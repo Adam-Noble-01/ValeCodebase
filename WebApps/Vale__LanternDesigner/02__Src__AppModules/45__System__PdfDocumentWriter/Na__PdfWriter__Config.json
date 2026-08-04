@@ -1,0 +1,32 @@
+{
+    "VghLantern__PdfWriter__Config": {
+        "VghLantern__PdfWriter__Config__Description": "Settings for the single PDF writer every export route in the application goes through. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('PdfWriter'). The writer owns page assembly, page size per page, and the footer; what is painted onto a page belongs to that page's painter, not here.",
+
+        "VghLantern__PdfWriter__Config__Document": {
+            "Unit"                      : "mm",
+            "UnitNote"                  : "Every painter in the application works in paper millimetres. Changing this would silently rescale every drawn coordinate in the app.",
+            "Compress"                  : true,
+            "FallbackFilename"          : "VghLantern__Document",
+            "FallbackFilenameNote"      : "Used only when a filename pattern resolves to separators and digits-free rubbish. An honest generic name beats a name that looks like a bug."
+        },
+
+        "VghLantern__PdfWriter__Config__Footer": {
+            "Enabled"                   : true,
+            "FooterText"                : "Vale Garden Houses Limited",
+            "PageNumberFormat"          : "Page {page} of {total}",
+            "FontSizePt"                : 7.2,
+            "InsetXMm"                  : 12,
+            "InsetYMm"                  : 6,
+            "TextColour"                : "#787878",
+            "SkipOnPageKinds"           : ["drawingSheet"],
+            "SkipOnPageKindsNote"       : "A drawing sheet carries its own titleblock, which is the sheet's identification. A running footer printed over or beside the drawing border reads as a defect on an issued drawing. Numbering still counts every physical page, so the numbers printed on the document pages stay truthful.",
+            "FooterNote"                : "The on-screen Preview and Send pages read this same block, so the footer a user sees is the footer the file gets."
+        },
+
+        "VghLantern__PdfWriter__Config__Messages": {
+            "LibraryUnavailable"        : "PDF export failed - the jsPDF library did not load.",
+            "NothingToWrite"            : "There is nothing to export.",
+            "WriteFailed"               : "PDF export failed - see the browser console for details."
+        }
+    }
+}

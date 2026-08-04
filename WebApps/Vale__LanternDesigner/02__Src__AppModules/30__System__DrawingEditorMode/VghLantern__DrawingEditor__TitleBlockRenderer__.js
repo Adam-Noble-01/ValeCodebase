@@ -6,29 +6,35 @@
    NAMESPACE  : VghLantern
    MODULE     : System - DrawingEditor - TitleBlockRenderer
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Build the Vale-branded titleblock strip for a drawing sheet
+   PURPOSE    : Resolve every titleblock field value from the project and the lantern
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Resolves every titleblock field from the project metadata, the active lantern
-     and the scale manager, then emits the titleblock markup for the sheet.
-   - Field rows, widths, label copy and the logo are all configuration; this module
-     only resolves values and lays them out.
-   - Returns markup rather than writing to the DOM, so the same block can be placed
-     on screen and handed to the PDF exporter.
+   - Resolves the titleblock fields from the project metadata, the active lantern and
+     the scale manager, and returns them as a flat key-to-string map.
+   - Draws nothing. SheetChrome lays the titleblock out and paints it onto both the
+     screen sheet and the PDF from one description; this module only decides what the
+     values are.
+   - Field rows, widths, label copy and the logo are all configuration.
 
    -----------------------------------------------------------------------------
 
-   WHY AN UNRESOLVED FIELD STILL RENDERS:
-   A field with no value renders an empty value box rather than being dropped. A
-   titleblock whose row count changes with the completeness of the data is a
-   titleblock nobody can proofread, and an obviously blank Client box is a far more
-   useful prompt than a silently missing one.
+   WHY THIS MODULE NO LONGER RENDERS:
+   It used to emit an HTML titleblock as well, which only Preview and Send used, while
+   the sheet and the export drew a different one from SheetChrome. Two titleblocks with
+   two sets of paddings, two column-width rules and only one of them carrying the Vale
+   logo. The markup builders are gone; what is left is the part that was always shared,
+   which is the answer to "what does the Client box say".
+
+   WHY AN UNRESOLVED FIELD STILL RETURNS A KEY:
+   A field with no value resolves to an empty string rather than being dropped, so the
+   titleblock's row count never changes with the completeness of the data. An obviously
+   blank Client box is a far more useful prompt than a silently missing one.
 
    ============================================================================= */
 
 // =============================================================================
-// REGION | Drawing Title Block Renderer Module
+// REGION | Drawing Title Block Field Resolver Module
 // =============================================================================
 
 const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
@@ -37,50 +43,10 @@ const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | CSS Class Names
-    // ------------------------------------------------------------
-    const CSS_BLOCK        =  'VghLantern__Sheet__TitleBlock';
-    const CSS_LOGO_CELL    =  'VghLantern__Sheet__TitleBlockLogo';
-    const CSS_FIELDS       =  'VghLantern__Sheet__TitleBlockFields';
-    const CSS_FIELD        =  'VghLantern__Sheet__TitleBlockField';
-    const CSS_FIELD_LABEL  =  'VghLantern__Sheet__TitleBlockFieldLabel';
-    const CSS_FIELD_VALUE  =  'VghLantern__Sheet__TitleBlockFieldValue';
-    const CSS_COMPANY      =  'VghLantern__Sheet__TitleBlockCompany';
-    // ------------------------------------------------------------
-
-
     // MODULE CONSTANTS | Project Data Keys
     // ------------------------------------------------------------
     const METADATA_BLOCK   =  'VghLantern__ProjectFile__Metadata';
     const IDENTITY_BLOCK   =  'Lantern__Identity__Config';
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Config Access
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Get the Titleblock Config Block
-    // ------------------------------------------------------------
-    function VghLantern__TitleBlockRenderer__Config() {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        if (!ConfigLoader) return {};
-
-        var drawingCfg  =  ConfigLoader.VghLantern__ConfigLoader__GetSection('DrawingEditor') || {};
-        return drawingCfg['VghLantern__DrawingEditor__Config__TitleBlock'] || {};
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Escape Text for Safe Markup Insertion
-    // ------------------------------------------------------------
-    function VghLantern__TitleBlockRenderer__Escape(value) {
-        return String(value === undefined || value === null ? '' : value)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -128,8 +94,10 @@ const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
 
     // FUNCTION | Resolve Every Titleblock Field Value
     // ------------------------------------------------------------
-    // Returned as a flat key-to-string map matching the Row Key values in config,
-    // so adding a row to config only needs a matching key here.
+    // Returned as a flat key-to-string map matching the Row Key values in config, so
+    // adding a row to config only needs a matching key here. The PDF writer's filename
+    // and metadata resolver reads the same map, so a file is named from the values
+    // printed on the drawing inside it.
     function VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(project, lantern) {
         var metadata     =  (project && project[METADATA_BLOCK]) || {};
         var identity     =  (lantern && lantern[IDENTITY_BLOCK]) || {};
@@ -157,93 +125,12 @@ const VghLantern__DrawingEditor__TitleBlockRenderer = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Markup Builders
-// -----------------------------------------------------------------------------
-
-    // SUB FUNCTION | Build the Logo Cell
-    // ------------------------------------------------------------
-    // Company name text is opt-in only - the logo already carries the brand, so
-    // printing "Vale Garden Houses Limited" under it just burns titleblock height.
-    function VghLantern__TitleBlockRenderer__BuildLogoCell(config) {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var LABEL         =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__TitleBlock';
-        var cellWidthMm   =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(config, 'LogoCellWidthMm', LABEL);
-        var cellStyle    =  cellWidthMm ? ' style="width:' + cellWidthMm + 'mm;min-width:' + cellWidthMm + 'mm"' : '';
-        var html         =  '<div class="' + CSS_LOGO_CELL + '"' + cellStyle + '>';
-
-        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'ShowValeLogo', LABEL) && config.LogoAssetPath) {
-            var widthStyle  =  config.LogoWidthMm ? ' style="width:' + config.LogoWidthMm + 'mm"' : '';
-            html  +=  '<img src="' + VghLantern__TitleBlockRenderer__Escape(config.LogoAssetPath) + '"' +
-                      widthStyle + ' alt="Vale Garden Houses">';
-        }
-
-        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'ShowCompanyName', LABEL) && config.CompanyName) {
-            html  +=  '<span class="' + CSS_COMPANY + '">' +
-                      VghLantern__TitleBlockRenderer__Escape(config.CompanyName) + '</span>';
-        }
-
-        return html + '</div>';
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Build One Field Cell
-    // ------------------------------------------------------------
-    // WidthMm is a relative flex share, not an absolute millimetre width. Absolute
-    // widths summed past the sheet width and wrapped the strip onto a second row.
-    function VghLantern__TitleBlockRenderer__BuildFieldCell(row, value) {
-        var flexShare  =  (typeof row.WidthMm === 'number' && row.WidthMm > 0) ? row.WidthMm : 1;
-        var style      =  ' style="flex:' + flexShare + ' ' + flexShare + ' 0;min-width:0"';
-
-        return '<div class="' + CSS_FIELD + '"' + style + '>' +
-               '<span class="' + CSS_FIELD_LABEL + '">' + VghLantern__TitleBlockRenderer__Escape(row.Label || row.Key) + '</span>' +
-               '<span class="' + CSS_FIELD_VALUE + '">' + VghLantern__TitleBlockRenderer__Escape(value) + '</span>' +
-               '</div>';
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Build the Full Titleblock Markup
-    // ------------------------------------------------------------
-    function VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup(project, lantern) {
-        var config  =  VghLantern__TitleBlockRenderer__Config();
-        var fields  =  VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(project, lantern);
-        var rows    =  Array.isArray(config.Rows) ? config.Rows : [];
-
-        var html  =  '<div class="' + CSS_BLOCK + '">' +
-                     VghLantern__TitleBlockRenderer__BuildLogoCell(config) +
-                     '<div class="' + CSS_FIELDS + '">';
-
-        var i;
-        for (i = 0; i < rows.length; i++) {
-            html  +=  VghLantern__TitleBlockRenderer__BuildFieldCell(rows[i], fields[rows[i].Key]);
-        }
-
-        return html + '</div></div>';
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Render the Titleblock Into a Host Element
-    // ------------------------------------------------------------
-    function VghLantern__DrawingEditor__TitleBlockRenderer__Render(hostElement, project, lantern) {
-        if (!hostElement) return;
-        hostElement.innerHTML  =  VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup(project, lantern);
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DrawingEditor__TitleBlockRenderer__Render         : VghLantern__DrawingEditor__TitleBlockRenderer__Render,
-        VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup    : VghLantern__DrawingEditor__TitleBlockRenderer__BuildMarkup,
         VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields  : VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields
     };
 

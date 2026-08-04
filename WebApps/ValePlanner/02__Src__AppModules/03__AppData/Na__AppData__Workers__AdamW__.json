@@ -2774,6 +2774,46 @@
           "endTime": "18:00",
           "title": "Dev |  Lantern Config",
           "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1785828167340",
+          "date": "2026-07-31",
+          "startTime": "14:00",
+          "endTime": "18:00",
+          "title": "Rick Thing",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1785828184846",
+          "date": "2026-07-30",
+          "startTime": "08:00",
+          "endTime": "18:00",
+          "title": "Dev |  Lantern Builder",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1785828202098",
+          "date": "2026-07-31",
+          "startTime": "08:00",
+          "endTime": "13:00",
+          "title": "Dev |  Lantern Builder",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1785828211091",
+          "date": "2026-07-31",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Lunch |  BBQ",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1785836644001",
+          "date": "2026-08-03",
+          "startTime": "11:00",
+          "endTime": "15:15",
+          "title": "Whitecard |  Londos",
+          "color": "na-shift-color-indigo"
         }
       ]
     }

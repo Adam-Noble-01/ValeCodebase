@@ -1,0 +1,532 @@
+/* =============================================================================
+ * VALE SCAN TO MERMAID - DOCUMENT AND DIAGRAM THEME
+ * =============================================================================
+ *
+ * FILE       : Vale__MermaidTheme__.css
+ * NAMESPACE  : ValeMermaid
+ * MODULE     : Style - MermaidTheme
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Vale Garden Houses branding for transcribed diagram documents
+ * CREATED    : 04-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Single stylesheet governing both the document chrome and the Mermaid diagram
+ * - Vale Design Suite tokens are identical to ValeSpec and VghLantern
+ * - The --ValeMermaid_* tokens are read at runtime and handed to Mermaid
+ * - Editing a colour here therefore restyles the diagram, not just the page
+ * - Copy this file to <project>/99__Style__MermaidTheme/ to override per project
+ * - Print rules keep the diagram whole and drop the collapsible sections
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | Vale Design Suite Standards
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Color Palette and Design Tokens */
+    /* ------------------------------------------------------------ */
+    :root {
+        --Vale_PrimaryBrand                : #172b3a;                      /* <-- Vale Garden Houses brand blue */
+        --Vale_PrimaryBrand_Dark           : #0f1e28;                      /* <-- Hover/pressed state for brand elements */
+        --Vale_BackgroundLight             : #f5f5f5;                      /* <-- Light background */
+        --Vale_BackgroundWhite             : #ffffff;                      /* <-- Pure white for panels */
+        --Vale_TextPrimary                 : #172b3a;                      /* <-- Primary text color */
+        --Vale_TextSecondary               : #656565;                      /* <-- Secondary text */
+        --Vale_TextSubtle                  : #5a6d7a;                      /* <-- Subtle text (adjusted for blue) */
+        --Vale_TextLight                   : #ffffff;                      /* <-- Light text on dark backgrounds */
+        --Vale_BorderPrimary               : #172b3a;                      /* <-- Primary border color */
+        --Vale_BorderLight                 : #cccccc;                      /* <-- Light border color */
+        --Vale_AccentBlue                  : #336699;                      /* <-- Accent blue for links and highlights */
+        --Vale_WarningOrange               : #d67e28;                      /* <-- Warning flag colour */
+        --Vale_ErrorRed                    : #d32f2f;                      /* <-- Error state colour */
+        --Vale_SuccessGreen                : #2a7d4f;                      /* <-- Success state colour */
+        --Vale_WarningBackground           : #fdf3e3;                      /* <-- Warning banner fill */
+        --Vale_ErrorBackground             : #fbeaea;                      /* <-- Error banner fill */
+        --Vale_SuccessBackground           : #eaf3ee;                      /* <-- Success banner fill */
+
+        /* Layout Dimension Variables */
+        --Vale_HeaderHeight                : 60px;                         /* <-- Fixed header height */
+        --Vale_MaxContentWidth             : 1600px;                       /* <-- Maximum content width */
+        --Vale_BorderWidth                 : 2px;                          /* <-- Standard border thickness */
+        --Vale_BorderRadius                : 8px;                          /* <-- Standard border radius */
+        --Vale_Spacing_Small               : 8px;                          /* <-- Small spacing unit */
+        --Vale_Spacing_Medium              : 16px;                         /* <-- Medium spacing unit */
+        --Vale_Spacing_Large               : 24px;                         /* <-- Large spacing unit */
+        --Vale_Spacing_XLarge              : 32px;                         /* <-- Extra large spacing unit */
+
+        /* Typography Variables */
+        --Vale_FontFamily                  : 'Open Sans', 'Segoe UI', sans-serif;
+        --Vale_FontSize_Title              : 26px;                         /* <-- Document title size */
+        --Vale_FontSize_Heading            : 24px;                         /* <-- Heading text size */
+        --Vale_FontSize_SubHeading         : 18px;                         /* <-- Sub-heading text size */
+        --Vale_FontSize_Standard           : 14px;                         /* <-- Standard interface text */
+        --Vale_FontSize_Small              : 12px;                         /* <-- Small text size */
+        --Vale_FontWeight_Light            : 300;                          /* <-- Light font weight */
+        --Vale_FontWeight_Regular          : 400;                          /* <-- Regular font weight */
+        --Vale_FontWeight_SemiBold         : 600;                          /* <-- Semi-bold font weight */
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | Mermaid Diagram Tokens Read At Runtime
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Handed To Mermaid themeVariables By The Inline Bootstrap */
+    /* ------------------------------------------------------------ */
+    :root {
+        --ValeMermaid_FontFamily           : 'Open Sans', 'Segoe UI', sans-serif;
+        --ValeMermaid_FontSize             : 15px;                         /* <-- Base node label size */
+
+        --ValeMermaid_NodeFill             : #ffffff;                      /* <-- Default process node fill */
+        --ValeMermaid_NodeStroke           : #172b3a;                      /* <-- Default process node outline */
+        --ValeMermaid_NodeText             : #172b3a;                      /* <-- Default node label colour */
+        --ValeMermaid_NodeStrokeWidth      : 1.6px;                        /* <-- Default node outline weight */
+
+        --ValeMermaid_LineStroke           : #2f4a5e;                      /* <-- Connector line colour */
+        --ValeMermaid_LineText             : #5a6d7a;                      /* <-- Edge label text colour */
+        --ValeMermaid_LineLabelBackground  : #ffffff;                      /* <-- Masks the line behind a label - must match ClusterFill or labels read as boxes */
+
+        --ValeMermaid_ClusterFill          : #ffffff;                      /* <-- Subgraph fill - kept white so edge label masks stay invisible */
+        --ValeMermaid_ClusterStroke        : #c9d1d6;                      /* <-- Subgraph outline does the grouping instead of a fill */
+
+        /* Semantic Role Colours - drive the classDef blocks in every diagram */
+        --ValeMermaid_StartFill            : #172b3a;                      /* <-- Entry point, solid brand blue */
+        --ValeMermaid_StartText            : #ffffff;                      /* <-- Entry point label */
+        --ValeMermaid_DecisionFill         : #f5f5f5;                      /* <-- Branch point fill */
+        --ValeMermaid_DecisionStroke       : #336699;                      /* <-- Branch point outline */
+        --ValeMermaid_StopFill             : #fbeaea;                      /* <-- Terminating or closing step */
+        --ValeMermaid_StopStroke           : #d32f2f;                      /* <-- Terminating or closing outline */
+        --ValeMermaid_SlaFill              : #fdf3e3;                      /* <-- Timing or service level constraint */
+        --ValeMermaid_SlaStroke            : #d67e28;                      /* <-- Timing constraint outline */
+        --ValeMermaid_DoneFill             : #eaf3ee;                      /* <-- Successful completion */
+        --ValeMermaid_DoneStroke           : #2a7d4f;                      /* <-- Successful completion outline */
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Page Shell And Vale Header
+ * ----------------------------------------------------------------------------- */
+
+    /* RESET | Base Page Setup */
+    /* ------------------------------------------------------------ */
+    *, *::before, *::after {
+        box-sizing                         : border-box;
+    }
+
+    body {
+        margin                             : 0;
+        padding                            : 0;
+        background                         : var(--Vale_BackgroundLight);
+        color                              : var(--Vale_TextPrimary);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        line-height                        : 1.55;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HEADER | Application Header Bar */
+    /* ------------------------------------------------------------ */
+    .app-header {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : space-between;
+        height                             : var(--Vale_HeaderHeight);
+        padding                            : 0 var(--Vale_Spacing_Large);
+        background                         : var(--Vale_BackgroundWhite);
+        color                              : var(--Vale_TextPrimary);
+        box-shadow                         : 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-bottom                      : var(--Vale_BorderWidth) solid var(--Vale_PrimaryBrand);
+    }
+
+    .app-header__logo-left {
+        height                             : 42px;
+        width                              : auto;
+        display                            : block;
+    }
+
+    .app-header__title {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        margin                             : 0;
+        padding                            : 0;
+        text-align                         : right;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Content Container */
+    /* ------------------------------------------------------------ */
+    .doc-shell {
+        max-width                          : var(--Vale_MaxContentWidth);
+        margin                             : var(--Vale_Spacing_XLarge) auto;
+        padding                            : 0 var(--Vale_Spacing_Large);
+    }
+
+    .doc-panel {
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : var(--Vale_Spacing_XLarge);
+        margin-bottom                      : var(--Vale_Spacing_Large);
+    }
+
+    .doc-title {
+        font-size                          : var(--Vale_FontSize_Title);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0;
+    }
+
+    .doc-subtitle {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_Light);
+        color                              : var(--Vale_TextSubtle);
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;
+    }
+
+    .doc-meta {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+        padding-top                        : var(--Vale_Spacing_Small);
+        margin-top                         : var(--Vale_Spacing_Medium);
+    }
+
+    .doc-section-heading {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;
+        padding-bottom                     : var(--Vale_Spacing_Small);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Diagram Surface
+ * ----------------------------------------------------------------------------- */
+
+    /* DIAGRAM | Mermaid Host And Overflow Handling */
+    /* ------------------------------------------------------------ */
+    .diagram-host {
+        width                              : 100%;
+        overflow-x                         : auto;                         /* <-- Wide flows scroll here, never the page body */
+        padding                            : var(--Vale_Spacing_Medium) 0;
+        text-align                         : center;
+    }
+
+    .diagram-host .mermaid svg {
+        max-width                          : 100%;
+        height                             : auto;
+    }
+
+    /* Labels are drawn as native SVG text so the diagram can be exported to a    */
+    /* raster image - a foreignObject label cannot be rasterised to canvas. The   */
+    /* connector behind the text is masked with a painted halo rather than a      */
+    /* background box, so no label reads as a node in its own right.              */
+    .diagram-host .edgeLabel,
+    .diagram-host .edgeLabel p,
+    .diagram-host .edgeLabel span {
+        background                         : transparent;
+        padding                            : 0 3px;
+        border-radius                      : 0;
+        font-size                          : var(--Vale_FontSize_Standard);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DIAGRAM | Export Toolbar */
+    /* ------------------------------------------------------------ */
+    .diagram-toolbar {
+        display                            : flex;
+        justify-content                    : flex-end;
+        gap                                : var(--Vale_Spacing_Small);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+
+    .diagram-toolbar__button {
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : 6px 14px;
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             border-color var(--Vale_Transition_Fast);
+    }
+
+    .diagram-toolbar__button:hover {
+        background                         : var(--Vale_BackgroundLight);
+        border-color                       : var(--Vale_PrimaryBrand);
+    }
+
+    .diagram-toolbar__button:disabled {
+        opacity                            : 0.5;
+        cursor                             : default;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Notes, Legend And Review Flags
+ * ----------------------------------------------------------------------------- */
+
+    /* NOTES | Transcribed Sheet Notes */
+    /* ------------------------------------------------------------ */
+    .notes-list {
+        margin                             : 0;
+        padding                            : 0 0 0 var(--Vale_Spacing_Large);
+    }
+
+    .notes-list li {
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+
+    .notes-emphasis {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        text-decoration                    : underline;                    /* <-- Mirrors the underlining on the drawn sheet */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LEGEND | Key Symbols Transcribed From The Sheet */
+    /* ------------------------------------------------------------ */
+    .legend-grid {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : var(--Vale_Spacing_Large);
+    }
+
+    .legend-item {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Standard);
+    }
+
+    .legend-swatch {
+        width                              : 16px;
+        height                             : 16px;
+        border                             : 1.5px solid var(--Vale_PrimaryBrand);
+        border-radius                      : 2px;
+        flex                               : 0 0 auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* REVIEW | Low Confidence Transcription Flags */
+    /* ------------------------------------------------------------ */
+    .review-panel {
+        background                         : var(--Vale_WarningBackground);
+        border-left                        : 4px solid var(--Vale_WarningOrange);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Large);
+    }
+
+    .review-table {
+        width                              : 100%;
+        border-collapse                    : collapse;
+        font-size                          : var(--Vale_FontSize_Standard);
+    }
+
+    .review-table th {
+        text-align                         : left;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Small);
+    }
+
+    .review-table td {
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Small);
+        vertical-align                     : top;
+    }
+
+    .confidence-low {
+        color                              : var(--Vale_ErrorRed);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .confidence-medium {
+        color                              : var(--Vale_WarningOrange);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .uncertain {
+        border-bottom                      : 1.5px dotted var(--Vale_WarningOrange);
+        cursor                             : help;                         /* <-- Hover reveals the alternative reading */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DISCLOSURE | Collapsible Original Scan And Review Sections */
+    /* ------------------------------------------------------------ */
+    .doc-disclosure {
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+
+    .doc-disclosure > summary {
+        cursor                             : pointer;
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Large);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        list-style                         : none;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+
+    .doc-disclosure > summary::-webkit-details-marker {
+        display                            : none;
+    }
+
+    .doc-disclosure > summary::before {
+        content                            : '\25B8';                      /* <-- Right pointing triangle when closed */
+        display                            : inline-block;
+        transition                         : transform 0.15s ease;
+        color                              : var(--Vale_AccentBlue);
+    }
+
+    .doc-disclosure[open] > summary::before {
+        transform                          : rotate(90deg);
+    }
+
+    .doc-disclosure__body {
+        padding                            : 0 var(--Vale_Spacing_Large) var(--Vale_Spacing_Large);
+    }
+
+    .doc-disclosure__count {
+        margin-left                        : auto;
+        font-weight                        : var(--Vale_FontWeight_Regular);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+
+    .source-scan {
+        width                              : 100%;
+        height                             : auto;
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Index Page Listing
+ * ----------------------------------------------------------------------------- */
+
+    /* INDEX | Sheet Contents Listing */
+    /* ------------------------------------------------------------ */
+    .index-list {
+        list-style                         : none;
+        margin                             : 0;
+        padding                            : 0;
+    }
+
+    .index-list li {
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+
+    .index-list li:last-child {
+        border-bottom                      : none;
+    }
+
+    .index-list a {
+        display                            : flex;
+        align-items                        : baseline;
+        gap                                : var(--Vale_Spacing_Medium);
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Small);
+        color                              : var(--Vale_PrimaryBrand);
+        text-decoration                    : none;
+        transition                         : background 0.15s ease;
+    }
+
+    .index-list a:hover {
+        background                         : var(--Vale_BackgroundLight);
+    }
+
+    .index-list__page {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_AccentBlue);
+        min-width                          : 60px;
+    }
+
+    .index-list__flags {
+        margin-left                        : auto;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_WarningOrange);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * MEDIA | Print And Presentation Output
+ * ----------------------------------------------------------------------------- */
+
+    /* PRINT | Ctrl+P To PDF Behaviour */
+    /* ------------------------------------------------------------ */
+    @media print {
+        body {
+            background                     : var(--Vale_BackgroundWhite);
+        }
+
+        .app-header {
+            box-shadow                     : none;
+        }
+
+        .doc-shell {
+            max-width                      : none;
+            margin                         : 0;
+            padding                        : 0;
+        }
+
+        .doc-panel {
+            border                         : none;
+            padding                        : 0;
+            break-inside                   : avoid;                        /* <-- Never split a diagram across pages */
+        }
+
+        .doc-disclosure {
+            display                        : none;                         /* <-- Original scan and review flags stay out of the deck */
+        }
+
+        .diagram-toolbar {
+            display                        : none;                         /* <-- Export buttons are screen furniture */
+        }
+
+        .doc-disclosure--print {
+            display                        : block;                        /* <-- Opt a disclosure back in when it must be printed */
+        }
+
+        .diagram-host {
+            overflow-x                     : visible;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

@@ -10,9 +10,8 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Owns the drawing scale for the active sheet: the selected denominator, the
-     available denominators, and the conversion between model millimetres and paper
-     millimetres.
+   - Owns the drawing scale for the active sheet: the selected denominator and the
+     available denominators.
    - Picks a best-fit denominator from the configured list given the model extents
      of every view and the paper space each frame has to work in.
    - Formats the scale label exactly as it should read in the titleblock.
@@ -209,26 +208,8 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Conversion and Formatting
+// REGION | Formatting
 // -----------------------------------------------------------------------------
-
-    // FUNCTION | Convert Model Millimetres to Paper Millimetres
-    // ------------------------------------------------------------
-    function VghLantern__DrawingEditor__ScaleManager__ModelMmToPaperMm(modelMm) {
-        var denominator  =  VghLantern__DrawingEditor__ScaleManager__GetDenominator();
-        return modelMm / denominator;
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Convert Paper Millimetres to Model Millimetres
-    // ------------------------------------------------------------
-    function VghLantern__DrawingEditor__ScaleManager__PaperMmToModelMm(paperMm) {
-        var denominator  =  VghLantern__DrawingEditor__ScaleManager__GetDenominator();
-        return paperMm * denominator;
-    }
-    // ------------------------------------------------------------
-
 
     // FUNCTION | Format the Scale for the Titleblock
     // ------------------------------------------------------------
@@ -256,8 +237,6 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
         VghLantern__DrawingEditor__ScaleManager__ListDenominators  : VghLantern__DrawingEditor__ScaleManager__ListDenominators,
         VghLantern__DrawingEditor__ScaleManager__FitToRequests     : VghLantern__DrawingEditor__ScaleManager__FitToRequests,
         VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled  : VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled,
-        VghLantern__DrawingEditor__ScaleManager__ModelMmToPaperMm  : VghLantern__DrawingEditor__ScaleManager__ModelMmToPaperMm,
-        VghLantern__DrawingEditor__ScaleManager__PaperMmToModelMm  : VghLantern__DrawingEditor__ScaleManager__PaperMmToModelMm,
         VghLantern__DrawingEditor__ScaleManager__FormatLabel       : VghLantern__DrawingEditor__ScaleManager__FormatLabel
     };
 

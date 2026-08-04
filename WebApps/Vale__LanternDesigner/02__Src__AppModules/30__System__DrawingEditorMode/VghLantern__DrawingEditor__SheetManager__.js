@@ -68,21 +68,15 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     const CSS_TOOL_BUTTON   =  'VghLantern__DrawingEditor__ToolButton';
     const CSS_TOOL_SPACER   =  'VghLantern__DrawingEditor__ToolSpacer';
 
-    const CSS_SHEET         =  'VghLantern__Sheet';
+    // The sheet, its frames and its handles are built by SheetSurface, which owns
+    // their class names and data attributes. Only the classes this module applies
+    // itself are named here.
     const CSS_SHEET_SCALER  =  'VghLantern__Sheet__Scaler';
-    const CSS_SHEET_CHROME  =  'VghLantern__Sheet__ChromeLayer';
     const CSS_EMPTY_STATE   =  'VghLantern__DrawingEditor__EmptyState';
 
-    const CSS_RESIZE_HANDLE =  'VghLantern__Sheet__ResizeHandle';
-    const CSS_RESIZE_COL    =  'VghLantern__Sheet__ResizeHandle--col';
-    const CSS_RESIZE_ROW    =  'VghLantern__Sheet__ResizeHandle--row';
     const CSS_RESIZE_DRAG   =  'VghLantern__Sheet__ResizeHandle--dragging';
     const CSS_BODY_RESIZING =  'VghLantern__Sheet__IsResizing';
     const CSS_BODY_RESIZE_ROW =  'VghLantern__Sheet__IsResizing--row';
-
-    const ATTR_SHEET_RESIZE =  'data-vgh-sheet-resize';
-    const ATTR_SPLIT_INDEX  =  'data-vgh-split-index';
-    const ATTR_SLOT_KEY     =  'data-vgh-slot';
     // ------------------------------------------------------------
 
 
@@ -225,11 +219,10 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // The one place the sheet geometry is produced. The screen build, the gutter
     // drag, the view placement and the PDF export all consume this same shape.
     function VghLantern__DrawingEditor__SheetManager__SolveLayout(project) {
-        var ViewportFrame   =  window.VghLantern__DrawingEditor__ViewportFrame;
         var SheetPdfLayout  =  window.VghLantern__DrawingEditor__SheetPdfLayout;
-        if (!ViewportFrame || !SheetPdfLayout) return null;
+        if (!SheetPdfLayout) return null;
 
-        var sheetSize  =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(
+        var sheetSize  =  SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__SheetSizeMm(
             VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
             VghLantern__DrawingEditor__SheetManager__Orientation()
         );
@@ -424,169 +417,40 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 // REGION | Sheet Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Paper Millimetres to Laid-Out Pixels
+    // HELPER FUNCTION | Find the Built Sheet Element Inside a Host
     // ------------------------------------------------------------
-    function VghLantern__SheetManager__PxPerMm(layout) {
-        var value  =  layout ? layout.ScreenPixelsPerMm : null;
-        // Layout__Solve already enforces this via ConfigLoader.RequireNumber and logs
-        // loudly if the JSON key is missing - only guarding here against divide-by-zero.
-        return (typeof value === 'number' && value > 0) ? value : 0.01;
+    // The sheet's class name belongs to SheetSurface, which builds it. Reading it
+    // back from there rather than repeating the literal is what stops a rename in
+    // one file quietly breaking the query in the other.
+    function VghLantern__SheetManager__FindSheet(hostElement) {
+        var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
+        if (!hostElement || !SheetSurface) return null;
+        return hostElement.querySelector('.' + SheetSurface.VghLantern__DrawingEditor__SheetSurface__SheetClass);
     }
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Build the Chrome Overlay Markup for a Layout
-    // ------------------------------------------------------------
-    // The overlay is the whole of the sheet that is not a view. Its viewBox is the
-    // paper in millimetres, so it carries the solved coordinates unchanged.
-    function VghLantern__SheetManager__BuildChromeMarkup(layout, state, logoAsset) {
-        var SheetChrome  =  window.VghLantern__DrawingEditor__SheetChrome;
-        if (!SheetChrome) return '';
-
-        var primitives  =  SheetChrome.VghLantern__DrawingEditor__SheetChrome__BuildForSheet(
-            layout, state.Project, state.Lantern, logoAsset
-        );
-
-        return SheetChrome.VghLantern__DrawingEditor__SheetChrome__ToSvgMarkup(
-            primitives, layout.Page.WidthMm, layout.Page.HeightMm, CSS_SHEET_CHROME
-        );
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Build Overlay Markup for the Gutter Split Handles
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__BuildResizeHandles(layout) {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var gridCfg  =  VghLantern__SheetManager__GridConfig();
-        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
-                gridCfg, 'ResizeHandlesEnabled', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid')) {
-            return '';
-        }
-
-        var html  =  '';
-        var i;
-
-        for (i = 0; i < layout.Grid.ColumnTracks.length - 1; i++) {
-            html  +=  '<div class="' + CSS_RESIZE_HANDLE + ' ' + CSS_RESIZE_COL + '" ' +
-                      ATTR_SHEET_RESIZE + '="col" ' + ATTR_SPLIT_INDEX + '="' + i + '" ' +
-                      'title="Drag to resize viewports"></div>';
-        }
-        for (i = 0; i < layout.Grid.RowTracks.length - 1; i++) {
-            html  +=  '<div class="' + CSS_RESIZE_HANDLE + ' ' + CSS_RESIZE_ROW + '" ' +
-                      ATTR_SHEET_RESIZE + '="row" ' + ATTR_SPLIT_INDEX + '="' + i + '" ' +
-                      'title="Drag to resize viewports"></div>';
-        }
-
-        return html;
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Build the Sheet Structure at Paper Size
+    // SUB FUNCTION | Wrap a Built Sheet in the Zoom Scaler
     // ------------------------------------------------------------
     // The scaler wraps the sheet and carries the screen zoom transform, so the sheet
-    // itself keeps its true paper-pixel dimensions.
+    // itself keeps its true paper-pixel dimensions. SheetSurface builds the sheet;
+    // this module only decides that it is interactive and that it zooms.
     function VghLantern__SheetManager__BuildSheetStructure(layout, state, logoAsset) {
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        var pxPerMm        =  VghLantern__SheetManager__PxPerMm(layout);
-
-        var sheetStyle  =  'width:'  + (layout.Page.WidthMm  * pxPerMm) + 'px;' +
-                           'height:' + (layout.Page.HeightMm * pxPerMm) + 'px;';
-
-        var framesHtml  =  '';
-        var i;
-        if (ViewportFrame) {
-            for (i = 0; i < layout.Slots.length; i++) {
-                framesHtml  +=  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__BuildMarkup(layout.Slots[i], pxPerMm);
-            }
-        }
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
+        if (!SheetSurface) return '';
 
         return '<div class="' + CSS_SHEET_SCALER + '">' +
-               '<div class="' + CSS_SHEET + '" style="' + sheetStyle + '" ' +
-               'data-vgh-sheet-size="' + layout.Page.SizeKey + '" ' +
-               'data-vgh-sheet-orientation="' + layout.Page.Orientation + '">' +
-               framesHtml +
-               VghLantern__SheetManager__BuildChromeMarkup(layout, state, logoAsset) +
-               VghLantern__SheetManager__BuildResizeHandles(layout) +
-               '</div></div>';
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Re-Position Frames, Chrome and Handles From a Layout
-    // ------------------------------------------------------------
-    // Used by the live gutter drag. Only boxes and the overlay move; no view is
-    // re-rendered and no surface is remounted, so a drag stays smooth.
-    function VghLantern__SheetManager__ApplyLayoutToDom(sheetElement, layout, state, logoAsset) {
-        if (!sheetElement || !layout) return;
-
-        var pxPerMm  =  VghLantern__SheetManager__PxPerMm(layout);
-        var i, placement, frameEl, bodyEl;
-
-        for (i = 0; i < layout.Slots.length; i++) {
-            placement  =  layout.Slots[i];
-            frameEl    =  sheetElement.querySelector('[' + ATTR_SLOT_KEY + '="' + placement.Slot.Key + '"]');
-            if (!frameEl) continue;
-
-            frameEl.style.left    =  (placement.Frame.X * pxPerMm) + 'px';
-            frameEl.style.top     =  (placement.Frame.Y * pxPerMm) + 'px';
-            frameEl.style.width   =  (placement.Frame.WidthMm  * pxPerMm) + 'px';
-            frameEl.style.height  =  (placement.Frame.HeightMm * pxPerMm) + 'px';
-
-            bodyEl  =  frameEl.querySelector('.VghLantern__Sheet__FrameBody');
-            if (!bodyEl) continue;
-
-            bodyEl.style.left    =  ((placement.Body.X - placement.Frame.X) * pxPerMm) + 'px';
-            bodyEl.style.top     =  ((placement.Body.Y - placement.Frame.Y) * pxPerMm) + 'px';
-            bodyEl.style.width   =  (placement.Body.WidthMm  * pxPerMm) + 'px';
-            bodyEl.style.height  =  (placement.Body.HeightMm * pxPerMm) + 'px';
-        }
-
-        var chromeEl  =  sheetElement.querySelector('.' + CSS_SHEET_CHROME);
-        if (chromeEl) {
-            chromeEl.outerHTML  =  VghLantern__SheetManager__BuildChromeMarkup(layout, state, logoAsset);
-        }
-
-        VghLantern__SheetManager__PositionResizeHandles(sheetElement, layout);
-    }
-    // ------------------------------------------------------------
-
-
-    // SUB FUNCTION | Position the Gutter Handles Over the Solved Tracks
-    // ------------------------------------------------------------
-    // A handle sits on the centre line of the gutter it drags, taken straight from
-    // the solved track offsets rather than measured back off the DOM.
-    function VghLantern__SheetManager__PositionResizeHandles(sheetElement, layout) {
-        if (!sheetElement || !layout) return;
-
-        var pxPerMm   =  VghLantern__SheetManager__PxPerMm(layout);
-        var grid      =  layout.Grid;
-        var gutterPx  =  grid.GutterMm * pxPerMm;
-        var handles   =  sheetElement.querySelectorAll('[' + ATTR_SHEET_RESIZE + ']');
-        var i, handleEl, isColumn, splitIndex, tracks, centreMm;
-
-        for (i = 0; i < handles.length; i++) {
-            handleEl    =  handles[i];
-            isColumn    =  handleEl.getAttribute(ATTR_SHEET_RESIZE) === 'col';
-            splitIndex  =  parseInt(handleEl.getAttribute(ATTR_SPLIT_INDEX), 10) || 0;
-            tracks      =  isColumn ? grid.ColumnTracks : grid.RowTracks;
-            if (!tracks || splitIndex + 1 >= tracks.length) continue;
-
-            centreMm  =  tracks[splitIndex].OffsetMm + tracks[splitIndex].SizeMm + (grid.GutterMm / 2);
-
-            if (isColumn) {
-                handleEl.style.left    =  ((grid.X + centreMm) * pxPerMm) + 'px';
-                handleEl.style.top     =  (grid.Y * pxPerMm) + 'px';
-                handleEl.style.height  =  (grid.HeightMm * pxPerMm) + 'px';
-                handleEl.style.width   =  Math.max(10, gutterPx + 6) + 'px';
-            } else {
-                handleEl.style.top     =  ((grid.Y + centreMm) * pxPerMm) + 'px';
-                handleEl.style.left    =  (grid.X * pxPerMm) + 'px';
-                handleEl.style.width   =  (grid.WidthMm * pxPerMm) + 'px';
-                handleEl.style.height  =  Math.max(10, gutterPx + 6) + 'px';
-            }
-        }
+               SheetSurface.VghLantern__DrawingEditor__SheetSurface__BuildHtml(layout, {
+                   Project           : state.Project,
+                   Lantern           : state.Lantern,
+                   LogoAsset         : logoAsset,
+                   SlotContentHtml   : null,                                   // <-- Frames stay empty; ViewPlacement mounts live surfaces into them
+                   ShowResizeHandles : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
+                       VghLantern__SheetManager__GridConfig(), 'ResizeHandlesEnabled',
+                       'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid')
+               }) +
+               '</div>';
     }
     // ------------------------------------------------------------
 
@@ -657,8 +521,11 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             host.innerHTML  =  VghLantern__SheetManager__BuildSheetStructure(layout, state, logoAsset);
             VghLantern__SheetManager__ApplySheetZoom();                        // <-- Rebuilt DOM starts unscaled; re-apply the session zoom
 
-            var sheetEl  =  host.querySelector('.' + CSS_SHEET);
-            VghLantern__SheetManager__PositionResizeHandles(sheetEl, layout);
+            var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
+            var sheetEl       =  VghLantern__SheetManager__FindSheet(host);
+            if (!sheetEl) return false;                                        // <-- SheetSurface unavailable; the empty state above already said so
+
+            SheetSurface.VghLantern__DrawingEditor__SheetSurface__PositionResizeHandles(sheetEl, layout);
 
             var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
             if (ViewPlacement) {
@@ -707,9 +574,10 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         var minPct    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'ShareMinPct', GRID_LABEL);
         var maxPct    =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'ShareMaxPct', GRID_LABEL);
 
+        var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
         var rect       =  drag.SheetEl.getBoundingClientRect();
         var zoom       =  VghLantern__SheetManager__ZoomFactor || 1;
-        var pxPerMm    =  VghLantern__SheetManager__PxPerMm(layout) * zoom;
+        var pxPerMm    =  SheetSurface.VghLantern__DrawingEditor__SheetSurface__PixelsPerMm(layout) * zoom;
         var grid       =  layout.Grid;
 
         var shares     =  drag.IsColumn ? VghLantern__SheetManager__ColumnSharesPct : VghLantern__SheetManager__RowSharesPct;
@@ -746,8 +614,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (!reSolved) return;
 
         VghLantern__SheetManager__ActiveLayout  =  reSolved;
-        VghLantern__SheetManager__ApplyLayoutToDom(
-            drag.SheetEl, reSolved, state,
+        SheetSurface.VghLantern__DrawingEditor__SheetSurface__ApplyLayout(
+            drag.SheetEl, reSolved, state.Project, state.Lantern,
             SheetChrome ? SheetChrome.VghLantern__DrawingEditor__SheetChrome__CachedLogo() : null
         );
     }
@@ -789,17 +657,23 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (!host) return;
 
         host.addEventListener('pointerdown', function(ev) {
-            var handleEl  =  ev.target.closest ? ev.target.closest('[' + ATTR_SHEET_RESIZE + ']') : null;
+            var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
+            if (!SheetSurface) return;
+
+            var resizeAttr  =  SheetSurface.VghLantern__DrawingEditor__SheetSurface__ResizeAttribute;
+            var splitAttr   =  SheetSurface.VghLantern__DrawingEditor__SheetSurface__SplitIndexAttribute;
+
+            var handleEl  =  ev.target.closest ? ev.target.closest('[' + resizeAttr + ']') : null;
             if (!handleEl) return;
 
-            var sheetEl  =  handleEl.closest('.' + CSS_SHEET);
+            var sheetEl  =  handleEl.closest('.' + SheetSurface.VghLantern__DrawingEditor__SheetSurface__SheetClass);
             if (!sheetEl) return;
 
             VghLantern__SheetManager__ActiveResize  =  {
                 HandleEl   : handleEl,
                 SheetEl    : sheetEl,
-                IsColumn   : handleEl.getAttribute(ATTR_SHEET_RESIZE) === 'col',
-                SplitIndex : parseInt(handleEl.getAttribute(ATTR_SPLIT_INDEX), 10) || 0
+                IsColumn   : handleEl.getAttribute(resizeAttr) === 'col',
+                SplitIndex : parseInt(handleEl.getAttribute(splitAttr), 10) || 0
             };
 
             handleEl.classList.add(CSS_RESIZE_DRAG);
@@ -858,28 +732,22 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Describe the Composed Sheet for the Document Preview Mode
+    // FUNCTION | Describe the Composed Sheet for Every Consumer Outside This Mode
     // ------------------------------------------------------------
-    // Preview and PDF export consume this rather than reaching into the sheet DOM,
-    // so the two modes stay decoupled and the sheet can be rebuilt freely. The solved
-    // layout travels with it, because that is what makes an export match the screen.
+    // Preview and Send and both export routes consume this rather than reaching into
+    // the sheet DOM, so the modes stay decoupled and the sheet can be rebuilt freely.
+    // The solved layout travels with it, because that is what makes an export and a
+    // preview match the screen.
+    //
+    // The paper size is not repeated as its own field: Layout.Page already carries
+    // the size key, the label, the orientation and the millimetres, and a second copy
+    // is a second thing that can disagree.
     function VghLantern__DrawingEditor__SheetManager__DescribeSheet() {
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
         var state          =  VghLantern__SheetManager__ReadState();
 
-        var sheetSize  =  ViewportFrame
-            ? ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(
-                  VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
-                  VghLantern__DrawingEditor__SheetManager__Orientation()
-              )
-            : null;
-
         return {
-            SheetSizeKey     : VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
-            Orientation      : VghLantern__DrawingEditor__SheetManager__Orientation(),
-            SheetSize        : sheetSize,
             Layout           : VghLantern__SheetManager__ActiveLayout
                                || VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project),
             ScaleDenominator : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator() : null,
@@ -1091,7 +959,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (!host) return;
 
         var scaler  =  host.querySelector('.' + CSS_SHEET_SCALER);
-        var sheet   =  host.querySelector('.' + CSS_SHEET);
+        var sheet   =  VghLantern__SheetManager__FindSheet(host);
         if (!scaler || !sheet) return;
 
         var z  =  VghLantern__SheetManager__ZoomFactor;

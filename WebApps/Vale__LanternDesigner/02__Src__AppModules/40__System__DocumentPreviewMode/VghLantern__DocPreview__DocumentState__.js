@@ -39,19 +39,13 @@ const VghLantern__DocPreview__DocumentState = (function() {
 
     // MODULE CONSTANTS | Toggle Keys and Groupings
     // ------------------------------------------------------------
-    const DRAWING_VIEW_KEYS  =  ['ShowPlanView', 'ShowFrontElevation', 'ShowSideElevation', 'Show3dView'];
+    // The drawing page is one switch. It used to be four, one per view, which meant
+    // this module had to know the Drawing Editor's slot keys and the preview had to
+    // filter the sheet as it rebuilt it. The sheet is now baked whole, so which views
+    // it carries is decided where the sheet is composed.
+    const DRAWING_VIEW_KEYS  =  ['ShowDrawingSheet'];
     const DOCUMENT_KEYS      =  ['ShowTakeoffSchedule', 'ShowComponentSchedule', 'ShowJobNotes'];
     const ALL_TOGGLE_KEYS    =  DRAWING_VIEW_KEYS.concat(DOCUMENT_KEYS);
-
-    // Maps a view-state toggle onto the Drawing Editor slot key it controls, so the
-    // preview can filter the sheet without knowing about toggle names. These keys
-    // must match VghLantern__DrawingEditor__Config__ViewSlots exactly.
-    const TOGGLE_TO_SLOT_KEY  =  {
-        ShowPlanView       : 'plan',
-        ShowFrontElevation : 'frontElevation',
-        ShowSideElevation  : 'sideElevation',
-        Show3dView         : 'threeDimensional'
-    };
     // ------------------------------------------------------------
 
 
@@ -257,27 +251,10 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | List the Drawing Slot Keys Enabled for the Drawing Page
-    // ------------------------------------------------------------
-    function VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys() {
-        var state  =  VghLantern__DocPreview__DocumentState__GetViewState();
-        var keys   =  [];
-        var i, toggleKey;
-
-        for (i = 0; i < DRAWING_VIEW_KEYS.length; i++) {
-            toggleKey  =  DRAWING_VIEW_KEYS[i];
-            if (state[toggleKey]) keys.push(TOGGLE_TO_SLOT_KEY[toggleKey]);
-        }
-
-        return keys;
-    }
-    // ------------------------------------------------------------
-
-
     // FUNCTION | Report Whether the Drawing Page Should Be Included
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocumentState__IncludesDrawingPage() {
-        return VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys().length > 0;
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowDrawingSheet;
     }
     // ------------------------------------------------------------
 
@@ -320,11 +297,13 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Describe the Page Geometry in Paper Millimetres
+    // FUNCTION | Describe the Specification Page Geometry in Paper Millimetres
     // ------------------------------------------------------------
-    // orientationOverride lets the drawing page force landscape without disturbing
-    // the document-wide orientation used by the specification pages.
-    function VghLantern__DocPreview__DocumentState__DescribePage(orientationOverride) {
+    // This describes the document pages only. The drawing sheet is not sized here:
+    // it arrives from the Drawing Editor already solved onto its own paper, which is
+    // what lets one exported file mix an A4 portrait schedule with an A1 landscape
+    // drawing.
+    function VghLantern__DocPreview__DocumentState__DescribePage() {
         VghLantern__DocumentState__EnsureInitialised();
 
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
@@ -333,7 +312,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
         var sizes    =  pageCfg.PaperSizesMm || FALLBACK_SIZES_MM;
         var size     =  sizes[VghLantern__DocumentState__PaperSize] || FALLBACK_SIZES_MM.A4;
 
-        var orientation  =  orientationOverride || VghLantern__DocumentState__Orientation;
+        var orientation  =  VghLantern__DocumentState__Orientation;
         var isLandscape  =  (orientation === 'landscape');
 
         var widthMm   =  isLandscape ? size.HeightMm : size.WidthMm;
@@ -351,17 +330,6 @@ const VghLantern__DocPreview__DocumentState = (function() {
             BodyHeightMm : heightMm - (marginMm * 2),
             PxPerMm      : pxPerMm
         };
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Get the Drawing Page Orientation
-    // ------------------------------------------------------------
-    function VghLantern__DocPreview__DocumentState__DrawingOrientation() {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
-            VghLantern__DocumentState__PageConfig(), 'DrawingSheetOrientation',
-            'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page');
     }
     // ------------------------------------------------------------
 
@@ -393,16 +361,6 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Reset Everything to Config Defaults
-    // ------------------------------------------------------------
-    function VghLantern__DocPreview__DocumentState__ResetToDefaults() {
-        VghLantern__DocumentState__IsInitialised  =  false;
-        VghLantern__DocumentState__ViewState      =  null;
-        return VghLantern__DocPreview__DocumentState__GetViewState();
-    }
-    // ------------------------------------------------------------
-
-
 // endregion -------------------------------------------------------------------
 
 
@@ -423,14 +381,11 @@ const VghLantern__DocPreview__DocumentState = (function() {
         DOCUMENT_KEYS                                                : DOCUMENT_KEYS,
         VghLantern__DocPreview__DocumentState__GetViewState           : VghLantern__DocPreview__DocumentState__GetViewState,
         VghLantern__DocPreview__DocumentState__SetViewStatePartial    : VghLantern__DocPreview__DocumentState__SetViewStatePartial,
-        VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys    : VghLantern__DocPreview__DocumentState__ListEnabledSlotKeys,
         VghLantern__DocPreview__DocumentState__IncludesDrawingPage    : VghLantern__DocPreview__DocumentState__IncludesDrawingPage,
         VghLantern__DocPreview__DocumentState__IncludesSpecificationPage : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,
         VghLantern__DocPreview__DocumentState__ListPageKinds          : VghLantern__DocPreview__DocumentState__ListPageKinds,
         VghLantern__DocPreview__DocumentState__SetPaperSize           : VghLantern__DocPreview__DocumentState__SetPaperSize,
-        VghLantern__DocPreview__DocumentState__DescribePage           : VghLantern__DocPreview__DocumentState__DescribePage,
-        VghLantern__DocPreview__DocumentState__DrawingOrientation     : VghLantern__DocPreview__DocumentState__DrawingOrientation,
-        VghLantern__DocPreview__DocumentState__ResetToDefaults        : VghLantern__DocPreview__DocumentState__ResetToDefaults
+        VghLantern__DocPreview__DocumentState__DescribePage           : VghLantern__DocPreview__DocumentState__DescribePage
     };
 
 // endregion -------------------------------------------------------------------

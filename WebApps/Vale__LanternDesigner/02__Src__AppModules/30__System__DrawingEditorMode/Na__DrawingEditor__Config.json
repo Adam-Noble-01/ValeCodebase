@@ -197,15 +197,11 @@
             "SnapshotPixelsPerMmNote"   : "Pixel density the 3D snapshot is rendered at. The buffer is sized from the frame's paper millimetres at this density, which is what gives the snapshot the frame's exact aspect - the same image then fills the same rectangle on screen and on paper with no fitting between them. Falls back to RasterPixelsPerMm.",
             "BlockGapMm"                : 3,
             "BlockGapMmNote"            : "Legacy fallback. Prefer Sheet.BlockGapMm - both screen and PDF read Sheet first.",
-            "FrameStrokeMm"             : 0.25,
-            "TitleStrokeMm"             : 0.25,
-            "InkColour"                 : "#172b3a",
-            "FrameLineColour"           : "#b8c0c6",
-            "MutedTextColour"           : "#6c757d",
-            "PaintingNote"              : "The stroke and colour values here are fallbacks only. SheetStyle owns how a sheet is painted, because those values have to serve the screen and the export at once.",
+            "PaintingNote"              : "How a sheet is painted lives in SheetStyle and only there. This block used to carry a duplicate set of stroke widths and colours as a fallback, which meant a colour could be changed in the obvious place and silently overridden from here.",
             "Author"                    : "Vale Garden Houses Limited",
             "Creator"                   : "Vale Lantern Designer",
-            "ScaleNote"                 : "The PDF page is created at the sheet's true millimetre size and each view's viewBox is rewritten to span exactly (frame size x scale denominator) model millimetres, so the file prints to scale at 100 percent with page scaling switched off."
+            "ScaleNote"                 : "The PDF page is created at the sheet's true millimetre size and each view's viewBox is rewritten to span exactly (frame size x scale denominator) model millimetres, so the file prints to scale at 100 percent with page scaling switched off.",
+            "SharedRouteNote"           : "These settings serve both export routes. The Drawing Editor's Download PDF and the drawing page inside a Preview and Send document are the same page, built by SheetPdfPainter and written by VghLantern__PdfWriter__Document."
         }
     }
 }

@@ -1,12 +1,12 @@
 {
     "VghLantern__ProjectFile__Metadata": {
         "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
-        "VghLantern__ProjectFile__Metadata__ProjectCode": "1542",
-        "VghLantern__ProjectFile__Metadata__ProjectName": "Mouse House",
-        "VghLantern__ProjectFile__Metadata__DocumentName": "Mickeys Lanterns",
-        "VghLantern__ProjectFile__Metadata__ClientName": "Mickey Mouse",
+        "VghLantern__ProjectFile__Metadata__ProjectCode": "2614",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "Epstein",
+        "VghLantern__ProjectFile__Metadata__DocumentName": "Epstein Island Roof Lanterns",
+        "VghLantern__ProjectFile__Metadata__ClientName": "Jeffrey",
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
-        "VghLantern__ProjectFile__Metadata__DocumentStatus": "For Approval",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "31-Jul-2026",
         "VghLantern__ProjectFile__Metadata__DateModified": "04-Aug-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
@@ -23,19 +23,38 @@
     },
     "VghLantern__ProjectFile__DrawingLayout": {
         "VghLantern__ProjectFile__DrawingLayout__Description": "How the Drawing Editor sheet was last set up. Null means fall back to the Drawing Editor config default.",
-        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": null,
-        "VghLantern__ProjectFile__DrawingLayout__Orientation": null,
-        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": null,
-        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
-        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
-        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
-        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {}
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A4",
+        "VghLantern__ProjectFile__DrawingLayout__Orientation": "landscape",
+        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": 50,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": true,
+        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": [
+            57.621266908549785,
+            42.378733091450215
+        ],
+        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": [
+            43.29904022775302,
+            56.70095977224698
+        ],
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.7052396173226885,
+        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
+            "threeDimensional": {
+                "Position": {
+                    "x": 4.742762518413148,
+                    "y": 6.51887063815135,
+                    "z": 5.13560105716626
+                },
+                "Target": {
+                    "x": 0.3596625784891038,
+                    "y": -0.15705266116092562,
+                    "z": 0.1630045108960956
+                }
+            }
+        }
     },
     "VghLantern__ProjectFile__Lanterns": [
         {
             "Lantern__Identity__Config": {
-                "Lantern__Identity__Config__Id": "ltn_130714_0",
+                "Lantern__Identity__Config__Id": "ltn_729041_0",
                 "Lantern__Identity__Config__Title": "",
                 "Lantern__Identity__Config__Reference": "",
                 "Lantern__Identity__Config__SortOrder": 0,
@@ -46,35 +65,35 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 2400,
-                "Lantern__Dimensions__Config__DepthMm": 1400,
-                "Lantern__Dimensions__Config__EavesProjectionMm": 50
+                "Lantern__Dimensions__Config__WidthMm": 6000,
+                "Lantern__Dimensions__Config__DepthMm": 2500,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 25
             },
             "Lantern__RoofPitch__Config": {
                 "Lantern__RoofPitch__Config__PitchDegrees": 25
             },
             "Lantern__GlazingBars__Config": {
-                "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
-                "Lantern__GlazingBars__Config__BarProfileId": "",
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 450,
+                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
             },
             "Lantern__RidgeAndHips__Config": {
-                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
-                "Lantern__RidgeAndHips__Config__HipProfileId": "",
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
                 "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
                 "Lantern__RidgeAndHips__Config__CrestingEnabled": false
             },
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
-                "Lantern__Finials__Config__FinialComponentId": "",
-                "Lantern__Finials__Config__FinialBaseComponentId": "",
+                "Lantern__Finials__Config__FinialComponentId": "VGH_FIN0001",
+                "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
             },
             "Lantern__BuildersUpstandAndBase__Config": {
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
-                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
                 "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
             },
@@ -85,10 +104,10 @@
                 "Lantern__Ventilation__Config__OperationType": ""
             },
             "Lantern__FinishAndGlazing__Config": {
-                "Lantern__FinishAndGlazing__Config__FrameFinish": "",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
-                "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
-                "Lantern__FinishAndGlazing__Config__GlazingTint": ""
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Vale Painted Hardwood",
+                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
             },
             "Lantern__Notes__Config": {
                 "Lantern__Notes__Config__DocumentWarning": "",

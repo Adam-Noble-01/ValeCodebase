@@ -120,27 +120,23 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
     // FUNCTION | Resolve the Sheet Style Every Surface Paints With
     // ------------------------------------------------------------
-    // SheetStyle is the owner. PdfExport colours are read second only as a legacy
-    // cross-block lookup for older config files that set colours there instead.
+    // SheetStyle is the sole owner. These values used to fall back to a duplicate set
+    // under PdfExport, which meant a colour could be changed in the obvious place and
+    // silently overridden from the other one.
     function VghLantern__DrawingEditor__SheetChrome__Style() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var style  =  VghLantern__SheetChrome__Block('SheetStyle');
-        var pdf    =  VghLantern__SheetChrome__Block('PdfExport');
         var LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__SheetStyle';
 
         return {
             FontFamily   : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FontFamily', LABEL),
             PaperColour  : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'PaperColour', LABEL),
-            InkColour    : style.InkColour       || pdf.InkColour       || ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'InkColour', LABEL),
-            FrameColour  : style.FrameLineColour || pdf.FrameLineColour || ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FrameLineColour', LABEL),
-            MutedColour  : style.MutedTextColour || pdf.MutedTextColour || ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'MutedTextColour', LABEL),
+            InkColour    : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'InkColour', LABEL),
+            FrameColour  : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FrameLineColour', LABEL),
+            MutedColour  : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'MutedTextColour', LABEL),
 
-            FrameStrokeMm : (typeof style.FrameStrokeMm === 'number') ? style.FrameStrokeMm
-                            : (typeof pdf.FrameStrokeMm === 'number') ? pdf.FrameStrokeMm
-                            : VghLantern__SheetChrome__Number(style, 'FrameStrokeMm'),
-            TitleStrokeMm : (typeof style.TitleStrokeMm === 'number') ? style.TitleStrokeMm
-                            : (typeof pdf.TitleStrokeMm === 'number') ? pdf.TitleStrokeMm
-                            : VghLantern__SheetChrome__Number(style, 'TitleStrokeMm'),
+            FrameStrokeMm : VghLantern__SheetChrome__Number(style, 'FrameStrokeMm'),
+            TitleStrokeMm : VghLantern__SheetChrome__Number(style, 'TitleStrokeMm'),
             CellPaddingMm : VghLantern__SheetChrome__Number(style, 'CellPaddingMm'),
 
             FrameLabelWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'FrameLabelWeight', LABEL),
@@ -926,15 +922,11 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DrawingEditor__SheetChrome__Build          : VghLantern__DrawingEditor__SheetChrome__Build,
         VghLantern__DrawingEditor__SheetChrome__BuildForSheet  : VghLantern__DrawingEditor__SheetChrome__BuildForSheet,
-        VghLantern__DrawingEditor__SheetChrome__CachedLogo     : VghLantern__DrawingEditor__SheetChrome__CachedLogo,
         VghLantern__DrawingEditor__SheetChrome__ToSvgMarkup    : VghLantern__DrawingEditor__SheetChrome__ToSvgMarkup,
         VghLantern__DrawingEditor__SheetChrome__DrawToPdf      : VghLantern__DrawingEditor__SheetChrome__DrawToPdf,
         VghLantern__DrawingEditor__SheetChrome__LoadLogo       : VghLantern__DrawingEditor__SheetChrome__LoadLogo,
-        VghLantern__DrawingEditor__SheetChrome__Style          : VghLantern__DrawingEditor__SheetChrome__Style,
-        VghLantern__DrawingEditor__SheetChrome__MeasureTextMm  : VghLantern__DrawingEditor__SheetChrome__MeasureTextMm,
-        VghLantern__DrawingEditor__SheetChrome__FitText        : VghLantern__DrawingEditor__SheetChrome__FitText
+        VghLantern__DrawingEditor__SheetChrome__CachedLogo     : VghLantern__DrawingEditor__SheetChrome__CachedLogo
     };
 
 // endregion -------------------------------------------------------------------

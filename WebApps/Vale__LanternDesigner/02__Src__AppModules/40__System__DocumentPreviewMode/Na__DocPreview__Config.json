@@ -1,6 +1,6 @@
 {
     "VghLantern__DocPreview__Config": {
-        "VghLantern__DocPreview__Config__Description": "System configuration for the Preview and Send mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('DocPreview'). Page setup, content toggles and PDF settings all live here.",
+        "VghLantern__DocPreview__Config__Description": "System configuration for the Preview and Send mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('DocPreview'). This block governs the specification pages only. The drawing sheet page is the Drawing Editor's sheet, at the Drawing Editor's paper size, and is configured in Na__DrawingEditor__Config.json.",
 
         "VghLantern__DocPreview__Config__Page": {
             "PaperSizesMm": {
@@ -12,27 +12,24 @@
             "MarginMm"                  : 12,
             "ScreenPixelsPerMm"         : 3.2,
             "ScreenPixelsPerMmNote"     : "Screen zoom only. Page geometry is authored in paper millimetres so the on-screen page and the exported PDF are the same document at two magnifications.",
-            "DrawingSheetOrientation"   : "landscape",
-            "DrawingSheetOrientationNote": "The drawing sheet is always landscape regardless of the document orientation - four views do not fit sensibly on a portrait page.",
+            "PaperNote"                 : "These settings size the specification pages. The drawing sheet keeps whatever paper the Drawing Editor is set to, which is why one exported document can run A4 portrait schedules into an A3 or A1 landscape drawing.",
             "PageOrder"                 : ["specification", "drawing"],
             "PageOrderNote"             : "Enabled pages are emitted in this order. Specification tables lead; the drawing sheet is last so takeoff and notes are read before the views."
         },
 
         "VghLantern__DocPreview__Config__ViewState": {
-            "DefaultShowPlanView"       : true,
-            "DefaultShowFrontElevation" : true,
-            "DefaultShowSideElevation"  : true,
-            "DefaultShow3dView"         : true,
-            "DefaultShowTakeoffSchedule": true,
+            "DefaultShowDrawingSheet"     : true,
+            "DefaultShowTakeoffSchedule"  : true,
             "DefaultShowComponentSchedule": true,
-            "DefaultShowJobNotes"       : true,
-            "PersistViewState"          : true,
-            "PersistViewStateNote"      : "When true the toggles round-trip through 08__LocalUserData via the user menu config endpoint, so a user's preferred output shape survives a reload. Toggle keys deliberately mirror VghLantern__UserMenu__ModeDocumentPreview__Config so the persistence layer needs no key translation.",
+            "DefaultShowJobNotes"         : true,
+            "PersistViewState"            : true,
+            "PersistViewStateNote"        : "When true the toggles round-trip through 08__LocalUserData via the user menu config endpoint, so a user's preferred output shape survives a reload. Toggle keys deliberately mirror VghLantern__UserMenu__ModeDocumentPreview__Config so the persistence layer needs no key translation.",
+            "DrawingSheetToggleNote"      : "One switch, because the drawing page is the composed Drawing Editor sheet baked in whole. Which views appear on that sheet, and how the grid is balanced, is decided in the Drawing Editor. Dropping a single view here would leave a hole in the sheet's grid rather than reflowing it.",
             "ToggleGrouping": {
-                "DrawingViews"          : ["ShowPlanView", "ShowFrontElevation", "ShowSideElevation", "Show3dView"],
+                "DrawingViews"          : ["ShowDrawingSheet"],
                 "DocumentSections"      : ["ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes"]
             },
-            "ToggleGroupingNote"        : "The drawing page appears when any DrawingViews toggle is on; the specification pages appear when any DocumentSections toggle is on. There is no separate page-level switch to fall out of step with the view toggles."
+            "ToggleGroupingNote"        : "The drawing page appears when ShowDrawingSheet is on; the specification pages appear when any DocumentSections toggle is on. There is no separate page-level switch to fall out of step with the content toggles."
         },
 
         "VghLantern__DocPreview__Config__Toolbar": {
@@ -42,11 +39,10 @@
             "ShowPrintButton"           : true,
             "ExportPdfLabel"            : "Export PDF",
             "PrintLabel"                : "Print",
+            "PaperSizeLabel"            : "Document Paper",
+            "PaperSizeLabelNote"        : "Named Document Paper rather than Paper because it sizes the specification pages only. The drawing sheet carries its own paper size over from the Drawing Editor.",
             "ToggleLabels": {
-                "ShowPlanView"          : "Plan",
-                "ShowFrontElevation"    : "Front Elevation",
-                "ShowSideElevation"     : "Side Elevation",
-                "Show3dView"            : "3D View",
+                "ShowDrawingSheet"      : "Drawing Sheet",
                 "ShowTakeoffSchedule"   : "Takeoff Schedule",
                 "ShowComponentSchedule" : "Component Schedule",
                 "ShowJobNotes"          : "Job Notes"
@@ -54,22 +50,31 @@
         },
 
         "VghLantern__DocPreview__Config__Pdf": {
-            "Unit"                      : "mm",
-            "JpegQuality"               : 0.92,
-            "RasterPixelsPerMm"         : 6,
-            "RasterPixelsPerMmNote"     : "SVG views are rasterised before embedding because jsPDF cannot place vector SVG. 6 px/mm is roughly 150 dpi - enough for a workshop print without a 20 MB file.",
-            "FooterText"                : "Vale Garden Houses Limited",
-            "PdfCreator"                : "Vale Lantern Designer",
-            "ShowPageNumbers"           : true,
-            "PageNumberFormat"          : "Page {page} of {total}",
+            "PdfNote"                   : "Type and table settings for the specification pages. Page assembly, page size per page and the footer belong to Na__PdfWriter__Config.json; drawing views are baked by the Drawing Editor at its own raster density.",
+
             "TitleFontSizePt"           : 16,
             "HeadingFontSizePt"         : 11,
             "BodyFontSizePt"            : 8.5,
+            "LineSpacing"               : 1.35,
+            "LineSpacingNote"           : "Multiplier applied to the type size to get a row height.",
+
+            "TableCellPaddingMm"        : 1.2,
+            "SectionGapMm"              : 4,
+            "FooterReserveMm"           : 8,
+            "FooterReserveMmNote"       : "Space kept clear at the foot of every specification page so flowing content never runs into the footer the PDF writer stamps there.",
+
             "TableHeaderBackground"     : "#172b3a",
             "TableHeaderTextColour"     : "#ffffff",
             "TableAltRowBackground"     : "#f5f5f5",
+            "HeadingColour"             : "#172b3a",
+            "BodyTextColour"            : "#1e1e1e",
+            "UserWarningColour"         : "#d32f2f",
+            "UserWarningColourNote"     : "Matches --VghLantern_ErrorRed. Used only for the staff-authored Document Warnings block, which is free text a person wrote rather than a rule the application evaluated.",
+
+            "DocumentAuthor"            : "Vale Garden Houses Limited",
+            "PdfCreator"                : "Vale Lantern Designer",
             "FilenamePattern"           : "VghLantern__{projectCode}__{projectName}__RoofLanternSpecification",
-            "FilenamePatternNote"       : "Resolved by PdfMetadataResolver. Unsafe filename characters are stripped there, not here."
+            "FilenamePatternNote"       : "Resolved by VghLantern__PdfWriter__Metadata. Unsafe filename characters are stripped there, not here."
         },
 
         "VghLantern__DocPreview__Config__Issues": {

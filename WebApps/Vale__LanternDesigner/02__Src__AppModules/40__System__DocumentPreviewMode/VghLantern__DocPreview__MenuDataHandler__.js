@@ -50,11 +50,12 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
 
     // The toggle keys shared by the view state, the persisted user file and the
     // app-level defaults block. One list, three consumers.
+    // A user file written before the drawing views collapsed into one Drawing Sheet
+    // switch still carries the four old keys. They are simply not read, and the one
+    // key that replaced them falls back to its config default, so an old file heals
+    // itself the first time the user touches a toggle.
     const TOGGLE_KEYS  =  [
-        'ShowPlanView',
-        'ShowFrontElevation',
-        'ShowSideElevation',
-        'Show3dView',
+        'ShowDrawingSheet',
         'ShowTakeoffSchedule',
         'ShowComponentSchedule',
         'ShowJobNotes'

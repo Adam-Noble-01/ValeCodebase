@@ -308,14 +308,19 @@
     <script src="02__Src__AppModules/25__System__Viewport3dMode/VghLantern__Viewport3d__SetOutLegend__.js"></script>
     <script src="02__Src__AppModules/25__System__Viewport3dMode/VghLantern__Viewport3d__Layout__.js"></script>
 
-    <!-- System: Drawing Editor Mode -->
+    <!-- System: Drawing Editor Mode                                                -->
+    <!-- SheetPdfLayout solves the paper, SheetChrome describes everything drawn on  -->
+    <!-- it, and SheetSurface builds the sheet both the editor and Preview and Send  -->
+    <!-- show. SheetPdfPainter paints that same sheet onto a PDF page. There is one  -->
+    <!-- description of a drawing sheet in the application and these are it.         -->
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__ScaleManager__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__TitleBlockRenderer__.js"></script>
-    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__ViewportFrame__.js"></script>
-    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__ViewPlacement__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__AnnotationLayer__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfLayout__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetChrome__.js"></script>
+    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetSurface__.js"></script>
+    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__ViewPlacement__.js"></script>
+    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfPainter__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfExporter__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetManager__.js"></script>
 
@@ -329,12 +334,19 @@
     <!-- PDF Export Library (version-locked, CDN independent) -->
     <script src="04__Src__Dependencies__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js"></script>
 
+    <!-- System: PDF Document Writer                                                -->
+    <!-- The single writer every export route in the application goes through. It   -->
+    <!-- assembles ordered page descriptors, each carrying its own paper size, so a  -->
+    <!-- document can run A4 portrait pages straight into an A1 landscape sheet.     -->
+    <script src="02__Src__AppModules/45__System__PdfDocumentWriter/VghLantern__PdfWriter__Metadata__.js"></script>
+    <script src="02__Src__AppModules/45__System__PdfDocumentWriter/VghLantern__PdfWriter__Document__.js"></script>
+
     <!-- System: Document Preview Mode -->
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__MenuDataHandler__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__DocumentState__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__DocIssueHandler__.js"></script>
-    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PdfMetadataResolver__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PrintDocumentRenderer__.js"></script>
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__SpecificationPdfPainter__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PdfExporter__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PageRenderer__.js"></script>
 

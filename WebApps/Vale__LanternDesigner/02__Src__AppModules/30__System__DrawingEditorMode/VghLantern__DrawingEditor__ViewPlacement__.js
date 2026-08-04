@@ -10,7 +10,7 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Places one view into each frame body prepared by ViewportFrame.
+   - Places one view into each frame body built by SheetSurface.
    - Orthographic slots mount a real Env2d surface, so sheet views are true vector
      linework from the same renderers the editor uses.
    - The 3D slot asks Env3d for an offscreen snapshot of the configured camera preset
@@ -592,8 +592,8 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // both the true-scale viewBox on the orthographic slots and the 3D snapshot size,
     // so every view is composed against the rectangle it will be printed into.
     async function VghLantern__DrawingEditor__ViewPlacement__PlaceAll(sheetElement, geometry, lantern, layout) {
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        if (!sheetElement || !ViewportFrame || !layout) return 0;
+        var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
+        if (!sheetElement || !SheetSurface || !layout) return 0;
 
         // A sheet rebuild orphans a live camera edit's DOM, so close it first.
         if (VghLantern__ViewPlacement__CameraEdit) VghLantern__ViewPlacement__ExitCameraEdit(true);
@@ -603,7 +603,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
 
         for (i = 0; i < layout.Slots.length; i++) {
             placement  =  layout.Slots[i];
-            body       =  ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__FindBody(sheetElement, placement.Slot.Key);
+            body       =  SheetSurface.VghLantern__DrawingEditor__SheetSurface__FindSlotBody(sheetElement, placement.Slot.Key);
             if (!body) continue;
 
             if (placement.Slot.Source === SOURCE_ENV3D) {

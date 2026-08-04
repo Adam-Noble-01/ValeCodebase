@@ -3,6 +3,69 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.1 - 04-Aug-2026
+### One drawing renderer and one PDF writer: the Drawing Editor sheet is now the drawing everywhere
+
+#### Fixed
+- **Preview and Send drew its own version of the drawing.** It laid out its own view grid from raw config, drew its own frame boxes and caption strips at its own stroke widths and greys, and drew its own titleblock with no Vale logo and equal-width columns. That was a second description of a sheet that already had one, and the two had drifted: `VghLantern__PdfExporter__SlotRect` re-derived the grid straight from `Columns`, `Rows` and `GutterMm`, so it **ignored gutter share drags entirely and did not reserve the notes band**. Drag a gutter in the Drawing Editor and nothing moved on the Preview and Send page or in its export. The drawing page is now the composed Drawing Editor sheet, baked in whole.
+- **The two surfaces baked the same views at different fidelities.** The Drawing Editor rasterised at PNG 12 px/mm; Preview and Send rasterised the identical SVG at JPEG 6 px/mm quality 0.92, which haloes thin dark linework into grey. One density and one format now, PNG at `DrawingEditor.PdfExport.RasterPixelsPerMm`.
+- **`{lanternTitle}` had never resolved in a Preview and Send filename.** `PdfMetadataResolver` looked the identity block up under `VghLantern__Lantern__Identity__Config`; every project file on disk uses `Lantern__Identity__Config`. The token, and the lantern name in the PDF keywords, silently came out empty. Tokens now come from `TitleBlockRenderer__ResolveFields`, which is the resolver the titleblock printed on the drawing already uses, so a file is named from the values printed inside it.
+- **A latent rotated-MediaBox bug.** jsPDF rewrites the format array when the orientation string disagrees with the dimensions: ask for landscape with `[210, 297]` and you get a 297 x 210 page. The old exporter passed a config orientation string alongside an explicit size, which happened to agree only because `DescribePage` pre-swapped the axes. The writer now derives orientation from `WidthMm >= HeightMm` for every page including overflow pages, so the two cannot contradict each other.
+
+#### Changed
+- **One PDF writer for the whole application.** `VghLantern__PdfWriter__Document__Write(pages, options)` takes an ordered list of page descriptors, each carrying its own paper size, and opens, foots and saves the file. Both routes are now descriptor lists: the Drawing Editor's Download PDF is `[drawingSheet]`, and Preview and Send is `[specification, ..., drawingSheet]`.
+- **A Preview and Send document is a mixed-size PDF.** The drawing page takes the Drawing Editor's own paper, so a default project exports A4 portrait schedules followed by an A3 landscape drawing sheet in one file. Set the Drawing Editor to A1 and the drawing page is A1, with the schedules still A4. Per-page paper meta is a property of the descriptor, so a future Terms and Conditions page is a descriptor away.
+- **One HTML sheet builder.** `SheetSurface__BuildHtml` builds the sheet for the Drawing Editor (empty frames it mounts live views into, gutter handles armed) and for Preview and Send (composed views baked in, inert). Same layout, same chrome overlay, same frame rectangles.
+- **One view framing function.** `SheetSurface__FrameViewMarkup` rewrites a serialised view's viewBox to span exactly (body rectangle x denominator) of model space. The screen preview and the PDF rasteriser both call it, so a view shows the same model window on the sheet, in the preview and in the file. It also sizes the SVG explicitly, which detaches a static preview from the Env2d stylesheet that was still styling it as a live pannable viewport, grab cursor and all.
+- **The four Preview and Send view toggles are now one Drawing Sheet toggle.** With the sheet baked whole, switching one view off would leave a hole in a fixed 2x2 grid rather than reflowing it. Which views appear is decided where the sheet is composed. A user file written before this still carries the four old keys; they are simply not read, and `ShowDrawingSheet` falls back to its config default, so an old file heals itself on the first toggle.
+- **No footer on a drawing sheet page.** The titleblock is the sheet's identification, and a running footer printed against the drawing border reads as a defect. Numbering still counts every physical page, so "Page 3 of 5" on the document pages stays truthful. The on-screen preview reads the same footer block the writer stamps from, so what is previewed is what is written.
+- The paper selector is labelled **Document Paper**, because it now sizes the specification pages only.
+
+#### Removed
+- `VghLantern__DrawingEditor__ViewportFrame__.js` - the frame markup moved into `SheetSurface` and the sheet size table into `SheetPdfLayout`, which is the module that solves every other paper rectangle. Nothing was left.
+- `VghLantern__DocPreview__PdfMetadataResolver__.js` - merged into `VghLantern__PdfWriter__Metadata`, so there is one filename sanitiser rather than two with identical regexes.
+- The drawing half of `DocPreview__PdfExporter` (`SlotRect`, `DrawViewSlot`, `DrawTitleBlock`, `RenderDrawingPage`, `RasteriseSvg`, `LoadSvgImage`, `StampFooters`) and the drawing half of `DocPreview__PageRenderer` (`ResolvePrintedSlots`, `BuildViewFrame`, `BuildDrawingBody`).
+- `TitleBlockRenderer__BuildMarkup` / `__Render` / `__BuildLogoCell` / `__BuildFieldCell` and `AnnotationLayer__BuildMarkup` / `__Render` - the HTML titleblock and notes block that only Preview and Send used. Both modules keep the part that was always shared: what the values are.
+- 170 lines of `DocPreview` CSS: the view grid, view frames, view labels, the titleblock host and every `.VghLantern__Sheet__TitleBlock*` and `.VghLantern__Sheet__Notes*` rule. The sheet arrives styled by the Drawing Editor stylesheet.
+- Verified-dead exports: `ScaleManager__ModelMmToPaperMm`, `ScaleManager__PaperMmToModelMm`, `SheetPdfLayout__MeasureNotesBand`, `SheetPdfLayout__PageSize`, `DocumentState__ResetToDefaults`, `ViewportFrame__SlotAttribute`, and `SheetChrome__Build` / `__MeasureTextMm` / `__Style` demoted to internal.
+- `SheetChrome__Style`'s fallback to a duplicate set of colours and stroke widths under `PdfExport`, and those five config keys. A colour could be changed in `SheetStyle`, the obvious place, and silently overridden from the other block.
+
+#### Config
+- **New** `02__Src__AppModules/45__System__PdfDocumentWriter/Na__PdfWriter__Config.json`, ConfigLoader section `PdfWriter`. Holds the document unit and compression, the footer (text, format, type size, insets, colour, and `SkipOnPageKinds` which is how a drawing sheet opts out), and the writer's failure messages.
+- `Na__DocPreview__Config.json`: `DrawingSheetOrientation`, `JpegQuality` and `RasterPixelsPerMm` removed, along with `FooterText`, `ShowPageNumbers` and `PageNumberFormat` which now live in the writer config. The four `DefaultShow<view>` toggles collapse to `DefaultShowDrawingSheet`. Six values the old exporter hardcoded in JS are now keys: `LineSpacing`, `TableCellPaddingMm`, `SectionGapMm`, `FooterReserveMm`, `HeadingColour`, `BodyTextColour` and `UserWarningColour`. Added `DocumentAuthor` and `PaperSizeLabel`.
+- `VghLantern__AppData__UserMenuConfig__Defaults__.json`: the four drawing-view keys replaced by `...__ShowDrawingSheet`.
+- The export refusals now read `EmptySelectionMessage` and `NoDrawingSheetMessage` out of the existing `Config__Issues` block rather than carrying their own JS copies of that copy. The banner above the toolbar and the toast that refuses the export therefore say the same thing in the same words, and changing either is one JSON edit.
+
+#### Files
+- **New** `45__System__PdfDocumentWriter/` - `Na__PdfWriter__Config.json`, `VghLantern__PdfWriter__Document__.js`, `VghLantern__PdfWriter__Metadata__.js`
+- **New** `VghLantern__DrawingEditor__SheetSurface__.js` - the one HTML sheet builder and the shared view framing
+- **New** `VghLantern__DrawingEditor__SheetPdfPainter__.js` - the one drawing sheet PDF painter
+- **New** `VghLantern__DocPreview__SpecificationPdfPainter__.js` - the flowing specification pages, moved out of the exporter
+**Reshaped, with before and after:**
+
+| File | Before | After |
+|---|---:|---:|
+| `VghLantern__DocPreview__PdfExporter__.js` | 722 | 198 |
+| `VghLantern__DocPreview__PageRenderer__.js` | 536 | 500 |
+| `VghLantern__DocPreview__Styles__Main__.css` | 555 | 385 |
+| `VghLantern__DrawingEditor__SheetPdfExporter__.js` | 423 | 99 |
+| `VghLantern__DrawingEditor__SheetManager__.js` | 1304 | 1172 |
+| `VghLantern__DrawingEditor__TitleBlockRenderer__.js` | 257 | 143 |
+| `VghLantern__DrawingEditor__AnnotationLayer__.js` | 197 | 144 |
+
+`PageRenderer` barely moves on line count but changes character entirely: the drawing page went from ~110 lines of its own grid, frames and titleblock host to one call into `SheetSurface`, and the room went into the two page shells and the shared footer.
+
+**Also touched:** `VghLantern__DrawingEditor__SheetPdfLayout__.js` (owns the sheet size table now), `VghLantern__DrawingEditor__SheetChrome__.js`, `VghLantern__DrawingEditor__ViewPlacement__.js`, `VghLantern__DrawingEditor__ScaleManager__.js`, `VghLantern__DocPreview__DocumentState__.js`, `VghLantern__DocPreview__MenuDataHandler__.js`, `VghLantern__AppCore__ConfigLoader__.js` (`PdfWriter` overlay and section accessor), `VghLantern__App__.html` (script manifest), `Na__ServiceWorker__VghLantern.js` (cache token to `2026-08-04-1`).
+
+#### Verification
+Static only - the app was not run as part of this change. Checked: every JS file parses, every JSON config parses, all 97 script tags in `VghLantern__App__.html` resolve to files on disk, every module in the three touched folders is loaded by the app, no dangling reference to any removed function survives anywhere in the tree, and no module still reads a config key this entry deleted.
+
+#### Known limitations
+- **Browser Print cannot honour mixed page sizes.** `window.print()` applies one paper size to the whole job, so a document whose drawing sheet is A3 while its schedules are A4 prints the drawing scaled to the chosen paper. This is pre-existing and unchanged. Export PDF is the route that keeps each page on its own paper at true size.
+- **Three version numbers disagree** and this entry did not change any of them: the DEVLOG runs a `v0.0.x` series, `VghLantern__Application__Config__AppVersion` says `0.4.0`, and recent commit subjects say `v0.4.7`.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.0.18 - 31-Jul-2026
 ### A new project is created with its first roof lantern already in it
 

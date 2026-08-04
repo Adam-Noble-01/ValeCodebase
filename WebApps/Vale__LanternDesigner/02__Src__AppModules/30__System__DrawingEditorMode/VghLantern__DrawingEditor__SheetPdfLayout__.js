@@ -13,11 +13,11 @@
    - Pure paper-space arithmetic for a drawing sheet: where the view grid sits, where
      each frame and its drawable body sit, where the notes block and the titleblock
      strip sit. Every number returned is a real paper millimetre.
-   - No DOM, no jsPDF, no config writing. SheetManager lays the screen sheet out from
-     this and SheetPdfExporter draws the page from it; this module decides nothing
+   - No DOM, no jsPDF, no config writing. SheetSurface lays the screen sheet out from
+     this and SheetPdfPainter draws the page from it; this module decides nothing
      about appearance.
-   - Sheet sizes come from ViewportFrame so the paper dimensions have exactly one
-     definition in the application.
+   - Owns the sheet size table, so the paper dimensions of an A4, A3, A2 or A1 sheet
+     have exactly one definition in the application.
 
    -----------------------------------------------------------------------------
 
@@ -191,13 +191,6 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Public Notes Height Helper for Screen Cell Maths
-    // ------------------------------------------------------------
-    function VghLantern__DrawingEditor__SheetPdfLayout__MeasureNotesBand(noteCount) {
-        return VghLantern__SheetPdfLayout__MeasureNotes(noteCount, VghLantern__SheetPdfLayout__ResolveFonts());
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -343,13 +336,29 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
 
     // FUNCTION | Resolve the Paper Size of a Sheet
     // ------------------------------------------------------------
-    // Delegated to ViewportFrame rather than re-read here, so portrait swapping and
-    // the sheet size table keep one owner.
-    function VghLantern__DrawingEditor__SheetPdfLayout__PageSize(sheetSizeKey, orientation) {
-        var ViewportFrame  =  window.VghLantern__DrawingEditor__ViewportFrame;
-        if (!ViewportFrame) return null;
+    // The sheet size table has one reader, here, because paper dimensions are the
+    // first input to every rectangle this module solves. Config lists sizes landscape
+    // (long edge first); portrait swaps them here so a size is only described once.
+    function VghLantern__DrawingEditor__SheetPdfLayout__SheetSizeMm(sheetSizeKey, orientation) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var sheetCfg      =  VghLantern__SheetPdfLayout__Block('Sheet');
+        var sizes         =  sheetCfg.SheetSizes || {};
+        var resolvedKey   =  sheetSizeKey || sheetCfg.DefaultSheetSize;
+        var entry         =  sizes[resolvedKey];
 
-        return ViewportFrame.VghLantern__DrawingEditor__ViewportFrame__SheetSizeMm(sheetSizeKey, orientation);
+        if (!entry) return null;
+
+        var resolvedOrientation  =  orientation || ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            sheetCfg, 'DefaultOrientation', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Sheet');
+        var isPortrait           =  resolvedOrientation === 'portrait';
+
+        return {
+            Key         : resolvedKey,
+            Label       : entry.Label || resolvedKey,
+            Orientation : resolvedOrientation,
+            WidthMm     : isPortrait ? entry.HeightMm : entry.WidthMm,
+            HeightMm    : isPortrait ? entry.WidthMm  : entry.HeightMm
+        };
     }
     // ------------------------------------------------------------
 
@@ -460,9 +469,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
     // ------------------------------------------------------------
     return {
         VghLantern__DrawingEditor__SheetPdfLayout__Solve             : VghLantern__DrawingEditor__SheetPdfLayout__Solve,
-        VghLantern__DrawingEditor__SheetPdfLayout__PageSize          : VghLantern__DrawingEditor__SheetPdfLayout__PageSize,
-        VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm      : VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm,
-        VghLantern__DrawingEditor__SheetPdfLayout__MeasureNotesBand  : VghLantern__DrawingEditor__SheetPdfLayout__MeasureNotesBand
+        VghLantern__DrawingEditor__SheetPdfLayout__SheetSizeMm       : VghLantern__DrawingEditor__SheetPdfLayout__SheetSizeMm
     };
 
 // endregion -------------------------------------------------------------------

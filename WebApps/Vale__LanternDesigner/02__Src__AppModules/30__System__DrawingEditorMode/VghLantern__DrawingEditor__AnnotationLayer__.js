@@ -12,9 +12,18 @@
    DESCRIPTION:
    - Composes the sheet notes list from two sources: the standing general notes held
      in config, and any project-specific notes recorded on the project file.
-   - Emits markup only; placement on the sheet is the SheetManager's business.
+   - Returns the list only. SheetPdfLayout measures the band it needs and SheetChrome
+     paints it onto both the screen sheet and the PDF from one description.
    - Enforces the configured maximum note count so a long note list can never push
      the titleblock off the sheet.
+
+   -----------------------------------------------------------------------------
+
+   WHY THIS MODULE NO LONGER EMITS MARKUP:
+   It used to also build an HTML notes block, which only Preview and Send used, while
+   the sheet and the export drew a different one from SheetChrome with its own columns,
+   leading and numbering. One list, painted once, by the module that paints everything
+   else on the sheet.
 
    -----------------------------------------------------------------------------
 
@@ -35,14 +44,8 @@ const VghLantern__DrawingEditor__AnnotationLayer = (function() {
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | CSS Class Names and Project Keys
+    // MODULE CONSTANTS | Project Data Keys
     // ------------------------------------------------------------
-    const CSS_BLOCK       =  'VghLantern__Sheet__Notes';
-    const CSS_TITLE       =  'VghLantern__Sheet__NotesTitle';
-    const CSS_LIST        =  'VghLantern__Sheet__NotesList';
-    const CSS_ITEM        =  'VghLantern__Sheet__NotesItem';
-    const CSS_ITEM_PROJ   =  'VghLantern__Sheet__NotesItem--project';
-
     const GLOBALS_BLOCK   =  'VghLantern__ProjectFile__GlobalSettings';
     const NOTES_FIELD     =  'VghLantern__ProjectFile__GlobalSettings__JobNotes';
     // ------------------------------------------------------------
@@ -65,15 +68,6 @@ const VghLantern__DrawingEditor__AnnotationLayer = (function() {
     }
     // ------------------------------------------------------------
 
-
-    // HELPER FUNCTION | Escape Text for Safe Markup Insertion
-    // ------------------------------------------------------------
-    function VghLantern__AnnotationLayer__Escape(value) {
-        return String(value === undefined || value === null ? '' : value)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-    // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 
@@ -132,58 +126,12 @@ const VghLantern__DrawingEditor__AnnotationLayer = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Markup
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Build the Notes Block Markup
-    // ------------------------------------------------------------
-    // Returns an empty string when annotations are switched off or there is nothing
-    // to print, so the caller can insert the result unconditionally.
-    function VghLantern__DrawingEditor__AnnotationLayer__BuildMarkup(project) {
-        var config  =  VghLantern__AnnotationLayer__Config();
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var ANNOTATIONS_LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Annotations';
-        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'Enabled', ANNOTATIONS_LABEL)) return '';
-
-        var notes  =  VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project);
-        if (!notes.length) return '';
-
-        var title  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'NotesBlockTitle', ANNOTATIONS_LABEL);
-        var html   =  '<aside class="' + CSS_BLOCK + '">' +
-                      '<h4 class="' + CSS_TITLE + '">' + VghLantern__AnnotationLayer__Escape(title) + '</h4>' +
-                      '<ol class="' + CSS_LIST + '">';
-
-        var i, itemClass;
-        for (i = 0; i < notes.length; i++) {
-            itemClass  =  CSS_ITEM + (notes[i].IsProjectNote ? ' ' + CSS_ITEM_PROJ : '');
-            html  +=  '<li class="' + itemClass + '">' + VghLantern__AnnotationLayer__Escape(notes[i].Text) + '</li>';
-        }
-
-        return html + '</ol></aside>';
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Render the Notes Block Into a Host Element
-    // ------------------------------------------------------------
-    function VghLantern__DrawingEditor__AnnotationLayer__Render(hostElement, project) {
-        if (!hostElement) return;
-        hostElement.innerHTML  =  VghLantern__DrawingEditor__AnnotationLayer__BuildMarkup(project);
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DrawingEditor__AnnotationLayer__Render        : VghLantern__DrawingEditor__AnnotationLayer__Render,
-        VghLantern__DrawingEditor__AnnotationLayer__BuildMarkup   : VghLantern__DrawingEditor__AnnotationLayer__BuildMarkup,
         VghLantern__DrawingEditor__AnnotationLayer__CollectNotes  : VghLantern__DrawingEditor__AnnotationLayer__CollectNotes
     };
 

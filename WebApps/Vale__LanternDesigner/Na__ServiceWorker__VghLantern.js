@@ -72,7 +72,7 @@
     // ------------------------------------------------------------
     const PWA_SW_PATH_PATTERN_API       = /\/api\//i;                                                              // <-- Local Flask API routes, never cached
     const PWA_SW_PATH_PATTERN_HTML      = /\.html?(\?.*)?$/i;                                                       // <-- HTML documents
-    const PWA_SW_PATH_PATTERN_DATA      = /\.json(\?.*)?$/i;                                                        // <-- Every JSON file. All JSON in this app is config or library data, never a bulk asset, so treating the whole extension as network-first is both simpler than an allow-list and safer during development where an edited config must never be shadowed by a cached copy
+    const PWA_SW_PATH_PATTERN_DATA      = /\.(json|md)(\?.*)?$/i;                                                   // <-- Every JSON and Markdown file. All JSON in this app is config or library data, never a bulk asset, and the only Markdown it fetches is the terms clause library, which is authored content someone edits and expects to see on the next refresh. Treating both extensions as network-first is simpler than an allow-list and stops an edited terms file being shadowed by a cached copy
     const PWA_SW_PATH_PATTERN_SHELL     = /\.(css|js|mjs|cjs|webmanifest|ico|png|jpe?g|svg|gif|webp|woff2?|ttf|otf)(\?.*)?$/i; // <-- App shell assets
     // ------------------------------------------------------------
 

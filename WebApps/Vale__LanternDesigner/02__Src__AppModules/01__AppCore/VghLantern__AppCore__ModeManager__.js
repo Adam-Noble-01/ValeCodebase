@@ -40,6 +40,7 @@ const VghLantern__AppCore__ModeManager = (function() {
     const MODE_VIEWPORT_3D      =  'Viewport3d';                             // <-- Dedicated full-screen 3D view
     const MODE_DRAWING_EDITOR   =  'DrawingEditor';                          // <-- Sheet composition
     const MODE_SPECIFICATION    =  'Specification';                          // <-- Schedules and takeoff
+    const MODE_CLIENT_DOCUMENT  =  'ClientDocument';                          // <-- Welcome letter and terms
     const MODE_DOC_PREVIEW      =  'DocumentPreview';                         // <-- Paginated preview + PDF
     const MODE_COMPONENT_INDEX  =  'ComponentIndex';                          // <-- Finial / profile gallery
     // ------------------------------------------------------------
@@ -55,6 +56,7 @@ const VghLantern__AppCore__ModeManager = (function() {
         'Viewport3d'       : { PanelId : 'VghLantern__App__ModeViewport3d',      IsFullBleed : true  },
         'DrawingEditor'    : { PanelId : 'VghLantern__App__ModeDrawingEditor',   IsFullBleed : true  },
         'Specification'    : { PanelId : 'VghLantern__App__ModeSpecification',   IsFullBleed : false },
+        'ClientDocument'   : { PanelId : 'VghLantern__App__ModeClientDocument',  IsFullBleed : false },
         'DocumentPreview'  : { PanelId : 'VghLantern__App__ModeDocPreview',      IsFullBleed : false },
         'ComponentIndex'   : { PanelId : 'VghLantern__App__ModeComponentIndex',  IsFullBleed : false }
     };
@@ -200,6 +202,7 @@ const VghLantern__AppCore__ModeManager = (function() {
         MODE_VIEWPORT_3D                          : MODE_VIEWPORT_3D,
         MODE_DRAWING_EDITOR                       : MODE_DRAWING_EDITOR,
         MODE_SPECIFICATION                        : MODE_SPECIFICATION,
+        MODE_CLIENT_DOCUMENT                      : MODE_CLIENT_DOCUMENT,
         MODE_DOC_PREVIEW                          : MODE_DOC_PREVIEW,
         MODE_COMPONENT_INDEX                      : MODE_COMPONENT_INDEX,
 

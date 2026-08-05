@@ -681,6 +681,63 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Normalise the Client Document Block
+    // ------------------------------------------------------------
+    // Holds the client-facing welcome letter and the project's own terms. Standard
+    // terms are NOT stored here - they live in the markdown library and only their
+    // on/off state is a project decision, which is what SectionToggles carries.
+    //
+    // Every list is allowed to be empty and an empty letter block list means "not
+    // materialised yet", which is exactly the state a project created before this
+    // block existed is in. The Client Doc tab fills it from the template on first
+    // open rather than this validator inventing letter text.
+    function VghLantern__SchemaValidator__NormaliseClientDocument(clientCfg) {
+        var didMutate  =  false;
+
+        if (VghLantern__SchemaValidator__ApplyStringField(clientCfg, 'VghLantern__ProjectFile__ClientDocument__LetterSalutation', '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(clientCfg, 'VghLantern__ProjectFile__ClientDocument__LetterBody',       '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(clientCfg, 'VghLantern__ProjectFile__ClientDocument__SignOffName',      '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(clientCfg, 'VghLantern__ProjectFile__ClientDocument__SignOffRole',      '')) didMutate  =  true;
+
+        // MIGRATION | Letter paragraph records to one markdown body
+        // The letter used to be a list of paragraph records, one per editor card. It
+        // is now a single markdown string, so an existing project's paragraphs are
+        // joined with blank lines - which is the paragraph break the parser reads -
+        // and the retired field is stripped. A letter already written therefore comes
+        // back word for word rather than being lost or re-seeded from the template.
+        var legacyBlocks  =  clientCfg['VghLantern__ProjectFile__ClientDocument__LetterBlocks'];
+        if (Array.isArray(legacyBlocks)) {
+            if (legacyBlocks.length && clientCfg['VghLantern__ProjectFile__ClientDocument__LetterBody'] === '') {
+                clientCfg['VghLantern__ProjectFile__ClientDocument__LetterBody']  =  legacyBlocks
+                    .map(function(block) { return (block && typeof block.Text === 'string') ? block.Text.trim() : ''; })
+                    .filter(function(text) { return text !== ''; })
+                    .join('\n\n');
+            }
+
+            delete clientCfg['VghLantern__ProjectFile__ClientDocument__LetterBlocks'];
+            didMutate  =  true;
+        }
+
+        var listFields  =  [
+            'VghLantern__ProjectFile__ClientDocument__CriticalTerms',
+            'VghLantern__ProjectFile__ClientDocument__SpecialTerms'
+        ];
+        var i;
+
+        for (i = 0; i < listFields.length; i++) {
+            if (!Array.isArray(clientCfg[listFields[i]])) {
+                clientCfg[listFields[i]]  =  [];
+                didMutate  =  true;
+            }
+        }
+
+        if (VghLantern__SchemaValidator__EnsureObject(clientCfg, 'VghLantern__ProjectFile__ClientDocument__SectionToggles')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Validate and Normalise Full Project Data
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__ValidateAndNormaliseProject(projectData, sourceLabel) {
@@ -700,6 +757,10 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             didMutate  =  true;
             notes.push('Created missing drawing layout object.');
         }
+        if (VghLantern__SchemaValidator__EnsureObject(clonedProject, 'VghLantern__ProjectFile__ClientDocument')) {
+            didMutate  =  true;
+            notes.push('Created missing client document object.');
+        }
         if (!Array.isArray(clonedProject['VghLantern__ProjectFile__Lanterns'])) {
             clonedProject['VghLantern__ProjectFile__Lanterns']  =  [];
             didMutate  =  true;
@@ -709,6 +770,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseMetadata(clonedProject['VghLantern__ProjectFile__Metadata'])) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseGlobalSettings(clonedProject['VghLantern__ProjectFile__GlobalSettings'])) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseDrawingLayout(clonedProject['VghLantern__ProjectFile__DrawingLayout'])) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseClientDocument(clonedProject['VghLantern__ProjectFile__ClientDocument'])) didMutate  =  true;
 
         var lanterns  =  clonedProject['VghLantern__ProjectFile__Lanterns'];
         for (var i = 0; i < lanterns.length; i++) {

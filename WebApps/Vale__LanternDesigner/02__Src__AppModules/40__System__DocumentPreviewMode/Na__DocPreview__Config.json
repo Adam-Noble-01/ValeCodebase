@@ -13,23 +13,27 @@
             "ScreenPixelsPerMm"         : 3.2,
             "ScreenPixelsPerMmNote"     : "Screen zoom only. Page geometry is authored in paper millimetres so the on-screen page and the exported PDF are the same document at two magnifications.",
             "PaperNote"                 : "These settings size the specification pages. The drawing sheet keeps whatever paper the Drawing Editor is set to, which is why one exported document can run A4 portrait schedules into an A3 or A1 landscape drawing.",
-            "PageOrder"                 : ["specification", "drawing"],
-            "PageOrderNote"             : "Enabled pages are emitted in this order. Specification tables lead; the drawing sheet is last so takeoff and notes are read before the views."
+            "PageOrder"                 : ["welcomeLetter", "drawing", "specification", "terms"],
+            "PageOrderNote"             : "Enabled pages are emitted in this order: the covering letter, then the drawing the client looks at, then the specification that describes it, then the terms it is all issued under. The terms are last because they are read last and referred back to; they are one flowing page descriptor however many sheets they run to, because they are one continuously numbered document."
         },
 
         "VghLantern__DocPreview__Config__ViewState": {
+            "DefaultShowWelcomeLetter"    : true,
             "DefaultShowDrawingSheet"     : true,
             "DefaultShowTakeoffSchedule"  : true,
             "DefaultShowComponentSchedule": true,
             "DefaultShowJobNotes"         : true,
+            "DefaultShowTermsPages"       : true,
             "PersistViewState"            : true,
             "PersistViewStateNote"        : "When true the toggles round-trip through 08__LocalUserData via the user menu config endpoint, so a user's preferred output shape survives a reload. Toggle keys deliberately mirror VghLantern__UserMenu__ModeDocumentPreview__Config so the persistence layer needs no key translation.",
             "DrawingSheetToggleNote"      : "One switch, because the drawing page is the composed Drawing Editor sheet baked in whole. Which views appear on that sheet, and how the grid is balanced, is decided in the Drawing Editor. Dropping a single view here would leave a hole in the sheet's grid rather than reflowing it.",
+            "TermsToggleNote"             : "ShowTermsPages is the page-level switch and is a per-user preference like every other key in this block. Which SECTIONS the terms document contains is NOT here - that is document content, so it lives on the project file and is edited by both the Client Doc tab and the Terms group in this mode's toolbar. One value, two surfaces, nothing to drift.",
             "ToggleGrouping": {
+                "Document"              : ["ShowWelcomeLetter", "ShowDrawingSheet", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes", "ShowTermsPages"],
                 "DrawingViews"          : ["ShowDrawingSheet"],
                 "DocumentSections"      : ["ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes"]
             },
-            "ToggleGroupingNote"        : "The drawing page appears when ShowDrawingSheet is on; the specification pages appear when any DocumentSections toggle is on. There is no separate page-level switch to fall out of step with the content toggles."
+            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the drawing page when ShowDrawingSheet is on, the terms pages when ShowTermsPages is on, and the specification pages when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
         },
 
         "VghLantern__DocPreview__Config__Toolbar": {
@@ -41,11 +45,17 @@
             "PrintLabel"                : "Print",
             "PaperSizeLabel"            : "Document Paper",
             "PaperSizeLabelNote"        : "Named Document Paper rather than Paper because it sizes the specification pages only. The drawing sheet carries its own paper size over from the Drawing Editor.",
+            "ShowTermsSectionToggles"   : true,
+            "ShowTermsSectionTogglesNote": "The per-section switches in the Terms toolbar group. These write to the project file, not to the per-user preferences, because which terms a quotation is issued under is a property of the quotation.",
+            "TermsGroupLabel"           : "Terms",
+            "DocumentGroupLabel"        : "Document",
             "ToggleLabels": {
+                "ShowWelcomeLetter"     : "Welcome Letter",
                 "ShowDrawingSheet"      : "Drawing Sheet",
                 "ShowTakeoffSchedule"   : "Takeoff Schedule",
                 "ShowComponentSchedule" : "Component Schedule",
-                "ShowJobNotes"          : "Job Notes"
+                "ShowJobNotes"          : "Job Notes",
+                "ShowTermsPages"        : "Terms Pages"
             }
         },
 
@@ -84,7 +94,13 @@
             "NoLanternMessage"          : "This project has no lanterns to document.",
             "UnsolvedGeometryMessage"   : "Lantern geometry has not been solved - open the Lantern Editor to resolve it.",
             "NoDrawingSheetMessage"     : "Visit the Drawing Editor once so the sheet can be composed before export.",
-            "EmptySelectionMessage"     : "Every content section is switched off - nothing to preview."
+            "EmptySelectionMessage"     : "Every content section is switched off - nothing to preview.",
+            "TermsLibraryFailedMessage" : "The standard terms library could not be read, so the terms document is incomplete. Switch the terms pages off or restore the missing file before issuing.",
+            "TermsUnreviewedMessage"    : "These terms have not been through legal review. The document closes with a notice saying so.",
+            "TermsUnreviewedNote"       : "A warning, not an error, so a quotation can still be issued while the wording is being settled. It is raised whenever ReviewNoticeEnabled is true in Na__Terms__Config.json, so switching the closing notice off switches this warning off with it - one flag, never two things to remember.",
+            "LetterEmptyMessage"        : "The welcome letter has no paragraphs, so it will not be included.",
+            "LetterUnsignedMessage"     : "The welcome letter has no name against the sign-off.",
+            "UnresolvedTokenMessage"    : "Document text refers to {tokens}, which this project has no value for. The reference will print as a blank."
         }
     }
 }

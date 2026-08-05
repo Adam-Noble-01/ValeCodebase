@@ -52,7 +52,7 @@ const VghLantern__AppCore__StateManager = (function() {
         solvedSkeleton          : null,                                      // <-- Last SkeletonSolver result (mm space)
         solvedBarSet            : null,                                      // <-- Last GlazeBarLayout result (mm space)
         activeView2d            : 'plan',                                    // <-- plan | frontElevation | sideElevation
-        is3dViewportVisible     : false,                                     // <-- In-editor 3D panel toggle
+        is3dViewportVisible     : true,                                      // <-- In-editor 3D panel toggle
         isDirty                 : false,                                     // <-- Unsaved changes flag
         currentMode             : 'DocManagement'                            // <-- Active UI mode
     };

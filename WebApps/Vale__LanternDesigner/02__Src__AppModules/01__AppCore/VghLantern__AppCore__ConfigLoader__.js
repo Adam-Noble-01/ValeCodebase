@@ -65,6 +65,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         { Label : 'EditorWarnings',  Path : '02__Src__AppModules/20__System__LanternAssembly__EditorMode/Na__LanternEditor__Warnings__.json' },
         { Label : 'DrawingEditor',   Path : '02__Src__AppModules/30__System__DrawingEditorMode/Na__DrawingEditor__Config.json' },
         { Label : 'Specification',   Path : '02__Src__AppModules/35__System__SpecificationMode/Na__Specification__Config.json' },
+        { Label : 'ClientDocument',  Path : '02__Src__AppModules/37__System__ClientDocumentMode/Na__ClientDocument__Config.json' },
+        { Label : 'Terms',           Path : '02__Src__AppModules/38__System__TermsAndConditions/Na__Terms__Config.json' },
         { Label : 'DocPreview',      Path : '02__Src__AppModules/40__System__DocumentPreviewMode/Na__DocPreview__Config.json' },
         { Label : 'PdfWriter',       Path : '02__Src__AppModules/45__System__PdfDocumentWriter/Na__PdfWriter__Config.json' }
     ];
@@ -90,6 +92,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     let VghLantern__ConfigLoader__EditorWarnings    =  null;                 // <-- Editor manufacturing warning rule table
     let VghLantern__ConfigLoader__DrawingEditor     =  null;                 // <-- Sheet, scale and titleblock settings
     let VghLantern__ConfigLoader__Specification     =  null;                 // <-- Specification document settings
+    let VghLantern__ConfigLoader__ClientDocument    =  null;                 // <-- Welcome letter template and editor settings
+    let VghLantern__ConfigLoader__Terms             =  null;                 // <-- Terms sections, numbering and the drawing QR block
     let VghLantern__ConfigLoader__DocPreview        =  null;                 // <-- Preview and PDF export settings
     let VghLantern__ConfigLoader__PdfWriter         =  null;                 // <-- Page assembly and footer rules for every PDF export
     let VghLantern__ConfigLoader__MergedConfig      =  null;                 // <-- Full merged object
@@ -136,6 +140,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         VghLantern__ConfigLoader__EditorWarnings   =  configData['VghLantern__LanternEditor__Warnings__Config'] || {};
         VghLantern__ConfigLoader__DrawingEditor    =  configData['VghLantern__DrawingEditor__Config']           || {};
         VghLantern__ConfigLoader__Specification    =  configData['VghLantern__Specification__Config']           || {};
+        VghLantern__ConfigLoader__ClientDocument   =  configData['VghLantern__ClientDocument__Config']          || {};
+        VghLantern__ConfigLoader__Terms            =  configData['VghLantern__Terms__Config']                   || {};
         VghLantern__ConfigLoader__DocPreview       =  configData['VghLantern__DocPreview__Config']              || {};
         VghLantern__ConfigLoader__PdfWriter        =  configData['VghLantern__PdfWriter__Config']               || {};
     }
@@ -208,6 +214,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
             'EditorWarnings'   : VghLantern__ConfigLoader__EditorWarnings,
             'DrawingEditor'    : VghLantern__ConfigLoader__DrawingEditor,
             'Specification'    : VghLantern__ConfigLoader__Specification,
+            'ClientDocument'   : VghLantern__ConfigLoader__ClientDocument,
+            'Terms'            : VghLantern__ConfigLoader__Terms,
             'DocPreview'       : VghLantern__ConfigLoader__DocPreview,
             'PdfWriter'        : VghLantern__ConfigLoader__PdfWriter
         };

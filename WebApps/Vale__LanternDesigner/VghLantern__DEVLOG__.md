@@ -3,6 +3,99 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.5.1 - 04-Aug-2026
+### The letter is written in one box, the terms say once that they are unreviewed, and the drawing's terms cell reads properly
+
+Review of v0.5.0 in the running app. Six changes, all of them things that only became
+obvious once there was something to look at.
+
+#### Changed - The welcome letter is one field, not six boxes
+- **The paragraph cards are gone.** The letter was edited as one card per paragraph, which is writing into six little boxes rather than writing a letter: text could not be selected across a paragraph break, moving a sentence between paragraphs meant retyping it, and the shape of the thing on screen looked nothing like the shape of the thing being produced. The body is now a single field holding the whole letter.
+- **It supports a small markdown subset**, and deliberately only this: `##` heading, `###` sub-heading, `---` divider, `**bold**`, `*italic*`, and a blank line for a new paragraph. Every one of those has to be drawn into a PDF by hand, so a feature that cannot be drawn on paper has no business in the editor. The grammar is printed as a legend under the box rather than hidden in a help panel.
+- **New module `VghLantern__ClientDoc__MarkdownParser__.js`** is the single parse. The screen renderer wraps its runs in spans; the PDF painter draws the same runs with jsPDF. One parse, two renderers, no second interpretation to drift.
+- Bold and italic in a PDF meant real work: jsPDF sets one font style per text call, so `WriteRunBlock` measures word by word in each run's own style and packs them into lines by hand. `splitTextToSize` cannot do this, because it takes one string in one style.
+- **Migration.** A project already holding paragraph records has them joined with blank lines into the new body and the retired `LetterBlocks` field stripped, so a letter already written comes back word for word rather than being lost or re-seeded from the template.
+
+#### Changed - The terms say it once
+- **`{{Vale-Legal-Team-To-Confirm}}` is removed from all 44 clauses**, and the reserved-token machinery with it. Forty-four red markers made the document unreadable and buried the very point they were making.
+- **One notice at the end instead**, printed in the critical red, saying the terms have not been reviewed or approved by Vale's legal advisers. It is `ReviewNoticeText` in `Na__Terms__Config.json`; setting `ReviewNoticeEnabled` to false removes both the notice and the Preview and Send warning that accompanies it. One flag, never two things to remember.
+- The clauses themselves are unchanged: still 44 subject lines stating what each must cover, still awaiting Vale's wording.
+
+#### Changed - The drawing's terms cell
+- **It is a title block cell, not a box beside one.** v0.5.0 put a taller box above the strip; it now sits at the right-hand end of the strip itself, mirroring the logo cell, with the same dividing rule and the QR sized to the strip height. `SheetPdfLayout` no longer solves a rectangle for it at all - the title block keeps its full width and `SheetChrome` solves the cell inside it.
+- **The copy reads properly.** Bold "Drawing Terms" over lighter, muted supporting text: "Scan the code or see your document pack for the full terms, limitations and omissions applying to this drawing." This inverts the caption-over-value rhythm of the other cells on purpose - those caption a value the reader is looking for, this one tells them to go and read something, so the instruction leads.
+- The placeholder notice line under the code is gone. The placeholder status is recorded in the config note and here.
+
+#### Fixed - The preview was not paginating
+- **Flowing documents overflowed one page shell.** A 44-clause terms document ran off the bottom of the paper and kept going, so the preview showed neither where the pages break nor how many there are, which is most of what a preview is for. **This also affected the specification pages**; it had just never been long enough to notice.
+- **New module `VghLantern__DocPreview__FlowPaginator__.js`** measures a flowing body and cuts it into real pages. It measures inside a copy of the actual page body, because that box is a flex column with a gap and a plain div measures differently. Blocks taller than a page are broken open recursively, so a 15-clause section splits at a clause boundary and keeps its heading and border on each page rather than overflowing.
+- The on-screen footer now prints the same "Page 2 of 7" the file will, using the PDF writer's own `PageNumberFormat`. It can, because the preview finally knows how many pages there are. Pages are built first and stamped second, for the same reason the PDF writer stamps its footers last.
+
+#### Added - The Client Doc columns are draggable
+A pointer-driven splitter between the edit and preview columns, bounded to between a quarter and three quarters so neither column can be dragged to nothing. Arrow keys nudge it, because a separator that only answers a pointer is a control some people cannot reach. The position is a per-browser UI preference, so it goes to localStorage rather than onto the project file - nothing about a quotation depends on how wide someone likes their edit column.
+
+#### Files
+New: `VghLantern__ClientDoc__MarkdownParser__.js`, `VghLantern__DocPreview__FlowPaginator__.js`.
+Changed: `VghLantern__ClientDoc__LetterModel__.js` (body is one string), `LetterEditor`, `LetterScreenRenderer`, `LetterPdfPainter` (run-based emphasis), `ClientDoc__Layout` (splitter), `ClientDoc__Styles`, `Na__ClientDocument__Config.json`, `DocumentTokens` (reserved token removed), `Terms__DocumentModel`, `Terms__ScreenRenderer`, `Terms__PdfPainter`, `Terms__Styles`, `Na__Terms__Config.json`, all four clause markdown files, `SheetChrome`, `SheetPdfLayout`, `Terms__QrLink`, `DocPreview__PageRenderer`, `DocIssueHandler`, `Na__DocPreview__Config.json`, `ProjectSchemaValidator` (LetterBlocks migration), `ProjectFileManager`.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.5.0 - 04-Aug-2026
+### Client Doc tab, a terms and conditions system with citable clause numbers, and a drawing that points at them
+
+#### Added
+- **A Client Doc tab**, between Specification and Preview and Send. Two columns: the welcome letter, the project's critical and special terms and the standard section switches on the left, a live document preview on the right. Every edit is a block card with a drag handle, a delete and, on a paragraph that came from the template, a reset. Writes are debounced and flow through `MarkDirty`, so it autosaves exactly like the job notes editor and there is no save button.
+- **A welcome letter**, seeded from a template in JSON and then owned by the project. The template is materialised onto the project file the first time the tab opens it, so editing the template changes what the *next* project starts with and never rewrites a letter already sent. Per-block reset is what keeps the template useful after that.
+- **A terms and conditions system** in its own `38__System__TermsAndConditions` folder: a markdown clause library, the numbering authority, a screen renderer, a PDF painter and the QR link builder.
+- **`VghLantern__AppUtils__QrEncoder__.js`**, a first-party QR encoder. Byte mode, error correction M, versions 1 to 10. No new dependency, because `04__Src__Dependencies__VersionLocked` is a deliberate CDN-independent set and the app is an installable PWA that has to work offline. Verified against the published ISO/IEC 18004 format-information and version-information strings.
+- **A flow paginator for the preview.** Flowing documents are now measured and cut into real pages on screen. A forty-clause terms document used to run off the bottom of one page shell and keep going, so the preview showed neither where the pages break nor how many there are.
+
+#### Clause numbering
+The rule that everything else follows: **the section number is fixed in config and never moves; the term number renumbers within its section.**
+
+| | |
+|---|---|
+| Sections | 1 Critical, 2 Special, 3 General and Legal, 4 Payment, 5 Access to Site, 6 Builders Upstand |
+| Format | `{section}.{term}`, term zero-padded to 2, giving `1.01`, `4.08`, `5.02` |
+| Add a special term | Section 2 renumbers. Nothing else moves. |
+| Switch Payment off | Document runs 1, 2, 3, 5, 6. Access is still `5.01`. |
+
+A clause number is a citation. If Payment were section 4 on one document and section 3 on the next because Access happened to be switched off, then "clause 4.08" would mean two different things to two people holding two versions of the same quotation. That is why a switched-off section leaves a gap rather than closing one. `VghLantern__Terms__DocumentModel__.js` is the only place a number is assigned; the editor labels its cards from it, and both renderers print from it.
+
+#### The clause library
+Four markdown files under `Na__Terms__Library/`. One blank-line separated paragraph is one clause, lines starting with a chevron are editor notes, and nothing else is parsed. Adding a clause is adding a paragraph.
+
+**The 44 clauses are subjects, not wording.** Each states what the clause must cover and ends with `{{Vale-Legal-Team-To-Confirm}}`. That token is reserved: it is never substituted, it prints in red on screen and on paper, and it raises a Preview and Send warning naming the clauses that still carry it. A warning rather than an error, so an internal draft is still previewable and exportable while the wording is written - `terms:pendingWording` moves into `BlockExportOnError` to make it blocking once the library is finished.
+
+#### Document order
+`PageOrder` is now `["welcomeLetter", "drawing", "specification", "terms"]`. **This reverses the previous default**, which put the specification before the drawing.
+
+Toggles in Preview and Send are in two groups. The page-level switches are per-user preferences and persist to `08__LocalUserData` like every other toggle. The per-section terms switches are **document content**, so they live on the project file and are written by the Client Doc tab and this toolbar through the same call. One value, two surfaces, nothing to drift.
+
+#### Changed - Drawing sheet
+- **The notes block is gone.** It printed three standing sentences about millimetres, figured dimensions and glazing. Those are now clauses in the terms document, and a summary of three of them beside the views is worse than a pointer to all of them. `VghLantern__DrawingEditor__AnnotationLayer__.js` is deleted, along with the `Notes` rectangle in the layout solve, `BuildNotes` in the chrome, and the `Config__Annotations` block.
+- **Job notes are unaffected.** They are stored on `GlobalSettings.JobNotes`, typed in the Specification tab and printed on the specification document under its existing `ShowJobNotes` toggle. Only the drawing sheet's copy of them went.
+- **The titleblock gained a terms cell** at its right-hand end, mirroring the logo cell at the left. It is a titleblock cell and not a box parked beside one: same height, same label and value type sizes, same baselines, same dividing rule as every other cell. The field cells divide what is left between the two fixed cells, so they squeeze up as intended.
+- The QR is drawn as a **new `Qr` chrome primitive**, not a raster. `SheetChrome` builds one primitive list and renders it to SVG and to jsPDF, so the code is vector on screen and vector in the file, and inherits that rule for free. Horizontal runs of dark modules are merged into single rectangles first, which takes a 37-module symbol from 688 marks to 375.
+
+#### Config
+- `Na__ClientDocument__Config.json` - letter template, editor limits, letter typography.
+- `Na__Terms__Config.json` - the section table with its fixed numbers, the numbering format, the clause library path, terms typography, and the drawing QR block.
+- `Na__DocPreview__Config.json` - new `PageOrder`, two new toggle defaults and labels, five new issue messages.
+- `Na__DrawingEditor__Config.json` - `Config__Annotations` deleted whole; the four orphaned `SheetStyle` note keys replaced by a note explaining that the terms cell has no styling of its own.
+
+**The QR address is a placeholder.** `TermsQrBaseUrl` is `http://localhost:8006/VghLantern__App__.html`, chosen so the printed code is scannable and testable today rather than dead until a client portal exists. Replacing it with the hosted Vale terms URL is the whole migration - no JS anywhere knows the address. The app reads `?doc=terms&project={code}` back at boot, opens the named project and lands on its terms, and `VghLantern__Terms__QrLink__.js` both builds that link and answers it so the two cannot drift.
+
+**Size warning, recorded in config as `QrScanSizeNote`.** At the default 10 mm titleblock height the code prints about 8.8 mm square. The default localhost URL produces a version 5 symbol, giving a 0.24 mm module, which is below what most phone cameras resolve reliably from a printed A3 sheet. Two levers, neither of which needs code: raise `Sheet.TitleBlockHeightMm` from 10 to about 16, or shorten the base URL. The hosted address is expected to be far shorter, which on its own drops the symbol to version 2 or 3 and roughly doubles the module size.
+
+#### Files
+New: `VghLantern__AppUtils__QrEncoder__.js`, `VghLantern__AppUtils__DocumentTokens__.js`, the eight `37__System__ClientDocumentMode` modules, the seven `38__System__TermsAndConditions` modules plus four markdown clause files, `VghLantern__DocPreview__FlowPaginator__.js`.
+Deleted: `VghLantern__DrawingEditor__AnnotationLayer__.js`.
+Changed: `VghLantern__App__.html`, the CSS index, `ConfigLoader`, `ModeManager`, `Init`, `ProjectSchemaValidator` (new `VghLantern__ProjectFile__ClientDocument` block), `ProjectFileManager`, `SheetManager`, `SheetPdfLayout`, `SheetChrome`, `DocumentState`, `PageRenderer`, `PdfExporter`, `DocIssueHandler`, `MenuDataHandler`, the service worker (`.md` added to the network-first pattern).
+
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.1.1 - 04-Aug-2026
 ### One drawing renderer and one PDF writer: the Drawing Editor sheet is now the drawing everywhere
 

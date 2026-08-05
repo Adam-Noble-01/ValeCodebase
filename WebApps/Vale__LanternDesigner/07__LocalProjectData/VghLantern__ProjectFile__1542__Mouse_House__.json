@@ -23,13 +23,19 @@
     },
     "VghLantern__ProjectFile__DrawingLayout": {
         "VghLantern__ProjectFile__DrawingLayout__Description": "How the Drawing Editor sheet was last set up. Null means fall back to the Drawing Editor config default.",
-        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": null,
-        "VghLantern__ProjectFile__DrawingLayout__Orientation": null,
-        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": null,
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A3",
+        "VghLantern__ProjectFile__DrawingLayout__Orientation": "landscape",
+        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": 20,
         "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
-        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
-        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
+        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": [
+            50,
+            50
+        ],
+        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": [
+            50,
+            50
+        ],
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.2214027484533332,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {}
     },
     "VghLantern__ProjectFile__Lanterns": [
@@ -95,5 +101,45 @@
                 "Lantern__Notes__Config__InternalComments": ""
             }
         }
-    ]
+    ],
+    "VghLantern__ProjectFile__ClientDocument": {
+        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
+        "VghLantern__ProjectFile__ClientDocument__LetterBlocks": [
+            {
+                "Id": "blk_msekixto_1",
+                "TemplateKey": "thanks",
+                "Text": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration."
+            },
+            {
+                "Id": "blk_msekixto_2",
+                "TemplateKey": "scope",
+                "Text": "Our quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install."
+            },
+            {
+                "Id": "blk_msekixto_3",
+                "TemplateKey": "workmanship",
+                "Text": "Every lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made."
+            },
+            {
+                "Id": "blk_msekixto_4",
+                "TemplateKey": "drawings",
+                "Text": "The drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree."
+            },
+            {
+                "Id": "blk_msekixto_5",
+                "TemplateKey": "terms",
+                "Text": "Our quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order."
+            },
+            {
+                "Id": "blk_msekixto_6",
+                "TemplateKey": "next",
+                "Text": "We would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch."
+            }
+        ],
+        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {}
+    }
 }

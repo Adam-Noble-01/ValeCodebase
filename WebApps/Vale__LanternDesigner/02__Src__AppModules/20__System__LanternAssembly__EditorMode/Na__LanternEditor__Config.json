@@ -72,7 +72,7 @@
             "ShowGlazingBars"          : true,
             "ShowProfileTraces"        : false,
             "ShowFinials"              : true,
-            "DualViewEnabledByDefault" : false,
+            "DualViewEnabledByDefault" : true,
             "DualViewOrientation"      : "vertical",
             "DualViewSecondaryDefault" : "frontElevation",
             "DualViewSharePct"         : 50,

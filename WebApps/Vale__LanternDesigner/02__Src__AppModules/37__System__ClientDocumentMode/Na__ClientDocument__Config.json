@@ -1,0 +1,113 @@
+{
+    "VghLantern__ClientDocument__Config": {
+        "VghLantern__ClientDocument__Config__Description": "System configuration for the Client Document mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('ClientDocument'). The welcome letter template lives here and nowhere else. Terms sections, clause numbering and the drawing QR block belong to Na__Terms__Config.json.",
+
+        "VghLantern__ClientDocument__Config__Mode": {
+            "ModeTitle"                 : "Client Document",
+            "EditColumnLabel"           : "Edit",
+            "PreviewColumnLabel"        : "Preview",
+            "NoProjectMessage"          : "Open a project before editing its client document.",
+            "PreviewPaperSizeNote"      : "The preview column renders at the Preview and Send document paper size so what is edited here is what is issued. Paper size itself is chosen in Preview and Send."
+        },
+
+        "VghLantern__ClientDocument__Config__Letter": {
+            "LetterTitle"               : "Welcome Letter",
+            "DefaultSalutation"         : "Dear {{ClientName}}",
+            "DefaultSalutationNote"     : "Resolved through VghLantern__AppUtils__DocumentTokens. A project with no client name recorded resolves to 'Dear' alone, which is visibly incomplete rather than plausibly wrong.",
+            "DefaultSignOffPhrase"      : "Yours sincerely",
+            "DefaultSignOffName"        : "",
+            "DefaultSignOffRole"        : "",
+            "DefaultSignOffNameNote"    : "Left blank so the letter shows an obviously unsigned block until a name is entered. The project author is offered as a one-click fill in the editor rather than silently substituted, because the person who set the project up is not always the person who signs the letter.",
+            "ShowLetterhead"            : true,
+            "ShowValeLogo"              : true,
+            "LogoAssetPath"             : "../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png",
+            "LogoWidthMm"               : 52,
+            "ShowIssueDate"             : true,
+            "ShowProjectReferenceLine"  : true,
+            "ProjectReferenceFormat"    : "Our reference: {{ProjectCode}}  |  {{ProjectName}}",
+            "SubjectLineFormat"         : "Roof lanterns at {{ProjectAddress}}",
+            "SubjectLineFormatNote"     : "Printed bold above the first paragraph. A project with no site address recorded drops the address and raises an unresolved-token warning in Preview and Send.",
+
+            "LetterTemplate": [
+                {
+                    "Key"  : "thanks",
+                    "Text" : "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration."
+                },
+                {
+                    "Key"  : "scope",
+                    "Text" : "Our quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install."
+                },
+                {
+                    "Key"  : "workmanship",
+                    "Text" : "Every lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made."
+                },
+                {
+                    "Key"  : "drawings",
+                    "Text" : "The drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree."
+                },
+                {
+                    "Key"  : "terms",
+                    "Text" : "Our quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order."
+                },
+                {
+                    "Key"  : "next",
+                    "Text" : "We would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch."
+                }
+            ],
+            "LetterTemplateNote"        : "The starting point for a new project's letter. The paragraphs are joined with blank lines into one markdown body the first time the Client Doc tab opens the project, and after that the letter belongs to the project - editing this array does not rewrite letters already written. That is deliberate: an issued document must not change under the person who issued it. Key is retained only to keep the entries identifiable while editing this file; nothing reads it at runtime now the body is one field.",
+
+            "MaxBodyCharacters"         : 24000,
+            "MaxBodyCharactersNote"     : "The whole letter body is one field. The cap is generous because it covers the entire letter rather than one paragraph, and it is enforced in the model as well as on the textarea because a paste can exceed a maxlength attribute in some browsers.",
+            "AutosaveDebounceMs"        : 600,
+            "AutosaveDebounceMsNote"    : "Matches the job notes editor. Writes go through StateManager MarkDirty, which the AppCore autosave path already listens to, so there is no save button.",
+            "ResetBodyLabel"            : "Reset letter to template",
+            "BodyPlaceholder"           : "Write the letter here. Blank line for a new paragraph, ## for a heading, --- for a divider.",
+
+            "MarkdownNote"              : "The body supports a deliberately small markdown subset: ## heading, ### sub-heading, --- divider, **bold**, *italic*, and a blank line for a new paragraph. Nothing else is parsed. Every one of those has to be drawn into a PDF by hand, and a feature that cannot be drawn on paper has no business in a document editor. VghLantern__ClientDoc__MarkdownParser is the single parse; the screen renderer and the PDF painter both draw its output."
+        },
+
+        "VghLantern__ClientDocument__Config__ProjectTerms": {
+            "CriticalTitle"             : "Critical Terms",
+            "CriticalHelperText"        : "Printed in red at the very front of the terms document. Use these only for things the reader must not miss.",
+            "CriticalPlaceholder"       : "State the critical term.",
+            "AddCriticalLabel"          : "Add critical term",
+
+            "SpecialTitle"              : "Special Project Terms",
+            "SpecialHelperText"         : "Project-specific terms that vary or add to the standard terms below.",
+            "SpecialPlaceholder"        : "State the special term.",
+            "AddSpecialLabel"           : "Add special term",
+
+            "StandardTitle"             : "Standard Terms",
+            "StandardHelperText"        : "Switch a standard section off to leave it out of this project's document. The clause numbers of the other sections do not move.",
+
+            "MaxTermCharacters"         : 900,
+            "MaxTermsPerSection"        : 40
+        },
+
+        "VghLantern__ClientDocument__Config__LetterStyle": {
+            "LetterheadGapMm"           : 8,
+            "SalutationGapMm"           : 6,
+            "SubjectGapMm"              : 5,
+            "ParagraphGapMm"            : 3.2,
+            "SignOffGapMm"              : 8,
+            "SignatureSpaceMm"          : 14,
+            "SignatureSpaceMmNote"      : "Blank vertical space between the sign-off phrase and the printed name, so a letter can be signed by hand after printing.",
+
+            "SubjectFontSizePt"         : 10,
+            "BodyFontSizePt"            : 9.5,
+            "MetaFontSizePt"            : 8.5,
+            "Heading2FontSizePt"        : 12,
+            "Heading3FontSizePt"        : 10.5,
+            "LineSpacing"               : 1.45,
+            "LineSpacingNote"           : "Looser than the specification tables. A letter is read as prose, not scanned as data.",
+
+            "DividerGapMm"              : 3,
+            "DividerStrokeMm"           : 0.2,
+            "DividerNote"               : "The --- rule in the letter body. The gap is applied above and below, so the rule sits centred in the space it takes.",
+
+            "HeadingColour"             : "#172b3a",
+            "BodyTextColour"            : "#1e1e1e",
+            "MetaTextColour"            : "#6c757d"
+        }
+    }
+}

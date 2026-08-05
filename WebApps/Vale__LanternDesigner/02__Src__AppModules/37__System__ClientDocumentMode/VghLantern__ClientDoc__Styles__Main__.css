@@ -1,0 +1,593 @@
+/* =============================================================================
+ * VGHLANTERN - CLIENT DOCUMENT MODE STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__ClientDoc__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : System - ClientDocumentMode - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The two-column editor, the block cards and the letter document
+ * CREATED    : 04-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Styles the Client Document mode: a scrolling edit column on the left and a live
+ *   document preview on the right.
+ * - The letter document styles are shared with Preview and Send, which renders the
+ *   same markup from the same renderer, so they are authored once here.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Mode Shell
+ * ----------------------------------------------------------------------------- */
+
+    #VghLantern__ClientDoc__Container {
+        box-sizing                     : border-box;
+        width                          : 100%;
+        padding                        : var(--Vale_Spacing_Large);
+        font-family                    : var(--Vale_FontFamily);
+        color                          : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__ClientDoc__Header {
+        display                        : flex;
+        align-items                    : baseline;
+        gap                            : var(--Vale_Spacing_Medium);
+        margin-bottom                  : var(--Vale_Spacing_Medium);
+        padding-bottom                 : var(--Vale_Spacing_Small);
+        border-bottom                  : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__Title {
+        margin                         : 0;
+        font-size                      : var(--Vale_FontSize_Heading);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__ClientDoc__Subtitle {
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__ClientDoc__EmptyState {
+        padding                        : var(--Vale_Spacing_XLarge);
+        text-align                     : center;
+        font-size                      : var(--Vale_FontSize_Standard);
+        color                          : var(--Vale_TextSecondary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px dashed var(--Vale_BorderLight);
+    }
+
+    /* Two columns with a draggable separator between them. The template is overridden
+       inline once the user has dragged it, so this is only ever the starting split. */
+    .VghLantern__ClientDoc__Split {
+        display                        : grid;
+        grid-template-columns          : 46% auto 54%;
+        align-items                    : start;
+    }
+
+    .VghLantern__ClientDoc__Column {
+        min-width                      : 0;
+        padding                        : 0 var(--Vale_Spacing_Medium);
+    }
+
+    /* The separator. Wider than the rule it draws so it is comfortably grabbable -
+       a two-pixel hit target is a two-pixel argument with the user. */
+    .VghLantern__ClientDoc__Splitter {
+        position                       : relative;
+        width                          : 11px;
+        min-height                     : 200px;
+        align-self                     : stretch;
+        cursor                         : col-resize;
+        touch-action                   : none;
+    }
+
+    .VghLantern__ClientDoc__Splitter::before {
+        content                        : '';
+        position                       : absolute;
+        top                            : 0;
+        bottom                         : 0;
+        left                           : 50%;
+        width                          : 1px;
+        transform                      : translateX(-50%);
+        background                     : var(--Vale_BorderLight);
+    }
+
+    /* The grip, so the handle reads as draggable rather than as a border. */
+    .VghLantern__ClientDoc__Splitter::after {
+        content                        : '';
+        position                       : absolute;
+        top                            : 50%;
+        left                           : 50%;
+        width                          : 3px;
+        height                         : 34px;
+        transform                      : translate(-50%, -50%);
+        border-radius                  : 2px;
+        background                     : var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__Splitter:hover::after,
+    .VghLantern__ClientDoc__Splitter:focus-visible::after {
+        background                     : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__ClientDoc__Splitter:focus-visible {
+        outline                        : 2px solid var(--Vale_PrimaryBrand);
+        outline-offset                 : -2px;
+    }
+
+    /* While dragging, the pointer is over the columns rather than the handle, and
+       without this the text under it selects and the cursor flickers. */
+    .VghLantern__ClientDoc__Split--dragging {
+        user-select                    : none;
+        cursor                         : col-resize;
+    }
+
+    .VghLantern__ClientDoc__Split--dragging .VghLantern__ClientDoc__Splitter::after {
+        background                     : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__ClientDoc__ColumnLabel {
+        display                        : block;
+        margin-bottom                  : var(--Vale_Spacing_Small);
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                 : 0.06em;
+        text-transform                 : uppercase;
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    /* Below this the two columns stack, and a vertical separator between stacked
+       rows would be meaningless, so the handle goes with them. The inline template
+       the drag writes is overridden here because it names three columns. */
+    @media (max-width: 1100px) {
+        .VghLantern__ClientDoc__Split {
+            grid-template-columns      : 1fr !important;
+        }
+
+        .VghLantern__ClientDoc__Splitter {
+            display                    : none;
+        }
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Editor Panels
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__ClientDoc__Panel {
+        margin-bottom                  : var(--Vale_Spacing_Large);
+        padding                        : var(--Vale_Spacing_Medium);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__Panel--critical {
+        border-left                    : 3px solid var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__ClientDoc__PanelTitle {
+        margin                         : 0 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_SubHeading);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__ClientDoc__Panel--critical .VghLantern__ClientDoc__PanelTitle {
+        color                          : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__ClientDoc__Helper {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Simple Fields
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__ClientDoc__FieldRow {
+        display                        : grid;
+        grid-template-columns          : 1fr 1fr;
+        gap                            : var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__ClientDoc__Field {
+        display                        : block;
+        margin-bottom                  : var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__ClientDoc__FieldLabel {
+        display                        : block;
+        margin-bottom                  : 4px;
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__ClientDoc__FieldInput {
+        box-sizing                     : border-box;
+        width                          : 100%;
+        padding                        : 7px 9px;
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_Standard);
+        color                          : var(--Vale_TextPrimary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__FieldInput:focus {
+        outline                        : none;
+        border-color                   : var(--Vale_PrimaryBrand);
+    }
+
+    /* The whole letter body, in one field. Monospace-adjacent line height and a
+       generous default height, because this is where prose is written rather than a
+       form field that happens to accept several lines. */
+    .VghLantern__ClientDoc__BodyInput {
+        box-sizing                     : border-box;
+        display                        : block;
+        width                          : 100%;
+        min-height                     : 420px;
+        padding                        : var(--Vale_Spacing_Medium);
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_Standard);
+        line-height                    : 1.65;
+        color                          : var(--Vale_TextPrimary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+        resize                         : vertical;
+    }
+
+    .VghLantern__ClientDoc__BodyInput:focus {
+        outline                        : none;
+        border-color                   : var(--Vale_PrimaryBrand);
+        box-shadow                     : inset 0 0 0 1px var(--Vale_PrimaryBrand);
+    }
+
+    /* The markdown legend under the box. The whole grammar, stated where it is used,
+       which beats a help panel nobody opens. */
+    .VghLantern__ClientDoc__Legend {
+        display                        : flex;
+        flex-wrap                      : wrap;
+        gap                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        margin                         : 6px 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__ClientDoc__LegendItem {
+        display                        : inline-flex;
+        align-items                    : center;
+        gap                            : 5px;
+    }
+
+    .VghLantern__ClientDoc__LegendItem code {
+        padding                        : 1px 5px;
+        font-family                    : ui-monospace, Consolas, 'Courier New', monospace;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextPrimary);
+        background                     : var(--Vale_BackgroundLight);
+        border                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__FillLink {
+        margin-top                     : 4px;
+        padding                        : 0;
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_PrimaryBrand);
+        background                     : none;
+        border                         : none;
+        text-decoration                : underline;
+        cursor                         : pointer;
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Block Cards
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__ClientDoc__BlockList {
+        margin-bottom                  : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__ClientDoc__BlockCard {
+        margin-bottom                  : var(--Vale_Spacing_Small);
+        background                     : var(--Vale_BackgroundLight);
+        border                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__BlockCard--critical {
+        border-left                    : 3px solid var(--VghLantern_ErrorRed);
+    }
+
+    /* The card being dragged fades so the gap it will leave is readable. */
+    .VghLantern__ClientDoc__BlockCard--dragging {
+        opacity                        : 0.45;
+    }
+
+    .VghLantern__ClientDoc__BlockHead {
+        display                        : flex;
+        align-items                    : center;
+        gap                            : var(--Vale_Spacing_Small);
+        padding                        : 5px 8px;
+        border-bottom                  : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ClientDoc__BlockHandle {
+        letter-spacing                 : -3px;
+        color                          : var(--Vale_TextSecondary);
+        cursor                         : grab;
+        user-select                    : none;
+    }
+
+    .VghLantern__ClientDoc__BlockLabel {
+        flex                           : 1 1 auto;
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_TextSecondary);
+        font-variant-numeric           : tabular-nums;
+    }
+
+    .VghLantern__ClientDoc__BlockCard--critical .VghLantern__ClientDoc__BlockLabel {
+        color                          : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__ClientDoc__BlockTools {
+        display                        : flex;
+        gap                            : 4px;
+    }
+
+    .VghLantern__ClientDoc__BlockTool {
+        width                          : 22px;
+        height                         : 22px;
+        font-size                      : var(--Vale_FontSize_Small);
+        line-height                    : 1;
+        color                          : var(--Vale_TextSecondary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+        cursor                         : pointer;
+    }
+
+    .VghLantern__ClientDoc__BlockTool:hover {
+        color                          : var(--Vale_PrimaryBrand);
+        background                     : var(--Vale_HoverBackground);
+    }
+
+    .VghLantern__ClientDoc__BlockInput {
+        box-sizing                     : border-box;
+        display                        : block;
+        width                          : 100%;
+        min-height                     : 54px;
+        padding                        : 8px 9px;
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_Standard);
+        line-height                    : 1.5;
+        color                          : var(--Vale_TextPrimary);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : none;
+        resize                         : none;
+        overflow                       : hidden;
+    }
+
+    .VghLantern__ClientDoc__BlockInput:focus {
+        outline                        : 2px solid var(--Vale_PrimaryBrand);
+        outline-offset                 : -2px;
+    }
+
+    .VghLantern__ClientDoc__BlockAdd {
+        padding                        : 6px 12px;
+        font-family                    : var(--Vale_FontFamily);
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_PrimaryBrand);
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px dashed var(--Vale_PrimaryBrand);
+        cursor                         : pointer;
+    }
+
+    .VghLantern__ClientDoc__BlockAdd:hover {
+        background                     : var(--Vale_HoverBackground);
+    }
+
+    .VghLantern__ClientDoc__BlockEmpty {
+        margin                         : 0 0 var(--Vale_Spacing_Small) 0;
+        padding                        : var(--Vale_Spacing_Medium);
+        text-align                     : center;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+        border                         : 1px dashed var(--Vale_BorderLight);
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Standard Section Switches
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__ClientDoc__SectionToggles {
+        display                        : flex;
+        flex-direction                 : column;
+        gap                            : 2px;
+    }
+
+    .VghLantern__ClientDoc__SectionToggle {
+        display                        : grid;
+        grid-template-columns          : auto 20px 1fr auto;
+        align-items                    : center;
+        gap                            : var(--Vale_Spacing_Small);
+        padding                        : 6px 8px;
+        font-size                      : var(--Vale_FontSize_Small);
+        border                         : 1px solid transparent;
+        cursor                         : pointer;
+    }
+
+    .VghLantern__ClientDoc__SectionToggle:hover {
+        background                     : var(--Vale_HoverBackground);
+    }
+
+    /* A section whose markdown file could not be read. Distinct from a section that
+       is simply switched off, because the two need different fixes. */
+    .VghLantern__ClientDoc__SectionToggle--failed {
+        color                          : var(--VghLantern_ErrorRed);
+        background                     : var(--VghLantern_ErrorBackground);
+        border-color                   : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__ClientDoc__SectionNumber {
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_TextSecondary);
+        font-variant-numeric           : tabular-nums;
+    }
+
+    .VghLantern__ClientDoc__SectionLabel {
+        color                          : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__ClientDoc__SectionCount {
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Preview Column
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__ClientDoc__PreviewPage {
+        margin-bottom                  : var(--Vale_Spacing_Large);
+        padding                        : 16mm 14mm;
+        background                     : var(--Vale_BackgroundWhite);
+        border                         : 1px solid var(--Vale_BorderLight);
+        box-shadow                     : 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Letter Document
+ * ----------------------------------------------------------------------------- */
+/* Shared with Preview and Send, which renders the identical markup. */
+
+    .VghLantern__Letter__Document {
+        font-family                    : var(--Vale_FontFamily);
+        color                          : var(--Vale_TextPrimary);
+        line-height                    : 1.55;
+    }
+
+    .VghLantern__Letter__Letterhead {
+        display                        : flex;
+        align-items                    : flex-start;
+        justify-content                : space-between;
+        gap                            : var(--Vale_Spacing_Large);
+        margin-bottom                  : var(--Vale_Spacing_XLarge);
+    }
+
+    .VghLantern__Letter__Logo {
+        display                        : block;
+        height                         : auto;
+    }
+
+    .VghLantern__Letter__Meta {
+        display                        : flex;
+        flex-direction                 : column;
+        align-items                    : flex-end;
+        gap                            : 2px;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+        text-align                     : right;
+    }
+
+    .VghLantern__Letter__Salutation {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Standard);
+    }
+
+    .VghLantern__Letter__Subject {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Standard);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Letter__Paragraph {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Standard);
+    }
+
+    /* The markdown subset the letter body supports. Sized to match the PDF painter's
+       Heading2FontSizePt and Heading3FontSizePt - if one moves the other must. */
+    .VghLantern__Letter__Heading2 {
+        margin                         : var(--Vale_Spacing_Large) 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_SubHeading);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Letter__Heading3 {
+        margin                         : var(--Vale_Spacing_Medium) 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_Standard);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Letter__Divider {
+        margin                         : var(--Vale_Spacing_Large) 0;
+        border                         : none;
+        border-top                     : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__Letter__Document strong {
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__Letter__Document em {
+        font-style                     : italic;
+    }
+
+    .VghLantern__Letter__SignOff {
+        margin-top                     : var(--Vale_Spacing_XLarge);
+        font-size                      : var(--Vale_FontSize_Standard);
+    }
+
+    .VghLantern__Letter__SignOff p {
+        margin                         : 0;
+    }
+
+    /* Deliberate blank space. A printed letter is signed by hand here. */
+    .VghLantern__Letter__SignatureSpace {
+        height                         : 14mm;
+    }
+
+    .VghLantern__Letter__SignName {
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Letter__SignRole {
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+    .VghLantern__Letter__Empty {
+        padding                        : var(--Vale_Spacing_Large);
+        text-align                     : center;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+        border                         : 1px dashed var(--Vale_BorderLight);
+    }
+
+/* #endregion -------------------------------------------------------- */

@@ -47,7 +47,7 @@
    starting ON:
 
        solid    null                 one segment, uncut
-       dotted   [ 6, 10 ]            6 on, 10 off, repeating
+       dotted   [ 12, 20 ]           12 on, 20 off, repeating
        dashed   [ 40, 22 ]           40 on, 22 off, repeating
        dashDot  [ 48, 16, 4, 16 ]    long, gap, dot, gap - the datum line type
 

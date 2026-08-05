@@ -8,7 +8,7 @@
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "31-Jul-2026",
-        "VghLantern__ProjectFile__Metadata__DateModified": "31-Jul-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "05-Aug-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -23,30 +23,30 @@
     },
     "VghLantern__ProjectFile__DrawingLayout": {
         "VghLantern__ProjectFile__DrawingLayout__Description": "How the Drawing Editor sheet was last set up. Null means fall back to the Drawing Editor config default.",
-        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A3",
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": "A4",
         "VghLantern__ProjectFile__DrawingLayout__Orientation": "landscape",
         "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": 50,
         "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": true,
         "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": [
-            50,
-            50
+            52.13459497616465,
+            47.86540502383535
         ],
         "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": [
-            50,
-            50
+            39.395325880697705,
+            60.604674119302295
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.6160744021928952,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.4918246739293577,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {
-                    "x": 6.163403682570771,
-                    "y": 3.57427420695982,
-                    "z": 6.452584659574418
+                    "x": 6.620509900104922,
+                    "y": 4.194053347629682,
+                    "z": 5.0476789403860245
                 },
                 "Target": {
-                    "x": 0.94173875480955,
-                    "y": -0.20188380208091877,
-                    "z": -0.23084167082963242
+                    "x": 0.33951916590433867,
+                    "y": -0.19929007296711734,
+                    "z": -0.19073975484801273
                 }
             }
         }
@@ -65,7 +65,7 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 8000,
+                "Lantern__Dimensions__Config__WidthMm": 4000,
                 "Lantern__Dimensions__Config__DepthMm": 3000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 50
             },
@@ -78,8 +78,8 @@
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
             },
             "Lantern__RidgeAndHips__Config": {
-                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
-                "Lantern__RidgeAndHips__Config__HipProfileId": "",
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
                 "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
                 "Lantern__RidgeAndHips__Config__CrestingEnabled": false
             },
@@ -114,5 +114,29 @@
                 "Lantern__Notes__Config__InternalComments": ""
             }
         }
-    ]
+    ],
+    "VghLantern__ProjectFile__ClientDocument": {
+        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
+        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [
+            {
+                "Id": "trm_mseklbat_1",
+                "Text": "No letting dog be around the team\n"
+            }
+        ],
+        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [
+            {
+                "Id": "trm_mseklphn_2",
+                "Text": "No letting Adam out during visit.\n"
+            }
+        ],
+        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {
+            "upstand": true,
+            "access": true,
+            "payment": true,
+            "general": true
+        },
+        "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch."
+    }
 }

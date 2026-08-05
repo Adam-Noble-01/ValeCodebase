@@ -1,0 +1,144 @@
+{
+    "VghLantern__Terms__Config": {
+        "VghLantern__Terms__Config__Description": "System configuration for the Terms and Conditions system. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('Terms'). Section order, section numbering, the markdown source of every standard section and the drawing QR block all live here. No clause number is ever computed anywhere but VghLantern__Terms__DocumentModel__.js, and no clause text is ever held in JS.",
+
+        "VghLantern__Terms__Config__Document": {
+            "DocumentTitle"             : "Terms and Conditions",
+            "IntroductionText"          : "The following terms and conditions form part of our quotation and apply to any order placed with us. Please read them in full.",
+            "EmptyStateMessage"         : "Every terms section is switched off, so no terms document will be issued.",
+            "LibraryFailureMessage"     : "The standard terms library could not be loaded. The terms document cannot be issued until it is available.",
+
+            "ReviewNoticeEnabled"       : true,
+            "ReviewNoticeHeading"       : "Note on the status of these terms",
+            "ReviewNoticeText"          : "These terms and conditions have not yet been reviewed or approved by Vale Garden Houses' legal advisers. They are issued as a working draft to describe the intended basis of any order, and should not be relied upon as final contract wording. Approved terms will be issued before an order is confirmed.",
+            "ReviewNoticeNote"          : "One notice at the end of the terms document, printed in the critical colour, replacing what used to be a per-clause marker on every clause. Forty-four red markers made the document unreadable and buried the point; one statement at the end makes it once, clearly. Set ReviewNoticeEnabled to false when the library has been approved - that is the whole switch, and it also stops the Preview and Send warning that accompanies it.",
+            "LibraryBasePath"           : "02__Src__AppModules/38__System__TermsAndConditions/Na__Terms__Library/",
+            "LibraryBasePathNote"       : "Relative to the application root. The loader appends the SourceFile named on each section below."
+        },
+
+        "VghLantern__Terms__Config__Numbering": {
+            "NumberFormat"              : "{section}.{term}",
+            "NumberFormatNote"          : "Tokens are {section} and {term}. The section number is fixed per section in the Sections table below and never moves. The term number is the one-based position within that section's terms.",
+            "TermNumberPadding"         : 2,
+            "TermNumberPaddingNote"     : "Zero padding width for the term half of the number, so a section's clauses sort and align as 4.01 through 4.12 rather than 4.1 through 4.12.",
+            "SectionNumberPadding"      : 0,
+            "SectionNumberPaddingNote"  : "Zero padding width for the section half. Zero means no padding, giving 4.08 rather than 04.08."
+        },
+
+        "VghLantern__Terms__Config__Sections": [
+            {
+                "Key"           : "critical",
+                "Number"        : 1,
+                "Label"         : "Critical Project Terms",
+                "Source"        : "project:critical",
+                "IsCritical"    : true,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "hide",
+                "Description"   : "Project-specific terms the reader must not miss. Printed in the critical colour. Authored per project in the Client Doc tab, never from the library."
+            },
+            {
+                "Key"           : "special",
+                "Number"        : 2,
+                "Label"         : "Special Project Terms",
+                "Source"        : "project:special",
+                "IsCritical"    : false,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "hide",
+                "Description"   : "Project-specific terms that vary the standard terms below. Authored per project in the Client Doc tab."
+            },
+            {
+                "Key"           : "general",
+                "Number"        : 3,
+                "Label"         : "General Terms and Legal Clarifications",
+                "Source"        : "library",
+                "SourceFile"    : "Na__Terms__01__GeneralAndLegal__.md",
+                "IsCritical"    : false,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "warn"
+            },
+            {
+                "Key"           : "payment",
+                "Number"        : 4,
+                "Label"         : "Payment Terms",
+                "Source"        : "library",
+                "SourceFile"    : "Na__Terms__02__Payment__.md",
+                "IsCritical"    : false,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "warn"
+            },
+            {
+                "Key"           : "access",
+                "Number"        : 5,
+                "Label"         : "Access to Site Terms",
+                "Source"        : "library",
+                "SourceFile"    : "Na__Terms__03__SiteAccess__.md",
+                "IsCritical"    : false,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "warn"
+            },
+            {
+                "Key"           : "upstand",
+                "Number"        : 6,
+                "Label"         : "Builders Upstand Terms",
+                "Source"        : "library",
+                "SourceFile"    : "Na__Terms__04__BuildersUpstand__.md",
+                "IsCritical"    : false,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "warn"
+            }
+        ],
+        "VghLantern__Terms__Config__SectionsNote": "Number is FIXED and is what makes a clause citable. Never renumber a section to close a gap - a section switched off simply does not print, and the sections around it keep their numbers so a term quoted on a previous document still means the same clause. Source is either 'project:critical', 'project:special' or 'library' with a SourceFile. EmptyBehaviour 'hide' drops an empty section silently (a project with no special terms is normal); 'warn' raises a Preview and Send warning because an empty standard section means a missing or unreadable markdown file.",
+
+        "VghLantern__Terms__Config__Style": {
+            "SectionHeadingFontSizePt"  : 11,
+            "TermNumberFontSizePt"      : 8.5,
+            "TermBodyFontSizePt"        : 8.5,
+            "IntroductionFontSizePt"    : 9,
+            "LineSpacing"               : 1.35,
+            "SectionGapMm"              : 5,
+            "TermGapMm"                 : 1.8,
+            "NumberColumnWidthMm"       : 13,
+            "NumberColumnWidthMmNote"   : "Width reserved at the left for the clause number. The term body is indented by this much so wrapped lines align under the first line rather than under the number.",
+            "HeadingColour"             : "#172b3a",
+            "BodyTextColour"            : "#1e1e1e",
+            "NumberColour"              : "#6c757d",
+            "CriticalTermColour"        : "#d32f2f",
+            "CriticalTermColourNote"    : "Matches --VghLantern_ErrorRed and the UserWarningColour used for staff-authored specification warnings. Critical terms and the closing review notice both print in it.",
+            "ReviewNoticeGapMm"         : 7,
+            "ReviewNoticeGapMmNote"     : "Space above the closing notice, wider than the gap between sections so the notice reads as separate from the terms rather than as a seventh section."
+        },
+
+        "VghLantern__Terms__Config__DrawingQrBlock": {
+            "Enabled"                   : true,
+            "BlockNote"                 : "The terms cell is the right-hand cell of the titleblock strip, mirroring the logo cell at the left-hand end. It is not a separate box: it is the same height as the strip, it uses the strip's own label and value type sizes, and it is divided from the fields by the same rule as every other cell. The QR square sits inside it at the strip's height.",
+
+            "HeadingText"               : "Drawing Terms",
+            "BodyText"                  : "Scan the code or see your document pack for the full terms, limitations and omissions applying to this drawing.",
+            "TextNote"                  : "The heading prints bold in the ink colour and the body prints lighter and muted beneath it, wrapped over up to BodyMaxLines lines. This cell inverts the caption-over-value rhythm the other titleblock cells use, deliberately: the other cells caption a value the reader is looking for, whereas this one is telling them to go and read something, so the instruction leads.",
+
+            "HeadingFontSizeMm"         : 2.0,
+            "BodyFontSizeMm"            : 1.3,
+            "BodyLineSpacing"           : 1.22,
+            "BodyMaxLines"              : 3,
+            "BodyMaxLinesNote"          : "Wrapping stops here rather than overflowing the strip. At the default cell width and titleblock height three lines is what fits; shorten BodyText rather than raising this unless the titleblock has also grown.",
+            "CellPaddingVMm"            : 1.1,
+
+            "TermsQrBaseUrl"            : "http://localhost:8006/VghLantern__App__.html",
+            "TermsQrBaseUrlNote"        : "PLACEHOLDER ADDRESS. This is the localhost development link so the code is scannable and testable today. Replace it with the hosted Vale client terms URL when the online portal exists. Changing this one key is the whole migration - no JS anywhere knows the address.",
+            "TermsQrQueryPattern"       : "?doc=terms&project={projectCode}",
+            "TermsQrQueryPatternNote"   : "Tokens: projectCode. VghLantern__Terms__QrLink__.js both builds this and reads it back on inbound navigation, so the link the code encodes and the link the app answers cannot drift.",
+
+            "CellWidthMm"               : 52,
+            "CellWidthMmNote"           : "Relative share of the titleblock strip is not used here: this cell is an absolute width taken off the right-hand end, and the flexible field cells divide what is left. That keeps the QR square a fixed printed size whatever paper the sheet is on.",
+            "CellPaddingHMm"            : 1.4,
+            "QrPaddingMm"               : 0.6,
+            "QrPaddingMmNote"           : "Inset above and below the code inside the strip. The printed QR edge length is the titleblock height less twice this, so the code is exactly as tall as the strip it sits in and nothing about it needs a second dimension to stay in step.",
+            "QrQuietZoneModules"        : 2,
+            "QrQuietZoneModulesNote"    : "Light margin around the symbol in modules. ISO/IEC 18004 asks for 4; 2 is used here because the cell's own white ground and the rule beside it already give the scanner most of that margin, and at this printed size every module counts.",
+            "QrDarkColour"              : "#172b3a",
+            "QrLightColour"             : "#ffffff",
+
+            "QrScanSizeNote"            : "SIZE WARNING. At the default 10 mm titleblock height the code prints about 8.8 mm square. A version 5 symbol (37 modules, which is what a project code in the default localhost URL produces) then has a 0.24 mm module, which is below what most phone cameras resolve reliably from a printed A3 sheet. Two levers, either of which fixes it without changing any code: raise Sheet.TitleBlockHeightMm in Na__DrawingEditor__Config.json from 10 to about 16, or shorten TermsQrBaseUrl. The hosted terms URL is expected to be far shorter than the development one, which on its own drops the symbol to version 2 or 3 and roughly doubles the module size."
+        }
+    }
+}

@@ -49,6 +49,12 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
     const CSS_ITEM_ERROR    =  'VghLantern__DocPreview__IssueItem--error';
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Config Label
+    // ------------------------------------------------------------
+    const ISSUES_LABEL      =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -104,7 +110,6 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
         }
 
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var ISSUES_LABEL  =  'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues';
 
         var project  =  StateManager.VghLantern__StateManager__GetCurrentProject();
         if (!project) {
@@ -138,8 +143,10 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
 
         var hasDrawing  =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesDrawingPage();
         var hasSpec     =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesSpecificationPage();
+        var hasLetter   =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter();
+        var hasTerms    =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesTermsPages();
 
-        if (!hasDrawing && !hasSpec) {
+        if (!hasDrawing && !hasSpec && !hasLetter && !hasTerms) {
             var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             return [VghLantern__DocIssue__Make(SEVERITY_ERROR, ConfigLoader.VghLantern__ConfigLoader__RequireString(
                 messages, 'EmptySelectionMessage', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues'))];
@@ -171,6 +178,87 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Collect Issues Raised by the Welcome Letter
+    // ------------------------------------------------------------
+    // Only when the letter is actually being issued. A project whose letter has never
+    // been opened is not a problem until someone tries to send it.
+    function VghLantern__DocIssue__CollectLetterIssues(messages) {
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var LetterModel    =  window.VghLantern__ClientDoc__LetterModel;
+        if (!DocumentState || !LetterModel) return [];
+        if (!DocumentState.VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter()) return [];
+
+        var letter  =  LetterModel.VghLantern__ClientDoc__LetterModel__BuildFromState();
+        if (!letter) return [];
+
+        var issues  =  [];
+
+        if (letter.Issues.IsEmpty) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'LetterEmptyMessage', ISSUES_LABEL)));
+        }
+        if (letter.Issues.IsUnsigned) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'LetterUnsignedMessage', ISSUES_LABEL)));
+        }
+        if (letter.Issues.UnresolvedTokens.length) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'UnresolvedTokenMessage', ISSUES_LABEL)
+                    .replace('{tokens}', letter.Issues.UnresolvedTokens.join(', '))));
+        }
+
+        return issues;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Collect Issues Raised by the Terms Document
+    // ------------------------------------------------------------
+    // A library file that could not be read is an ERROR: issuing a quotation whose
+    // payment terms silently did not print is exactly the failure the terms exist to
+    // prevent. Terms that have not been through legal review are a WARNING, so a
+    // quotation can still be produced while the wording is being settled.
+    function VghLantern__DocIssue__CollectTermsIssues(messages) {
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var TermsModel     =  window.VghLantern__Terms__DocumentModel;
+        if (!DocumentState || !TermsModel) return [];
+        if (!DocumentState.VghLantern__DocPreview__DocumentState__IncludesTermsPages()) return [];
+
+        var model  =  TermsModel.VghLantern__Terms__DocumentModel__BuildFromState();
+        if (!model) return [];
+
+        var issues  =  [];
+
+        if (model.Issues.FailedSections.length) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_ERROR,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'TermsLibraryFailedMessage', ISSUES_LABEL) +
+                ' Missing: ' + model.Issues.FailedSections.join(', ') + '.'));
+        }
+
+        if (model.Issues.IsUnreviewed) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'TermsUnreviewedMessage', ISSUES_LABEL)));
+        }
+
+        if (model.Issues.EmptySections.length) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                'These terms sections are switched on but contain nothing: ' +
+                model.Issues.EmptySections.join(', ') + '.'));
+        }
+
+        if (model.Issues.UnresolvedTokens.length) {
+            issues.push(VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'UnresolvedTokenMessage', ISSUES_LABEL)
+                    .replace('{tokens}', model.Issues.UnresolvedTokens.join(', '))));
+        }
+
+        return issues;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Collect Every Issue Affecting This Document
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocIssueHandler__Collect() {
@@ -184,7 +272,9 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
         if (!hasBlockingStateIssue) {
             issues  =  issues
                 .concat(VghLantern__DocIssue__CollectSelectionIssues(messages))
-                .concat(VghLantern__DocIssue__CollectSpecificationIssues());
+                .concat(VghLantern__DocIssue__CollectSpecificationIssues())
+                .concat(VghLantern__DocIssue__CollectLetterIssues(messages))
+                .concat(VghLantern__DocIssue__CollectTermsIssues(messages));
         }
 
         return issues;

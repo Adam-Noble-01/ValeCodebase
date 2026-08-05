@@ -43,9 +43,11 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // this module had to know the Drawing Editor's slot keys and the preview had to
     // filter the sheet as it rebuilt it. The sheet is now baked whole, so which views
     // it carries is decided where the sheet is composed.
+    const LETTER_KEYS        =  ['ShowWelcomeLetter'];
     const DRAWING_VIEW_KEYS  =  ['ShowDrawingSheet'];
     const DOCUMENT_KEYS      =  ['ShowTakeoffSchedule', 'ShowComponentSchedule', 'ShowJobNotes'];
-    const ALL_TOGGLE_KEYS    =  DRAWING_VIEW_KEYS.concat(DOCUMENT_KEYS);
+    const TERMS_KEYS         =  ['ShowTermsPages'];
+    const ALL_TOGGLE_KEYS    =  LETTER_KEYS.concat(DRAWING_VIEW_KEYS, DOCUMENT_KEYS, TERMS_KEYS);
     // ------------------------------------------------------------
 
 
@@ -259,6 +261,25 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Report Whether the Welcome Letter Page Should Be Included
+    // ------------------------------------------------------------
+    function VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter() {
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowWelcomeLetter;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Report Whether the Terms Pages Should Be Included
+    // ------------------------------------------------------------
+    // The page-level switch only. Whether any terms SURVIVE that switch is the terms
+    // document model's answer, because which sections are on is a project decision
+    // rather than a per-user preference.
+    function VghLantern__DocPreview__DocumentState__IncludesTermsPages() {
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowTermsPages;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Report Whether Any Specification Content Is Included
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocumentState__IncludesSpecificationPage() {
@@ -336,24 +357,35 @@ const VghLantern__DocPreview__DocumentState = (function() {
 
     // FUNCTION | List Enabled Page Kinds in Config Order
     // ------------------------------------------------------------
-    // Returns 'specification' and/or 'drawing' only when that page has content.
-    // Order comes from Config__Page.PageOrder so preview and PDF cannot diverge.
+    // Returns only the kinds that are switched on AND have content. Order comes from
+    // Config__Page.PageOrder so preview and PDF cannot diverge, and an unknown kind in
+    // that array is skipped with a warning rather than silently producing nothing.
     function VghLantern__DocPreview__DocumentState__ListPageKinds() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var pageCfg  =  VghLantern__DocumentState__PageConfig();
-        var order    =  Array.isArray(pageCfg.PageOrder) && pageCfg.PageOrder.length
-            ? pageCfg.PageOrder.slice()
-            : ['specification', 'drawing'];
+        var order    =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            pageCfg, 'PageOrder', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page');
+
+        var includes  =  {
+            welcomeLetter : VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter,
+            drawing       : VghLantern__DocPreview__DocumentState__IncludesDrawingPage,
+            specification : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,
+            terms         : VghLantern__DocPreview__DocumentState__IncludesTermsPages
+        };
 
         var kinds  =  [];
         var i, kind;
 
         for (i = 0; i < order.length; i++) {
             kind  =  order[i];
-            if (kind === 'specification' && VghLantern__DocPreview__DocumentState__IncludesSpecificationPage()) {
-                kinds.push('specification');
-            } else if (kind === 'drawing' && VghLantern__DocPreview__DocumentState__IncludesDrawingPage()) {
-                kinds.push('drawing');
+
+            if (!includes[kind]) {
+                console.warn('[VghLantern__DocPreview__DocumentState] Unknown page kind "' + kind +
+                    '" in PageOrder. Known kinds are: ' + Object.keys(includes).join(', ') + '.');
+                continue;
             }
+
+            if (includes[kind]()) kinds.push(kind);
         }
 
         return kinds;
@@ -377,11 +409,16 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
+        LETTER_KEYS                                                  : LETTER_KEYS,
         DRAWING_VIEW_KEYS                                            : DRAWING_VIEW_KEYS,
         DOCUMENT_KEYS                                                : DOCUMENT_KEYS,
+        TERMS_KEYS                                                   : TERMS_KEYS,
+        ALL_TOGGLE_KEYS                                              : ALL_TOGGLE_KEYS,
         VghLantern__DocPreview__DocumentState__GetViewState           : VghLantern__DocPreview__DocumentState__GetViewState,
         VghLantern__DocPreview__DocumentState__SetViewStatePartial    : VghLantern__DocPreview__DocumentState__SetViewStatePartial,
         VghLantern__DocPreview__DocumentState__IncludesDrawingPage    : VghLantern__DocPreview__DocumentState__IncludesDrawingPage,
+        VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter  : VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter,
+        VghLantern__DocPreview__DocumentState__IncludesTermsPages     : VghLantern__DocPreview__DocumentState__IncludesTermsPages,
         VghLantern__DocPreview__DocumentState__IncludesSpecificationPage : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,
         VghLantern__DocPreview__DocumentState__ListPageKinds          : VghLantern__DocPreview__DocumentState__ListPageKinds,
         VghLantern__DocPreview__DocumentState__SetPaperSize           : VghLantern__DocPreview__DocumentState__SetPaperSize,

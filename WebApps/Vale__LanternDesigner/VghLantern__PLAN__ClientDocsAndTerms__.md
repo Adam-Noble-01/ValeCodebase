@@ -102,7 +102,8 @@ your screenshot, concatenated with any project job notes.
 | Terms numbering | Fixed section index from config, live renumber within a section. `1.01` is always a Critical term, `4.08` is always a Payment term. Toggling a section off does not renumber the others. |
 | Editing surface | Block editor, one plain-text auto-growing textarea per paragraph / term, with add, delete, drag-reorder and per-block reset to template. No markdown parsing in the editor. |
 | QR target | A working deep link. `{BaseUrl}?doc=terms&project={code}`. The app reads the query at boot and opens the Client Doc tab on the terms. `BaseUrl` is one JSON key, clearly marked as a placeholder. |
-| Nav position | Projects / Lantern Editor / 3D View / Drawing Editor / Specification / **Client Doc** / Preview & Send. |
+| Nav position | Projects / Lantern Editor / 3D View / Drawing Editor / Specification / **Client Doc** / Preview & Send. The tab sits immediately before Preview & Send. |
+| Document page order | Independent of the tab position, and exactly as briefed: **1 Welcome Letter, 2 Drawing, 3 Specification, 4 Special Terms, 5 General Terms.** Special terms lead the terms document because critical and special are the project's own; the standard library sections follow. |
 
 ---
 
@@ -239,6 +240,9 @@ Tokens available in both the letter and the terms markdown:
 An unresolved token renders as an empty string and raises a Preview & Send warning naming the token,
 rather than printing `{{ProjectAddress}}` on a document that goes to a client.
 
+`{{Vale-Legal-Team-To-Confirm}}` is a **reserved token** and is the one exception: it is never
+resolved away. See section 6.3.
+
 ### 4.3 The terms markdown library
 
 Deliberately minimal so the files are genuinely easy to edit:
@@ -247,12 +251,21 @@ Deliberately minimal so the files are genuinely easy to edit:
 # Payment Terms
 
 > Editor note lines start with a chevron and are never printed.
+> Every clause below states its subject only. Vale's legal team supplies the wording.
 
-A deposit of 50 percent of the total order value is payable on order confirmation.
+Deposit percentage and the point at which it becomes payable. {{Vale-Legal-Team-To-Confirm}}
 
-The balance is payable prior to despatch from our works. Goods remain the property of
-Vale Garden Houses Limited until payment has been received in full.
+Balance payment trigger, whether that is despatch from works, delivery to site or
+practical completion of the installation. {{Vale-Legal-Team-To-Confirm}}
+
+Retention of title until payment is received in full. {{Vale-Legal-Team-To-Confirm}}
+
+Interest and recovery costs on late payment. {{Vale-Legal-Team-To-Confirm}}
 ```
+
+**No invented legal wording.** Each clause is a one-line statement of the subject the clause must
+cover, followed by the reserved token. Nothing in the library reads as finished legal text, so
+nothing can be mistaken for it. See section 6.3 for how the token behaves.
 
 Rules:
 1. The first `# ` line is the file's own title. Informational only; the config `Label` is what prints.
@@ -300,6 +313,19 @@ in both the preview and the PDF, using the same colour-override path
 ```json
 "PageOrder" : ["welcomeLetter", "drawing", "specification", "terms"]
 ```
+
+Which gives exactly the briefed running order:
+
+| # | Page | Kind | Paper |
+|---|---|---|---|
+| 1 | Welcome Letter | `welcomeLetter` | A4 portrait, flows |
+| 2 | Drawing | `drawingSheet` | A3 landscape (whatever the Drawing Editor is set to) |
+| 3 | Specification | `specification` | A4 portrait, flows |
+| 4 | Critical then Special Terms | `terms` | A4 portrait, flows |
+| 5 | General, Payment, Access, Upstand Terms | `terms` | continues the same flow |
+
+Pages 4 and 5 are one flowing `terms` descriptor, not two, because they are one continuously
+numbered document. The section order inside it puts the project's own terms first.
 
 > **Note this reverses the current default.** Today spec comes before the drawing. Your brief puts
 > the drawing at 2 and the spec at 3, so the default changes. It is one JSON array.
@@ -474,11 +500,19 @@ after `SyncFromServer()` has populated the cache:
 | `VghLantern__DocPreview__PdfExporter__.js` | Build the `welcomeLetter` and `terms` page descriptors. |
 | `VghLantern__DocPreview__DocIssueHandler__.js` | Errors for a failed terms library load, warnings for unresolved tokens and an empty letter. |
 | `Na__DocPreview__Config.json` | New `PageOrder`, new toggle defaults and labels. |
-| `Na__DrawingEditor__Config.json` | `GeneralNotes` emptied, new `TitleBlock.TermsCallout` block. |
-| `VghLantern__DrawingEditor__SheetPdfLayout__.js` | Solve the `TermsCallout` rectangle, shorten the titleblock, raise the grid bottom. |
-| `VghLantern__DrawingEditor__SheetChrome__.js` | `KIND_QR` primitive plus SVG and PDF renderers, `BuildTermsCallout`. |
+| `Na__DrawingEditor__Config.json` | `Config__Annotations` block deleted whole. `SheetStyle.NotesTitleWeight`, `NotesTitleTrackingMm`, `NotesTitleUppercase` and `NoteWeight` deleted. New `TitleBlock.TermsCallout` block. |
+| `VghLantern__DrawingEditor__SheetPdfLayout__.js` | Remove `MeasureNotes`, the `Notes` rectangle, the `noteCount` parameter, the `NoteMm` / `LineSpacing` font entries and the Notes line in the layout-shape header comment. Solve the `TermsCallout` rectangle, shorten the titleblock, take the grid bottom from `min(titleBlock.Y, termsCallout.Y)`. |
+| `VghLantern__DrawingEditor__SheetChrome__.js` | Remove `BuildNotes`, the `Notes` context key, the `AnnotationLayer` lookup in `BuildForSheet` and the four note style keys. Add `KIND_QR` plus its SVG and PDF renderers, and `BuildTermsCallout`. |
+| `VghLantern__DrawingEditor__SheetManager__.js` | Remove the note-count helper and the `noteCount` argument to `Solve`. |
 | `Na__ServiceWorker__VghLantern.js` | `.md` added to the network-first data pattern so an edited terms file is never shadowed by cache, for the same reason JSON already is. Cache version token bumped. |
 | `VghLantern__DEVLOG__.md` | `v0.5.0` entry. |
+
+### 5.2b Deleted files (1)
+
+```
+02__Src__AppModules/30__System__DrawingEditorMode/
+  VghLantern__DrawingEditor__AnnotationLayer__.js     <-- plus its script tag in VghLantern__App__.html
+```
 
 ### 5.3 Project file schema addition
 
@@ -520,34 +554,40 @@ is the last one in.
 
 ---
 
-## 6. Things I want you to rule on
+## 6. Rulings received
 
-### 6.1 The notes block on the drawing
+### 6.1 The notes block on the drawing - RIP OUT
 
-You said to remove the basic terms. I am emptying `GeneralNotes` to `[]` rather than deleting the
-notes block machinery, because that same block also prints **project job notes** typed in the
-Specification tab, which are genuinely useful on a drawing (access, sequencing, site constraints).
-With the array empty and no job notes on the project, no notes block renders at all, which is the
-outcome in your marked-up image.
+Removed entirely, not emptied. The whole `AnnotationLayer` module, the `Notes` rectangle in
+`SheetPdfLayout`, `BuildNotes` in `SheetChrome`, the `Config__Annotations` config block and the four
+orphaned `SheetStyle` note keys all go. Removal list in section 5.2, deleted file in section 5.2b.
 
-If you would rather the sheet never carried a notes block again, say so and I will remove it from
-the layout, the chrome and the config entirely.
+Job notes survive. They are stored on `GlobalSettings.JobNotes`, edited in the Specification tab and
+printed on the specification document under the existing `ShowJobNotes` toggle. That path is not
+touched.
 
-### 6.2 Footer on the letter page
+### 6.2 Footer on the letter page - KEEP
 
-The PDF writer skips the footer on `drawingSheet` only. The welcome letter will currently get
-`Vale Garden Houses Limited ... Page 1 of 7`. A letter usually does not carry one, but consistent
-pagination across an issued bundle has its own value. Suppressing it is adding `"welcomeLetter"` to
-one config array. Tell me which you want and I will set it that way from the start.
+The welcome letter and the terms pages both carry the standard footer and count toward
+`Page {n} of {total}`. `SkipOnPageKinds` stays `["drawingSheet"]`.
 
-### 6.3 Terms content
+### 6.3 Terms content - SUBJECT NOTES PLUS RESERVED TOKEN
 
-I will write the four markdown files with sensible, professionally worded placeholder clauses for a
-bespoke hardwood roof lantern manufacturer: deposit and balance, title retention, lead times,
-survey responsibility, access and hard-standing, upstand tolerance and squareness, condensation and
-timber movement, and so on. **They are placeholders, not legal advice**, and every file will carry a
-chevron editor note at the top saying so. Assume Vale's own wording replaces them before anything is
-issued to a client.
+No invented legal wording anywhere. Each clause in the four markdown files is a one-line statement
+of what the clause must cover, followed by `{{Vale-Legal-Team-To-Confirm}}`.
+
+The token is handled as a **reserved token** by `DocumentTokens`:
+
+- It is never substituted or blanked. It prints literally, in the critical-term red
+  (`#d32f2f`), on screen and in the PDF, so an unfinished clause is impossible to miss on a page.
+- Every occurrence raises a Preview & Send **warning** (not an error) listing the clause numbers
+  that still carry it, for example: `Terms 3.02, 3.07, 4.01 and 6 others await Vale legal wording.`
+- It is a warning rather than a blocking error so the document is still previewable and exportable
+  as an internal draft while the wording is being written. Making it blocking later is one entry in
+  `Config__Issues.BlockExportOnError`, and the config key carries a note saying so.
+
+Once Vale's legal team supplies wording, replacing a clause is editing one paragraph in one `.md`
+file and deleting the token. The warning count falls to zero on its own.
 
 ### 6.4 Scope I am not building
 
@@ -562,9 +602,19 @@ Not in this pass, flag them if you want them added:
 
 ## 7. Estimate
 
-Roughly 3,100 lines of new JS, 480 lines of JSON config, 260 lines of CSS, and around 200 lines of
-markdown terms content, plus about 340 lines of changes across the 16 modified files. The QR
-encoder is the single largest new file at roughly 380 lines.
+Roughly 3,100 lines of new JS, 470 lines of JSON config, 260 lines of CSS, and around 160 lines of
+markdown terms content, plus about 400 lines of changes across the 17 modified files and one
+deletion. The QR encoder is the single largest new file at roughly 380 lines.
+
+---
+
+## 8. Revision history of this plan
+
+| Rev | Change |
+|---|---|
+| A | First issue. |
+| B | Notes block ripped out entirely rather than emptied (6.1). Footer kept on the letter and terms pages (6.2). Terms markdown becomes subject notes plus the reserved `{{Vale-Legal-Team-To-Confirm}}` token, no invented legal wording (6.3). Document page order table added to 4.5, confirming tab position and page order are independent. |
+| C | **Built. Three changes made during the build, all from review of the running app.** (1) The terms block is no longer a separate taller box above the titleblock, as drawn in 4.7. It is the right-hand CELL of the titleblock strip, mirroring the logo cell: same height, same label and value type, same baselines, same dividing rule. The QR is exactly as tall as the strip allows. `SheetPdfLayout` therefore no longer solves a `TermsCallout` rectangle at all - the titleblock keeps its full width and the cell is solved inside it by `SheetChrome`, alongside the logo cell. (2) The placeholder notice line under the code is gone; the placeholder status is recorded in config notes and the DEVLOG instead. (3) **New module not in this plan: `VghLantern__DocPreview__FlowPaginator__.js`.** The preview was putting a whole flowing document in one page shell and letting it overflow the paper. It now measures and cuts flowing bodies into real pages, so the terms document breaks where the PDF breaks and the on-screen footer can print the same "Page 2 of 7" the file will. This fixes the specification pages too, which had the same latent bug. |
 
 ---
 

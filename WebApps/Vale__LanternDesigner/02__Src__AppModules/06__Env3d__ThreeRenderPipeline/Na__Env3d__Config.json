@@ -145,14 +145,14 @@
 
             "LinePatternsMm": {
                 "solid"                       : [],
-                "dotted"                      : [6, 10],
+                "dotted"                      : [12, 20],
                 "dashed"                      : [40, 22],
                 "dashDot"                     : [48, 16, 4, 16]
             },
             "LinePatternsNote"                : "Alternating ON and OFF lengths in real millimetres, always starting ON. Patterns are stamped into geometry as discrete segments rather than shaded, which is the only way to get a true dash-dot and avoids the vendored line material's unfinished dash handling entirely. Because the lengths are in model millimetres they scale with the lantern, exactly as drawn linework does.",
 
             "LineStyles": {
-                "Centreline__GlazeBar"        : { "Colour": "#8e44c8", "WidthPx": 2.0, "Pattern": "solid",   "Label": "Glaze Bar Centre Lines" },
+                "Centreline__GlazeBar"        : { "Colour": "#8e44c8", "WidthPx": 2.0, "Pattern": "dotted",  "Label": "Glaze Bar Centre Lines" },
                 "Centreline__Transom"         : { "Colour": "#a06bd4", "WidthPx": 2.0, "Pattern": "solid",   "Label": "Transom Centre Lines" },
                 "Centreline__Ridge"           : { "Colour": "#7b3fb0", "WidthPx": 2.5, "Pattern": "solid",   "Label": "Ridge Centre Line" },
                 "Centreline__Hip"             : { "Colour": "#7b3fb0", "WidthPx": 2.5, "Pattern": "solid",   "Label": "Hip Centre Lines" },

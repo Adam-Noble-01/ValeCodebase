@@ -105,6 +105,8 @@
         <span class="VghLantern__App__NavSeparator">/</span>
         <button class="VghLantern__App__NavTab VghLantern__App__NavTab--disabled" data-mode="Specification">Specification</button>
         <span class="VghLantern__App__NavSeparator">/</span>
+        <button class="VghLantern__App__NavTab VghLantern__App__NavTab--disabled" data-mode="ClientDocument">Client Doc</button>
+        <span class="VghLantern__App__NavSeparator">/</span>
         <button class="VghLantern__App__NavTab VghLantern__App__NavTab--disabled" data-mode="DocumentPreview">Preview &amp; Send</button>
         <div class="VghLantern__App__NavSpacer"></div>
         <button class="VghLantern__App__NavTab" data-mode="ComponentIndex">Component Index</button>
@@ -189,6 +191,15 @@
 
 
         <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Client Document Mode - Welcome Letter And Terms       -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="VghLantern__App__ModeClientDocument" class="VghLantern__App__ModePanel">
+            <div id="VghLantern__ClientDoc__Container"></div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
         <!-- MODE PANEL | Document Preview Mode - Preview And Send              -->
         <!-- ----------------------------------------------------------------- -->
         <section id="VghLantern__App__ModeDocPreview" class="VghLantern__App__ModePanel">
@@ -240,6 +251,8 @@
     <script src="02__Src__AppModules/03__AppUtils/VghLantern__AppUtils__UnitConverter__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/VghLantern__AppUtils__ProjectSchemaValidator__.js"></script>
     <script src="02__Src__AppModules/03__AppUtils/VghLantern__AppUtils__HotkeyHandler__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/VghLantern__AppUtils__DocumentTokens__.js"></script>
+    <script src="02__Src__AppModules/03__AppUtils/VghLantern__AppUtils__QrEncoder__.js"></script>
 
     <!-- Geometry Engine (the single geometry brain - depends on UnitConverter only) -->
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__RoofPitchCalculator__.js"></script>
@@ -315,7 +328,6 @@
     <!-- description of a drawing sheet in the application and these are it.         -->
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__ScaleManager__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__TitleBlockRenderer__.js"></script>
-    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__AnnotationLayer__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfLayout__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetChrome__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetSurface__.js"></script>
@@ -330,6 +342,31 @@
     <script src="02__Src__AppModules/35__System__SpecificationMode/VghLantern__Specification__ScheduleRenderer__.js"></script>
     <script src="02__Src__AppModules/35__System__SpecificationMode/VghLantern__Specification__JobNotes__.js"></script>
     <script src="02__Src__AppModules/35__System__SpecificationMode/VghLantern__Specification__SectionManager__.js"></script>
+
+    <!-- System: Client Document Mode                                               -->
+    <!-- The welcome letter tab. LetterModel owns the letter as data, BlockEditor is -->
+    <!-- the one editable card the three panels are built from, and the renderer and -->
+    <!-- painter are the letter's two output surfaces. Every cross-module reference  -->
+    <!-- resolves through window at call time, so the numeric order here is for      -->
+    <!-- reading rather than for dependency.                                         -->
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__MarkdownParser__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterModel__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__BlockEditor__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterEditor__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__TermsEditor__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterScreenRenderer__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterPdfPainter__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__Layout__.js"></script>
+
+    <!-- System: Terms And Conditions                                               -->
+    <!-- MarkdownLoader reads the clause library, DocumentModel is the single        -->
+    <!-- numbering authority every surface reads its clause numbers from, and the    -->
+    <!-- renderer and painter draw that one model to screen and to paper.            -->
+    <script src="02__Src__AppModules/38__System__TermsAndConditions/VghLantern__Terms__MarkdownLoader__.js"></script>
+    <script src="02__Src__AppModules/38__System__TermsAndConditions/VghLantern__Terms__DocumentModel__.js"></script>
+    <script src="02__Src__AppModules/38__System__TermsAndConditions/VghLantern__Terms__ScreenRenderer__.js"></script>
+    <script src="02__Src__AppModules/38__System__TermsAndConditions/VghLantern__Terms__PdfPainter__.js"></script>
+    <script src="02__Src__AppModules/38__System__TermsAndConditions/VghLantern__Terms__QrLink__.js"></script>
 
     <!-- PDF Export Library (version-locked, CDN independent) -->
     <script src="04__Src__Dependencies__VersionLocked/05__Vendor__JsPdf__v4.1.0/jspdf.umd.js"></script>
@@ -346,6 +383,7 @@
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__DocumentState__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__DocIssueHandler__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PrintDocumentRenderer__.js"></script>
+    <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__FlowPaginator__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__SpecificationPdfPainter__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PdfExporter__.js"></script>
     <script src="02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PageRenderer__.js"></script>

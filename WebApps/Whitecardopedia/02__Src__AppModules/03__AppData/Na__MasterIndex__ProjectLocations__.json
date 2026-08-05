@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "30-Jul-2026 at 10:43",
+    "generatedAt": "04-Aug-2026 at 18:32",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1949,6 +1949,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "30-Jul-2026 at 10:43"
+        },
+        {
+            "folderId": "2026/64078__Londos",
+            "year": "2026",
+            "projectCode": "64078",
+            "name": "Londos",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "04-Aug-2026 at 18:32"
         }
     ]
 }

@@ -123,6 +123,14 @@
         var defaultMode  =  appSection['VghLantern__Application__Config__DefaultMode'] || ModeManager.MODE_DOC_MANAGEMENT;
         ModeManager.VghLantern__ModeManager__SwitchToMode(defaultMode, false);
 
+        // A scanned drawing QR code lands here. Checked after the default mode is set
+        // so it overrides it, and after the server sync above so the project the link
+        // names is actually in the cache to be found.
+        var TermsQrLink  =  window.VghLantern__Terms__QrLink;
+        if (TermsQrLink && TermsQrLink.VghLantern__Terms__QrLink__HandleInboundLink) {
+            TermsQrLink.VghLantern__Terms__QrLink__HandleInboundLink();
+        }
+
         console.log('[VghLantern__Init] Application ready.');
     }
     // ------------------------------------------------------------
@@ -181,6 +189,11 @@
         var PageRenderer  =  window.VghLantern__DocPreview__PageRenderer;
         if (PageRenderer && PageRenderer.VghLantern__DocPreview__PageRenderer__Init) {
             PageRenderer.VghLantern__DocPreview__PageRenderer__Init();         // <-- Delegated preview toolbar and export buttons
+        }
+
+        var ClientDocLayout  =  window.VghLantern__ClientDoc__Layout;
+        if (ClientDocLayout && ClientDocLayout.VghLantern__ClientDoc__Layout__Init) {
+            ClientDocLayout.VghLantern__ClientDoc__Layout__Init();             // <-- Delegated block card, field and section switch listeners
         }
     }
     // ------------------------------------------------------------
@@ -283,6 +296,13 @@
                 SpecSections.VghLantern__Specification__SectionManager__OnModeExit(); // <-- Flushes a part-typed job note before it is lost
             }
         }
+
+        if (modeId === 'ClientDocument') {
+            var ClientDocLayout  =  window.VghLantern__ClientDoc__Layout;
+            if (ClientDocLayout && ClientDocLayout.VghLantern__ClientDoc__Layout__OnModeExit) {
+                ClientDocLayout.VghLantern__ClientDoc__Layout__OnModeExit();    // <-- Flushes a part-typed letter paragraph or term
+            }
+        }
     }
     // ------------------------------------------------------------
 
@@ -300,6 +320,7 @@
         if (modeId === 'Viewport3d')      await VghLantern__AppCore__RenderViewport3d();
         if (modeId === 'DrawingEditor')   await VghLantern__AppCore__RenderDrawingEditor();
         if (modeId === 'Specification')   VghLantern__AppCore__RenderSpecification();
+        if (modeId === 'ClientDocument')  await VghLantern__AppCore__RenderClientDocument();
         if (modeId === 'DocumentPreview') await VghLantern__AppCore__RenderDocumentPreview();
         if (modeId === 'ComponentIndex')  VghLantern__AppCore__RenderComponentIndex();
     }
@@ -369,6 +390,20 @@
 
         if (SectionManager && SectionManager.VghLantern__Specification__SectionManager__Render) SectionManager.VghLantern__Specification__SectionManager__Render();
         if (JobNotes && JobNotes.VghLantern__Specification__JobNotes__Render) JobNotes.VghLantern__Specification__JobNotes__Render();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Client Document Mode
+    // ------------------------------------------------------------
+    // Awaited because the render fetches the terms markdown library before its first
+    // paint, so the section switches report real clause counts on the way in rather
+    // than reading zero and correcting themselves a moment later.
+    async function VghLantern__AppCore__RenderClientDocument() {
+        var Layout  =  window.VghLantern__ClientDoc__Layout;
+        if (Layout && Layout.VghLantern__ClientDoc__Layout__Render) {
+            await Layout.VghLantern__ClientDoc__Layout__Render();
+        }
     }
     // ------------------------------------------------------------
 

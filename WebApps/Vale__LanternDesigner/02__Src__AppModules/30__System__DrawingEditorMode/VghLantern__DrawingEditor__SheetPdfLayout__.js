@@ -36,15 +36,16 @@
 
    RETURNED LAYOUT SHAPE:
 
-     Page        { WidthMm, HeightMm, Orientation, SizeKey, Label }
-     Content     { X, Y, WidthMm, HeightMm }          inside the sheet margins
-     Grid        { X, Y, WidthMm, HeightMm, GutterMm, Columns, Rows,
-                   ColumnTracks, RowTracks }         tracks are { OffsetMm, SizeMm }
-     Notes       { X, Y, WidthMm, HeightMm, Columns, ... } or null when empty
-     TitleBlock  { X, Y, WidthMm, HeightMm }
-     Slots       [ { Slot, Frame, Label, Body } ]     one entry per configured slot
-     Fonts       { ... }                              millimetre type sizes
-     LabelMm     caption strip height
+     Page         { WidthMm, HeightMm, Orientation, SizeKey, Label }
+     Content      { X, Y, WidthMm, HeightMm }         inside the sheet margins
+     Grid         { X, Y, WidthMm, HeightMm, GutterMm, Columns, Rows,
+                    ColumnTracks, RowTracks }        tracks are { OffsetMm, SizeMm }
+     TitleBlock   { X, Y, WidthMm, HeightMm }         full content width; the logo
+                                                      and terms cells are solved
+                                                      inside it by SheetChrome
+     Slots        [ { Slot, Frame, Label, Body } ]    one entry per configured slot
+     Fonts        { ... }                             millimetre type sizes
+     LabelMm      caption strip height
      ScreenPixelsPerMm                                screen scaling only
 
    ============================================================================= */
@@ -124,17 +125,17 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
     // ------------------------------------------------------------
     // Sizes are millimetres because the whole page is millimetres; the exporter
     // converts to points at the moment it talks to jsPDF and nowhere else.
+    // The terms cell has no type sizes of its own: it is a titleblock cell and uses
+    // the strip's own label and value sizes, which is most of what makes it read as
+    // part of the titleblock rather than as a box parked next to it.
     function VghLantern__SheetPdfLayout__ResolveFonts() {
         var gridCfg   =  VghLantern__SheetPdfLayout__Block('ViewGrid');
-        var notesCfg  =  VghLantern__SheetPdfLayout__Block('Annotations');
         var titleCfg  =  VghLantern__SheetPdfLayout__Block('TitleBlock');
 
         return {
             FrameLabelMm : VghLantern__SheetPdfLayout__Number(gridCfg,  'FrameLabelFontSizeMm'),
-            NoteMm       : VghLantern__SheetPdfLayout__Number(notesCfg, 'DefaultFontSizeMm'),
             TitleLabelMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeLabelMm'),
-            TitleValueMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeValueMm'),
-            LineSpacing  : VghLantern__SheetPdfLayout__Number(notesCfg, 'LineSpacing')
+            TitleValueMm : VghLantern__SheetPdfLayout__Number(titleCfg, 'FontSizeValueMm')
         };
     }
     // ------------------------------------------------------------
@@ -146,50 +147,6 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
         return fontSizeMm * lineSpacing;
     }
     // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Notes Block Measurement
-// -----------------------------------------------------------------------------
-
-    // SUB FUNCTION | Measure the Notes Block for a Given Note Count
-    // ------------------------------------------------------------
-    // Returned before the grid is solved, because the notes block takes its space
-    // off the top of the titleblock and the grid gets whatever is left. Height is
-    // driven by the note count so a long note list never overruns the titleblock.
-    // Screen CellSizeMm and PDF Solve both call this so the reserved band matches.
-    function VghLantern__SheetPdfLayout__MeasureNotes(noteCount, fonts) {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var notesCfg  =  VghLantern__SheetPdfLayout__Block('Annotations');
-        var notesEnabled  =  ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
-            notesCfg, 'Enabled', 'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Annotations');
-        if (!notesEnabled || noteCount <= 0) return null;
-
-        var columns      =  Math.max(1, VghLantern__SheetPdfLayout__Number(notesCfg, 'ColumnCount'));
-        var columnGapMm  =  VghLantern__SheetPdfLayout__Number(notesCfg, 'ColumnGapMm');
-        var lineSpacing  =  VghLantern__SheetPdfLayout__Number(notesCfg, 'LineSpacing');
-        var headingScale =  VghLantern__SheetPdfLayout__Number(notesCfg, 'HeadingScale');
-        var paddingTopMm =  VghLantern__SheetPdfLayout__Number(notesCfg, 'PaddingTopMm');
-        var rows         =  Math.ceil(noteCount / columns);
-        var lineMm       =  VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm(fonts.NoteMm, lineSpacing);
-        var headingMm    =  VghLantern__DrawingEditor__SheetPdfLayout__LineHeightMm(fonts.NoteMm * headingScale, lineSpacing);
-
-        return {
-            Columns      : columns,
-            Rows         : rows,
-            ColumnGapMm  : columnGapMm,
-            LineHeightMm : lineMm,
-            HeadingMm    : headingMm,
-            HeadingScale : headingScale,
-            PaddingTopMm : paddingTopMm,
-            HeightMm     : paddingTopMm + headingMm + (rows * lineMm),
-            Title        : VghLantern__SheetPdfLayout__String(notesCfg, 'NotesBlockTitle')
-        };
-    }
-    // ------------------------------------------------------------
-
 
 // endregion -------------------------------------------------------------------
 
@@ -365,9 +322,10 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
 
     // FUNCTION | Solve the Full Paper Layout for a Sheet
     // ------------------------------------------------------------
-    // noteCount is supplied by the caller because the notes themselves are resolved
-    // by the AnnotationLayer, which owns what a sheet actually prints.
-    function VghLantern__DrawingEditor__SheetPdfLayout__Solve(sheetSize, noteCount) {
+    // A pure function of the paper size and the session grid shares. It used to take
+    // a note count as well, because the notes block grew with the number of notes;
+    // the terms callout that replaced it is the same size on every sheet.
+    function VghLantern__DrawingEditor__SheetPdfLayout__Solve(sheetSize) {
         if (!sheetSize) return null;
 
         var sheetCfg  =  VghLantern__SheetPdfLayout__Block('Sheet');
@@ -386,7 +344,6 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
         var rows     =  Math.max(1, VghLantern__SheetPdfLayout__Number(gridCfg, 'Rows'));
 
         var fonts  =  VghLantern__SheetPdfLayout__ResolveFonts();
-        var notes  =  VghLantern__SheetPdfLayout__MeasureNotes(noteCount, fonts);
 
         var content  =  {
             X        : marginMm,
@@ -395,8 +352,10 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             HeightMm : sheetSize.HeightMm - (marginMm * 2)
         };
 
-        // Bottom up: the titleblock is pinned to the foot of the content area, the
-        // notes sit directly above it, and the view grid takes everything left.
+        // Bottom up: the titleblock strip is pinned to the foot of the content area and
+        // the view grid takes everything above it. The terms cell is a cell WITHIN that
+        // strip, like the logo cell, so it costs the layout no height of its own and is
+        // solved by SheetChrome alongside the other cells rather than reserved here.
         var titleBlock  =  {
             X        : content.X,
             Y        : content.Y + content.HeightMm - titleMm,
@@ -404,27 +363,7 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
             HeightMm : titleMm
         };
 
-        var notesRect  =  null;
-        var gridBottom =  titleBlock.Y - blockGapMm;
-
-        if (notes) {
-            notesRect  =  {
-                X        : content.X,
-                Y        : titleBlock.Y - blockGapMm - notes.HeightMm,
-                WidthMm  : content.WidthMm,
-                HeightMm : notes.HeightMm,
-
-                Columns      : notes.Columns,
-                Rows         : notes.Rows,
-                ColumnGapMm  : notes.ColumnGapMm,
-                LineHeightMm : notes.LineHeightMm,
-                HeadingMm    : notes.HeadingMm,
-                HeadingScale : notes.HeadingScale,
-                PaddingTopMm : notes.PaddingTopMm || 0,
-                Title        : notes.Title
-            };
-            gridBottom  =  notesRect.Y - blockGapMm;
-        }
+        var gridBottom  =  titleBlock.Y - blockGapMm;
 
         var grid  =  {
             X        : content.X,
@@ -448,14 +387,13 @@ const VghLantern__DrawingEditor__SheetPdfLayout = (function() {
                 SizeKey     : sheetSize.Key,
                 Label       : sheetSize.Label
             },
-            Content    : content,
-            Grid       : grid,
-            Notes      : notesRect,
-            TitleBlock : titleBlock,
-            Slots      : slots.Placed,
-            Fonts      : fonts,
-            MarginMm   : marginMm,
-            LabelMm    : labelMm,
+            Content      : content,
+            Grid         : grid,
+            TitleBlock   : titleBlock,
+            Slots        : slots.Placed,
+            Fonts        : fonts,
+            MarginMm     : marginMm,
+            LabelMm      : labelMm,
 
             // Screen-only value, carried on the layout so the Drawing Editor has one
             // place to convert paper millimetres into laid-out pixels.

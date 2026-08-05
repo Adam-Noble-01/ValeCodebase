@@ -1,0 +1,157 @@
+/* =============================================================================
+ * VGHLANTERN - TERMS AND CONDITIONS STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__Terms__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : System - TermsAndConditions - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The terms document as it reads on screen, in the editor and in preview
+ * CREATED    : 04-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Styles the print-faithful terms document produced by
+ *   VghLantern__Terms__ScreenRenderer. The same markup is shown in the Client Doc
+ *   preview column and on the Preview and Send terms pages, so it is styled once.
+ * - The clause number sits in a fixed left column and the body is indented past it,
+ *   which is what the PDF painter does with NumberColumnWidthMm. The two are meant
+ *   to look the same; if one is changed the other must move with it.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Document Shell
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Terms__Document {
+        font-family                    : var(--Vale_FontFamily);
+        color                          : var(--Vale_TextPrimary);
+        line-height                    : 1.45;
+    }
+
+    .VghLantern__Terms__Title {
+        margin                         : 0 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_SubHeading);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__Terms__Introduction {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Sections and Clauses
+ * ----------------------------------------------------------------------------- */
+
+    .VghLantern__Terms__Section {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        break-inside                   : avoid;
+    }
+
+    .VghLantern__Terms__SectionHeading {
+        margin                         : 0 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_Standard);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    /* A critical section is the one thing on the document a reader must not skim
+       past, so the heading takes the error colour and a rule to match. */
+    .VghLantern__Terms__Section--critical .VghLantern__Terms__SectionHeading {
+        color                          : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__Terms__Section--critical {
+        padding                        : var(--Vale_Spacing_Small);
+        background                     : var(--VghLantern_ErrorBackground);
+        border-left                    : 3px solid var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__Terms__ClauseList {
+        margin                         : 0;
+        padding                        : 0;
+        list-style                     : none;
+    }
+
+    /* Grid rather than a list marker, because the number is generated content that
+       has to align with a fixed column in the PDF, not a browser-drawn bullet. */
+    .VghLantern__Terms__Clause {
+        display                        : grid;
+        grid-template-columns          : 13mm 1fr;
+        column-gap                     : 0;
+        margin                         : 0 0 var(--Vale_Spacing_Small) 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        break-inside                   : avoid;
+    }
+
+    .VghLantern__Terms__ClauseNumber {
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_TextSecondary);
+        font-variant-numeric           : tabular-nums;
+    }
+
+    .VghLantern__Terms__ClauseBody {
+        color                          : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__Terms__Clause--critical .VghLantern__Terms__ClauseNumber,
+    .VghLantern__Terms__Clause--critical .VghLantern__Terms__ClauseBody {
+        color                          : var(--VghLantern_ErrorRed);
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Closing Review Notice and Failure Notices
+ * ----------------------------------------------------------------------------- */
+
+    /* The one statement, at the end, that these terms have not been through legal
+       review. It replaced a red marker on every clause: forty-four of those made the
+       document unreadable and buried the very point they were making. */
+    .VghLantern__Terms__ReviewNotice {
+        margin                         : var(--Vale_Spacing_Large) 0 0 0;
+        padding                        : var(--Vale_Spacing_Small);
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--VghLantern_ErrorRed);
+        background                     : var(--VghLantern_ErrorBackground);
+        border                         : 1px solid var(--VghLantern_ErrorRed);
+        break-inside                   : avoid;
+    }
+
+    .VghLantern__Terms__ReviewNotice p {
+        margin                         : 0;
+    }
+
+    .VghLantern__Terms__ReviewNoticeTitle {
+        margin                         : 0 0 4px 0;
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__Terms__Failure {
+        margin                         : 0 0 var(--Vale_Spacing_Medium) 0;
+        padding                        : var(--Vale_Spacing_Small);
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--VghLantern_ErrorRed);
+        background                     : var(--VghLantern_ErrorBackground);
+        border                         : 1px solid var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__Terms__Empty {
+        padding                        : var(--Vale_Spacing_Large);
+        text-align                     : center;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+        border                         : 1px dashed var(--Vale_BorderLight);
+    }
+
+/* #endregion -------------------------------------------------------- */

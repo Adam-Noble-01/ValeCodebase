@@ -123,6 +123,47 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // SUB FUNCTION | Build the Welcome Letter Page Descriptor
+    // ------------------------------------------------------------
+    // The letter is resolved by the Client Doc mode's model and painted by its own
+    // painter, so the letter in this document is the letter that mode previews.
+    function VghLantern__PdfExporter__BuildWelcomeLetterPage() {
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var LetterModel    =  window.VghLantern__ClientDoc__LetterModel;
+        var Painter        =  window.VghLantern__ClientDoc__LetterPdfPainter;
+        if (!DocumentState || !LetterModel || !Painter) return null;
+
+        var letter  =  LetterModel.VghLantern__ClientDoc__LetterModel__BuildFromState();
+        if (!letter) return null;
+
+        return Painter.VghLantern__ClientDoc__LetterPdfPainter__BuildPage(
+            DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(), letter
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Terms Page Descriptor
+    // ------------------------------------------------------------
+    // One descriptor for the whole terms document however many sheets it runs to,
+    // because it is one continuously numbered document. The clause numbers come from
+    // the terms model, which is the same model the preview and the editor read.
+    function VghLantern__PdfExporter__BuildTermsPage() {
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var TermsModel     =  window.VghLantern__Terms__DocumentModel;
+        var Painter        =  window.VghLantern__Terms__PdfPainter;
+        if (!DocumentState || !TermsModel || !Painter) return null;
+
+        var model  =  TermsModel.VghLantern__Terms__DocumentModel__BuildFromState();
+        if (!model) return null;
+
+        return Painter.VghLantern__Terms__PdfPainter__BuildPage(
+            DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(), model
+        );
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -154,16 +195,27 @@ const VghLantern__DocPreview__PdfExporter = (function() {
             return false;
         }
 
+        // One builder per page kind. Adding a page kind is adding a row here and a row
+        // in DocumentState's include table, and nothing else.
+        var builders  =  {
+            welcomeLetter : VghLantern__PdfExporter__BuildWelcomeLetterPage,
+            drawing       : VghLantern__PdfExporter__BuildDrawingPage,
+            specification : function() { return VghLantern__PdfExporter__BuildSpecificationPage(viewState); },
+            terms         : VghLantern__PdfExporter__BuildTermsPage
+        };
+
         var pages  =  [];
         var i, page;
 
         for (i = 0; i < pageKinds.length; i++) {
-            page  =  (pageKinds[i] === 'drawing')
-                ? VghLantern__PdfExporter__BuildDrawingPage()
-                : VghLantern__PdfExporter__BuildSpecificationPage(viewState);
+            if (!builders[pageKinds[i]]) continue;
+            page  =  builders[pageKinds[i]]();
 
             // A drawing page the user asked for that cannot be built is a blocking
-            // problem, not a page to quietly leave out of an issued document.
+            // problem, not a page to quietly leave out of an issued document. The
+            // letter and the terms are different: an empty letter or a document with
+            // every terms section switched off are states the user chose, and they are
+            // reported as warnings by the issue handler rather than refused here.
             if (!page && pageKinds[i] === 'drawing') {
                 VghLantern__PdfExporter__ReportFailure(VghLantern__PdfExporter__IssueMessage('NoDrawingSheetMessage'));
                 return false;

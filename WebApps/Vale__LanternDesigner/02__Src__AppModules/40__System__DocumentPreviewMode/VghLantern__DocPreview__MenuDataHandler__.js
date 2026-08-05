@@ -54,11 +54,16 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
     // switch still carries the four old keys. They are simply not read, and the one
     // key that replaced them falls back to its config default, so an old file heals
     // itself the first time the user touches a toggle.
+    // Page-level switches only. The per-section terms switches are deliberately not
+    // here: which terms a quotation is issued under is a property of the quotation,
+    // so it lives on the project file rather than in a user's preferences.
     const TOGGLE_KEYS  =  [
+        'ShowWelcomeLetter',
         'ShowDrawingSheet',
         'ShowTakeoffSchedule',
         'ShowComponentSchedule',
-        'ShowJobNotes'
+        'ShowJobNotes',
+        'ShowTermsPages'
     ];
     // ------------------------------------------------------------
 

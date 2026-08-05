@@ -415,6 +415,16 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor'   : 1,
                 'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates'  : {}
             },
+            'VghLantern__ProjectFile__ClientDocument': {
+                'VghLantern__ProjectFile__ClientDocument__Description'      : 'The client-facing welcome letter and this project\'s own terms. Standard terms live in the markdown library; only their on/off state is recorded here.',
+                'VghLantern__ProjectFile__ClientDocument__LetterSalutation' : '',
+                'VghLantern__ProjectFile__ClientDocument__LetterBody'       : '',
+                'VghLantern__ProjectFile__ClientDocument__SignOffName'      : '',
+                'VghLantern__ProjectFile__ClientDocument__SignOffRole'      : '',
+                'VghLantern__ProjectFile__ClientDocument__CriticalTerms'    : [],
+                'VghLantern__ProjectFile__ClientDocument__SpecialTerms'     : [],
+                'VghLantern__ProjectFile__ClientDocument__SectionToggles'   : {}
+            },
             'VghLantern__ProjectFile__Lanterns': VghLantern__ProjectFileManager__BuildSeedLanterns()
         };
     }

@@ -204,21 +204,16 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Count the Notes the Current Project Prints
-    // ------------------------------------------------------------
-    function VghLantern__SheetManager__NoteCount(project) {
-        var AnnotationLayer  =  window.VghLantern__DrawingEditor__AnnotationLayer;
-        if (!AnnotationLayer) return 0;
-        return AnnotationLayer.VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project).length;
-    }
-    // ------------------------------------------------------------
-
-
     // FUNCTION | Solve the Paper Layout of the Current Sheet
     // ------------------------------------------------------------
     // The one place the sheet geometry is produced. The screen build, the gutter
     // drag, the view placement and the PDF export all consume this same shape.
-    function VghLantern__DrawingEditor__SheetManager__SolveLayout(project) {
+    //
+    // The project is no longer an input. It used to be, solely to count the notes the
+    // sheet printed; the notes block has been replaced by the terms callout, which is
+    // the same size on every sheet, so the layout is now a pure function of the paper
+    // and the grid shares.
+    function VghLantern__DrawingEditor__SheetManager__SolveLayout() {
         var SheetPdfLayout  =  window.VghLantern__DrawingEditor__SheetPdfLayout;
         if (!SheetPdfLayout) return null;
 
@@ -230,9 +225,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         VghLantern__SheetManager__EnsureShares();                             // <-- Solver reads the shares back through GetGridShares
 
-        return SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__Solve(
-            sheetSize, VghLantern__SheetManager__NoteCount(project)
-        );
+        return SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__Solve(sheetSize);
     }
     // ------------------------------------------------------------
 
@@ -484,7 +477,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         try {
             var state     =  VghLantern__SheetManager__ReadState();
             var hasModel  =  !!(state.Lantern && state.Geometry.Skeleton);
-            var layout    =  VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project);
+            var layout    =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
 
             // Scale first: the toolbar select, the frame captions and the titleblock
             // all quote it, so it must be settled before any of them render. A scale
@@ -610,7 +603,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         var state       =  VghLantern__SheetManager__ReadState();
         var SheetChrome =  window.VghLantern__DrawingEditor__SheetChrome;
-        var reSolved    =  VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project);
+        var reSolved    =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
         if (!reSolved) return;
 
         VghLantern__SheetManager__ActiveLayout  =  reSolved;
@@ -749,7 +742,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         return {
             Layout           : VghLantern__SheetManager__ActiveLayout
-                               || VghLantern__DrawingEditor__SheetManager__SolveLayout(state.Project),
+                               || VghLantern__DrawingEditor__SheetManager__SolveLayout(),
             ScaleDenominator : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator() : null,
             ScaleLabel       : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__FormatLabel() : '',
             ViewSvgMarkup    : ViewPlacement ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectSvgMarkup() : {},

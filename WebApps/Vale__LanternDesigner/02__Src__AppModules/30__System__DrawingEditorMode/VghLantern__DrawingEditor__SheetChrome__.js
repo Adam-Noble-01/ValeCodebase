@@ -66,6 +66,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     const KIND_LINE   =  'Line';
     const KIND_TEXT   =  'Text';
     const KIND_IMAGE  =  'Image';
+    const KIND_QR     =  'Qr';                                                // <-- A module matrix, expanded to rectangles by each renderer
     // ------------------------------------------------------------
 
 
@@ -144,10 +145,6 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
             FrameLabelUppercase     : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(style, 'FrameLabelUppercase', LABEL),
             ScaleLabelWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'ScaleLabelWeight', LABEL),
 
-            NotesTitleWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'NotesTitleWeight', LABEL),
-            NotesTitleTrackingMm    : VghLantern__SheetChrome__Number(style, 'NotesTitleTrackingMm'),
-            NotesTitleUppercase     : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(style, 'NotesTitleUppercase', LABEL),
-            NoteWeight              : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'NoteWeight', LABEL),
 
             TitleLabelWeight        : ConfigLoader.VghLantern__ConfigLoader__RequireString(style, 'TitleLabelWeight', LABEL),
             TitleLabelTrackingMm    : VghLantern__SheetChrome__Number(style, 'TitleLabelTrackingMm'),
@@ -354,9 +351,14 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         var padMm       =  style.CellPaddingMm;
         var fontMm      =  fonts.FrameLabelMm;
         var baselineY   =  VghLantern__SheetChrome__BaselineCentred(label.Y, label.HeightMm, fontMm);
-        var showScale   =  (slot.ShowScale !== false) && !!scaleLabel;
+
+        // A view with no true scale (a perspective 3D view, say) still gets the same
+        // right-hand slot filled - with a static note rather than a quoted ratio - so
+        // the reader is told the omission was deliberate, not a rendering fault.
+        var scaleText   =  ((slot.ShowScale !== false) && scaleLabel) ? scaleLabel : (slot.ScaleNoteLabel || '');
+        var showScale   =  !!scaleText;
         var scaleWidth  =  showScale
-            ? VghLantern__DrawingEditor__SheetChrome__MeasureTextMm(scaleLabel, fontMm, style.ScaleLabelWeight, 0)
+            ? VghLantern__DrawingEditor__SheetChrome__MeasureTextMm(scaleText, fontMm, style.ScaleLabelWeight, 0)
             : 0;
 
         var captionText  =  String(slot.Label || slot.Key);
@@ -383,7 +385,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         VghLantern__SheetChrome__PushText(list, {
             X          : label.X + label.WidthMm - padMm,
             BaselineY  : baselineY,
-            Text       : scaleLabel,
+            Text       : scaleText,
             FontMm     : fontMm,
             Weight     : style.ScaleLabelWeight,
             Colour     : style.MutedColour,
@@ -396,66 +398,210 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Notes Block Chrome
+// REGION | Terms Callout Chrome
 // -----------------------------------------------------------------------------
+//
+// This block replaced the sheet's numbered notes list. Those notes were three
+// standing sentences about millimetres and figured dimensions, which are now clauses
+// in the project's own terms document rather than a summary printed beside the views.
+// What sits here instead is the instruction to go and read that document, and the
+// code that takes the reader to it.
 
-    // SUB FUNCTION | Build the Rule, Heading and Numbered Notes
+    // HELPER FUNCTION | Get the Drawing QR Block From the Terms Config
     // ------------------------------------------------------------
-    // Filled column by column so the numbering reads down then across, which is the
-    // order a reader scans a two-column note list in.
-    function VghLantern__SheetChrome__BuildNotes(list, layout, notes, fonts, style) {
-        var rect  =  layout.Notes;
-        if (!rect || !notes || !notes.length) return;
+    // Owned by the terms system, not the Drawing Editor, because the address it
+    // encodes has to have exactly one home when the hosted terms page replaces the
+    // placeholder.
+    function VghLantern__SheetChrome__TermsBlock() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader) return {};
 
-        // PaddingTopMm, HeadingScale and Title are already resolved strictly from
-        // config by SheetPdfLayout, so no fallback is needed (or wanted) here.
-        var padTopMm     =  rect.PaddingTopMm;
-        var headingFont  =  fonts.NoteMm * rect.HeadingScale;
-        var originY      =  rect.Y + padTopMm;
+        var termsCfg  =  ConfigLoader.VghLantern__ConfigLoader__GetSection('Terms') || {};
+        return termsCfg['VghLantern__Terms__Config__DrawingQrBlock'] || {};
+    }
+    // ------------------------------------------------------------
 
-        VghLantern__SheetChrome__PushLine(list, rect.X, rect.Y, rect.X + rect.WidthMm, rect.Y,
+
+    // SUB HELPER FUNCTION | Push a QR Symbol as a Module Matrix
+    // ------------------------------------------------------------
+    // The matrix travels on the primitive rather than being expanded here, so each
+    // renderer emits it in its own idiom and the symbol is vector on both surfaces.
+    function VghLantern__SheetChrome__PushQr(list, x, y, sizeMm, encoded, darkColour, lightColour) {
+        if (!encoded || !encoded.Modules) return;
+
+        list.push({
+            Kind        : KIND_QR,
+            X           : x,
+            Y           : y,
+            SizeMm      : sizeMm,
+            ModuleCount : encoded.Size,
+            Modules     : encoded.Modules,
+            DarkColour  : darkColour,
+            LightColour : lightColour
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Solve the Terms Cell and the QR Square Inside It
+    // ------------------------------------------------------------
+    // Mirrors SolveLogo at the other end of the strip: an absolute width taken off the
+    // right, with the field cells dividing what is left between them. Returned even
+    // when there is no code to draw, so the field strip always ends at the same x.
+    //
+    // The QR is square and exactly as tall as the strip allows, so its printed size
+    // needs no dimension of its own - change the titleblock height and the code
+    // follows it.
+    function VghLantern__SheetChrome__SolveTermsCell(titleRect, project) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var QrEncoder     =  window.VghLantern__AppUtils__QrEncoder;
+        var QrLink        =  window.VghLantern__Terms__QrLink;
+
+        var config  =  VghLantern__SheetChrome__TermsBlock();
+        var LABEL   =  'Na__Terms__Config.json -> VghLantern__Terms__Config__DrawingQrBlock';
+
+        var solved  =  { CellWidthMm : 0, Qr : null, Config : config };
+
+        if (!ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(config, 'Enabled', LABEL)) return solved;
+
+        solved.CellWidthMm  =  VghLantern__SheetChrome__Number(config, 'CellWidthMm', 'DrawingQrBlock');
+        if (!solved.CellWidthMm) return solved;
+
+        var url      =  QrLink ? QrLink.VghLantern__Terms__QrLink__BuildUrl(project) : '';
+        var encoded  =  (url && QrEncoder) ? QrEncoder.VghLantern__AppUtils__QrEncoder__Encode(url) : null;
+        if (!encoded) return solved;                                           // <-- Cell without a code beats a code that scans to nothing
+
+        var padMm     =  VghLantern__SheetChrome__Number(config, 'QrPaddingMm', 'DrawingQrBlock');
+        var sizeMm    =  Math.max(0, titleRect.HeightMm - (padMm * 2));
+
+        solved.Qr  =  {
+            X        : titleRect.X + titleRect.WidthMm - padMm - sizeMm,
+            Y        : titleRect.Y + padMm,
+            SizeMm   : sizeMm,
+            Encoded  : encoded
+        };
+
+        return solved;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Wrap Text to a Maximum Paper Width
+    // ------------------------------------------------------------
+    // Greedy wrap measured against the same document the truncation test uses, so the
+    // body breaks in the same place on screen as it does on paper.
+    function VghLantern__SheetChrome__WrapText(text, fontMm, weight, maxWidthMm, maxLines) {
+        var words    =  String(text || '').split(/\s+/).filter(function(word) { return word !== ''; });
+        var lines    =  [];
+        var current  =  '';
+        var i, candidate;
+
+        for (i = 0; i < words.length; i++) {
+            candidate  =  (current === '') ? words[i] : (current + ' ' + words[i]);
+
+            if (VghLantern__DrawingEditor__SheetChrome__MeasureTextMm(candidate, fontMm, weight, 0) <= maxWidthMm) {
+                current  =  candidate;
+                continue;
+            }
+
+            if (current !== '') lines.push(current);
+            current  =  words[i];
+
+            // The last line the cell can hold takes whatever is left, truncated, so
+            // the copy ends in an ellipsis rather than silently losing its tail.
+            if (lines.length === maxLines - 1) {
+                current  =  words.slice(i).join(' ');
+                break;
+            }
+        }
+
+        if (current !== '' && lines.length < maxLines) {
+            lines.push(VghLantern__DrawingEditor__SheetChrome__FitText(current, fontMm, weight, 0, maxWidthMm));
+        }
+
+        return lines;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Terms Cell Contents
+    // ------------------------------------------------------------
+    // A bold instruction over lighter supporting copy, with the code at the cell's
+    // right-hand end. This inverts the caption-over-value rhythm of the other
+    // titleblock cells on purpose: those caption a value the reader is looking for,
+    // whereas this one is telling them to go and read something, so the instruction
+    // leads and the detail follows it.
+    function VghLantern__SheetChrome__BuildTermsCell(list, titleRect, terms, style) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!terms.CellWidthMm) return;
+
+        var config  =  terms.Config;
+        var LABEL   =  'Na__Terms__Config.json -> VghLantern__Terms__Config__DrawingQrBlock';
+
+        var cellX     =  titleRect.X + titleRect.WidthMm - terms.CellWidthMm;
+        var padHMm    =  VghLantern__SheetChrome__Number(config, 'CellPaddingHMm', 'DrawingQrBlock');
+        var padVMm    =  VghLantern__SheetChrome__Number(config, 'CellPaddingVMm', 'DrawingQrBlock');
+        var headingMm =  VghLantern__SheetChrome__Number(config, 'HeadingFontSizeMm', 'DrawingQrBlock');
+        var bodyMm    =  VghLantern__SheetChrome__Number(config, 'BodyFontSizeMm', 'DrawingQrBlock');
+        var spacing   =  VghLantern__SheetChrome__Number(config, 'BodyLineSpacing', 'DrawingQrBlock');
+        var maxLines  =  VghLantern__SheetChrome__Number(config, 'BodyMaxLines', 'DrawingQrBlock');
+
+        var qrRoomMm  =  terms.Qr ? (terms.Qr.SizeMm + padHMm) : 0;
+        var textX     =  cellX + padHMm;
+        var textRoom  =  Math.max(1, terms.CellWidthMm - (padHMm * 2) - qrRoomMm);
+
+        // The same rule that divides every other pair of cells in the strip.
+        VghLantern__SheetChrome__PushLine(list, cellX, titleRect.Y, cellX, titleRect.Y + titleRect.HeightMm,
                                           style.FrameColour, style.FrameStrokeMm);
 
-        var headingText  =  String(rect.Title);
-        if (style.NotesTitleUppercase) headingText  =  headingText.toUpperCase();
+        var cursorY  =  titleRect.Y + padVMm;
 
         VghLantern__SheetChrome__PushText(list, {
-            X          : rect.X,
-            BaselineY  : VghLantern__SheetChrome__BaselineFromTop(originY, headingFont),
-            Text       : headingText,
-            FontMm     : headingFont,
-            Weight     : style.NotesTitleWeight,
-            Colour     : style.InkColour,
-            Align      : 'left',
-            TrackingMm : style.NotesTitleTrackingMm
+            X         : textX,
+            BaselineY : VghLantern__SheetChrome__BaselineFromTop(cursorY, headingMm),
+            Text      : VghLantern__DrawingEditor__SheetChrome__FitText(
+                            ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'HeadingText', LABEL),
+                            headingMm, 'bold', 0, textRoom),
+            FontMm    : headingMm,
+            Weight    : 'bold',
+            Colour    : style.InkColour,
+            Align     : 'left'
         });
 
-        var columnWidth  =  (rect.WidthMm - (rect.ColumnGapMm * (rect.Columns - 1))) / rect.Columns;
-        var i, columnIndex, rowIndex, textX, baselineY, noteText;
+        cursorY  +=  headingMm * spacing;
 
-        for (i = 0; i < notes.length; i++) {
-            columnIndex  =  Math.floor(i / rect.Rows);
-            rowIndex     =  i % rect.Rows;
+        var bodyLineMm  =  bodyMm * spacing;
+        var bodyLines   =  VghLantern__SheetChrome__WrapText(
+            ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'BodyText', LABEL),
+            bodyMm, 'normal', textRoom, maxLines
+        );
+        var i;
 
-            textX      =  rect.X + (columnIndex * (columnWidth + rect.ColumnGapMm));
-            baselineY  =  VghLantern__SheetChrome__BaselineFromTop(
-                originY + rect.HeadingMm + (rowIndex * rect.LineHeightMm), fonts.NoteMm
-            );
-
-            noteText  =  VghLantern__DrawingEditor__SheetChrome__FitText(
-                (i + 1) + '. ' + String(notes[i].Text || ''), fonts.NoteMm, style.NoteWeight, 0, columnWidth
-            );
+        for (i = 0; i < bodyLines.length; i++) {
+            // A line that would run past the strip is dropped rather than overflowing
+            // it, which on a titleblock would read as a printing fault.
+            if (cursorY + bodyLineMm > titleRect.Y + titleRect.HeightMm - padVMm) break;
 
             VghLantern__SheetChrome__PushText(list, {
                 X         : textX,
-                BaselineY : baselineY,
-                Text      : noteText,
-                FontMm    : fonts.NoteMm,
-                Weight    : style.NoteWeight,
-                Colour    : style.InkColour,
+                BaselineY : VghLantern__SheetChrome__BaselineFromTop(cursorY, bodyMm),
+                Text      : bodyLines[i],
+                FontMm    : bodyMm,
+                Weight    : 'normal',
+                Colour    : style.MutedColour,
                 Align     : 'left'
             });
+
+            cursorY  +=  bodyLineMm;
         }
+
+        if (!terms.Qr) return;
+
+        VghLantern__SheetChrome__PushQr(
+            list, terms.Qr.X, terms.Qr.Y, terms.Qr.SizeMm, terms.Qr.Encoded,
+            ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'QrDarkColour',  LABEL),
+            ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'QrLightColour', LABEL)
+        );
     }
     // ------------------------------------------------------------
 
@@ -515,9 +661,12 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
     // SUB FUNCTION | Build the Single Row Titleblock Strip
     // ------------------------------------------------------------
-    // Row WidthMm values are relative shares of the field strip, not absolute
-    // widths, so adding a row rebalances the strip instead of overflowing it.
-    function VghLantern__SheetChrome__BuildTitleBlock(list, layout, fields, fonts, style, logoAsset) {
+    // Three parts across one strip: the logo cell at an absolute width on the left,
+    // the terms cell at an absolute width on the right, and the field cells dividing
+    // whatever is left between them by relative share. Row WidthMm values are those
+    // shares, not absolute widths, so adding a row rebalances the strip rather than
+    // overflowing it - and the two fixed cells keep their printed size on every paper.
+    function VghLantern__SheetChrome__BuildTitleBlock(list, layout, fields, fonts, style, logoAsset, project) {
         var rect      =  layout.TitleBlock;
         var titleCfg  =  VghLantern__SheetChrome__Block('TitleBlock');
         var rows      =  Array.isArray(titleCfg.Rows) ? titleCfg.Rows : [];
@@ -536,14 +685,27 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
                                               rect.X + logo.CellWidthMm, rect.Y + rect.HeightMm,
                                               style.InkColour, style.TitleStrokeMm);
         }
-        if (!rows.length) return;
 
-        var fieldsX      =  rect.X + logo.CellWidthMm;
-        var fieldsWidth  =  rect.WidthMm - logo.CellWidthMm;
         var padHMm       =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingHMm', 'TitleBlock');
         var padTopMm     =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingTopMm', 'TitleBlock');
         var padBottomMm  =  VghLantern__SheetChrome__Number(titleCfg, 'FieldPaddingBottomMm', 'TitleBlock');
         var labelTopMm   =  VghLantern__SheetChrome__Number(titleCfg, 'FieldLabelOffsetTopMm', 'TitleBlock');
+
+        // The value sits centred in the cell below the label band, which is what the
+        // titleblock reads as: a small caption over a strong value. Solved before the
+        // terms cell is drawn so that cell can sit on the identical two baselines.
+        var valueBandY   =  rect.Y + padTopMm;
+        var valueBandH   =  Math.max(0, rect.HeightMm - padTopMm - padBottomMm);
+        var valueBaseY   =  VghLantern__SheetChrome__BaselineCentred(valueBandY, valueBandH, fonts.TitleValueMm);
+        var labelBaseY   =  VghLantern__SheetChrome__BaselineFromTop(rect.Y + labelTopMm, fonts.TitleLabelMm);
+
+        var terms  =  VghLantern__SheetChrome__SolveTermsCell(rect, project);
+        VghLantern__SheetChrome__BuildTermsCell(list, rect, terms, style);
+
+        if (!rows.length) return;
+
+        var fieldsX      =  rect.X + logo.CellWidthMm;
+        var fieldsWidth  =  Math.max(1, rect.WidthMm - logo.CellWidthMm - terms.CellWidthMm);
 
         var totalShare  =  0;
         var i, share;
@@ -551,13 +713,6 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
             totalShare  +=  (typeof rows[i].WidthMm === 'number' && rows[i].WidthMm > 0) ? rows[i].WidthMm : 1;
         }
         if (totalShare <= 0) return;
-
-        // The value sits centred in the cell below the label band, which is what the
-        // titleblock reads as: a small caption over a strong value.
-        var valueBandY   =  rect.Y + padTopMm;
-        var valueBandH   =  Math.max(0, rect.HeightMm - padTopMm - padBottomMm);
-        var valueBaseY   =  VghLantern__SheetChrome__BaselineCentred(valueBandY, valueBandH, fonts.TitleValueMm);
-        var labelBaseY   =  VghLantern__SheetChrome__BaselineFromTop(rect.Y + labelTopMm, fonts.TitleLabelMm);
 
         var cursorX  =  fieldsX;
         var cellWidth, textRoom, labelText, valueText;
@@ -684,7 +839,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
     // FUNCTION | Build Every Chrome Primitive for a Solved Layout
     // ------------------------------------------------------------
-    // context is { ScaleLabel, Notes, Fields, LogoAsset }. Nothing here reads the
+    // context is { ScaleLabel, Project, Fields, LogoAsset }. Nothing here reads the
     // DOM or the exporter, so the same call serves both surfaces.
     function VghLantern__DrawingEditor__SheetChrome__Build(layout, context) {
         if (!layout) return [];
@@ -699,8 +854,8 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
             VghLantern__SheetChrome__BuildFrame(list, layout.Slots[i], ctx.ScaleLabel || '', fonts, style);
         }
 
-        VghLantern__SheetChrome__BuildNotes(list, layout, ctx.Notes || [], fonts, style);
-        VghLantern__SheetChrome__BuildTitleBlock(list, layout, ctx.Fields || {}, fonts, style, ctx.LogoAsset || null);
+        VghLantern__SheetChrome__BuildTitleBlock(list, layout, ctx.Fields || {}, fonts, style,
+                                                 ctx.LogoAsset || null, ctx.Project || null);
 
         return list;
     }
@@ -710,19 +865,16 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // FUNCTION | Build Chrome Primitives for a Project's Sheet
     // ------------------------------------------------------------
     // The one call both the Drawing Editor and the PDF exporter make. Resolving the
-    // notes, the titleblock fields and the scale label here rather than in each
-    // caller is what stops a sheet and its export quoting different values.
+    // titleblock fields and the scale label here rather than in each caller is what
+    // stops a sheet and its export quoting different values.
     // Deliberately synchronous - hand it the logo from LoadLogo or CachedLogo.
     function VghLantern__DrawingEditor__SheetChrome__BuildForSheet(layout, project, lantern, logoAsset) {
-        var AnnotationLayer  =  window.VghLantern__DrawingEditor__AnnotationLayer;
-        var TitleBlock       =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
-        var ScaleManager     =  window.VghLantern__DrawingEditor__ScaleManager;
+        var TitleBlock    =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
+        var ScaleManager  =  window.VghLantern__DrawingEditor__ScaleManager;
 
         return VghLantern__DrawingEditor__SheetChrome__Build(layout, {
             ScaleLabel : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__FormatLabel() : '',
-            Notes      : AnnotationLayer
-                ? AnnotationLayer.VghLantern__DrawingEditor__AnnotationLayer__CollectNotes(project)
-                : [],
+            Project    : project || null,                                      // <-- The terms callout encodes this project's code
             Fields     : TitleBlock
                 ? TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(project, lantern)
                 : {},
@@ -754,6 +906,23 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         if (align === 'right')  return 'end';
         if (align === 'center') return 'middle';
         return 'start';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Merge a QR Primitive's Dark Modules Into Row Runs
+    // ------------------------------------------------------------
+    // Shared by both renderers so the SVG and the PDF emit the identical rectangles.
+    // Delegated to the encoder, which owns the matrix and therefore owns what a run
+    // through it means.
+    function VghLantern__SheetChrome__QrRuns(primitive) {
+        var QrEncoder  =  window.VghLantern__AppUtils__QrEncoder;
+        if (!QrEncoder) return [];
+
+        return QrEncoder.VghLantern__AppUtils__QrEncoder__MergeRuns({
+            Size    : primitive.ModuleCount,
+            Modules : primitive.Modules
+        });
     }
     // ------------------------------------------------------------
 
@@ -793,6 +962,26 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
                    'width="' + primitive.WidthMm + '" height="' + primitive.HeightMm + '" ' +
                    'preserveAspectRatio="xMidYMid meet" ' +
                    'href="' + primitive.DataUrl + '"/>';
+        }
+
+        if (primitive.Kind === KIND_QR) {
+            var runs      =  VghLantern__SheetChrome__QrRuns(primitive);
+            var moduleMm  =  primitive.SizeMm / primitive.ModuleCount;
+            var body      =  '<rect x="' + primitive.X + '" y="' + primitive.Y + '" ' +
+                             'width="' + primitive.SizeMm + '" height="' + primitive.SizeMm + '" ' +
+                             'fill="' + primitive.LightColour + '"/>';
+            var r;
+
+            for (r = 0; r < runs.length; r++) {
+                body  +=  '<rect x="' + (primitive.X + (runs[r].Col * moduleMm)) + '" ' +
+                          'y="' + (primitive.Y + (runs[r].Row * moduleMm)) + '" ' +
+                          'width="' + (runs[r].Length * moduleMm) + '" height="' + moduleMm + '" ' +
+                          'fill="' + primitive.DarkColour + '"/>';
+            }
+
+            // shape-rendering crispEdges stops the browser antialiasing the module
+            // edges into grey, which is what a phone camera reads as a soft module.
+            return '<g shape-rendering="crispEdges">' + body + '</g>';
         }
 
         return '';
@@ -891,6 +1080,27 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
         if (primitive.Kind === KIND_IMAGE) {
             doc.addImage(primitive.DataUrl, 'PNG', primitive.X, primitive.Y, primitive.WidthMm, primitive.HeightMm);
+            return;
+        }
+
+        if (primitive.Kind === KIND_QR) {
+            // Drawn as filled rectangles rather than placed as a raster, so the symbol
+            // is vector in the file and stays sharp at any print size or zoom.
+            var moduleMm  =  primitive.SizeMm / primitive.ModuleCount;
+            var runs      =  VghLantern__SheetChrome__QrRuns(primitive);
+            var light     =  VghLantern__SheetChrome__Rgb(primitive.LightColour);
+            var dark      =  VghLantern__SheetChrome__Rgb(primitive.DarkColour);
+            var r;
+
+            doc.setFillColor(light.R, light.G, light.B);
+            doc.rect(primitive.X, primitive.Y, primitive.SizeMm, primitive.SizeMm, 'F');
+
+            doc.setFillColor(dark.R, dark.G, dark.B);
+            for (r = 0; r < runs.length; r++) {
+                doc.rect(primitive.X + (runs[r].Col * moduleMm),
+                         primitive.Y + (runs[r].Row * moduleMm),
+                         runs[r].Length * moduleMm, moduleMm, 'F');
+            }
         }
     }
     // ------------------------------------------------------------

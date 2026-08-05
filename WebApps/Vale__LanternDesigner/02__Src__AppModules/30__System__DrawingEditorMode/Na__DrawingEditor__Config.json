@@ -65,7 +65,8 @@
                 "RowStart"     : 2,
                 "RowSpan"      : 1,
                 "ShowScale"    : false,
-                "ShowScaleNote": "The 3D view is a perspective projection, so quoting a scale beside it would be misleading."
+                "ShowScaleNote": "The 3D view is a perspective projection, so quoting a scale beside it would be misleading.",
+                "ScaleNoteLabel": "Not To Scale"
             }
         ],
 
@@ -74,8 +75,8 @@
             "Rows"                      : 2,
             "GutterMm"                  : 6,
             "FrameStrokeMm"             : 0.25,
-            "FrameLabelHeightMm"        : 7,
-            "FrameLabelFontSizeMm"      : 3.2,
+            "FrameLabelHeightMm"        : 5,
+            "FrameLabelFontSizeMm"      : 2.2,
             "ColumnSharesPct"           : [50, 50],
             "RowSharesPct"              : [50, 50],
             "ShareMinPct"               : 20,
@@ -105,10 +106,7 @@
             "FrameLabelUppercase"       : true,
             "ScaleLabelWeight"          : "normal",
 
-            "NotesTitleWeight"          : "bold",
-            "NotesTitleTrackingMm"      : 0.07,
-            "NotesTitleUppercase"       : true,
-            "NoteWeight"                : "normal",
+            "TermsCellStyleNote"        : "The terms cell has no styling of its own. It is the right-hand cell of the titleblock strip and prints on the TitleLabel and TitleValue sizes, weights, tracking and baselines defined above, which is what makes it read as part of the titleblock rather than as a box parked beside it. Its width, copy and QR settings live in Na__Terms__Config.json under VghLantern__Terms__Config__DrawingQrBlock.",
 
             "TitleLabelWeight"          : "normal",
             "TitleLabelTrackingMm"      : 0.05,
@@ -145,7 +143,7 @@
             "FieldPaddingTopMm"         : 2.4,
             "FieldPaddingHMm"           : 1.4,
             "FieldPaddingBottomMm"      : 0.8,
-            "FieldLabelOffsetTopMm"     : 0.5,
+            "FieldLabelOffsetTopMm"     : 1.5,
             "FieldPaddingNote"          : "Screen CSS and PDF titleblock both read these millimetre paddings so the strip matches on paper.",
             "SingleRowLayout"           : true,
             "SingleRowLayoutNote"       : "All fields sit on one horizontal strip. WidthMm values are relative flex shares, not absolute widths that would force wrapping.",
@@ -161,24 +159,7 @@
             "RowsNote"                  : "Row Key maps to a field the TitleBlockRenderer resolves from the project and lantern. WidthMm is a relative share of the strip. Element is omitted from the strip - it lives on the lantern schedule instead. An unresolved key still renders so the strip layout stays stable."
         },
 
-        "VghLantern__DrawingEditor__Config__Annotations": {
-            "Enabled"                   : true,
-            "DefaultFontSizeMm"         : 1.4,
-            "HeadingScale"              : 1.05,
-            "LineSpacing"               : 1.35,
-            "ColumnCount"               : 2,
-            "ColumnGapMm"               : 6,
-            "PaddingTopMm"              : 1.25,
-            "DefaultLeaderStrokeMm"     : 0.25,
-            "MaxNotes"                  : 12,
-            "NotesBlockTitle"           : "Notes",
-            "GeneralNotes": [
-                "All dimensions in millimetres unless noted otherwise.",
-                "Do not scale from this drawing; work to figured dimensions.",
-                "Glazing to be installed in accordance with the specification schedule."
-            ],
-            "GeneralNotesNote"          : "Standing notes printed on every sheet. Project-specific notes are added per drawing and stored on the project file."
-        },
+        "VghLantern__DrawingEditor__Config__AnnotationsRemovedNote": "The sheet no longer carries a notes block. It printed three standing sentences about millimetres, figured dimensions and glazing, plus the project job notes. Those three sentences are now clauses in the project's terms document, and the sheet carries the terms callout in the bottom right instead - a QR code taking the reader to the full terms rather than a summary of three of them beside the views. Job notes are unaffected: they are still typed in the Specification tab and still print on the specification document under its ShowJobNotes toggle. The callout is configured in Na__Terms__Config.json under VghLantern__Terms__Config__DrawingQrBlock.",
 
         "VghLantern__DrawingEditor__Config__Toolbar": {
             "ShowSheetSizeSelect"       : true,

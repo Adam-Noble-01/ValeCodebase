@@ -26,9 +26,14 @@
        Solid3d__Frame      swept or line-drawn structural members, and the base
                            prisms. SOLID GEOMETRY - what the user sees and what a
                            snapshot captures.
+       Solid3d__GlazeBars  the three part glaze bar composite - cap, core and
+                           trim, one merged mesh each. Held apart from the frame
+                           because these are the meshes the element type filter
+                           isolates and the cutting list is measured from.
        Solid3d__Glazing    translucent glass faces
        Solid3d__Components loaded GLB finials, bases, cresting, vents
        SetOut__Lines       datum and construction linework, the setting-out view
+       Overlay__Section    cross section cut face and its profile line, transient
        Overlay__Highlight  hover inspector instance overlay, transient
 
    ---------------------------------------------------------------------------
@@ -82,9 +87,11 @@ import {
     export const VghLantern__Env3d__SceneGroup  =  {
         Helpers             : 'helpers',
         Solid3d__Frame      : 'solid3d__frame',
+        Solid3d__GlazeBars  : 'solid3d__glazeBars',
         Solid3d__Glazing    : 'solid3d__glazing',
         Solid3d__Components : 'solid3d__components',
         SetOut__Lines       : 'setOut__lines',
+        Overlay__Section    : 'overlay__section',
         Overlay__Highlight  : 'overlay__highlight'
     };
     // ------------------------------------------------------------
@@ -97,21 +104,26 @@ import {
     export const VghLantern__Env3d__SceneGroupOrder  =  [                    // <-- Creation and draw order
         VghLantern__Env3d__SceneGroup.Helpers,
         VghLantern__Env3d__SceneGroup.Solid3d__Frame,
+        VghLantern__Env3d__SceneGroup.Solid3d__GlazeBars,
         VghLantern__Env3d__SceneGroup.Solid3d__Glazing,
         VghLantern__Env3d__SceneGroup.Solid3d__Components,
         VghLantern__Env3d__SceneGroup.SetOut__Lines,
+        VghLantern__Env3d__SceneGroup.Overlay__Section,
         VghLantern__Env3d__SceneGroup.Overlay__Highlight
     ];
 
     export const VghLantern__Env3d__SceneGroupSet__Solid3d  =  [             // <-- The visible solid model
         VghLantern__Env3d__SceneGroup.Solid3d__Frame,
+        VghLantern__Env3d__SceneGroup.Solid3d__GlazeBars,
         VghLantern__Env3d__SceneGroup.Solid3d__Glazing,
         VghLantern__Env3d__SceneGroup.Solid3d__Components
     ];
 
     export const VghLantern__Env3d__SceneGroupSet__Rebuilt  =  [             // <-- Cleared and rebuilt on every solve
         VghLantern__Env3d__SceneGroup.Overlay__Highlight,                    // <-- First: its geometry slices the buffers below
+        VghLantern__Env3d__SceneGroup.Overlay__Section,                      // <-- Second, for the same reason: a cut face is derived from the meshes below it
         VghLantern__Env3d__SceneGroup.Solid3d__Frame,
+        VghLantern__Env3d__SceneGroup.Solid3d__GlazeBars,
         VghLantern__Env3d__SceneGroup.Solid3d__Glazing,
         VghLantern__Env3d__SceneGroup.Solid3d__Components,
         VghLantern__Env3d__SceneGroup.SetOut__Lines
@@ -299,6 +311,30 @@ import {
     function VghLantern__Env3d__SceneManager__AttachGroundPlane(surface) {
         const grid  =  VghLantern__Env3d__SceneManager__BuildGroundGrid();
         if (grid) surface.Groups[VghLantern__Env3d__SceneGroup.Helpers].add(grid);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show or Hide the Ground Grid on a Surface
+    // ------------------------------------------------------------
+    // The grid is addressed by name rather than by group because the helpers group
+    // also holds the light rig, and hiding that group would render the lantern as
+    // an unlit black silhouette.
+    //
+    // Exposed for the cross section system: the cut is applied at the renderer, so
+    // it takes the grid with it and leaves a grid that stops dead along the section
+    // line, which reads as a rendering fault rather than as a section.
+    export function VghLantern__Env3d__SceneManager__SetGroundGridVisible(surface, isVisible) {
+        if (!surface || surface.IsDestroyed || !surface.Groups) return;
+
+        const helpers  =  surface.Groups[VghLantern__Env3d__SceneGroup.Helpers];
+        if (!helpers) return;
+
+        const grid  =  helpers.getObjectByName(GROUND_GRID_NAME);
+        if (!grid) return;                                                    // <-- Surface was mounted without a grid at all
+
+        grid.visible  =  isVisible === true;
+        VghLantern__Env3d__SceneManager__Invalidate(surface);
     }
     // ------------------------------------------------------------
 

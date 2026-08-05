@@ -58,8 +58,10 @@
             },
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
-                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
@@ -78,8 +80,7 @@
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -89,7 +90,6 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
             },
@@ -113,7 +113,7 @@
         ]
     },
     "VghLantern__Glazing__Options__Config": {
-        "VghLantern__Glazing__Options__Config__Description": "Available glazing specifications and tints offered in the Finish and Glazing section.",
+        "VghLantern__Glazing__Options__Config__Description": "Available glazing specifications and tints offered in the Glazing section. Element finishes are not here: they live in Na__PbrMaterials__Config.json, one palette per element.",
         "VghLantern__Glazing__Options__Config__GlazingSpecs": [
             "Double Glazed Toughened",
             "Double Glazed Laminate Over",

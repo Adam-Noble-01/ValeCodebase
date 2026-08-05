@@ -14,8 +14,8 @@
      paper out on screen, asks ViewPlacement to fill the frames and hands the same
      layout to the PDF exporter.
    - Holds the sheet size, orientation, scale, grid shares and zoom for the session,
-     and persists them onto the project file so a reopened project comes back on the
-     sheet it was left on.
+     and persists them onto each lantern's DrawingLayout block so a multi-lantern
+     project keeps an independent sheet per lantern through Flask autosave.
    - Everything measurable comes from SheetPdfLayout; this module sequences it rather
      than repeating its arithmetic.
 
@@ -93,20 +93,30 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Project File Layout Block
+    // MODULE CONSTANTS | Project File Layout Block Keys
     // ------------------------------------------------------------
-    // The sheet setup is document state, not application state: a project issued at
-    // A2 1:20 with a rebalanced grid should reopen exactly that way, so it is written
-    // onto the project file rather than held in the session or in localStorage.
-    const LAYOUT_BLOCK          =  'VghLantern__ProjectFile__DrawingLayout';
-    const LAYOUT_SHEET_SIZE     =  'VghLantern__ProjectFile__DrawingLayout__SheetSizeKey';
-    const LAYOUT_ORIENTATION    =  'VghLantern__ProjectFile__DrawingLayout__Orientation';
-    const LAYOUT_SCALE          =  'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator';
-    const LAYOUT_SCALE_MANUAL   =  'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual';
-    const LAYOUT_COLUMN_SHARES  =  'VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct';
-    const LAYOUT_ROW_SHARES     =  'VghLantern__ProjectFile__DrawingLayout__RowSharesPct';
-    const LAYOUT_ZOOM           =  'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor';
-    const LAYOUT_CAMERAS        =  'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates';
+    // Sheet setup is stored on each lantern so Kitchen and Dining Room can keep
+    // independent paper, scale, grid and camera state. The project-level
+    // DrawingLayout block remains a legacy fallback seed for older files.
+    const LAYOUT_LANTERN_BLOCK     =  'Lantern__DrawingLayout__Config';
+    const LAYOUT_SHEET_SIZE        =  'Lantern__DrawingLayout__Config__SheetSizeKey';
+    const LAYOUT_ORIENTATION       =  'Lantern__DrawingLayout__Config__Orientation';
+    const LAYOUT_SCALE             =  'Lantern__DrawingLayout__Config__ScaleDenominator';
+    const LAYOUT_SCALE_MANUAL      =  'Lantern__DrawingLayout__Config__ScaleIsManual';
+    const LAYOUT_COLUMN_SHARES     =  'Lantern__DrawingLayout__Config__ColumnSharesPct';
+    const LAYOUT_ROW_SHARES        =  'Lantern__DrawingLayout__Config__RowSharesPct';
+    const LAYOUT_ZOOM              =  'Lantern__DrawingLayout__Config__SheetZoomFactor';
+    const LAYOUT_CAMERAS           =  'Lantern__DrawingLayout__Config__ViewCameraStates';
+
+    const LAYOUT_PROJECT_BLOCK          =  'VghLantern__ProjectFile__DrawingLayout';
+    const LAYOUT_PROJECT_SHEET_SIZE     =  'VghLantern__ProjectFile__DrawingLayout__SheetSizeKey';
+    const LAYOUT_PROJECT_ORIENTATION    =  'VghLantern__ProjectFile__DrawingLayout__Orientation';
+    const LAYOUT_PROJECT_SCALE          =  'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator';
+    const LAYOUT_PROJECT_SCALE_MANUAL   =  'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual';
+    const LAYOUT_PROJECT_COLUMN_SHARES  =  'VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct';
+    const LAYOUT_PROJECT_ROW_SHARES     =  'VghLantern__ProjectFile__DrawingLayout__RowSharesPct';
+    const LAYOUT_PROJECT_ZOOM           =  'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor';
+    const LAYOUT_PROJECT_CAMERAS        =  'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates';
     // ------------------------------------------------------------
 
 
@@ -119,6 +129,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     let VghLantern__SheetManager__RedrawTimerId   =  null;
     let VghLantern__SheetManager__IsRendering     =  false;                   // <-- Prevents overlapping async sheet builds
     let VghLantern__SheetManager__IsRerunQueued   =  false;                   // <-- A render request arrived while one was in flight
+    let VghLantern__SheetManager__LayoutLanternIndex  =  -1;                 // <-- Which lantern the session sheet setup currently belongs to
     // ------------------------------------------------------------
 
 
@@ -311,6 +322,61 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Escape Text for Safe Attribute and Content Use
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__Escape(value) {
+        return String(value === undefined || value === null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve a Lantern's Display Title
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__LanternLabel(lantern, index) {
+        var identity  =  lantern ? lantern['Lantern__Identity__Config'] : null;
+        if (identity && identity['Lantern__Identity__Config__Title']) {
+            return identity['Lantern__Identity__Config__Title'];
+        }
+        return 'Lantern ' + (index + 1);                                      // <-- Same fallback the editor tab strip uses
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Lantern Selector Group
+    // ------------------------------------------------------------
+    // Only rendered when the project holds more than one lantern. Sits between
+    // Scale and Download PDF - the gap the sheet toolbar leaves for cycling
+    // Kitchen / Dining Room drawings without leaving the mode.
+    function VghLantern__SheetManager__BuildLanternGroup() {
+        var state     =  VghLantern__SheetManager__ReadState();
+        var lanterns  =  (state.Project && Array.isArray(state.Project['VghLantern__ProjectFile__Lanterns']))
+            ? state.Project['VghLantern__ProjectFile__Lanterns']
+            : [];
+        if (lanterns.length < 2) return '';
+
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var appState      =  StateManager ? StateManager.VghLantern__StateManager__GetState() : {};
+        var activeIndex   =  typeof appState.currentLanternIndex === 'number' ? appState.currentLanternIndex : 0;
+
+        var values  =  [];
+        var labels  =  [];
+        var i;
+        for (i = 0; i < lanterns.length; i++) {
+            values.push(i);
+            labels.push(VghLantern__SheetManager__LanternLabel(lanterns[i], i));
+        }
+
+        return '<div class="' + CSS_TOOL_GROUP + '">' +
+               '<label class="' + CSS_TOOL_LABEL + '" for="VghLantern__DrawingEditor__LanternSelect">Lantern</label>' +
+               '<select class="' + CSS_TOOL_SELECT + '" id="VghLantern__DrawingEditor__LanternSelect">' +
+               VghLantern__SheetManager__BuildOptions(values, labels.map(VghLantern__SheetManager__Escape), activeIndex) +
+               '</select></div>';
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Render the Drawing Editor Toolbar
     // ------------------------------------------------------------
     function VghLantern__SheetManager__RenderToolbar() {
@@ -325,6 +391,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowSheetSizeSelect',   TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildSheetSizeGroup();
         if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowOrientationToggle', TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildOrientationGroup();
         if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowScaleSelect',       TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildScaleGroup();
+        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(toolbarCfg, 'ShowLanternSelector',   TOOLBAR_LABEL)) html  +=  VghLantern__SheetManager__BuildLanternGroup();
 
         // Export sits hard right, away from the sheet setup controls, because it is
         // the one action on this toolbar that produces a file.
@@ -761,20 +828,31 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 // REGION | Drawing Layout Persistence
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Get or Create the Layout Block on the Current Project
+    // HELPER FUNCTION | Read the Legacy Project-Level Layout Block
     // ------------------------------------------------------------
-    function VghLantern__SheetManager__LayoutBlock(createIfMissing) {
+    function VghLantern__SheetManager__ProjectLayoutBlock() {
         var StateManager  =  window.VghLantern__AppCore__StateManager;
         if (!StateManager) return null;
 
         var project  =  StateManager.VghLantern__StateManager__GetCurrentProject();
         if (!project) return null;
 
-        var block  =  project[LAYOUT_BLOCK];
+        var block  =  project[LAYOUT_PROJECT_BLOCK];
+        return (block && typeof block === 'object' && !Array.isArray(block)) ? block : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Get or Create the Layout Block on a Lantern
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__LanternLayoutBlock(lantern, createIfMissing) {
+        if (!lantern || typeof lantern !== 'object') return null;
+
+        var block  =  lantern[LAYOUT_LANTERN_BLOCK];
         if (!block || typeof block !== 'object' || Array.isArray(block)) {
             if (!createIfMissing) return null;
             block  =  {};
-            project[LAYOUT_BLOCK]  =  block;
+            lantern[LAYOUT_LANTERN_BLOCK]  =  block;
         }
 
         return block;
@@ -782,11 +860,50 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Write the Current Sheet Setup Onto the Project File
+    // HELPER FUNCTION | Resolve the Layout Block for the Active Lantern
+    // ------------------------------------------------------------
+    // Prefers the selected lantern's own sheet setup. Falls back to the legacy
+    // project-level block only when no lantern is selected yet (project just
+    // loaded) so Restore still has something to read before the first lantern
+    // is chosen.
+    function VghLantern__SheetManager__LayoutBlock(createIfMissing) {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return null;
+
+        var lantern  =  StateManager.VghLantern__StateManager__GetCurrentLantern();
+        if (lantern) return VghLantern__SheetManager__LanternLayoutBlock(lantern, createIfMissing);
+
+        if (createIfMissing) return null;                                     // <-- Never invent a project-level write target
+        return VghLantern__SheetManager__ProjectLayoutBlock();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Map a Legacy Project Layout Block Onto Lantern Keys
+    // ------------------------------------------------------------
+    function VghLantern__SheetManager__ProjectBlockAsLanternKeys(projectBlock) {
+        if (!projectBlock) return {};
+
+        var mapped  =  {};
+        mapped[LAYOUT_SHEET_SIZE]     =  projectBlock[LAYOUT_PROJECT_SHEET_SIZE];
+        mapped[LAYOUT_ORIENTATION]    =  projectBlock[LAYOUT_PROJECT_ORIENTATION];
+        mapped[LAYOUT_SCALE]          =  projectBlock[LAYOUT_PROJECT_SCALE];
+        mapped[LAYOUT_SCALE_MANUAL]   =  projectBlock[LAYOUT_PROJECT_SCALE_MANUAL];
+        mapped[LAYOUT_COLUMN_SHARES]  =  projectBlock[LAYOUT_PROJECT_COLUMN_SHARES];
+        mapped[LAYOUT_ROW_SHARES]     =  projectBlock[LAYOUT_PROJECT_ROW_SHARES];
+        mapped[LAYOUT_ZOOM]           =  projectBlock[LAYOUT_PROJECT_ZOOM];
+        mapped[LAYOUT_CAMERAS]        =  projectBlock[LAYOUT_PROJECT_CAMERAS];
+        return mapped;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Write the Current Sheet Setup Onto the Active Lantern
     // ------------------------------------------------------------
     // Marking the project dirty is what schedules the write: AppCore already
     // debounces dirty state into a single disk save, so a gutter drag or a run of
-    // zoom steps costs one file write rather than one per event.
+    // zoom steps costs one file write rather than one per event. Flask persists
+    // the whole project JSON, so each lantern's DrawingLayout rides along.
     function VghLantern__SheetManager__RecordLayoutState(reason) {
         if (VghLantern__SheetManager__IsRestoring) return;
 
@@ -795,6 +912,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
 
         VghLantern__SheetManager__EnsureShares();
 
@@ -811,27 +929,42 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates()
             : (block[LAYOUT_CAMERAS] || {});
 
-        var StateManager  =  window.VghLantern__AppCore__StateManager;
-        if (StateManager) StateManager.VghLantern__StateManager__MarkDirty();
+        if (StateManager) {
+            var state  =  StateManager.VghLantern__StateManager__GetState();
+            VghLantern__SheetManager__LayoutLanternIndex  =  state.currentLanternIndex;
+            StateManager.VghLantern__StateManager__MarkDirty();
+        }
 
         if (reason) console.log('[VghLantern__DrawingEditor__SheetManager] Sheet setup recorded: ' + reason);
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Restore the Sheet Setup From a Newly Loaded Project
+    // FUNCTION | Restore the Sheet Setup From the Active Lantern
     // ------------------------------------------------------------
-    // A project with no recorded layout falls back to the config defaults, which is
-    // exactly what a project created before this block existed should do.
+    // A lantern with no recorded layout falls back to the config defaults, which is
+    // exactly what a newly added lantern should do. The legacy project-level block
+    // is only consulted when no lantern is selected yet.
     function VghLantern__SheetManager__RestoreLayoutState() {
         var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
         var GRID_LABEL     =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid';
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
         var gridCfg        =  VghLantern__SheetManager__GridConfig();
         var columns        =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Columns', GRID_LABEL);
         var rows           =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Rows',    GRID_LABEL);
-        var block          =  VghLantern__SheetManager__LayoutBlock(false) || {};
+
+        var lantern        =  StateManager ? StateManager.VghLantern__StateManager__GetCurrentLantern() : null;
+        var block;
+
+        if (lantern) {
+            block  =  VghLantern__SheetManager__LanternLayoutBlock(lantern, false) || {};
+        } else {
+            block  =  VghLantern__SheetManager__ProjectBlockAsLanternKeys(
+                VghLantern__SheetManager__ProjectLayoutBlock()
+            );
+        }
 
         VghLantern__SheetManager__IsRestoring  =  true;
 
@@ -866,9 +999,66 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             }
 
             VghLantern__SheetManager__ActiveLayout  =  null;
+
+            if (StateManager) {
+                var state  =  StateManager.VghLantern__StateManager__GetState();
+                VghLantern__SheetManager__LayoutLanternIndex  =  state.currentLanternIndex;
+            }
         } finally {
             VghLantern__SheetManager__IsRestoring  =  false;
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Flush Session Layout Onto the Previous Lantern Before a Switch
+    // ------------------------------------------------------------
+    // Lantern Editor tabs and the Drawing Editor selector both change the active
+    // index. Flushing first stops Kitchen's camera and scale being written onto
+    // Dining Room when the solve for the new lantern arrives.
+    function VghLantern__SheetManager__FlushLayoutBeforeLanternChange() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return;
+
+        var state      =  StateManager.VghLantern__StateManager__GetState();
+        var nextIndex  =  state.currentLanternIndex;
+        var prevIndex  =  VghLantern__SheetManager__LayoutLanternIndex;
+
+        if (prevIndex < 0 || prevIndex === nextIndex) return;
+
+        var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        var lanterns  =  project ? project['VghLantern__ProjectFile__Lanterns'] : null;
+        if (!Array.isArray(lanterns) || !lanterns[prevIndex]) return;
+
+        // Temporarily point GetCurrentLantern at the previous lantern by writing
+        // through its block directly - the active index has already moved.
+        var block  =  VghLantern__SheetManager__LanternLayoutBlock(lanterns[prevIndex], true);
+        if (!block) return;
+
+        var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+
+        VghLantern__SheetManager__EnsureShares();
+
+        block[LAYOUT_SHEET_SIZE]    =  VghLantern__DrawingEditor__SheetManager__SheetSizeKey();
+        block[LAYOUT_ORIENTATION]   =  VghLantern__DrawingEditor__SheetManager__Orientation();
+        block[LAYOUT_SCALE]         =  ScaleManager
+            ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator()
+            : null;
+        block[LAYOUT_SCALE_MANUAL]  =  VghLantern__SheetManager__IsScaleManual;
+        block[LAYOUT_COLUMN_SHARES] =  VghLantern__SheetManager__ColumnSharesPct
+            ? VghLantern__SheetManager__ColumnSharesPct.slice()
+            : null;
+        block[LAYOUT_ROW_SHARES]    =  VghLantern__SheetManager__RowSharesPct
+            ? VghLantern__SheetManager__RowSharesPct.slice()
+            : null;
+        block[LAYOUT_ZOOM]          =  VghLantern__SheetManager__ZoomFactor;
+        block[LAYOUT_CAMERAS]       =  ViewPlacement
+            ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates()
+            : (block[LAYOUT_CAMERAS] || {});
+
+        StateManager.VghLantern__StateManager__MarkDirty();
+        console.log('[VghLantern__DrawingEditor__SheetManager] Sheet setup flushed for lantern ' + prevIndex);
     }
     // ------------------------------------------------------------
 
@@ -897,6 +1087,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         var sizeSelect     =  document.getElementById('VghLantern__DrawingEditor__SheetSizeSelect');
         var orientSelect   =  document.getElementById('VghLantern__DrawingEditor__OrientationSelect');
         var scaleSelect    =  document.getElementById('VghLantern__DrawingEditor__ScaleSelect');
+        var lanternSelect  =  document.getElementById('VghLantern__DrawingEditor__LanternSelect');
 
         if (sizeSelect) {
             sizeSelect.addEventListener('change', function(e) {
@@ -922,6 +1113,22 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
                 VghLantern__SheetManager__IsScaleManual  =  true;             // <-- The choice sticks; auto fit no longer overrides it
                 VghLantern__SheetManager__RecordLayoutState('drawingLayout:scale');
                 void VghLantern__DrawingEditor__SheetManager__Render();
+            });
+        }
+
+        if (lanternSelect) {
+            lanternSelect.addEventListener('change', function(e) {
+                var StateManager  =  window.VghLantern__AppCore__StateManager;
+                if (!StateManager) return;
+
+                var nextIndex  =  parseInt(e.currentTarget.value, 10);
+                if (isNaN(nextIndex)) return;
+
+                // Flush the current sheet onto the lantern we are leaving, then switch.
+                // lanternSelected restores the incoming lantern's layout and the solve
+                // rebuilds the sheet against its geometry.
+                VghLantern__SheetManager__RecordLayoutState('drawingLayout:lanternSwitch');
+                StateManager.VghLantern__StateManager__SetCurrentLanternIndex(nextIndex);
             });
         }
 
@@ -1102,7 +1309,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
     // Called once at boot. Subscribing to the solve rather than to each edit means
     // one listener covers dimension edits, control changes and lantern switches,
-    // because all of them end in a resolve.
+    // because all of them end in a resolve. lanternSelected restores that lantern's
+    // own sheet setup before the debounced redraw paints it.
     function VghLantern__DrawingEditor__SheetManager__Init() {
         if (VghLantern__SheetManager__IsSubscribed) return;
 
@@ -1115,8 +1323,18 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         // paper, scale and viewpoint it was last saved with rather than on the
         // defaults followed by a visible correction.
         StateManager.VghLantern__StateManager__On('projectChanged', function() {
+            VghLantern__SheetManager__LayoutLanternIndex  =  -1;
             VghLantern__SheetManager__RestoreLayoutState();
             VghLantern__SheetManager__QueueRedraw();
+        });
+
+        // Lantern Editor tabs and the Drawing Editor selector both fire this. Flush
+        // the outgoing lantern first when the switch came from elsewhere (tabs),
+        // then restore the incoming lantern's sheet so the solve paints the right
+        // paper rather than the previous lantern's session state.
+        StateManager.VghLantern__StateManager__On('lanternSelected', function() {
+            VghLantern__SheetManager__FlushLayoutBeforeLanternChange();
+            VghLantern__SheetManager__RestoreLayoutState();
         });
 
         VghLantern__SheetManager__BindSheetNavigation();                       // <-- Host element is static DOM, so once is enough

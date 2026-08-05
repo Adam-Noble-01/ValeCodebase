@@ -11,7 +11,9 @@
 
    DESCRIPTION:
    - Opens in the shared app modal, so it inherits overlay and dismiss behaviour
-   - Shows a large 2D preview traced from the asset's Na__Asset__Profile2D outline
+   - Shows a large 2D preview: a component traces its index entry's Preview2d
+     block (front elevation, or a legacy Profile2D fallback), a profile traces
+     its own Na__Asset__Profile2D outline
    - Lists metadata, bounding extents, applicable member roles, and asset URLs
    - Copy-to-clipboard action for the asset id, for pasting into a config JSON
    - Reads assets only through ComponentIndexLoader / ProfileIndexLoader
@@ -140,6 +142,18 @@ const VghLantern__ComponentIndex__DetailView = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Describe the Extents Carried on a Preview2d Block
+    // ------------------------------------------------------------
+    // Preview2d already states its own width and height in mm - the build
+    // utility read them straight off the source bounding box - so this is a
+    // formatting step, not a recomputation.
+    function VghLantern__ComponentIndex__DetailView__DescribeExtentsFromPreview2d(preview2d) {
+        if (!preview2d || !isFinite(preview2d.WidthMm) || !isFinite(preview2d.HeightMm)) return '';
+        return preview2d.WidthMm.toFixed(1) + ' mm wide  x  ' + preview2d.HeightMm.toFixed(1) + ' mm tall';
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -191,9 +205,27 @@ const VghLantern__ComponentIndex__DetailView = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build the Large Preview Block from a Baked Preview2d Block
+    // ------------------------------------------------------------
+    // Components carry their front elevation as Preview2d.PathData rather than
+    // Profile2D points, so the detail panel traces it through the gallery's
+    // matching builder instead - same rule as above, different source.
+    function VghLantern__ComponentIndex__DetailView__BuildPreviewBlockFromPreview2d(preview2d, isLineArt) {
+        var Gallery  =  window.VghLantern__System__ComponentIndex;
+        var svg      =  (preview2d && Gallery && Gallery.VghLantern__ComponentIndex__BuildPreviewSvgFromPathData)
+            ? Gallery.VghLantern__ComponentIndex__BuildPreviewSvgFromPathData(preview2d, isLineArt)
+            : '';
+
+        var inner  =  svg || '<div class="VghLantern__ComponentIndex__PreviewMissing">3D only</div>';
+
+        return '<div class="VghLantern__ComponentIndex__DetailPreview">' + inner + '</div>';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build the Metadata Block
     // ------------------------------------------------------------
-    function VghLantern__ComponentIndex__DetailView__BuildMetadataBlock(resolved, outlinePoints) {
+    function VghLantern__ComponentIndex__DetailView__BuildMetadataBlock(resolved, outlinePoints, extentsText) {
         var entry     =  resolved.Entry || {};
         var asset     =  resolved.Asset || {};
         var metadata  =  asset[KEY_METADATA] || {};
@@ -209,8 +241,7 @@ const VghLantern__ComponentIndex__DetailView = (function() {
         html     +=      VghLantern__ComponentIndex__DetailView__Row('Category',
                              entry.CategoryName || entry.CategoryId);
         html     +=      VghLantern__ComponentIndex__DetailView__Row('Applicable Roles', roles);
-        html     +=      VghLantern__ComponentIndex__DetailView__Row('Extents',
-                             VghLantern__ComponentIndex__DetailView__DescribeExtents(outlinePoints));
+        html     +=      VghLantern__ComponentIndex__DetailView__Row('Extents', extentsText);
         html     +=      VghLantern__ComponentIndex__DetailView__Row('Outline Points',
                              Array.isArray(outlinePoints) ? outlinePoints.length : '');
         html     +=      VghLantern__ComponentIndex__DetailView__Row('Has Inline Mesh',
@@ -248,15 +279,35 @@ const VghLantern__ComponentIndex__DetailView = (function() {
             return;
         }
 
-        var asset          =  resolved.Asset || {};
-        var profile2d      =  asset[KEY_PROFILE2D] || {};
-        var outlinePoints  =  Array.isArray(profile2d['Na__Asset__Profile2D__Points'])
-            ? profile2d['Na__Asset__Profile2D__Points']
-            : null;
+        var entry          =  resolved.Entry;
+        var previewHtml    =  '';
+        var outlinePoints  =  null;
+        var extentsText    =  '';
+
+        if (resolved.IsProfile) {
+            // Profiles have no Preview2d block - trace the swept cross-section's
+            // own outline points, same as the gallery card does.
+            var asset      =  resolved.Asset || {};
+            var profile2d  =  asset[KEY_PROFILE2D] || {};
+            outlinePoints  =  Array.isArray(profile2d['Na__Asset__Profile2D__Points'])
+                ? profile2d['Na__Asset__Profile2D__Points']
+                : null;
+
+            previewHtml  =  VghLantern__ComponentIndex__DetailView__BuildPreviewBlock(outlinePoints);
+            extentsText  =  VghLantern__ComponentIndex__DetailView__DescribeExtents(outlinePoints);
+        } else {
+            // Components carry their front elevation pre-baked on the index
+            // entry - the same Preview2d block the gallery card already drew.
+            var preview2d  =  entry.Preview2d || null;
+
+            previewHtml  =  VghLantern__ComponentIndex__DetailView__BuildPreviewBlockFromPreview2d(
+                preview2d, entry.Has2dElevation === true);
+            extentsText  =  VghLantern__ComponentIndex__DetailView__DescribeExtentsFromPreview2d(preview2d);
+        }
 
         var bodyHtml  =  '<div class="VghLantern__ComponentIndex__DetailLayout">';
-        bodyHtml     +=      VghLantern__ComponentIndex__DetailView__BuildPreviewBlock(outlinePoints);
-        bodyHtml     +=      VghLantern__ComponentIndex__DetailView__BuildMetadataBlock(resolved, outlinePoints);
+        bodyHtml     +=      previewHtml;
+        bodyHtml     +=      VghLantern__ComponentIndex__DetailView__BuildMetadataBlock(resolved, outlinePoints, extentsText);
         bodyHtml     +=  '</div>';
 
         var actionsHtml  =  '';

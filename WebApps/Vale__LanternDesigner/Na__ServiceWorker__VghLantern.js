@@ -54,7 +54,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN          = '2026-08-04-1';                                                          // <-- Bump to invalidate every cache bucket
+    const PWA_SW_VERSION_TOKEN          = '2026-08-05-3';                                                          // <-- Bump to invalidate every cache bucket
     const PWA_SW_CACHE_NAME_SHELL       = `vghlantern-shell-${PWA_SW_VERSION_TOKEN}`;                              // <-- App shell cache id
     const PWA_SW_CACHE_NAME_DATA        = `vghlantern-data-${PWA_SW_VERSION_TOKEN}`;                               // <-- Application data cache id
     const PWA_SW_CACHE_PREFIXES_OWNED   = ['vghlantern-shell-', 'vghlantern-data-', 'na-vghlantern-cache-'];       // <-- Owned prefixes, including the superseded stub prefix
@@ -98,7 +98,8 @@
         '02__Src__AppModules/02__AppData/VghLantern__AppConfig__Main__.json',
         '02__Src__AppModules/02__AppData/VghLantern__AppData__Hotkeys__Main__.json',
         '05__Data__LanternComponentLibrary/VghLantern__ComponentDataIndex__.json',
-        '06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json'
+        '06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json',
+        '06__Data__LanternProfileLibrary/45_1000__GlazeBars/VghLantern__GlazeBarSystem__Index__.json'    // <-- Boot-critical: the takeoff reads it synchronously
     ];
     // ------------------------------------------------------------
 

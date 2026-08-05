@@ -165,8 +165,9 @@
             "ShowSheetSizeSelect"       : true,
             "ShowOrientationToggle"     : true,
             "ShowScaleSelect"           : true,
+            "ShowLanternSelector"       : true,
             "ShowDownloadPdfButton"     : true,
-            "ToolbarNote"               : "The sheet live-updates on every geometry solve and every toolbar change, so there are no manual refresh or fit controls."
+            "ToolbarNote"               : "The sheet live-updates on every geometry solve and every toolbar change, so there are no manual refresh or fit controls. ShowLanternSelector only paints when the project holds more than one lantern."
         },
 
         "VghLantern__DrawingEditor__Config__PdfExport": {

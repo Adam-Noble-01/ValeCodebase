@@ -100,12 +100,12 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const SECTION_BUILDERS  =  {
         'lanternInfo'      : { Global : 'VghLantern__LanternEditor__Section__LanternInfo',      Fn : 'VghLantern__Section__LanternInfo__Build'      },
         'formAndSize'      : { Global : 'VghLantern__LanternEditor__Section__FormAndSize',      Fn : 'VghLantern__Section__FormAndSize__Build'      },
-        'glazingBars'      : { Global : 'VghLantern__LanternEditor__Section__GlazingBars',      Fn : 'VghLantern__Section__GlazingBars__Build'      },
+        'glazeBars'        : { Global : 'VghLantern__LanternEditor__Section__GlazeBars',        Fn : 'VghLantern__Section__GlazeBars__Build'        },
         'ridgeAndHips'     : { Global : 'VghLantern__LanternEditor__Section__RidgeAndHips',     Fn : 'VghLantern__Section__RidgeAndHips__Build'     },
         'finials'          : { Global : 'VghLantern__LanternEditor__Section__Finials',          Fn : 'VghLantern__Section__Finials__Build'          },
         'buildersUpstandAndBase'      : { Global : 'VghLantern__LanternEditor__Section__BuildersUpstandAndBase',      Fn : 'VghLantern__Section__BuildersUpstandAndBase__Build'      },
         'ventilation'      : { Global : 'VghLantern__LanternEditor__Section__Ventilation',      Fn : 'VghLantern__Section__Ventilation__Build'      },
-        'finishAndGlazing' : { Global : 'VghLantern__LanternEditor__Section__FinishAndGlazing', Fn : 'VghLantern__Section__FinishAndGlazing__Build' },
+        'glazing'          : { Global : 'VghLantern__LanternEditor__Section__Glazing',          Fn : 'VghLantern__Section__Glazing__Build'          },
         'warningsAndComments' : { Global : 'VghLantern__LanternEditor__Section__WarningsAndComments', Fn : 'VghLantern__Section__WarningsAndComments__Build' }
     };
     // ------------------------------------------------------------
@@ -198,6 +198,23 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Wrap a Finish Palette as Option Objects
+    // ------------------------------------------------------------
+    // A palette entry is named rather than coded, and the name is what a lantern
+    // stores and what a schedule prints, so value and label are the same string.
+    // Keeping the palettes off the plain-string helper is deliberate: a palette
+    // entry is an object and will grow more fields, and coercing it to a string
+    // list here would mean re-deriving them at every later call site.
+    function VghLantern__ControlDescriptors__OptionsFromPalette(paletteList) {
+        if (!Array.isArray(paletteList)) return [];
+
+        return paletteList.map(function(finish) {
+            return { Value : finish.Name, Label : finish.Name, Disabled : false };
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build Options from Profile Index Entries for a Role
     // ------------------------------------------------------------
     function VghLantern__ControlDescriptors__OptionsFromProfiles(roleKey) {
@@ -273,16 +290,31 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
                 editorCfg['VghLantern__LanternEditor__Config__VentOperationTypes'], []);
         }
 
+        // The three finish palettes. One helper rather than three, because a
+        // palette is a palette: the only thing that differs between the frame, the
+        // glaze bar cap and the interior joinery is which array is read.
         if (sourceName === 'finishes') {
-            var finishes  =  finishCfg['VghLantern__Finish__Options__Config__AvailableFinishes'] || [];
-            return finishes.map(function(finish) {
-                return { Value : finish.Name, Label : finish.Name, Disabled : false };
-            });
+            return VghLantern__ControlDescriptors__OptionsFromPalette(
+                finishCfg['VghLantern__Finish__Options__Config__AvailableFinishes']);
         }
 
-        if (sourceName === 'colourReferences') {
-            return VghLantern__ControlDescriptors__OptionsFromStrings(
-                finishCfg['VghLantern__Finish__Options__Config__ColourReferences'], []);
+        if (sourceName === 'capFinishes') {
+            return VghLantern__ControlDescriptors__OptionsFromPalette(
+                finishCfg['VghLantern__Finish__Options__Config__CapFinishes']);
+        }
+
+        if (sourceName === 'trimFinishes') {
+            return VghLantern__ControlDescriptors__OptionsFromPalette(
+                finishCfg['VghLantern__Finish__Options__Config__JoineryFinishes']);
+        }
+
+        // The glaze bar trim depths. Sourced from the glaze bar system rather
+        // than from config, because the depths on offer are exactly the trim
+        // assets that exist, and a config list could disagree with them.
+        if (sourceName === 'glazeBarTrims') {
+            var GlazeBars  =  window.VghLantern__AppData__GlazeBarSystemLoader;
+            if (!GlazeBars) return [];
+            return GlazeBars.VghLantern__GlazeBarSystemLoader__ListTrimOptions();
         }
 
         return [];

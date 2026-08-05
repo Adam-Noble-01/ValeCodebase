@@ -290,14 +290,52 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
 // REGION | Category Describers
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Describe a Glaze Bar Part From What the Builder Stamped
+    // ------------------------------------------------------------
+    // A glaze bar part has no profile index entry to look up - it is one of three
+    // sections in a composite, catalogued by the glaze bar system rather than by
+    // the profile library. Left to the ordinary member path it reported "Profile:
+    // Not assigned", a placeholder section size it does not have, and the frame's
+    // material and finish, none of which is true of a bare aluminium core.
+    //
+    // Everything here comes from the userData the composite builder stamped on
+    // the mesh, so the panel quotes the part that was actually extruded.
+    // Returns null for any mesh that is not a glaze bar part.
+    function VghLantern__Env3d__InspectStats__GlazeBarFacts(pick) {
+        const object3d  =  pick.Object3d;
+        const data      =  object3d ? object3d.userData : null;
+        if (!data || !data.VghLantern__PartKey) return null;
+
+        const facts  =  [];
+
+        VghLantern__Env3d__InspectStats__Push(facts, 'Part',      data.VghLantern__PartName);
+        VghLantern__Env3d__InspectStats__Push(facts, 'Asset',     data.VghLantern__AssetId);
+        VghLantern__Env3d__InspectStats__Push(facts, 'Element',   data.VghLantern__ElementType);
+        VghLantern__Env3d__InspectStats__Push(facts, 'Material',  data.VghLantern__SpecMaterial);
+
+        // Material says what the part is made of, Finish says how it was specified,
+        // and on a painted trim those are two different answers. Absent on the
+        // core, which is never finished because it is never seen.
+        VghLantern__Env3d__InspectStats__Push(facts, 'Finish',    data.VghLantern__PartFinish);
+
+        if (typeof data.VghLantern__SectionAreaSqMm === 'number') {
+            VghLantern__Env3d__InspectStats__Push(facts, 'Section area',
+                (Math.round(data.VghLantern__SectionAreaSqMm * 10) / 10) + ' mm2');
+        }
+
+        return facts;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Describe a Structural Member
     // ------------------------------------------------------------
     function VghLantern__Env3d__InspectStats__DescribeMember(pick, lantern) {
-        const member   =  pick.Record   || {};
-        const roleKey  =  pick.RoleKey;
-        const profile  =  VghLantern__Env3d__InspectStats__ProfileForRole(lantern, roleKey);
+        const member    =  pick.Record   || {};
+        const roleKey   =  pick.RoleKey;
         const isUpstand =  ROLE_BUILDERS_UPSTAND_SET.indexOf(roleKey) !== -1;
-        const facts    =  [];
+        const glazeBar  =  VghLantern__Env3d__InspectStats__GlazeBarFacts(pick);
+        const facts     =  [];
 
         VghLantern__Env3d__InspectStats__Push(facts, 'Member id',   member.Id);
         VghLantern__Env3d__InspectStats__Push(facts, 'Length',      VghLantern__Env3d__InspectStats__Mm(member.LengthMm));
@@ -306,6 +344,18 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
         VghLantern__Env3d__InspectStats__Push(facts, 'Instances in model', pick.EntryCount);
         VghLantern__Env3d__InspectStats__Push(facts, 'Total length',
             VghLantern__Env3d__InspectStats__Metres(VghLantern__Env3d__InspectStats__TotalLengthMm(pick)));
+
+        // A glaze bar part describes itself. Everything else resolves a profile.
+        if (glazeBar) {
+            for (let i = 0; i < glazeBar.length; i++) facts.push(glazeBar[i]);
+
+            return {
+                TypeLabel : (pick.Object3d.userData.VghLantern__PartName || MEMBER_ROLE_LABELS[roleKey] || roleKey),
+                Facts     : facts
+            };
+        }
+
+        const profile  =  VghLantern__Env3d__InspectStats__ProfileForRole(lantern, roleKey);
 
         VghLantern__Env3d__InspectStats__Push(facts, 'Profile',
             profile.Entry ? (profile.Entry.Name + ' (' + profile.ProfileId + ')')
@@ -345,8 +395,10 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
 
         VghLantern__Env3d__InspectStats__Push(facts, 'Glazing spec', (block && block[FIELD_GLAZING_SPEC]) || VALUE_UNSPECIFIED);
         VghLantern__Env3d__InspectStats__Push(facts, 'Tint',        (block && block[FIELD_GLAZING_TINT]) || VALUE_UNSPECIFIED);
-        VghLantern__Env3d__InspectStats__Push(facts, 'Set back from frame',
-            VghLantern__Env3d__InspectStats__Mm(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInsetMm')));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Unit thickness',
+            VghLantern__Env3d__InspectStats__Mm(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingThicknessMm')));
+        VghLantern__Env3d__InspectStats__Push(facts, 'Inner face above bar datum',
+            VghLantern__Env3d__InspectStats__Mm(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInnerFaceOffsetMm')));
 
         return {
             TypeLabel : 'Glazing Panel',

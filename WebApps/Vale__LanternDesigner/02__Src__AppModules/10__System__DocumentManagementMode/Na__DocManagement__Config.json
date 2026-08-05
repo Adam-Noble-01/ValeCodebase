@@ -15,7 +15,7 @@
             "Issued"        : "#2a7d4f"
         },
 
-        "DefaultSortField"     : "dateCreated",
+        "DefaultSortField"     : "dateModified",
         "DefaultSortDirection" : "desc",
 
         "SearchPlaceholder"    : "Search lantern projects...",

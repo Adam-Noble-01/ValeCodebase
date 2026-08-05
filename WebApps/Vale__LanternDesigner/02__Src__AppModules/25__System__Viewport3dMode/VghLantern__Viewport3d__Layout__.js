@@ -13,7 +13,8 @@
    - Mounts one Env3d surface into the full-bleed 3D View mode panel and holds the
      surface handle for the life of the session.
    - Renders the control overlay through Viewport3d__Controls and services its
-     intents: camera presets, zoom-extents and lantern selection.
+     intents: camera presets, zoom-extents, display mode, cross section and
+     lantern selection.
    - Attaches the Env3d hover inspector and feeds its payloads to
      Viewport3d__InspectorPanel, so hovering a member names it, counts its
      siblings and shades the rest of the model back.
@@ -154,6 +155,22 @@ const VghLantern__Viewport3d__Layout = (function() {
                 VghLantern__Viewport3dLayout__SyncDisplayMode();
             },
 
+            OnElementView: function(viewKey) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface) return;
+
+                pipeline.VghLantern__Env3d__RenderPipeline__SetElementView(VghLantern__Viewport3dLayout__Surface, viewKey);
+                VghLantern__Viewport3dLayout__SyncElementView();
+            },
+
+            OnSectionMode: function(modeKey) {
+                var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+                if (!pipeline || !VghLantern__Viewport3dLayout__Surface) return;
+
+                pipeline.VghLantern__Env3d__RenderPipeline__SetSectionMode(VghLantern__Viewport3dLayout__Surface, modeKey);
+                VghLantern__Viewport3dLayout__SyncSectionMode();
+            },
+
             OnLanternSelected: function(lanternIndex) {
                 var StateManager  =  window.VghLantern__AppCore__StateManager;
                 if (!StateManager || typeof lanternIndex !== 'number' || isNaN(lanternIndex)) return;
@@ -269,6 +286,43 @@ const VghLantern__Viewport3d__Layout = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Push the Surface's Element View Out to the Overlay
+    // ------------------------------------------------------------
+    // The surface owns the view, not the UI, for the same reason it owns the
+    // display mode and the cut.
+    function VghLantern__Viewport3dLayout__SyncElementView() {
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Controls  =  window.VghLantern__Viewport3d__Controls;
+        if (!pipeline || !Controls || !VghLantern__Viewport3dLayout__Surface) return;
+        if (!pipeline.VghLantern__Env3d__RenderPipeline__GetElementView) return;
+
+        Controls.VghLantern__Viewport3d__Controls__SetActiveElementView(
+            pipeline.VghLantern__Env3d__RenderPipeline__GetElementView(VghLantern__Viewport3dLayout__Surface)
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Push the Surface's Cut State Out to the Overlay
+    // ------------------------------------------------------------
+    // The surface owns the cut, not the UI, for the same reason it owns the display
+    // mode: a highlight derived from what is actually on screen can never disagree
+    // with it. Asked of the pipeline rather than remembered here, and re-asked
+    // after every rebuild, because a cut chosen before a lantern was loaded is held
+    // and applied the moment one arrives.
+    function VghLantern__Viewport3dLayout__SyncSectionMode() {
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        var Controls  =  window.VghLantern__Viewport3d__Controls;
+        if (!pipeline || !Controls || !VghLantern__Viewport3dLayout__Surface) return;
+        if (!pipeline.VghLantern__Env3d__RenderPipeline__GetSectionMode) return;
+
+        Controls.VghLantern__Viewport3d__Controls__SetActiveSectionMode(
+            pipeline.VghLantern__Env3d__RenderPipeline__GetSectionMode(VghLantern__Viewport3dLayout__Surface)
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Refresh the Setting Out Key and Check Results
     // ------------------------------------------------------------
     // Fed from what the pipeline actually drew and from the model it built, so a
@@ -284,6 +338,8 @@ const VghLantern__Viewport3d__Layout = (function() {
             pipeline.VghLantern__Env3d__RenderPipeline__GetSetOutModel(VghLantern__Viewport3dLayout__Surface)
         );
         VghLantern__Viewport3dLayout__SyncDisplayMode();
+        VghLantern__Viewport3dLayout__SyncElementView();                      // <-- A rebuild re-applies the element view, so the highlight follows it
+        VghLantern__Viewport3dLayout__SyncSectionMode();                      // <-- A rebuild re-derives the cut, so the highlight follows it
     }
     // ------------------------------------------------------------
 

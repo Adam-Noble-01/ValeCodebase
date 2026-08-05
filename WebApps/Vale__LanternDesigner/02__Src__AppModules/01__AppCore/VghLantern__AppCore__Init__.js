@@ -70,15 +70,22 @@
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Load Both Data Library Indexes
+    // SUB FUNCTION | Load Every Data Library Index
     // ------------------------------------------------------------
+    // The glaze bar system index joins the component and profile catalogues here
+    // rather than being fetched on first render, because the takeoff reads it
+    // synchronously and the editor's trim picker needs its card previews before
+    // the first paint. It is a few kilobytes; the asset files it points at are
+    // the large ones, and those are still fetched on demand.
     async function VghLantern__AppCore__LoadDataLibraries() {
         var ComponentIndexLoader  =  window.VghLantern__AppData__ComponentIndexLoader;
         var ProfileIndexLoader    =  window.VghLantern__AppData__ProfileIndexLoader;
+        var GlazeBarSystemLoader  =  window.VghLantern__AppData__GlazeBarSystemLoader;
 
         var pending  =  [];
         if (ComponentIndexLoader) pending.push(ComponentIndexLoader.VghLantern__ComponentIndexLoader__LoadIndex());
         if (ProfileIndexLoader)   pending.push(ProfileIndexLoader.VghLantern__ProfileIndexLoader__LoadIndex());
+        if (GlazeBarSystemLoader) pending.push(GlazeBarSystemLoader.VghLantern__GlazeBarSystemLoader__LoadIndex());
         await Promise.all(pending);
     }
     // ------------------------------------------------------------

@@ -1,0 +1,41 @@
+{
+    "VghLantern__CrossSection__Config": {
+        "VghLantern__CrossSection__Config__Meta": {
+            "ConfigLabel"                     : "3D Cross Section View",
+            "ConfigVersion"                   : "0.1.0",
+            "ConfigNote"                      : "Ported from ValeVision3D 41__System__CrossSectionView. Structural and numeric values only. Lengths are stated in real millimetres and converted to world units through VghLantern__Env3d__ConfigAccess, so a number here means the same thing as a number on a drawing."
+        },
+
+        "VghLantern__CrossSection__Config__Feature": {
+            "Enabled"                         : true,
+            "EnabledNote"                     : "Master switch for the cross section tool. False leaves the 3D View overlay without the Cross Section cluster and never builds a cut plane, so the feature costs nothing at all rather than being hidden.",
+
+            "HideGroundGridWhenCut"           : true,
+            "HideGroundGridWhenCutNote"       : "The cut is applied at the renderer, so it takes the ground grid with it and leaves a grid that stops dead along the section line. That reads as a rendering fault rather than as a section, so the grid is dropped for the duration of a cut and restored on return to No Cut."
+        },
+
+        "VghLantern__CrossSection__Config__Appearance": {
+            "FillColour"                      : "#f0f0f0",
+            "FillColourNote"                  : "The solid cut face, RGB 240,240,240. Matched to ValeVision3D so a lantern sectioned here reads the same as the same lantern sectioned in a ValeVision scene.",
+
+            "LineColour"                      : "#323232",
+            "LineWidthPx"                     : 2.0,
+            "LineWidthPxNote"                 : "CSS pixels, zoom invariant, following the same reasoning as the setting-out linework: a section profile is read on screen, not issued at a scale.",
+
+            "FillInsetMm"                     : 1.2,
+            "LineInsetMm"                     : 0.4,
+            "InsetNote"                       : "How far the fill and the profile line sit BEHIND the cut plane, measured along the kept-side normal. Both must be non-zero because the clip is applied globally at the renderer, so anything sitting exactly on the plane is a coin toss away from being clipped with the model. The line is inset less than the fill so it always reads in front of it."
+        },
+
+        "VghLantern__CrossSection__Config__Tuning": {
+            "WeldToleranceMm"                 : 0.25,
+            "WeldToleranceNote"               : "Grid that contour endpoints are snapped to before they are chained into loops. This is also what lets two touching solids cancel their shared contact face, which is what produces a clean section with no internal linework. Too fine and loops fail to close on float error; too coarse and a genuine rebate detail welds shut.",
+
+            "MinLoopAreaMm2"                  : 20,
+            "MinLoopAreaNote"                 : "Loops smaller than this are discarded as slivers. Deliberately far below the ValeVision value: that tool sections buildings, this one sections a glazing bar, and a 20 mm2 loop is a real detail here rather than noise.",
+
+            "MaxCrossingSegments"             : 250000,
+            "MaxCrossingSegmentsNote"         : "Hard safety ceiling on contour segments per recompute. Tripping it abandons the fill and the profile line but leaves the clip itself active, so the model is still cut - it just loses its painted face rather than locking the browser."
+        }
+    }
+}

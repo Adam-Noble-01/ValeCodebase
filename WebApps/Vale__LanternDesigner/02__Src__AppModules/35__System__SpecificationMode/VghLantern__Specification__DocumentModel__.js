@@ -50,6 +50,7 @@ const VghLantern__Specification__DocumentModel = (function() {
     const BLOCK_IDENTITY    =  'Lantern__Identity__Config';
     const BLOCK_FORM        =  'Lantern__Form__Config';
     const BLOCK_FINISH      =  'Lantern__FinishAndGlazing__Config';
+    const BLOCK_BARS        =  'Lantern__GlazingBars__Config';                // <-- Carries the glaze bar cap and trim finishes
     const BLOCK_NOTES       =  'Lantern__Notes__Config';
     // ------------------------------------------------------------
 
@@ -123,7 +124,8 @@ const VghLantern__Specification__DocumentModel = (function() {
                                 VghLantern__DocumentModel__Read(lantern, BLOCK_FORM, 'Lantern__Form__Config__RoofForm', '')
                             ),
             FrameFinish   : VghLantern__DocumentModel__Read(lantern, BLOCK_FINISH, 'Lantern__FinishAndGlazing__Config__FrameFinish', ''),
-            ColourRef     : VghLantern__DocumentModel__Read(lantern, BLOCK_FINISH, 'Lantern__FinishAndGlazing__Config__FrameColourRef', ''),
+            CapFinish     : VghLantern__DocumentModel__Read(lantern, BLOCK_BARS,   'Lantern__GlazingBars__Config__CapFinish', ''),
+            TrimFinish    : VghLantern__DocumentModel__Read(lantern, BLOCK_BARS,   'Lantern__GlazingBars__Config__TrimFinish', ''),
             GlazingSpec   : VghLantern__DocumentModel__Read(lantern, BLOCK_FINISH, 'Lantern__FinishAndGlazing__Config__GlazingSpec', ''),
             GlazingTint   : VghLantern__DocumentModel__Read(lantern, BLOCK_FINISH, 'Lantern__FinishAndGlazing__Config__GlazingTint', ''),
             DocumentWarning : String(VghLantern__DocumentModel__Read(lantern, BLOCK_NOTES, 'Lantern__Notes__Config__DocumentWarning', '')).trim(),

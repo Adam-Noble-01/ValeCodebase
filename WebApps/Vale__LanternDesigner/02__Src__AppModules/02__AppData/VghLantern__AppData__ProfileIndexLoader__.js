@@ -285,16 +285,23 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
     // 'buildersUpstandReveal' is deliberately absent. It traces the hole through the base,
     // not a section, so an unmapped role here is exactly what stops it being
     // swept or traced as though it were a member.
+    //
+    // 'glazingBar' and 'transom' are absent for a different reason. A Vale glaze
+    // bar is three sections, not one, so it cannot be named by a single profile
+    // id. VghLantern__AppData__GlazeBarSystemLoader owns those two roles, and
+    // their absence here is what stops anything resolving them to a lone outline.
+    //
+    // 'eaves' and 'frame' are absent because neither is a swept section. The
+    // eaves ring is a datum, not a part - the metal on that line belongs to the
+    // upstand and the frame beneath it - and the frame is built as a solid prism
+    // by MeshBuilder__BuildersUpstandBox. Both used to point at an eaves profile
+    // id that never named a real profile.
     const ROLE_PROFILE_FIELDS  =  {
         'ridge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__RidgeProfileId'],
         'hip'        : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
         'verge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
-        'eaves'      : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__EavesProfileId'],
-        'frame'      : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__EavesProfileId'],
                 'buildersUpstand'       : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
-        'buildersUpstandPost'   : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
-        'glazingBar' : ['Lantern__GlazingBars__Config',   'Lantern__GlazingBars__Config__BarProfileId'],
-        'transom'    : ['Lantern__GlazingBars__Config',   'Lantern__GlazingBars__Config__BarProfileId']
+        'buildersUpstandPost'   : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId']
     };
     // ------------------------------------------------------------
 

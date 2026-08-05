@@ -52,7 +52,7 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 2400,
+                "Lantern__Dimensions__Config__WidthMm": 5000,
                 "Lantern__Dimensions__Config__DepthMm": 1400,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 50
             },
@@ -60,19 +60,21 @@
                 "Lantern__RoofPitch__Config__PitchDegrees": 25
             },
             "Lantern__GlazingBars__Config": {
-                "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
-                "Lantern__GlazingBars__Config__BarProfileId": "",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 380,
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1032",
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
             },
             "Lantern__RidgeAndHips__Config": {
-                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
-                "Lantern__RidgeAndHips__Config__HipProfileId": "",
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
                 "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
                 "Lantern__RidgeAndHips__Config__CrestingEnabled": false
             },
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
-                "Lantern__Finials__Config__FinialComponentId": "50_1001",
+                "Lantern__Finials__Config__FinialComponentId": "50_2001",
                 "Lantern__Finials__Config__FinialBaseComponentId": "",
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
@@ -81,8 +83,7 @@
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -92,13 +93,41 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""
             },
             "Lantern__Notes__Config": {
                 "Lantern__Notes__Config__DocumentWarning": "",
                 "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A4",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": false,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.9738777165434775,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 3.796905723847037,
+                            "y": 4.550202205301989,
+                            "z": 4.191736634705994
+                        },
+                        "Target": {
+                            "x": 0.39402889349035836,
+                            "y": 0.14218444932210675,
+                            "z": -0.022336495286713234
+                        }
+                    }
+                }
             }
         }
     ],

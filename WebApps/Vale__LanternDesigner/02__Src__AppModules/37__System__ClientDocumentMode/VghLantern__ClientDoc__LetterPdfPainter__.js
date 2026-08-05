@@ -349,10 +349,14 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
     // An empty string is a deliberate spacer between the postal address and the
     // contact details, matching the gap between the two groups on screen. It is
     // skipped when drawn but still advances the cursor.
-    function VghLantern__LetterPdf__CompanyLines(letter) {
+    //
+    // The company name is dropped whenever the logo printed, because the logo is
+    // itself the words "Vale Garden Houses" - the screen renderer drops it on the
+    // same test, and the two surfaces have to agree.
+    function VghLantern__LetterPdf__CompanyLines(letter, isLogoShown) {
         if (!letter.ShowCompanyDetails) return [];
 
-        var address  =  [letter.CompanyName, letter.CompanyAddressLine1,
+        var address  =  [isLogoShown ? '' : letter.CompanyName, letter.CompanyAddressLine1,
                          letter.CompanyTownCity, letter.CompanyPostCode]
             .filter(function(part) { return !!part; });
         var contact  =  [letter.CompanyPhone, letter.CompanyWebsite]
@@ -382,18 +386,22 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
             cursor.Doc.addImage(logoAsset.DataUrl, 'PNG', cursor.X, blockTopY, letter.LogoWidthMm, logoHeight);
         }
 
-        var lines     =  VghLantern__LetterPdf__CompanyLines(letter);
-        var companyY  =  blockTopY;
-        var i;
+        var isLogoShown  =  logoHeight > 0;
+        var lines        =  VghLantern__LetterPdf__CompanyLines(letter, isLogoShown);
+        var companyY     =  blockTopY;
+        var i, isNameLine;
 
         cursor.Doc.setFontSize(style.MetaPt);
 
         for (i = 0; i < lines.length; i++) {
             if (lines[i] !== '') {
-                // The company name leads the block, set bold in the heading colour
-                // exactly as the screen renderer sets it.
-                cursor.Doc.setFont('helvetica', i === 0 ? 'bold' : 'normal');
-                cursor.Doc.setTextColor(i === 0 ? style.HeadingColour : style.MetaColour);
+                // Line zero is the company name only when the logo is absent, which
+                // is the one case the block leads with a bold name in the heading
+                // colour. With the logo showing, line zero is the street address.
+                isNameLine  =  (i === 0 && !isLogoShown);
+
+                cursor.Doc.setFont('helvetica', isNameLine ? 'bold' : 'normal');
+                cursor.Doc.setTextColor(isNameLine ? style.HeadingColour : style.MetaColour);
                 cursor.Doc.text(lines[i], cursor.RightEdgeMm, companyY + lineHeight * 0.8, { align : 'right' });
             }
             companyY  +=  lineHeight;

@@ -189,14 +189,6 @@
                 "Operator"   : "gt",
                 "LimitValue" : 0,
                 "Message"    : "Finials are switched on but no finial has been chosen from the component library."
-            },
-            {
-                "Key"        : "glazingBarsWithoutProfile",
-                "Severity"   : "warning",
-                "Metric"     : "glazingBarsWithoutProfile",
-                "Operator"   : "gt",
-                "LimitValue" : 0,
-                "Message"    : "Glazing bars are laid out but no bar section has been chosen; the drawing will show a placeholder rectangle."
             }
         ]
     }

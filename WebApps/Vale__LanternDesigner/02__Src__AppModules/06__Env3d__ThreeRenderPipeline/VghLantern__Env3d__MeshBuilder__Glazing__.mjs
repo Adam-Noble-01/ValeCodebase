@@ -12,8 +12,10 @@
    DESCRIPTION:
    - Builds each solved glazing face as a translucent SLAB of the configured
      thickness, not a single plane.
-   - Panels are inset from the face plane by the configured amount so the frame
-     reads as frame rather than sitting coplanar with the glass and z-fighting.
+   - The slab is seated on the GLAZE BAR DATUM the way the real unit is. Its
+     INNER face sits GlazingInnerFaceOffsetMm ABOVE the datum, which is the
+     depth of the core's glazing leg and the setting tape the pane beds onto,
+     and the unit's thickness is then measured outward from that bedding face.
    - Draws whole slopes rather than individual panes between bars. At review
      scale the bar meshes already delineate the panes, so per-pane glass would
      multiply geometry for no visual gain.
@@ -21,16 +23,18 @@
    ---------------------------------------------------------------------------
 
    WHY THE GLASS HAS THICKNESS:
-   A sealed unit is around 20 mm over its two panes, the spacer and the seals,
-   and that depth is doing visual work. A single plane has no edge to catch light
-   where it meets a bar, and only one surface to reflect from, which is a large
-   part of why flat-plane glass reads as a tinted sheet however well the material
-   is tuned. The slab gives a visible edge at every junction and a second
-   reflection off the back face.
+   A sealed unit is 28 mm over its two panes, the spacer and the seals, and that
+   depth is doing visual work. A single plane has no edge to catch light where it
+   meets a bar, and only one surface to reflect from, which is a large part of
+   why flat-plane glass reads as a tinted sheet however well the material is
+   tuned. The slab gives a visible edge at every junction and a second reflection
+   off the back face.
 
-   Extrusion runs INWARD from the inset plane, so the outer glass surface stays
-   exactly where the old single plane sat - changing the thickness never moves
-   the visible face.
+   Extrusion runs OUTWARD from the bedding face, because that is the face the bar
+   actually locates. The pane sits down on the core's glazing leg and everything
+   above it is unit thickness, so changing the thickness moves the OUTER surface
+   up under the cap and leaves the bedding face exactly where the bar put it -
+   which is how a thicker unit behaves on the real roof.
 
    EVERY FACE IS GLASS:
    Outer cap, inner cap and edge band are all part of one buffer and so all wear
@@ -98,13 +102,18 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Convert a Face's Model Points to Inset World Points
+    // HELPER FUNCTION | Convert a Face's Model Points to Offset World Points
     // ------------------------------------------------------------
+    // The solved face plane IS the glaze bar datum - the same section zero the
+    // composite bar is built about - so offsetWorld is measured from that datum
+    // along the face's OUTWARD normal. Positive lifts the ring out through the
+    // roof towards the cap, negative drops it inside towards the trim.
+    //
     // The returned ring is wound so that a fan across it faces OUTWARD. A slab
     // has an inside and an outside, so unlike a single plane its winding has to
     // be right: computeVertexNormals reads winding, and a reversed cap would
     // light as though the sky were underneath the roof.
-    function VghLantern__Env3d__GlazingBuilder__InsetFacePoints(face, insetWorld) {
+    function VghLantern__Env3d__GlazingBuilder__OffsetFacePoints(face, offsetWorld) {
         const worldPoints  =  [];
 
         for (let i = 0; i < face.Points.length; i++) {
@@ -124,9 +133,9 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
         const raw    =  new THREE.Vector3().crossVectors(edgeA, edgeB);
         if (raw.dot(outward) < 0) worldPoints.reverse();
 
-        if (insetWorld !== 0) {
+        if (offsetWorld !== 0) {
             for (let i = 0; i < worldPoints.length; i++) {
-                worldPoints[i].addScaledVector(outward, -insetWorld);          // <-- Push the glass back under the frame
+                worldPoints[i].addScaledVector(outward, offsetWorld);          // <-- Lift the ring clear of the bar datum
             }
         }
         return worldPoints;
@@ -157,9 +166,10 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
 
     // SUB FUNCTION | Build a Glazing Slab From an Outward-Wound Ring
     // ------------------------------------------------------------
-    // Extruded INWARD from the ring, so the outer glass surface stays exactly
-    // where the single plane used to sit and the body is added behind it. The
-    // visible face does not move when the thickness is changed.
+    // The ring handed in is the OUTER face of the unit and the body is built
+    // back inward from it. The caller places that ring at the bedding offset
+    // PLUS the thickness, so the inner ring lands exactly on the bedding face
+    // above the bar datum whatever the thickness is set to.
     //
     // Emits the outer cap, the inner cap and the edge band. All three are part of
     // the same buffer and so wear the same glass material - a slab whose reverse
@@ -205,8 +215,9 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     export function VghLantern__Env3d__MeshBuilder__Glazing__Build(targetGroup, skeleton) {
         if (!targetGroup || !skeleton || !Array.isArray(skeleton.Faces)) return;
 
-        const insetWorld      =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInsetMm'));
+        const innerFaceWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInnerFaceOffsetMm'));
         const thicknessWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingThicknessMm'));
+        const outerFaceWorld  =  innerFaceWorld + thicknessWorld;             // <-- Ring goes in at the outer face; the slab closes back down onto the bedding face
         const vertices        =  [];
         const spans           =  [];
 
@@ -220,7 +231,7 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
             // name one slope out of a mesh holding all four.
             const triangleStart  =  vertices.length / VERTICES_PER_TRIANGLE;
 
-            const worldPoints  =  VghLantern__Env3d__GlazingBuilder__InsetFacePoints(face, insetWorld);
+            const worldPoints  =  VghLantern__Env3d__GlazingBuilder__OffsetFacePoints(face, outerFaceWorld);
             const outward      =  VghLantern__Env3d__GlazingBuilder__FaceNormal(worldPoints);
             VghLantern__Env3d__GlazingBuilder__BuildSlab(worldPoints, outward, thicknessWorld, vertices);
 

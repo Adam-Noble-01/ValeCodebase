@@ -1,0 +1,119 @@
+{
+    "VghLantern__ProjectFile__Metadata": {
+        "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "VghLantern__ProjectFile__Metadata__ProjectCode": "2525",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "Bay Manor",
+        "VghLantern__ProjectFile__Metadata__DocumentName": "Bay Manor Glazebars",
+        "VghLantern__ProjectFile__Metadata__ClientName": "Dr Glazebaramara",
+        "VghLantern__ProjectFile__Metadata__SiteAddress": "",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "VghLantern__ProjectFile__Metadata__DateCreated": "05-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "05-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__DateIssued": "",
+        "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
+        "VghLantern__ProjectFile__Metadata__Author": "",
+        "VghLantern__ProjectFile__Metadata__SchemaVersion": "1.0.0"
+    },
+    "VghLantern__ProjectFile__GlobalSettings": {
+        "VghLantern__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all lanterns.",
+        "VghLantern__ProjectFile__GlobalSettings__FrameFinish": "",
+        "VghLantern__ProjectFile__GlobalSettings__GlazingSpec": "",
+        "VghLantern__ProjectFile__GlobalSettings__DrawingScaleRef": "",
+        "VghLantern__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "VghLantern__ProjectFile__DrawingLayout": {
+        "VghLantern__ProjectFile__DrawingLayout__Description": "Legacy shared sheet seed. Live sheet setup is stored per lantern under Lantern__DrawingLayout__Config; this block only seeds empty lantern layouts on load.",
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": null,
+        "VghLantern__ProjectFile__DrawingLayout__Orientation": null,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": null,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
+        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
+        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
+        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {}
+    },
+    "VghLantern__ProjectFile__ClientDocument": {
+        "VghLantern__ProjectFile__ClientDocument__Description": "The client-facing welcome letter and this project's own terms. Standard terms live in the markdown library; only their on/off state is recorded here.",
+        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "",
+        "VghLantern__ProjectFile__ClientDocument__LetterBody": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
+        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {}
+    },
+    "VghLantern__ProjectFile__Lanterns": [
+        {
+            "Lantern__Identity__Config": {
+                "Lantern__Identity__Config__Id": "ltn_996322_0",
+                "Lantern__Identity__Config__Title": "",
+                "Lantern__Identity__Config__Reference": "",
+                "Lantern__Identity__Config__SortOrder": 0,
+                "Lantern__Identity__Config__Quantity": 1
+            },
+            "Lantern__Form__Config": {
+                "Lantern__Form__Config__RoofForm": "Hipped Ridge",
+                "Lantern__Form__Config__PlanRotationDeg": 0
+            },
+            "Lantern__Dimensions__Config": {
+                "Lantern__Dimensions__Config__WidthMm": 3000,
+                "Lantern__Dimensions__Config__DepthMm": 2000,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 25
+            },
+            "Lantern__RoofPitch__Config": {
+                "Lantern__RoofPitch__Config__PitchDegrees": 22.5
+            },
+            "Lantern__GlazingBars__Config": {
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
+            },
+            "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
+                "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
+                "Lantern__RidgeAndHips__Config__CrestingEnabled": false
+            },
+            "Lantern__Finials__Config": {
+                "Lantern__Finials__Config__Enabled": true,
+                "Lantern__Finials__Config__FinialComponentId": "50_1001",
+                "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
+                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
+                "Lantern__Finials__Config__PlaceAtApex": false
+            },
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
+            },
+            "Lantern__Ventilation__Config": {
+                "Lantern__Ventilation__Config__Enabled": false,
+                "Lantern__Ventilation__Config__VentComponentId": "",
+                "Lantern__Ventilation__Config__VentCount": 0,
+                "Lantern__Ventilation__Config__OperationType": ""
+            },
+            "Lantern__FinishAndGlazing__Config": {
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
+            },
+            "Lantern__Notes__Config": {
+                "Lantern__Notes__Config__DocumentWarning": "",
+                "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": null,
+                "Lantern__DrawingLayout__Config__Orientation": null,
+                "Lantern__DrawingLayout__Config__ScaleDenominator": null,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": false,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": null,
+                "Lantern__DrawingLayout__Config__RowSharesPct": null,
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {}
+            }
+        }
+    ]
+}

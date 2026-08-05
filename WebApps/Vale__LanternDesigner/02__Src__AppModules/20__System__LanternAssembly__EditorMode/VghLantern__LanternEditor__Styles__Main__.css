@@ -70,8 +70,8 @@
     #VghLantern__LanternEditor__ControlsPanel {
         display                            : flex;
         flex-direction                     : column;
-        flex                               : 0 0 var(--VghLantern_EditorControlsWidth, 420px);
-        width                              : var(--VghLantern_EditorControlsWidth, 420px);
+        flex                               : 0 0 var(--VghLantern_EditorControlsWidth, 504px);
+        width                              : var(--VghLantern_EditorControlsWidth, 504px);
         min-width                          : 0;
         min-height                         : 0;
         background-color                   : var(--Vale_BackgroundWhite);
@@ -1248,19 +1248,13 @@
     /* ------------------------------------------------------------ */
 
 
-    /* CARD | Name and Metadata Lines */
+    /* CARD | Name Line */
     /* ------------------------------------------------------------ */
     .VghLantern__ControlPanel__CardName {
         font-size                          : var(--Vale_FontSize_Small);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextPrimary);
         line-height                        : 1.25;
-    }
-
-    .VghLantern__ControlPanel__CardMeta {
-        font-size                          : calc(var(--Vale_FontSize_Small) * 0.9);
-        color                              : var(--Vale_TextSecondary);
-        line-height                        : 1.2;
     }
     /* ------------------------------------------------------------ */
 

@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Reads the project manifest via ProjectFileManager.VghLantern__ProjectFileManager__ListProjects()
    - Renders a full HTML table with project metadata columns
-   - Sortable column headers, defaulting to newest Date Created first
+   - Sortable column headers, defaulting to newest Last Modified first
    - Status column renders a colour-coded pill badge (Draft / For Approval / Issued)
    - Each row provides Open, Edit, and Delete action buttons
    - Inline edit mode turns name/document/status cells into inputs and swaps Edit for Save
@@ -69,7 +69,7 @@ const VghLantern__DocManagement__ProjectList = (function() {
     const SORT_FIELD_STATUS         =  'status';                                  // <-- Workflow status
     const SORT_FIELD_DATE_CREATED   =  'dateCreated';                             // <-- Creation timestamp
     const SORT_FIELD_DATE_MODIFIED  =  'dateModified';                            // <-- Last save timestamp
-    const DEFAULT_SORT_FIELD        =  SORT_FIELD_DATE_CREATED;
+    const DEFAULT_SORT_FIELD        =  SORT_FIELD_DATE_MODIFIED;
     const DEFAULT_SORT_DIRECTION    =  'desc';
 
     const STATUS_SORT_ORDER  =  {
@@ -84,6 +84,7 @@ const VghLantern__DocManagement__ProjectList = (function() {
     // ------------------------------------------------------------
     let VghLantern__ProjectList__SortField      =  DEFAULT_SORT_FIELD;            // <-- Active sort column
     let VghLantern__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;        // <-- 'asc' or 'desc'
+    let VghLantern__ProjectList__SortDefaultsApplied  =  false;                   // <-- Config defaults seeded on first render
     let VghLantern__ProjectList__SearchQuery    =  '';                            // <-- Live search filter text
     let VghLantern__ProjectList__EditingCode    =  null;                          // <-- Project code currently in inline edit mode
     // ------------------------------------------------------------
@@ -119,6 +120,41 @@ const VghLantern__DocManagement__ProjectList = (function() {
         if (!appConfig) return {};
 
         return appConfig['VghLantern__DocManagement__Config__EmptyState'] || {};
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve the Configured Default Sort Field
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__ResolveDefaultSortField() {
+        var tableCfg  =  VghLantern__ProjectList__TableConfig();
+        var field     =  tableCfg.DefaultSortField;
+
+        if (field && VghLantern__ProjectList__IsSortableField(field)) return field;
+        return DEFAULT_SORT_FIELD;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve the Configured Default Sort Direction
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__ResolveDefaultSortDirection() {
+        var tableCfg  =  VghLantern__ProjectList__TableConfig();
+        var direction =  tableCfg.DefaultSortDirection;
+
+        return (direction === 'asc' || direction === 'desc') ? direction : DEFAULT_SORT_DIRECTION;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Apply Table Config Sort Defaults on First Render
+    // ------------------------------------------------------------
+    function VghLantern__ProjectList__ApplyConfigSortDefaultsOnce() {
+        if (VghLantern__ProjectList__SortDefaultsApplied) return;
+
+        VghLantern__ProjectList__SortField      =  VghLantern__ProjectList__ResolveDefaultSortField();
+        VghLantern__ProjectList__SortDirection  =  VghLantern__ProjectList__ResolveDefaultSortDirection();
+        VghLantern__ProjectList__SortDefaultsApplied  =  true;
     }
     // ------------------------------------------------------------
 
@@ -321,8 +357,8 @@ const VghLantern__DocManagement__ProjectList = (function() {
         list  =  VghLantern__ProjectList__ApplySearchFilter(list);
 
         if (!VghLantern__ProjectList__IsSortableField(VghLantern__ProjectList__SortField)) {
-            VghLantern__ProjectList__SortField      =  DEFAULT_SORT_FIELD;        // <-- Recover from an invalid field
-            VghLantern__ProjectList__SortDirection  =  DEFAULT_SORT_DIRECTION;
+            VghLantern__ProjectList__SortField      =  VghLantern__ProjectList__ResolveDefaultSortField();
+            VghLantern__ProjectList__SortDirection  =  VghLantern__ProjectList__ResolveDefaultSortDirection();
         }
 
         var directionFactor  =  (VghLantern__ProjectList__SortDirection === 'asc') ? 1 : -1;
@@ -521,6 +557,8 @@ const VghLantern__DocManagement__ProjectList = (function() {
     function VghLantern__ProjectList__RenderTableOnly() {
         var container  =  document.getElementById(TABLE_CONTAINER_ID);
         if (!container) return;
+
+        VghLantern__ProjectList__ApplyConfigSortDefaultsOnce();
 
         var ProjectFileManager  =  window.VghLantern__AppData__ProjectFileManager;
         if (!ProjectFileManager) {

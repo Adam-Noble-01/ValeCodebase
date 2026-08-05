@@ -53,7 +53,7 @@
         Lighting      : { AmbientIntensity : 0.62, KeyLightIntensity : 1.05, FillLightIntensity : 0.38 },
         // Materials are deliberately absent: they moved to Na__PbrMaterials__Config.json
         // and MaterialLibrary reads that file directly rather than through here.
-        MeshBuilders  : { SkeletonMode : 'profileSweep', FallbackBarWidthMm : 40, FallbackBarDepthMm : 55, GlazingInsetMm : 6, GlazingThicknessMm : 20 },
+        MeshBuilders  : { SkeletonMode : 'profileSweep', FallbackBarWidthMm : 40, FallbackBarDepthMm : 55, GlazingInnerFaceOffsetMm : 8, GlazingThicknessMm : 28 },
         Snapshot      : { DefaultWidthPx : 2000, DefaultHeightPx : 1400, SupersampleFactor : 2 },
         SetOut        : { Enabled : true, DefaultDisplayMode : 'solid3d', CheckToleranceMm : 0.5, DepthTest : false, RenderOrder : 20 }
     };

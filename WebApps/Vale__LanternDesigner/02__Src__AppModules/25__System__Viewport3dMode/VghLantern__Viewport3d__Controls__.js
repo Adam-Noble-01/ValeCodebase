@@ -55,6 +55,8 @@ const VghLantern__Viewport3d__Controls = (function() {
     const ATTR_ACTION       =  'data-vgh-action';
     const ATTR_LANTERN      =  'data-vgh-lantern-select';
     const ATTR_DISPLAY_MODE =  'data-vgh-display-mode';
+    const ATTR_SECTION_MODE =  'data-vgh-section-mode';
+    const ATTR_ELEMENT_VIEW =  'data-vgh-element-view';
 
     const ACTION_ZOOM_FIT   =  'zoomExtents';
     // ------------------------------------------------------------
@@ -66,6 +68,8 @@ const VghLantern__Viewport3d__Controls = (function() {
     const LABEL_TOOLS       =  'Tools';
     const LABEL_LANTERN     =  'Lantern';
     const LABEL_DISPLAY     =  'Display';
+    const LABEL_SECTION     =  'Cross Section';
+    const LABEL_ELEMENTS    =  'Elements';
     const LABEL_FIT         =  'Zoom to Fit';
     const LABEL_MODE_PREFIX =  'Members: ';
     // ------------------------------------------------------------
@@ -83,6 +87,8 @@ const VghLantern__Viewport3d__Controls = (function() {
     let VghLantern__Viewport3dControls__Callbacks     =  {};                  // <-- Intent handlers supplied by Layout
     let VghLantern__Viewport3dControls__ActivePreset  =  '';                  // <-- Preset key currently highlighted
     let VghLantern__Viewport3dControls__ActiveDisplay =  '';                  // <-- Display mode key currently highlighted
+    let VghLantern__Viewport3dControls__ActiveSection =  '';                  // <-- Cross section cut key currently highlighted
+    let VghLantern__Viewport3dControls__ActiveElement =  '';                  // <-- Element view key currently highlighted
     let VghLantern__Viewport3dControls__IsBound       =  false;               // <-- Guards duplicate delegated listeners
     // ------------------------------------------------------------
 
@@ -203,6 +209,79 @@ const VghLantern__Viewport3d__Controls = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build the Element View Button Group
+    // ------------------------------------------------------------
+    // Switches between the finished lantern and the structure inside it. Distinct
+    // from the display mode beside it: that one chooses between solid geometry
+    // and setting-out linework, this one chooses which elements of the solid
+    // model are drawn, and the two are usable together.
+    //
+    // The list is asked of the pipeline rather than written out here, so a third
+    // element view would appear in this overlay with no edit to it.
+    function VghLantern__Viewport3dControls__BuildElementGroup(modeConfig) {
+        if (modeConfig.ShowElementViewToggle === false) return '';
+
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        if (!pipeline || !pipeline.VghLantern__Env3d__RenderPipeline__ListElementViews) return '';
+
+        var views  =  pipeline.VghLantern__Env3d__RenderPipeline__ListElementViews() || [];
+        if (!views.length) return '';
+
+        var html  =  '<div class="' + CSS_GROUP + '">' +
+                     '<span class="' + CSS_GROUP_LABEL + '">' + LABEL_ELEMENTS + '</span>';
+
+        var i, activeClass;
+        for (i = 0; i < views.length; i++) {
+            activeClass  =  (views[i].Key === VghLantern__Viewport3dControls__ActiveElement) ? ' ' + CSS_BTN_ACTIVE : '';
+
+            html  +=  '<button type="button" class="' + CSS_BTN + activeClass + '"' +
+                      ' ' + ATTR_ELEMENT_VIEW + '="' + VghLantern__Viewport3dControls__Escape(views[i].Key) + '">' +
+                      VghLantern__Viewport3dControls__Escape(views[i].Label) +
+                      '</button>';
+        }
+
+        return html + '</div>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Cross Section Button Group
+    // ------------------------------------------------------------
+    // Three states rather than a checkbox, because "no cut" is a view in its own
+    // right and reads better as the button a reviewer returns to than as an
+    // un-ticked box. The list is asked of the pipeline for the same reason the
+    // display modes are, and comes back empty when the feature is switched off in
+    // Na__CrossSection__Config.json, which leaves no cluster rather than an inert one.
+    //
+    // Placed between the camera presets and the tools deliberately: a cut is chosen
+    // after the viewing angle and before the reviewer starts zooming into detail.
+    function VghLantern__Viewport3dControls__BuildSectionGroup(modeConfig) {
+        if (modeConfig.ShowCrossSectionToggle === false) return '';
+
+        var pipeline  =  window.VghLantern__Env3d__RenderPipeline;
+        if (!pipeline || !pipeline.VghLantern__Env3d__RenderPipeline__ListSectionModes) return '';
+
+        var modes  =  pipeline.VghLantern__Env3d__RenderPipeline__ListSectionModes() || [];
+        if (!modes.length) return '';
+
+        var html  =  '<div class="' + CSS_GROUP + '">' +
+                     '<span class="' + CSS_GROUP_LABEL + '">' + LABEL_SECTION + '</span>';
+
+        var i, activeClass;
+        for (i = 0; i < modes.length; i++) {
+            activeClass  =  (modes[i].Key === VghLantern__Viewport3dControls__ActiveSection) ? ' ' + CSS_BTN_ACTIVE : '';
+
+            html  +=  '<button type="button" class="' + CSS_BTN + activeClass + '"' +
+                      ' ' + ATTR_SECTION_MODE + '="' + VghLantern__Viewport3dControls__Escape(modes[i].Key) + '">' +
+                      VghLantern__Viewport3dControls__Escape(modes[i].Label) +
+                      '</button>';
+        }
+
+        return html + '</div>';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build the Tool Button Group
     // ------------------------------------------------------------
     function VghLantern__Viewport3dControls__BuildToolGroup(modeConfig) {
@@ -300,6 +379,18 @@ const VghLantern__Viewport3d__Controls = (function() {
                 return;
             }
 
+            var elementEl  =  ev.target.closest('[' + ATTR_ELEMENT_VIEW + ']');
+            if (elementEl) {
+                VghLantern__Viewport3dControls__Invoke('OnElementView', elementEl.getAttribute(ATTR_ELEMENT_VIEW));
+                return;
+            }
+
+            var sectionEl  =  ev.target.closest('[' + ATTR_SECTION_MODE + ']');
+            if (sectionEl) {
+                VghLantern__Viewport3dControls__Invoke('OnSectionMode', sectionEl.getAttribute(ATTR_SECTION_MODE));
+                return;
+            }
+
             var actionEl  =  ev.target.closest('[' + ATTR_ACTION + ']');
             if (actionEl && actionEl.getAttribute(ATTR_ACTION) === ACTION_ZOOM_FIT) {
                 VghLantern__Viewport3dControls__Invoke('OnZoomExtents');
@@ -345,7 +436,9 @@ const VghLantern__Viewport3d__Controls = (function() {
         var modeConfig  =  VghLantern__Viewport3dControls__ModeConfig();
 
         hostElement.innerHTML  =  VghLantern__Viewport3dControls__BuildDisplayGroup(modeConfig) +
+                                  VghLantern__Viewport3dControls__BuildElementGroup(modeConfig) +
                                   VghLantern__Viewport3dControls__BuildPresetGroup() +
+                                  VghLantern__Viewport3dControls__BuildSectionGroup(modeConfig) +
                                   VghLantern__Viewport3dControls__BuildToolGroup(modeConfig) +
                                   VghLantern__Viewport3dControls__BuildLanternGroup(modeConfig) +
                                   VghLantern__Viewport3dControls__BuildModeReadout(modeConfig);
@@ -400,6 +493,50 @@ const VghLantern__Viewport3d__Controls = (function() {
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Highlight the Element View the Surface Is In
+    // ------------------------------------------------------------
+    // Updated in place, like every other highlight in this overlay.
+    function VghLantern__Viewport3d__Controls__SetActiveElementView(viewKey) {
+        VghLantern__Viewport3dControls__ActiveElement  =  viewKey || '';
+
+        var hostElement  =  VghLantern__Viewport3dControls__HostElement;
+        if (!hostElement) return;
+
+        var buttons  =  hostElement.querySelectorAll('[' + ATTR_ELEMENT_VIEW + ']');
+        var i;
+        for (i = 0; i < buttons.length; i++) {
+            if (buttons[i].getAttribute(ATTR_ELEMENT_VIEW) === VghLantern__Viewport3dControls__ActiveElement) {
+                buttons[i].classList.add(CSS_BTN_ACTIVE);
+            } else {
+                buttons[i].classList.remove(CSS_BTN_ACTIVE);
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Highlight the Cut the Surface Is Showing
+    // ------------------------------------------------------------
+    // Updated in place for the same reason the preset and display highlights are:
+    // repainting the whole overlay on a click would rebuild the lantern selector
+    // under the user's cursor.
+    function VghLantern__Viewport3d__Controls__SetActiveSectionMode(modeKey) {
+        VghLantern__Viewport3dControls__ActiveSection  =  modeKey || '';
+
+        var hostElement  =  VghLantern__Viewport3dControls__HostElement;
+        if (!hostElement) return;
+
+        var buttons  =  hostElement.querySelectorAll('[' + ATTR_SECTION_MODE + ']');
+        var i;
+        for (i = 0; i < buttons.length; i++) {
+            if (buttons[i].getAttribute(ATTR_SECTION_MODE) === VghLantern__Viewport3dControls__ActiveSection) {
+                buttons[i].classList.add(CSS_BTN_ACTIVE);
+            } else {
+                buttons[i].classList.remove(CSS_BTN_ACTIVE);
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -412,7 +549,9 @@ const VghLantern__Viewport3d__Controls = (function() {
     return {
         VghLantern__Viewport3d__Controls__Render          : VghLantern__Viewport3d__Controls__Render,
         VghLantern__Viewport3d__Controls__SetActivePreset      : VghLantern__Viewport3d__Controls__SetActivePreset,
-        VghLantern__Viewport3d__Controls__SetActiveDisplayMode : VghLantern__Viewport3d__Controls__SetActiveDisplayMode
+        VghLantern__Viewport3d__Controls__SetActiveDisplayMode : VghLantern__Viewport3d__Controls__SetActiveDisplayMode,
+        VghLantern__Viewport3d__Controls__SetActiveElementView : VghLantern__Viewport3d__Controls__SetActiveElementView,
+        VghLantern__Viewport3d__Controls__SetActiveSectionMode : VghLantern__Viewport3d__Controls__SetActiveSectionMode
     };
 
 // endregion -------------------------------------------------------------------

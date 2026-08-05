@@ -76,7 +76,6 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_CARD_SELECTED   =  'VghLantern__ControlPanel__Card--selected';
     const CSS_CARD_PREVIEW    =  'VghLantern__ControlPanel__CardPreview';
     const CSS_CARD_NAME       =  'VghLantern__ControlPanel__CardName';
-    const CSS_CARD_META       =  'VghLantern__ControlPanel__CardMeta';
     const CSS_CARD_EMPTY      =  'VghLantern__ControlPanel__CardEmpty';
     // ------------------------------------------------------------
 
@@ -277,10 +276,6 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             previewSvg  =  '<div class="' + CSS_CARD_PREVIEW + ' ' + CSS_CARD_EMPTY + '">No preview</div>';
         }
 
-        var metaParts  =  [];
-        if (typeof option.HeightMm === 'number') metaParts.push(Math.round(option.HeightMm) + ' mm high');
-        if (option.ProductCode)                  metaParts.push(option.ProductCode);
-
         var html  =  '<button type="button"'
                   +      ' class="' + CSS_CARD + (isSelected ? ' ' + CSS_CARD_SELECTED : '') + '"'
                   +      ' ' + ATTR_CONTROL + '="' + VghLantern__ControlPanel__Escape(descriptor.Key) + '"'
@@ -290,9 +285,6 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
                   +      ' title="' + VghLantern__ControlPanel__Escape(option.Label) + '">';
         html     +=      previewSvg;
         html     +=      '<span class="' + CSS_CARD_NAME + '">' + VghLantern__ControlPanel__Escape(option.Label) + '</span>';
-        if (metaParts.length > 0) {
-            html  +=     '<span class="' + CSS_CARD_META + '">' + VghLantern__ControlPanel__Escape(metaParts.join('  |  ')) + '</span>';
-        }
         html     +=  '</button>';
 
         return html;

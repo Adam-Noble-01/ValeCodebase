@@ -15,8 +15,10 @@
  * - Square SVG preview wells with a loading shim and missing-profile state
  * - Fixed non-scaling outline weight so every section reads at the same line
  *   thickness, plus the red insertion-origin cross
+ * - A stroke-only line-art variant for front-elevation Preview2d paths,
+ *   alongside the solid-fill outline used for a closed Profile2D silhouette
  * - Small / medium / large thumbnail toggle driving fixed-width grid columns
- * - Capability badges for the Has2dProfile / Has3d gating flags
+ * - Capability badges for the Has2dProfile / Has2dElevation / Has3d gating flags
  * - Two-column detail panel layout used inside the shared app modal
  * - Consumes --Vale_* and --VghLantern_* tokens from the global Variables sheet
  *
@@ -341,6 +343,18 @@
         stroke-width                       : 1.5;                                /* <-- Fixed screen px, paired with the non-scaling stroke below */
         stroke-linejoin                    : round;
         vector-effect                      : non-scaling-stroke;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Line-Art Variant for Front-Elevation Preview2d Paths */
+    /* ------------------------------------------------------------ */
+    /* Elevation linework is a set of open segments and arcs, not one closed
+       silhouette - the same reason a placed finial draws stroke-only in the
+       2D environment. A legacy Profile2D fallback stays on the base rule
+       above and keeps its solid fill.                                      */
+    .VghLantern__ComponentIndex__PreviewPath--lineArt {
+        fill                               : none;
     }
     /* ------------------------------------------------------------ */
 

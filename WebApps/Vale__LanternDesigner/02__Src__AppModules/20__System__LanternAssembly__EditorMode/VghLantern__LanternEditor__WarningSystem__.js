@@ -226,12 +226,8 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
         var meta     =  (skeleton && skeleton.Meta) || {};
         var spacing  =  VghLantern__WarningSystem__SpacingRange(barSet);
 
-        var barCountTotal  =  Number(((barSet && barSet.Meta) || {}).LongSlopeBarCount || 0)
-                           +  Number(((barSet && barSet.Meta) || {}).ShortSlopeBarCount || 0);
-
         var finialsOn      =  (lantern && lantern[BLOCK_FINIALS]) ? lantern[BLOCK_FINIALS]['Lantern__Finials__Config__Enabled'] === true : false;
         var finialChosen   =  VghLantern__WarningSystem__ReadText(lantern, BLOCK_FINIALS, 'Lantern__Finials__Config__FinialComponentId') !== '';
-        var barProfileSet  =  VghLantern__WarningSystem__ReadText(lantern, BLOCK_BARS, 'Lantern__GlazingBars__Config__BarProfileId') !== '';
 
         var ventsOn        =  (lantern && lantern[BLOCK_VENTS]) ? lantern[BLOCK_VENTS]['Lantern__Ventilation__Config__Enabled'] === true : false;
         var ventCount      =  ventsOn ? VghLantern__WarningSystem__ReadNumber(lantern, BLOCK_VENTS, 'Lantern__Ventilation__Config__VentCount') : 0;
@@ -252,8 +248,7 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
             maxPaneAreaSqM                 : VghLantern__WarningSystem__MaxPaneAreaSqM(skeleton, barSet),
             paneCount                      : paneCount,
             ventCountOverPaneCount         : Math.max(0, ventCount - paneCount),
-            finialsEnabledWithoutComponent : (finialsOn && !finialChosen) ? 1 : 0,
-            glazingBarsWithoutProfile      : (barCountTotal > 0 && !barProfileSet) ? 1 : 0
+            finialsEnabledWithoutComponent : (finialsOn && !finialChosen) ? 1 : 0
         };
     }
     // ------------------------------------------------------------

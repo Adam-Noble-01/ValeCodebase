@@ -3,6 +3,206 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.8 - 05-Aug-2026
+### The glazing bar becomes a real Vale glaze bar: three parts, three materials, and solids a boolean can cut
+
+A Vale roof glaze bar is not a section. It is a powder coated aluminium cap over a
+concealed structural extrusion, clad on the inside with a douglas fir moulding, and
+the model said none of that. It swept one hand-authored outline - a 50 x 82 mm block
+with a stepped cap, marked in its own file as "representative pending a traced Vale
+section" - along every rafter and called it a bar.
+
+That was fine while the 3D view only had to be looked at. It stops being fine the
+moment the tool is asked for a cutting list, because three parts of different
+materials are cut to different lengths and a single lump cannot report any of it.
+
+#### Added - `VghLantern__Geometry__SectionLoopBuilder__.js`
+- Turns an exported 2D view into closed, wound, triangulated faces. The Component
+  Editor exports a section as an unordered soup of line segments, which is all a
+  viewer that draws linework has ever needed; a solid needs to know which segments
+  form which loop, which way round it runs, and which loops are holes.
+- Stitches on a one micron lattice, walks the graph into cycles, classifies each
+  loop by nesting depth, bridges holes into their boundary and ear clips the result.
+- Winding is discarded on arrival and rebuilt from nesting depth rather than
+  trusted. The five glaze bar assets do not agree with each other: measured by
+  signed area the core and the 45 and 90 mm trims come out counter clockwise while
+  the cap and the 70 mm trim come out clockwise. A silhouette walk has no reason to
+  prefer a direction, but an extruder that believes it builds two parts of five
+  inside out, and the fault only shows as backface culling swallowing a part at
+  certain camera angles.
+- Pure arithmetic. No THREE, no DOM, no fetch, so the 2D renderers can consume it
+  when they need filled sections rather than linework.
+
+#### Added - `VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs`
+- Extrudes each of the three sections along every bar datum into its own merged
+  mesh. Three meshes rather than one is the point: each part is separately
+  pickable, separately isolatable by element type, and separately countable.
+- Assembles the buffers by hand rather than calling `THREE.ExtrudeGeometry`, which
+  is what the retired sweep used. ExtrudeGeometry emits unwelded triangles with the
+  end cap vertices separate from the wall vertices, so its output is a shell that
+  renders correctly and is not a solid - no edge is shared, so nothing downstream
+  can tell inside from outside. The cutting list comes from booleans against the hip
+  and ridge, and a boolean against a shell either fails outright or silently returns
+  the wrong volume, which would surface as a specification table quietly under
+  reporting a bar length nobody re-measures.
+- One vertex per section point per end, walls raised ring by ring so every section
+  edge produces exactly one quad, both ends capped over those same vertices. Every
+  edge is shared by exactly two triangles and every normal points out.
+- Verified against the real assets: triangle counts are exactly n-2 per face
+  (19 to 17, 205 to 203, 45 to 43), triangle sum area matches the shoelace area to
+  five decimal places, zero non-manifold edges, zero inconsistently oriented edges,
+  volume exact to nine significant figures against section area times length, and an
+  Euler characteristic of 2 for the bars and 0 for a hollow test prism.
+- Reuses the retired sweep's orientation basis unchanged, so the composite lands
+  where the single section did and no other module has to be re-reasoned about.
+
+#### Added - The glaze bar system as its own small library
+- `06__Data__LanternProfileLibrary/45_1000__GlazeBars/` holds the five exported
+  assets and a hand-authored `VghLantern__GlazeBarSystem__Index__.json`. Hand
+  authored deliberately: this is a fixed three part system rather than a catalogue,
+  and a folder scan cannot know which asset fills which slot.
+- **New `VghLantern__AppData__GlazeBarSystemLoader__.js`** caches the fetch and the
+  stitch per asset, and offers two paths - an async one that returns geometry and a
+  synchronous one answered from the index alone. The takeoff needs a part's name,
+  element type, material and section area inside a synchronous solve and never needs
+  the outline, so it does not pull the 650 kB cap file to read five fields.
+- All three parts share one section frame taken from the Top Plan view, with
+  section 0,0 on the glaze bar datum. Because the frame is shared they assemble with
+  no fitting, which is checked rather than assumed: cap against core, core against
+  trim and cap against trim all return zero solid overlap.
+
+#### Added - Trim depth chosen from pictures
+- 45 mm (default), 70 mm and 90 mm, picked from cards in the same way finials are.
+  Three numbers in a list ask the user to hold a moulding in their head; each card
+  instead draws the whole assembled bar - cap, core and that trim - so the depths
+  are compared as the shapes they are. Card art is generated from the real section
+  geometry, so it cannot drift from what gets extruded.
+- Composite section areas: 1961.4, 2936.4 and 3714.4 mm2 respectively, across an
+  overall bar width of 40.584 mm.
+
+#### Added - Element type, and a structural view in the 3D tab
+- `Na__Asset__ValeSpec__ElementType` on the asset schema, with the vocabulary
+  Structural, Trim, By Others, Flashing, Glazing. Alongside it
+  `Na__Asset__ValeSpec__SpecMaterial`, which is the downstream schedule line
+  ("Powder Coated Aluminium") and is deliberately distinct from Finish.
+- **New `VghLantern__Env3d__ElementFilter__.mjs`** switches between the finished
+  lantern and the carcass inside it. Held apart from DisplayMode because "which
+  elements" is orthogonal to "solid or setting out" - a reviewer can want the
+  structure with its setting out over it, and folding the two into one list would
+  need an entry per combination.
+- Meshes that do not yet declare a type take one from the scene group they sit in,
+  so the other builders can start declaring theirs one at a time with no change to
+  the filter. The kerb is the interesting default: a builders upstand is exactly
+  what By Others means, so it correctly drops out of a Vale structural view.
+
+#### Added - Bare mill aluminium, and a brushed grain to carry it
+- The core is never coated because it is never seen, and in the structural view it
+  is the only thing on screen, so it has to read unmistakably as bare metal rather
+  than as one more grey. Three things do that and none of them is the colour:
+  metalness at a full 1.0 kills the diffuse term so the surface is reflection alone,
+  `EnvMapIntensity` at 1.6 against the powder coat's 0.9 because bare metal returns
+  the sky where a coating scatters it, and a grain map.
+- **New `ProceduralTextures__BrushedGrain`** generates a seamless anisotropic grain
+  that varies sharply across the texture and barely at all along it. Applied as a
+  roughness map rather than a bump map: roughness is what carries anisotropy in a
+  standard PBR model, which has no true anisotropy term, and real die lines are
+  microns deep. A trace of bump at 0.00012 world units catches a grazing highlight.
+- The composite now emits UVs, with U running across the section perimeter and V
+  along the bar, both in world units. A texture that varies in U and holds steady in
+  V therefore lands as lines running the length of the bar, which is what an
+  extrusion's die lines are. Without them no map could have applied at all.
+
+#### Added - Three finish palettes rather than one
+- The frame reads `Finishes`, the glaze bar cap reads `CapFinishes` and the trim
+  reads `JoineryFinishes`. The cap does not follow the frame: the frame is painted
+  joinery and the outside of the roof carries lead flashing, so what the frame is
+  painted has no bearing on the capping above it.
+- Cap Finish and Trim Finish close the Glaze Bars section. A bar has two finished
+  faces, they point in opposite directions, and they are not one decision.
+
+#### Changed - The takeoff counts three parts, not one bar
+- One row per part per run, each carrying its section area, element type and
+  specification material. Area times run gives a volume and volume times density
+  gives a weight, which is what a materials schedule is costed from.
+- Section areas are read from the stitched geometry rather than from the index, so
+  the number multiplied by a bar length is measured from the outline that was
+  actually extruded.
+
+#### Changed - Hover inspector reports what was built
+- A glaze bar part has no profile index entry to look up. Left on the ordinary
+  member path it reported "Profile: Not assigned", a placeholder section size it
+  does not have, and the frame's material and finish, none of which is true of a
+  bare aluminium core. It now reads the userData the builder stamps.
+
+#### Removed - The eaves section
+- The eaves ring is where the roof plane meets the upstand, not a part. The metal
+  along that line belongs to the upstand and the frame beneath it, both already
+  measured, so sweeping it put a length of extrusion round the roof that nothing is
+  ordered for and no drawing shows.
+- Gone from the mesh build, the takeoff, the Frame and Builders Upstand menu and the
+  role to profile map. `Lantern__BuildersUpstandAndBase__Config__EavesProfileId` is
+  stripped on load with nothing to migrate - its own control hint read "Reserved for
+  future cornice profiles" and no eaves profile was ever authored.
+- The ring itself stays in the solved skeleton. It is the datum every hip, every
+  slope and the whole bar set-out is measured from, and the setting-out view draws
+  it. It is simply never given a section.
+
+#### Removed - The monolithic glazing bar
+- `PRF__GlazingBars/` and `PRF_GLB0001` deleted, with the category and entry taken
+  out of the profile index. `glazingBar` and `transom` are gone from the role to
+  profile map, which is what stops anything resolving a Vale glaze bar to a lone
+  outline, and `MeshBuilder__Skeleton` now skips both roles so a second section can
+  never end up inside the first.
+- `Lantern__GlazingBars__Config__BarProfileId` retired on load, and the
+  "no bar section chosen" warning deleted along with it - the composite is always
+  fitted, so the condition can no longer arise.
+- The stored block keeps its `GlazingBars` name while the section the user sees is
+  now Glaze Bars. Renaming a persisted key would force a migration over every saved
+  project on disk to change a name that appears nowhere but inside the file.
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.7 - 05-Aug-2026
+### Drawing Editor cycles multi-lantern sheets and keeps each layout on disk
+
+Multi-lantern projects such as Walkers Palace (Gary Lineker) used to share one
+Drawing Editor sheet. Switching lanterns rebuilt the geometry but kept the same
+paper, scale, grid and camera, and Flask had nowhere to store a second sheet.
+
+#### Added - Per-lantern `Lantern__DrawingLayout__Config`
+- Each lantern now owns its own sheet size, orientation, scale, grid shares,
+  zoom and 3D camera states.
+- Schema migration seeds empty lantern layouts from the legacy project-level
+  `VghLantern__ProjectFile__DrawingLayout` block, so existing composed sheets
+  are not lost on first open.
+- SheetManager reads and writes the active lantern's block. MarkDirty still
+  drives the Flask autosave of the whole project JSON, so each drawing layout
+  is persisted with its lantern.
+
+#### Added - Drawing Editor lantern selector
+- Toolbar dropdown between Scale and Download PDF when a project has two or
+  more lanterns (`ShowLanternSelector` in `Na__DrawingEditor__Config.json`).
+- Switching lanterns flushes the outgoing sheet, restores the incoming
+  lantern's layout, and re-solves so Kitchen and Dining Room drawings stay
+  independent. The same flush/restore path runs when lantern tabs change in
+  the Lantern Editor.
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.6 - 05-Aug-2026
+### Lantern Editor section order and accordion behaviour
+
+#### Changed - `Na__LanternEditor__Config.json` sections
+- Moved **Lantern Info** to the last position in the control panel menu.
+- Set `CollapseOthersOnOpen` to `true` so opening one section closes any other open section.
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.6 - 05-Aug-2026
+### Lantern Editor controls panel 20% wider
+
+#### Changed - `Na__LanternEditor__Config.json` layout defaults
+- `ControlsPanelDefaultWidthPx` 420 → 504, min 320 → 384, max 640 → 768.
+- Config remains the SSOT; layout module applies via `--VghLantern_EditorControlsWidth`.
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.1.6 - 05-Aug-2026
 ### Per-asset 3js transform override for quick seating alignment
 

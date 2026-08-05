@@ -1,88 +1,68 @@
 {
     "VghLantern__ProfileDataIndex__Meta": {
-        "GeneratedBy"                       : "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ProfileDataIndex__.py",
-        "GeneratedDate"                     : "31-Jul-2026 at 10:20",
-        "SchemaVersion"                     : "1.0.0",
-        "LibraryRoot"                       : "06__Data__LanternProfileLibrary/",
-        "ProfileCount"                      : 3,
-        "DoNotEditByHand"                   : true
+        "GeneratedBy": "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ProfileDataIndex__.py",
+        "GeneratedDate": "05-Aug-2026 at 15:00",
+        "SchemaVersion": "1.0.0",
+        "LibraryRoot": "06__Data__LanternProfileLibrary/",
+        "ProfileCount": 2,
+        "DoNotEditByHand": true,
+        "GlazeBarNote": "Glazing bars are deliberately absent. A Vale glaze bar is a three part composite, not one swept section, so it is catalogued by 06__Data__LanternProfileLibrary/45_1000__GlazeBars/VghLantern__GlazeBarSystem__Index__.json and loaded by VghLantern__AppData__GlazeBarSystemLoader."
     },
-
     "VghLantern__ProfileDataIndex__Categories": [
         {
-            "CategoryId"                    : "PRF__GlazingBars",
-            "CategoryName"                  : "Glazing Bars",
-            "FolderName"                    : "PRF__GlazingBars",
-            "SortOrder"                     : 10,
-            "Description"                   : "Sections swept along rafters and transoms across the roof slopes."
+            "CategoryId": "PRF__RidgeSections",
+            "CategoryName": "Ridge Sections",
+            "FolderName": "PRF__RidgeSections",
+            "SortOrder": 20,
+            "Description": "Sections swept along the horizontal ridge line."
         },
         {
-            "CategoryId"                    : "PRF__RidgeSections",
-            "CategoryName"                  : "Ridge Sections",
-            "FolderName"                    : "PRF__RidgeSections",
-            "SortOrder"                     : 20,
-            "Description"                   : "Sections swept along the horizontal ridge line."
-        },
-        {
-            "CategoryId"                    : "PRF__HipSections",
-            "CategoryName"                  : "Hip Sections",
-            "FolderName"                    : "PRF__HipSections",
-            "SortOrder"                     : 30,
-            "Description"                   : "Sections swept along hips and, on gabled forms, verges."
+            "CategoryId": "PRF__HipSections",
+            "CategoryName": "Hip Sections",
+            "FolderName": "PRF__HipSections",
+            "SortOrder": 30,
+            "Description": "Sections swept along hips and, on gabled forms, verges."
         }
     ],
-
     "VghLantern__ProfileDataIndex__Profiles": [
         {
-            "ProfileId"                     : "PRF_GLB0001",
-            "Name"                          : "Glazing Bar - Standard 50mm Capped",
-            "CategoryId"                    : "PRF__GlazingBars",
-            "CategoryName"                  : "Glazing Bars",
-            "JsonUrl"                       : "PRF__GlazingBars/VghLantern__Profile__PRF_GLB0001__StandardGlazingBar50__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["glazingBar", "transom"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "FaceWidthMm"                   : 50.0,
-            "SectionDepthMm"                : 82.0,
-            "SectionAreaSqMm"               : 3540.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
+            "ProfileId": "PRF_RDG0001",
+            "Name": "Ridge Section - Capped 90mm",
+            "CategoryId": "PRF__RidgeSections",
+            "CategoryName": "Ridge Sections",
+            "JsonUrl": "PRF__RidgeSections/VghLantern__Profile__PRF_RDG0001__CappedRidge90__.json",
+            "PreviewUrl": null,
+            "ApplicableRoles": [
+                "ridge"
+            ],
+            "Has2dProfile": true,
+            "Has3d": false,
+            "Glb3dUrl": null,
+            "FaceWidthMm": 90.0,
+            "SectionDepthMm": 110.0,
+            "SectionAreaSqMm": 9540.0,
+            "Revision": "A",
+            "IsDefaultForRole": true
         },
         {
-            "ProfileId"                     : "PRF_RDG0001",
-            "Name"                          : "Ridge Section - Capped 90mm",
-            "CategoryId"                    : "PRF__RidgeSections",
-            "CategoryName"                  : "Ridge Sections",
-            "JsonUrl"                       : "PRF__RidgeSections/VghLantern__Profile__PRF_RDG0001__CappedRidge90__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["ridge"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "FaceWidthMm"                   : 90.0,
-            "SectionDepthMm"                : 110.0,
-            "SectionAreaSqMm"               : 9540.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
-        },
-        {
-            "ProfileId"                     : "PRF_HIP0001",
-            "Name"                          : "Hip Section - Standard 75mm",
-            "CategoryId"                    : "PRF__HipSections",
-            "CategoryName"                  : "Hip Sections",
-            "JsonUrl"                       : "PRF__HipSections/VghLantern__Profile__PRF_HIP0001__StandardHip75__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["hip", "verge"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "FaceWidthMm"                   : 75.0,
-            "SectionDepthMm"                : 95.0,
-            "SectionAreaSqMm"               : 6815.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
+            "ProfileId": "PRF_HIP0001",
+            "Name": "Hip Section - Standard 75mm",
+            "CategoryId": "PRF__HipSections",
+            "CategoryName": "Hip Sections",
+            "JsonUrl": "PRF__HipSections/VghLantern__Profile__PRF_HIP0001__StandardHip75__.json",
+            "PreviewUrl": null,
+            "ApplicableRoles": [
+                "hip",
+                "verge"
+            ],
+            "Has2dProfile": true,
+            "Has3d": false,
+            "Glb3dUrl": null,
+            "FaceWidthMm": 75.0,
+            "SectionDepthMm": 95.0,
+            "SectionAreaSqMm": 6815.0,
+            "Revision": "A",
+            "IsDefaultForRole": true
         }
     ]
 }

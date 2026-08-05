@@ -217,6 +217,123 @@ import * as THREE from 'three';
 
 
 // -----------------------------------------------------------------------------
+// REGION | Brushed Metal Grain
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Build a Seamless Anisotropic Brushed Metal Grain
+    // ------------------------------------------------------------
+    // Extruded aluminium is not a uniform surface. It leaves the die against
+    // hardened steel and carries fine parallel lines down its length, and those
+    // die lines are the whole reason a bare extrusion reads as metal rather than
+    // as grey plastic: they smear the reflection in one direction only, so the
+    // highlight stretches along the bar as the camera moves.
+    //
+    // The isotropic Noise above cannot express that - a fractal field has no
+    // direction. This builds a grain that varies sharply ACROSS the texture and
+    // barely at all ALONG it, which is exactly what a roughness map needs to
+    // carry to produce a stretched anisotropic highlight in a standard PBR
+    // shader, without needing a true anisotropy term the material model here
+    // does not have.
+    //
+    // options:
+    //   PixelSize      canvas edge in pixels
+    //   LineDensity    independent lines across the width; higher is finer
+    //   LineContrast   how far the lines swing away from mid grey
+    //   Wander         how much a line drifts along its own length; 0 is
+    //                  perfectly straight, which reads as machined rather than
+    //                  drawn
+    //   WanderLattice  cells along the length governing that drift
+    //   Seed           any integer; same seed gives the same grain forever
+    export function VghLantern__Env3d__ProceduralTextures__BrushedGrain(options) {
+        const settings  =  Object.assign({
+            PixelSize     : 512,
+            LineDensity   : 256,
+            LineContrast  : 0.55,
+            Wander        : 0.15,
+            WanderLattice : 8,
+            Seed          : 1
+        }, options || {});
+
+        const cacheKey  =  'brushed|' + [settings.PixelSize, settings.LineDensity, settings.LineContrast,
+                                         settings.Wander, settings.WanderLattice, settings.Seed].join('|');
+
+        if (VghLantern__Env3d__ProceduralTextures__Cache[cacheKey]) {
+            return VghLantern__Env3d__ProceduralTextures__Cache[cacheKey];
+        }
+
+        const random  =  VghLantern__Env3d__ProceduralTextures__Rng(settings.Seed);
+        const size    =  settings.PixelSize;
+
+        // One independent value per line across the width. Sampled with wrapping
+        // interpolation so the left and right edges meet without a visible seam.
+        const lineCount  =  Math.max(2, Math.round(settings.LineDensity));
+        const lineValue  =  new Float32Array(lineCount);
+        for (let i = 0; i < lineCount; i++) lineValue[i]  =  random();
+
+        // A second, much coarser field along the length. This is what stops the
+        // lines reading as a printed barcode: a real drawn line fades and
+        // strengthens over its run rather than holding one value forever.
+        const wanderSize  =  Math.max(2, Math.round(settings.WanderLattice));
+        const wander      =  new Float32Array(wanderSize * wanderSize);
+        for (let i = 0; i < wander.length; i++) wander[i]  =  random();
+
+        const canvas   =  document.createElement('canvas');
+        canvas.width   =  size;
+        canvas.height  =  size;
+
+        const context   =  canvas.getContext('2d');
+        const imageData =  context.createImageData(size, size);
+        const pixels    =  imageData.data;
+
+        for (let py = 0; py < size; py++) {
+            const v  =  py / size;
+
+            for (let px = 0; px < size; px++) {
+                const u  =  px / size;
+
+                // ACROSS the grain: sharp, high frequency, wrapping.
+                const linePos   =  u * lineCount;
+                const lineIndex =  Math.floor(linePos);
+                const lineFrac  =  VghLantern__Env3d__ProceduralTextures__Smooth(linePos - lineIndex);
+                const lineA     =  lineValue[((lineIndex % lineCount) + lineCount) % lineCount];
+                const lineB     =  lineValue[((lineIndex + 1) % lineCount + lineCount) % lineCount];
+                const across    =  lineA + (lineB - lineA) * lineFrac;
+
+                // ALONG the grain: slow, low frequency, also wrapping.
+                const along  =  VghLantern__Env3d__ProceduralTextures__SampleOctave(wander, wanderSize, u, v);
+
+                let value  =  0.5 + (across - 0.5) * settings.LineContrast
+                                 + (along  - 0.5) * settings.Wander;
+                value  =  Math.max(0, Math.min(1, value));
+
+                const byte    =  Math.round(value * 255);
+                const offset  =  (py * size + px) * 4;
+                pixels[offset]      =  byte;
+                pixels[offset + 1]  =  byte;
+                pixels[offset + 2]  =  byte;
+                pixels[offset + 3]  =  255;
+            }
+        }
+
+        context.putImageData(imageData, 0, 0);
+
+        const texture  =  new THREE.CanvasTexture(canvas);
+        texture.wrapS  =  THREE.RepeatWrapping;
+        texture.wrapT  =  THREE.RepeatWrapping;
+        texture.name   =  'VghLantern__Env3d__Texture__BrushedGrain';
+
+        // Roughness and height are both linear quantities, never colour.
+        texture.colorSpace  =  THREE.NoColorSpace;
+
+        VghLantern__Env3d__ProceduralTextures__Cache[cacheKey]  =  texture;
+        return texture;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Cache Lifecycle
 // -----------------------------------------------------------------------------
 

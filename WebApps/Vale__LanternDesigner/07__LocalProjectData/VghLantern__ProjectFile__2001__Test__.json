@@ -8,7 +8,7 @@
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Issued",
         "VghLantern__ProjectFile__Metadata__DateCreated": "30-Jul-2026",
-        "VghLantern__ProjectFile__Metadata__DateModified": "31-Jul-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "05-Aug-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -45,8 +45,10 @@
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__BarCountShortSlope": 1,
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
-                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Natural Douglas Fir"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
@@ -64,7 +66,6 @@
             "Lantern__BuildersUpstandAndBase__Config": {
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 390,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": "",
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 60
             },
@@ -76,9 +77,41 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "Vale Painted Hardwood",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "Triple Glazed Toughened",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": "Neutral Solar Control"
+            },
+            "Lantern__Notes__Config": {
+                "Lantern__Notes__Config__DocumentWarning": "",
+                "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A3",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": true,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    61.878115901387,
+                    38.121884098613
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.453109348600649,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 8.253348957194698,
+                            "y": 6.8104677825146265,
+                            "z": 7.492795515055688
+                        },
+                        "Target": {
+                            "x": 0.7296793145045377,
+                            "y": -0.2584721677810195,
+                            "z": -0.015492726767391253
+                        }
+                    }
+                }
             }
         },
         {
@@ -103,8 +136,10 @@
             },
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
-                "Lantern__GlazingBars__Config__BarProfileId": "",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
@@ -123,8 +158,7 @@
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -134,9 +168,41 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""
+            },
+            "Lantern__Notes__Config": {
+                "Lantern__Notes__Config__DocumentWarning": "",
+                "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A3",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": true,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    61.878115901387,
+                    38.121884098613
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.453109348600649,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 8.253348957194698,
+                            "y": 6.8104677825146265,
+                            "z": 7.492795515055688
+                        },
+                        "Target": {
+                            "x": 0.7296793145045377,
+                            "y": -0.2584721677810195,
+                            "z": -0.015492726767391253
+                        }
+                    }
+                }
             }
         },
         {
@@ -161,8 +227,10 @@
             },
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 500,
-                "Lantern__GlazingBars__Config__BarProfileId": "",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
@@ -181,8 +249,7 @@
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 50,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -192,9 +259,41 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""
+            },
+            "Lantern__Notes__Config": {
+                "Lantern__Notes__Config__DocumentWarning": "",
+                "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A3",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": true,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    61.878115901387,
+                    38.121884098613
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.453109348600649,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 8.253348957194698,
+                            "y": 6.8104677825146265,
+                            "z": 7.492795515055688
+                        },
+                        "Target": {
+                            "x": 0.7296793145045377,
+                            "y": -0.2584721677810195,
+                            "z": -0.015492726767391253
+                        }
+                    }
+                }
             }
         }
     ],
@@ -226,5 +325,14 @@
                 }
             }
         }
+    },
+    "VghLantern__ProjectFile__ClientDocument": {
+        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "",
+        "VghLantern__ProjectFile__ClientDocument__LetterBody": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
+        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {}
     }
 }

@@ -31,11 +31,25 @@
    ---------------------------------------------------------------------------
 
    MATERIAL ROLES:
-       frame        all structural members: builders upstand, eaves, ridge, hip, bars
-       glazing      translucent glass faces
-       builders upstand         builders upstand and base, usually a slightly different tone to frame
-       component    fallback for GLB components with no embedded material
-       skeletonLine line-mode fallback when a profile is unavailable
+       frame            all structural members: base frame, eaves, ridge, hip
+       glazing          translucent glass faces
+       buildersUpstand  builders upstand and base, usually a slightly different tone to frame
+       component        library components, coated to match the frame
+       skeletonLine     line-mode fallback when a profile is unavailable
+       grp              glass reinforced plastic: the kerb and any flat roof
+       millAluminium    the concealed glaze bar core, never coated
+       glazeBarCap      the glaze bar cap, from the cap finish palette
+       glazeBarTrim     the glaze bar trim, from the joinery finish palette
+
+   THREE PALETTES, NOT ONE:
+   Three elements are specified separately and each reads its own array out of
+   Na__PbrMaterials__Config.json - the frame from Finishes, the glaze bar cap from
+   CapFinishes and the glaze bar trim from JoineryFinishes. ROLE_PALETTE_KEY is
+   the whole of that mapping; everything else about resolving a finish is shared.
+
+   The cap does not follow the frame. The frame is painted joinery and the outside
+   of the roof carries lead flashing, so the frame colour has no bearing on what
+   the capping above it is finished in.
 
    HOVER INSPECTOR ROLES:
        ghost / ghostGlazing                    the model receding behind a hover
@@ -58,6 +72,7 @@ import {
 
 import {
     VghLantern__Env3d__ProceduralTextures__Noise,
+    VghLantern__Env3d__ProceduralTextures__BrushedGrain,
     VghLantern__Env3d__ProceduralTextures__DisposeAll
 } from './VghLantern__Env3d__ProceduralTextures__.mjs';
 
@@ -77,13 +92,39 @@ import {
     const ROLE_COMPONENT      =  'component';                                // <-- GLB fallback material
     const ROLE_SKELETON_LINE  =  'skeletonLine';                             // <-- Line-mode member fallback
     const ROLE_GRP            =  'grp';                                      // <-- Glass reinforced plastic: kerb and flat roof
+    const ROLE_MILL_ALUMINIUM =  'millAluminium';                            // <-- Bare extrusion: the concealed glaze bar core
 
-    const FIXED_COLOUR_ROLES  =  [ROLE_GLAZING, ROLE_SKELETON_LINE, ROLE_BUILDERS_UPSTAND, ROLE_GRP];
+    const ROLE_BAR_CAP        =  'glazeBarCap';                              // <-- Glaze bar cap, finished from its own palette
+    const ROLE_BAR_TRIM       =  'glazeBarTrim';                             // <-- Glaze bar trim, finished from the joinery palette
+
+    // These roles are made of what they are made of. A concealed core, a sheet of
+    // glass or a GRP kerb has no finish to choose, so asking for one of them with
+    // a finish name returns the same material either way.
+    //
+    // The two glaze bar roles are NOT in this list. They used to be - the cap
+    // followed the frame and the trim was always bare douglas fir - but both are
+    // now specified in their own right, so each caches per finish name like the
+    // frame does. Bare douglas fir did not disappear with the fixed trim: it is
+    // the Timber role BLOCK, reached through the joinery palette's Natural Douglas
+    // Fir entry, which delegates to it rather than restating its numbers.
+    const FIXED_COLOUR_ROLES  =  [ROLE_GLAZING, ROLE_SKELETON_LINE, ROLE_BUILDERS_UPSTAND, ROLE_GRP, ROLE_MILL_ALUMINIUM];
 
     const PBR_CONFIG_KEY      =  'VghLantern__PbrMaterials__Config';         // <-- Palette and surface response SSOT
     const PBR_FINISHES_KEY    =  'VghLantern__PbrMaterials__Config__Finishes';
+    const PBR_CAP_KEY         =  'VghLantern__PbrMaterials__Config__CapFinishes';
+    const PBR_JOINERY_KEY     =  'VghLantern__PbrMaterials__Config__JoineryFinishes';
     const PBR_DEFAULTS_KEY    =  'VghLantern__PbrMaterials__Config__FinishDefaults';
     const PBR_ROLES_KEY       =  'VghLantern__PbrMaterials__Config__RoleMaterials';
+
+    // Which palette each finish-driven role picks its named finish out of. The
+    // frame and the library components share one because a Vale component is
+    // supplied coated to match the lantern it belongs to.
+    const ROLE_PALETTE_KEY    =  {
+        frame        : PBR_FINISHES_KEY,
+        component    : PBR_FINISHES_KEY,
+        glazeBarCap  : PBR_CAP_KEY,
+        glazeBarTrim : PBR_JOINERY_KEY
+    };
     // ------------------------------------------------------------
 
 
@@ -144,52 +185,82 @@ import {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Resolve a Finish Name to Its Full PBR Profile
+    // HELPER FUNCTION | The Profile Used When a Finish Name Resolves to Nothing
     // ------------------------------------------------------------
-    // The palette is config, never a local copy. An unknown or empty finish name
-    // falls back to the documented neutral coated aluminium, which deliberately
-    // matches no real product so a mis-stored finish is visible rather than
-    // silently plausible.
-    export function VghLantern__Env3d__MaterialLibrary__FinishProfile(finishName) {
+    // The documented neutral coated aluminium, which deliberately matches no real
+    // product so a mis-stored finish is visible rather than silently plausible.
+    function VghLantern__Env3d__MaterialLibrary__FallbackProfile() {
         const config    =  VghLantern__Env3d__MaterialLibrary__PbrConfig();
         const defaults  =  (config && config[PBR_DEFAULTS_KEY]) || {};
 
-        const fallbackProfile  =  {
+        return {
             HexColor           : defaults.FallbackHexColor  || '#8d9095',
             RenderAlbedoHex    : defaults.FallbackHexColor  || '#8d9095',
             Roughness          : (typeof defaults.FallbackRoughness === 'number') ? defaults.FallbackRoughness : 0.5,
             Metalness          : (typeof defaults.FallbackMetalness === 'number') ? defaults.FallbackMetalness : 0.08,
             ClearCoat          : 0,
             ClearCoatRoughness : 0,
-            EnvMapIntensity    : 1
+            EnvMapIntensity    : 1,
+            FlatShading        : false,
+            UsesMaterial       : ''
         };
+    }
+    // ------------------------------------------------------------
 
-        if (!finishName || !config) return fallbackProfile;
 
-        const finishList  =  config[PBR_FINISHES_KEY];
-        if (!Array.isArray(finishList)) return fallbackProfile;
+    // FUNCTION | Resolve a Finish Name Against a Named Palette
+    // ------------------------------------------------------------
+    // The palettes are config, never a local copy. paletteKey names which of the
+    // three arrays to search - the frame finishes, the glaze bar cap finishes or
+    // the interior joinery finishes - so one lookup serves all three and a fourth
+    // palette is a constant rather than another copy of this function.
+    //
+    // An entry may delegate with UsesMaterial instead of carrying its own numbers,
+    // which is how Natural Douglas Fir points at the Timber role block rather than
+    // restating it. The delegation is passed back rather than followed here,
+    // because it names a ROLE block and this function only knows about palettes.
+    export function VghLantern__Env3d__MaterialLibrary__PaletteProfile(paletteKey, finishName) {
+        const config    =  VghLantern__Env3d__MaterialLibrary__PbrConfig();
+        const fallback  =  VghLantern__Env3d__MaterialLibrary__FallbackProfile();
+
+        if (!finishName || !config) return fallback;
+
+        const finishList  =  config[paletteKey];
+        if (!Array.isArray(finishList)) return fallback;
 
         for (let i = 0; i < finishList.length; i++) {
             const finish  =  finishList[i];
             if (!finish || finish.Name !== finishName) continue;
 
             return {
-                HexColor           : finish.HexColor || fallbackProfile.HexColor,
+                HexColor           : finish.HexColor || fallback.HexColor,
                 // The colour the 3D surface is actually built with. A finish may
                 // declare a render albedo distinct from its swatch, because a
                 // paint chip photographed under studio light is not the same
                 // quantity as diffuse albedo - the gap is widest on dark colours.
                 // The swatch above still drives the 2D fill and the schedule.
-                RenderAlbedoHex    : finish.RenderAlbedoHex || finish.HexColor || fallbackProfile.HexColor,
-                Roughness          : (typeof finish.Roughness === 'number') ? finish.Roughness : fallbackProfile.Roughness,
-                Metalness          : (typeof finish.Metalness === 'number') ? finish.Metalness : fallbackProfile.Metalness,
+                RenderAlbedoHex    : finish.RenderAlbedoHex || finish.HexColor || fallback.HexColor,
+                Roughness          : (typeof finish.Roughness === 'number') ? finish.Roughness : fallback.Roughness,
+                Metalness          : (typeof finish.Metalness === 'number') ? finish.Metalness : fallback.Metalness,
                 ClearCoat          : (typeof finish.ClearCoat === 'number') ? finish.ClearCoat : 0,
                 ClearCoatRoughness : (typeof finish.ClearCoatRoughness === 'number') ? finish.ClearCoatRoughness : 0,
-                EnvMapIntensity    : (typeof finish.EnvMapIntensity === 'number') ? finish.EnvMapIntensity : 1
+                EnvMapIntensity    : (typeof finish.EnvMapIntensity === 'number') ? finish.EnvMapIntensity : 1,
+                FlatShading        : finish.FlatShading === true,
+                UsesMaterial       : finish.UsesMaterial || ''
             };
         }
 
-        return fallbackProfile;
+        return fallback;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve a Frame Finish Name to Its Full PBR Profile
+    // ------------------------------------------------------------
+    // The frame palette specifically. Kept as its own named entry point because it
+    // is what almost every caller wants and because it predates the other two.
+    export function VghLantern__Env3d__MaterialLibrary__FinishProfile(finishName) {
+        return VghLantern__Env3d__MaterialLibrary__PaletteProfile(PBR_FINISHES_KEY, finishName);
     }
     // ------------------------------------------------------------
 
@@ -294,16 +365,25 @@ import {
 // REGION | Material Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build a Finish-Driven Surface (Frame and Components)
+    // HELPER FUNCTION | Build a Finish-Driven Surface (Frame, Components, Bar Parts)
     // ------------------------------------------------------------
-    // ClearCoat above zero promotes the material to MeshPhysicalMaterial, which
-    // is the difference between a powder coated surface and a bare metal one.
+    // ClearCoat above zero promotes the material to MeshPhysicalMaterial, which is
+    // the difference between a coated surface and a bare metal one. It carries a
+    // second job on the joinery paints: at around 0.06 with a high clearcoat
+    // roughness it is the soft broad sheen of an eggshell rather than the thin
+    // lacquer of a powder coat, which is the same mechanism turned right down.
+    //
+    // FlatShading is honoured here because the glaze bar parts are welded, indexed
+    // solids built for a boolean pass. Their hard arrises have to come from the
+    // shading model rather than from splitting vertices, which would break exactly
+    // the property the weld exists to provide.
     function VghLantern__Env3d__MaterialLibrary__BuildFinishSurface(profile) {
         const common  =  {
             color           : new THREE.Color(profile.RenderAlbedoHex || profile.HexColor),
             roughness       : profile.Roughness,
             metalness       : profile.Metalness,
-            envMapIntensity : profile.EnvMapIntensity
+            envMapIntensity : profile.EnvMapIntensity,
+            flatShading     : profile.FlatShading === true
         };
 
         if (profile.ClearCoat > 0) {
@@ -426,6 +506,119 @@ import {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build a Plain Config-Driven Standard Surface
+    // ------------------------------------------------------------
+    // For the materials that are simply what they are - bare douglas fir, a
+    // concealed extrusion - and need neither a finish lookup nor a procedural
+    // texture. Every value comes from the named role block, so adding another such
+    // material is a config entry rather than a new builder.
+    //
+    // Reached two ways: directly, for a role that has no finish to choose, and via
+    // a palette entry's UsesMaterial, which is how an offered finish can BE one of
+    // these role blocks instead of restating it.
+    //
+    // FlatShading is honoured here because these surfaces clothe the glaze bar
+    // solids, which are welded and indexed so that a boolean can use them. Hard
+    // arrises therefore have to come from the shading model rather than from
+    // splitting vertices, which would break exactly the property the weld exists
+    // to provide.
+    function VghLantern__Env3d__MaterialLibrary__BuildPlainSurface(blockName) {
+        const block  =  VghLantern__Env3d__MaterialLibrary__RoleBlock(blockName);
+
+        return new THREE.MeshStandardMaterial({
+            color           : new THREE.Color(block.HexColor || '#a8abae'),
+            roughness       : (typeof block.Roughness === 'number')       ? block.Roughness       : 0.5,
+            metalness       : (typeof block.Metalness === 'number')       ? block.Metalness       : 0,
+            envMapIntensity : (typeof block.EnvMapIntensity === 'number') ? block.EnvMapIntensity : 1,
+            flatShading     : block.FlatShading === true
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Bare Mill Finish Aluminium
+    // ------------------------------------------------------------
+    // The concealed glaze bar core, and the one material in the model that is
+    // deliberately NOT the lantern's finish. In the structural view it is the
+    // only thing on screen, so the whole point of it is to be unmistakably bare
+    // metal rather than one more grey.
+    //
+    // Three things do that work, and none of them is the colour:
+    //   metalness 1      kills the diffuse term entirely, so the surface is
+    //                    reflection alone - the single biggest difference
+    //                    between metal and coated metal
+    //   envMapIntensity  well above the powder coat's, because bare aluminium
+    //                    returns the sky where a coating scatters it
+    //   the grain map    die lines running the length of the extrusion, which
+    //                    stretch the highlight along the bar
+    //
+    // The grain is a ROUGHNESS map first and a bump map second. Roughness is
+    // what carries anisotropy in a standard PBR model - the shader has no true
+    // anisotropy term - and relief on a real die line is microns deep, far too
+    // shallow to read as texture.
+    function VghLantern__Env3d__MaterialLibrary__BuildMillAluminium() {
+        const metal  =  VghLantern__Env3d__MaterialLibrary__RoleBlock('MillAluminium');
+
+        const material  =  new THREE.MeshStandardMaterial({
+            color           : new THREE.Color(metal.HexColor || '#c7ccd1'),
+            roughness       : (typeof metal.Roughness === 'number')       ? metal.Roughness       : 0.30,
+            metalness       : (typeof metal.Metalness === 'number')       ? metal.Metalness       : 1.0,
+            envMapIntensity : (typeof metal.EnvMapIntensity === 'number') ? metal.EnvMapIntensity : 1.6,
+            flatShading     : metal.FlatShading === true
+        });
+
+        if (metal.GrainEnabled === false) return material;
+
+        try {
+            const grain  =  VghLantern__Env3d__ProceduralTextures__BrushedGrain({
+                PixelSize     : metal.GrainPixelSize,
+                LineDensity   : metal.GrainLineDensity,
+                LineContrast  : metal.GrainLineContrast,
+                Wander        : metal.GrainWander,
+                WanderLattice : metal.GrainWanderLattice,
+                Seed          : metal.GrainSeed
+            });
+
+            // The mesh carries UVs in world units with U across the section and V
+            // along the bar, so the repeat is tiles per world unit and V is held
+            // at one to keep the grain running unbroken down the length.
+            const repeatU  =  (typeof metal.GrainRepeatU === 'number') ? metal.GrainRepeatU : 4;
+            const repeatV  =  (typeof metal.GrainRepeatV === 'number') ? metal.GrainRepeatV : 1;
+
+            // Three multiplies the map through the scalar, so the scalar has to
+            // become the TOP of the wanted band and the map's mid grey then lands
+            // mid band. Setting roughness and the map independently is the usual
+            // way this goes wrong: the material ends up darker and flatter than
+            // either value suggests.
+            const roughMin  =  (typeof metal.GrainRoughnessMin === 'number') ? metal.GrainRoughnessMin : 0.16;
+            const roughMax  =  (typeof metal.GrainRoughnessMax === 'number') ? metal.GrainRoughnessMax : 0.46;
+
+            const grainMap  =  grain.clone();                                 // <-- Cloned so this material owns its own repeat without disturbing the cached source
+            grainMap.needsUpdate  =  true;
+            grainMap.wrapS  =  THREE.RepeatWrapping;
+            grainMap.wrapT  =  THREE.RepeatWrapping;
+            grainMap.repeat.set(repeatU, repeatV);
+
+            material.roughness     =  roughMax;
+            material.roughnessMap  =  grainMap;
+            material.userData.VghLantern__RoughnessFloor  =  roughMin;        // <-- Recorded for anyone tuning the band later
+
+            if (typeof metal.GrainBumpScale === 'number' && metal.GrainBumpScale > 0) {
+                material.bumpMap    =  grainMap;
+                material.bumpScale  =  metal.GrainBumpScale;
+            }
+
+        } catch (error) {
+            // A canvas that will not allocate is a reason to render the metal
+            // plain, never a reason to fail the whole scene build.
+            console.warn('[VghLantern Env3d] Brushed grain could not be generated - core renders untextured:', error);
+        }
+
+        return material;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Material for a Role
     // ------------------------------------------------------------
     function VghLantern__Env3d__MaterialLibrary__Build(roleKey, finishName) {
@@ -447,6 +640,9 @@ import {
         } else if (roleKey === ROLE_GRP) {
             material  =  VghLantern__Env3d__MaterialLibrary__BuildGrp();
 
+        } else if (roleKey === ROLE_MILL_ALUMINIUM) {
+            material  =  VghLantern__Env3d__MaterialLibrary__BuildMillAluminium();
+
         } else if (roleKey === ROLE_BUILDERS_UPSTAND) {
             // The kerb declares which material it is finished in rather than
             // carrying a colour, so changing the whole kerb finish is one config
@@ -461,10 +657,20 @@ import {
             });
 
         } else {
-            // Frame and library components both wear the lantern's chosen finish,
-            // because a Vale component is supplied coated to match its lantern.
-            material  =  VghLantern__Env3d__MaterialLibrary__BuildFinishSurface(
-                VghLantern__Env3d__MaterialLibrary__FinishProfile(finishName));
+            // Every remaining role is finish-driven: the frame, the library
+            // components that are supplied coated to match it, and the two glaze
+            // bar parts that carry finishes of their own. Which palette the name
+            // is looked up in is the only thing that differs between them.
+            const paletteKey  =  ROLE_PALETTE_KEY[roleKey] || PBR_FINISHES_KEY;
+            const profile     =  VghLantern__Env3d__MaterialLibrary__PaletteProfile(paletteKey, finishName);
+
+            // A palette entry may delegate to a role block rather than carry its
+            // own surface, which is how Natural Douglas Fir resolves to the same
+            // timber every unpainted trim has always been built from instead of
+            // restating those numbers in a second place.
+            material  =  profile.UsesMaterial
+                ? VghLantern__Env3d__MaterialLibrary__BuildPlainSurface(profile.UsesMaterial)
+                : VghLantern__Env3d__MaterialLibrary__BuildFinishSurface(profile);
         }
 
         material.name                         =  'VghLantern__Env3d__Material__' + roleKey;
@@ -520,6 +726,24 @@ import {
 
     export function VghLantern__Env3d__MaterialLibrary__Component(finishName) {
         return VghLantern__Env3d__MaterialLibrary__Get(ROLE_COMPONENT, finishName);
+    }
+
+    // The concealed glaze bar core. Bare mill extrusion, never coated, because it
+    // is never seen once the cap and trim are on - so it takes no finish name.
+    export function VghLantern__Env3d__MaterialLibrary__MillAluminium() {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_MILL_ALUMINIUM, null);
+    }
+
+    // The two finished faces of a glaze bar, each specified in its own right. The
+    // cap does NOT follow the frame: the frame is painted joinery and the outside
+    // of the roof is dressed in lead flashing, so what the frame is painted has no
+    // bearing on the capping above it.
+    export function VghLantern__Env3d__MaterialLibrary__GlazeBarCap(capFinishName) {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_BAR_CAP, capFinishName);
+    }
+
+    export function VghLantern__Env3d__MaterialLibrary__GlazeBarTrim(trimFinishName) {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_BAR_TRIM, trimFinishName);
     }
 
     export function VghLantern__Env3d__MaterialLibrary__SkeletonLine() {

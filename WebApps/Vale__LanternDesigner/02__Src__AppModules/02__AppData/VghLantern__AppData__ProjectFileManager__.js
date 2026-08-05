@@ -405,7 +405,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__GlobalSettings__JobNotes'         : ''
             },
             'VghLantern__ProjectFile__DrawingLayout': {
-                'VghLantern__ProjectFile__DrawingLayout__Description'       : 'How the Drawing Editor sheet was last set up. Null means fall back to the Drawing Editor config default.',
+                'VghLantern__ProjectFile__DrawingLayout__Description'       : 'Legacy shared sheet seed. Live sheet setup is stored per lantern under Lantern__DrawingLayout__Config; this block only seeds empty lantern layouts on load.',
                 'VghLantern__ProjectFile__DrawingLayout__SheetSizeKey'      : null,
                 'VghLantern__ProjectFile__DrawingLayout__Orientation'       : null,
                 'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator'  : null,

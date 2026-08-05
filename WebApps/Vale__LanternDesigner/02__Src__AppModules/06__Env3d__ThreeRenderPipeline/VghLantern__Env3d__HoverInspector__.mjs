@@ -51,6 +51,7 @@ import {
     VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 import { VghLantern__Env3d__PickIndex__Resolve, VghLantern__Env3d__PickIndex__InstanceKey, VghLantern__Env3d__PickIndex__RaycastRoots } from './VghLantern__Env3d__PickIndex__.mjs';
+import { VghLantern__CrossSection__IsPointClipped } from '../26__System__CrossSectionView/VghLantern__CrossSection__SystemLogic__.mjs';
 import { VghLantern__Env3d__HighlightLayer__Apply, VghLantern__Env3d__HighlightLayer__Clear } from './VghLantern__Env3d__HighlightLayer__.mjs';
 import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__InspectStats__.mjs';
 
@@ -93,6 +94,11 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
     // Walks the hit list rather than taking hits[0], because an object whose
     // category is switched off in config carries no pick table and should be seen
     // straight through rather than blocking what is behind it.
+    //
+    // Hits inside a cross section's removed half are skipped for the same reason.
+    // Clipping is a shader effect, so the raycaster still finds the half that was
+    // cut away, and without this the cursor would name a member that is not on
+    // screen while ignoring the one the reviewer opened the section to look at.
     function VghLantern__Env3d__HoverInspector__PickAtPointer(surface) {
         const state  =  surface.InspectorState;
         if (!state || !surface.Camera) return null;
@@ -108,6 +114,7 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
         const hits  =  state.Raycaster.intersectObjects(VghLantern__Env3d__PickIndex__RaycastRoots(surface), true);
 
         for (let i = 0; i < hits.length; i++) {
+            if (VghLantern__CrossSection__IsPointClipped(surface, hits[i].point)) continue;
             const resolved  =  VghLantern__Env3d__PickIndex__Resolve(hits[i]);
             if (resolved) return resolved;
         }

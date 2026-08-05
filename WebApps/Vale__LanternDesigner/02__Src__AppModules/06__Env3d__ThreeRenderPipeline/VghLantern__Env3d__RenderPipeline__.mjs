@@ -24,6 +24,7 @@
        Render(surface, skeleton, ...)   rebuild the solid model AND the setting out
        ApplyPreset(surface, key)        isometric / front / side / plan
        SetDisplayMode(surface, key)     solid3d / both / setOut
+       SetSectionMode(surface, key)     none / lateral / longitudinal
        AttachInspector(surface, cb)     hover and pin model inspection
        Snapshot(surface, options)       PNG data URL for the drawing sheet
        Dispose(surface)                 release the WebGL context
@@ -67,6 +68,13 @@ import { VghLantern__Env3d__EnvironmentMap__Ready } from './VghLantern__Env3d__E
 import { VghLantern__Env3d__MeshBuilder__Skeleton__Build, VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode } from './VghLantern__Env3d__MeshBuilder__Skeleton__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build } from './VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
+import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build } from './VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs';
+import {
+    VghLantern__Env3d__ElementFilter__Apply,
+    VghLantern__Env3d__ElementFilter__Current,
+    VghLantern__Env3d__ElementFilter__Label,
+    VghLantern__Env3d__ElementFilter__List
+} from './VghLantern__Env3d__ElementFilter__.mjs';
 import { VghLantern__Env3d__ComponentLoader__Glb__Build, VghLantern__Env3d__ComponentLoader__Glb__ClearCache } from './VghLantern__Env3d__ComponentLoader__Glb__.mjs';
 import { VghLantern__Env3d__SnapshotExporter__Capture, VghLantern__Env3d__SnapshotExporter__CapturePreset } from './VghLantern__Env3d__SnapshotExporter__.mjs';
 import { VghLantern__Env3d__MaterialLibrary__DisposeAll } from './VghLantern__Env3d__MaterialLibrary__.mjs';
@@ -89,6 +97,18 @@ import {
     VghLantern__Env3d__HoverInspector__Clear,
     VghLantern__Env3d__HoverInspector__IsAttached
 } from './VghLantern__Env3d__HoverInspector__.mjs';
+
+import {
+    VghLantern__CrossSection__Apply,
+    VghLantern__CrossSection__Current,
+    VghLantern__CrossSection__Cycle,
+    VghLantern__CrossSection__List,
+    VghLantern__CrossSection__Label,
+    VghLantern__CrossSection__Refresh,
+    VghLantern__CrossSection__None
+} from '../26__System__CrossSectionView/VghLantern__CrossSection__SystemLogic__.mjs';
+
+import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__CrossSection__CapFactory__SeedResolution } from '../26__System__CrossSectionView/VghLantern__CrossSection__CapFactory__.mjs';
 
 // =============================================================================
 // REGION | 3D Render Pipeline Module
@@ -194,6 +214,7 @@ import {
         }
         VghLantern__Env3d__MaterialLibrary__DisposeAll();
         VghLantern__Env3d__SetOut__LineFactory__DisposeMaterials();
+        VghLantern__CrossSection__CapFactory__DisposeMaterials();
         VghLantern__Env3d__ComponentLoader__Glb__ClearCache();
     }
     // ------------------------------------------------------------
@@ -206,6 +227,7 @@ import {
     export function VghLantern__Env3d__RenderPipeline__Resize(surface) {
         VghLantern__Env3d__SceneManager__Resize(surface);
         VghLantern__Env3d__SetOut__LineFactory__SeedResolution(surface);      // <-- Fat line width is driven by viewport size
+        VghLantern__CrossSection__CapFactory__SeedResolution(surface);        // <-- The section profile is fat linework too
     }
     // ------------------------------------------------------------
 
@@ -240,17 +262,25 @@ import {
         surface.LastSkeleton  =  skeleton || null;
         surface.LastLantern   =  lantern  || null;
 
+        // Both empty-state exits run the cross section refresh on the way out. The
+        // groups are already empty at this point, so a cut left over from the
+        // lantern that was on screen drops itself rather than sitting as a clip
+        // plane over nothing - which would take the ground grid with it and leave
+        // the viewport looking broken rather than simply empty.
         if (!skeleton) {
             VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, MESSAGE_NO_MODEL);
+            VghLantern__CrossSection__Refresh(surface);
             return;
         }
         if (skeleton.Meta && skeleton.Meta.IsValid === false) {
             VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, MESSAGE_INVALID);
+            VghLantern__CrossSection__Refresh(surface);
             return;
         }
         VghLantern__Env3d__RenderPipeline__SetEmptyState(surface, null);
 
         const solidFrameGroup       =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Frame);
+        const solidGlazeBarGroup    =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__GlazeBars);
         const solidGlazingGroup     =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Glazing);
         const solidComponentsGroup  =  VghLantern__Env3d__SceneManager__GetGroup(surface, VghLantern__Env3d__SceneGroup.Solid3d__Components);
 
@@ -258,6 +288,12 @@ import {
         VghLantern__Env3d__MeshBuilder__Glazing__Build(solidGlazingGroup, skeleton);
         VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(solidFrameGroup, skeleton, lantern);
         await VghLantern__Env3d__MeshBuilder__Skeleton__Build(solidFrameGroup, skeleton, barSet, lantern);
+
+        // The glaze bars are built apart from the rest of the skeleton because
+        // they are not one swept section but three, and the summary they return
+        // is what the takeoff totals a cutting list from.
+        surface.LastGlazeBarSummary  =  await VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build(solidGlazeBarGroup, barSet, lantern);
+
         await VghLantern__Env3d__ComponentLoader__Glb__Build(solidComponentsGroup, skeleton, lantern);
 
         // SETTING OUT GEOMETRY | The datums and construction triangles behind it
@@ -276,6 +312,19 @@ import {
         // re-applied after every rebuild. Without this a reviewer inspecting the
         // setting out would be thrown back to the solid model by any edit.
         VghLantern__Env3d__DisplayMode__Apply(surface, VghLantern__Env3d__DisplayMode__Current(surface));
+
+        // The element view is a property of the surface for the same reason. The
+        // two compose rather than compete: the display mode switches whole groups
+        // and this switches the meshes inside them, and Three inherits visibility
+        // down the graph, so a hidden group stays hidden whatever this decides.
+        VghLantern__Env3d__ElementFilter__Apply(surface, VghLantern__Env3d__ElementFilter__Current(surface));
+
+        // A cut is a property of the surface in exactly the way a display mode is,
+        // and the section group was emptied with the model, so the cut face is
+        // recomputed against the geometry that replaced it. An uncut surface
+        // returns immediately and pays nothing.
+        VghLantern__CrossSection__Refresh(surface);
+
         VghLantern__Env3d__SceneManager__Invalidate(surface);
     }
     // ------------------------------------------------------------
@@ -406,6 +455,51 @@ import {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Set the Element View on a Surface
+    // ------------------------------------------------------------
+    // 'full' the finished lantern, 'structural' the carcass alone. Orthogonal to
+    // the display mode: a reviewer can put the setting out over the structure.
+    export function VghLantern__Env3d__RenderPipeline__SetElementView(surface, viewKey) {
+        VghLantern__Env3d__ElementFilter__Apply(surface, viewKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Element View a Surface Is In
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__GetElementView(surface) {
+        return VghLantern__Env3d__ElementFilter__Current(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List Every Element View With Its Label
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__ListElementViews() {
+        return VghLantern__Env3d__ElementFilter__List();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Human Readable Name for an Element View
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__ElementViewLabel(viewKey) {
+        return VghLantern__Env3d__ElementFilter__Label(viewKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Glaze Bar Build Summary From the Last Render
+    // ------------------------------------------------------------
+    // One record per part actually built, each with its section area, element
+    // type and specification material. The takeoff totals a cutting list from
+    // this rather than re-deriving what the builder already measured.
+    export function VghLantern__Env3d__RenderPipeline__GetGlazeBarSummary(surface) {
+        return (surface && surface.LastGlazeBarSummary) ? surface.LastGlazeBarSummary : null;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | List the Available Display Modes
     // ------------------------------------------------------------
     export function VghLantern__Env3d__RenderPipeline__ListDisplayModes() {
@@ -440,6 +534,57 @@ import {
     // it can never claim to show something that was not drawn.
     export function VghLantern__Env3d__RenderPipeline__GetSetOutLegend(surface) {
         return (surface && surface.SetOutManifest) ? surface.SetOutManifest : [];
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Cross Section View
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Set the Cut State on a Surface
+    // ------------------------------------------------------------
+    // 'none' the uncut model, 'lateral' cut along the long way of the lantern,
+    // 'longitudinal' cut across the short way. The cut is per surface, so a section
+    // set up in the 3D View never reaches the editor panel or a sheet viewport.
+    export function VghLantern__Env3d__RenderPipeline__SetSectionMode(surface, modeKey) {
+        VghLantern__CrossSection__Apply(surface, modeKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Cut State a Surface Is In
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__GetSectionMode(surface) {
+        return VghLantern__CrossSection__Current(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Advance a Surface to the Next Cut State
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__CycleSectionMode(surface) {
+        return VghLantern__CrossSection__Cycle(surface);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Available Cut States
+    // ------------------------------------------------------------
+    // Empty when the feature is switched off in config, which is what removes the
+    // cluster from the 3D View overlay rather than leaving inert buttons on screen.
+    export function VghLantern__Env3d__RenderPipeline__ListSectionModes() {
+        return VghLantern__CrossSection__List();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Human Readable Name for a Cut State
+    // ------------------------------------------------------------
+    export function VghLantern__Env3d__RenderPipeline__SectionModeLabel(modeKey) {
+        return VghLantern__CrossSection__Label(modeKey);
     }
     // ------------------------------------------------------------
 
@@ -497,18 +642,33 @@ import {
 
     // HELPER FUNCTION | Put a Surface Into Issue Condition for a Capture
     // ------------------------------------------------------------
-    // A sheet drawing shows the manufactured article, never the setting out that
-    // derived it, and never a reviewer's leftover hover highlight. Both are
-    // therefore forced off for the duration of a capture and restored after, which
-    // matters because the Drawing Editor prefers the live 3D View surface for its
-    // sheet viewports rather than mounting one of its own.
+    // A sheet drawing shows the manufactured article whole: never the setting out
+    // that derived it, never a reviewer's leftover hover highlight, and never a
+    // cross section they happened to leave switched on. All three are forced off
+    // for the duration of a capture and restored after, which matters because the
+    // Drawing Editor prefers the live 3D View surface for its sheet viewports
+    // rather than mounting one of its own.
     function VghLantern__Env3d__RenderPipeline__BeginCapture(surface) {
         VghLantern__Env3d__HoverInspector__Clear(surface);
 
-        const restoreMode  =  VghLantern__Env3d__DisplayMode__Current(surface);
-        VghLantern__Env3d__DisplayMode__Apply(surface, VghLantern__Env3d__DisplayMode__Solid3d);
+        const restore  =  {
+            DisplayMode : VghLantern__Env3d__DisplayMode__Current(surface),
+            SectionMode : VghLantern__CrossSection__Current(surface)
+        };
 
-        return restoreMode;
+        VghLantern__Env3d__DisplayMode__Apply(surface, VghLantern__Env3d__DisplayMode__Solid3d);
+        VghLantern__CrossSection__Apply(surface, VghLantern__CrossSection__None);
+
+        return restore;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Return a Surface to the Condition the Reviewer Left It In
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__RenderPipeline__EndCapture(surface, restore) {
+        VghLantern__Env3d__DisplayMode__Apply(surface, restore.DisplayMode);
+        VghLantern__CrossSection__Apply(surface, restore.SectionMode);
     }
     // ------------------------------------------------------------
 
@@ -516,12 +676,12 @@ import {
     // FUNCTION | Capture the Current View as a PNG Data URL
     // ------------------------------------------------------------
     export function VghLantern__Env3d__RenderPipeline__Snapshot(surface, options) {
-        const restoreMode  =  VghLantern__Env3d__RenderPipeline__BeginCapture(surface);
+        const restore  =  VghLantern__Env3d__RenderPipeline__BeginCapture(surface);
 
         try {
             return VghLantern__Env3d__SnapshotExporter__Capture(surface, options);
         } finally {
-            VghLantern__Env3d__DisplayMode__Apply(surface, restoreMode);
+            VghLantern__Env3d__RenderPipeline__EndCapture(surface, restore);
         }
     }
     // ------------------------------------------------------------
@@ -532,7 +692,7 @@ import {
     export function VghLantern__Env3d__RenderPipeline__SnapshotPreset(surface, presetKey, options) {
         if (!surface) return null;
 
-        const restoreMode  =  VghLantern__Env3d__RenderPipeline__BeginCapture(surface);
+        const restore  =  VghLantern__Env3d__RenderPipeline__BeginCapture(surface);
 
         try {
             return VghLantern__Env3d__SnapshotExporter__CapturePreset(
@@ -540,7 +700,7 @@ import {
                 VghLantern__Env3d__CameraRig__ApplyPreset
             );
         } finally {
-            VghLantern__Env3d__DisplayMode__Apply(surface, restoreMode);
+            VghLantern__Env3d__RenderPipeline__EndCapture(surface, restore);
         }
     }
     // ------------------------------------------------------------

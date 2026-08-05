@@ -19,7 +19,7 @@
         "VghLantern__UserMenu__ModeLanternEditor__Config__Show3dViewport"              : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFormAndSizeOpen"      : true,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionRoofPitchOpen"        : true,
-        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionGlazingBarsOpen"      : true,
+        "VghLantern__UserMenu__ModeLanternEditor__Config__SectionGlazeBarsOpen"        : true,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionRidgeAndHipsOpen"     : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionFinialsOpen"          : false,
         "VghLantern__UserMenu__ModeLanternEditor__Config__SectionBuildersUpstandAndBaseOpen"      : false,

@@ -32,6 +32,16 @@
    skips those roles. 'buildersUpstandReveal' is skipped by every builder: it is the hole
    through the base and exists only as 2D setting-out linework.
 
+   Glazing bars and transoms are skipped too, and for a more interesting reason:
+   a Vale glaze bar is not a section at all but an assembly of three of them, so
+   it cannot be expressed as one outline swept along a role. MeshBuilder
+   GlazeBarComposite owns those two roles entirely.
+
+   The eaves ring is skipped because it is not a part. It is the line where the
+   roof plane meets the upstand, and the metal there belongs to the upstand and
+   frame below it. It remains in the solved skeleton as the datum everything else
+   is set out from, but nothing sweeps it.
+
    ============================================================================= */
 
 import * as THREE from 'three';
@@ -68,6 +78,24 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     const ROLE_BASE_SOLID_SET   =  ['buildersUpstand', 'buildersUpstandPost', 'frame'];
     const ROLE_ANNOTATION_SET   =  ['buildersUpstandReveal'];
 
+    // Glazing bars and transoms are no longer one swept section. They are the
+    // three part Vale glaze bar - cap, core and trim - and MeshBuilder
+    // GlazeBarComposite owns them entirely. Sweeping them here as well would put
+    // a second section inside the first, and the duplicate would be invisible on
+    // screen while doubling every bar in a takeoff.
+    const ROLE_GLAZE_BAR_SET    =  ['glazingBar', 'transom'];
+
+    // The eaves ring is not a Vale part. It is where the roof plane meets the
+    // upstand, and the metal along that line belongs to the upstand and the
+    // frame below it rather than to a section of its own. It was being swept as
+    // a member, which put a length of extrusion round the roof that nothing is
+    // ordered for and that no drawing shows.
+    //
+    // The ring stays in the SOLVED SKELETON, because it is the datum every hip,
+    // every slope and the whole glaze bar set-out is measured from, and the
+    // setting-out view draws it. It is simply never given a section.
+    const ROLE_NOT_BUILT_SET    =  ['eaves'];
+
     const FINISH_BLOCK          =  'Lantern__FinishAndGlazing__Config';      // <-- Frame finish lives here
     const FINISH_FIELD          =  'Lantern__FinishAndGlazing__Config__FrameFinish';
     // ------------------------------------------------------------
@@ -85,6 +113,8 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     // in which case the builders upstand and frame rings fall through to the normal path.
     function VghLantern__Env3d__SkeletonBuilder__IsExcludedRole(roleKey, buildsBaseAsSolid) {
         if (ROLE_ANNOTATION_SET.indexOf(roleKey) !== -1) return true;
+        if (ROLE_GLAZE_BAR_SET.indexOf(roleKey) !== -1) return true;
+        if (ROLE_NOT_BUILT_SET.indexOf(roleKey) !== -1) return true;
         return buildsBaseAsSolid && ROLE_BASE_SOLID_SET.indexOf(roleKey) !== -1;
     }
     // ------------------------------------------------------------

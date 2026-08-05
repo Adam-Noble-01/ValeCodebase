@@ -127,9 +127,31 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
         if (sectionSizeOpts) {
             if (sectionSizeOpts.SectionWidthMm  != null) row.SectionWidthMm  =  Math.round(Number(sectionSizeOpts.SectionWidthMm)  || 0);
             if (sectionSizeOpts.SectionHeightMm != null) row.SectionHeightMm =  Math.round(Number(sectionSizeOpts.SectionHeightMm) || 0);
+
+            // Carried for the parts that know their own section: area times run
+            // gives a volume, and volume times density gives a weight, which is
+            // what a materials schedule is costed from.
+            if (sectionSizeOpts.SectionAreaSqMm != null) row.SectionAreaSqMm =  VghLantern__QuantityTakeoff__Round(Number(sectionSizeOpts.SectionAreaSqMm) || 0, 2);
+            if (sectionSizeOpts.ElementType)             row.ElementType     =  sectionSizeOpts.ElementType;
+            if (sectionSizeOpts.SpecMaterial)            row.SpecMaterial    =  sectionSizeOpts.SpecMaterial;
         }
 
         rows.push(row);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Describe the Three Parts of This Lantern's Glaze Bar
+    // ------------------------------------------------------------
+    // Falls back to an empty list when the glaze bar system has not loaded, which
+    // drops the bar rows from the takeoff rather than inventing them. A takeoff
+    // that is silently short is recoverable; one carrying a guessed section area
+    // that gets costed is not.
+    function VghLantern__QuantityTakeoff__GlazeBarParts(lantern) {
+        var Loader  =  window.VghLantern__AppData__GlazeBarSystemLoader;
+        if (!Loader) return [];
+
+        return Loader.VghLantern__GlazeBarSystemLoader__DescribeParts(lantern) || [];
     }
     // ------------------------------------------------------------
 
@@ -216,9 +238,11 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_RIDGE_HIPS, 'Lantern__RidgeAndHips__Config__HipProfileId', ''),
             totalFor('hip'), countFor('hip'), quantity);
 
-        VghLantern__QuantityTakeoff__PushLinear(rows, 'eaves', 'Eaves Section',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__EavesProfileId', ''),
-            totalFor('eaves'), countFor('eaves'), quantity);
+        // There is no eaves row. The eaves ring is the line where the roof plane
+        // meets the upstand, not a length of anything: the metal along it belongs
+        // to the upstand and the frame beneath, both of which are already
+        // measured below. Totalling it as a section put a run round the roof that
+        // nothing is ordered for.
 
         // The builders upstand and the frame are prisms, not swept members, so their runs come
         // from the Base block rather than from a member-role total. Summing the
@@ -237,16 +261,31 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', ''),
             (Number(base.UpstandHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
 
+        // A glaze bar is three parts, so it is three rows. Every part runs the
+        // full length of every bar - they are extruded along one datum - so each
+        // takes the same run and the same member count, and differs only in what
+        // it is made of and what it is called on a cutting list.
+        //
+        // The parts are read from the glaze bar system rather than named here, so
+        // a change of trim depth reaches the takeoff without an edit and the
+        // section areas quoted are the ones actually extruded.
         if (barSet && barSet.Meta) {
-            var barProfileId  =  VghLantern__QuantityTakeoff__Read(lantern, BLOCK_GLAZING_BARS, 'Lantern__GlazingBars__Config__BarProfileId', '');
+            var barParts   =  VghLantern__QuantityTakeoff__GlazeBarParts(lantern);
+            var barCount   =  (barSet.Meta.LongSlopeBarCount * 2) + (barSet.Meta.ShortSlopeBarCount * 2);
+            var transomOn  =  barSet.Meta.TransomEnabled ? 2 : 0;
+            var partIndex, barPart;
 
-            VghLantern__QuantityTakeoff__PushLinear(rows, 'glazingBar', 'Glazing Bar',
-                barProfileId, barSet.Meta.TotalBarLengthMm,
-                (barSet.Meta.LongSlopeBarCount * 2) + (barSet.Meta.ShortSlopeBarCount * 2),
-                quantity);
+            for (partIndex = 0; partIndex < barParts.length; partIndex++) {
+                barPart  =  barParts[partIndex];
 
-            VghLantern__QuantityTakeoff__PushLinear(rows, 'transom', 'Horizontal Transom',
-                barProfileId, barSet.Meta.TotalTransomLengthMm, barSet.Meta.TransomEnabled ? 2 : 0, quantity);
+                VghLantern__QuantityTakeoff__PushLinear(rows, 'glazeBar__' + barPart.PartKey, barPart.PartName,
+                    barPart.AssetId, barSet.Meta.TotalBarLengthMm, barCount, quantity,
+                    { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType, SpecMaterial : barPart.SpecMaterial });
+
+                VghLantern__QuantityTakeoff__PushLinear(rows, 'transom__' + barPart.PartKey, barPart.PartName + ' - Transom',
+                    barPart.AssetId, barSet.Meta.TotalTransomLengthMm, transomOn, quantity,
+                    { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType, SpecMaterial : barPart.SpecMaterial });
+            }
         }
 
         var crestingEnabled  =  VghLantern__QuantityTakeoff__Read(lantern, BLOCK_RIDGE_HIPS, 'Lantern__RidgeAndHips__Config__CrestingEnabled', false) === true;

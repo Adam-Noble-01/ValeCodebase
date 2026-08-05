@@ -116,6 +116,28 @@ const VghLantern__Env2d__ProfileTraceRenderer = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Roles Built as the Composite Glaze Bar
+    // ------------------------------------------------------------
+    const GLAZE_BAR_ROLES  =  ['glazingBar', 'transom'];
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Band Width for a Composite Glaze Bar Role
+    // ------------------------------------------------------------
+    // Returns 0 for every other role, so the caller falls straight through to the
+    // normal profile lookup. The width quoted is the widest point across the
+    // assembled bar - the cap - which is what a plan band should show.
+    function VghLantern__Env2d__ProfileTraceRenderer__GlazeBarWidthMm(roleKey) {
+        if (GLAZE_BAR_ROLES.indexOf(roleKey) === -1) return 0;
+
+        var GlazeBars  =  window.VghLantern__AppData__GlazeBarSystemLoader;
+        if (!GlazeBars) return 0;
+
+        return GlazeBars.VghLantern__GlazeBarSystemLoader__OverallWidthMm();
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -179,15 +201,24 @@ const VghLantern__Env2d__ProfileTraceRenderer = (function() {
         var i, item, profileId, widthMm, outline, startPt, endPt;
 
         for (i = 0; i < traceables.length; i++) {
-            item       =  traceables[i];
-            profileId  =  VghLantern__Env2d__ProfileTraceRenderer__ProfileIdForRole(lantern, item.Role);
-            if (!profileId) continue;
+            item  =  traceables[i];
 
-            if (widthCache[profileId] === undefined) {
-                outline                 =  await ProfileIndexLoader.VghLantern__ProfileIndexLoader__GetOutlinePoints(profileId);
-                widthCache[profileId]   =  VghLantern__Env2d__ProfileTraceRenderer__OutlineWidthMm(outline);
+            // A glaze bar has no single profile to measure - it is three sections
+            // sharing a datum - so its band width comes from the glaze bar system
+            // instead. Without this the bars would silently vanish from the trace
+            // overlay, which reads as a set-out fault rather than a missing width.
+            widthMm  =  VghLantern__Env2d__ProfileTraceRenderer__GlazeBarWidthMm(item.Role);
+
+            if (!widthMm) {
+                profileId  =  VghLantern__Env2d__ProfileTraceRenderer__ProfileIdForRole(lantern, item.Role);
+                if (!profileId) continue;
+
+                if (widthCache[profileId] === undefined) {
+                    outline                 =  await ProfileIndexLoader.VghLantern__ProfileIndexLoader__GetOutlinePoints(profileId);
+                    widthCache[profileId]   =  VghLantern__Env2d__ProfileTraceRenderer__OutlineWidthMm(outline);
+                }
+                widthMm  =  widthCache[profileId];
             }
-            widthMm  =  widthCache[profileId];
             if (!widthMm) continue;
 
             startPt  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ProjectPoint(item.Start, viewKey);

@@ -139,16 +139,23 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
     // Right-aligned across from the logo, one element per line, with the contact
     // details set as their own group beneath the postal address. A run-on address
     // under the logo read as a caption on the image rather than as stationery.
-    function VghLantern__LetterScreen__BuildCompanyDetails(letter) {
+    //
+    // The company name is dropped whenever the logo is showing, because the logo is
+    // itself the words "Vale Garden Houses" - setting them again beside it prints the
+    // company name twice in one band, which is the single thing that most makes a
+    // letterhead look put together by accident. It is printed only when the logo is
+    // switched off, where it is the sole thing identifying the sender.
+    function VghLantern__LetterScreen__BuildCompanyDetails(letter, isLogoShown) {
         if (!letter.ShowCompanyDetails) return '';
 
-        var address  =  [letter.CompanyName, letter.CompanyAddressLine1,
+        var address  =  [isLogoShown ? '' : letter.CompanyName, letter.CompanyAddressLine1,
                          letter.CompanyTownCity, letter.CompanyPostCode]
             .filter(function(part) { return !!part; });
         var contact  =  [letter.CompanyPhone, letter.CompanyWebsite]
             .filter(function(part) { return !!part; });
 
-        var html  =  VghLantern__LetterScreen__BuildLineBlock(CSS_COMPANY_BLOCK, address, CSS_COMPANY_NAME) +
+        var html  =  VghLantern__LetterScreen__BuildLineBlock(
+                         CSS_COMPANY_BLOCK, address, isLogoShown ? '' : CSS_COMPANY_NAME) +
                      VghLantern__LetterScreen__BuildLineBlock(CSS_COMPANY_BLOCK, contact, '');
 
         return html ? '<div class="' + CSS_COMPANY + '">' + html + '</div>' : '';
@@ -164,13 +171,15 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
     function VghLantern__LetterScreen__BuildLetterhead(letter) {
         if (!letter.ShowLetterhead) return '';
 
-        var logoHtml  =  (letter.ShowLogo && letter.LogoAssetPath)
+        var isLogoShown  =  !!(letter.ShowLogo && letter.LogoAssetPath);
+
+        var logoHtml  =  isLogoShown
             ? '<img class="' + CSS_LOGO + '" src="' + VghLantern__LetterScreen__Escape(letter.LogoAssetPath) +
               '" style="width:' + letter.LogoWidthMm + 'mm" alt="Vale Garden Houses">'
             : '';
 
         return '<header class="' + CSS_LETTERHEAD + '">' + logoHtml +
-               VghLantern__LetterScreen__BuildCompanyDetails(letter) + '</header>';
+               VghLantern__LetterScreen__BuildCompanyDetails(letter, isLogoShown) + '</header>';
     }
     // ------------------------------------------------------------
 

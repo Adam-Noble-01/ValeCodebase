@@ -14,10 +14,14 @@
    - Two library tabs: Components (finials, bases, cresting, vents) and Profiles
      (glazing bars, ridge, hip, eaves and builders upstand sections)
    - Category filter chips plus a live text search across id, name and category
-   - Each card shows a 2D preview traced from the asset's Na__Asset__Profile2D
-     outline, so nothing depends on pre-rendered raster thumbnails
+   - A component card draws its index entry's baked Preview2d block - the
+     asset's front elevation flattened to SVG path data at build time, or a
+     legacy Na__Asset__Profile2D outline where no elevation was exported. A
+     profile card has no Preview2d block, so it traces its own Profile2D
+     outline on demand. Neither depends on a pre-rendered raster thumbnail.
    - Clicking a card opens the DetailView panel for that asset
-   - Badges surface the Has2dProfile / Has3d gating flags at a glance
+   - Badges surface the Has2dProfile / Has2dElevation / Has3d gating flags at
+     a glance
 
    -----------------------------------------------------------------------------
 
@@ -27,15 +31,20 @@
    why they are the single consumers.
 
    PREVIEW RENDERING:
-   Card previews are inline SVG built from outline points. The heavy lifting is
-   shared with the 2D environment via Env2d__SvgHelpers, so a profile looks the
-   same here as it does on a plan or elevation.
+   A component card's path comes straight off the index entry's Preview2d
+   block, so no per-card asset fetch is needed - the build utility already
+   flattened the front elevation into absolute path data. A profile card has
+   no such block, so its path is still traced from outline points fetched on
+   demand. Elevation linework draws stroke-only, the convention the 2D
+   environment uses for a placed finial; a legacy closed outline keeps its
+   solid fill.
 
    Every preview draws at one fixed outline weight, frames the section in a
    square viewBox so all cards read at the same proportion, and marks the
    insertion origin with a red diagonal cross. Both the card grid and the
-   detail panel come through BuildPreviewSvg, so neither can drift from the
-   other.
+   detail panel resolve through the same pair of builders - BuildPreviewSvg
+   for outline points, BuildPreviewSvgFromPathData for a Preview2d block - so
+   neither surface can drift from the other.
 
    The toolbar carries a small / medium / large thumbnail toggle. Grid columns
    are a fixed width per setting rather than a fluid stretch, so a card is the
@@ -312,22 +321,20 @@ const VghLantern__System__ComponentIndex = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Build an Inline SVG Preview from Outline Points
+    // HELPER FUNCTION | Frame a Path Inside a Padded Square Viewbox
     // ------------------------------------------------------------
-    function VghLantern__ComponentIndex__BuildPreviewSvg(points) {
-        if (!Array.isArray(points) || points.length < 3) return '';
-
-        var bounds  =  VghLantern__ComponentIndex__OutlineBounds(points);
-        if (!bounds) return '';
+    // Shared tail end for both preview sources - a point-traced outline and a
+    // baked Preview2d path string both resolve to (pathData, centre, span)
+    // before reaching here, so the square framing and origin cross can never
+    // drift between the two.
+    function VghLantern__ComponentIndex__WrapFramedSvg(pathData, centreX, centreY, outlineSpan, pathClass) {
+        if (!pathData) return '';
 
         // A square viewBox centred on the outline, sized off the longer edge, so
         // every section is framed to the same proportion of the square well. A
         // per-axis pad would leave a wide eaves tight to the sides while a
         // narrow glazing bar floated in space.
-        var outlineSpan  =  Math.max(bounds.Width, bounds.Height);
-        var viewSpan     =  outlineSpan * (1 + PREVIEW_PADDING_PCT * 2);
-        var centreX      =  bounds.MinX + bounds.Width  / 2;
-        var centreY      =  -(bounds.MinY + bounds.Height / 2);                   // <-- Negated to match the flipped path
+        var viewSpan  =  outlineSpan * (1 + PREVIEW_PADDING_PCT * 2);
 
         var viewBox  =  [
             (centreX - viewSpan / 2).toFixed(2),
@@ -336,12 +343,9 @@ const VghLantern__System__ComponentIndex = (function() {
             viewSpan.toFixed(2)
         ].join(' ');
 
-        var pathData  =  VghLantern__ComponentIndex__OutlinePathData(points);
-        if (!pathData) return '';
-
         var svg  =  '<svg class="VghLantern__ComponentIndex__PreviewSvg" viewBox="' + viewBox + '"';
         svg     +=      ' preserveAspectRatio="xMidYMid meet" aria-hidden="true">';
-        svg     +=      '<path d="' + pathData + '" class="VghLantern__ComponentIndex__PreviewPath" />';
+        svg     +=      '<path d="' + pathData + '" class="' + pathClass + '" />';
         svg     +=      VghLantern__ComponentIndex__OriginMarker(viewSpan);       // <-- Drawn last, the section fill would otherwise bury it
         svg     +=  '</svg>';
 
@@ -350,11 +354,111 @@ const VghLantern__System__ComponentIndex = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build an Inline SVG Preview from Outline Points
+    // ------------------------------------------------------------
+    // Profiles only - a swept cross-section has no Preview2d block, so it is
+    // still traced point by point every time it is asked for.
+    function VghLantern__ComponentIndex__BuildPreviewSvg(points) {
+        if (!Array.isArray(points) || points.length < 3) return '';
+
+        var bounds  =  VghLantern__ComponentIndex__OutlineBounds(points);
+        if (!bounds) return '';
+
+        var outlineSpan  =  Math.max(bounds.Width, bounds.Height);
+        var centreX      =  bounds.MinX + bounds.Width  / 2;
+        var centreY      =  -(bounds.MinY + bounds.Height / 2);                   // <-- Negated to match the flipped path
+
+        var pathData  =  VghLantern__ComponentIndex__OutlinePathData(points);
+        if (!pathData) return '';
+
+        return VghLantern__ComponentIndex__WrapFramedSvg(
+            pathData, centreX, centreY, outlineSpan, 'VghLantern__ComponentIndex__PreviewPath');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Parse an SVG viewBox Attribute String
+    // ------------------------------------------------------------
+    function VghLantern__ComponentIndex__ParseViewBox(viewBoxText) {
+        var parts  =  String(viewBoxText || '').trim().split(/\s+/);
+        if (parts.length !== 4) return null;
+
+        var minX    =  Number(parts[0]);
+        var minY    =  Number(parts[1]);
+        var width   =  Number(parts[2]);
+        var height  =  Number(parts[3]);
+        if (!isFinite(minX) || !isFinite(minY) || !isFinite(width) || !isFinite(height)) return null;
+
+        return { MinX : minX, MinY : minY, Width : width, Height : height };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build an Inline SVG Preview from a Baked Preview2d Block
+    // ------------------------------------------------------------
+    // Preview2d.PathData is the component's front elevation, already flattened
+    // to absolute SVG path syntax by the build utility (or, for a
+    // pre-unified asset, its legacy Profile2D outline) - so this only has to
+    // frame it, never retrace it point by point.
+    function VghLantern__ComponentIndex__BuildPreviewSvgFromPathData(preview2d, isLineArt) {
+        if (!preview2d || !preview2d.PathData) return '';
+
+        var box  =  VghLantern__ComponentIndex__ParseViewBox(preview2d.ViewBox);
+        if (!box || box.Width <= 0 || box.Height <= 0) return '';
+
+        var outlineSpan  =  Math.max(box.Width, box.Height);
+        var centreX      =  box.MinX + box.Width  / 2;
+        var centreY      =  box.MinY + box.Height / 2;
+
+        // Elevation linework draws stroke-only, the same convention the 2D
+        // environment uses for a placed finial - filling open line segments
+        // would bury most of them and leave arcs looking like solid wedges.
+        // A legacy Profile2D fallback is still one closed outline, so it
+        // keeps the solid fill.
+        var pathClass  =  isLineArt
+            ? 'VghLantern__ComponentIndex__PreviewPath VghLantern__ComponentIndex__PreviewPath--lineArt'
+            : 'VghLantern__ComponentIndex__PreviewPath';
+
+        return VghLantern__ComponentIndex__WrapFramedSvg(
+            preview2d.PathData, centreX, centreY, outlineSpan, pathClass);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the Preview SVG for One Card, Whatever Its Source
+    // ------------------------------------------------------------
+    // Components carry a Preview2d block baked into the index at build time -
+    // their front elevation, or a legacy Profile2D fallback - so the card
+    // draws synchronously from data already in memory. Profiles have no such
+    // block; they are still traced from the swept cross-section's own outline
+    // points, fetched on demand.
+    async function VghLantern__ComponentIndex__BuildCardPreviewSvg(entryId) {
+        if (VghLantern__ComponentIndex__ActiveLibrary === LIBRARY_PROFILES) {
+            var points  =  await VghLantern__ComponentIndex__OutlineFor(entryId);
+            return VghLantern__ComponentIndex__BuildPreviewSvg(points);
+        }
+
+        var loader  =  window.VghLantern__AppData__ComponentIndexLoader;
+        if (!loader) return '';
+
+        var preview2d  =  loader.VghLantern__ComponentIndexLoader__GetPreview2d(entryId);
+        if (!preview2d) return '';
+
+        var entry      =  loader.VghLantern__ComponentIndexLoader__GetEntry(entryId);
+        var isLineArt  =  !!(entry && entry.Has2dElevation);
+
+        return VghLantern__ComponentIndex__BuildPreviewSvgFromPathData(preview2d, isLineArt);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Populate Every Card Preview Asynchronously
     // ------------------------------------------------------------
-    // Cards render immediately with a loading shim, then each preview is filled
-    // in as its asset JSON arrives. This keeps the grid responsive on a cold
-    // cache rather than blocking the whole gallery on the slowest fetch.
+    // Cards render immediately with a loading shim, then each preview is
+    // filled in as it resolves. A component resolves on the same tick, since
+    // its Preview2d is already sitting in the loaded index; a profile still
+    // awaits its outline fetch. Either way this keeps the grid responsive on
+    // a cold cache rather than blocking the whole gallery on the slowest one.
     async function VghLantern__ComponentIndex__PopulatePreviews(entryIds) {
         for (var i = 0; i < entryIds.length; i++) {
             var entryId  =  entryIds[i];
@@ -362,8 +466,7 @@ const VghLantern__System__ComponentIndex = (function() {
                 '.VghLantern__ComponentIndex__Preview[data-entry-id="' + entryId + '"]');
             if (!host) continue;
 
-            var points  =  await VghLantern__ComponentIndex__OutlineFor(entryId);
-            var svg     =  VghLantern__ComponentIndex__BuildPreviewSvg(points);
+            var svg  =  await VghLantern__ComponentIndex__BuildCardPreviewSvg(entryId);
 
             host.classList.remove('VghLantern__ComponentIndex__Preview--loading');
 
@@ -491,7 +594,11 @@ const VghLantern__System__ComponentIndex = (function() {
     function VghLantern__ComponentIndex__BuildBadges(entry) {
         var html  =  '<div class="VghLantern__ComponentIndex__Badges">';
 
-        if (entry.Has2dProfile !== false) {
+        // A profile entry only ever carries Has2dProfile; a component entry may
+        // instead (or additionally) carry Has2dElevation - either one means
+        // there is a real preview to show, not the "3D only" placeholder.
+        var has2dPreview  =  entry.Has2dProfile !== false || entry.Has2dElevation === true;
+        if (has2dPreview) {
             html  +=  '<span class="VghLantern__ComponentIndex__Badge VghLantern__ComponentIndex__Badge--2d">2D</span>';
         }
         if (entry.Has3d === true || entry.Glb3dUrl) {
@@ -705,9 +812,10 @@ const VghLantern__System__ComponentIndex = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__ComponentIndex__Init            : VghLantern__ComponentIndex__Init,
-        VghLantern__ComponentIndex__Render          : VghLantern__ComponentIndex__Render,
-        VghLantern__ComponentIndex__BuildPreviewSvg : VghLantern__ComponentIndex__BuildPreviewSvg
+        VghLantern__ComponentIndex__Init                        : VghLantern__ComponentIndex__Init,
+        VghLantern__ComponentIndex__Render                      : VghLantern__ComponentIndex__Render,
+        VghLantern__ComponentIndex__BuildPreviewSvg             : VghLantern__ComponentIndex__BuildPreviewSvg,
+        VghLantern__ComponentIndex__BuildPreviewSvgFromPathData : VghLantern__ComponentIndex__BuildPreviewSvgFromPathData
     };
 
 // endregion -------------------------------------------------------------------

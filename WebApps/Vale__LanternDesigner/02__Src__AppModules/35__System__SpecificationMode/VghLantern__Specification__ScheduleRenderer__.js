@@ -57,13 +57,25 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
 
     // MODULE CONSTANTS | Finish Schedule Columns
     // ------------------------------------------------------------
-    // Not config-driven, unlike the quantity tables: these four fields are the
-    // finish schedule, and a variable column set here would just be a way to omit
-    // one of them by accident.
+    // Not config-driven, unlike the quantity tables: these fields ARE the finish
+    // schedule, and a variable column set here would just be a way to omit one of
+    // them by accident.
+    //
+    // The three finishes are three columns because they are three separate
+    // decisions on the job sheet: the frame is painted joinery, the glaze bar cap
+    // is powder coated and sits outside under the lead flashing, and the glaze bar
+    // trim is what the room sees. A single "Finish" column would have to pick one
+    // of them to print and silently drop the other two.
+    //
+    // The retired Colour Ref column was a free-standing RAL or BS reference the
+    // user typed alongside the finish, which meant it could contradict it. Every
+    // palette entry now carries its own reference, so the finish name is the
+    // reference and there is nothing left for a separate column to say.
     const FINISH_COLUMNS  =  [
         { Key: 'Title',       Label: 'Lantern',      Align: 'left' },
         { Key: 'FrameFinish', Label: 'Frame Finish', Align: 'left' },
-        { Key: 'ColourRef',   Label: 'Colour Ref',   Align: 'left' },
+        { Key: 'CapFinish',   Label: 'Bar Cap',      Align: 'left' },
+        { Key: 'TrimFinish',  Label: 'Bar Trim',     Align: 'left' },
         { Key: 'GlazingSpec', Label: 'Glazing',      Align: 'left' },
         { Key: 'GlazingTint', Label: 'Tint',         Align: 'left' }
     ];
@@ -226,7 +238,8 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
             rows.push({
                 Title       : entry.Title,
                 FrameFinish : entry.FrameFinish,
-                ColourRef   : entry.ColourRef,
+                CapFinish   : entry.CapFinish,
+                TrimFinish  : entry.TrimFinish,
                 GlazingSpec : entry.GlazingSpec,
                 GlazingTint : entry.GlazingTint
             });

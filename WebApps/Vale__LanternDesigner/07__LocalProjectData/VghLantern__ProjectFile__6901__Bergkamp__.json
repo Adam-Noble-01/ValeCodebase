@@ -74,8 +74,10 @@
             },
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
-                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1032",
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Neutral White"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
@@ -94,8 +96,7 @@
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -105,13 +106,41 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
-                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Toughened",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
             },
             "Lantern__Notes__Config": {
                 "Lantern__Notes__Config__DocumentWarning": "",
                 "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A3",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 20,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": true,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    55.84303068821747,
+                    44.15696931178253
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    42.492954337671414,
+                    57.50704566232858
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.2382581060987796,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 3.5088927220612396,
+                            "y": 5.357298311467052,
+                            "z": 4.831297616643609
+                        },
+                        "Target": {
+                            "x": -0.08914346655237035,
+                            "y": 0.29140126363111846,
+                            "z": 0.22079789039326644
+                        }
+                    }
+                }
             }
         }
     ],

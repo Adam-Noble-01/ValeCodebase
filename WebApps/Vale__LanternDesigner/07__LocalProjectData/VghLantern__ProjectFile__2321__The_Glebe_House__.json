@@ -73,9 +73,11 @@
                 "Lantern__RoofPitch__Config__PitchDegrees": 22.5
             },
             "Lantern__GlazingBars__Config": {
-                "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
-                "Lantern__GlazingBars__Config__BarProfileId": "PRF_GLB0001",
-                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 380,
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1033",
+                "Lantern__GlazingBars__Config__CapFinish": "White",
+                "Lantern__GlazingBars__Config__TrimFinish": "Natural Douglas Fir"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
@@ -94,8 +96,7 @@
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
                 "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": "",
-                "Lantern__BuildersUpstandAndBase__Config__EavesProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -105,13 +106,41 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""
             },
             "Lantern__Notes__Config": {
                 "Lantern__Notes__Config__DocumentWarning": "",
                 "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A4",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": true,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    57.697469459573156,
+                    42.302530540426844
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    35.88848884343831,
+                    64.11151115656169
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.531571543900448,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 6.003131124117384,
+                            "y": 6.549677194719238,
+                            "z": 5.665096475834581
+                        },
+                        "Target": {
+                            "x": 0.5030251652107536,
+                            "y": -0.1502647928509566,
+                            "z": 0.09169013711195625
+                        }
+                    }
+                }
             }
         }
     ],
@@ -119,8 +148,26 @@
         "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
         "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
         "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
-        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
-        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [
+            {
+                "Id": "trm_msfzcsw8_3",
+                "Text": "Cannot start production sooner than June"
+            },
+            {
+                "Id": "trm_msfzdbi9_4",
+                "Text": "Builder must have upstand ready by July."
+            }
+        ],
+        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [
+            {
+                "Id": "trm_msfzby2u_1",
+                "Text": "Deposit MUST BE BLOODY PAID, we aren't going to wait around, pay otherwise job is cancelled."
+            },
+            {
+                "Id": "trm_msfzcl7z_2",
+                "Text": ""
+            }
+        ],
         "VghLantern__ProjectFile__ClientDocument__SectionToggles": {},
         "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch.",
         "VghLantern__ProjectFile__ClientDocument__ClientAddressLine1": ""

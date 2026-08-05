@@ -114,7 +114,7 @@ const VghLantern__LanternEditor__Layout = (function() {
     // MODULE CONSTANTS | Placeholder Layout Values
     // ------------------------------------------------------------
     // Bootstrap-only placeholders before ApplyLayoutVariables() first reads config.
-    const BOOTSTRAP_CONTROLS_WIDTH_PX   =  420;
+    const BOOTSTRAP_CONTROLS_WIDTH_PX   =  504;
     const BOOTSTRAP_3D_SHARE_PCT        =  40;
 
     const EMPTY_PROJECT_MESSAGE          =  'No project loaded.';

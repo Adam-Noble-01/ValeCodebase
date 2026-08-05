@@ -61,6 +61,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         { Label : 'PbrMaterials',    Path : '02__Src__AppModules/02__AppData/Na__PbrMaterials__Config.json' },
         { Label : 'Env2d',           Path : '02__Src__AppModules/05__Env2d__SvgRenderPipeline/Na__Env2d__Config.json' },
         { Label : 'Env3d',           Path : '02__Src__AppModules/06__Env3d__ThreeRenderPipeline/Na__Env3d__Config.json' },
+        { Label : 'CrossSection',    Path : '02__Src__AppModules/26__System__CrossSectionView/Na__CrossSection__Config.json' },
         { Label : 'DocManagement',   Path : '02__Src__AppModules/10__System__DocumentManagementMode/Na__DocManagement__Config.json' },
         { Label : 'LanternEditor',   Path : '02__Src__AppModules/20__System__LanternAssembly__EditorMode/Na__LanternEditor__Config.json' },
         { Label : 'EditorWarnings',  Path : '02__Src__AppModules/20__System__LanternAssembly__EditorMode/Na__LanternEditor__Warnings__.json' },
@@ -90,6 +91,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     let VghLantern__ConfigLoader__DataLibraries     =  null;                 // <-- Component and profile library paths
     let VghLantern__ConfigLoader__Env2d             =  null;                 // <-- 2D SVG environment settings
     let VghLantern__ConfigLoader__Env3d             =  null;                 // <-- 3D Three.js environment settings
+    let VghLantern__ConfigLoader__CrossSection      =  null;                 // <-- 3D cross section cut appearance and tuning
     let VghLantern__ConfigLoader__LanternEditor     =  null;                 // <-- Editor layout and section settings
     let VghLantern__ConfigLoader__EditorWarnings    =  null;                 // <-- Editor manufacturing warning rule table
     let VghLantern__ConfigLoader__DrawingEditor     =  null;                 // <-- Sheet, scale and titleblock settings
@@ -125,33 +127,73 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Derive the Finish Option List from the PBR Materials Config
+    // SUB HELPER FUNCTION | Project One PBR Palette Down to Its Option Fields
     // ------------------------------------------------------------
-    // The finish palette moved into Na__PbrMaterials__Config.json, where each
-    // entry carries its full surface response rather than only a hex colour.
-    // Everything that only wants the option list - the editor dropdowns, the
-    // specification schedule - still asks for the 'FinishOptions' section and is
-    // served this projection, so the palette lives in exactly one file while its
-    // consumers stay unaware that it moved.
+    // An option list wants a name and the few descriptive fields a schedule or a
+    // hint might quote. It does not want roughness, clear coat or a render albedo
+    // override, all of which belong to the renderer alone. Projecting rather than
+    // passing the array through keeps those out of reach of anything that only
+    // asked what a lantern can be finished in.
+    function VghLantern__ConfigLoader__ProjectPalette(paletteList) {
+        if (!Array.isArray(paletteList)) return [];
+
+        return paletteList.map(function(finish) {
+            return {
+                Name           : finish.Name,
+                MatCode        : finish.MatCode,
+                HexColor       : finish.HexColor,
+                RalReference   : finish.RalReference || finish.PaintReference || '',
+                Substrate      : finish.Substrate,
+                Description    : finish.Description,
+                IsDefault      : finish.IsDefault === true
+            };
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Name the Default Entry in a Projected Palette
+    // ------------------------------------------------------------
+    // The palette declares its own default rather than the loader picking the
+    // first entry, so reordering the list for presentation cannot silently change
+    // what a new lantern is specified with.
+    function VghLantern__ConfigLoader__PaletteDefaultName(paletteList) {
+        if (!Array.isArray(paletteList)) return '';
+
+        for (var i = 0; i < paletteList.length; i++) {
+            if (paletteList[i] && paletteList[i].IsDefault === true) return paletteList[i].Name || '';
+        }
+        return '';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Derive the Finish Option Lists from the PBR Materials Config
+    // ------------------------------------------------------------
+    // The finish palettes live in Na__PbrMaterials__Config.json, where each entry
+    // carries its full surface response rather than only a hex colour. Everything
+    // that only wants the option list - the editor dropdowns, the specification
+    // schedule - asks for the 'FinishOptions' section and is served this
+    // projection, so the palettes live in exactly one file while their consumers
+    // stay unaware of where that is.
+    //
+    // Three palettes rather than one, because three different elements are
+    // specified separately: the frame, the glaze bar cap outside the roof, and the
+    // glaze bar trim inside the room.
     function VghLantern__ConfigLoader__DeriveFinishOptions(pbrConfig) {
-        var finishes  =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__Finishes']) || [];
-        var defaults  =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__FinishDefaults']) || {};
-        var refs      =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__ColourReferences']) || [];
+        var finishes  =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__Finishes'])         || [];
+        var caps      =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__CapFinishes'])      || [];
+        var joinery   =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__JoineryFinishes'])  || [];
+        var defaults  =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__FinishDefaults'])   || {};
 
         return {
             'VghLantern__Finish__Options__Config__Description'         : 'Derived at load time from Na__PbrMaterials__Config.json. Never edit here.',
-            'VghLantern__Finish__Options__Config__AvailableFinishes'   : finishes.map(function(finish) {
-                return {
-                    Name         : finish.Name,
-                    MatCode      : finish.MatCode,
-                    HexColor     : finish.HexColor,
-                    RalReference : finish.RalReference,
-                    Substrate    : finish.Substrate,
-                    Description  : finish.Description
-                };
-            }),
+            'VghLantern__Finish__Options__Config__AvailableFinishes'   : VghLantern__ConfigLoader__ProjectPalette(finishes),
+            'VghLantern__Finish__Options__Config__CapFinishes'         : VghLantern__ConfigLoader__ProjectPalette(caps),
+            'VghLantern__Finish__Options__Config__JoineryFinishes'     : VghLantern__ConfigLoader__ProjectPalette(joinery),
             'VghLantern__Finish__Options__Config__DefaultFinish'       : defaults.DefaultFinishName || '',
-            'VghLantern__Finish__Options__Config__ColourReferences'    : refs
+            'VghLantern__Finish__Options__Config__DefaultCapFinish'    : VghLantern__ConfigLoader__PaletteDefaultName(caps),
+            'VghLantern__Finish__Options__Config__DefaultTrimFinish'   : VghLantern__ConfigLoader__PaletteDefaultName(joinery)
         };
     }
     // ------------------------------------------------------------
@@ -171,6 +213,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         VghLantern__ConfigLoader__DataLibraries    =  configData['VghLantern__DataLibraries__Config']           || {};
         VghLantern__ConfigLoader__Env2d            =  configData['VghLantern__Env2d__Config']                   || {};
         VghLantern__ConfigLoader__Env3d            =  configData['VghLantern__Env3d__Config']                   || {};
+        VghLantern__ConfigLoader__CrossSection     =  configData['VghLantern__CrossSection__Config']            || {};
         VghLantern__ConfigLoader__LanternEditor    =  configData['VghLantern__LanternEditor__Config']           || {};
         VghLantern__ConfigLoader__EditorWarnings   =  configData['VghLantern__LanternEditor__Warnings__Config'] || {};
         VghLantern__ConfigLoader__DrawingEditor    =  configData['VghLantern__DrawingEditor__Config']           || {};
@@ -246,6 +289,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
             'DataLibraries'    : VghLantern__ConfigLoader__DataLibraries,
             'Env2d'            : VghLantern__ConfigLoader__Env2d,
             'Env3d'            : VghLantern__ConfigLoader__Env3d,
+            'CrossSection'     : VghLantern__ConfigLoader__CrossSection,
             'LanternEditor'    : VghLantern__ConfigLoader__LanternEditor,
             'EditorWarnings'   : VghLantern__ConfigLoader__EditorWarnings,
             'DrawingEditor'    : VghLantern__ConfigLoader__DrawingEditor,

@@ -56,9 +56,66 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // count was never authoritative once a project was saved in spacing mode, so
     // there is nothing to migrate - the stored target spacing already describes
     // the set-out.
+    // BarProfileId joined them when the single monolithic bar section was retired
+    // in favour of the three part Vale glaze bar. There is nothing to migrate: the
+    // profile it named described a representative 50 mm section that was never a
+    // real Vale bar, and the composite that replaced it is not user-selectable.
     const SCHEMA__RETIRED_GLAZING_FIELDS  =  [
         'Lantern__GlazingBars__Config__DivisionMode',
-        'Lantern__GlazingBars__Config__BarCountLongSlope'
+        'Lantern__GlazingBars__Config__BarCountLongSlope',
+        'Lantern__GlazingBars__Config__BarProfileId'
+    ];
+
+
+    // MODULE CONSTANTS | Glaze Bar Trim Default
+    // ------------------------------------------------------------
+    // The 45 mm trim, matching the DefaultOptionId in the glaze bar system index.
+    // Named here so a project saved before trims existed loads with the depth a
+    // new lantern would be given rather than with no trim at all.
+    const SCHEMA__DEFAULT_TRIM_OPTION_ID  =  '45_1031';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Glaze Bar Finish Defaults
+    // ------------------------------------------------------------
+    // Match the IsDefault entries in the CapFinishes and JoineryFinishes palettes
+    // in Na__PbrMaterials__Config.json. A project saved before the bar carried its
+    // own finishes has neither field, and these are written in on load.
+    //
+    // The trim default is a PAINT rather than the bare timber those older projects
+    // were drawn with. That is deliberate: it is the finish most jobs are actually
+    // specified in, and a project saved before the field existed had no recorded
+    // intention to preserve - it had the one appearance the app could draw. Any
+    // job that wanted bare fir can say so now, which it could not before.
+    const SCHEMA__DEFAULT_CAP_FINISH      =  'Powder Coated Aluminium';
+    const SCHEMA__DEFAULT_TRIM_FINISH     =  'Farrow and Ball French Gray';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Retired Finish Fields
+    // ------------------------------------------------------------
+    // FrameColourRef was a free-standing dropdown of RAL and BS references sitting
+    // beside the frame finish, which meant a lantern could be saved claiming a
+    // finish and a colour reference that contradicted each other. Every palette
+    // entry already carries its own RalReference, so the field was asking the user
+    // to restate something the chosen finish had already answered. It is stripped
+    // on load with nothing to migrate: the finish name it sat next to is
+    // authoritative and always was.
+    const SCHEMA__RETIRED_FINISH_FIELDS   =  [
+        'Lantern__FinishAndGlazing__Config__FrameColourRef'
+    ];
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Retired Builders Upstand and Base Fields
+    // ------------------------------------------------------------
+    // The eaves section is gone. The eaves ring is the line where the roof plane
+    // meets the upstand rather than a part in its own right - the metal along it
+    // belongs to the upstand and the frame beneath - so it is no longer swept,
+    // scheduled or offered as a choice. Nothing to migrate: the field named a
+    // profile that was never authored, and every project on disk stores it empty.
+    const SCHEMA__RETIRED_UPSTAND_FIELDS  =  [
+        'Lantern__BuildersUpstandAndBase__Config__EavesProfileId'
     ];
     // ------------------------------------------------------------
 
@@ -375,8 +432,15 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         }
 
         if (VghLantern__SchemaValidator__ApplyIntField(barsCfg, 'Lantern__GlazingBars__Config__TargetSpacingMm', SCHEMA__DEFAULT_BAR_SPACING_MM, 100, 3000)) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__BarProfileId', '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__TrimOptionId', SCHEMA__DEFAULT_TRIM_OPTION_ID)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyBoolField(barsCfg, 'Lantern__GlazingBars__Config__HorizontalTransomEnabled', false)) didMutate  =  true;
+
+        // The two finished faces of the bar. Defaulted rather than left blank,
+        // because a bar is always supplied with both of them finished somehow -
+        // an empty string here would mean "no cap finish", which is not a thing a
+        // Vale bar can be.
+        if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__CapFinish',  SCHEMA__DEFAULT_CAP_FINISH))  didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__TrimFinish', SCHEMA__DEFAULT_TRIM_FINISH)) didMutate  =  true;
 
         return didMutate;
     }
@@ -435,8 +499,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             ['Lantern__KerbAndBase__Config__KerbHeightMm',    'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm'],
             ['Lantern__KerbAndBase__Config__KerbThicknessMm', 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm'],
             ['Lantern__KerbAndBase__Config__KerbProfileId',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
-            ['Lantern__KerbAndBase__Config__FrameHeightMm',   'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm'],
-            ['Lantern__KerbAndBase__Config__EavesProfileId',  'Lantern__BuildersUpstandAndBase__Config__EavesProfileId']
+            ['Lantern__KerbAndBase__Config__FrameHeightMm',   'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm']
         ];
 
         for (var i = 0; i < fieldMap.length; i++) {
@@ -473,7 +536,13 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',   SCHEMA__DEFAULT_FRAME_HEIGHT_MM,   SCHEMA__MIN_FRAME_HEIGHT_MM,   SCHEMA__MAX_FRAME_HEIGHT_MM))   didMutate  =  true;
 
         if (VghLantern__SchemaValidator__ApplyStringField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', '')) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyStringField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__EavesProfileId', '')) didMutate  =  true;
+
+        for (var i = 0; i < SCHEMA__RETIRED_UPSTAND_FIELDS.length; i++) {
+            if (SCHEMA__RETIRED_UPSTAND_FIELDS[i] in upstandCfg) {
+                delete upstandCfg[SCHEMA__RETIRED_UPSTAND_FIELDS[i]];
+                didMutate  =  true;
+            }
+        }
 
         return didMutate;
     }
@@ -502,8 +571,14 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         var didMutate  =  false;
         var finishCfg  =  lantern['Lantern__FinishAndGlazing__Config'];
 
+        for (var i = 0; i < SCHEMA__RETIRED_FINISH_FIELDS.length; i++) {
+            if (SCHEMA__RETIRED_FINISH_FIELDS[i] in finishCfg) {
+                delete finishCfg[SCHEMA__RETIRED_FINISH_FIELDS[i]];
+                didMutate  =  true;
+            }
+        }
+
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__FrameFinish', '')) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__FrameColourRef', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__GlazingSpec', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__GlazingTint', '')) didMutate  =  true;
 
@@ -522,6 +597,50 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
         if (VghLantern__SchemaValidator__ApplyStringField(notesCfg, 'Lantern__Notes__Config__DocumentWarning', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(notesCfg, 'Lantern__Notes__Config__InternalComments', '')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Normalise Lantern Drawing Layout Block
+    // ------------------------------------------------------------
+    // Each lantern owns its own Drawing Editor sheet setup so a multi-lantern
+    // project can keep Kitchen at A4 1:50 and Dining Room at A3 1:20 without
+    // overwriting each other. Null fields still mean "fall back to config".
+    function VghLantern__SchemaValidator__NormaliseLanternDrawingLayout(lantern) {
+        var didMutate  =  false;
+        var layoutCfg  =  lantern['Lantern__DrawingLayout__Config'];
+
+        if (!('Lantern__DrawingLayout__Config__SheetSizeKey' in layoutCfg)) {
+            layoutCfg['Lantern__DrawingLayout__Config__SheetSizeKey']  =  null;
+            didMutate  =  true;
+        }
+        if (!('Lantern__DrawingLayout__Config__Orientation' in layoutCfg)) {
+            layoutCfg['Lantern__DrawingLayout__Config__Orientation']  =  null;
+            didMutate  =  true;
+        }
+        if (!('Lantern__DrawingLayout__Config__ScaleDenominator' in layoutCfg)) {
+            layoutCfg['Lantern__DrawingLayout__Config__ScaleDenominator']  =  null;
+            didMutate  =  true;
+        }
+        if (VghLantern__SchemaValidator__ApplyBoolField(layoutCfg, 'Lantern__DrawingLayout__Config__ScaleIsManual', false)) didMutate  =  true;
+
+        if (!Array.isArray(layoutCfg['Lantern__DrawingLayout__Config__ColumnSharesPct'])) {
+            layoutCfg['Lantern__DrawingLayout__Config__ColumnSharesPct']  =  null;
+            didMutate  =  true;
+        }
+        if (!Array.isArray(layoutCfg['Lantern__DrawingLayout__Config__RowSharesPct'])) {
+            layoutCfg['Lantern__DrawingLayout__Config__RowSharesPct']  =  null;
+            didMutate  =  true;
+        }
+
+        if (typeof layoutCfg['Lantern__DrawingLayout__Config__SheetZoomFactor'] !== 'number') {
+            layoutCfg['Lantern__DrawingLayout__Config__SheetZoomFactor']  =  1;
+            didMutate  =  true;
+        }
+
+        if (VghLantern__SchemaValidator__EnsureObject(layoutCfg, 'Lantern__DrawingLayout__Config__ViewCameraStates')) didMutate  =  true;
 
         return didMutate;
     }
@@ -549,7 +668,8 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             'Lantern__BuildersUpstandAndBase__Config',
             'Lantern__Ventilation__Config',
             'Lantern__FinishAndGlazing__Config',
-            'Lantern__Notes__Config'
+            'Lantern__Notes__Config',
+            'Lantern__DrawingLayout__Config'
         ];
         for (var i = 0; i < requiredBlocks.length; i++) {
             if (VghLantern__SchemaValidator__EnsureObject(lantern, requiredBlocks[i])) didMutate  =  true;
@@ -566,6 +686,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseVentilation(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinishAndGlazing(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseNotes(lantern)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseLanternDrawingLayout(lantern)) didMutate  =  true;
 
         return { LanternData: lantern, DidMutate: didMutate };
     }
@@ -637,12 +758,10 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
     // SUB FUNCTION | Normalise the Drawing Layout Block
     // ------------------------------------------------------------
-    // Holds how the Drawing Editor sheet was last set up: paper, orientation, scale,
-    // grid shares, zoom and the 3D viewpoint. Every field is allowed to be null and
-    // null means "fall back to config", which is exactly what a project created
-    // before this block existed needs to do. Nothing here is dimensional geometry, so
-    // no value is clamped to a lantern range - the Drawing Editor validates a sheet
-    // size against the size table and a scale against the denominator list itself.
+    // Legacy project-level sheet setup. Kept so older files still load, and so a
+    // project opened before per-lantern layouts existed can seed each lantern's
+    // own DrawingLayout from this block once. New edits are written onto each
+    // lantern; this block remains a fallback seed only.
     function VghLantern__SchemaValidator__NormaliseDrawingLayout(layoutCfg) {
         var didMutate  =  false;
 
@@ -675,6 +794,75 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         }
 
         if (VghLantern__SchemaValidator__EnsureObject(layoutCfg, 'VghLantern__ProjectFile__DrawingLayout__ViewCameraStates')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Test Whether a Lantern Drawing Layout Is Still Empty
+    // ------------------------------------------------------------
+    // Empty means "never composed for this lantern", so the project-level legacy
+    // block can seed it without overwriting a sheet the user has already set up.
+    function VghLantern__SchemaValidator__LanternDrawingLayoutIsEmpty(layoutCfg) {
+        if (!layoutCfg || typeof layoutCfg !== 'object') return true;
+
+        return layoutCfg['Lantern__DrawingLayout__Config__SheetSizeKey'] === null
+            && layoutCfg['Lantern__DrawingLayout__Config__Orientation'] === null
+            && layoutCfg['Lantern__DrawingLayout__Config__ScaleDenominator'] === null
+            && layoutCfg['Lantern__DrawingLayout__Config__ColumnSharesPct'] === null
+            && layoutCfg['Lantern__DrawingLayout__Config__RowSharesPct'] === null
+            && layoutCfg['Lantern__DrawingLayout__Config__ScaleIsManual'] !== true;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Seed Empty Per-Lantern Layouts From the Legacy Project Block
+    // ------------------------------------------------------------
+    // Projects saved before DrawingLayout lived on each lantern carried one shared
+    // sheet setup. Copying that setup into every empty lantern keeps Walkers Palace
+    // (and every other multi-lantern job) from losing the sheet the user already
+    // composed, then lets each lantern diverge independently from that starting point.
+    function VghLantern__SchemaValidator__MigrateProjectDrawingLayoutIntoLanterns(projectData) {
+        var projectLayout  =  projectData['VghLantern__ProjectFile__DrawingLayout'];
+        var lanterns       =  projectData['VghLantern__ProjectFile__Lanterns'];
+        if (!projectLayout || !Array.isArray(lanterns) || lanterns.length === 0) return false;
+
+        var fieldMap  =  [
+            ['VghLantern__ProjectFile__DrawingLayout__SheetSizeKey',     'Lantern__DrawingLayout__Config__SheetSizeKey'],
+            ['VghLantern__ProjectFile__DrawingLayout__Orientation',      'Lantern__DrawingLayout__Config__Orientation'],
+            ['VghLantern__ProjectFile__DrawingLayout__ScaleDenominator', 'Lantern__DrawingLayout__Config__ScaleDenominator'],
+            ['VghLantern__ProjectFile__DrawingLayout__ScaleIsManual',    'Lantern__DrawingLayout__Config__ScaleIsManual'],
+            ['VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct',  'Lantern__DrawingLayout__Config__ColumnSharesPct'],
+            ['VghLantern__ProjectFile__DrawingLayout__RowSharesPct',     'Lantern__DrawingLayout__Config__RowSharesPct'],
+            ['VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor',  'Lantern__DrawingLayout__Config__SheetZoomFactor'],
+            ['VghLantern__ProjectFile__DrawingLayout__ViewCameraStates', 'Lantern__DrawingLayout__Config__ViewCameraStates']
+        ];
+
+        var didMutate  =  false;
+        var i, j, lantern, layoutCfg, fromKey, toKey, value;
+
+        for (i = 0; i < lanterns.length; i++) {
+            lantern    =  lanterns[i];
+            layoutCfg  =  lantern ? lantern['Lantern__DrawingLayout__Config'] : null;
+            if (!layoutCfg || !VghLantern__SchemaValidator__LanternDrawingLayoutIsEmpty(layoutCfg)) continue;
+
+            for (j = 0; j < fieldMap.length; j++) {
+                fromKey  =  fieldMap[j][0];
+                toKey    =  fieldMap[j][1];
+                value    =  projectLayout[fromKey];
+
+                if (Array.isArray(value)) {
+                    layoutCfg[toKey]  =  value.slice();
+                } else if (value && typeof value === 'object') {
+                    layoutCfg[toKey]  =  VghLantern__SchemaValidator__Clone(value);
+                } else {
+                    layoutCfg[toKey]  =  value;
+                }
+            }
+
+            didMutate  =  true;
+        }
 
         return didMutate;
     }
@@ -777,6 +965,11 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             var normalisedLantern  =  VghLantern__SchemaValidator__NormaliseLantern(lanterns[i], i);
             lanterns[i]  =  normalisedLantern.LanternData;
             if (normalisedLantern.DidMutate) didMutate  =  true;
+        }
+
+        if (VghLantern__SchemaValidator__MigrateProjectDrawingLayoutIntoLanterns(clonedProject)) {
+            didMutate  =  true;
+            notes.push('Seeded per-lantern drawing layouts from the legacy project DrawingLayout block.');
         }
 
         if (didMutate) {

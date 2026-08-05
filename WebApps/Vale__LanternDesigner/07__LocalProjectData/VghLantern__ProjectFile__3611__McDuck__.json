@@ -1,0 +1,147 @@
+{
+    "VghLantern__ProjectFile__Metadata": {
+        "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
+        "VghLantern__ProjectFile__Metadata__ProjectCode": "3611",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "McDuck",
+        "VghLantern__ProjectFile__Metadata__DocumentName": "McDuck Manor",
+        "VghLantern__ProjectFile__Metadata__ClientName": "Scrooge McDuck",
+        "VghLantern__ProjectFile__Metadata__SiteAddress": "",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "VghLantern__ProjectFile__Metadata__DateCreated": "05-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "05-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__DateIssued": "",
+        "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
+        "VghLantern__ProjectFile__Metadata__Author": "",
+        "VghLantern__ProjectFile__Metadata__SchemaVersion": "1.0.0"
+    },
+    "VghLantern__ProjectFile__GlobalSettings": {
+        "VghLantern__ProjectFile__GlobalSettings__Description": "Document-wide settings that cascade to all lanterns.",
+        "VghLantern__ProjectFile__GlobalSettings__FrameFinish": "",
+        "VghLantern__ProjectFile__GlobalSettings__GlazingSpec": "",
+        "VghLantern__ProjectFile__GlobalSettings__DrawingScaleRef": "",
+        "VghLantern__ProjectFile__GlobalSettings__JobNotes": ""
+    },
+    "VghLantern__ProjectFile__DrawingLayout": {
+        "VghLantern__ProjectFile__DrawingLayout__Description": "Legacy shared sheet seed. Live sheet setup is stored per lantern under Lantern__DrawingLayout__Config; this block only seeds empty lantern layouts on load.",
+        "VghLantern__ProjectFile__DrawingLayout__SheetSizeKey": null,
+        "VghLantern__ProjectFile__DrawingLayout__Orientation": null,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": null,
+        "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
+        "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
+        "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
+        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {}
+    },
+    "VghLantern__ProjectFile__ClientDocument": {
+        "VghLantern__ProjectFile__ClientDocument__Description": "The client-facing welcome letter and this project's own terms. Standard terms live in the markdown library; only their on/off state is recorded here.",
+        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
+        "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch.",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "{{UserName}}",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "{{UserJobTitle}}",
+        "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [
+            {
+                "Id": "trm_msg90aey_1",
+                "Text": "Goofy must not be allowed to attend site during Vale's works."
+            }
+        ],
+        "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
+        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {},
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressLine1": "{{ClientAddress__Line01}}",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressStreet": "{{ClientAddress__StreetName}}",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressTownCity": "{{ClientAddress__Town/City}}",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressPostCode": "{{ClientAddress__PostCode}}"
+    },
+    "VghLantern__ProjectFile__Lanterns": [
+        {
+            "Lantern__Identity__Config": {
+                "Lantern__Identity__Config__Id": "ltn_966922_0",
+                "Lantern__Identity__Config__Title": "",
+                "Lantern__Identity__Config__Reference": "",
+                "Lantern__Identity__Config__SortOrder": 0,
+                "Lantern__Identity__Config__Quantity": 1
+            },
+            "Lantern__Form__Config": {
+                "Lantern__Form__Config__RoofForm": "Hipped Ridge",
+                "Lantern__Form__Config__PlanRotationDeg": 0
+            },
+            "Lantern__Dimensions__Config": {
+                "Lantern__Dimensions__Config__WidthMm": 7000,
+                "Lantern__Dimensions__Config__DepthMm": 4000,
+                "Lantern__Dimensions__Config__EavesProjectionMm": 25
+            },
+            "Lantern__RoofPitch__Config": {
+                "Lantern__RoofPitch__Config__PitchDegrees": 30
+            },
+            "Lantern__GlazingBars__Config": {
+                "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
+                "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
+                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
+            },
+            "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
+                "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
+                "Lantern__RidgeAndHips__Config__CrestingEnabled": false
+            },
+            "Lantern__Finials__Config": {
+                "Lantern__Finials__Config__Enabled": true,
+                "Lantern__Finials__Config__FinialComponentId": "50_1001",
+                "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
+                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
+                "Lantern__Finials__Config__PlaceAtApex": false
+            },
+            "Lantern__BuildersUpstandAndBase__Config": {
+                "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
+                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
+            },
+            "Lantern__Ventilation__Config": {
+                "Lantern__Ventilation__Config__Enabled": false,
+                "Lantern__Ventilation__Config__VentComponentId": "",
+                "Lantern__Ventilation__Config__VentCount": 0,
+                "Lantern__Ventilation__Config__OperationType": ""
+            },
+            "Lantern__FinishAndGlazing__Config": {
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
+                "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
+            },
+            "Lantern__Notes__Config": {
+                "Lantern__Notes__Config__DocumentWarning": "",
+                "Lantern__Notes__Config__InternalComments": ""
+            },
+            "Lantern__DrawingLayout__Config": {
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A4",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
+                "Lantern__DrawingLayout__Config__ScaleIsManual": true,
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    61.27669039145908,
+                    38.72330960854092
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    35.904086535024604,
+                    64.0959134649754
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.3771277643359572,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 7.834982814291844,
+                            "y": 6.363101547346917,
+                            "z": 10.028320691529423
+                        },
+                        "Target": {
+                            "x": 0,
+                            "y": 0.6970671475544961,
+                            "z": 0
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

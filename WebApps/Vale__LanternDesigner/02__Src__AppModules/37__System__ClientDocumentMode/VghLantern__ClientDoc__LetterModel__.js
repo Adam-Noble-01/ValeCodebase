@@ -137,6 +137,18 @@ const VghLantern__ClientDoc__LetterModel = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Report Whether a Field Is Blank or Still a Placeholder
+    // ------------------------------------------------------------
+    // The seeded defaults are literal {{Token}} strings, so a field holding one has
+    // not actually been filled in. Issue reporting has to treat the two the same or
+    // seeding a placeholder would silently switch off the warning that field feeds.
+    function VghLantern__LetterModel__IsPlaceholderOrEmpty(value) {
+        var text  =  String(value === undefined || value === null ? '' : value).trim();
+        return text === '' || /^\{\{.*\}\}$/.test(text);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -336,17 +348,24 @@ const VghLantern__ClientDoc__LetterModel = (function() {
             return result.Text;
         }
 
+        // HELPER | Read a named field, falling back to its configured default
+        // A project materialised before a field existed has nothing stored against
+        // it, so without this the block that field feeds would silently vanish from
+        // an older letter while appearing on every new one.
+        function fieldOrDefault(fieldName) {
+            var stored  =  VghLantern__ClientDoc__LetterModel__ReadField(project, fieldName);
+            if (stored !== '') return stored;
+
+            return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                letterCfg, FIELD_DEFAULT_CONFIG_KEY_MAP[fieldName], LETTER_LABEL);
+        }
+
         // Tokens are resolved on the raw body BEFORE it is parsed, so a token sitting
         // inside a bold run resolves like any other text rather than breaking the run
         // apart. Parsing then produces the blocks both renderers draw.
         var Parser  =  window.VghLantern__ClientDoc__MarkdownParser;
         var body    =  resolve(VghLantern__ClientDoc__LetterModel__ReadBody(project));
         var blocks  =  Parser ? Parser.VghLantern__ClientDoc__MarkdownParser__Parse(body) : [];
-
-        var salutation  =  VghLantern__ClientDoc__LetterModel__ReadField(project, 'salutation');
-        if (salutation === '') {
-            salutation  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'DefaultSalutation', LETTER_LABEL);
-        }
 
         return {
             ShowLetterhead : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(letterCfg, 'ShowLetterhead',   LETTER_LABEL),
@@ -377,22 +396,27 @@ const VghLantern__ClientDoc__LetterModel = (function() {
             // exactly like the sign-off fields below, until a client address data
             // source exists on the project record.
             ClientName            : tokenTable.ClientName || '',
-            ClientAddressLine1    : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressLine1'),
-            ClientAddressStreet   : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressStreet'),
-            ClientAddressTownCity : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressTownCity'),
-            ClientAddressPostCode : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressPostCode'),
+            ClientAddressLine1    : fieldOrDefault('clientAddressLine1'),
+            ClientAddressStreet   : fieldOrDefault('clientAddressStreet'),
+            ClientAddressTownCity : fieldOrDefault('clientAddressTownCity'),
+            ClientAddressPostCode : fieldOrDefault('clientAddressPostCode'),
 
-            Salutation     : resolve(salutation),
+            Salutation     : resolve(fieldOrDefault('salutation')),
             Blocks         : blocks,
 
             SignOffPhrase  : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'DefaultSignOffPhrase', LETTER_LABEL),
-            SignOffName    : VghLantern__ClientDoc__LetterModel__ReadField(project, 'signOffName'),
-            SignOffRole    : VghLantern__ClientDoc__LetterModel__ReadField(project, 'signOffRole'),
+            SignOffName    : fieldOrDefault('signOffName'),
+            SignOffRole    : fieldOrDefault('signOffRole'),
 
             Issues         : {
                 UnresolvedTokens : unresolved,
                 IsEmpty          : body.trim() === '',
-                IsUnsigned       : VghLantern__ClientDoc__LetterModel__ReadField(project, 'signOffName') === ''
+
+                // A name that is still the {{UserName}} placeholder is not a
+                // signature, so Preview and Send must keep warning about it just as
+                // it did when the field was left blank.
+                IsUnsigned       : VghLantern__LetterModel__IsPlaceholderOrEmpty(
+                                       VghLantern__ClientDoc__LetterModel__ReadField(project, 'signOffName'))
             }
         };
     }

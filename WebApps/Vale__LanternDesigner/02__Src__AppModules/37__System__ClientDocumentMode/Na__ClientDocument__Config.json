@@ -102,6 +102,11 @@
 
         "VghLantern__ClientDocument__Config__LetterStyle": {
             "LetterheadGapMm"           : 8,
+            "LetterheadRuleGapMm"       : 4,
+            "LetterheadRuleStrokeMm"    : 0.2,
+            "LetterheadRuleNote"        : "The rule closing the stationery band, matching the border the screen renderer draws under the same block. Set LetterheadRuleStrokeMm to 0 to drop the rule from both surfaces.",
+            "AddressRowGapMm"           : 10,
+            "AddressRowGapMmNote"       : "Space between the recipient and reference row and the salutation. Wider than SalutationGapMm because the row above it is a block of several lines rather than one.",
             "SalutationGapMm"           : 6,
             "SubjectGapMm"              : 5,
             "ParagraphGapMm"            : 3.2,

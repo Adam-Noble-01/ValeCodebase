@@ -91,7 +91,7 @@
                 "Lantern__Ventilation__Config__OperationType": ""
             },
             "Lantern__FinishAndGlazing__Config": {
-                "Lantern__FinishAndGlazing__Config__FrameFinish": "",
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
                 "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""

@@ -65,7 +65,7 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 4000,
+                "Lantern__Dimensions__Config__WidthMm": 4500,
                 "Lantern__Dimensions__Config__DepthMm": 3000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 20
             },

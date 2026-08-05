@@ -3,6 +3,20 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.6 - 05-Aug-2026
+### Per-asset 3js transform override for quick seating alignment
+
+#### Added - `Na__Asset__3jsOveride__Transform` on component JSON
+- Optional block at the end of a component asset: `X_mm` / `Y_mm` / `Z_mm`
+  (Three.js world axes, Y = up). `+200` lifts 200 mm; `-200` lowers it.
+- Missing block, missing keys, or zero values are ignored.
+- Ball and Spire finials set to `Y_mm: 200` for initial seating nudge.
+
+#### Added - `VghLantern__Env3d__ComponentTransformOverride__.mjs`
+- Reads the override block and adds millimetre offsets after the component
+  is seated on its anchor. Wired into `ComponentLoader__Glb__Build`.
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.1.5 - 05-Aug-2026
 ### The library speaks the SketchUp exporter's language, finials are chosen from pictures, and every material comes from one file
 

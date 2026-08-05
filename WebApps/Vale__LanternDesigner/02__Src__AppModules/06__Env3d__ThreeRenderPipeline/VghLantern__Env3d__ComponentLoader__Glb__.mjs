@@ -60,6 +60,10 @@ import {
     VghLantern__Env3d__MeshJson__ClearCache
 } from './VghLantern__Env3d__ComponentLoader__MeshJson__.mjs';
 
+import {
+    VghLantern__Env3d__ComponentTransformOverride__Apply
+} from './VghLantern__Env3d__ComponentTransformOverride__.mjs';
+
 // =============================================================================
 // REGION | GLB Component Loader Module
 // =============================================================================
@@ -347,6 +351,12 @@ import {
             const world  =  VghLantern__Env3d__ConfigAccess__PointToWorld(anchor.Position);
             object3d.position.set(world.x, world.y, world.z);
             object3d.userData.VghLantern__AnchorId  =  anchor.Id;
+
+            // Optional per-asset mm nudge from Na__Asset__3jsOveride__Transform.
+            // Missing / zero keys are ignored. Asset is session-cached, so this
+            // second read is free after ResolveObject already fetched it.
+            const asset  =  await VghLantern__Env3d__ComponentLoader__ReadAsset(componentId);
+            VghLantern__Env3d__ComponentTransformOverride__Apply(object3d, asset);
 
             // A placed component is its own object rather than one of a merged set,
             // so it registers whole. The record carries what the inspector cannot

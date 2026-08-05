@@ -38,6 +38,7 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
     const CSS_FIELD_ROW   =  'VghLantern__ClientDoc__FieldRow';
     const CSS_FIELD       =  'VghLantern__ClientDoc__Field';
     const CSS_FIELD_LABEL =  'VghLantern__ClientDoc__FieldLabel';
+    const CSS_GROUP_LABEL =  'VghLantern__ClientDoc__FieldGroupLabel';
     const CSS_FIELD_INPUT =  'VghLantern__ClientDoc__FieldInput';
     const CSS_HELPER      =  'VghLantern__ClientDoc__Helper';
     const CSS_FILL_LINK   =  'VghLantern__ClientDoc__FillLink';
@@ -212,26 +213,42 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Build One Field Placeheld by the Token It Will Print
+    // ------------------------------------------------------------
+    // An empty field still prints its configured default onto the letter, so the
+    // placeholder shows that default rather than a generic prompt. What the box
+    // looks empty with is then exactly what the preview beside it is showing.
+    function VghLantern__LetterEditor__BuildTokenField(project, fieldName, label, defaultConfigKey) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var LetterModel   =  window.VghLantern__ClientDoc__LetterModel;
+
+        return VghLantern__LetterEditor__BuildField(
+            fieldName, label,
+            LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, fieldName),
+            ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                VghLantern__LetterEditor__Config(), defaultConfigKey, LETTER_LABEL));
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build the Client Address Block
     // ------------------------------------------------------------
     // The recipient block the letterhead prints above the salutation. Each field
-    // seeds from config as a literal {{ClientAddress__...}} token - see LetterModel -
-    // so the block is laid out and formatted correctly before a project carries a
-    // real client address.
+    // defaults to a literal {{ClientAddress__...}} token - see LetterModel - so the
+    // block is laid out and formatted correctly before a project carries a real
+    // client address.
     function VghLantern__LetterEditor__BuildClientAddress(project) {
-        var LetterModel  =  window.VghLantern__ClientDoc__LetterModel;
-
         return '<div class="' + CSS_FIELD_ROW + '">' +
-               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_LINE1, 'Address Line 1',
-                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_LINE1), 'Address line 1') +
-               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_STREET, 'Street Name',
-                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_STREET), 'Street name') +
+               VghLantern__LetterEditor__BuildTokenField(project, FIELD_CLIENT_ADDR_LINE1,
+                   'Address Line 1', 'DefaultClientAddressLine1') +
+               VghLantern__LetterEditor__BuildTokenField(project, FIELD_CLIENT_ADDR_STREET,
+                   'Street Name', 'DefaultClientAddressStreet') +
                '</div>' +
                '<div class="' + CSS_FIELD_ROW + '">' +
-               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_TOWN, 'Town / City',
-                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_TOWN), 'Town or city') +
-               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_POST, 'Postcode',
-                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_POST), 'Postcode') +
+               VghLantern__LetterEditor__BuildTokenField(project, FIELD_CLIENT_ADDR_TOWN,
+                   'Town / City', 'DefaultClientAddressTownCity') +
+               VghLantern__LetterEditor__BuildTokenField(project, FIELD_CLIENT_ADDR_POST,
+                   'Postcode', 'DefaultClientAddressPostCode') +
                '</div>';
     }
     // ------------------------------------------------------------
@@ -242,21 +259,30 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
     // The project author is offered as a one-click fill rather than pre-filled,
     // because whoever set the project up is not always whoever signs the letter.
     function VghLantern__LetterEditor__BuildSignOff(project) {
-        var LetterModel  =  window.VghLantern__ClientDoc__LetterModel;
-        var metadata     =  (project && project['VghLantern__ProjectFile__Metadata']) || {};
-        var author       =  metadata['VghLantern__ProjectFile__Metadata__Author'] || '';
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var LetterModel   =  window.VghLantern__ClientDoc__LetterModel;
+        var config        =  VghLantern__LetterEditor__Config();
+        var metadata      =  (project && project['VghLantern__ProjectFile__Metadata']) || {};
+        var author        =  metadata['VghLantern__ProjectFile__Metadata__Author'] || '';
 
         var name  =  LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_SIGNOFF_NAME);
         var role  =  LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_SIGNOFF_ROLE);
 
-        var fillLink  =  (author !== '' && name === '')
+        // The fill offer stands while the name is still a placeholder as well as
+        // while it is blank, because neither is a signature.
+        var isNamed  =  name !== '' && !/^\{\{.*\}\}$/.test(name.trim());
+
+        var fillLink  =  (author !== '' && !isNamed)
             ? '<button type="button" class="' + CSS_FILL_LINK + '" ' + ATTR_ACTION + '="fillAuthor">' +
               'Use ' + VghLantern__LetterEditor__Escape(author) + '</button>'
             : '';
 
         return '<div class="' + CSS_FIELD_ROW + '">' +
-               VghLantern__LetterEditor__BuildField(FIELD_SIGNOFF_NAME, 'Signed by', name, 'Name', fillLink) +
-               VghLantern__LetterEditor__BuildField(FIELD_SIGNOFF_ROLE, 'Role', role, 'Role or title') +
+               VghLantern__LetterEditor__BuildField(FIELD_SIGNOFF_NAME, 'Signed by', name,
+                   ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'DefaultSignOffName', LETTER_LABEL),
+                   fillLink) +
+               VghLantern__LetterEditor__BuildField(FIELD_SIGNOFF_ROLE, 'Role', role,
+                   ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'DefaultSignOffRole', LETTER_LABEL)) +
                '</div>';
     }
     // ------------------------------------------------------------
@@ -322,7 +348,7 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
                    LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_SALUTATION),
                    'Dear ...') +
 
-               '<span class="' + CSS_FIELD_LABEL + '">Client Address</span>' +
+               '<span class="' + CSS_GROUP_LABEL + '">Client Address</span>' +
                VghLantern__LetterEditor__BuildClientAddress(project) +
 
                '<label class="' + CSS_FIELD + '">' +

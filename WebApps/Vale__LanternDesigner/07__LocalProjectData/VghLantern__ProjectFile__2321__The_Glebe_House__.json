@@ -35,7 +35,7 @@
             35.88848884343831,
             64.11151115656169
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.7973158564688865,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.531571543900448,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {
@@ -65,7 +65,7 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 5000,
+                "Lantern__Dimensions__Config__WidthMm": 6000,
                 "Lantern__Dimensions__Config__DepthMm": 3000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 25
             },
@@ -85,7 +85,7 @@
             },
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
-                "Lantern__Finials__Config__FinialComponentId": "50_2001",
+                "Lantern__Finials__Config__FinialComponentId": "50_1001",
                 "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
@@ -122,6 +122,7 @@
         "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
         "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
         "VghLantern__ProjectFile__ClientDocument__SectionToggles": {},
-        "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch."
+        "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch.",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressLine1": ""
     }
 }

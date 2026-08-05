@@ -797,11 +797,21 @@
 
     /* SECTION | Chevron Indicator */
     /* ------------------------------------------------------------ */
+    /* An empty span with nothing to rotate reads as no indicator at all - the glyph
+       itself lives here rather than in the markup, so open/closed state is always a
+       pure CSS transform and never drifts from what the JS renders. Closed points
+       right; the --open rule below rotates it to point down. */
     .VghLantern__ControlPanel__SectionChevron {
         flex                               : 0 0 auto;
         font-size                          : var(--Vale_FontSize_Small);
         color                              : var(--Vale_TextSubtle);
         transition                         : transform var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ControlPanel__SectionChevron::before {
+        content                            : '\203A';
+        display                            : inline-block;
+        line-height                        : 1;
     }
     /* ------------------------------------------------------------ */
 

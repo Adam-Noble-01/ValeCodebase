@@ -85,7 +85,10 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
             DividerGapMm     : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'DividerGapMm',       STYLE_LABEL),
             DividerStrokeMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'DividerStrokeMm',    STYLE_LABEL),
 
-            LetterheadGapMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'LetterheadGapMm',    STYLE_LABEL),
+            LetterheadGapMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'LetterheadGapMm',       STYLE_LABEL),
+            LetterheadRuleGapMm    : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'LetterheadRuleGapMm',    STYLE_LABEL),
+            LetterheadRuleStrokeMm : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'LetterheadRuleStrokeMm', STYLE_LABEL),
+            AddressRowGapMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'AddressRowGapMm',    STYLE_LABEL),
             SalutationGapMm  : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'SalutationGapMm',    STYLE_LABEL),
             SubjectGapMm     : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'SubjectGapMm',       STYLE_LABEL),
             ParagraphGapMm   : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(styleCfg, 'ParagraphGapMm',     STYLE_LABEL),
@@ -341,11 +344,31 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | List the Sender's Letterhead Lines
+    // ------------------------------------------------------------
+    // An empty string is a deliberate spacer between the postal address and the
+    // contact details, matching the gap between the two groups on screen. It is
+    // skipped when drawn but still advances the cursor.
+    function VghLantern__LetterPdf__CompanyLines(letter) {
+        if (!letter.ShowCompanyDetails) return [];
+
+        var address  =  [letter.CompanyName, letter.CompanyAddressLine1,
+                         letter.CompanyTownCity, letter.CompanyPostCode]
+            .filter(function(part) { return !!part; });
+        var contact  =  [letter.CompanyPhone, letter.CompanyWebsite]
+            .filter(function(part) { return !!part; });
+
+        if (address.length && contact.length) return address.concat([''], contact);
+        return address.concat(contact);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Write the Letterhead Strip
     // ------------------------------------------------------------
-    // The logo sits left and the date and reference sit right-aligned against the
-    // margin, which is the same arrangement the screen renderer produces. Vale's own
-    // return address and contact details print under the logo, left-aligned.
+    // Logo left, the sender's own details right-aligned across from it, closed by a
+    // rule - the same stationery band the screen renderer draws. Nothing about the
+    // particular letter belongs here; the date and reference go in the address row.
     function VghLantern__LetterPdf__WriteLetterhead(cursor, letter, logoAsset) {
         if (!letter.ShowLetterhead) return;
 
@@ -359,72 +382,84 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
             cursor.Doc.addImage(logoAsset.DataUrl, 'PNG', cursor.X, blockTopY, letter.LogoWidthMm, logoHeight);
         }
 
-        cursor.Doc.setFont('helvetica', 'normal');
+        var lines     =  VghLantern__LetterPdf__CompanyLines(letter);
+        var companyY  =  blockTopY;
+        var i;
+
         cursor.Doc.setFontSize(style.MetaPt);
-        cursor.Doc.setTextColor(style.MetaColour);
 
-        var companyBottomY  =  blockTopY + logoHeight;
-        if (letter.ShowCompanyDetails) {
-            var addressLine  =  [letter.CompanyAddressLine1, letter.CompanyTownCity, letter.CompanyPostCode]
-                .filter(function(part) { return !!part; }).join(', ');
-            var contactLine  =  [letter.CompanyWebsite, letter.CompanyPhone]
-                .filter(function(part) { return !!part; }).join('  ·  ');
-            var companyLines =  [addressLine, contactLine].filter(function(part) { return !!part; });
-
-            var companyY  =  blockTopY + logoHeight + (logoHeight ? 1.5 : 0) + lineHeight * 0.8;
-            var i;
-            for (i = 0; i < companyLines.length; i++) {
-                cursor.Doc.text(companyLines[i], cursor.X, companyY);
-                companyY  +=  lineHeight;
+        for (i = 0; i < lines.length; i++) {
+            if (lines[i] !== '') {
+                // The company name leads the block, set bold in the heading colour
+                // exactly as the screen renderer sets it.
+                cursor.Doc.setFont('helvetica', i === 0 ? 'bold' : 'normal');
+                cursor.Doc.setTextColor(i === 0 ? style.HeadingColour : style.MetaColour);
+                cursor.Doc.text(lines[i], cursor.RightEdgeMm, companyY + lineHeight * 0.8, { align : 'right' });
             }
-            if (companyLines.length) companyBottomY  =  companyY - lineHeight + (lineHeight - lineHeight * 0.8);
+            companyY  +=  lineHeight;
         }
 
-        cursor.Doc.setFontSize(style.MetaPt);
-        cursor.Doc.setTextColor(style.MetaColour);
+        cursor.Doc.setFont('helvetica', 'normal');
 
-        var metaY  =  blockTopY + lineHeight * 0.8;
-        if (letter.IssueDate) {
-            cursor.Doc.text(String(letter.IssueDate), cursor.RightEdgeMm, metaY, { align : 'right' });
-            metaY  +=  lineHeight;
-        }
-        if (letter.ReferenceLine) {
-            cursor.Doc.text(String(letter.ReferenceLine), cursor.RightEdgeMm, metaY, { align : 'right' });
-            metaY  +=  lineHeight;
+        var stripBottomY  =  Math.max(blockTopY + logoHeight, companyY);
+
+        if (style.LetterheadRuleStrokeMm > 0) {
+            stripBottomY  +=  style.LetterheadRuleGapMm;
+            cursor.Doc.setDrawColor(style.MetaColour);
+            cursor.Doc.setLineWidth(style.LetterheadRuleStrokeMm);
+            cursor.Doc.line(cursor.X, stripBottomY, cursor.RightEdgeMm, stripBottomY);
         }
 
-        cursor.Y  =  Math.max(companyBottomY, metaY) + style.LetterheadGapMm;
+        cursor.Y  =  stripBottomY + style.LetterheadGapMm;
     }
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Write the Recipient Address Block
+    // SUB FUNCTION | Write the Recipient and Reference Row
     // ------------------------------------------------------------
-    // Sits above the salutation. The client's name is a real resolved value; the
-    // address lines are raw, unresolved placeholders until a project carries a real
-    // client address - see VghLantern__ClientDoc__LetterModel.
-    function VghLantern__LetterPdf__WriteRecipientAddress(cursor, letter) {
-        var lines  =  [letter.ClientName, letter.ClientAddressLine1, letter.ClientAddressStreet,
-                       letter.ClientAddressTownCity, letter.ClientAddressPostCode]
+    // Recipient left, date and reference right, both drawn from one top edge. The
+    // client's name is a real resolved value; the address lines are raw, unresolved
+    // placeholders until a project carries a real client address - see LetterModel.
+    function VghLantern__LetterPdf__WriteAddressRow(cursor, letter) {
+        var recipient  =  [letter.ClientName, letter.ClientAddressLine1, letter.ClientAddressStreet,
+                           letter.ClientAddressTownCity, letter.ClientAddressPostCode]
             .filter(function(part) { return !!part; });
-        if (!lines.length) return;
+        var meta       =  [letter.IssueDate, letter.ReferenceLine]
+            .filter(function(part) { return !!part; });
+        if (!recipient.length && !meta.length) return;
 
-        var style       =  cursor.Style;
-        var lineHeight  =  VghLantern__LetterPdf__LineHeightMm(style.BodyPt, style);
+        var style     =  cursor.Style;
+        var bodyLine  =  VghLantern__LetterPdf__LineHeightMm(style.BodyPt, style);
+        var metaLine  =  VghLantern__LetterPdf__LineHeightMm(style.MetaPt, style);
+        var i;
+
+        // Both columns start from the same edge, so the page break has to be settled
+        // before either is drawn rather than part way down the taller of the two.
+        VghLantern__LetterPdf__EnsureSpace(cursor,
+            Math.max(recipient.length * bodyLine, meta.length * metaLine));
+
+        var topY  =  cursor.Y;
 
         cursor.Doc.setFont('helvetica', 'normal');
         cursor.Doc.setFontSize(style.BodyPt);
         cursor.Doc.setTextColor(style.BodyColour);
 
-        VghLantern__LetterPdf__EnsureSpace(cursor, lineHeight * lines.length);
-
-        var i;
-        for (i = 0; i < lines.length; i++) {
-            cursor.Doc.text(lines[i], cursor.X, cursor.Y + lineHeight * 0.8);
-            cursor.Y  +=  lineHeight;
+        var recipientY  =  topY;
+        for (i = 0; i < recipient.length; i++) {
+            cursor.Doc.text(recipient[i], cursor.X, recipientY + bodyLine * 0.8);
+            recipientY  +=  bodyLine;
         }
 
-        cursor.Y  +=  style.SalutationGapMm;
+        cursor.Doc.setFontSize(style.MetaPt);
+        cursor.Doc.setTextColor(style.MetaColour);
+
+        var metaY  =  topY;
+        for (i = 0; i < meta.length; i++) {
+            cursor.Doc.text(meta[i], cursor.RightEdgeMm, metaY + metaLine * 0.8, { align : 'right' });
+            metaY  +=  metaLine;
+        }
+
+        cursor.Y  =  Math.max(recipientY, metaY) + style.AddressRowGapMm;
     }
     // ------------------------------------------------------------
 
@@ -469,7 +504,7 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
         }
 
         VghLantern__LetterPdf__WriteLetterhead(cursor, letter, logoAsset);
-        VghLantern__LetterPdf__WriteRecipientAddress(cursor, letter);
+        VghLantern__LetterPdf__WriteAddressRow(cursor, letter);
         VghLantern__LetterPdf__WriteTextBlock(cursor, letter.Salutation, style.BodyPt,    style.BodyColour,    false, style.SalutationGapMm);
         VghLantern__LetterPdf__WriteTextBlock(cursor, letter.Subject,    style.SubjectPt, style.HeadingColour, true,  style.SubjectGapMm);
 

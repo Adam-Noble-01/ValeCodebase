@@ -217,6 +217,20 @@
         color                          : var(--Vale_TextSecondary);
     }
 
+    /* Heads a set of related fields rather than one field, so it needs air above it
+       to read as a divider between groups instead of as the first field's label. */
+    .VghLantern__ClientDoc__FieldGroupLabel {
+        display                        : block;
+        margin                         : var(--Vale_Spacing_Medium) 0 var(--Vale_Spacing_Small) 0;
+        padding-bottom                 : 4px;
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                 : 0.04em;
+        text-transform                 : uppercase;
+        color                          : var(--Vale_TextSecondary);
+        border-bottom                  : 1px solid var(--Vale_BorderLight);
+    }
+
     .VghLantern__ClientDoc__FieldInput {
         box-sizing                     : border-box;
         width                          : 100%;
@@ -493,7 +507,53 @@
         line-height                    : 1.55;
     }
 
+    /* The stationery band: logo left, the sender's own details right-aligned across
+       from it, closed by a rule. This carries nothing about the particular letter -
+       the date and reference belong to the address row below. */
     .VghLantern__Letter__Letterhead {
+        display                        : flex;
+        align-items                    : flex-start;
+        justify-content                : space-between;
+        gap                            : var(--Vale_Spacing_Large);
+        padding-bottom                 : var(--Vale_Spacing_Medium);
+        margin-bottom                  : var(--Vale_Spacing_Large);
+        border-bottom                  : 1px solid var(--Vale_BorderLight);
+    }
+
+    /* flex 0 0 auto is load-bearing: a flex item shrinks along the container's main
+       axis by default, so without it the logo is squashed by whatever sits beside
+       it and the text lands on top of the image. */
+    .VghLantern__Letter__Logo {
+        display                        : block;
+        flex                           : 0 0 auto;
+        height                         : auto;
+    }
+
+    .VghLantern__Letter__CompanyDetails {
+        display                        : flex;
+        flex-direction                 : column;
+        align-items                    : flex-end;
+        gap                            : var(--Vale_Spacing_Small);
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+        text-align                     : right;
+    }
+
+    /* Postal address and contact details are two groups, so the gap above separates
+       them without a rule or a blank line to maintain. */
+    .VghLantern__Letter__CompanyBlock {
+        display                        : flex;
+        flex-direction                 : column;
+        align-items                    : flex-end;
+    }
+
+    .VghLantern__Letter__CompanyName {
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        color                          : var(--Vale_PrimaryBrand);
+    }
+
+    /* Recipient left, date and reference right, both off one top edge. */
+    .VghLantern__Letter__AddressRow {
         display                        : flex;
         align-items                    : flex-start;
         justify-content                : space-between;
@@ -501,27 +561,11 @@
         margin-bottom                  : var(--Vale_Spacing_XLarge);
     }
 
-    /* Logo and Vale's own return address, stacked as one block on the left so the
-       sender's identity reads together rather than as two unrelated fragments. */
-    .VghLantern__Letter__Sender {
+    .VghLantern__Letter__RecipientAddress {
         display                        : flex;
         flex-direction                 : column;
-        align-items                    : flex-start;
-        gap                            : 4px;
-        min-width                      : 0;
-    }
-
-    .VghLantern__Letter__Logo {
-        display                        : block;
-        height                         : auto;
-    }
-
-    .VghLantern__Letter__CompanyDetails {
-        display                        : flex;
-        flex-direction                 : column;
-        gap                            : 1px;
-        font-size                      : var(--Vale_FontSize_Small);
-        color                          : var(--Vale_TextSecondary);
+        font-size                      : var(--Vale_FontSize_Standard);
+        color                          : var(--Vale_TextPrimary);
     }
 
     .VghLantern__Letter__Meta {
@@ -532,17 +576,7 @@
         font-size                      : var(--Vale_FontSize_Small);
         color                          : var(--Vale_TextSecondary);
         text-align                     : right;
-    }
-
-    /* The recipient block, above the salutation. */
-    .VghLantern__Letter__RecipientAddress {
-        margin                         : 0 0 var(--Vale_Spacing_Large) 0;
-        font-size                      : var(--Vale_FontSize_Standard);
-        color                          : var(--Vale_TextPrimary);
-    }
-
-    .VghLantern__Letter__RecipientAddress p {
-        margin                         : 0;
+        white-space                    : nowrap;
     }
 
     .VghLantern__Letter__Salutation {

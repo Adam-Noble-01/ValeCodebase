@@ -8,17 +8,31 @@
    AUTHOR     : Adam Noble - Noble Architecture
    PURPOSE    : Draw finials, bases and cresting at their solved anchor points
    CREATED    : 30-Jul-2026
+   UPDATED    : 05-Aug-2026 - unified component schema, real linework in all views
 
    DESCRIPTION:
    - Places discrete components from 05__Data__LanternComponentLibrary onto the
-     anchor points the SkeletonSolver publishes (ridge ends, or a single apex on
-     a pyramid).
-   - Uses the component's Na__Asset__Profile2D elevation outline when present.
-     A component with no 2D profile falls back to a proportional placeholder, so
-     a newly indexed 3D-only asset still shows where it sits.
-   - This is the 2D half of the deliberate 2D/3D asset split: the same component
-     JSON serves the gallery thumbnail and the elevation linework here, while the
-     3D environment reads its mesh or GLB from the same file.
+     anchor points the SkeletonSolver publishes: the two ridge ends on a hipped
+     or gabled roof, or the single apex on a pyramid.
+   - Every asset is authored about its origin point in SketchUp, so placing a
+     component is simply putting its local 0,0 on the anchor. There is no
+     per-asset offset table and nothing to keep in step by hand.
+   - Draws the component's real exported linework:
+       elevation views  Na__Asset__Elevation2D__Front / __Right
+       plan view        Na__Asset__Plan2D__Top
+     An asset that predates the unified export falls back to its Profile2D
+     outline, and an asset with neither falls back to a proportional
+     placeholder, so a newly indexed 3D-only part still shows where it sits.
+
+   ---------------------------------------------------------------------------
+
+   WHY THE DRAW IS SYNCHRONOUS AND THE LOAD IS NOT:
+   Component assets are one to three megabytes and load on demand, so the first
+   render after a selection change usually has no geometry to draw yet. Rather
+   than make the whole 2D pipeline await a fetch, this renderer draws whatever
+   is resident, kicks off the load for whatever is not, and asks the pipeline to
+   redraw when the asset lands. The user sees a placeholder for one frame
+   instead of a stalled viewport.
 
    ============================================================================= */
 
@@ -29,15 +43,38 @@
 const VghLantern__Env2d__FinialRenderer = (function() {
 
 // -----------------------------------------------------------------------------
-// REGION | Module Constants
+// REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
     // MODULE CONSTANTS | CSS Classes and Placeholder Proportions
     // ------------------------------------------------------------
-    const CSS_FINIAL           =  'VghLantern__Env2d__Finial';               // <-- Traced component outline
+    const CSS_FINIAL           =  'VghLantern__Env2d__Finial';               // <-- Traced component linework
     const CSS_FINIAL_FALLBACK  =  'VghLantern__Env2d__Finial--placeholder';  // <-- Proportional placeholder
     const CSS_FINIAL_ANCHOR    =  'VghLantern__Env2d__FinialAnchor';         // <-- Plan-view anchor marker
     const PLAN_MARKER_FACTOR   =  0.5;                                       // <-- Plan marker radius as a share of width; a proportion, not a config value
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Anchor Roles Published by the Skeleton Solver
+    // ------------------------------------------------------------
+    // The solver names anchors by WHERE they are on the roof; the lantern names
+    // components by WHAT goes there. This is the join between the two.
+    const ANCHOR_ROLE_RIDGE_END  =  'ridgeEnd';
+    const ANCHOR_ROLE_APEX       =  'apex';
+
+    const FINIALS_BLOCK          =  'Lantern__Finials__Config';
+    const FIELD_ENABLED          =  'Lantern__Finials__Config__Enabled';
+    const FIELD_COMPONENT_ID     =  'Lantern__Finials__Config__FinialComponentId';
+    const FIELD_AT_RIDGE_ENDS    =  'Lantern__Finials__Config__PlaceAtRidgeEnds';
+    const FIELD_AT_APEX          =  'Lantern__Finials__Config__PlaceAtApex';
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Pending Asset Requests
+    // ------------------------------------------------------------
+    // Guards against a load-triggered redraw requesting the same asset again
+    // and again while its fetch is still in flight.
+    let VghLantern__Env2d__FinialRenderer__Requested  =  new Set();
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -69,25 +106,111 @@ const VghLantern__Env2d__FinialRenderer = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Outline Placement
+// REGION | Anchor Filtering
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Map a Component Outline into View Space at an Anchor
+    // HELPER FUNCTION | Whether a Finial Belongs at This Anchor
     // ------------------------------------------------------------
-    // A component's Profile2D outline is authored in its own local space with
-    // x across and y up from its seating point. In elevation the local axes map
-    // straight onto the view axes, remembering that SVG y runs downward.
-    function VghLantern__Env2d__FinialRenderer__PlaceOutline(outlinePoints, anchorPt2d) {
-        var placed  =  [];
-        var i, localX, localY;
+    // Place at Ridge Ends and Place at Apex are user choices, so an anchor the
+    // solver published is not automatically an anchor that gets a finial.
+    function VghLantern__Env2d__FinialRenderer__AnchorWanted(anchor, finialsCfg) {
+        if (!anchor) return false;
 
-        for (i = 0; i < outlinePoints.length; i++) {
-            localX  =  Number(outlinePoints[i].x) || 0;
-            localY  =  Number(outlinePoints[i].y) || 0;
-            placed.push({ x: anchorPt2d.x + localX, y: anchorPt2d.y - localY });
+        if (anchor.Role === ANCHOR_ROLE_RIDGE_END) return finialsCfg[FIELD_AT_RIDGE_ENDS] !== false;
+        if (anchor.Role === ANCHOR_ROLE_APEX)      return finialsCfg[FIELD_AT_APEX]       !== false;
+
+        return true;                                                         // <-- An unfamiliar anchor role still gets drawn
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Geometry Resolution
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Request an Asset and Redraw When It Lands
+    // ------------------------------------------------------------
+    function VghLantern__Env2d__FinialRenderer__RequestAsset(componentId) {
+        if (!componentId) return;
+        if (VghLantern__Env2d__FinialRenderer__Requested.has(componentId)) return;
+
+        var ComponentLoader  =  window.VghLantern__AppData__ComponentIndexLoader;
+        if (!ComponentLoader) return;
+
+        VghLantern__Env2d__FinialRenderer__Requested.add(componentId);
+
+        ComponentLoader.VghLantern__ComponentIndexLoader__LoadAsset(componentId).then(function(assetData) {
+            VghLantern__Env2d__FinialRenderer__Requested.delete(componentId);
+            if (!assetData) return;
+
+            // The editor's viewport host owns both 2D surfaces and knows how to
+            // redraw them from current state, so the redraw is asked for there
+            // rather than by reaching back into the pipeline with a surface this
+            // renderer does not have.
+            var ViewportHost  =  window.VghLantern__LanternEditor__ViewportHost__2d;
+            if (ViewportHost && typeof ViewportHost.VghLantern__ViewportHost2d__Redraw === 'function') {
+                ViewportHost.VghLantern__ViewportHost2d__Redraw();
+            }
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve the SVG Path Data for a Component at an Anchor
+    // ------------------------------------------------------------
+    // Returns { PathData, IsPlaceholder }. Reads only what is already resident;
+    // a missing asset triggers a background load and draws the placeholder for
+    // this frame.
+    function VghLantern__Env2d__FinialRenderer__ResolvePathData(componentId, anchorPt2d, viewKey, config) {
+        var PathRenderer     =  window.VghLantern__Env2d__ComponentPathRenderer;
+        var ComponentLoader  =  window.VghLantern__AppData__ComponentIndexLoader;
+
+        if (!componentId || !PathRenderer || !ComponentLoader) {
+            return {
+                PathData      : VghLantern__Env2d__FinialRenderer__PlaceholderPathData(anchorPt2d, config),
+                IsPlaceholder : true
+            };
         }
 
-        return placed;
+        var assetData  =  ComponentLoader.VghLantern__ComponentIndexLoader__PeekAsset(componentId);
+        if (!assetData) {
+            VghLantern__Env2d__FinialRenderer__RequestAsset(componentId);
+            return {
+                PathData      : VghLantern__Env2d__FinialRenderer__PlaceholderPathData(anchorPt2d, config),
+                IsPlaceholder : true
+            };
+        }
+
+        // Unified schema: the exported drawing linework for this view
+        var assetViewKey  =  PathRenderer.VghLantern__ComponentPathRenderer__AssetViewKey(viewKey);
+        var blockKey      =  (assetViewKey === 'plan')  ? 'Na__Asset__Plan2D__Top'
+                          :  (assetViewKey === 'right') ? 'Na__Asset__Elevation2D__Right'
+                          :                               'Na__Asset__Elevation2D__Front';
+
+        var block  =  assetData[blockKey];
+        if (block && Array.isArray(block['Na__Geometry__Paths']) && block['Na__Geometry__Paths'].length > 0) {
+            return {
+                PathData      : PathRenderer.VghLantern__ComponentPathRenderer__BuildPathData(block['Na__Geometry__Paths'], anchorPt2d),
+                IsPlaceholder : false
+            };
+        }
+
+        // Legacy schema: one closed outline, only meaningful in elevation
+        var profile2d  =  assetData['Na__Asset__Profile2D'];
+        var points     =  profile2d && profile2d['Na__Asset__Profile2D__Points'];
+        if (Array.isArray(points) && points.length > 2 && assetViewKey !== 'plan') {
+            return {
+                PathData      : PathRenderer.VghLantern__ComponentPathRenderer__BuildOutlinePathData(points, anchorPt2d),
+                IsPlaceholder : false
+            };
+        }
+
+        return {
+            PathData      : VghLantern__Env2d__FinialRenderer__PlaceholderPathData(anchorPt2d, config),
+            IsPlaceholder : true
+        };
     }
     // ------------------------------------------------------------
 
@@ -100,16 +223,31 @@ const VghLantern__Env2d__FinialRenderer = (function() {
         var halfWidth  =  widthMm / 2;
 
         return [
-            { x: anchorPt2d.x - halfWidth,       y: anchorPt2d.y },
-            { x: anchorPt2d.x - halfWidth,       y: anchorPt2d.y - (heightMm * 0.18) },
-            { x: anchorPt2d.x - (halfWidth * 0.55), y: anchorPt2d.y - (heightMm * 0.30) },
-            { x: anchorPt2d.x - (halfWidth * 0.55), y: anchorPt2d.y - (heightMm * 0.62) },
-            { x: anchorPt2d.x,                   y: anchorPt2d.y - heightMm },
-            { x: anchorPt2d.x + (halfWidth * 0.55), y: anchorPt2d.y - (heightMm * 0.62) },
-            { x: anchorPt2d.x + (halfWidth * 0.55), y: anchorPt2d.y - (heightMm * 0.30) },
-            { x: anchorPt2d.x + halfWidth,       y: anchorPt2d.y - (heightMm * 0.18) },
-            { x: anchorPt2d.x + halfWidth,       y: anchorPt2d.y }
+            { x: anchorPt2d.x - halfWidth,             y: anchorPt2d.y },
+            { x: anchorPt2d.x - halfWidth,             y: anchorPt2d.y - (heightMm * 0.18) },
+            { x: anchorPt2d.x - (halfWidth * 0.55),    y: anchorPt2d.y - (heightMm * 0.30) },
+            { x: anchorPt2d.x - (halfWidth * 0.55),    y: anchorPt2d.y - (heightMm * 0.62) },
+            { x: anchorPt2d.x,                         y: anchorPt2d.y - heightMm },
+            { x: anchorPt2d.x + (halfWidth * 0.55),    y: anchorPt2d.y - (heightMm * 0.62) },
+            { x: anchorPt2d.x + (halfWidth * 0.55),    y: anchorPt2d.y - (heightMm * 0.30) },
+            { x: anchorPt2d.x + halfWidth,             y: anchorPt2d.y - (heightMm * 0.18) },
+            { x: anchorPt2d.x + halfWidth,             y: anchorPt2d.y }
         ];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Placeholder Outline as SVG Path Data
+    // ------------------------------------------------------------
+    function VghLantern__Env2d__FinialRenderer__PlaceholderPathData(anchorPt2d, config) {
+        var points  =  VghLantern__Env2d__FinialRenderer__PlaceholderOutline(
+            anchorPt2d, config.FallbackWidthMm, config.FallbackHeightMm);
+
+        var out  =  '';
+        for (var i = 0; i < points.length; i++) {
+            out  +=  (i === 0 ? 'M' : 'L') + points[i].x.toFixed(3) + ' ' + points[i].y.toFixed(3);
+        }
+        return out + 'Z';
     }
     // ------------------------------------------------------------
 
@@ -120,33 +258,32 @@ const VghLantern__Env2d__FinialRenderer = (function() {
 // REGION | Anchor Drawing
 // -----------------------------------------------------------------------------
 
-    // SUB FUNCTION | Draw One Finial in Elevation
+    // SUB FUNCTION | Draw One Resolved Component at an Anchor
     // ------------------------------------------------------------
-    function VghLantern__Env2d__FinialRenderer__DrawElevationFinial(targetLayer, anchorPt2d, outlinePoints, config, anchorId) {
+    // One path element per component regardless of how many primitives it holds,
+    // so a 157-segment spire at two ridge ends costs two DOM nodes.
+    function VghLantern__Env2d__FinialRenderer__DrawComponent(targetLayer, resolved, componentId, config, anchorId) {
         var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
 
-        var hasOutline  =  outlinePoints && outlinePoints.length > 2;
-        var placed      =  hasOutline
-            ? VghLantern__Env2d__FinialRenderer__PlaceOutline(outlinePoints, anchorPt2d)
-            : VghLantern__Env2d__FinialRenderer__PlaceholderOutline(anchorPt2d, config.FallbackWidthMm, config.FallbackHeightMm);
+        if (!resolved || !resolved.PathData) return;
 
-        targetLayer.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreatePolyShape(
-            placed,
-            hasOutline ? CSS_FINIAL : (CSS_FINIAL + ' ' + CSS_FINIAL_FALLBACK),
-            false,
+        targetLayer.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreatePath(
+            resolved.PathData,
+            resolved.IsPlaceholder ? (CSS_FINIAL + ' ' + CSS_FINIAL_FALLBACK) : CSS_FINIAL,
             {
-                'stroke-width'      : config.OutlineStrokeWidthMm,
-                'data-vgh-anchor-id': anchorId
+                'stroke-width'          : config.OutlineStrokeWidthMm,
+                'fill'                  : 'none',
+                'data-vgh-anchor-id'    : anchorId,
+                'data-vgh-component-id' : componentId || ''
             }
         ));
     }
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Draw One Finial Anchor in Plan
+    // SUB FUNCTION | Draw One Finial Anchor Marker in Plan
     // ------------------------------------------------------------
-    // In plan a finial is a small marker at the anchor rather than an outline,
-    // matching how Vale annotate lantern plans.
+    // Used only when the component has no plan linework of its own.
     function VghLantern__Env2d__FinialRenderer__DrawPlanAnchor(targetLayer, anchorPt2d, config, anchorId) {
         var SvgHelpers  =  window.VghLantern__Env2d__SvgHelpers;
         var radius      =  config.FallbackWidthMm * PLAN_MARKER_FACTOR;
@@ -163,13 +300,13 @@ const VghLantern__Env2d__FinialRenderer = (function() {
 
     // FUNCTION | Render Finials at Every Solved Anchor
     // ------------------------------------------------------------
-    // Async because the component outline is fetched on demand. The placeholder
-    // draws immediately if the asset has no 2D profile.
+    // Kept async for callers that already await it, but it no longer awaits a
+    // fetch itself - see the module header for why.
     async function VghLantern__Env2d__FinialRenderer__Render(instance, skeleton, lantern) {
         if (!instance || !skeleton || !skeleton.FinialAnchors || !lantern) return;
 
-        var finialsCfg  =  lantern['Lantern__Finials__Config'] || {};
-        if (finialsCfg['Lantern__Finials__Config__Enabled'] !== true) return;
+        var finialsCfg  =  lantern[FINIALS_BLOCK] || {};
+        if (finialsCfg[FIELD_ENABLED] !== true) return;
 
         var config  =  VghLantern__Env2d__FinialRenderer__ReadConfig();
         var viewKey =  instance.ViewKey;
@@ -182,24 +319,25 @@ const VghLantern__Env2d__FinialRenderer = (function() {
         if (!componentLayer) return;
 
         var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
-        var componentId   =  finialsCfg['Lantern__Finials__Config__FinialComponentId'] || '';
+        var componentId   =  finialsCfg[FIELD_COMPONENT_ID] || '';
 
-        var outlinePoints  =  null;
-        if (!isPlan && componentId && window.VghLantern__AppData__ComponentIndexLoader) {
-            outlinePoints  =  await window.VghLantern__AppData__ComponentIndexLoader
-                .VghLantern__ComponentIndexLoader__GetOutlinePoints(componentId);
-        }
+        for (var i = 0; i < skeleton.FinialAnchors.length; i++) {
+            var anchor  =  skeleton.FinialAnchors[i];
+            if (!VghLantern__Env2d__FinialRenderer__AnchorWanted(anchor, finialsCfg)) continue;
 
-        var i, anchor, anchorPt2d;
-        for (i = 0; i < skeleton.FinialAnchors.length; i++) {
-            anchor      =  skeleton.FinialAnchors[i];
-            anchorPt2d  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ProjectPoint(anchor.Position, viewKey);
+            var anchorPt2d  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ProjectPoint(anchor.Position, viewKey);
+            var resolved    =  VghLantern__Env2d__FinialRenderer__ResolvePathData(componentId, anchorPt2d, viewKey, config);
 
-            if (isPlan) {
+            // In plan, a component with no plan linework of its own reads better
+            // as a small seating marker than as an elevation spike drawn flat,
+            // which is how Vale annotate lantern plans anyway.
+            if (isPlan && resolved.IsPlaceholder) {
                 VghLantern__Env2d__FinialRenderer__DrawPlanAnchor(componentLayer, anchorPt2d, config, anchor.Id);
-            } else {
-                VghLantern__Env2d__FinialRenderer__DrawElevationFinial(componentLayer, anchorPt2d, outlinePoints, config, anchor.Id);
+                continue;
             }
+
+            VghLantern__Env2d__FinialRenderer__DrawComponent(
+                componentLayer, resolved, componentId, config, anchor.Id);
         }
     }
     // ------------------------------------------------------------

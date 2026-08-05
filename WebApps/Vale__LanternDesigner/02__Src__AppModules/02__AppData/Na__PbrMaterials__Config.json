@@ -1,0 +1,151 @@
+{
+    "VghLantern__PbrMaterials__Config": {
+
+        "VghLantern__PbrMaterials__Config__Meta": {
+            "Description"                       : "Single source of truth for every material property used by the 2D preview fills and the 3D PBR renderer. Nothing here is duplicated in Na__Env3d__Config.json or VghLantern__AppConfig__Main__.json.",
+            "SchemaVersion"                     : "1.0.0",
+            "CreatedDate"                       : "05-Aug-2026",
+            "MigrationNote"                     : "Finish palette migrated out of VghLantern__AppConfig__Main__.json and the role colours out of Na__Env3d__Config.json VghLantern__Env3d__Config__Materials. AppCore__ConfigLoader derives the legacy FinishOptions section from the Finishes array below, so existing option-list consumers read this file without knowing it moved.",
+            "RenderModelNote"                   : "Metalness / Roughness workflow. ClearCoat above zero promotes the material to a THREE.MeshPhysicalMaterial, which is what gives powder coat its thin lacquer sheen over a matt pigment layer."
+        },
+
+        "VghLantern__PbrMaterials__Config__Finishes": [
+            {
+                "Name"                          : "Anthracite Grey",
+                "MatCode"                       : "MAT620__Metal__Aluminium__PowderCoated__RAL7016",
+                "RalReference"                  : "RAL 7016 Anthracite Grey",
+                "HexColor"                      : "#383E42",
+                "HexColorNote"                  : "The true RAL 7016 swatch. This is the value the 2D preview fill and the specification schedule use, so it must stay accurate to the paint reference and must not be lightened to flatter the 3D view.",
+                "RenderAlbedoHex"               : "#4A5157",
+                "RenderAlbedoHexNote"           : "OPTIONAL 3D-only override. A swatch photograph is a dark paint chip measured under studio light; a renderer instead wants diffuse albedo, and for a dark powder coat that sits lighter than the chip because the real surface scatters light off its micro-texture in a way a single flat colour cannot. Without this the frame renders closer to black than a real RAL 7016 lantern ever looks. Raise toward #545B61 to lift the frame further, or delete the key to render the raw swatch.",
+                "Substrate"                     : "Powder coated aluminium",
+                "Roughness"                     : 0.45,
+                "Metalness"                     : 0.08,
+                "ClearCoat"                     : 0.18,
+                "ClearCoatRoughness"            : 0.38,
+                "EnvMapIntensity"               : 0.9,
+                "Description"                   : "Vale's standard contemporary finish. Satin polyester powder coat over marine grade aluminium, colour matched to RAL 7016.",
+                "IsDefault"                     : true
+            },
+            {
+                "Name"                          : "White Painted",
+                "MatCode"                       : "MAT621__Metal__Aluminium__PowderCoated__OffWhite",
+                "RalReference"                  : "Off white - nearest RAL 9010 Pure White",
+                "HexColor"                      : "#EDEAE2",
+                "Substrate"                     : "Powder coated aluminium",
+                "Roughness"                     : 0.48,
+                "Metalness"                     : 0.06,
+                "ClearCoat"                     : 0.16,
+                "ClearCoatRoughness"            : 0.40,
+                "EnvMapIntensity"               : 0.9,
+                "Description"                   : "A timeless warm off white rather than a stark brilliant white - it sits with painted joinery and stonework instead of fighting them. Satin polyester powder coat over marine grade aluminium.",
+                "IsDefault"                     : false
+            },
+            {
+                "Name"                          : "Lead",
+                "MatCode"                       : "MAT640__Metal__Lead__Weathered",
+                "RalReference"                  : "Not applicable - natural metal",
+                "HexColor"                      : "#7C8085",
+                "Substrate"                     : "Milled lead, natural weathered patina",
+                "Roughness"                     : 0.62,
+                "Metalness"                     : 0.55,
+                "ClearCoat"                     : 0.0,
+                "ClearCoatRoughness"            : 0.0,
+                "EnvMapIntensity"               : 1.0,
+                "Description"                   : "Natural metal rather than a coating, so it carries real metalness and a duller broken reflection. The tone is weathered lead, not bright cast lead.",
+                "IsDefault"                     : false
+            }
+        ],
+
+        "VghLantern__PbrMaterials__Config__FinishDefaults": {
+            "DefaultFinishName"                 : "Anthracite Grey",
+            "FallbackHexColor"                  : "#8D9095",
+            "FallbackRoughness"                 : 0.50,
+            "FallbackMetalness"                 : 0.08,
+            "FallbackNote"                      : "Used only when a lantern stores a finish name that is no longer in the palette above. A neutral coated aluminium tone, deliberately not matching any real product."
+        },
+
+        "VghLantern__PbrMaterials__Config__ColourReferences": [
+            "RAL 7016 Anthracite Grey",
+            "RAL 9010 Pure White",
+            "RAL 9001 Cream",
+            "RAL 7038 Agate Grey",
+            "BS 4800 18B21 Slate",
+            "Vale House Colour - To Be Confirmed"
+        ],
+
+        "VghLantern__PbrMaterials__Config__RoleMaterials": {
+            "Glazing": {
+                "Description"                   : "Clear double glazed unit. Ported from ValeVision3D MaxEngine, which resolves MAT101__Glass__ClearDefault out of the shared Na__Common__DataLib__CoreSuEntityStandards materials index and then applies its glass environment overrides on top. The values below are that same recipe, so a lantern and a ValeVision scene render glass identically.",
+
+                "HexColor"                      : "#E6F0FF",
+                "HexColorNote"                  : "rgb(230, 240, 255) - the DataLib base, near white with the faintest blue cast. This is NOT what you see on screen; it is the tint the reflection is filtered through after BrightnessMultiplier below has taken it almost to black.",
+
+                "BrightnessMultiplier"          : 0.000244140625,
+                "BrightnessMultiplierNote"      : "THE KEY VALUE, and the one that looks like a mistake. 1/4096. The base colour is multiplied down to effectively black so the diffuse term contributes nothing and EVERY visible thing about the glass comes from the environment reflection instead. Glass painted as a flat translucent blue reads as tinted acrylic no matter what the opacity is; glass that is black plus a reflection reads as glass. Raise toward 0.01 only if you want a deliberately tinted unit.",
+
+                "Opacity"                       : 0.3,
+                "OpacityNote"                   : "Opacity multiplies the whole shaded result, reflection included, so on a near-black base it behaves as a reflection strength dial as much as a transparency one. 0.2 is the DataLib default and reads faint on a lantern seen against bright sky; 0.3 gives the pane more presence without closing the view through it.",
+
+                "Roughness"                     : 0.02,
+                "RoughnessNote"                 : "Sharper than the DataLib default of 0.05. A crisp reflection is what sells a flat pane; blur it and the glass turns milky.",
+
+                "Metalness"                     : 0.0,
+                "MetalnessNote"                 : "Glass is a dielectric. The reflection arrives through the standard 4 percent Fresnel term, which is what gives the pane its grazing-angle brightening - raising metalness would make it read as a mirror rather than a window.",
+
+                "EnvMapIntensity"               : 1.8,
+                "EnvMapIntensityNote"           : "Effective reflection strength of the glass. Glass inherits scene.environment like everything else - it has to, because the material is shared across surfaces that each have their own context-specific radiance map - so this value is divided by the scene Environment Intensity when applied. That keeps this number meaning what it says and leaves the frame dial free to move without dragging the glass with it.",
+
+                "DoubleSided"                   : true,
+                "DepthWrite"                    : false,
+                "DepthWriteNote"                : "Off, so panes do not z-fight each other in a scene with no order independent transparency."
+            },
+            "BuildersUpstand": {
+                "UsesMaterial"                  : "Grp",
+                "Note"                          : "The builders kerb is a GRP covered upstand, so it takes the GRP material below rather than carrying a colour of its own. Point this at another role key to change what the kerb is finished in."
+            },
+
+            "Grp": {
+                "Description"                   : "Glass reinforced plastic. The material of the builders kerb and any flat roof area abutting the lantern. Laid wet over ply and rolled out by hand, so it is never optically flat - the surface carries a fine granular texture from the chopped strand mat under the topcoat, plus a soft undulation from the roller.",
+                "HexColor"                      : "#C3C1BA",
+                "HexColorNote"                  : "Standard light grey GRP roofing topcoat, very slightly warm so it sits against the powder coated frame rather than competing with it.",
+                "Roughness"                     : 0.58,
+                "RoughnessNote"                 : "A resin topcoat is satin, not matt: it holds a broad soft highlight rather than a sharp one.",
+                "Metalness"                     : 0.0,
+                "EnvMapIntensity"               : 0.75,
+                "EnvMapIntensityNote"           : "Held below the frame's so the kerb sits back visually and the eye goes to the lantern above it.",
+
+                "BumpEnabled"                   : true,
+                "BumpScale"                     : 0.0022,
+                "BumpScaleNote"                 : "Bump height in world units, so this is metres: 0.0022 is roughly two millimetres of apparent relief. Enough to break the highlight up and kill the plastic CAD look; raise toward 0.004 for a coarser hand laid finish, drop to 0.001 for a sprayed one.",
+                "BumpRepeat"                    : 26,
+                "BumpRepeatNote"                : "Tiles per world unit. ExtrudeGeometry gives this mesh UVs in metres, so 26 puts one noise tile in roughly every 38 mm and the grain reads at true scale regardless of how large the lantern is.",
+
+                "NoisePixelSize"                : 256,
+                "NoiseBaseLattice"              : 10,
+                "NoiseOctaves"                  : 4,
+                "NoiseOctavesNote"              : "Four doublings gives both the broad roller undulation and the fine mat speckle in one map.",
+                "NoisePersistence"              : 0.55,
+                "NoisePersistenceNote"          : "Amplitude falloff per octave. Higher keeps more fine detail and reads grittier; lower reads smoother and more sprayed.",
+                "NoiseContrast"                 : 1.15,
+                "NoiseSeed"                     : 20260805,
+                "NoiseSeedNote"                 : "Any integer. Fixed rather than random so the same grain appears on every reload and in every exported snapshot - two screenshots of one lantern must not differ."
+            },
+            "SkeletonLine": {
+                "HexColor"                      : "#172B3A",
+                "Note"                          : "Line mode member colour. A line material carries no PBR response."
+            },
+            "Component": {
+                "InheritsFrameFinish"           : true,
+                "Note"                          : "Library components - finials, bases, cresting, vents - are supplied in the same powder coated finish as the frame, so their material is resolved from the lantern's chosen finish rather than carrying its own colour."
+            }
+        },
+
+        "VghLantern__PbrMaterials__Config__Preview2d": {
+            "UseFinishHexAsFill"                : true,
+            "FinishFillOpacity"                 : 0.18,
+            "Note"                              : "The 2D elevation fills tint from the same HexColor the 3D material uses, so the drawing and the model can never disagree about what colour a lantern is."
+        }
+
+    }
+}

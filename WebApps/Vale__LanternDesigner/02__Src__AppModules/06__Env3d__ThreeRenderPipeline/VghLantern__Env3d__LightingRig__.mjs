@@ -33,6 +33,7 @@ import {
     VghLantern__Env3d__ConfigAccess__RequireString
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d__SceneManager__.mjs';
+import { VghLantern__Env3d__EnvironmentMap__Apply } from './VghLantern__Env3d__EnvironmentMap__.mjs';
 
 // =============================================================================
 // REGION | 3D Lighting Rig Module
@@ -141,6 +142,12 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
         rig.add(bounce.target);
 
         surface.Groups.helpers.add(rig);
+
+        // The HDR sky is applied on top of this rig, and dims it once it lands.
+        // Deliberately not awaited: the viewport must be drawable immediately,
+        // and the 1.5 MB sky simply triggers a re-render when it arrives.
+        VghLantern__Env3d__EnvironmentMap__Apply(surface);
+
         VghLantern__Env3d__SceneManager__Invalidate(surface);
         return rig;
     }

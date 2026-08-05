@@ -344,7 +344,8 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
     // SUB FUNCTION | Write the Letterhead Strip
     // ------------------------------------------------------------
     // The logo sits left and the date and reference sit right-aligned against the
-    // margin, which is the same arrangement the screen renderer produces.
+    // margin, which is the same arrangement the screen renderer produces. Vale's own
+    // return address and contact details print under the logo, left-aligned.
     function VghLantern__LetterPdf__WriteLetterhead(cursor, letter, logoAsset) {
         if (!letter.ShowLetterhead) return;
 
@@ -356,6 +357,27 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
         if (letter.ShowLogo && logoAsset && logoAsset.DataUrl && logoAsset.WidthPx) {
             logoHeight  =  letter.LogoWidthMm * (logoAsset.HeightPx / logoAsset.WidthPx);
             cursor.Doc.addImage(logoAsset.DataUrl, 'PNG', cursor.X, blockTopY, letter.LogoWidthMm, logoHeight);
+        }
+
+        cursor.Doc.setFont('helvetica', 'normal');
+        cursor.Doc.setFontSize(style.MetaPt);
+        cursor.Doc.setTextColor(style.MetaColour);
+
+        var companyBottomY  =  blockTopY + logoHeight;
+        if (letter.ShowCompanyDetails) {
+            var addressLine  =  [letter.CompanyAddressLine1, letter.CompanyTownCity, letter.CompanyPostCode]
+                .filter(function(part) { return !!part; }).join(', ');
+            var contactLine  =  [letter.CompanyWebsite, letter.CompanyPhone]
+                .filter(function(part) { return !!part; }).join('  ·  ');
+            var companyLines =  [addressLine, contactLine].filter(function(part) { return !!part; });
+
+            var companyY  =  blockTopY + logoHeight + (logoHeight ? 1.5 : 0) + lineHeight * 0.8;
+            var i;
+            for (i = 0; i < companyLines.length; i++) {
+                cursor.Doc.text(companyLines[i], cursor.X, companyY);
+                companyY  +=  lineHeight;
+            }
+            if (companyLines.length) companyBottomY  =  companyY - lineHeight + (lineHeight - lineHeight * 0.8);
         }
 
         cursor.Doc.setFontSize(style.MetaPt);
@@ -371,7 +393,38 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
             metaY  +=  lineHeight;
         }
 
-        cursor.Y  =  Math.max(blockTopY + logoHeight, metaY) + style.LetterheadGapMm;
+        cursor.Y  =  Math.max(companyBottomY, metaY) + style.LetterheadGapMm;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Write the Recipient Address Block
+    // ------------------------------------------------------------
+    // Sits above the salutation. The client's name is a real resolved value; the
+    // address lines are raw, unresolved placeholders until a project carries a real
+    // client address - see VghLantern__ClientDoc__LetterModel.
+    function VghLantern__LetterPdf__WriteRecipientAddress(cursor, letter) {
+        var lines  =  [letter.ClientName, letter.ClientAddressLine1, letter.ClientAddressStreet,
+                       letter.ClientAddressTownCity, letter.ClientAddressPostCode]
+            .filter(function(part) { return !!part; });
+        if (!lines.length) return;
+
+        var style       =  cursor.Style;
+        var lineHeight  =  VghLantern__LetterPdf__LineHeightMm(style.BodyPt, style);
+
+        cursor.Doc.setFont('helvetica', 'normal');
+        cursor.Doc.setFontSize(style.BodyPt);
+        cursor.Doc.setTextColor(style.BodyColour);
+
+        VghLantern__LetterPdf__EnsureSpace(cursor, lineHeight * lines.length);
+
+        var i;
+        for (i = 0; i < lines.length; i++) {
+            cursor.Doc.text(lines[i], cursor.X, cursor.Y + lineHeight * 0.8);
+            cursor.Y  +=  lineHeight;
+        }
+
+        cursor.Y  +=  style.SalutationGapMm;
     }
     // ------------------------------------------------------------
 
@@ -416,6 +469,7 @@ const VghLantern__ClientDoc__LetterPdfPainter = (function() {
         }
 
         VghLantern__LetterPdf__WriteLetterhead(cursor, letter, logoAsset);
+        VghLantern__LetterPdf__WriteRecipientAddress(cursor, letter);
         VghLantern__LetterPdf__WriteTextBlock(cursor, letter.Salutation, style.BodyPt,    style.BodyColour,    false, style.SalutationGapMm);
         VghLantern__LetterPdf__WriteTextBlock(cursor, letter.Subject,    style.SubjectPt, style.HeadingColour, true,  style.SubjectGapMm);
 

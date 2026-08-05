@@ -63,6 +63,7 @@ import {
 } from './VghLantern__Env3d__CameraRig__.mjs';
 
 import { VghLantern__Env3d__LightingRig__Attach } from './VghLantern__Env3d__LightingRig__.mjs';
+import { VghLantern__Env3d__EnvironmentMap__Ready } from './VghLantern__Env3d__EnvironmentMap__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Skeleton__Build, VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode } from './VghLantern__Env3d__MeshBuilder__Skeleton__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build } from './VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
@@ -219,6 +220,14 @@ import {
     // ------------------------------------------------------------
     export async function VghLantern__Env3d__RenderPipeline__Render(surface, skeleton, barSet, lantern) {
         if (!surface || surface.IsDestroyed) return;
+
+        // Lighting parity across every 3D surface. The sky loads asynchronously,
+        // and a surface that is drawn once and captured - the drawing sheet's
+        // offscreen viewport - would otherwise photograph itself before the sky
+        // arrived and come out lit differently to the live viewport beside it.
+        // Resolves in a microtask once the radiance map is cached.
+        await VghLantern__Env3d__EnvironmentMap__Ready(surface);
+        if (surface.IsDestroyed) return;
 
         // Any highlight in flight refers to meshes that are about to be disposed,
         // and any pinned target to a member index the rebuild may renumber.

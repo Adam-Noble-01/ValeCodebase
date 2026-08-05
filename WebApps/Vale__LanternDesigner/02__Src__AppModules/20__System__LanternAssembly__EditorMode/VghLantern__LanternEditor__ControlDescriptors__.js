@@ -88,6 +88,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const TYPE_TEXT         =  'text';                                       // <-- Single-line free text entry
     const TYPE_TEXTAREA     =  'textarea';                                   // <-- Multi-line free text entry
     const TYPE_BUTTON       =  'button';                                     // <-- Fires an Action, holds no value
+    const TYPE_CARDS        =  'cards';                                      // <-- Single choice shown as selectable preview cards
     // ------------------------------------------------------------
 
 
@@ -218,6 +219,9 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
 
     // HELPER FUNCTION | Build Options from Component Index Entries for a Role
     // ------------------------------------------------------------
+    // Carries the baked thumbnail outline and the headline dimension alongside
+    // the value, so a card control can draw a real picture of each component
+    // without fetching any of the megabyte-scale asset files.
     function VghLantern__ControlDescriptors__OptionsFromComponents(roleKey) {
         var ComponentLoader  =  window.VghLantern__AppData__ComponentIndexLoader;
         if (!ComponentLoader) return [];
@@ -226,9 +230,14 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
 
         return entries.map(function(entry) {
             return {
-                Value    : entry.AssetId,
-                Label    : entry.Name || entry.AssetId,
-                Disabled : false
+                Value      : entry.AssetId,
+                Label      : entry.Name || entry.AssetId,
+                Disabled   : false,
+                Preview2d  : entry.Preview2d || null,
+                HeightMm   : entry.OverallHeightMm,
+                WidthMm    : entry.WidthMm,
+                ProductCode: entry.ProductCode || entry.AssetId,
+                Has3d      : entry.Has3d === true
             };
         });
     }
@@ -400,7 +409,10 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             return rawValue === true || rawValue === 'true';
         }
 
-        if (descriptor.Type === TYPE_SELECT) {
+        // Cards are a select in every respect but presentation, so they share
+        // its coercion. Without this the id would fall through to the numeric
+        // branch below and be parsed into NaN.
+        if (descriptor.Type === TYPE_SELECT || descriptor.Type === TYPE_CARDS) {
             return String(rawValue === null || rawValue === undefined ? '' : rawValue);
         }
 
@@ -540,6 +552,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__TypeText        : TYPE_TEXT,
         VghLantern__ControlDescriptors__TypeTextarea    : TYPE_TEXTAREA,
         VghLantern__ControlDescriptors__TypeButton      : TYPE_BUTTON,
+        VghLantern__ControlDescriptors__TypeCards       : TYPE_CARDS,
 
         VghLantern__ControlDescriptors__BuildSections   : VghLantern__ControlDescriptors__BuildSections,
         VghLantern__ControlDescriptors__Normalise       : VghLantern__ControlDescriptors__Normalise,

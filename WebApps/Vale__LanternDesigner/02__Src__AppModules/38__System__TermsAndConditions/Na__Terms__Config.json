@@ -112,15 +112,15 @@
             "Enabled"                   : true,
             "BlockNote"                 : "The terms cell is the right-hand cell of the titleblock strip, mirroring the logo cell at the left-hand end. It is not a separate box: it is the same height as the strip, it uses the strip's own label and value type sizes, and it is divided from the fields by the same rule as every other cell. The QR square sits inside it at the strip's height.",
 
-            "HeadingText"               : "Drawing Terms",
-            "BodyText"                  : "Scan the code or see your document pack for the full terms, limitations and omissions applying to this drawing.",
+            "HeadingText"               : "Drawing Terms  -  Mandatory Review",
+            "BodyText"                  : "Use of this drawing is not authorised until all general and project-specific notes, terms, limitations and omissions have been read and fully understood. Scan the QR code or refer to the document pack for the defined responsibilities of Vale Garden Houses Ltd, the client and all contractors.",
             "TextNote"                  : "The heading prints bold in the ink colour and the body prints lighter and muted beneath it, wrapped over up to BodyMaxLines lines. This cell inverts the caption-over-value rhythm the other titleblock cells use, deliberately: the other cells caption a value the reader is looking for, whereas this one is telling them to go and read something, so the instruction leads.",
 
             "HeadingFontSizeMm"         : 2.0,
             "BodyFontSizeMm"            : 1.3,
             "BodyLineSpacing"           : 1.22,
-            "BodyMaxLines"              : 3,
-            "BodyMaxLinesNote"          : "Wrapping stops here rather than overflowing the strip. At the default cell width and titleblock height three lines is what fits; shorten BodyText rather than raising this unless the titleblock has also grown.",
+            "BodyMaxLines"              : 4,
+            "BodyMaxLinesNote"          : "Wrapping stops here rather than overflowing the strip. At the default cell width and titleblock height four lines is what fits; shorten BodyText rather than raising this further unless the titleblock has also grown.",
             "CellPaddingVMm"            : 1.1,
 
             "TermsQrBaseUrl"            : "http://localhost:8006/VghLantern__App__.html",

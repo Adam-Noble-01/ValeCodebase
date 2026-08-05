@@ -10,7 +10,8 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Triangulates each solved glazing face into a flat translucent panel.
+   - Builds each solved glazing face as a translucent SLAB of the configured
+     thickness, not a single plane.
    - Panels are inset from the face plane by the configured amount so the frame
      reads as frame rather than sitting coplanar with the glass and z-fighting.
    - Draws whole slopes rather than individual panes between bars. At review
@@ -19,10 +20,32 @@
 
    ---------------------------------------------------------------------------
 
-   TRIANGULATION APPROACH:
+   WHY THE GLASS HAS THICKNESS:
+   A sealed unit is around 20 mm over its two panes, the spacer and the seals,
+   and that depth is doing visual work. A single plane has no edge to catch light
+   where it meets a bar, and only one surface to reflect from, which is a large
+   part of why flat-plane glass reads as a tinted sheet however well the material
+   is tuned. The slab gives a visible edge at every junction and a second
+   reflection off the back face.
+
+   Extrusion runs INWARD from the inset plane, so the outer glass surface stays
+   exactly where the old single plane sat - changing the thickness never moves
+   the visible face.
+
+   EVERY FACE IS GLASS:
+   Outer cap, inner cap and edge band are all part of one buffer and so all wear
+   the glazing material. This matters more than it sounds: an untextured reverse
+   or edge face would read as flat grey wherever the frame does not cover it,
+   which on a lantern is every eaves and ridge junction and the whole underside
+   seen from indoors.
+
+   TRIANGULATION AND WINDING:
    Solver faces are convex quads or triangles, so a fan from the first vertex is
-   both correct and cheap. There is no need for a general polygon tessellator, and
-   deliberately not using one keeps this module dependency free.
+   both correct and cheap - no general tessellator, no dependency. A slab does
+   need its winding to be right, though, where a plane did not: computeVertexNormals
+   derives normals from winding, so a reversed cap would light as though the sky
+   were underneath the roof. The point ring is therefore normalised to an
+   outward winding once, and every cap and wall is built consistently from it.
 
    ============================================================================= */
 
@@ -61,15 +84,14 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
 
     // HELPER FUNCTION | Compute the Outward Normal of a Face
     // ------------------------------------------------------------
-    // Derived from the first three vertices, then flipped if it points inward,
-    // using the face centroid relative to the model centre as the outward test.
+    // Derived from the first three vertices, then flipped if it points inward.
+    // A roof slope always faces upward to some degree, so a downward normal means
+    // the winding runs the other way for our purposes.
     function VghLantern__Env3d__GlazingBuilder__FaceNormal(worldPoints) {
         const edgeA  =  new THREE.Vector3().subVectors(worldPoints[1], worldPoints[0]);
         const edgeB  =  new THREE.Vector3().subVectors(worldPoints[2], worldPoints[0]);
         const normal =  new THREE.Vector3().crossVectors(edgeA, edgeB).normalize();
 
-        // A roof slope always faces upward to some degree, so a downward normal
-        // means the winding is reversed for our purposes.
         if (normal.y < 0) normal.negate();
         return normal;
     }
@@ -78,6 +100,10 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
 
     // HELPER FUNCTION | Convert a Face's Model Points to Inset World Points
     // ------------------------------------------------------------
+    // The returned ring is wound so that a fan across it faces OUTWARD. A slab
+    // has an inside and an outside, so unlike a single plane its winding has to
+    // be right: computeVertexNormals reads winding, and a reversed cap would
+    // light as though the sky were underneath the roof.
     function VghLantern__Env3d__GlazingBuilder__InsetFacePoints(face, insetWorld) {
         const worldPoints  =  [];
 
@@ -86,22 +112,83 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
             worldPoints.push(new THREE.Vector3(pt.x, pt.y, pt.z));
         }
 
-        if (insetWorld === 0 || worldPoints.length < MIN_FACE_POINTS) return worldPoints;
+        if (worldPoints.length < MIN_FACE_POINTS) return worldPoints;
 
-        const normal  =  VghLantern__Env3d__GlazingBuilder__FaceNormal(worldPoints);
-        for (let i = 0; i < worldPoints.length; i++) {
-            worldPoints[i].addScaledVector(normal, -insetWorld);              // <-- Push the glass back under the frame
+        const outward  =  VghLantern__Env3d__GlazingBuilder__FaceNormal(worldPoints);
+
+        // FaceNormal may have flipped the raw winding normal to point up. When it
+        // did, the point order itself is reversed relative to outward, so reverse
+        // it once here and every cap and wall built from it is consistent.
+        const edgeA  =  new THREE.Vector3().subVectors(worldPoints[1], worldPoints[0]);
+        const edgeB  =  new THREE.Vector3().subVectors(worldPoints[2], worldPoints[0]);
+        const raw    =  new THREE.Vector3().crossVectors(edgeA, edgeB);
+        if (raw.dot(outward) < 0) worldPoints.reverse();
+
+        if (insetWorld !== 0) {
+            for (let i = 0; i < worldPoints.length; i++) {
+                worldPoints[i].addScaledVector(outward, -insetWorld);          // <-- Push the glass back under the frame
+            }
         }
         return worldPoints;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Fan Triangulate a Convex Face Into a Vertex List
+    // HELPER FUNCTION | Fan Triangulate a Convex Ring Into a Vertex List
     // ------------------------------------------------------------
-    function VghLantern__Env3d__GlazingBuilder__FanTriangles(worldPoints, sink) {
-        for (let i = 1; i < worldPoints.length - 1; i++) {
-            sink.push(worldPoints[0], worldPoints[i], worldPoints[i + 1]);
+    function VghLantern__Env3d__GlazingBuilder__FanTriangles(ring, sink) {
+        for (let i = 1; i < ring.length - 1; i++) {
+            sink.push(ring[0], ring[i], ring[i + 1]);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fan Triangulate a Ring With Reversed Winding
+    // ------------------------------------------------------------
+    // The back face of the slab, wound so its normal points the other way.
+    function VghLantern__Env3d__GlazingBuilder__FanTrianglesReversed(ring, sink) {
+        for (let i = 1; i < ring.length - 1; i++) {
+            sink.push(ring[0], ring[i + 1], ring[i]);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build a Glazing Slab From an Outward-Wound Ring
+    // ------------------------------------------------------------
+    // Extruded INWARD from the ring, so the outer glass surface stays exactly
+    // where the single plane used to sit and the body is added behind it. The
+    // visible face does not move when the thickness is changed.
+    //
+    // Emits the outer cap, the inner cap and the edge band. All three are part of
+    // the same buffer and so wear the same glass material - a slab whose reverse
+    // and edge faces were untextured would show as flat grey wherever the frame
+    // does not cover it, which on a lantern is every eaves and ridge junction.
+    function VghLantern__Env3d__GlazingBuilder__BuildSlab(outerRing, outward, thicknessWorld, sink) {
+        if (thicknessWorld <= 0) {
+            VghLantern__Env3d__GlazingBuilder__FanTriangles(outerRing, sink);
+            return;
+        }
+
+        const innerRing  =  outerRing.map(function(point) {
+            return point.clone().addScaledVector(outward, -thicknessWorld);
+        });
+
+        VghLantern__Env3d__GlazingBuilder__FanTriangles(outerRing, sink);           // <-- Outer face, normals outward
+        VghLantern__Env3d__GlazingBuilder__FanTrianglesReversed(innerRing, sink);   // <-- Inner face, normals inward
+
+        // EDGE BAND | One quad per ring edge, wound so its normal points away
+        // from the slab body rather than into it.
+        for (let i = 0; i < outerRing.length; i++) {
+            const next   =  (i + 1) % outerRing.length;
+            const outerA =  outerRing[i];
+            const outerB =  outerRing[next];
+            const innerA =  innerRing[i];
+            const innerB =  innerRing[next];
+
+            sink.push(outerA, innerA, innerB);
+            sink.push(outerA, innerB, outerB);
         }
     }
     // ------------------------------------------------------------
@@ -118,9 +205,10 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     export function VghLantern__Env3d__MeshBuilder__Glazing__Build(targetGroup, skeleton) {
         if (!targetGroup || !skeleton || !Array.isArray(skeleton.Faces)) return;
 
-        const insetWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInsetMm'));
-        const vertices    =  [];
-        const spans       =  [];
+        const insetWorld      =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingInsetMm'));
+        const thicknessWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('MeshBuilders', 'GlazingThicknessMm'));
+        const vertices        =  [];
+        const spans           =  [];
 
         for (let i = 0; i < skeleton.Faces.length; i++) {
             const face  =  skeleton.Faces[i];
@@ -133,7 +221,8 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
             const triangleStart  =  vertices.length / VERTICES_PER_TRIANGLE;
 
             const worldPoints  =  VghLantern__Env3d__GlazingBuilder__InsetFacePoints(face, insetWorld);
-            VghLantern__Env3d__GlazingBuilder__FanTriangles(worldPoints, vertices);
+            const outward      =  VghLantern__Env3d__GlazingBuilder__FaceNormal(worldPoints);
+            VghLantern__Env3d__GlazingBuilder__BuildSlab(worldPoints, outward, thicknessWorld, vertices);
 
             spans.push({
                 Record    : face,

@@ -14,7 +14,13 @@
    - The whole section is one expandable group: finials off collapses to a single
      row, which is the common case on contemporary lanterns.
    - Component option lists come from the component library filtered by role, so
-     the same asset drives the 2D elevation outline and the 3D GLB placement.
+     the same asset drives the 2D elevation linework and the 3D mesh placement.
+   - The finial itself is chosen from picture cards rather than a dropdown.
+     Choosing a finial is a visual decision, and a list of product names asks the
+     user to hold a shape in their head that the app already knows: each card
+     draws the component's own exported front elevation. The cards cost nothing
+     to show because the outline is baked into the component index, and the
+     megabyte-scale asset file is fetched only once a card is chosen.
    - Apex placement only applies to forms that converge on a point, so that toggle
      hides on a ridged roof rather than storing a flag with no effect.
 
@@ -89,11 +95,12 @@ const VghLantern__LanternEditor__Section__Finials = (function() {
                 Children : [
                     {
                         Key           : 'finialComponentId',
-                        Type          : 'select',
+                        Type          : 'cards',
                         Label         : 'Finial',
                         Block         : FINIALS_BLOCK,
                         Field         : 'Lantern__Finials__Config__FinialComponentId',
-                        OptionsSource : 'components:finial'
+                        OptionsSource : 'components:finial',
+                        Hint          : 'Each card is the component\'s real front elevation. Geometry loads on selection.'
                     },
                     {
                         Key           : 'finialBaseComponentId',

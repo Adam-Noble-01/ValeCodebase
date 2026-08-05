@@ -32,10 +32,13 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
     // ------------------------------------------------------------
     const CSS_ROOT        =  'VghLantern__Letter__Document';
     const CSS_LETTERHEAD  =  'VghLantern__Letter__Letterhead';
+    const CSS_SENDER      =  'VghLantern__Letter__Sender';
     const CSS_LOGO        =  'VghLantern__Letter__Logo';
+    const CSS_COMPANY     =  'VghLantern__Letter__CompanyDetails';
     const CSS_META        =  'VghLantern__Letter__Meta';
     const CSS_DATE        =  'VghLantern__Letter__Date';
     const CSS_REFERENCE   =  'VghLantern__Letter__Reference';
+    const CSS_RECIPIENT   =  'VghLantern__Letter__RecipientAddress';
     const CSS_SALUTATION  =  'VghLantern__Letter__Salutation';
     const CSS_SUBJECT     =  'VghLantern__Letter__Subject';
     const CSS_PARAGRAPH   =  'VghLantern__Letter__Paragraph';
@@ -110,10 +113,30 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build Vale's Own Return Address Beside the Logo
+    // ------------------------------------------------------------
+    function VghLantern__LetterScreen__BuildCompanyDetails(letter) {
+        if (!letter.ShowCompanyDetails) return '';
+
+        var addressLine  =  [letter.CompanyAddressLine1, letter.CompanyTownCity, letter.CompanyPostCode]
+            .filter(function(part) { return !!part; }).join(', ');
+        var contactLine  =  [letter.CompanyWebsite, letter.CompanyPhone]
+            .filter(function(part) { return !!part; }).join('  ·  ');
+
+        var html  =  '';
+        if (addressLine) html  +=  '<span>' + VghLantern__LetterScreen__Escape(addressLine) + '</span>';
+        if (contactLine) html  +=  '<span>' + VghLantern__LetterScreen__Escape(contactLine) + '</span>';
+
+        return html ? '<div class="' + CSS_COMPANY + '">' + html + '</div>' : '';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build the Letterhead Strip
     // ------------------------------------------------------------
     // The date and reference sit opposite the logo, which is where a reader looks for
-    // them and where the PDF painter puts them.
+    // them and where the PDF painter puts them. Vale's own address and contact
+    // details sit under the logo, so the sender's identity reads as one block.
     function VghLantern__LetterScreen__BuildLetterhead(letter) {
         if (!letter.ShowLetterhead) return '';
 
@@ -121,6 +144,9 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
             ? '<img class="' + CSS_LOGO + '" src="' + VghLantern__LetterScreen__Escape(letter.LogoAssetPath) +
               '" style="width:' + letter.LogoWidthMm + 'mm" alt="Vale Garden Houses">'
             : '';
+
+        var senderHtml  =  '<div class="' + CSS_SENDER + '">' + logoHtml +
+                           VghLantern__LetterScreen__BuildCompanyDetails(letter) + '</div>';
 
         var metaHtml  =  '';
         if (letter.IssueDate) {
@@ -132,8 +158,31 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
                           VghLantern__LetterScreen__Escape(letter.ReferenceLine) + '</span>';
         }
 
-        return '<header class="' + CSS_LETTERHEAD + '">' + logoHtml +
+        return '<header class="' + CSS_LETTERHEAD + '">' + senderHtml +
                '<div class="' + CSS_META + '">' + metaHtml + '</div></header>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Recipient Address Block
+    // ------------------------------------------------------------
+    // Sits above the salutation, the way a written letter names who it is going to.
+    // The client's name is a real resolved token; the address lines are raw,
+    // unresolved placeholders until a project carries a real client address.
+    function VghLantern__LetterScreen__BuildRecipientAddress(letter) {
+        var lines  =  [letter.ClientName, letter.ClientAddressLine1, letter.ClientAddressStreet,
+                       letter.ClientAddressTownCity, letter.ClientAddressPostCode]
+            .filter(function(part) { return !!part; });
+
+        if (!lines.length) return '';
+
+        var html  =  '<div class="' + CSS_RECIPIENT + '">';
+        var i;
+        for (i = 0; i < lines.length; i++) {
+            html  +=  '<p>' + VghLantern__LetterScreen__Escape(lines[i]) + '</p>';
+        }
+
+        return html + '</div>';
     }
     // ------------------------------------------------------------
 
@@ -154,7 +203,8 @@ const VghLantern__ClientDoc__LetterScreenRenderer = (function() {
         }
 
         var html  =  '<div class="' + CSS_ROOT + '">' +
-                     VghLantern__LetterScreen__BuildLetterhead(letter);
+                     VghLantern__LetterScreen__BuildLetterhead(letter) +
+                     VghLantern__LetterScreen__BuildRecipientAddress(letter);
 
         if (letter.Salutation) {
             html  +=  '<p class="' + CSS_SALUTATION + '">' +

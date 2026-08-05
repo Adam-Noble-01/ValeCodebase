@@ -47,11 +47,13 @@
     // ------------------------------------------------------------
     const FALLBACK_SECTIONS  =  {
         Meta          : { WorldUnitsPerMillimetre : 0.001 },
-        Renderer      : { Antialias : true, MaxPixelRatio : 2, ClearColorFallback : '#dfe3e6', PreserveDrawingBuffer : true, OnDemandRendering : true },
+        Renderer      : { Antialias : true, MaxPixelRatio : 2, ClearColorFallback : '#dfe3e6', PreserveDrawingBuffer : true, OnDemandRendering : true, ToneMapping : 'Neutral', ToneMappingExposure : 1.15 },
+        Environment   : { Enabled : false, HdriUrl : '', Intensity : 1.15, UseAsBackground : false, AmbientDimWhenEnvironmentActive : 0.18, KeyDimWhenEnvironmentActive : 0.55 },
         Camera        : { FieldOfViewDegrees : 38, NearPlaneMm : 50, FarPlaneMm : 60000, FitPaddingFactor : 1.35 },
         Lighting      : { AmbientIntensity : 0.62, KeyLightIntensity : 1.05, FillLightIntensity : 0.38 },
-        Materials     : { FrameColourFallback : '#f2efe9', GlazingColour : '#a8c8d8', GlazingOpacity : 0.22 },
-        MeshBuilders  : { SkeletonMode : 'profileSweep', FallbackBarWidthMm : 40, FallbackBarDepthMm : 55 },
+        // Materials are deliberately absent: they moved to Na__PbrMaterials__Config.json
+        // and MaterialLibrary reads that file directly rather than through here.
+        MeshBuilders  : { SkeletonMode : 'profileSweep', FallbackBarWidthMm : 40, FallbackBarDepthMm : 55, GlazingInsetMm : 6, GlazingThicknessMm : 20 },
         Snapshot      : { DefaultWidthPx : 2000, DefaultHeightPx : 1400, SupersampleFactor : 2 },
         SetOut        : { Enabled : true, DefaultDisplayMode : 'solid3d', CheckToleranceMm : 0.5, DepthTest : false, RenderOrder : 20 }
     };

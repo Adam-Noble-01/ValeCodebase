@@ -1,108 +1,185 @@
 {
     "VghLantern__ComponentDataIndex__Meta": {
-        "GeneratedBy"                       : "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py",
-        "GeneratedDate"                     : "30-Jul-2026 at 11:40",
-        "SchemaVersion"                     : "1.0.0",
-        "LibraryRoot"                       : "05__Data__LanternComponentLibrary/",
-        "AssetCount"                        : 4,
-        "DoNotEditByHand"                   : true
+        "GeneratedBy": "60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py",
+        "GeneratedDate": "05-Aug-2026 at 10:52",
+        "SchemaVersion": "2.0.0",
+        "LibraryRoot": "05__Data__LanternComponentLibrary/",
+        "AssetCount": 4,
+        "DoNotEditByHand": true,
+        "IndexPurposeNote": "Catalogue only. Geometry stays in the asset files and is fetched on demand by VghLantern__AppData__ComponentAssetCache__.js, because a unified asset export runs to one or two megabytes."
     },
-
     "VghLantern__ComponentDataIndex__Categories": [
         {
-            "CategoryId"                    : "VGH_FIN0000__Finials",
-            "CategoryName"                  : "Finials",
-            "FolderName"                    : "VGH_FIN0000__Finials",
-            "SortOrder"                     : 10,
-            "Description"                   : "Turned and cast finials placed at ridge ends and at the apex."
+            "CategoryId": "45__Roof__RidgeCaps",
+            "CategoryName": "Ridge Caps",
+            "FolderName": "45__Roof__RidgeCaps",
+            "Role": "finialBase",
+            "SortOrder": 10,
+            "Description": "Ridge cap sections and the base blocks seating a finial onto the ridge."
         },
         {
-            "CategoryId"                    : "VGH_FIN0100__FinialBases",
-            "CategoryName"                  : "Finial Bases",
-            "FolderName"                    : "VGH_FIN0100__FinialBases",
-            "SortOrder"                     : 20,
-            "Description"                   : "Base blocks seating a finial onto the ridge cap."
+            "CategoryId": "50__Roof__Finials",
+            "CategoryName": "Finials",
+            "FolderName": "50__Roof__Finials",
+            "Role": "finial",
+            "SortOrder": 20,
+            "Description": "Turned and cast finials placed at ridge ends and at the apex."
         },
         {
-            "CategoryId"                    : "VGH_CRS0000__Cresting",
-            "CategoryName"                  : "Cresting",
-            "FolderName"                    : "VGH_CRS0000__Cresting",
-            "SortOrder"                     : 30,
-            "Description"                   : "Repeating decorative cresting running along the ridge."
-        },
-        {
-            "CategoryId"                    : "VGH_VNT0000__Ventilation",
-            "CategoryName"                  : "Ventilation",
-            "FolderName"                    : "VGH_VNT0000__Ventilation",
-            "SortOrder"                     : 40,
-            "Description"                   : "Opening roof vents replacing a glazing pane on a slope."
+            "CategoryId": "55__Roof__Crestings",
+            "CategoryName": "Crestings",
+            "FolderName": "55__Roof__Crestings",
+            "Role": "cresting",
+            "SortOrder": 30,
+            "Description": "Repeating decorative cresting running along the ridge."
         }
     ],
-
     "VghLantern__ComponentDataIndex__Assets": [
         {
-            "AssetId"                       : "VGH_FIN0001",
-            "Name"                          : "Finial - Ball and Spike 320mm",
-            "CategoryId"                    : "VGH_FIN0000__Finials",
-            "CategoryName"                  : "Finials",
-            "JsonUrl"                       : "VGH_FIN0000__Finials/VghLantern__Component__VGH_FIN0001__BallAndSpikeFinial__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["finial"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "OverallHeightMm"               : 320.0,
-            "SeatingWidthMm"                : 92.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
+            "AssetId": "VGH_FIN0101",
+            "Name": "Finial Base - Moulded 130mm",
+            "CategoryId": "45__Roof__RidgeCaps",
+            "CategoryName": "Ridge Caps",
+            "JsonUrl": "45__Roof__RidgeCaps/VghLantern__Component__VGH_FIN0101__MouldedFinialBase__.json",
+            "PreviewUrl": null,
+            "ApplicableRoles": [
+                "finialBase"
+            ],
+            "SchemaVersion": "1.0.0",
+            "Has2dElevation": false,
+            "Has2dPlan": false,
+            "Has2dProfile": true,
+            "Has3d": false,
+            "Mesh3dInline": false,
+            "Glb3dUrl": null,
+            "OverallHeightMm": 104.0,
+            "HeightAboveOriginMm": 104.0,
+            "DepthBelowOriginMm": 0.0,
+            "WidthMm": 130.0,
+            "PlanDiameterMm": null,
+            "Revision": "A",
+            "DataStatus": "Provisional - dimensions are representative pending a measured Vale component",
+            "ProductCode": "",
+            "FileSizeBytes": 3607,
+            "IsDefaultForRole": true,
+            "Preview2d": {
+                "ViewBox": "-65 -104 130 104",
+                "PathData": "M -65 -0 L 65 -0 L 65 -22 L 54 -38 L 54 -70 L 46 -86 L 46 -104 L -46 -104 L -46 -86 L -54 -70 L -54 -38 L -65 -22 Z",
+                "WidthMm": 130.0,
+                "HeightMm": 104.0
+            }
         },
         {
-            "AssetId"                       : "VGH_FIN0101",
-            "Name"                          : "Finial Base - Moulded 130mm",
-            "CategoryId"                    : "VGH_FIN0100__FinialBases",
-            "CategoryName"                  : "Finial Bases",
-            "JsonUrl"                       : "VGH_FIN0100__FinialBases/VghLantern__Component__VGH_FIN0101__MouldedFinialBase__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["finialBase"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "OverallHeightMm"               : 104.0,
-            "SeatingWidthMm"                : 130.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
+            "AssetId": "50_1001",
+            "Name": "Ball Finial",
+            "CategoryId": "50__Roof__Finials",
+            "CategoryName": "Finials",
+            "JsonUrl": "50__Roof__Finials/50_1001__Finial__Ball__.json",
+            "PreviewUrl": null,
+            "ApplicableRoles": [
+                "finial"
+            ],
+            "SchemaVersion": "1.1.0",
+            "Has2dElevation": true,
+            "Has2dPlan": true,
+            "Has2dProfile": false,
+            "Has3d": true,
+            "Mesh3dInline": true,
+            "Glb3dUrl": null,
+            "OverallHeightMm": 295.601,
+            "HeightAboveOriginMm": 265.601,
+            "DepthBelowOriginMm": 30.0,
+            "WidthMm": 150.026,
+            "PlanDiameterMm": 148.858,
+            "Revision": "A",
+            "DataStatus": "Draft - auto-captured by Component Editor Export tab, awaiting audit",
+            "ProductCode": "50_1001",
+            "FileSizeBytes": 1122710,
+            "IsDefaultForRole": true,
+            "Mesh3dCounts": {
+                "VertexCount": 914,
+                "FaceCount": 673,
+                "EdgeCount": 1345
+            },
+            "Preview2d": {
+                "ViewBox": "-75 -265.6 150 295.6",
+                "PathData": "M32.5 -123A75 75 0 1 0 -32.5 -123M-56 -50L56 -50M-64.5 -30.1L64.5 -30.1M-63.3 -45.1L-56 -50M-67.2 -37.3L-63.3 -45.1M-67.3 -32.7L-67.2 -37.3M-67.3 -32.7L-64.5 -30.1M-32.5 -123L32.5 -123M-38.5 -116.9L38.5 -116.9M-38.6 -30L38.6 -30M-34.5 -101L34.5 -101M-34.5 -109L34.5 -109M-40 -109.5L40 -109.5M-56 -61L56 -61M-34.5 -101L-23.1 -97.6M-23.1 -97.6L-19.3 -93.9M-19.3 -93.9L-17.1 -88.5M-19.1 -78.7L-17.1 -88.5M-28.4 -68.6L-19.1 -78.7M-40.5 -63.1L-28.4 -68.6M-56 -61L-40.5 -63.1M-64.5 -30.1L-40 -30M-40 30L-40 -30M-40 30L40 30M40 30L40 -30M40 -30L64.5 -30.1M-56 -61L-56 -50M-34.5 -109L-34.5 -101M40.5 -63.1L56 -61M28.4 -68.6L40.5 -63.1M19.1 -78.7L28.4 -68.6M17.1 -88.5L19.1 -78.7M17.1 -88.5L19.3 -93.9M19.3 -93.9L23.1 -97.6M23.1 -97.6L34.5 -101M34.5 -101L34.5 -109M64.5 -30.1L67.3 -32.7M67.2 -37.3L67.3 -32.7M63.3 -45.1L67.2 -37.3M56 -50L63.3 -45.1M56 -50L56 -61M38.5 -116.9L40 -109.5M32.5 -123L38.5 -116.9M-40 -109.5L-34.5 -109M-40 -109.5L-38.5 -116.9M-38.5 -116.9L-32.5 -123M34.5 -109L40 -109.5",
+                "WidthMm": 150.026,
+                "HeightMm": 295.601
+            }
         },
         {
-            "AssetId"                       : "VGH_CRS0001",
-            "Name"                          : "Cresting - Fleur 150mm Pitch",
-            "CategoryId"                    : "VGH_CRS0000__Cresting",
-            "CategoryName"                  : "Cresting",
-            "JsonUrl"                       : "VGH_CRS0000__Cresting/VghLantern__Component__VGH_CRS0001__FleurCresting__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["cresting"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "OverallHeightMm"               : 140.0,
-            "RepeatPitchMm"                 : 150.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
+            "AssetId": "50_2001",
+            "Name": "Spire Finial",
+            "CategoryId": "50__Roof__Finials",
+            "CategoryName": "Finials",
+            "JsonUrl": "50__Roof__Finials/50_2001__Finial__Spire__.json",
+            "PreviewUrl": null,
+            "ApplicableRoles": [
+                "finial"
+            ],
+            "SchemaVersion": "1.1.0",
+            "Has2dElevation": true,
+            "Has2dPlan": true,
+            "Has2dProfile": false,
+            "Has3d": true,
+            "Mesh3dInline": true,
+            "Glb3dUrl": null,
+            "OverallHeightMm": 548.0,
+            "HeightAboveOriginMm": 518.0,
+            "DepthBelowOriginMm": 30.0,
+            "WidthMm": 109.696,
+            "PlanDiameterMm": 109.696,
+            "Revision": "A",
+            "DataStatus": "Draft - auto-captured by Component Editor Export tab, awaiting audit",
+            "ProductCode": "50_2001",
+            "FileSizeBytes": 2860434,
+            "IsDefaultForRole": false,
+            "Mesh3dCounts": {
+                "VertexCount": 2041,
+                "FaceCount": 1778,
+                "EdgeCount": 3576
+            },
+            "Preview2d": {
+                "ViewBox": "-54.8 -518 109.7 548",
+                "PathData": "M-33.6 -105.6L-29.5 -105M-37.7 -107.5L-33.6 -105.6M-41 -110.2L-37.7 -107.5M-44 -113.8L-41 -110.2M-46.4 -118.5L-44 -113.8M-47.6 -122.6L-46.4 -118.5M-48.4 -127.5L-47.6 -122.6M-48.4 -127.5L-48.4 -132.5M-48.4 -132.5L-47.6 -137.4M-47.6 -137.4L-46.4 -141.5M-46.4 -141.5L-44.9 -144.7M-44.9 -144.7L-42 -148.8M-42 -148.8L-38.9 -151.7M-38.9 -151.7L-35.5 -153.7M-35.5 -153.7L-32.6 -154.7M-32.6 -154.7L-29.5 -155M-29.5 -155L-29.5 -162M-29.5 -162L-25.3 -162.5M-25.3 -162.5L-22.2 -163.4M-22.2 -163.4L-19.8 -164.6M-19.8 -164.6L-17.8 -165.9M-17.8 -165.9L-16.1 -167.7M-16.1 -167.7L-14.7 -169.8M-14.7 -169.8L-13.9 -171.7M-13.9 -171.7L-13.6 -173.7M-13.8 -175.1L-13.6 -173.7M-14.1 -175.9L-13.8 -175.1M-14.5 -176.5L-14.1 -175.9M-14.9 -177.1L-14.5 -176.5M-15.7 -177.7L-14.9 -177.1M-20.2 -180.5L-15.7 -177.7M-30.1 -184.2L-20.2 -180.5M-37.9 -185.8L-30.1 -184.2M-49 -187L-37.9 -185.8M-49 -187L-31 -278.9M-31 -278.9L-20.9 -340M-20.9 -340L-15.6 -380M-15.6 -380L-11.7 -424.4M-11.7 -424.4L-6 -512M-6 -512L-4.3 -514.9M-4.3 -514.9L-2.7 -516.5M-2.7 -516.5L0 -518M0 -518L2.7 -516.5M2.7 -516.5L4.3 -514.9M4.3 -514.9L6 -512M6 -512L11.7 -424.4M11.7 -424.4L15.6 -380M15.6 -380L20.9 -340M20.9 -340L31 -278.9M31 -278.9L49 -187M-50.4 -44.4L-47.5 -45M-53.1 -42.4L-50.4 -44.4M-54.7 -39.4L-53.1 -42.4M-54.8 -36L-54.7 -39.4M-54.8 -36L-53.7 -33.3M-53.7 -33.3L-51.2 -31M-51.2 -31L-48.5 -30.1M-48.5 -30.1L-45 -30M-45 -30L45 -30M45 -30L48.5 -30.1M48.5 -30.1L51.2 -31M51.2 -31L53.7 -33.3M53.7 -33.3L54.8 -36M54.7 -39.4L54.8 -36M53.1 -42.4L54.7 -39.4M50.4 -44.4L53.1 -42.4M47.5 -45L50.4 -44.4M-47.5 -45L-47.5 -53M-47.5 -53L-35.4 -54.7M-35.4 -54.7L-27.1 -58M-27.1 -58L-22.2 -61.4M-22.2 -61.4L-18.9 -64.8M-18.9 -64.8L-16.6 -67.8M-16.6 -67.8L-15 -71M-15 -71L-14 -74.4M-14 -74.4L-13.6 -77.9M-13.9 -80.3L-13.6 -77.9M-14.2 -81.8L-13.9 -80.3M-15.2 -83.9L-14.2 -81.8M-17.4 -86.9L-15.2 -83.9M-19.8 -89.1L-17.4 -86.9M-22.8 -90.8L-19.8 -89.1M-25.7 -92L-22.8 -90.8M-33.2 -93.3L-25.7 -92M-33.5 -94.2L-33.2 -93.3M-33.6 -96.3L-33.5 -94.2M-33.6 -96.3L-33.1 -98.9M-33.1 -98.9L-32.5 -100.7M-32.5 -100.7L-31.5 -102.5M-31.5 -102.5L-29.5 -105M29.5 -155L32.6 -154.7M32.6 -154.7L35.5 -153.7M35.5 -153.7L38.9 -151.7M38.9 -151.7L42 -148.8M42 -148.8L44.9 -144.7M44.9 -144.7L46.4 -141.5M46.4 -141.5L47.6 -137.4M47.6 -137.4L48.4 -132.5M48.4 -127.5L48.4 -132.5M47.6 -122.6L48.4 -127.5M46.4 -118.5L47.6 -122.6M44 -113.8L46.4 -118.5M41 -110.2L44 -113.8M37.7 -107.5L41 -110.2M33.6 -105.6L37.7 -107.5M29.5 -105L33.6 -105.6M29.5 -155L29.5 -162M37.9 -185.8L49 -187M30.1 -184.2L37.9 -185.8M20.2 -180.5L30.1 -184.2M15.7 -177.7L20.2 -180.5M14.9 -177.1L15.7 -177.7M14.5 -176.5L14.9 -177.1M14.1 -175.9L14.5 -176.5M13.8 -175.1L14.1 -175.9M13.6 -173.7L13.8 -175.1M13.6 -173.7L13.9 -171.7M13.9 -171.7L14.7 -169.8M14.7 -169.8L16.1 -167.7M16.1 -167.7L17.8 -165.9M17.8 -165.9L19.8 -164.6M19.8 -164.6L22.2 -163.4M22.2 -163.4L25.3 -162.5M25.3 -162.5L29.5 -162M47.5 -45L47.5 -53M25.7 -92L33.2 -93.3M22.8 -90.8L25.7 -92M19.8 -89.1L22.8 -90.8M17.4 -86.9L19.8 -89.1M15.2 -83.9L17.4 -86.9M14.2 -81.8L15.2 -83.9M13.9 -80.3L14.2 -81.8M13.6 -77.9L13.9 -80.3M13.6 -77.9L14 -74.4M14 -74.4L15 -71M15 -71L16.6 -67.8M16.6 -67.8L18.9 -64.8M18.9 -64.8L22.2 -61.4M22.2 -61.4L27.1 -58M27.1 -58L35.4 -54.7M35.4 -54.7L47.5 -53M29.5 -105L31.5 -102.5M31.5 -102.5L32.5 -100.7M32.5 -100.7L33.1 -98.9M33.1 -98.9L33.6 -96.3M33.5 -94.2L33.6 -96.3M33.2 -93.3L33.5 -94.2M-29.5 -155L29.5 -155M-29.5 -162L29.5 -162M-49 -187L49 -187M-47.5 -45L47.5 -45M-47.5 -53L47.5 -53M-33.2 -93.3L33.2 -93.3M-29.5 -105L29.5 -105M-40 30L-40 -30M-40 30L40 30M40 30L40 -30",
+                "WidthMm": 109.696,
+                "HeightMm": 548.0
+            }
         },
         {
-            "AssetId"                       : "VGH_VNT0001",
-            "Name"                          : "Roof Vent - Manual Winder 600 x 900",
-            "CategoryId"                    : "VGH_VNT0000__Ventilation",
-            "CategoryName"                  : "Ventilation",
-            "JsonUrl"                       : "VGH_VNT0000__Ventilation/VghLantern__Component__VGH_VNT0001__ManualRoofVent__.json",
-            "PreviewUrl"                    : null,
-            "ApplicableRoles"               : ["vent"],
-            "Has2dProfile"                  : true,
-            "Has3d"                         : false,
-            "Glb3dUrl"                      : null,
-            "OpeningWidthMm"                : 600.0,
-            "OpeningHeightMm"               : 900.0,
-            "Revision"                      : "A",
-            "IsDefaultForRole"              : true
+            "AssetId": "VGH_CRS0001",
+            "Name": "Cresting - Fleur 150mm Pitch",
+            "CategoryId": "55__Roof__Crestings",
+            "CategoryName": "Crestings",
+            "JsonUrl": "55__Roof__Crestings/VghLantern__Component__VGH_CRS0001__FleurCresting__.json",
+            "PreviewUrl": null,
+            "ApplicableRoles": [
+                "cresting"
+            ],
+            "SchemaVersion": "1.0.0",
+            "Has2dElevation": false,
+            "Has2dPlan": false,
+            "Has2dProfile": true,
+            "Has3d": false,
+            "Mesh3dInline": false,
+            "Glb3dUrl": null,
+            "OverallHeightMm": 140.0,
+            "HeightAboveOriginMm": 140.0,
+            "DepthBelowOriginMm": 0.0,
+            "WidthMm": 150.0,
+            "PlanDiameterMm": null,
+            "Revision": "A",
+            "DataStatus": "Provisional - dimensions are representative pending a measured Vale component",
+            "ProductCode": "",
+            "FileSizeBytes": 3904,
+            "IsDefaultForRole": true,
+            "Preview2d": {
+                "ViewBox": "-75 -140 150 140",
+                "PathData": "M -75 -0 L 75 -0 L 75 -14 L 30 -14 L 26 -46 L 44 -62 L 30 -86 L 12 -74 L 10 -118 L 0 -140 L -10 -118 L -12 -74 L -30 -86 L -44 -62 L -26 -46 L -30 -14 L -75 -14 Z",
+                "WidthMm": 150.0,
+                "HeightMm": 140.0
+            }
         }
     ]
 }

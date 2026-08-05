@@ -1143,3 +1143,115 @@
     /* ------------------------------------------------------------ */
 
 /* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Control Panel - Component Preview Cards
+   ----------------------------------------------------------------------------- */
+
+    /* GRID | Selectable Component Card Strip */
+    /* ------------------------------------------------------------ */
+    /* Two columns at the default panel width. The panel is resizable, so the
+       track is a minimum rather than a fixed size and the strip reflows to three
+       columns when the user widens it.                                          */
+    .VghLantern__ControlPanel__CardGrid {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(120px, 1fr));
+        gap                                : var(--Vale_Spacing_Small);
+        width                              : 100%;
+        margin-top                         : calc(var(--Vale_Spacing_Small) / 2);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | One Selectable Component */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__Card {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        padding                            : var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        text-align                         : center;
+        transition                         : border-color var(--Vale_Transition_Fast),
+                                             background-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__ControlPanel__Card:hover {
+        border-color                       : var(--Vale_BorderPrimary);
+        background-color                   : var(--Vale_BackgroundLight);
+    }
+
+    .VghLantern__ControlPanel__Card:focus-visible {
+        outline                            : 2px solid var(--VghLantern_AccentBlue);
+        outline-offset                     : 1px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Selected State */
+    /* ------------------------------------------------------------ */
+    /* Both a border and a tint: on a strip of line drawings a border alone is
+       easy to miss, and the drawings themselves carry no colour to lose.        */
+    .VghLantern__ControlPanel__Card--selected {
+        border-color                       : var(--VghLantern_AccentBlue);
+        box-shadow                         : inset 0 0 0 1px var(--VghLantern_AccentBlue);
+        background-color                   : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Front Elevation Preview */
+    /* ------------------------------------------------------------ */
+    /* The stroke is set here rather than on the path so the whole strip restyles
+       from one rule, and non-scaling-stroke on the path keeps a tall spire and a
+       squat ball drawn at the same visual line weight.                          */
+    .VghLantern__ControlPanel__CardPreview {
+        display                            : block;
+        width                              : 100%;
+        height                             : 74px;
+        stroke                             : var(--Vale_TextPrimary);
+        stroke-width                       : 1;
+        stroke-linecap                     : round;
+        stroke-linejoin                    : round;
+        overflow                           : visible;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Preview Placeholder */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__CardEmpty {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        background-color                   : var(--Vale_BackgroundLight);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Name and Metadata Lines */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__CardName {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        line-height                        : 1.25;
+    }
+
+    .VghLantern__ControlPanel__CardMeta {
+        font-size                          : calc(var(--Vale_FontSize_Small) * 0.9);
+        color                              : var(--Vale_TextSecondary);
+        line-height                        : 1.2;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

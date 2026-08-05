@@ -158,12 +158,33 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
         if (countEach <= 0) return;
 
         rows.push({
-            Key         : key,
-            Label       : label,
-            ComponentId : componentId || '',
-            CountEach   : countEach,
-            CountTotal  : countEach * quantity
+            Key           : key,
+            Label         : label,
+            ComponentId   : componentId || '',
+            ComponentName : VghLantern__QuantityTakeoff__ComponentName(componentId),
+            CountEach     : countEach,
+            CountTotal    : countEach * quantity
         });
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve a Component Id to Its Product Name
+    // ------------------------------------------------------------
+    // Label says what the component IS on the lantern ('Finial'); this says
+    // WHICH one was specified ('Ball Finial'). The name is read from the
+    // component index, which resolves it in priority order: the asset's own
+    // Na__Asset__ValeSpec__ProductName once the Vale spec audit fills it in,
+    // then a hand-authored metadata name, then a label derived from the file
+    // naming standard. Nothing is fetched - the index is already resident.
+    function VghLantern__QuantityTakeoff__ComponentName(componentId) {
+        if (!componentId) return '';
+
+        var ComponentLoader  =  window.VghLantern__AppData__ComponentIndexLoader;
+        if (!ComponentLoader) return '';
+
+        var entry  =  ComponentLoader.VghLantern__ComponentIndexLoader__GetEntry(componentId);
+        return (entry && entry.Name) ? entry.Name : '';
     }
     // ------------------------------------------------------------
 
@@ -390,7 +411,13 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
                 row     =  takeoffList[i].Components[j];
                 mapKey  =  row.Key + '::' + row.ComponentId;
                 if (!componentMap[mapKey]) {
-                    componentMap[mapKey]  =  { Key: row.Key, Label: row.Label, ComponentId: row.ComponentId, CountTotal: 0 };
+                    componentMap[mapKey]  =  {
+                        Key           : row.Key,
+                        Label         : row.Label,
+                        ComponentId   : row.ComponentId,
+                        ComponentName : row.ComponentName,
+                        CountTotal    : 0
+                    };
                 }
                 componentMap[mapKey].CountTotal  +=  row.CountTotal;
             }

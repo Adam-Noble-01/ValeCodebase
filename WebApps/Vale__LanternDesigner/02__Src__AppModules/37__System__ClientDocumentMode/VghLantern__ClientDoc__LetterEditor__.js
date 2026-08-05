@@ -52,10 +52,14 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
     const ATTR_FIELD      =  'data-vgh-letter-field';
     const ATTR_ACTION     =  'data-vgh-letter-action';
 
-    const FIELD_SALUTATION   =  'salutation';
-    const FIELD_SIGNOFF_NAME =  'signOffName';
-    const FIELD_SIGNOFF_ROLE =  'signOffRole';
-    const FIELD_BODY         =  'body';
+    const FIELD_SALUTATION            =  'salutation';
+    const FIELD_SIGNOFF_NAME          =  'signOffName';
+    const FIELD_SIGNOFF_ROLE          =  'signOffRole';
+    const FIELD_CLIENT_ADDR_LINE1     =  'clientAddressLine1';
+    const FIELD_CLIENT_ADDR_STREET    =  'clientAddressStreet';
+    const FIELD_CLIENT_ADDR_TOWN      =  'clientAddressTownCity';
+    const FIELD_CLIENT_ADDR_POST      =  'clientAddressPostCode';
+    const FIELD_BODY                  =  'body';
     // ------------------------------------------------------------
 
 
@@ -208,6 +212,31 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build the Client Address Block
+    // ------------------------------------------------------------
+    // The recipient block the letterhead prints above the salutation. Each field
+    // seeds from config as a literal {{ClientAddress__...}} token - see LetterModel -
+    // so the block is laid out and formatted correctly before a project carries a
+    // real client address.
+    function VghLantern__LetterEditor__BuildClientAddress(project) {
+        var LetterModel  =  window.VghLantern__ClientDoc__LetterModel;
+
+        return '<div class="' + CSS_FIELD_ROW + '">' +
+               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_LINE1, 'Address Line 1',
+                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_LINE1), 'Address line 1') +
+               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_STREET, 'Street Name',
+                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_STREET), 'Street name') +
+               '</div>' +
+               '<div class="' + CSS_FIELD_ROW + '">' +
+               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_TOWN, 'Town / City',
+                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_TOWN), 'Town or city') +
+               VghLantern__LetterEditor__BuildField(FIELD_CLIENT_ADDR_POST, 'Postcode',
+                   LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_CLIENT_ADDR_POST), 'Postcode') +
+               '</div>';
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build the Sign-Off Block
     // ------------------------------------------------------------
     // The project author is offered as a one-click fill rather than pre-filled,
@@ -292,6 +321,9 @@ const VghLantern__ClientDoc__LetterEditor = (function() {
                    FIELD_SALUTATION, 'Salutation',
                    LetterModel.VghLantern__ClientDoc__LetterModel__ReadField(project, FIELD_SALUTATION),
                    'Dear ...') +
+
+               '<span class="' + CSS_FIELD_LABEL + '">Client Address</span>' +
+               VghLantern__LetterEditor__BuildClientAddress(project) +
 
                '<label class="' + CSS_FIELD + '">' +
                '<span class="' + CSS_FIELD_LABEL + '">Letter</span>' +

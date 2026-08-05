@@ -35,7 +35,7 @@
             35.88848884343831,
             64.11151115656169
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.6383760723207117,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.7973158564688865,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {
@@ -85,7 +85,7 @@
             },
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
-                "Lantern__Finials__Config__FinialComponentId": "VGH_FIN0001",
+                "Lantern__Finials__Config__FinialComponentId": "50_2001",
                 "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
@@ -104,10 +104,10 @@
                 "Lantern__Ventilation__Config__OperationType": ""
             },
             "Lantern__FinishAndGlazing__Config": {
-                "Lantern__FinishAndGlazing__Config__FrameFinish": "Vale Painted Hardwood",
-                "Lantern__FinishAndGlazing__Config__FrameColourRef": "RAL 7016 Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
-                "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
+                "Lantern__FinishAndGlazing__Config__GlazingTint": ""
             },
             "Lantern__Notes__Config": {
                 "Lantern__Notes__Config__DocumentWarning": "",

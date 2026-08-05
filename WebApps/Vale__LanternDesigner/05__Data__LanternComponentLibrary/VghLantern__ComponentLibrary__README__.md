@@ -1,8 +1,8 @@
 # VghLantern Component Library
 
-Discrete objects placed at a point on the lantern — finials, finial bases,
-cresting and ventilation. Cross-sections swept along skeleton lines (glazing
-bars, ridge caps, builders upstands) live in `06__Data__LanternProfileLibrary` instead.
+Discrete objects placed at a point on the lantern — finials, ridge caps and
+cresting. Cross-sections swept along skeleton lines (glazing bars, ridge caps,
+builders upstands) live in `06__Data__LanternProfileLibrary` instead.
 
 ---
 
@@ -12,78 +12,127 @@ bars, ridge caps, builders upstands) live in `06__Data__LanternProfileLibrary` i
 05__Data__LanternComponentLibrary/
 ├── VghLantern__ComponentDataIndex__.json   ← GENERATED — never hand-edit
 ├── VghLantern__ComponentLibrary__README__.md
-├── VGH_FIN0000__Finials/
-├── VGH_FIN0100__FinialBases/
-├── VGH_CRS0000__Cresting/
-├── VGH_VNT0000__Ventilation/
-└── 3dAssets__Glb/                          ← heavier meshes referenced by URL
+├── 45__Roof__RidgeCaps/
+├── 50__Roof__Finials/
+└── 55__Roof__Crestings/
 ```
 
-File naming: `VghLantern__Component__{AssetId}__{ShortName}__.json`
+Folder names follow the main Noble Architecture component library standard:
+`{NN}__{Zone}__{PluralCategory}`. The folder **is** the classification — the
+build utility reads the placement role, display name and sort order from its
+`CATEGORY_RULES` table keyed by folder name. Adding a category means adding a
+folder and a rule, never editing the generated index.
 
-Asset id format: `VGH_{TYPE}{NNNN}` — `FIN`, `CRS`, `VNT`. The numeric block
-matches the category folder prefix so an id sorts into its folder on sight.
+File naming: `{ProductCode}__{Type}__{Descriptor}__.json`, e.g.
+`50_1001__Finial__Ball__.json`. The product code is the leading digit block and
+becomes the `AssetId`.
 
 ---
 
 ## Asset schema
 
-Identical unified schema to the profile library, so an asset exported from
-SketchUp by `65__Dev__CadObjectBuilder` drops straight in.
+Two schemas are supported side by side.
+
+### Na__Asset__UnifiedComponentSchema (current)
+
+Exported by the **Export tab** of Na Component Editor Tools in SketchUp. One
+file carries every view of one physical component:
 
 | Block | Purpose |
 |---|---|
-| `meta` | Schema version, generator, source model |
-| `Na__Asset__Metadata` | Id, name, category, description, revision, material, tags |
-| `Na__Asset__Profile2D` | Closed outline in millimetres — gallery thumbnail and elevation linework |
-| `Na__Asset__Mesh3D` | Optional inline mesh for light components |
-| `Na__Asset__Glb3D__Url` | Optional GLB in `3dAssets__Glb/` for heavier meshes |
-| `Na__Asset__Has2dProfile` / `Na__Asset__Has3d` | UI gating flags |
-| `Na__Asset__PlacementBehaviour` | Applicable roles, anchor point, alignment, repeat pitch |
+| `meta` | Schema version, generator, source model, export warnings |
+| `Na__Asset__Metadata` | Id, name, revision, data status, material, tags |
+| `Na__Asset__ValeSpecification` | Product code, supplier, finish, notes |
+| `Na__Asset__Elevation2D__Front` | Front elevation drawing linework |
+| `Na__Asset__Elevation2D__Right` | Right elevation drawing linework |
+| `Na__Asset__Plan2D__Top` | Plan drawing linework |
+| `Na__Asset__Mesh3D` | Vertices, faces, per-vertex normals, edges |
+| `Na__Asset__ObjectHierarchy3D` | Nested group and component transforms |
+| `Na__Asset__PlacementBehaviour` | Roles, anchor point, overall height |
 
-### The 2D / 3D split
+Each 2D block holds `Na__Geometry__Paths` — a list of `Line`, `Arc`, `Circle`
+and `Polygon` primitives in millimetres — plus a bounding box and counts. This
+is drawing linework, not a single closed outline: a turned finial exports as its
+real silhouette with its ring lines, exactly as it appears in SketchUp.
 
-A component may carry 2D linework, 3D geometry, or both. The two flags let the
-UI gate cleanly without loading the asset:
+### The earlier hand-authored format
 
-- `Na__Asset__Has2dProfile: true` — the Component Index gallery can draw a
-  thumbnail and `VghLantern__Env2d__FinialRenderer__.js` can draw the object in
-  elevation.
-- `Na__Asset__Has3d: true` — the 3D environment has geometry to place, either
-  inline in `Na__Asset__Mesh3D` or fetched from `Na__Asset__Glb3D__Url`.
+`Na__Asset__Profile2D` (one closed outline) with an optional
+`Na__Asset__Glb3D__Url`. Still read, still rendered. Both the 2D renderer and
+the 3D loader prefer the unified blocks and fall back to these, so a library
+part way through re-export keeps working.
 
-Prefer inline `Na__Asset__Mesh3D` for small components; use a GLB in
-`3dAssets__Glb/` once a mesh becomes heavy enough that inlining bloats the JSON.
-`VghLantern__Env3d__ComponentLoader__Glb__.mjs` renders a sized placeholder box
-when a component has no 3D geometry yet, so the model still reads correctly.
+---
 
-### Outline point convention
+## The origin point is the insertion point
 
-Points are `{ "x": <mm>, "y": <mm> }` in millimetres, counter-clockwise, closed
-(do not repeat the first point).
+Every asset is authored about the `00__OriginPoint` group captured in SketchUp,
+so local `0,0,0` is the seating point and **placing a component is putting its
+local origin on the anchor** — in 2D and in 3D, with no per-asset offset table
+to maintain.
 
-- **Finials and bases** — origin is the seating point where the object meets the
-  surface below it. X is centred on the vertical axis, Y rises. Finials may set
-  `Na__Asset__Profile2D__IsRevolveOutline: true` when the outline is a turned
-  profile suitable for revolving about Y.
-- **Cresting** — origin is the seating point at the centre of **one repeat**. X
-  spans one full repeat (`RepeatPitchMm` wide), Y rises to the tip. Renderers
-  tile the outline along the ridge run.
-- **Vents** — origin is the centre of the pane the vent replaces. X runs across
-  the slope, Y runs up the slope, so the outline is the frame extent seen square
-  onto the slope.
+An asset may reach below its origin. The ball finial extends 30 mm down as a
+spigot that buries into the ridge; the index records this as
+`DepthBelowOriginMm` so a renderer can reason about it without loading the
+geometry.
 
-`VghLantern__Env2d__FinialRenderer__.js` places these outlines by adding local X
-to the anchor and subtracting local Y (SVG Y runs downward), so positive Y is
-always up on screen.
+Finial anchors are published by the SkeletonSolver at the two ridge ends, or at
+the single apex on a pyramid roof.
+
+---
+
+## Loading is on demand, and cached per session
+
+A unified export is **one to three megabytes** — the spire finial alone is
+2.8 MB. Loading the library up front would cost tens of megabytes for a lantern
+that uses two components, so:
+
+- `VghLantern__AppData__ComponentIndexLoader__.js` loads only the index and
+  resolves ids to URLs.
+- `VghLantern__AppData__ComponentAssetCache__.js` fetches an asset the first
+  time something asks for it and holds it for the life of the page, trimming to
+  a byte budget on a least-recently-used basis. Switching between two finials
+  repeatedly costs one fetch each, ever.
+- The cache is memory only and deliberately not persisted. Persisting would buy
+  a faster second visit at the price of a cache-busting scheme to invalidate a
+  re-exported asset, and during authoring that trade is the wrong way round. A
+  new session re-fetches.
+
+### Card previews cost nothing
+
+The editor shows finials as picture cards before the user has chosen any of
+them. Fetching every asset just to draw thumbnails would defeat on-demand
+loading entirely, so the build utility **bakes each asset's front elevation into
+the index** as one compact SVG path (`Preview2d`). The whole index including
+every preview is about 13 kB against 3.9 MB of asset files.
+
+---
+
+## The index is generated output
+
+`VghLantern__ComponentDataIndex__.json` is rebuilt by
+`60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py`, which
+walks the category folders and derives each entry from the asset's own content.
+**Never edit it by hand** — the next build overwrites the change.
+
+Add a component by dropping the JSON into its category folder and rerunning:
+
+```
+python 60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py
+```
+
+`VghLantern__AppData__ComponentIndexLoader__.js` is the only consumer; it
+fetches `/api/component-index` first (served `no-store`, so the index stays live
+while authoring) and falls back to the static file.
 
 ---
 
 ## Applicable roles
 
-Each asset declares the roles it may fill. The editor builds its dropdowns from
-these declarations (`OptionsSource: 'components:<role>'`), so no module
-hardcodes a category-to-role table.
+Each asset declares the roles it may fill, and the build utility supplies the
+role from the category folder when the exporter left it blank (SketchUp has no
+concept of a lantern placement role). The editor builds its option lists from
+these declarations, so no module hardcodes a category-to-role table.
 
 | Role key | Assigned by |
 |---|---|
@@ -92,26 +141,16 @@ hardcodes a category-to-role table.
 | `cresting` | `Lantern__RidgeAndHips__Config__CrestingComponentId` |
 | `vent` | `Lantern__Ventilation__Config__VentComponentId` |
 
----
-
-## The index is generated output
-
-`VghLantern__ComponentDataIndex__.json` is rebuilt by
-`60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py`, which
-walks the category folders and derives each index entry from the asset's own
-metadata. **Never edit it by hand** — the next build overwrites the change.
-
-Add a component by dropping the JSON into its category folder and rerunning the
-builder. `VghLantern__AppData__ComponentIndexLoader__.js` is the only consumer;
-it fetches `/api/component-index` first (served `no-store`, so the index stays
-live while authoring) and falls back to the static file.
+Note that the solver names an anchor by **where** it is (`ridgeEnd`, `apex`)
+while the lantern names a component by **what** goes there (`finial`). The two
+vocabularies are joined in the renderers, not in the data.
 
 ---
 
 ## Data status
 
-Every example asset carries
-`Na__Asset__Metadata__DataStatus: "Provisional …"`. The dimensions are
-representative placeholders that let the pipeline render and schedule end to
-end; they are **not** verified Vale product data. Replace them with measured
-components before the tool is used for production output.
+The SketchUp-exported assets carry
+`Na__Asset__Metadata__DataStatus: "Draft - auto-captured …"`, and the older
+worked examples carry `"Provisional …"`. Neither is verified Vale product data.
+Fill in the `Na__Asset__ValeSpecification` block and revise the status before
+these are used for production output.

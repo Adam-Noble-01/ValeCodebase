@@ -56,7 +56,7 @@
             },
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
-                "Lantern__Finials__Config__FinialComponentId": "VGH_FIN0001",
+                "Lantern__Finials__Config__FinialComponentId": "50_1001",
                 "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false

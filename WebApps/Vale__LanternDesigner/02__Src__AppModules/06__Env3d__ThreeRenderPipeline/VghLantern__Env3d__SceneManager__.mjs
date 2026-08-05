@@ -203,6 +203,35 @@ import {
 // REGION | Surface Factory
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Resolve the Configured Tone Mapping Curve
+    // ------------------------------------------------------------
+    // Named in config rather than numbered, because THREE's tone mapping
+    // constants are integers whose meaning is invisible in a JSON file. An
+    // unrecognised name falls back to Neutral and says so, which is safer than
+    // silently reverting to NoToneMapping and clipping every highlight.
+    function VghLantern__Env3d__SceneManager__ToneMapping() {
+        const curves  =  {
+            'None'       : THREE.NoToneMapping,
+            'Linear'     : THREE.LinearToneMapping,
+            'Reinhard'   : THREE.ReinhardToneMapping,
+            'Cineon'     : THREE.CineonToneMapping,
+            'ACESFilmic' : THREE.ACESFilmicToneMapping,
+            'AGX'        : THREE.AgXToneMapping,
+            'Neutral'    : THREE.NeutralToneMapping
+        };
+
+        const name   =  VghLantern__Env3d__ConfigAccess__RequireString('Renderer', 'ToneMapping');
+        const curve  =  curves[name];
+
+        if (curve === undefined) {
+            console.warn('[VghLantern Env3d] Unknown ToneMapping "' + name + '" in Na__Env3d__Config.json - using Neutral.');
+            return THREE.NeutralToneMapping;
+        }
+        return curve;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Create an Independent 3D Surface Inside a Host Element
     // ------------------------------------------------------------
     // options.ShowGroundPlane set to false builds the surface without the ground
@@ -224,6 +253,7 @@ import {
         });
         renderer.domElement.className  =  CSS_CANVAS;
         renderer.setClearColor(new THREE.Color(VghLantern__Env3d__ConfigAccess__RequireString('Renderer', 'ClearColorFallback')), 1);
+        renderer.toneMapping           =  VghLantern__Env3d__SceneManager__ToneMapping();
         renderer.toneMappingExposure   =  VghLantern__Env3d__ConfigAccess__RequireNumber('Renderer', 'ToneMappingExposure');
         hostElement.appendChild(renderer.domElement);
         hostElement.classList.add(CSS_HOST_ACTIVE);

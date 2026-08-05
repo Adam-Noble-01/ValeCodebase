@@ -58,6 +58,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     // as module-level consts inside the renderer / editor JS files.
     const SYSTEM_CONFIG_OVERLAYS  =  [
         { Label : 'UserMenuDefaults', Path : '02__Src__AppModules/02__AppData/VghLantern__AppData__UserMenuConfig__Defaults__.json' },
+        { Label : 'PbrMaterials',    Path : '02__Src__AppModules/02__AppData/Na__PbrMaterials__Config.json' },
         { Label : 'Env2d',           Path : '02__Src__AppModules/05__Env2d__SvgRenderPipeline/Na__Env2d__Config.json' },
         { Label : 'Env3d',           Path : '02__Src__AppModules/06__Env3d__ThreeRenderPipeline/Na__Env3d__Config.json' },
         { Label : 'DocManagement',   Path : '02__Src__AppModules/10__System__DocumentManagementMode/Na__DocManagement__Config.json' },
@@ -83,7 +84,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     let VghLantern__ConfigLoader__NewProjectSeed    =  null;                 // <-- Lantern every new project is created with
     let VghLantern__ConfigLoader__RoofFormOptions   =  null;                 // <-- Selectable roof forms
     let VghLantern__ConfigLoader__GlazingOptions    =  null;                 // <-- Glazing spec option lists
-    let VghLantern__ConfigLoader__FinishOptions     =  null;                 // <-- Frame finish option lists
+    let VghLantern__ConfigLoader__FinishOptions     =  null;                 // <-- Frame finish option lists, derived from PbrMaterials
+    let VghLantern__ConfigLoader__PbrMaterials      =  null;                 // <-- Finish palette and surface response SSOT
     let VghLantern__ConfigLoader__Validation        =  null;                 // <-- Min / max constraint envelope
     let VghLantern__ConfigLoader__DataLibraries     =  null;                 // <-- Component and profile library paths
     let VghLantern__ConfigLoader__Env2d             =  null;                 // <-- 2D SVG environment settings
@@ -123,6 +125,38 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Derive the Finish Option List from the PBR Materials Config
+    // ------------------------------------------------------------
+    // The finish palette moved into Na__PbrMaterials__Config.json, where each
+    // entry carries its full surface response rather than only a hex colour.
+    // Everything that only wants the option list - the editor dropdowns, the
+    // specification schedule - still asks for the 'FinishOptions' section and is
+    // served this projection, so the palette lives in exactly one file while its
+    // consumers stay unaware that it moved.
+    function VghLantern__ConfigLoader__DeriveFinishOptions(pbrConfig) {
+        var finishes  =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__Finishes']) || [];
+        var defaults  =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__FinishDefaults']) || {};
+        var refs      =  (pbrConfig && pbrConfig['VghLantern__PbrMaterials__Config__ColourReferences']) || [];
+
+        return {
+            'VghLantern__Finish__Options__Config__Description'         : 'Derived at load time from Na__PbrMaterials__Config.json. Never edit here.',
+            'VghLantern__Finish__Options__Config__AvailableFinishes'   : finishes.map(function(finish) {
+                return {
+                    Name         : finish.Name,
+                    MatCode      : finish.MatCode,
+                    HexColor     : finish.HexColor,
+                    RalReference : finish.RalReference,
+                    Substrate    : finish.Substrate,
+                    Description  : finish.Description
+                };
+            }),
+            'VghLantern__Finish__Options__Config__DefaultFinish'       : defaults.DefaultFinishName || '',
+            'VghLantern__Finish__Options__Config__ColourReferences'    : refs
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Assign Named Section Accessors from the Merged Config
     // ------------------------------------------------------------
     function VghLantern__ConfigLoader__AssignSections(configData) {
@@ -131,7 +165,8 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         VghLantern__ConfigLoader__NewProjectSeed   =  configData['VghLantern__NewProject__SeedLantern__Config'] || {};
         VghLantern__ConfigLoader__RoofFormOptions  =  configData['VghLantern__RoofForm__Options__Config']       || {};
         VghLantern__ConfigLoader__GlazingOptions   =  configData['VghLantern__Glazing__Options__Config']        || {};
-        VghLantern__ConfigLoader__FinishOptions    =  configData['VghLantern__Finish__Options__Config']         || {};
+        VghLantern__ConfigLoader__PbrMaterials     =  configData['VghLantern__PbrMaterials__Config']            || {};
+        VghLantern__ConfigLoader__FinishOptions    =  VghLantern__ConfigLoader__DeriveFinishOptions(VghLantern__ConfigLoader__PbrMaterials);
         VghLantern__ConfigLoader__Validation       =  configData['VghLantern__Validation__Config']              || {};
         VghLantern__ConfigLoader__DataLibraries    =  configData['VghLantern__DataLibraries__Config']           || {};
         VghLantern__ConfigLoader__Env2d            =  configData['VghLantern__Env2d__Config']                   || {};
@@ -206,6 +241,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
             'RoofFormOptions'  : VghLantern__ConfigLoader__RoofFormOptions,
             'GlazingOptions'   : VghLantern__ConfigLoader__GlazingOptions,
             'FinishOptions'    : VghLantern__ConfigLoader__FinishOptions,
+            'PbrMaterials'     : VghLantern__ConfigLoader__PbrMaterials,
             'Validation'       : VghLantern__ConfigLoader__Validation,
             'DataLibraries'    : VghLantern__ConfigLoader__DataLibraries,
             'Env2d'            : VghLantern__ConfigLoader__Env2d,

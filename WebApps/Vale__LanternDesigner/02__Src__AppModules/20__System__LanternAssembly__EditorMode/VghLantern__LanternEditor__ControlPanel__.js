@@ -70,6 +70,14 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_GROUP_BODY      =  'VghLantern__ControlPanel__GroupBody';
     const CSS_SUBHEADING      =  'VghLantern__ControlPanel__SubHeading';
     const CSS_EMPTY           =  'VghLantern__ControlPanel__EmptyState';
+
+    const CSS_CARD_GRID       =  'VghLantern__ControlPanel__CardGrid';
+    const CSS_CARD            =  'VghLantern__ControlPanel__Card';
+    const CSS_CARD_SELECTED   =  'VghLantern__ControlPanel__Card--selected';
+    const CSS_CARD_PREVIEW    =  'VghLantern__ControlPanel__CardPreview';
+    const CSS_CARD_NAME       =  'VghLantern__ControlPanel__CardName';
+    const CSS_CARD_META       =  'VghLantern__ControlPanel__CardMeta';
+    const CSS_CARD_EMPTY      =  'VghLantern__ControlPanel__CardEmpty';
     // ------------------------------------------------------------
 
 
@@ -77,7 +85,8 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // ------------------------------------------------------------
     const ATTR_SECTION  =  'data-vgh-section';                               // <-- Section key on headers
     const ATTR_CONTROL  =  'data-vgh-control';                               // <-- Descriptor key on inputs
-    const ATTR_ROLE     =  'data-vgh-role';                                  // <-- slider | numeric | toggle | select | text | button
+    const ATTR_ROLE     =  'data-vgh-role';                                  // <-- slider | numeric | toggle | select | text | button | card
+    const ATTR_VALUE    =  'data-vgh-value';                                 // <-- Option value carried by a card
     // ------------------------------------------------------------
 
 
@@ -247,6 +256,99 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Build One Selectable Preview Card
+    // ------------------------------------------------------------
+    // The preview is inline SVG drawn from the outline the build utility baked
+    // into the component index, so a strip of cards costs no network traffic and
+    // the picture is the component's real front elevation rather than a stock
+    // icon that has to be maintained separately.
+    function VghLantern__ControlPanel__BuildCard(descriptor, option, isSelected) {
+        var preview     =  option.Preview2d;
+        var previewSvg  =  '';
+
+        if (preview && preview.PathData) {
+            previewSvg  =  '<svg class="' + CSS_CARD_PREVIEW + '"'
+                        +      ' viewBox="' + VghLantern__ControlPanel__Escape(preview.ViewBox) + '"'
+                        +      ' preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
+                        +      '<path d="' + VghLantern__ControlPanel__Escape(preview.PathData) + '"'
+                        +          ' fill="none" vector-effect="non-scaling-stroke"></path>'
+                        +  '</svg>';
+        } else {
+            previewSvg  =  '<div class="' + CSS_CARD_PREVIEW + ' ' + CSS_CARD_EMPTY + '">No preview</div>';
+        }
+
+        var metaParts  =  [];
+        if (typeof option.HeightMm === 'number') metaParts.push(Math.round(option.HeightMm) + ' mm high');
+        if (option.ProductCode)                  metaParts.push(option.ProductCode);
+
+        var html  =  '<button type="button"'
+                  +      ' class="' + CSS_CARD + (isSelected ? ' ' + CSS_CARD_SELECTED : '') + '"'
+                  +      ' ' + ATTR_CONTROL + '="' + VghLantern__ControlPanel__Escape(descriptor.Key) + '"'
+                  +      ' ' + ATTR_ROLE + '="card"'
+                  +      ' ' + ATTR_VALUE + '="' + VghLantern__ControlPanel__Escape(option.Value) + '"'
+                  +      ' aria-pressed="' + (isSelected ? 'true' : 'false') + '"'
+                  +      ' title="' + VghLantern__ControlPanel__Escape(option.Label) + '">';
+        html     +=      previewSvg;
+        html     +=      '<span class="' + CSS_CARD_NAME + '">' + VghLantern__ControlPanel__Escape(option.Label) + '</span>';
+        if (metaParts.length > 0) {
+            html  +=     '<span class="' + CSS_CARD_META + '">' + VghLantern__ControlPanel__Escape(metaParts.join('  |  ')) + '</span>';
+        }
+        html     +=  '</button>';
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Build a Card Strip Control
+    // ------------------------------------------------------------
+    // The same value and the same option source as a select, shown as pictures.
+    // Choosing a finial is a visual decision, and a dropdown of product names
+    // asks the user to hold a shape in their head that the app already knows.
+    function VghLantern__ControlPanel__BuildCards(descriptor, currentValue) {
+        var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
+        if (!Descriptors) return '';
+
+        var options   =  Descriptors.VghLantern__ControlDescriptors__ResolveOptions(descriptor);
+        var selected  =  String(currentValue === null || currentValue === undefined ? '' : currentValue);
+
+        if (options.length === 0) {
+            return '<p class="' + CSS_CONTROL_HINT + '">No components available for this role.</p>';
+        }
+
+        var html  =  '<div class="' + CSS_CARD_GRID + '" role="radiogroup">';
+
+        if (descriptor.AllowEmpty) {
+            var noneSelected  =  selected === '';
+            html  +=  '<button type="button"'
+                   +      ' class="' + CSS_CARD + (noneSelected ? ' ' + CSS_CARD_SELECTED : '') + '"'
+                   +      ' ' + ATTR_CONTROL + '="' + VghLantern__ControlPanel__Escape(descriptor.Key) + '"'
+                   +      ' ' + ATTR_ROLE + '="card"'
+                   +      ' ' + ATTR_VALUE + '=""'
+                   +      ' aria-pressed="' + (noneSelected ? 'true' : 'false') + '">'
+                   +      '<div class="' + CSS_CARD_PREVIEW + ' ' + CSS_CARD_EMPTY + '">None</div>'
+                   +      '<span class="' + CSS_CARD_NAME + '">None</span>'
+                   +  '</button>';
+        }
+
+        for (var i = 0; i < options.length; i++) {
+            html  +=  VghLantern__ControlPanel__BuildCard(descriptor, options[i], String(options[i].Value) === selected);
+        }
+
+        html  +=  '</div>';
+
+        // Same contract as the select: a stored value the library no longer
+        // holds must say so, otherwise the strip just reads as "nothing chosen".
+        if (selected !== '' && !VghLantern__ControlPanel__OptionsContain(options, selected)) {
+            html  +=  '<p class="' + CSS_CONTROL_HINT + '">Stored value "'
+                   +      VghLantern__ControlPanel__Escape(selected) + '" is not in the current library.</p>';
+        }
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Test Whether an Option List Contains a Value
     // ------------------------------------------------------------
     function VghLantern__ControlPanel__OptionsContain(options, value) {
@@ -343,6 +445,8 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             inputHtml  =  VghLantern__ControlPanel__BuildToggle(descriptor, currentValue);
         } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeSelect) {
             inputHtml  =  VghLantern__ControlPanel__BuildSelect(descriptor, currentValue);
+        } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeCards) {
+            inputHtml  =  VghLantern__ControlPanel__BuildCards(descriptor, currentValue);
         } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeText
                 || descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeTextarea) {
             inputHtml  =  VghLantern__ControlPanel__BuildTextField(descriptor, currentValue);
@@ -448,7 +552,7 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         var lantern  =  VghLantern__ControlPanel__ActiveLantern();
 
         if (!lantern) {
-            host.className  =  CSS_PANEL;
+            host.classList.add(CSS_PANEL);
             host.innerHTML  =  '<p class="' + CSS_EMPTY + '">No lantern selected.</p>';
             return;
         }
@@ -462,7 +566,7 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             html  +=  VghLantern__ControlPanel__BuildSection(sections[i], lantern);
         }
 
-        host.className  =  CSS_PANEL;
+        host.classList.add(CSS_PANEL);
         host.innerHTML  =  html || '<p class="' + CSS_EMPTY + '">No controls available.</p>';
 
         VghLantern__ControlPanel__BindDelegated(host);
@@ -715,6 +819,16 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // SUB FUNCTION | Handle a Delegated Click for Section Headers and Buttons
     // ------------------------------------------------------------
     function VghLantern__ControlPanel__OnClick(e) {
+        // Cards are buttons too, so they are tested first - otherwise the action
+        // button branch would claim the click and try to fire an Action that a
+        // card descriptor does not have.
+        var card  =  e.target.closest ? e.target.closest('[' + ATTR_ROLE + '="card"]') : null;
+        if (card) {
+            var cardKey  =  card.getAttribute(ATTR_CONTROL);
+            if (cardKey) VghLantern__ControlPanel__CommitValue(cardKey, card.getAttribute(ATTR_VALUE) || '', null);
+            return;
+        }
+
         var actionButton  =  e.target.closest ? e.target.closest('[' + ATTR_ROLE + '="button"]') : null;
         if (actionButton) {
             var controlKey  =  actionButton.getAttribute(ATTR_CONTROL);

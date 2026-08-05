@@ -35,18 +35,18 @@
             39.395325880697705,
             60.604674119302295
         ],
-        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.4918246739293577,
+        "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1.7973158564688865,
         "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {
             "threeDimensional": {
                 "Position": {
-                    "x": 6.620509900104922,
-                    "y": 4.194053347629682,
-                    "z": 5.0476789403860245
+                    "x": 4.2486647672263285,
+                    "y": 5.255441075658869,
+                    "z": 4.1870768046912685
                 },
                 "Target": {
-                    "x": 0.33951916590433867,
-                    "y": -0.19929007296711734,
-                    "z": -0.19073975484801273
+                    "x": 0.15097115161452399,
+                    "y": -0.12829796201205612,
+                    "z": -0.006285488979051363
                 }
             }
         }
@@ -67,7 +67,7 @@
             "Lantern__Dimensions__Config": {
                 "Lantern__Dimensions__Config__WidthMm": 4000,
                 "Lantern__Dimensions__Config__DepthMm": 3000,
-                "Lantern__Dimensions__Config__EavesProjectionMm": 50
+                "Lantern__Dimensions__Config__EavesProjectionMm": 20
             },
             "Lantern__RoofPitch__Config": {
                 "Lantern__RoofPitch__Config__PitchDegrees": 22.5
@@ -78,14 +78,14 @@
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false
             },
             "Lantern__RidgeAndHips__Config": {
-                "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
-                "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
+                "Lantern__RidgeAndHips__Config__RidgeProfileId": "",
+                "Lantern__RidgeAndHips__Config__HipProfileId": "",
                 "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
                 "Lantern__RidgeAndHips__Config__CrestingEnabled": false
             },
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
-                "Lantern__Finials__Config__FinialComponentId": "",
+                "Lantern__Finials__Config__FinialComponentId": "50_1001",
                 "Lantern__Finials__Config__FinialBaseComponentId": "",
                 "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
@@ -104,7 +104,7 @@
                 "Lantern__Ventilation__Config__OperationType": ""
             },
             "Lantern__FinishAndGlazing__Config": {
-                "Lantern__FinishAndGlazing__Config__FrameFinish": "",
+                "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
                 "Lantern__FinishAndGlazing__Config__FrameColourRef": "",
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": ""
@@ -117,8 +117,8 @@
     ],
     "VghLantern__ProjectFile__ClientDocument": {
         "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
-        "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
-        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "{{UserName}}",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "{{UserJobTitle}}",
         "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [
             {
                 "Id": "trm_mseklbat_1",

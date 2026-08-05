@@ -3,7 +3,269 @@
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.5.1 - 04-Aug-2026
+## Vale__LanternDesigner v0.1.5 - 05-Aug-2026
+### The library speaks the SketchUp exporter's language, finials are chosen from pictures, and every material comes from one file
+
+The component library now holds real exported geometry instead of hand-authored
+placeholders. Two finials came out of SketchUp through the new Component Editor
+Export tab - a ball and a spire - and everything downstream had to learn to read
+that format.
+
+#### Added - Unified component schema, read end to end
+- The library carries `Na__Asset__Elevation2D__Front / __Right`, `Na__Asset__Plan2D__Top`,
+  `Na__Asset__Mesh3D` and `Na__Asset__ObjectHierarchy3D`. The earlier
+  `Na__Asset__Profile2D` format is still read, so a library part way through
+  re-export keeps rendering rather than blanking out.
+- **New `VghLantern__Env2d__ComponentPathRenderer__.js`** flattens a
+  `Na__Geometry__Paths` list - Line, Arc, Circle, Polygon - into one SVG path
+  string placed at an anchor. One path element per component, not one per
+  primitive: a 157-segment spire at two ridge ends is two DOM nodes, not 314.
+- **New `VghLantern__Env3d__ComponentLoader__MeshJson__.mjs`** builds a
+  `THREE.BufferGeometry` from the inline mesh, with per-vertex normals and the
+  Z-up to Y-up swap that matches `ConfigAccess__PointToWorld` exactly. Geometry
+  is cached per asset and cloned per placement, so four identical finials cost
+  one build.
+- The 3D loader now prefers the inline mesh, falls back to a GLB, then to the
+  placeholder. Mesh first because it arrives in the same file the 2D views come
+  from, so the two environments cannot drift apart.
+
+#### Fixed - 3D finials were never placed at all
+The solver names an anchor by **where** it is (`ridgeEnd`, `apex`); the lantern
+names a component by **what** goes there (`finial`). The 3D loader compared the
+two directly, which silently matched nothing, so every ridge end stayed empty
+while the 2D view drew finials perfectly. The two vocabularies are now joined by
+an explicit map in the loader. `PlaceAtRidgeEnds` and `PlaceAtApex` are honoured
+in both environments too - previously the solver's anchors were taken as final.
+
+#### Added - The origin point is the insertion point
+Every asset is authored about its `00__OriginPoint` group, so placing a
+component is putting its local 0,0,0 on the anchor - in 2D and in 3D, with no
+per-asset offset table. The ball finial reaches 30 mm below its origin as a
+spigot that buries into the ridge, and that lands correctly with no special case.
+
+#### Added - Finials are chosen from picture cards
+- New `cards` control type in the editor: same value, same option source and the
+  same "stored value is not in the current library" contract as a select, shown
+  as selectable previews. Choosing a finial is a visual decision, and a list of
+  product names asks the user to hold a shape in their head that the app already
+  knows.
+- **The previews cost nothing.** Fetching every asset to draw thumbnails would
+  defeat on-demand loading entirely, so the build utility bakes each asset's
+  front elevation into the index as one compact SVG path. The whole index
+  including every preview is **13 kB against 3.9 MB of asset files.**
+
+#### Added - On-demand loading with a session cache
+- **New `VghLantern__AppData__ComponentAssetCache__.js`.** A unified export is
+  one to three megabytes; the spire alone is 2.8 MB. Nothing is fetched until
+  something asks for it, and an asset is then held for the life of the page, so
+  toggling between two finials costs one fetch each, ever.
+- The cache trims to a byte budget on a least-recently-used basis, with a floor
+  of two entries so a single large asset cannot thrash it.
+- **Memory only, deliberately.** Persisting would buy a faster second visit at
+  the price of a cache-busting scheme to invalidate a re-exported asset, and
+  during authoring that trade is the wrong way round. A new session re-fetches.
+- The 2D renderer draws what is resident and requests what is not, then redraws
+  when the asset lands. The user sees a placeholder for one frame instead of a
+  stalled viewport.
+
+#### Added - One PBR materials file
+- **New `02__Src__AppModules/02__AppData/Na__PbrMaterials__Config.json`** is now
+  the single source of truth for the palette and the surface response. The
+  finish list migrated out of `VghLantern__AppConfig__Main__.json` and the role
+  colours out of `Na__Env3d__Config.json`; both keep a migration note where the
+  block used to be.
+- Finishes are **Anthracite Grey (RAL 7016)**, **White Painted** and **Lead**.
+  The white is a warm off white rather than a stark brilliant white, so it sits
+  with painted joinery instead of fighting it.
+- The first two are powder coated aluminium and carry a clear coat value, which
+  promotes them to `MeshPhysicalMaterial` - a matt pigment layer under a thin
+  lacquer. Lead is real metal instead: high metalness, rough broken reflection,
+  no clear coat.
+- The material cache is now keyed on the finish **name** rather than its colour.
+  Two finishes can share a hex value and still differ in roughness or clear
+  coat; keying on colour handed the second one the first one's surface.
+- `AppCore__ConfigLoader` derives the old `FinishOptions` section from the new
+  file at load time, so every existing consumer reads it without knowing it moved.
+
+#### Fixed - Dark finishes read as black silhouettes
+Anthracite grey came out looking almost black. The cause was that the renderer
+had no environment map at all: a metalness / roughness material with nothing to
+reflect gets all its brightness from direct lights, and a dark powder coat is
+mostly specular response, so it collapsed to near black and read as a shape
+rather than a surface. The materials were already carrying EnvMapIntensity
+values with no environment to apply them to.
+- **New `VghLantern__Env3d__EnvironmentMap__.mjs`** loads the same 1024p autumn
+  field skydome ValeVision3D MaxEngine uses, copied into
+  `01__AppAssets__VghLantern/05__AppAssets__SkyDomes/`. A lantern reviewed here
+  and the same lantern dropped into a ValeVision scene are now lit by one sky.
+  Decoded once through PMREMGenerator and shared by every surface.
+- The studio rig is dimmed once the sky lands rather than left at full strength,
+  or the two stack and every surface washes flat. The key light survives at
+  reduced strength because it is what gives the glazing bars their edge.
+- **The renderer had no tone mapping curve assigned**, so it was running
+  NoToneMapping and clipping every specular highlight. Now set to the Khronos
+  PBR Neutral curve, which rolls highlights off without the desaturation ACES
+  applies - a powder coat on screen still reads as its RAL swatch.
+- The base colour was left at the true RAL 7016 value. Lightening the swatch
+  would have made the model look better while making the drawing, the schedule
+  and the 2D preview all wrong. Brightness is controlled by the two documented
+  dials instead: Environment Intensity and ToneMappingExposure, both at 1.15.
+- Loading is not awaited. The viewport draws on the studio rig immediately and
+  re-renders when the 1.5 MB sky arrives; a failed load warns and carries on.
+
+#### Added - Glazing has real thickness, and every face of it is glass
+The glass was a single plane. A plane has no edge to catch light where it meets
+a bar and only one surface to reflect from, which is a large part of why flat
+glass reads as a tinted sheet however carefully the material is tuned.
+- Each glazed slope is now built as a **20 mm slab** (`GlazingThicknessMm`),
+  which is about right for a sealed unit over its two panes, spacer and seals.
+  It gives a visible edge at every eaves, bar and ridge junction and a second
+  reflection off the back face.
+- Extrusion runs **inward** from the inset plane, so the outer glass surface
+  stays exactly where the old single plane sat. Changing the thickness never
+  moves the visible face. Setting it to 0 falls back to the old plane.
+- **Outer cap, inner cap and edge band are one buffer and all wear the glazing
+  material.** An untextured reverse or edge face would read as flat grey
+  wherever the frame does not cover it, which on a lantern is every eaves and
+  ridge junction and the whole underside seen from indoors.
+- A slab needs its winding to be right where a plane did not, because
+  computeVertexNormals derives normals from winding and a reversed cap would
+  light as though the sky were under the roof. The point ring is normalised to
+  an outward winding once and every cap and wall is built consistently from it.
+  Verified numerically rather than by eye: on a pitched quad all twelve
+  triangles face outward, cap up the slope, inner cap down, four edges
+  perpendicular.
+
+#### Changed - Glass reflects harder
+Opacity 0.2 to 0.3, roughness 0.03 to 0.02, EnvMapIntensity 1.0 to 1.8. Opacity
+is doing more than it looks: it multiplies the whole shaded result including the
+reflection, so on a near-black base it behaves as a reflection strength dial as
+much as a transparency one. At 0.2 the pane read faint against bright sky.
+
+#### Fixed - Glass read as tinted acrylic, and the drawing sheet was lit differently
+Two related faults in one pass.
+- **Glass is now ValeVision3D MaxEngine glass.** Ported the recipe rather than
+  guessing at one: the shared DataLib entry MAT101__Glass__ClearDefault gives
+  the near-white base, 0.2 opacity and double sided no-depth-write setup, and
+  MaxEngine glass overrides give the rest. The move that matters is the
+  brightness multiplier of 1/4096, which takes the base colour almost to black
+  so the diffuse term contributes nothing and every visible thing about the pane
+  is environment reflection. A pane painted flat translucent blue - which is
+  what it was - reads as tinted acrylic at any opacity; a pane that is black
+  plus a sharp 0.03-roughness reflection reads as glass.
+- Glass carries its own envMap and envMapIntensity rather than inheriting
+  scene.environment, exactly as MaxEngine does, so tuning the frame brightness
+  down no longer drags the glass reflection down with it. The two are now
+  independently tunable.
+- **Lighting parity across all three 3D surfaces - the real cause.** The sheet
+  and the 3D tab rendered markedly darker than the configurator viewport. Two
+  faults, found in that order:
+  1. A timing race. The sky loads asynchronously and the sheet viewport draws
+     exactly once before being captured to a PNG, so it photographed itself
+     before the sky arrived. Each surface now records its environment promise
+     and RenderPipeline__Render awaits it before drawing.
+  2. **The actual culprit: the radiance map was being shared across renderers.**
+     PMREMGenerator is constructed around one WebGLRenderer and returns a render
+     target living in that renderer's GL context. Every 3D surface here builds
+     its own WebGLRenderer, so every surface after the first was handed a
+     texture its context could not resolve - it rendered as though there were no
+     environment, while its studio rig had already been dimmed on the assumption
+     that there was one. Doubly dark, and only ever on the surfaces that did not
+     happen to generate the map.
+  Now split: the equirectangular HDR is CPU side and genuinely shareable, so it
+  downloads and decodes once; the pre-filtered radiance map is built per
+  renderer and held in a WeakMap so it is freed with its renderer. Filtering is
+  a handful of GPU passes on an already resident image, which is the right price
+  for every surface being lit.
+- Glass consequently inherits scene.environment rather than carrying its own
+  map, because one shared material cannot hold the right per-context texture for
+  every surface. Its configured EnvMapIntensity is divided by the scene
+  environment intensity when applied, so the number in config still means the
+  effective reflection strength of the glass and the frame dial does not drag it
+  around.
+- **Anthracite lifted without touching the RAL swatch.** A finish may now declare
+  an optional RenderAlbedoHex used only by the 3D material. RAL 7016 renders at
+  #4A5157 while the specification and the 2D fill keep the true #383E42, because
+  a swatch is a paint chip measured under studio light and a renderer wants
+  diffuse albedo - the two genuinely differ, and the gap is widest on dark
+  colours, which is why anthracite was the finish that looked wrong.
+
+#### Added - GRP material for the builders kerb
+The kerb was rendering as a flat tinted prism, which reads as CAD rather than as
+the site work it represents. It now carries a proper GRP material - glass
+reinforced plastic, the same thing that covers the kerb and any abutting flat
+roof - with a light grey satin topcoat and a procedural bump so the surface is
+not optically perfect.
+- **New `VghLantern__Env3d__ProceduralTextures__.mjs`** generates seamless
+  fractal value noise on a canvas and returns it as a THREE.CanvasTexture. No
+  image file ships, so there is nothing to cache-bust when the grain is retuned.
+- **Seamless by construction**: lattice lookups wrap, so the right edge
+  interpolates back into the left. A tile seam repeating every few hundred
+  millimetres along a kerb would read as a defect in the moulding.
+- **Deterministic by construction**: the lattice is filled from a seeded
+  generator rather than Math.random, so the same grain appears on every reload
+  and in every exported snapshot. Two screenshots of one lantern must not differ.
+- The bump repeat is expressed in tiles per world unit, and the kerb mesh is an
+  ExtrudeGeometry whose UVs are already in metres, so the grain holds its true
+  physical size on a 900 mm lantern and a 5 m one alike.
+- The kerb declares `UsesMaterial: "Grp"` rather than carrying a colour, so
+  refinishing it is one config key. `MaterialLibrary__Grp()` is exported in its
+  own right for the flat roof areas that will want it later.
+
+#### Changed - Environment lighting dialled back and fully exposed
+First pass overlit the model. Every dial the environment responds to is now in
+`VghLantern__Env3d__Config__Environment`, with the order of operations stated in
+the block: Intensity scales the sky, four Dim factors scale the studio rig
+underneath it, and ToneMappingExposure scales the final image after both.
+- Environment Intensity 1.15 down to **0.55**, ToneMappingExposure 1.15 down to
+  **0.95**.
+- Fill and ground bounce gained their own dim factors instead of borrowing the
+  ambient one, so the balance between sky and direct light is adjustable per
+  light rather than in two lumps.
+- Added `RotationDegrees` to spin the sun patch without touching the rig, plus
+  `BackgroundIntensity` and `BackgroundBlurriness` for when the sky is used as
+  the backdrop.
+
+#### Added - Specification lists which component, not just what kind
+The Components table gained a **Type** column: the Component column says what
+the item is on the lantern ("Finial"), Type says which one was specified ("Ball
+Finial"). No schema change was needed - the name resolves in priority order from
+`Na__Asset__ValeSpec__ProductName` once the Vale spec audit fills it in, then a
+hand-authored metadata name, then the file naming standard.
+
+#### Added - The missing index builder
+`60__Dev__WebBuildUtils/VghLantern__BuildUtil__ComponentDataIndex__.py` was
+referenced by the library README but absent from the repo. Written and run. It
+reads placement role, category and sort order from a folder-name table, because
+the unified exporter leaves `ApplicableRoles` empty - SketchUp has no concept of
+a lantern placement role, but the folder it lives in does.
+
+#### Changed - Library reorganised and legacy asset retired
+Folders renamed to the main component library standard
+(`45__Roof__RidgeCaps`, `50__Roof__Finials`, `55__Roof__Crestings`). The legacy
+hand-authored `VGH_FIN0001` ball-and-spike finial is removed, superseded by the
+measured `50_1001` export; the two saved projects referencing it were migrated,
+and the seed lantern now starts on the Ball Finial in Anthracite Grey.
+
+#### Files
+New: `Na__PbrMaterials__Config.json`, `VghLantern__AppData__ComponentAssetCache__.js`,
+`VghLantern__Env3d__EnvironmentMap__.mjs`, `VghLantern__Env3d__ProceduralTextures__.mjs`,
+`HdriSkydome__RuralLandscape__AutumnField__SunnyDay__OptimisedVersion__1024p__.hdr`
+(copied from ValeVision3D),
+`VghLantern__Env2d__ComponentPathRenderer__.js`,
+`VghLantern__Env3d__ComponentLoader__MeshJson__.mjs`,
+`VghLantern__BuildUtil__ComponentDataIndex__.py`.
+Changed: `ComponentIndexLoader`, `Env2d__FinialRenderer`, `Env3d__ComponentLoader__Glb`,
+`Env3d__MaterialLibrary`, `Env3d__ConfigAccess`, `AppCore__ConfigLoader`,
+`LanternEditor__ControlPanel`, `LanternEditor__ControlDescriptors`,
+`LanternEditor__Section__Finials`, `LanternEditor__Styles__Main.css`,
+`Geometry__QuantityTakeoff`, `Na__Specification__Config.json`,
+`VghLantern__AppConfig__Main__.json`, `Na__Env3d__Config.json`,
+`VghLantern__App__.html`, component library README and index.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.4 - 04-Aug-2026
 ### The letter is written in one box, the terms say once that they are unreviewed, and the drawing's terms cell reads properly
 
 Review of v0.5.0 in the running app. Six changes, all of them things that only became
@@ -40,7 +302,7 @@ Changed: `VghLantern__ClientDoc__LetterModel__.js` (body is one string), `Letter
 
 
 # ---------------------------------------------------------
-## Vale__LanternDesigner v0.5.0 - 04-Aug-2026
+## Vale__LanternDesigner v0.1.3 - 04-Aug-2026
 ### Client Doc tab, a terms and conditions system with citable clause numbers, and a drawing that points at them
 
 #### Added

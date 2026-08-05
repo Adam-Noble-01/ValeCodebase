@@ -10,22 +10,35 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Places discrete components - finials, finial bases, cresting, vents - at the
-     anchor points published by the SkeletonSolver.
+   - Places discrete components - finials, finial bases, cresting - at the anchor
+     points published by the SkeletonSolver: the two ridge ends on a hipped or
+     gabled roof, or the single apex on a pyramid.
    - The 3D counterpart of Env2d's FinialRenderer. Both read the same component
-     library entry; this one uses Na__Asset__Glb3d__Url while the 2D renderer uses
-     Na__Asset__Profile2D.
-   - Caches loaded GLB scenes and clones per placement, so four identical finials
-     cost one network fetch and one parse.
-   - A missing or absent GLB yields a proportional placeholder rather than an
-     empty anchor, matching the 2D fallback behaviour.
+     library entry, and both place a component by putting its LOCAL ORIGIN on the
+     anchor, because every asset is authored about its origin point group.
 
    ---------------------------------------------------------------------------
 
+   GEOMETRY SOURCE ORDER:
+   1. Na__Asset__Mesh3D    inline indexed mesh from the unified export. Preferred:
+                           it arrives with the same file the 2D views came from,
+                           so the two environments cannot drift apart.
+   2. Na__Asset__Glb3D__Url an external GLB, for assets not yet re-exported.
+   3. Placeholder          a plain turned form, so a chosen-but-unmodelled
+                           component reads as "not specified yet" rather than as
+                           an empty ridge end.
+
+   ANCHOR ROLE VERSUS COMPONENT ROLE:
+   The solver names an anchor by WHERE it is on the roof - 'ridgeEnd', 'apex'.
+   The lantern names a component by WHAT goes there - 'finial', 'finialBase',
+   'cresting'. Those two vocabularies are joined by ANCHOR_ROLE_TO_COMPONENT_ROLE
+   below. They were previously compared directly, which silently matched nothing
+   and left every ridge end empty in the 3D view.
+
    SCALE CONVENTION:
-   GLBs exported by the SketchUp CAD object builder are authored in millimetres.
-   The importer applies the standard mm-to-world scale so a 300 mm finial arrives
-   300 mm tall in a metre-unit scene.
+   Both sources are authored in millimetres. Inline meshes are converted as they
+   are built; GLBs take the standard mm-to-world scale on import, so a 300 mm
+   finial arrives 300 mm tall in a metre-unit scene.
 
    ============================================================================= */
 
@@ -42,6 +55,11 @@ import {
 import { VghLantern__Env3d__MaterialLibrary__Component } from './VghLantern__Env3d__MaterialLibrary__.mjs';
 import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d__PickIndex__.mjs';
 
+import {
+    VghLantern__Env3d__MeshJson__BuildMesh,
+    VghLantern__Env3d__MeshJson__ClearCache
+} from './VghLantern__Env3d__ComponentLoader__MeshJson__.mjs';
+
 // =============================================================================
 // REGION | GLB Component Loader Module
 // =============================================================================
@@ -52,14 +70,33 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
 
     // MODULE CONSTANTS | Anchor Roles and Asset Field Names
     // ------------------------------------------------------------
-    const ANCHOR_ROLE_FINIAL       =  'finial';                              // <-- Ridge end and apex finials
-    const ANCHOR_ROLE_FINIAL_BASE  =  'finialBase';                          // <-- Base block under a finial
-    const ANCHOR_ROLE_CRESTING     =  'cresting';                            // <-- Ridge cresting runs
+    const COMPONENT_ROLE_FINIAL       =  'finial';                           // <-- Ridge end and apex finials
+    const COMPONENT_ROLE_FINIAL_BASE  =  'finialBase';                       // <-- Base block under a finial
+    const COMPONENT_ROLE_CRESTING     =  'cresting';                         // <-- Ridge cresting runs
 
-    const ASSET_FIELD_GLB          =  'Na__Asset__Glb3d__Url';               // <-- Heavier meshes live as GLB files
+    // The solver's anchor vocabulary mapped onto the lantern's component
+    // vocabulary. Both ridge ends and a pyramid apex take a finial.
+    const ANCHOR_ROLE_TO_COMPONENT_ROLE  =  {
+        'ridgeEnd'   : COMPONENT_ROLE_FINIAL,
+        'apex'       : COMPONENT_ROLE_FINIAL,
+        'finial'     : COMPONENT_ROLE_FINIAL,
+        'finialBase' : COMPONENT_ROLE_FINIAL_BASE,
+        'cresting'   : COMPONENT_ROLE_CRESTING
+    };
+
+    const ANCHOR_ROLE_RIDGE_END    =  'ridgeEnd';
+    const ANCHOR_ROLE_APEX         =  'apex';
+
+    const ASSET_FIELD_GLB          =  'Na__Asset__Glb3D__Url';               // <-- Heavier meshes live as GLB files
+    const ASSET_FIELD_GLB_LEGACY   =  'Na__Asset__Glb3d__Url';               // <-- Earlier files used this casing
+    const ASSET_FIELD_MESH_3D      =  'Na__Asset__Mesh3D';                   // <-- Inline mesh from the unified export
     const ASSET_FIELD_HAS_3D       =  'Na__Asset__Has3d';                    // <-- Gate flag from the component index
 
-    const FINISH_BLOCK             =  'Lantern__FinishAndGlazing__Config';   // <-- Frame finish tints placeholder components
+    const FINIALS_BLOCK            =  'Lantern__Finials__Config';
+    const FIELD_AT_RIDGE_ENDS      =  'Lantern__Finials__Config__PlaceAtRidgeEnds';
+    const FIELD_AT_APEX            =  'Lantern__Finials__Config__PlaceAtApex';
+
+    const FINISH_BLOCK             =  'Lantern__FinishAndGlazing__Config';   // <-- Frame finish tints every component
     const FINISH_FIELD             =  'Lantern__FinishAndGlazing__Config__FrameFinish';
     // ------------------------------------------------------------
 
@@ -182,20 +219,32 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
     // SUB FUNCTION | Resolve the Object to Place at One Anchor
     // ------------------------------------------------------------
     // An unassigned anchor yields nothing - the user has not chosen a component
-    // there. A chosen component with a missing GLB yields the placeholder, which
-    // is the case worth flagging visually.
+    // there. A chosen component with no usable geometry yields the placeholder,
+    // which is the case worth flagging visually.
     async function VghLantern__Env3d__ComponentLoader__ResolveObject(componentId, finishName) {
         if (!componentId) return null;
 
         const asset  =  await VghLantern__Env3d__ComponentLoader__ReadAsset(componentId);
-        const glbUrl =  asset ? asset[ASSET_FIELD_GLB] : null;
-        const has3d  =  asset ? asset[ASSET_FIELD_HAS_3D] === true : false;
+
+        // 1. Inline mesh from the unified export - the same file the 2D views
+        //    are drawn from, so the two environments cannot disagree.
+        const meshBlock  =  asset ? asset[ASSET_FIELD_MESH_3D] : null;
+        if (meshBlock) {
+            const mesh  =  VghLantern__Env3d__MeshJson__BuildMesh(
+                componentId, meshBlock, VghLantern__Env3d__MaterialLibrary__Component(finishName));
+            if (mesh) return mesh;
+        }
+
+        // 2. External GLB, for assets not yet re-exported to the unified schema.
+        const glbUrl  =  asset ? (asset[ASSET_FIELD_GLB] || asset[ASSET_FIELD_GLB_LEGACY]) : null;
+        const has3d   =  asset ? asset[ASSET_FIELD_HAS_3D] === true : false;
 
         if (glbUrl && has3d) {
             const scene  =  await VghLantern__Env3d__ComponentLoader__LoadGlb(componentId, glbUrl);
             if (scene) return VghLantern__Env3d__ComponentLoader__InstanceFromScene(scene);
         }
 
+        // 3. Stand-in.
         if (!VghLantern__Env3d__ConfigAccess__RequireBoolean('ComponentLoader', 'PlaceholderOnMissingGlb')) return null;
         return VghLantern__Env3d__ComponentLoader__BuildPlaceholder(finishName);
     }
@@ -208,24 +257,29 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
 // REGION | Anchor Population
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Resolve the Component Id Assigned to an Anchor Role
+    // HELPER FUNCTION | Resolve the Component Id Assigned to an Anchor
     // ------------------------------------------------------------
-    // Finials and their bases are configured in the Finials block; cresting sits
-    // with the ridge because it is a ridge-mounted run rather than a point item.
+    // Translates the solver's anchor role into the lantern's component role
+    // first, then reads whichever config block owns that role. Finials and their
+    // bases are configured in the Finials block; cresting sits with the ridge
+    // because it is a ridge-mounted run rather than a point item.
     function VghLantern__Env3d__ComponentLoader__ComponentIdForRole(lantern, anchorRole) {
         if (!lantern) return '';
 
-        if (anchorRole === ANCHOR_ROLE_FINIAL || anchorRole === ANCHOR_ROLE_FINIAL_BASE) {
-            const finialBlock  =  lantern['Lantern__Finials__Config'];
+        const componentRole  =  ANCHOR_ROLE_TO_COMPONENT_ROLE[anchorRole];
+        if (!componentRole) return '';
+
+        if (componentRole === COMPONENT_ROLE_FINIAL || componentRole === COMPONENT_ROLE_FINIAL_BASE) {
+            const finialBlock  =  lantern[FINIALS_BLOCK];
             if (!finialBlock) return '';
             if (finialBlock['Lantern__Finials__Config__Enabled'] !== true) return '';
 
-            return anchorRole === ANCHOR_ROLE_FINIAL
+            return componentRole === COMPONENT_ROLE_FINIAL
                 ? (finialBlock['Lantern__Finials__Config__FinialComponentId']     || '')
                 : (finialBlock['Lantern__Finials__Config__FinialBaseComponentId'] || '');
         }
 
-        if (anchorRole === ANCHOR_ROLE_CRESTING) {
+        if (componentRole === COMPONENT_ROLE_CRESTING) {
             const ridgeBlock  =  lantern['Lantern__RidgeAndHips__Config'];
             if (!ridgeBlock) return '';
             if (ridgeBlock['Lantern__RidgeAndHips__Config__CrestingEnabled'] !== true) return '';
@@ -234,6 +288,22 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
         }
 
         return '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether the User Wants a Component at This Anchor
+    // ------------------------------------------------------------
+    // Place at Ridge Ends and Place at Apex are user choices, so an anchor the
+    // solver published is not automatically an anchor that gets a component.
+    function VghLantern__Env3d__ComponentLoader__AnchorWanted(lantern, anchor) {
+        const finialBlock  =  lantern ? lantern[FINIALS_BLOCK] : null;
+        if (!finialBlock) return true;
+
+        if (anchor.Role === ANCHOR_ROLE_RIDGE_END) return finialBlock[FIELD_AT_RIDGE_ENDS] !== false;
+        if (anchor.Role === ANCHOR_ROLE_APEX)      return finialBlock[FIELD_AT_APEX]       !== false;
+
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -264,11 +334,16 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
         for (let i = 0; i < anchors.length; i++) {
             const anchor   =  anchors[i];
             if (!anchor || !anchor.Position) continue;
+            if (!VghLantern__Env3d__ComponentLoader__AnchorWanted(lantern, anchor)) continue;
 
             const componentId  =  VghLantern__Env3d__ComponentLoader__ComponentIdForRole(lantern, anchor.Role);
             const object3d     =  await VghLantern__Env3d__ComponentLoader__ResolveObject(componentId, finishName);
             if (!object3d) continue;
 
+            // Local origin onto the anchor, and nothing else. The asset was
+            // authored about its origin point in SketchUp, so any component that
+            // reaches below its origin - a spigot buried in the ridge - lands
+            // correctly without a per-asset seating offset.
             const world  =  VghLantern__Env3d__ConfigAccess__PointToWorld(anchor.Position);
             object3d.position.set(world.x, world.y, world.z);
             object3d.userData.VghLantern__AnchorId  =  anchor.Id;
@@ -289,13 +364,21 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Clear the GLB Scene Cache
+    // FUNCTION | Clear Every Component Geometry Cache
     // ------------------------------------------------------------
     // Called when the component library is rebuilt during authoring, so a freshly
     // exported GLB is picked up without a page reload.
+    // All three caches go together - GLB scenes, built mesh geometry, and the
+    // asset JSON bodies - because a half-cleared set would rebuild new geometry
+    // from a stale file.
     export function VghLantern__Env3d__ComponentLoader__Glb__ClearCache() {
         VghLantern__Env3d__ComponentLoader__SceneCache  =  {};
         VghLantern__Env3d__ComponentLoader__PendingMap  =  {};
+
+        VghLantern__Env3d__MeshJson__ClearCache();
+
+        const AssetCache  =  window.VghLantern__AppData__ComponentAssetCache;
+        if (AssetCache) AssetCache.VghLantern__ComponentAssetCache__ClearAll();
     }
     // ------------------------------------------------------------
 

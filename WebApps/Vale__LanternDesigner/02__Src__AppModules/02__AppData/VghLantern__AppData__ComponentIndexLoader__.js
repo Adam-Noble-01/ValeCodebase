@@ -23,13 +23,35 @@
      by hand and never hardcode component data that belongs in it.
    - This module is the single consumer of the component index. Other modules read
      it through this API rather than fetching the JSON themselves.
+   - Asset bodies are NOT cached here. Fetching and session caching belong to
+     VghLantern__AppData__ComponentAssetCache__.js, because a unified asset
+     export is one to three megabytes and needs a real memory budget rather than
+     an object that only ever grows.
 
-   ASSET SCHEMA (unified with the SketchUp ProfilePathTracer exporter):
-   - Na__Asset__Metadata    : id, name, category, description, revision
-   - Na__Asset__Profile2D   : closed outline points for gallery + elevation linework
-   - Na__Asset__Mesh3D      : optional inline mesh for light components
-   - Na__Asset__Glb3D__Url  : optional GLB reference for heavier meshes
-   - Na__Asset__Has2dProfile / Na__Asset__Has3d : UI gating flags
+   ---------------------------------------------------------------------------
+
+   TWO SCHEMAS LIVE SIDE BY SIDE:
+
+   Na__Asset__UnifiedComponentSchema (SketchUp Component Editor, Export tab):
+   - Na__Asset__Elevation2D__Front / __Right : drawing linework as Na__Geometry__Paths
+   - Na__Asset__Plan2D__Top                  : the same, seen from above
+   - Na__Asset__Mesh3D                       : vertices, faces, per-vertex normals, edges
+   - Na__Asset__ObjectHierarchy3D            : nested group and component transforms
+
+   The earlier hand-authored format:
+   - Na__Asset__Profile2D                    : a single closed outline of points
+   - Na__Asset__Glb3D__Url                   : an external GLB for the 3D view
+
+   Both are supported. Every geometry accessor below prefers the unified blocks
+   and falls back to the profile, so a library part way through re-export keeps
+   rendering rather than blanking out.
+
+   THE ORIGIN IS THE INSERTION POINT:
+   Every asset is authored about the origin point group captured in SketchUp, so
+   local 0,0,0 is the seating point. Placing a component means putting its local
+   origin on the anchor - in 2D and in 3D, with no per-asset offset table. An
+   asset may extend below its origin (a spigot buried in the ridge); the index
+   records that as DepthBelowOriginMm.
 
    ============================================================================= */
 
@@ -56,7 +78,16 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
     let VghLantern__ComponentIndexLoader__IndexData     =  null;             // <-- Parsed index document
     let VghLantern__ComponentIndexLoader__EntryMap      =  null;             // <-- Map<AssetId, indexEntry>
     let VghLantern__ComponentIndexLoader__LoadPromise   =  null;             // <-- In-flight load, so concurrent callers share one fetch
-    let VghLantern__ComponentIndexLoader__AssetCache    =  {};              // <-- AssetId -> fully parsed asset JSON
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Unified Asset Block Keys
+    // ------------------------------------------------------------
+    const BLOCK_ELEVATION_FRONT  =  'Na__Asset__Elevation2D__Front';
+    const BLOCK_ELEVATION_RIGHT  =  'Na__Asset__Elevation2D__Right';
+    const BLOCK_PLAN_TOP         =  'Na__Asset__Plan2D__Top';
+    const BLOCK_MESH_3D          =  'Na__Asset__Mesh3D';
+    const BLOCK_PROFILE_2D       =  'Na__Asset__Profile2D';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -224,9 +255,19 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
 
     // FUNCTION | Load a Single Component Asset JSON by Asset Id
     // ------------------------------------------------------------
+    // Delegates the fetch and the session cache to ComponentAssetCache. This
+    // module only resolves which URL an id means and how big it is going to be.
     async function VghLantern__ComponentIndexLoader__LoadAsset(assetId) {
         if (!assetId) return null;
-        if (VghLantern__ComponentIndexLoader__AssetCache[assetId]) return VghLantern__ComponentIndexLoader__AssetCache[assetId];
+
+        var AssetCache  =  window.VghLantern__AppData__ComponentAssetCache;
+        if (!AssetCache) {
+            console.error('[VghLantern__ComponentIndexLoader] ComponentAssetCache is not loaded - asset bodies cannot be fetched.');
+            return null;
+        }
+
+        var cached  =  AssetCache.VghLantern__ComponentAssetCache__Peek(assetId);
+        if (cached) return cached;
 
         await VghLantern__ComponentIndexLoader__LoadIndex();
 
@@ -242,16 +283,20 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
             return null;
         }
 
-        try {
-            var response  =  await fetch(assetUrl, { cache: 'no-store' });
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            var assetData  =  await response.json();
-            VghLantern__ComponentIndexLoader__AssetCache[assetId]  =  assetData;
-            return assetData;
-        } catch (e) {
-            console.error('[VghLantern__ComponentIndexLoader] Failed to load component asset ' + assetId + ':', e.message);
-            return null;
-        }
+        return await AssetCache.VghLantern__ComponentAssetCache__Load(assetId, assetUrl, entry.FileSizeBytes);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read an Already-Resident Asset Without Fetching
+    // ------------------------------------------------------------
+    // A synchronous renderer uses this to take the fast path when the asset is
+    // resident and draw its placeholder when it is not, instead of forcing the
+    // whole 2D pipeline to become async.
+    function VghLantern__ComponentIndexLoader__PeekAsset(assetId) {
+        var AssetCache  =  window.VghLantern__AppData__ComponentAssetCache;
+        if (!AssetCache || !assetId) return null;
+        return AssetCache.VghLantern__ComponentAssetCache__Peek(assetId);
     }
     // ------------------------------------------------------------
 
@@ -276,15 +321,90 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Get the Baked Thumbnail Outline for an Asset
+    // ------------------------------------------------------------
+    // Synchronous and free: the build utility flattens each asset's front
+    // elevation into one compact SVG path and stores it in the index, so a
+    // gallery of cards draws every component in the role without fetching a
+    // single megabyte-scale asset file.
+    function VghLantern__ComponentIndexLoader__GetPreview2d(assetId) {
+        var entry  =  VghLantern__ComponentIndexLoader__GetEntry(assetId);
+        if (!entry || !entry.Preview2d) return null;
+        return entry.Preview2d;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get Placement Metrics for an Asset
+    // ------------------------------------------------------------
+    // Read straight from the index, so a renderer can size and seat a component
+    // before its geometry has arrived.
+    function VghLantern__ComponentIndexLoader__GetPlacementMetrics(assetId) {
+        var entry  =  VghLantern__ComponentIndexLoader__GetEntry(assetId);
+        if (!entry) return null;
+
+        return {
+            OverallHeightMm     : entry.OverallHeightMm,
+            HeightAboveOriginMm : entry.HeightAboveOriginMm,
+            DepthBelowOriginMm  : entry.DepthBelowOriginMm,
+            WidthMm             : entry.WidthMm,
+            PlanDiameterMm      : entry.PlanDiameterMm
+        };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Geometry Block Accessors
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Get a 2D View Block for an Asset
+    // ------------------------------------------------------------
+    // viewKey is 'front' | 'right' | 'plan'. Returns the block carrying
+    // Na__Geometry__Paths and Na__Geometry__BoundingBox, or null when the asset
+    // predates the unified schema.
+    async function VghLantern__ComponentIndexLoader__GetViewBlock(assetId, viewKey) {
+        var assetData  =  await VghLantern__ComponentIndexLoader__LoadAsset(assetId);
+        if (!assetData) return null;
+
+        var blockKey  =  BLOCK_ELEVATION_FRONT;
+        if (viewKey === 'right') blockKey  =  BLOCK_ELEVATION_RIGHT;
+        if (viewKey === 'plan')  blockKey  =  BLOCK_PLAN_TOP;
+
+        var block  =  assetData[blockKey];
+        if (block && Array.isArray(block['Na__Geometry__Paths'])) return block;
+
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the 3D Mesh Block for an Asset
+    // ------------------------------------------------------------
+    async function VghLantern__ComponentIndexLoader__GetMesh3d(assetId) {
+        var assetData  =  await VghLantern__ComponentIndexLoader__LoadAsset(assetId);
+        if (!assetData) return null;
+
+        var mesh  =  assetData[BLOCK_MESH_3D];
+        if (mesh && Array.isArray(mesh['Na__Geometry__Vertices'])) return mesh;
+
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Get the 2D Elevation Outline Points for an Asset
     // ------------------------------------------------------------
-    // Returns the Na__Asset__Profile2D outline in mm, or null when the component
-    // is 3D only. The 2D finial renderer falls back to a placeholder on null.
+    // The legacy Na__Asset__Profile2D outline in mm, kept for assets that have
+    // not been re-exported yet. Unified assets return null here and are drawn
+    // from their elevation paths instead.
     async function VghLantern__ComponentIndexLoader__GetOutlinePoints(assetId) {
         var assetData  =  await VghLantern__ComponentIndexLoader__LoadAsset(assetId);
         if (!assetData) return null;
 
-        var profile2d  =  assetData['Na__Asset__Profile2D'];
+        var profile2d  =  assetData[BLOCK_PROFILE_2D];
         if (!profile2d || !Array.isArray(profile2d['Na__Asset__Profile2D__Points'])) return null;
 
         return profile2d['Na__Asset__Profile2D__Points'];
@@ -309,8 +429,13 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
         VghLantern__ComponentIndexLoader__ListEntriesForRole     : VghLantern__ComponentIndexLoader__ListEntriesForRole,
         VghLantern__ComponentIndexLoader__GetEntry               : VghLantern__ComponentIndexLoader__GetEntry,
         VghLantern__ComponentIndexLoader__LoadAsset              : VghLantern__ComponentIndexLoader__LoadAsset,
+        VghLantern__ComponentIndexLoader__PeekAsset              : VghLantern__ComponentIndexLoader__PeekAsset,
         VghLantern__ComponentIndexLoader__GetPreviewUrl          : VghLantern__ComponentIndexLoader__GetPreviewUrl,
         VghLantern__ComponentIndexLoader__GetGlbUrl              : VghLantern__ComponentIndexLoader__GetGlbUrl,
+        VghLantern__ComponentIndexLoader__GetPreview2d           : VghLantern__ComponentIndexLoader__GetPreview2d,
+        VghLantern__ComponentIndexLoader__GetPlacementMetrics    : VghLantern__ComponentIndexLoader__GetPlacementMetrics,
+        VghLantern__ComponentIndexLoader__GetViewBlock           : VghLantern__ComponentIndexLoader__GetViewBlock,
+        VghLantern__ComponentIndexLoader__GetMesh3d              : VghLantern__ComponentIndexLoader__GetMesh3d,
         VghLantern__ComponentIndexLoader__GetOutlinePoints       : VghLantern__ComponentIndexLoader__GetOutlinePoints
     };
 

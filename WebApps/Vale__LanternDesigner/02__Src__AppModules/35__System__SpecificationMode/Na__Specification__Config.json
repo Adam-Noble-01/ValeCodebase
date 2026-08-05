@@ -39,8 +39,9 @@
                 { "Key": "AreaSqMTotal", "Label": "m2 (total)",       "Align": "right" }
             ],
             "ComponentColumns": [
-                { "Key": "Label",       "Label": "Component",        "Align": "left"  },
-                { "Key": "ComponentId", "Label": "Component Ref",    "Align": "left"  },
+                { "Key": "Label",         "Label": "Component",      "Align": "left"  },
+                { "Key": "ComponentName", "Label": "Type",           "Align": "left"  },
+                { "Key": "ComponentId",   "Label": "Component Ref",  "Align": "left"  },
                 { "Key": "CountEach",   "Label": "Qty (each)",       "Align": "right" },
                 { "Key": "CountTotal",  "Label": "Qty (total)",      "Align": "right" }
             ],

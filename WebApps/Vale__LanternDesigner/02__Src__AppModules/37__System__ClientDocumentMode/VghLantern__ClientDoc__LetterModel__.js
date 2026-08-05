@@ -51,11 +51,28 @@ const VghLantern__ClientDoc__LetterModel = (function() {
 
     // MODULE CONSTANTS | Project Data Keys
     // ------------------------------------------------------------
-    const CLIENT_DOC_BLOCK   =  'VghLantern__ProjectFile__ClientDocument';
-    const FIELD_BODY         =  'VghLantern__ProjectFile__ClientDocument__LetterBody';
-    const FIELD_SALUTATION   =  'VghLantern__ProjectFile__ClientDocument__LetterSalutation';
-    const FIELD_SIGNOFF_NAME =  'VghLantern__ProjectFile__ClientDocument__SignOffName';
-    const FIELD_SIGNOFF_ROLE =  'VghLantern__ProjectFile__ClientDocument__SignOffRole';
+    const CLIENT_DOC_BLOCK          =  'VghLantern__ProjectFile__ClientDocument';
+    const FIELD_BODY                =  'VghLantern__ProjectFile__ClientDocument__LetterBody';
+    const FIELD_SALUTATION          =  'VghLantern__ProjectFile__ClientDocument__LetterSalutation';
+    const FIELD_SIGNOFF_NAME        =  'VghLantern__ProjectFile__ClientDocument__SignOffName';
+    const FIELD_SIGNOFF_ROLE        =  'VghLantern__ProjectFile__ClientDocument__SignOffRole';
+    const FIELD_CLIENT_ADDR_LINE1   =  'VghLantern__ProjectFile__ClientDocument__ClientAddressLine1';
+    const FIELD_CLIENT_ADDR_STREET  =  'VghLantern__ProjectFile__ClientDocument__ClientAddressStreet';
+    const FIELD_CLIENT_ADDR_TOWN    =  'VghLantern__ProjectFile__ClientDocument__ClientAddressTownCity';
+    const FIELD_CLIENT_ADDR_POST    =  'VghLantern__ProjectFile__ClientDocument__ClientAddressPostCode';
+
+    // Maps the short field names the editor and the resolver use onto the project
+    // keys above, so ReadField/SetField and the materialisation seed share one table
+    // rather than each growing its own chain of ternaries as fields are added.
+    const FIELD_KEY_MAP  =  {
+        salutation            : FIELD_SALUTATION,
+        signOffName           : FIELD_SIGNOFF_NAME,
+        signOffRole           : FIELD_SIGNOFF_ROLE,
+        clientAddressLine1    : FIELD_CLIENT_ADDR_LINE1,
+        clientAddressStreet   : FIELD_CLIENT_ADDR_STREET,
+        clientAddressTownCity : FIELD_CLIENT_ADDR_TOWN,
+        clientAddressPostCode : FIELD_CLIENT_ADDR_POST
+    };
     // ------------------------------------------------------------
 
 
@@ -145,6 +162,28 @@ const VghLantern__ClientDoc__LetterModel = (function() {
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Config Key For Each Field's Seed Value
+    // ------------------------------------------------------------
+    // The salutation, the sign-off and the client address all start from a config
+    // default the first time a project opens here, for the same reason: an empty
+    // field on a client-facing letter reads as unfinished rather than as a choice.
+    // The sign-off and client address defaults are literal tokens - {{UserName}},
+    // {{ClientAddress__Line01}} and so on - printed exactly as written because they
+    // are never passed through VghLantern__AppUtils__DocumentTokens. They exist so
+    // the letterhead is laid out and formatted correctly today; a future system that
+    // knows the signed-in user and the client's postal address replaces them.
+    const FIELD_DEFAULT_CONFIG_KEY_MAP  =  {
+        salutation            : 'DefaultSalutation',
+        signOffName           : 'DefaultSignOffName',
+        signOffRole           : 'DefaultSignOffRole',
+        clientAddressLine1    : 'DefaultClientAddressLine1',
+        clientAddressStreet   : 'DefaultClientAddressStreet',
+        clientAddressTownCity : 'DefaultClientAddressTownCity',
+        clientAddressPostCode : 'DefaultClientAddressPostCode'
+    };
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Write the Template Onto a Project That Has No Letter Yet
     // ------------------------------------------------------------
     // Runs once per project, the first time the Client Doc tab opens it. Returns true
@@ -156,12 +195,16 @@ const VghLantern__ClientDoc__LetterModel = (function() {
 
         block[FIELD_BODY]  =  VghLantern__ClientDoc__LetterModel__TemplateBody();
 
-        // The salutation is seeded from config the same way and for the same reason:
-        // an empty greeting on a letter to a client is not a useful default.
-        if (typeof block[FIELD_SALUTATION] !== 'string' || block[FIELD_SALUTATION] === '') {
-            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-            block[FIELD_SALUTATION]  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
-                VghLantern__LetterModel__Block('Letter'), 'DefaultSalutation', LETTER_LABEL);
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var letterCfg     =  VghLantern__LetterModel__Block('Letter');
+        var fieldName, projectKey;
+
+        for (fieldName in FIELD_DEFAULT_CONFIG_KEY_MAP) {
+            projectKey  =  FIELD_KEY_MAP[fieldName];
+            if (typeof block[projectKey] === 'string' && block[projectKey] !== '') continue;
+
+            block[projectKey]  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                letterCfg, FIELD_DEFAULT_CONFIG_KEY_MAP[fieldName], LETTER_LABEL);
         }
 
         VghLantern__LetterModel__MarkDirty();
@@ -231,16 +274,14 @@ const VghLantern__ClientDoc__LetterModel = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Salutation and Sign Off
+// REGION | Named Letter Fields
 // -----------------------------------------------------------------------------
 
     // FUNCTION | Read a Named Letter Field
     // ------------------------------------------------------------
     function VghLantern__ClientDoc__LetterModel__ReadField(project, fieldName) {
         var block  =  (project && project[CLIENT_DOC_BLOCK]) || {};
-        var key    =  (fieldName === 'salutation') ? FIELD_SALUTATION
-                    : (fieldName === 'signOffName') ? FIELD_SIGNOFF_NAME
-                    : FIELD_SIGNOFF_ROLE;
+        var key    =  FIELD_KEY_MAP[fieldName] || FIELD_SIGNOFF_ROLE;
 
         return (typeof block[key] === 'string') ? block[key] : '';
     }
@@ -253,9 +294,7 @@ const VghLantern__ClientDoc__LetterModel = (function() {
         var block  =  VghLantern__LetterModel__EnsureBlock(project);
         if (!block) return false;
 
-        var key  =  (fieldName === 'salutation') ? FIELD_SALUTATION
-                  : (fieldName === 'signOffName') ? FIELD_SIGNOFF_NAME
-                  : FIELD_SIGNOFF_ROLE;
+        var key  =  FIELD_KEY_MAP[fieldName] || FIELD_SIGNOFF_ROLE;
 
         if (block[key] === value) return false;
 
@@ -315,12 +354,34 @@ const VghLantern__ClientDoc__LetterModel = (function() {
             LogoAssetPath  : letterCfg.LogoAssetPath || '',
             LogoWidthMm    : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(letterCfg, 'LogoWidthMm',       LETTER_LABEL),
 
+            // The sender's own details, printed beside the logo. Fixed company data,
+            // not project data, so it comes straight from config rather than through
+            // the token resolver.
+            ShowCompanyDetails   : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(letterCfg, 'ShowCompanyDetails', LETTER_LABEL),
+            CompanyName          : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'CompanyLetterheadName',         LETTER_LABEL),
+            CompanyAddressLine1  : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'CompanyLetterheadAddressLine1', LETTER_LABEL),
+            CompanyTownCity      : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'CompanyLetterheadTownCity',     LETTER_LABEL),
+            CompanyPostCode      : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'CompanyLetterheadPostCode',     LETTER_LABEL),
+            CompanyWebsite       : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'CompanyLetterheadWebsite',      LETTER_LABEL),
+            CompanyPhone         : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'CompanyLetterheadPhone',        LETTER_LABEL),
+
             IssueDate      : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(letterCfg, 'ShowIssueDate', LETTER_LABEL)
                              ? (tokenTable.IssueDate || '') : '',
             ReferenceLine  : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(letterCfg, 'ShowProjectReferenceLine', LETTER_LABEL)
                              ? resolve(ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'ProjectReferenceFormat', LETTER_LABEL))
                              : '',
             Subject        : resolve(ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'SubjectLineFormat', LETTER_LABEL)),
+
+            // The recipient block above the salutation. The client's name is a real
+            // resolved token; the four address lines are raw, unresolved placeholders
+            // exactly like the sign-off fields below, until a client address data
+            // source exists on the project record.
+            ClientName            : tokenTable.ClientName || '',
+            ClientAddressLine1    : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressLine1'),
+            ClientAddressStreet   : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressStreet'),
+            ClientAddressTownCity : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressTownCity'),
+            ClientAddressPostCode : VghLantern__ClientDoc__LetterModel__ReadField(project, 'clientAddressPostCode'),
+
             Salutation     : resolve(salutation),
             Blocks         : blocks,
 

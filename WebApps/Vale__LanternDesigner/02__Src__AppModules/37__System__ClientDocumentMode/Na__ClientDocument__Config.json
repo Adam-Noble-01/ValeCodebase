@@ -100,6 +100,24 @@
             "MaxTermsPerSection"        : 40
         },
 
+        "VghLantern__ClientDocument__Config__DrawingNotes": {
+            "PanelTitle"                : "Drawing Notes",
+            "HelperText"                : "Notes about this lantern's drawing in particular. They print on their own page immediately after that drawing, and the drawing's QR code brings the reader to them. A lantern with no notes prints no page and its code falls through to the General Drawing Terms.",
+            "Placeholder"               : "State the note.",
+            "AddLabel"                  : "Add drawing note",
+            "EmptyMessage"              : "No drawing notes on this lantern.",
+            "NoLanternsMessage"         : "This project has no lanterns to write drawing notes against.",
+
+            "TabAllLabel"               : "All",
+            "TabCountSuffixSingular"    : "note",
+            "TabCountSuffixPlural"      : "notes",
+            "TabsNote"                  : "One tab per lantern, in schedule order, each showing how many notes it carries so a pack can be checked at a glance without opening every tab. The tab strip is hidden on a single-lantern project, where it would be one tab that does nothing.",
+
+            "MaxNoteCharacters"         : 900,
+            "MaxNotesPerLantern"        : 40,
+            "MaxNoteCharactersNote"     : "Matched to MaxTermCharacters above, because a drawing note and a project term are the same kind of object - one numbered statement - and a different cap on each would be an arbitrary distinction the user would discover by hitting it."
+        },
+
         "VghLantern__ClientDocument__Config__LetterStyle": {
             "LetterheadGapMm"           : 8,
             "LetterheadRuleGapMm"       : 4,

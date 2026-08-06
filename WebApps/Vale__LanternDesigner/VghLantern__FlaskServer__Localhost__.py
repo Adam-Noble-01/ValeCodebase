@@ -48,8 +48,11 @@ NA__SERVER__USER_MENU_DATA_PATH     = (NA__SERVER__APP_ROOT_PATH / "08__LocalUse
 NA__SERVER__MAIN_APP_CONFIG_PATH    = (NA__SERVER__APP_ROOT_PATH / "02__Src__AppModules/02__AppData/VghLantern__AppConfig__Main__.json").resolve()
 NA__SERVER__COMPONENT_INDEX_PATH    = (NA__SERVER__APP_ROOT_PATH / "05__Data__LanternComponentLibrary/VghLantern__ComponentDataIndex__.json").resolve()
 NA__SERVER__PROFILE_INDEX_PATH      = (NA__SERVER__APP_ROOT_PATH / "06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json").resolve()
+NA__SERVER__SERVICE_WORKER_PATH     = (NA__SERVER__APP_ROOT_PATH / "Na__ServiceWorker__VghLantern.js").resolve()
 NA__SERVER__DEFAULT_PORT            = 8006                                       # <-- Reserved port for the Lantern Designer
 NA__SERVER__OUTPUT_LOG_HANDLE       = None
+
+NA__SERVER__SW_VERSION_TOKEN_PATTERN = re.compile(r"(const PWA_SW_VERSION_TOKEN\s*=\s*)'[^']*'")  # Matches the one token line in the service worker
 
 NA__SERVER__PROJECT_CODE_PATTERN    = re.compile(r'^[A-Za-z0-9_\-]{1,64}$')       # Allowlist for safe project codes
 NA__SERVER__PROJECT_FILE_NAME_PATTERN = re.compile(
@@ -674,6 +677,43 @@ def Na__Server__RunHttpLoopWithConsoleCommands(httpd: ThreadingHTTPServer, comma
 # -----------------------------------------------------------------------------
 
 
+# HELPER FUNCTION | Deep-Bust Every Client Cache via the Service Worker Token
+# ------------------------------------------------------------
+# The service worker's PWA_SW_VERSION_TOKEN names every cache bucket, and the
+# worker deletes any bucket that does not match it on activate. Stamping a
+# fresh timestamp token here makes the worker file byte-different, so every
+# connected browser re-fetches it (served no-store), installs it, and drops
+# ALL cached shell and data buckets on activation - a complete cache bust
+# pushed from the server side with no client action needed beyond a reload.
+# The /api/ routes are never cached by the worker and every response already
+# carries Cache-Control: no-store, so this token is the one stale surface.
+# Returns the new token, or None when the worker file could not be stamped.
+def Na__Server__BustClientCaches() -> str | None:
+    try:
+        worker_source = NA__SERVER__SERVICE_WORKER_PATH.read_text(encoding="utf-8")
+    except OSError as read_error:
+        print(f" [WARN] Cache bust skipped - could not read service worker: {read_error}")
+        return None
+
+    new_token = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+    stamped_source, replaced_count = NA__SERVER__SW_VERSION_TOKEN_PATTERN.subn(
+        rf"\g<1>'{new_token}'", worker_source, count=1
+    )
+
+    if replaced_count != 1:
+        print(" [WARN] Cache bust skipped - PWA_SW_VERSION_TOKEN line not found in the service worker.")
+        return None
+
+    try:
+        NA__SERVER__SERVICE_WORKER_PATH.write_text(stamped_source, encoding="utf-8")
+    except OSError as write_error:
+        print(f" [WARN] Cache bust skipped - could not write service worker: {write_error}")
+        return None
+
+    return new_token
+# ------------------------------------------------------------
+
+
 # HELPER FUNCTION | Build Dot/Index JSON Path Segment
 # ------------------------------------------------------------
 def Na__Server__BuildJsonPath(parent_path: str, key_or_index: str) -> str:
@@ -833,6 +873,7 @@ def main() -> int:
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
     parser.add_argument("--silent", action="store_true", help="Redirect output to log file for no-console launches")
     parser.add_argument("--log-file", type=str, default="Na__VghLanternServer__Startup.log", help="Log file path relative to app root")
+    parser.add_argument("--no-cache-bust", action="store_true", help="Skip stamping a fresh service worker cache token on start and restart")
     args = parser.parse_args()
     # ------------------------------------------------------------
 
@@ -862,6 +903,9 @@ def main() -> int:
     print(" Press Ctrl+C to stop server")
     if not args.silent:
         print(" Restart flags  : --r | --R | --restart | --Restart")
+        print(" Cache bust     : every start and restart stamps a fresh service worker")
+        print("                  token, so clients drop ALL cached files on next load")
+        print("                  (disable with --no-cache-bust)")
     print("=============================================================================")
 
     command_queue             = None
@@ -879,6 +923,15 @@ def main() -> int:
 
     try:
         while True:
+            # Runs on the first start AND on every console-flag restart, so
+            # typing --r after a data edit pushes a complete cache bust: every
+            # client's service worker re-installs and drops all cached buckets.
+            if not args.no_cache_bust:
+                stamped_token = Na__Server__BustClientCaches()
+                if stamped_token:
+                    print(f" Cache bust     : service worker token stamped {stamped_token}")
+                    print("                  Reload the app once for the fresh worker to take over.")
+
             httpd = Na__Server__HttpServer((args.host, args.port), Na__Server__RequestHandler)
             should_restart_server = Na__Server__RunHttpLoopWithConsoleCommands(httpd, command_queue)
             httpd.server_close()

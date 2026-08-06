@@ -201,8 +201,16 @@ const VghLantern__DrawingEditor__SheetPdfPainter = (function() {
         var layout        =  sheet ? sheet.Layout : null;
         if (!doc || !layout || !SheetChrome) return false;
 
+        // The sheet's own skeleton is used where it carries one. A baked sheet always
+        // does, and it must: a document pack paints four sheets in a row, and framing
+        // the third one against whichever lantern happens to be active in the editor
+        // would centre it on the wrong model. The live single-sheet download carries
+        // no skeleton of its own and falls back to the published solve, which for that
+        // path is the same lantern by definition.
         var pixelsPerMm  =  VghLantern__SheetPdfPainter__RasterPixelsPerMm();
-        var skeleton     =  StateManager ? StateManager.VghLantern__StateManager__GetSolvedSkeleton() : null;
+        var skeleton     =  (sheet && sheet.Skeleton)
+            ? sheet.Skeleton
+            : (StateManager ? StateManager.VghLantern__StateManager__GetSolvedSkeleton() : null);
         var i;
 
         // Views first, chrome after. A view is an opaque raster that fills its body
@@ -215,7 +223,7 @@ const VghLantern__DrawingEditor__SheetPdfPainter = (function() {
 
         var logoAsset   =  await SheetChrome.VghLantern__DrawingEditor__SheetChrome__LoadLogo();
         var primitives  =  SheetChrome.VghLantern__DrawingEditor__SheetChrome__BuildForSheet(
-            layout, sheet.Project, sheet.Lantern, logoAsset
+            layout, sheet, logoAsset
         );
         SheetChrome.VghLantern__DrawingEditor__SheetChrome__DrawToPdf(doc, primitives);
 

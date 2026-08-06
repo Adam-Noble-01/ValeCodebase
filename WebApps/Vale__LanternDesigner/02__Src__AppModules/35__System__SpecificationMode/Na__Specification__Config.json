@@ -17,6 +17,7 @@
             { "Key": "lanternSchedule",  "Label": "Lantern Schedule",       "Renderer": "schedule",   "Enabled": true, "StartExpanded": true },
             { "Key": "componentCounts",  "Label": "Components",             "Renderer": "components", "Enabled": true, "StartExpanded": true },
             { "Key": "linearSections",   "Label": "Section Lengths",        "Renderer": "linear",     "Enabled": true, "StartExpanded": true },
+            { "Key": "cuttingList",      "Label": "Cutting List",           "Renderer": "cuttingList", "Enabled": true, "StartExpanded": true },
             { "Key": "glazingAreas",     "Label": "Glazing Areas",          "Renderer": "areas",      "Enabled": true, "StartExpanded": true },
             { "Key": "finishAndGlazing", "Label": "Finish and Glazing",     "Renderer": "finish",     "Enabled": true, "StartExpanded": true },
             { "Key": "jobNotes",         "Label": "Job Notes",              "Renderer": "notes",      "Enabled": true, "StartExpanded": true }
@@ -30,8 +31,19 @@
                 { "Key": "MemberCount",      "Label": "Members",             "Align": "right" },
                 { "Key": "SectionWidthMm",   "Label": "Width mm",            "Align": "right" },
                 { "Key": "SectionHeightMm",  "Label": "Height mm",           "Align": "right" },
-                { "Key": "LengthMEach",      "Label": "Length m (each)",     "Align": "right" },
-                { "Key": "LengthMTotal",     "Label": "Length m (total)",    "Align": "right" }
+                { "Key": "LengthMEach",      "Label": "Run m (per lantern)", "Align": "right" },
+                { "Key": "LengthMTotal",     "Label": "Run m (all)",         "Align": "right" }
+            ],
+
+            "CuttingListColumnsNote": "The workshop table. Section Lengths answers how much stock to buy; this answers what to cut it into, so cut length and number off lead rather than a run total.",
+            "CuttingListColumns": [
+                { "Key": "Label",            "Label": "Section",               "Align": "left"  },
+                { "Key": "ProfileId",        "Label": "Profile Ref",           "Align": "left"  },
+                { "Key": "TypeRef",          "Label": "Type",                  "Align": "left"  },
+                { "Key": "CutLengthMm",      "Label": "Cut length mm",         "Align": "right" },
+                { "Key": "CountEach",        "Label": "No. off (per lantern)", "Align": "right" },
+                { "Key": "CountTotal",       "Label": "No. off (all)",         "Align": "right" },
+                { "Key": "LengthMTotal",     "Label": "Run m (all)",           "Align": "right" }
             ],
             "AreaColumns": [
                 { "Key": "Label",        "Label": "Area",             "Align": "left"  },

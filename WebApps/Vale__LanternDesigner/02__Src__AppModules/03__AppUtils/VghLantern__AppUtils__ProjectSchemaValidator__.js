@@ -92,6 +92,18 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Frame Finish Default
+    // ------------------------------------------------------------
+    // Matches DefaultFinishName and the IsDefault entry in the Finishes palette
+    // in Na__PbrMaterials__Config.json. This is more than the frame's colour:
+    // library components - finials, bases, cresting, vents - are supplied coated
+    // to match the frame, so a lantern defaulted to an empty finish rendered its
+    // finials in the neutral fallback grey rather than the anthracite a real
+    // Vale lantern arrives in.
+    const SCHEMA__DEFAULT_FRAME_FINISH    =  'Anthracite Grey';
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Retired Finish Fields
     // ------------------------------------------------------------
     // FrameColourRef was a free-standing dropdown of RAL and BS references sitting
@@ -578,7 +590,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             }
         }
 
-        if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__FrameFinish', '')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__FrameFinish', SCHEMA__DEFAULT_FRAME_FINISH)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__GlazingSpec', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__GlazingTint', '')) didMutate  =  true;
 
@@ -597,6 +609,31 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
         if (VghLantern__SchemaValidator__ApplyStringField(notesCfg, 'Lantern__Notes__Config__DocumentWarning', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(notesCfg, 'Lantern__Notes__Config__InternalComments', '')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Normalise Lantern Drawing Notes Block
+    // ------------------------------------------------------------
+    // The drawing notes printed on the Drawing Terms page that follows this lantern's
+    // sheet in the issued pack. One { Id, Text } record per note, numbered at render
+    // time by the terms document model - the same shape and the same numbering
+    // authority as the project's critical and special terms.
+    //
+    // Kept apart from Lantern__Notes__Config on purpose. That block is about the
+    // SPECIFICATION - a red warning banner and staff-only comments - whereas this is
+    // client-facing prose about the DRAWING. Merging them would put an internal
+    // comment one careless edit away from an issued document.
+    function VghLantern__SchemaValidator__NormaliseDrawingNotes(lantern) {
+        var didMutate  =  false;
+        var notesCfg   =  lantern['Lantern__DrawingNotes__Config'];
+
+        if (!Array.isArray(notesCfg['Lantern__DrawingNotes__Config__Notes'])) {
+            notesCfg['Lantern__DrawingNotes__Config__Notes']  =  [];
+            didMutate  =  true;
+        }
 
         return didMutate;
     }
@@ -669,6 +706,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             'Lantern__Ventilation__Config',
             'Lantern__FinishAndGlazing__Config',
             'Lantern__Notes__Config',
+            'Lantern__DrawingNotes__Config',
             'Lantern__DrawingLayout__Config'
         ];
         for (var i = 0; i < requiredBlocks.length; i++) {
@@ -686,6 +724,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseVentilation(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinishAndGlazing(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseNotes(lantern)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseDrawingNotes(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseLanternDrawingLayout(lantern)) didMutate  =  true;
 
         return { LanternData: lantern, DidMutate: didMutate };

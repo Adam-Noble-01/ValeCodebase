@@ -1,0 +1,29 @@
+{
+    "VghLantern__UserLogin__Config__Description": "System configuration overlay for the user login gate. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly. The login is a prototype gate over the landing screen backed by test accounts in Na__UserLogin__UserAccounts__.json; a successful sign in is remembered in a cookie so the gate is skipped on the next visit.",
+
+    "VghLantern__UserLogin__Config__Content": {
+        "LogoPath"     : "01__AppAssets__VghLantern/Graphics__Logo__ValeLanternDesigner__.png",
+        "LogoAltText"  : "Vale Lantern Designer"
+    },
+
+    "VghLantern__UserLogin__Config__Session": {
+        "CookieName"           : "VghLantern__UserLogin__Session",
+        "CookieLifetimeDays"   : 30,
+        "CookieLifetimeNote"   : "One month, per the product decision that a signed in user should not be asked again on this device. Clearing the cookie (or the Sign out link on the landing screen) re-arms the gate.",
+        "AccountsPath"         : "02__Src__AppModules/08__System__UserLogin/Na__UserLogin__UserAccounts__.json"
+    },
+
+    "VghLantern__UserLogin__Config__Copy": {
+        "ModalTitle"               : "Sign in to continue",
+        "ModalSubtitle"            : "Enter your Vale Design Suite credentials. Your session is remembered on this device for one month.",
+        "UserNameLabel"            : "User Name",
+        "UserNamePlaceholder"      : "e.g. Adam Noble",
+        "PasswordLabel"            : "Password",
+        "PasswordPlaceholder"      : "Enter your password",
+        "SignInLabel"              : "Sign In",
+        "SigningInLabel"           : "Signing in...",
+        "ErrorMissingFields"       : "Enter your user name and password.",
+        "ErrorUnknownUser"         : "User name or password not recognised.",
+        "ErrorAccountsUnavailable" : "The user account list could not be loaded. See the console for detail."
+    }
+}

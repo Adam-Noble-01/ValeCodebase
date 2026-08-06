@@ -96,6 +96,21 @@
     /* ------------------------------------------------------------ */
 
 
+    /* NAV | Landing Screen Lock */
+    /* ------------------------------------------------------------ */
+    /* Applied to the nav bar container by the Landing Screen while    */
+    /* its mode is active, so EVERY tab greys out without touching the */
+    /* per-tab --disabled classes the project gating maintains.        */
+    #VghLantern__App__NavigationBar.VghLantern__App__NavigationBar--landingLocked .VghLantern__App__NavTab {
+        color                              : var(--Vale_BorderLight);
+        cursor                             : default;
+        opacity                            : 0.5;
+        pointer-events                     : none;
+        border-bottom-color                : transparent;
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* NAV | Entry Via Button Only Tab */
     /* ------------------------------------------------------------ */
     .VghLantern__App__NavTab--entryViaButtonOnly {

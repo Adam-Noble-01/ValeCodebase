@@ -34,5 +34,28 @@
         "PlaceholderClientName"   : "e.g. Mr & Mrs Jones",
         "PlaceholderDocumentName" : "e.g. Orangery Roof Lantern",
         "LandingModeKey"          : "LanternEditor"
+    },
+
+    "VghLantern__DocManagement__Config__NewProjectDatabase": {
+        "SectionNote"              : "Copy for the database-first new project modal. The job number digit rules themselves live in Na__ValeDatabase__Config.json; the strings here only describe them to the user.",
+        "ModalTitle"               : "New Project from Vale Database",
+        "ConfirmTitle"             : "Confirm Client Details",
+        "JobNumberLabel"           : "Vale Job Number",
+        "JobNumberPlaceholder"     : "e.g. 1256 or 15134",
+        "JobNumberHint"            : "Enter the 4 or 5 digit Vale job number. The client's details are fetched from the Vale database and the project is built from them.",
+        "FetchButtonLabel"         : "Fetch Client Details",
+        "FetchingLabel"            : "Fetching...",
+        "FetchingMessage"          : "Contacting the Vale client database...",
+        "NotFoundMessage"          : "Job number {JobNumber} is not in the Vale database. Check the number, or add the project manually below.",
+        "LookupUnavailableMessage" : "The Vale client database is unavailable. See the console for detail.",
+        "PreviewIntro"             : "Vale database record for job {JobNumber}:",
+        "PreviewQuestion"          : "Create this project with the details above?",
+        "AcceptButtonLabel"        : "Accept and Create Project",
+        "BackButtonLabel"          : "Back",
+        "CancelButtonLabel"        : "Cancel",
+        "ManualEntryLinkText"      : "Not in the Database? Click Here",
+        "ErrorNonNumeric"          : "Job numbers contain digits only.",
+        "ErrorLeadingZero"         : "Vale job numbers do not start with 0.",
+        "ErrorWrongLength"         : "Job numbers are 4 or 5 digits."
     }
 }

@@ -450,3 +450,94 @@
     /* ------------------------------------------------------------ */
 
 /* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Database New Project Modal
+ * ----------------------------------------------------------------------------- */
+
+    /* DB MODAL | Job Number Hint Line */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__DbHint {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        line-height                        : 1.5;
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DB MODAL | Manual Entry Fallback Link */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__DbManualRow {
+        padding-top                        : var(--Vale_Spacing_Medium);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__DocManagement__DbManualLink {
+        padding                            : 0;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--VghLantern_AccentBlue);
+        background                         : none;
+        border                             : none;
+        cursor                             : pointer;
+    }
+
+    .VghLantern__DocManagement__DbManualLink:hover {
+        text-decoration                    : underline;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DB MODAL | Record Preview Intro and Question */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__DbIntro {
+        margin-bottom                      : var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__DocManagement__DbQuestion {
+        margin                             : var(--Vale_Spacing_Medium) 0 var(--Vale_Spacing_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DB MODAL | Fetched Record Preview Rows */
+    /* ------------------------------------------------------------ */
+    .VghLantern__DocManagement__DbPreview {
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : var(--Vale_BackgroundLight);
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__DocManagement__DbPreviewRow {
+        display                            : grid;
+        grid-template-columns              : calc(140px * var(--Vale_UIScale)) 1fr;
+        gap                                : var(--Vale_Spacing_Medium);
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) 0;
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__DocManagement__DbPreviewRow:last-child {
+        border-bottom                      : none;
+    }
+
+    .VghLantern__DocManagement__DbPreviewLabel {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+    }
+
+    .VghLantern__DocManagement__DbPreviewValue {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        overflow-wrap                      : anywhere;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

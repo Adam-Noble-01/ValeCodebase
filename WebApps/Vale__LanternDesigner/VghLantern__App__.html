@@ -121,6 +121,15 @@
 
 
         <!-- ----------------------------------------------------------------- -->
+        <!-- MODE PANEL | Landing Screen - Boot Welcome Card                    -->
+        <!-- ----------------------------------------------------------------- -->
+        <section id="VghLantern__App__ModeLandingScreen" class="VghLantern__App__ModePanel">
+            <div id="VghLantern__LandingScreen__Container"></div>
+        </section>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
         <!-- MODE PANEL | Document Management Mode - Project Manager            -->
         <!-- ----------------------------------------------------------------- -->
         <section id="VghLantern__App__ModeDocManagement" class="VghLantern__App__ModePanel">
@@ -298,9 +307,25 @@
     <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/VghLantern__AppNotifications__ServerConnectionBanner__.js"></script>
     <script src="02__Src__AppModules/07__AppNotifications__UserAlerts/VghLantern__AppNotifications__Toast__.js"></script>
 
+    <!-- System: Lantern Creation Wizard (pops above every mode; consulted by the new-project flow and the editor's + Add Lantern path) -->
+    <script src="02__Src__AppModules/09__System__LaternCreationWizard/VghLantern__CreationWizard__Steps__.js"></script>
+    <script src="02__Src__AppModules/09__System__LaternCreationWizard/VghLantern__CreationWizard__PreviewSketch__.js"></script>
+    <script src="02__Src__AppModules/09__System__LaternCreationWizard/VghLantern__CreationWizard__Overlay__.js"></script>
+    <script src="02__Src__AppModules/09__System__LaternCreationWizard/VghLantern__CreationWizard__Controller__.js"></script>
+
     <!-- System: Document Management Mode -->
     <script src="02__Src__AppModules/10__System__DocumentManagementMode/VghLantern__DocManagement__ProjectList__.js"></script>
     <script src="02__Src__AppModules/10__System__DocumentManagementMode/VghLantern__DocManagement__ProjectActions__.js"></script>
+
+    <!-- System: Vale Database API (placeholder client lookup behind the new-project flow) -->
+    <script src="02__Src__AppModules/12__System__ValeDatabaseApi/VghLantern__ValeDatabase__ClientLookup__.js"></script>
+
+    <!-- System: User Login (cookie session gate shown over the landing screen) -->
+    <script src="02__Src__AppModules/08__System__UserLogin/VghLantern__UserLogin__SessionManager__.js"></script>
+    <script src="02__Src__AppModules/08__System__UserLogin/VghLantern__UserLogin__LoginModal__.js"></script>
+
+    <!-- System: Landing Screen (boot welcome card; locks the nav tabs while active) -->
+    <script src="02__Src__AppModules/11__System__LandingScreen/VghLantern__LandingScreen__Controller__.js"></script>
 
     <!-- System: Lantern Assembly Editor Mode -->
     <script src="02__Src__AppModules/20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__ControlDescriptors__.js"></script>
@@ -339,6 +364,7 @@
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfPainter__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetPdfExporter__.js"></script>
     <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetManager__.js"></script>
+    <script src="02__Src__AppModules/30__System__DrawingEditorMode/VghLantern__DrawingEditor__SheetBaker__.js"></script>
 
     <!-- System: Specification Mode -->
     <script src="02__Src__AppModules/35__System__SpecificationMode/VghLantern__Specification__DocumentModel__.js"></script>
@@ -358,6 +384,7 @@
     <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__BlockEditor__.js"></script>
     <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterEditor__.js"></script>
     <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__TermsEditor__.js"></script>
+    <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__DrawingNotesEditor__.js"></script>
     <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterScreenRenderer__.js"></script>
     <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__LetterPdfPainter__.js"></script>
     <script src="02__Src__AppModules/37__System__ClientDocumentMode/VghLantern__ClientDoc__Layout__.js"></script>

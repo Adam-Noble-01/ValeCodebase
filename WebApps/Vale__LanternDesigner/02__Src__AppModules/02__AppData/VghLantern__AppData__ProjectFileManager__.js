@@ -379,7 +379,10 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
     // SUB FUNCTION | Build a Fresh Project Data Object
     // ------------------------------------------------------------
-    function VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName) {
+    // siteAddress and author are optional; the database-first create flow
+    // supplies them from the fetched client record so the single create write
+    // already carries them, rather than a second racing save patching them in.
+    function VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName, siteAddress, author) {
         var now  =  VghLantern__ProjectFileManager__GetTodayStamp();
 
         return {
@@ -389,13 +392,13 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__Metadata__ProjectName'     : projectName,
                 'VghLantern__ProjectFile__Metadata__DocumentName'    : documentName || projectName + ' Roof Lanterns',
                 'VghLantern__ProjectFile__Metadata__ClientName'      : clientName || '',
-                'VghLantern__ProjectFile__Metadata__SiteAddress'     : '',
+                'VghLantern__ProjectFile__Metadata__SiteAddress'     : siteAddress || '',
                 'VghLantern__ProjectFile__Metadata__DocumentStatus'  : 'Draft',
                 'VghLantern__ProjectFile__Metadata__DateCreated'     : now,
                 'VghLantern__ProjectFile__Metadata__DateModified'    : now,
                 'VghLantern__ProjectFile__Metadata__DateIssued'      : '',
                 'VghLantern__ProjectFile__Metadata__RevisionCode'    : 'A',
-                'VghLantern__ProjectFile__Metadata__Author'          : ''
+                'VghLantern__ProjectFile__Metadata__Author'          : author || ''
             },
             'VghLantern__ProjectFile__GlobalSettings': {
                 'VghLantern__ProjectFile__GlobalSettings__Description'      : 'Document-wide settings that cascade to all lanterns.',
@@ -433,10 +436,12 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
     // FUNCTION | Create New Project
     // ------------------------------------------------------------
-    function VghLantern__ProjectFileManager__CreateProject(projectCode, projectName, documentName, clientName) {
+    // Trailing siteAddress and author are optional (see BuildNewProjectData);
+    // the manual modal omits them, the database flow fills them.
+    function VghLantern__ProjectFileManager__CreateProject(projectCode, projectName, documentName, clientName, siteAddress, author) {
         var storageKey   =  STORAGE_PREFIX + projectCode;
         var now          =  VghLantern__ProjectFileManager__GetTodayStamp();
-        var projectData  =  VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName);
+        var projectData  =  VghLantern__ProjectFileManager__BuildNewProjectData(projectCode, projectName, documentName, clientName, siteAddress, author);
 
         var normalisedCreate  =  VghLantern__ProjectFileManager__NormaliseProjectData(projectData, 'createProject');
         projectData  =  normalisedCreate.projectData || projectData;

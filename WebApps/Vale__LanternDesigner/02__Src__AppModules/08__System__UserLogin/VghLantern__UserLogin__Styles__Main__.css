@@ -1,0 +1,127 @@
+/* =============================================================================
+ * VGHLANTERN - USER LOGIN STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UserLogin__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : User Login
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Sign in gate overlay shown over the landing screen
+ * CREATED    : 06-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Full screen brand-tinted scrim above the app chrome and shared modals
+ * - Centred sign in card in the shared dialog language
+ * - Field styling comes from the shared VghLantern__Modal__ classes; this
+ *   sheet only owns the overlay, the card shell and the login-specific bits
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Login Gate Overlay and Dialog
+ * ----------------------------------------------------------------------------- */
+
+    /* LOGIN | Overlay Backdrop */
+    /* ------------------------------------------------------------ */
+    /* Sits above the shared modal layer (2000) so no project dialog  */
+    /* can ever surface over the gate, but below the toast layer.     */
+    .VghLantern__UserLogin__Overlay {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        background                         : rgba(23, 43, 58, 0.55);
+        display                            : none;
+        align-items                        : center;
+        justify-content                    : center;
+        z-index                            : calc(var(--Vale_ZIndex_Modal) + 500);
+        animation                          : VghLantern__UserLogin__FadeIn 200ms ease-out;
+    }
+
+    .VghLantern__UserLogin__Overlay--visible {
+        display                            : flex;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LOGIN | Sign In Dialog Card */
+    /* ------------------------------------------------------------ */
+    .VghLantern__UserLogin__Dialog {
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 18px 44px rgba(23, 43, 58, 0.28);
+        padding                            : var(--Vale_Spacing_XLarge);
+        width                              : 90%;
+        max-width                          : calc(400px * var(--Vale_UIScale));
+        animation                          : VghLantern__UserLogin__PanelIn 240ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LOGIN | Product Logo */
+    /* ------------------------------------------------------------ */
+    /* The logo artwork carries its own border box, so it sits plain. */
+    .VghLantern__UserLogin__Logo {
+        display                            : block;
+        width                              : calc(200px * var(--Vale_UIScale));
+        max-width                          : 70%;
+        margin                             : 0 auto var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LOGIN | Title and Subtitle */
+    /* ------------------------------------------------------------ */
+    .VghLantern__UserLogin__Title {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__UserLogin__Subtitle {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        line-height                        : 1.5;
+        margin-bottom                      : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LOGIN | Full Width Sign In Button */
+    /* ------------------------------------------------------------ */
+    /* The gate has one action, so the primary button spans the card  */
+    /* rather than sitting in a right-aligned action row.             */
+    .VghLantern__UserLogin__BtnSignIn {
+        width                              : 100%;
+        margin-top                         : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__UserLogin__BtnSignIn:disabled {
+        opacity                            : 0.6;
+        cursor                             : wait;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * ANIMATION | Gate Entrance
+ * ----------------------------------------------------------------------------- */
+
+    /* KEYFRAMES | Backdrop Fade and Panel Rise */
+    /* ------------------------------------------------------------ */
+    @keyframes VghLantern__UserLogin__FadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+
+    @keyframes VghLantern__UserLogin__PanelIn {
+        from { transform: scale(0.96); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

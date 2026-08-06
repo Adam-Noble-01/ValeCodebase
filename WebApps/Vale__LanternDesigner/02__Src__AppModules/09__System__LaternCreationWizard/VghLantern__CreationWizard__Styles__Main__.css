@@ -1,0 +1,922 @@
+/* =============================================================================
+ * VGHLANTERN - CREATION WIZARD STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__CreationWizard__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : System - CreationWizard - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Overlay, step sections, indicator lamps and live preview styling
+ * CREATED    : 06-Aug-2026
+ *
+ * DESCRIPTION:
+ * - The wizard sits above every mode at its own z-index band between the shared
+ *   modal (2000) and the toasts (3000), so a toast can still land over it.
+ * - Section expand/collapse uses the grid-template-rows 0fr/1fr technique; the
+ *   duration comes from Na__CreationWizard__Config.json, stamped onto the root
+ *   as --VghWizard_TransitionMs by the Overlay module, so the JSON stays the
+ *   single source of the timing.
+ * - The indicator lamps are pure CSS state: hollow when waiting, pulsing blue
+ *   ring when active, green with a drawn-on tick once the step is confirmed.
+ * - Sketch stroke classes mirror the Env2d skeleton tokens so the preview reads
+ *   as a miniature of the real drawings.
+ *
+ * ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Overlay and Panel Entrance
+   ----------------------------------------------------------------------------- */
+
+    /* OVERLAY | Full Screen Backdrop Above Every Mode */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Overlay {
+        position                           : fixed;
+        inset                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        background                         : rgba(23, 43, 58, 0.55);
+        backdrop-filter                    : blur(6px);
+        -webkit-backdrop-filter            : blur(6px);
+        z-index                            : calc(var(--Vale_ZIndex_Modal) + 400);
+        opacity                            : 0;
+        visibility                         : hidden;
+        transition                         : opacity var(--VghWizard_TransitionMs, 340ms) ease,
+                                             visibility 0s linear var(--VghWizard_TransitionMs, 340ms);
+    }
+
+    .VghLantern__CreationWizard__Overlay--visible {
+        opacity                            : 1;
+        visibility                         : visible;
+        transition                         : opacity var(--VghWizard_TransitionMs, 340ms) ease;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PANEL | Dialog Card with Soft Rise-In Entrance */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Panel {
+        display                            : flex;
+        flex-direction                     : column;
+        width                              : min(880px, 94vw);
+        max-height                         : 92vh;
+        background                         : var(--Vale_BackgroundWhite);
+        border-radius                      : calc(var(--Vale_BorderRadius) * 1.5);
+        box-shadow                         : 0 24px 64px rgba(0, 0, 0, 0.28);
+        overflow                           : hidden;
+        outline                            : none;
+        transform                          : translateY(16px) scale(0.97);
+        transition                         : transform var(--VghWizard_TransitionMs, 340ms) cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .VghLantern__CreationWizard__Overlay--visible .VghLantern__CreationWizard__Panel {
+        transform                          : translateY(0) scale(1);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Header and Progress Tracking
+   ----------------------------------------------------------------------------- */
+
+    /* HEADER | Title Block and Progress Column */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Header {
+        display                            : flex;
+        align-items                        : flex-end;
+        justify-content                    : space-between;
+        gap                                : var(--Vale_Spacing_Large);
+        padding                            : var(--Vale_Spacing_Large) var(--Vale_Spacing_Large) var(--Vale_Spacing_Medium);
+        border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__CreationWizard__Title {
+        font-size                          : var(--Vale_FontSize_Heading);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin                             : 0;
+    }
+
+    .VghLantern__CreationWizard__Subtitle {
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextSecondary);
+        line-height                        : 1.5;
+        margin                             : var(--Vale_Spacing_Small) 0 0;
+        max-width                          : 52ch;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* PROGRESS | Step Counter and Fill Bar */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__ProgressBlock {
+        flex                               : 0 0 190px;
+        text-align                         : right;
+    }
+
+    .VghLantern__CreationWizard__ProgressCounter {
+        display                            : block;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__CreationWizard__ProgressTrack {
+        height                             : 6px;
+        border-radius                      : 3px;
+        background                         : var(--Vale_HoverBackground);
+        overflow                           : hidden;
+    }
+
+    .VghLantern__CreationWizard__ProgressFill {
+        height                             : 100%;
+        width                              : 0%;
+        border-radius                      : 3px;
+        background                         : linear-gradient(90deg, var(--VghLantern_AccentBlue), var(--Vale_PrimaryBrand));
+        transition                         : width var(--VghWizard_TransitionMs, 340ms) cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Column Layout
+   ----------------------------------------------------------------------------- */
+
+    /* LAYOUT | Steps Column Beside the Preview Pane */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Columns {
+        display                            : flex;
+        flex                               : 1 1 auto;
+        min-height                         : 0;
+    }
+
+    .VghLantern__CreationWizard__StepsColumn {
+        flex                               : 1 1 auto;
+        min-width                          : 0;
+        overflow-y                         : auto;
+        padding                            : var(--Vale_Spacing_Large);
+    }
+
+    .VghLantern__CreationWizard__PreviewColumn {
+        flex                               : 0 0 304px;
+        overflow-y                         : auto;
+        padding                            : var(--Vale_Spacing_Large) var(--Vale_Spacing_Medium);
+        border-left                        : 1px solid var(--Vale_BorderLight);
+        background                         : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Step Sections and Indicator Lamps
+   ----------------------------------------------------------------------------- */
+
+    /* SECTION | One Collapsible Step */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Section {
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        background                         : var(--Vale_BackgroundWhite);
+        margin-bottom                      : var(--Vale_Spacing_Small);
+        transition                         : border-color var(--Vale_Transition_Fast),
+                                             box-shadow var(--Vale_Transition_Fast),
+                                             opacity var(--Vale_Transition_Standard);
+    }
+
+    .VghLantern__CreationWizard__Section--active {
+        border-color                       : var(--VghLantern_AccentBlue);
+        box-shadow                         : 0 6px 20px rgba(51, 102, 153, 0.14);
+    }
+
+    .VghLantern__CreationWizard__Section--locked {
+        opacity                            : 0.55;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Header Row with Lamp, Title and Summary */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__SectionHeader {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Medium);
+        width                              : 100%;
+        padding                            : var(--Vale_Spacing_Medium);
+        background                         : transparent;
+        border                             : none;
+        font-family                        : var(--Vale_FontFamily);
+        text-align                         : left;
+        cursor                             : default;
+    }
+
+    .VghLantern__CreationWizard__Section--complete:not(.VghLantern__CreationWizard__Section--active) .VghLantern__CreationWizard__SectionHeader {
+        cursor                             : pointer;
+    }
+
+    .VghLantern__CreationWizard__Section--complete:not(.VghLantern__CreationWizard__Section--active) .VghLantern__CreationWizard__SectionHeader:hover {
+        background                         : var(--Vale_HoverBackground);
+        border-radius                      : var(--Vale_BorderRadius);
+    }
+
+    .VghLantern__CreationWizard__SectionTitle {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__CreationWizard__SectionValue {
+        margin-left                        : auto;
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_SuccessGreen);
+        opacity                            : 0;
+        transition                         : opacity var(--Vale_Transition_Standard);
+    }
+
+    .VghLantern__CreationWizard__Section--complete .VghLantern__CreationWizard__SectionValue {
+        opacity                            : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAMP | Completion Indicator Light */
+    /* ------------------------------------------------------------ */
+    /* Hollow while waiting, pulsing blue ring while active, filled green with
+       a drawn tick once confirmed. The tick literally draws itself on via a
+       dashoffset transition the moment --complete lands on the section.       */
+    .VghLantern__CreationWizard__Lamp {
+        flex                               : 0 0 auto;
+        width                              : 18px;
+        height                             : 18px;
+        border-radius                      : 50%;
+        border                             : 2px solid var(--Vale_BorderLight);
+        background                         : transparent;
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        transition                         : background var(--Vale_Transition_Standard),
+                                             border-color var(--Vale_Transition_Standard);
+    }
+
+    .VghLantern__CreationWizard__Section--active .VghLantern__CreationWizard__Lamp {
+        border-color                       : var(--VghLantern_AccentBlue);
+        animation                          : VghLantern__CreationWizard__LampPulse 1.8s ease-out infinite;
+    }
+
+    .VghLantern__CreationWizard__Section--complete .VghLantern__CreationWizard__Lamp {
+        border-color                       : var(--VghLantern_SuccessGreen);
+        background                         : var(--VghLantern_SuccessGreen);
+        animation                          : none;
+    }
+
+    .VghLantern__CreationWizard__LampTick {
+        width                              : 11px;
+        height                             : 11px;
+        overflow                           : visible;
+    }
+
+    .VghLantern__CreationWizard__LampTick path {
+        fill                               : none;
+        stroke                             : var(--Vale_TextLight);
+        stroke-width                       : 2;
+        stroke-linecap                     : round;
+        stroke-linejoin                    : round;
+        stroke-dasharray                   : 11;
+        stroke-dashoffset                  : 11;
+        transition                         : stroke-dashoffset 320ms ease-out 140ms;
+    }
+
+    .VghLantern__CreationWizard__Section--complete .VghLantern__CreationWizard__LampTick path {
+        stroke-dashoffset                  : 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CHEVRON | Reopen Affordance on Completed Rows */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Chevron {
+        flex                               : 0 0 auto;
+        width                              : 7px;
+        height                             : 7px;
+        border-right                       : 2px solid var(--Vale_TextSubtle);
+        border-bottom                      : 2px solid var(--Vale_TextSubtle);
+        transform                          : rotate(45deg);
+        opacity                            : 0;
+        transition                         : transform var(--Vale_Transition_Standard),
+                                             opacity var(--Vale_Transition_Standard);
+    }
+
+    .VghLantern__CreationWizard__Section--complete .VghLantern__CreationWizard__Chevron {
+        opacity                            : 1;
+    }
+
+    .VghLantern__CreationWizard__Section--active .VghLantern__CreationWizard__Chevron {
+        transform                          : rotate(-135deg);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Animated Expand and Collapse Body */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__SectionBody {
+        display                            : grid;
+        grid-template-rows                 : 0fr;
+        transition                         : grid-template-rows var(--VghWizard_TransitionMs, 340ms) cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .VghLantern__CreationWizard__Section--active .VghLantern__CreationWizard__SectionBody {
+        grid-template-rows                 : 1fr;
+    }
+
+    /* visibility hidden once collapsed keeps the folded inputs out of the Tab
+       order; the zero-second transition is delayed so the fold-up animation
+       finishes before the content formally disappears.                        */
+    .VghLantern__CreationWizard__SectionInner {
+        overflow                           : hidden;
+        min-height                         : 0;
+        padding                            : 0 var(--Vale_Spacing_Medium);
+        visibility                         : hidden;
+        transition                         : visibility 0s linear var(--VghWizard_TransitionMs, 340ms);
+    }
+
+    .VghLantern__CreationWizard__Section--active .VghLantern__CreationWizard__SectionInner {
+        padding-bottom                     : var(--Vale_Spacing_Medium);
+        visibility                         : visible;
+        transition                         : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Content Slide-Up Reveal Inside an Opening Step */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__SectionInner > * {
+        opacity                            : 0;
+        transform                          : translateY(8px);
+        transition                         : opacity var(--VghWizard_TransitionMs, 340ms) ease,
+                                             transform var(--VghWizard_TransitionMs, 340ms) cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .VghLantern__CreationWizard__Section--active .VghLantern__CreationWizard__SectionInner > * {
+        opacity                            : 1;
+        transform                          : translateY(0);
+        transition-delay                   : 90ms;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Step Content and Inputs
+   ----------------------------------------------------------------------------- */
+
+    /* CONTENT | Question Prompt and Hint Line */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Prompt {
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_Light);
+        color                              : var(--Vale_TextPrimary);
+        margin                             : var(--Vale_Spacing_Small) 0 var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__CreationWizard__HintLine {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        line-height                        : 1.5;
+        margin                             : var(--Vale_Spacing_Small) 0 0;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUTS | Large Numeric Entry with Unit Tag */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__InputRow {
+        display                            : flex;
+        align-items                        : baseline;
+        gap                                : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__CreationWizard__NumberInput {
+        width                              : 7ch;
+        border                             : none;
+        border-bottom                      : 2px solid var(--Vale_BorderLight);
+        background                         : transparent;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : calc(30px * var(--Vale_UIScale));
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        padding                            : 0 2px 2px;
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__CreationWizard__NumberInput:focus {
+        outline                            : none;
+        border-bottom-color                : var(--VghLantern_AccentBlue);
+    }
+
+    .VghLantern__CreationWizard__NumberInput::-webkit-inner-spin-button,
+    .VghLantern__CreationWizard__NumberInput::-webkit-outer-spin-button {
+        -webkit-appearance                 : none;                    /* <-- The slider below already covers nudging */
+        margin                             : 0;
+    }
+
+    .VghLantern__CreationWizard__NumberInput {
+        -moz-appearance                    : textfield;
+    }
+
+    .VghLantern__CreationWizard__UnitTag {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.5px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUTS | Synced Slider and Bounds Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Slider {
+        width                              : 100%;
+        margin-top                         : var(--Vale_Spacing_Medium);
+        accent-color                       : var(--VghLantern_AccentBlue);
+    }
+
+    .VghLantern__CreationWizard__BoundsRow {
+        display                            : flex;
+        justify-content                    : space-between;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        margin-top                         : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* INPUTS | Name Text Entry */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__TextInput {
+        width                              : 100%;
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        color                              : var(--Vale_TextPrimary);
+        transition                         : border-color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__CreationWizard__TextInput:focus {
+        outline                            : none;
+        border-color                       : var(--VghLantern_AccentBlue);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CONTENT | Inline Validation Message */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__StepMessage {
+        display                            : none;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_ErrorRed);
+        margin                             : var(--Vale_Spacing_Small) 0 0;
+    }
+
+    .VghLantern__CreationWizard__StepMessage--visible {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CONTENT | Step Action Row and Next Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__StepActions {
+        display                            : flex;
+        justify-content                    : flex-end;
+        margin-top                         : var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__CreationWizard__BtnNext {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             opacity var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__CreationWizard__BtnNext:hover:not(:disabled) {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+    }
+
+    .VghLantern__CreationWizard__BtnNext:disabled {
+        opacity                            : 0.45;
+        cursor                             : default;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Finial Selection Cards
+   ----------------------------------------------------------------------------- */
+
+    /* GRID | Selectable Finial Card Strip */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__CardGrid {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fill, minmax(96px, 1fr));
+        gap                                : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | One Selectable Choice */
+    /* ------------------------------------------------------------ */
+    /* Square cards: the elevation preview fills whatever the name line leaves,
+       so a strip of finials reads as a set of tiles rather than wide slabs.   */
+    .VghLantern__CreationWizard__Card {
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        aspect-ratio                       : 1 / 1;
+        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        padding                            : var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        text-align                         : center;
+        transition                         : border-color var(--Vale_Transition_Fast),
+                                             background-color var(--Vale_Transition_Fast),
+                                             transform var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__CreationWizard__Card:hover {
+        border-color                       : var(--Vale_BorderPrimary);
+        background                         : var(--Vale_BackgroundLight);
+        transform                          : translateY(-1px);
+    }
+
+    .VghLantern__CreationWizard__Card:focus-visible {
+        outline                            : 2px solid var(--VghLantern_AccentBlue);
+        outline-offset                     : 1px;
+    }
+
+    .VghLantern__CreationWizard__Card--selected {
+        border-color                       : var(--VghLantern_AccentBlue);
+        box-shadow                         : inset 0 0 0 1px var(--VghLantern_AccentBlue);
+        background                         : var(--Vale_BackgroundLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Elevation Preview and Name Line */
+    /* ------------------------------------------------------------ */
+    /* flex-basis 0, never auto: an svg carrying a tall component's own viewBox
+       has a huge intrinsic height, and basis auto would feed that straight into
+       the card, stretching it far past square. At basis 0 the preview claims no
+       height of its own and simply fills whatever the 1:1 card leaves over.    */
+    .VghLantern__CreationWizard__CardPreview {
+        display                            : block;
+        width                              : 100%;
+        flex                               : 1 1 0;
+        min-height                         : 0;
+        stroke                             : var(--Vale_TextPrimary);
+        stroke-width                       : 1;
+        stroke-linecap                     : round;
+        stroke-linejoin                    : round;
+        overflow                           : visible;
+    }
+
+    /* Quiet by design: the empty choice is words on white, not a boxed panel
+       competing with the component drawings beside it.                        */
+    .VghLantern__CreationWizard__CardPreviewEmpty {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_BorderLight);
+    }
+
+    .VghLantern__CreationWizard__CardName {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        line-height                        : 1.25;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Live Preview Pane and Sketch Linework
+   ----------------------------------------------------------------------------- */
+
+    /* PANE | Preview Column Furniture */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__PaneTitle {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 1.2px;
+        margin                             : 0 0 var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__CreationWizard__PreviewCard {
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__CreationWizard__Sketch {
+        display                            : block;
+        width                              : 100%;
+        height                             : auto;
+    }
+
+    .VghLantern__CreationWizard__PreviewCaption {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        margin                             : var(--Vale_Spacing_Medium) 0 0;
+    }
+
+    .VghLantern__CreationWizard__PreviewCaptionSub {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+        margin                             : 4px 0 0;
+        min-height                         : 1.2em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SKETCH | Linework Classes Mirroring the Env2d Skeleton Tokens */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__SketchMain {
+        stroke                             : var(--VghLantern_SvgSkeletonEaves);
+        stroke-width                       : 1.3;
+        fill                               : none;
+    }
+
+    .VghLantern__CreationWizard__SketchRidge {
+        stroke                             : var(--VghLantern_SvgSkeletonRidge);
+        stroke-width                       : 1.6;
+        stroke-linecap                     : round;
+        fill                               : none;
+    }
+
+    .VghLantern__CreationWizard__SketchHip {
+        stroke                             : var(--VghLantern_SvgSkeletonHip);
+        stroke-width                       : 1;
+        fill                               : none;
+    }
+
+    .VghLantern__CreationWizard__SketchUpstand {
+        stroke                             : var(--VghLantern_SvgSkeletonBuildersUpstand);
+        stroke-width                       : 1;
+        fill                               : none;
+    }
+
+    .VghLantern__CreationWizard__SketchGlazeFill {
+        fill                               : var(--VghLantern_SvgGlazingFill);
+        stroke                             : none;
+    }
+
+    .VghLantern__CreationWizard__SketchRoofFace {
+        fill                               : var(--VghLantern_SvgGlazingFill);
+        stroke                             : var(--VghLantern_SvgSkeletonEaves);
+        stroke-width                       : 1.3;
+        stroke-linejoin                    : round;
+    }
+
+    .VghLantern__CreationWizard__SketchComponent {
+        stroke                             : var(--VghLantern_SvgComponentStroke);
+        stroke-width                       : 1;
+        overflow                           : visible;
+    }
+
+    /* Dimensions rest in Vale blue; only the one being asked for right now
+       takes the app's red dimension language, with a gentle opacity pulse as
+       the visual prompt.                                                      */
+    .VghLantern__CreationWizard__SketchDim {
+        stroke                             : var(--Vale_PrimaryBrand);
+        stroke-width                       : 0.8;
+        fill                               : none;
+    }
+
+    .VghLantern__CreationWizard__SketchDimText {
+        fill                               : var(--Vale_PrimaryBrand);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : 9px;
+    }
+
+    .VghLantern__CreationWizard__SketchDim--active {
+        stroke                             : var(--VghLantern_SvgDimensionLine);
+    }
+
+    .VghLantern__CreationWizard__SketchDimText--active {
+        fill                               : var(--VghLantern_SvgDimensionText);
+    }
+
+    .VghLantern__CreationWizard__SketchDimPulse {
+        animation                          : VghLantern__CreationWizard__DimPulse 1.7s ease-in-out infinite;
+    }
+
+    .VghLantern__CreationWizard__SketchLabel {
+        fill                               : var(--Vale_TextSubtle);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : 8.5px;
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 1.2px;
+        text-transform                     : uppercase;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Footer, Completion State and Keyframes
+   ----------------------------------------------------------------------------- */
+
+    /* FOOTER | Cancel, Enter Hint and Create */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__Footer {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Medium);
+        padding                            : var(--Vale_Spacing_Medium) var(--Vale_Spacing_Large);
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__CreationWizard__EnterHint {
+        flex                               : 1 1 auto;
+        text-align                         : center;
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__CreationWizard__BtnCancel {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        background                         : transparent;
+        color                              : var(--Vale_TextSecondary);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        cursor                             : pointer;
+        transition                         : all var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__CreationWizard__BtnCancel:hover {
+        background                         : var(--Vale_HoverBackground);
+        color                              : var(--Vale_TextPrimary);
+    }
+
+    .VghLantern__CreationWizard__BtnCreate {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_XLarge);
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             opacity var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__CreationWizard__BtnCreate:hover:not(:disabled) {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+    }
+
+    .VghLantern__CreationWizard__BtnCreate:disabled {
+        opacity                            : 0.45;
+        cursor                             : default;
+    }
+
+    .VghLantern__CreationWizard__BtnCreate--armed {
+        animation                          : VghLantern__CreationWizard__CreatePulse 1.6s ease-out infinite;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* COMPLETION | All Steps Answered Banner */
+    /* ------------------------------------------------------------ */
+    .VghLantern__CreationWizard__AllCompleteHint {
+        display                            : none;
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--VghLantern_SuccessGreen);
+        background                         : rgba(42, 125, 79, 0.08);
+        border                             : 1px solid rgba(42, 125, 79, 0.25);
+        border-radius                      : var(--Vale_BorderRadius);
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);
+        margin                             : var(--Vale_Spacing_Small) 0 0;
+    }
+
+    .VghLantern__CreationWizard__AllCompleteHint--visible {
+        display                            : block;
+        animation                          : VghLantern__CreationWizard__HintRise var(--VghWizard_TransitionMs, 340ms) cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* KEYFRAMES | Lamp Pulse, Create Pulse and Hint Rise */
+    /* ------------------------------------------------------------ */
+    @keyframes VghLantern__CreationWizard__LampPulse {
+        0%   { box-shadow : 0 0 0 0 rgba(51, 102, 153, 0.35); }
+        70%  { box-shadow : 0 0 0 6px rgba(51, 102, 153, 0); }
+        100% { box-shadow : 0 0 0 0 rgba(51, 102, 153, 0); }
+    }
+
+    @keyframes VghLantern__CreationWizard__CreatePulse {
+        0%   { box-shadow : 0 0 0 0 rgba(23, 43, 58, 0.35); }
+        70%  { box-shadow : 0 0 0 10px rgba(23, 43, 58, 0); }
+        100% { box-shadow : 0 0 0 0 rgba(23, 43, 58, 0); }
+    }
+
+    @keyframes VghLantern__CreationWizard__HintRise {
+        from { opacity : 0; transform : translateY(6px); }
+        to   { opacity : 1; transform : translateY(0); }
+    }
+
+    @keyframes VghLantern__CreationWizard__DimPulse {
+        0%   { opacity : 1; }
+        50%  { opacity : 0.35; }
+        100% { opacity : 1; }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* -----------------------------------------------------------------------------
+   #region | Creation Wizard - Narrow Viewports and Reduced Motion
+   ----------------------------------------------------------------------------- */
+
+    /* RESPONSIVE | Stack the Preview Above the Steps on Narrow Screens */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 760px) {
+        .VghLantern__CreationWizard__Columns {
+            flex-direction                 : column;
+        }
+
+        .VghLantern__CreationWizard__PreviewColumn {
+            order                          : -1;
+            flex                           : 0 0 auto;
+            border-left                    : none;
+            border-bottom                  : 1px solid var(--Vale_BorderLight);
+        }
+
+        .VghLantern__CreationWizard__Sketch {
+            max-height                     : 180px;
+        }
+
+        .VghLantern__CreationWizard__ProgressBlock {
+            flex-basis                     : 120px;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCESSIBILITY | Honour the User's Reduced Motion Preference */
+    /* ------------------------------------------------------------ */
+    @media (prefers-reduced-motion: reduce) {
+        .VghLantern__CreationWizard__Overlay,
+        .VghLantern__CreationWizard__Panel,
+        .VghLantern__CreationWizard__SectionBody,
+        .VghLantern__CreationWizard__SectionInner > *,
+        .VghLantern__CreationWizard__ProgressFill {
+            transition                     : none;
+        }
+
+        .VghLantern__CreationWizard__Lamp,
+        .VghLantern__CreationWizard__BtnCreate--armed,
+        .VghLantern__CreationWizard__AllCompleteHint--visible,
+        .VghLantern__CreationWizard__SketchDimPulse {
+            animation                      : none;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

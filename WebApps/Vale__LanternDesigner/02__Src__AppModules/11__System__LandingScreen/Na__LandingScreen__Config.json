@@ -1,0 +1,25 @@
+{
+    "VghLantern__LandingScreen__Config__Description": "System configuration overlay for the landing screen shown when the application initialises. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly. The greeting writes itself character by character with the signed in user's name; every tab stays greyed until the user leaves via View Project Library or Create New Project.",
+
+    "VghLantern__LandingScreen__Config__Content": {
+        "LogoPath"             : "01__AppAssets__VghLantern/Graphics__Logo__ValeLanternDesigner__.png",
+        "LogoAltText"          : "Vale Lantern Designer",
+        "GreetingTemplate"     : "Hello {UserName}, ready to design?",
+        "GreetingTemplateNote" : "{UserName} is replaced with the signed in user's display name. The greeting stays empty until a user exists, because the login gate covers the landing screen up to that moment.",
+        "BtnLibraryLabel"      : "View Project Library",
+        "BtnNewProjectLabel"   : "Create New Project",
+        "VersionLabelTemplate" : "Prototype Version {AppVersion} (Early Access)",
+        "VersionLabelNote"     : "{AppVersion} is replaced with VghLantern__Application__Config__AppVersion so the landing card can never disagree with the config SSOT.",
+        "CopyrightText"        : "© 2026 Vale Garden Houses | All Rights Reserved",
+        "SignedInAsPrefix"     : "Signed in as",
+        "SignOutLabel"         : "Sign out"
+    },
+
+    "VghLantern__LandingScreen__Config__Behaviour": {
+        "TypewriterStartDelayMs"   : 350,
+        "TypewriterCharDelayMs"    : 38,
+        "TypewriterCharDelayNote"  : "Per character delay of the greeting write-on. Around 38ms reads as handwriting pace; 0 renders the line instantly for impatient demos.",
+        "CaretSettleDelayMs"       : 1200,
+        "CaretSettleDelayNote"     : "How long the caret keeps blinking after the line completes before it fades out."
+    }
+}

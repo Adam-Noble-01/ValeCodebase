@@ -134,13 +134,32 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB HELPER FUNCTION | Find One Lantern's Entry in a Built Model
+    // ------------------------------------------------------------
+    // Matched on LanternIndex rather than array position, because the model omits any
+    // lantern the solver rejected - so on a project with an unbuildable lantern the
+    // two stop agreeing, and position would silently return the wrong lantern's
+    // takeoff under the right lantern's drawing.
+    function VghLantern__PrintDocument__FindLantern(model, lanternIndex) {
+        var i;
+        for (i = 0; i < model.Lanterns.length; i++) {
+            if (model.Lanterns[i].LanternIndex === lanternIndex) return model.Lanterns[i];
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build Tables for One Lantern Takeoff
     // ------------------------------------------------------------
-    function VghLantern__PrintDocument__BuildLanternTakeoff(entry, viewState) {
+    // isOwnPage suppresses the lantern heading: when this block is a page of its own
+    // the masthead above it already names the lantern, and a heading repeating it
+    // immediately underneath reads as a mistake.
+    function VghLantern__PrintDocument__BuildLanternTakeoff(entry, viewState, isOwnPage) {
         var Tables  =  window.VghLantern__Specification__TakeoffTableRenderer;
         if (!Tables || !entry || !entry.Takeoff) return '';
 
-        var html  =  VghLantern__PrintDocument__Heading(entry.Title);
+        var html  =  isOwnPage ? '' : VghLantern__PrintDocument__Heading(entry.Title);
 
         if (viewState.ShowComponentSchedule) {
             html  +=  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable(entry.Takeoff);
@@ -162,11 +181,33 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Build the Full Print-Faithful Specification Body
+    // SUB FUNCTION | Build the Document Masthead
     // ------------------------------------------------------------
-    // Mirrors PdfExporter__RenderSpecificationPages so Preview and Send shows the
-    // same document the PDF will write, not the Specification Mode card UI.
-    function VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml(viewState) {
+    // Repeated at the head of every specification block in the pack, because each one
+    // is now a page in its own right and a page that does not say which project it
+    // belongs to is a page that gets filed against the wrong job.
+    function VghLantern__PrintDocument__BuildMasthead(model, titleSuffix) {
+        var metaLine  =  [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
+            .filter(function(part) { return !!part; }).join('  |  ');
+
+        var title  =  model.Meta.DocumentTitle + (titleSuffix ? ('  -  ' + titleSuffix) : '');
+
+        return '<h2 class="' + CSS_TITLE + '">' + VghLantern__PrintDocument__Escape(title) + '</h2>' +
+               '<p class="' + CSS_META + '">' + VghLantern__PrintDocument__Escape(metaLine) + '</p>';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the Project Summary Body
+    // ------------------------------------------------------------
+    // What the whole job amounts to: the schedule of lanterns, the project totals and
+    // the job notes. It leads the pack so the reader sees the shape of the job before
+    // the detail of any one lantern.
+    //
+    // The warnings live here rather than being repeated per lantern because they are
+    // already prefixed with the lantern that raised them, and a reader wants them in
+    // one list at the front rather than scattered through four specifications.
+    function VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml(viewState) {
         var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
         var Tables         =  window.VghLantern__Specification__TakeoffTableRenderer;
         if (!DocumentModel || !Tables) {
@@ -182,24 +223,15 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var tableCfg      =  VghLantern__PrintDocument__SpecConfig()['VghLantern__Specification__Config__Tables'] || {};
         var TABLE_LABEL   =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables';
-        var metaLine      =  [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
-            .filter(function(part) { return !!part; }).join('  |  ');
 
         var html  =  '<div class="' + CSS_ROOT + '">' +
-                     '<h2 class="' + CSS_TITLE + '">' +
-                     VghLantern__PrintDocument__Escape(model.Meta.DocumentTitle) + '</h2>' +
-                     '<p class="' + CSS_META + '">' + VghLantern__PrintDocument__Escape(metaLine) + '</p>' +
+                     VghLantern__PrintDocument__BuildMasthead(model, '') +
                      VghLantern__PrintDocument__BuildUserWarnings(model.UserWarnings) +
                      VghLantern__PrintDocument__BuildWarnings(model.Warnings) +
                      VghLantern__PrintDocument__Heading('Lantern Schedule') +
                      Tables.VghLantern__Specification__TakeoffTableRenderer__BuildTable(
                          ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ScheduleColumns', TABLE_LABEL), model.ScheduleRows, null, null
                      );
-
-        var i;
-        for (i = 0; i < model.Lanterns.length; i++) {
-            html  +=  VghLantern__PrintDocument__BuildLanternTakeoff(model.Lanterns[i], state);
-        }
 
         if (model.Aggregate && state.ShowTakeoffSchedule) {
             html  +=  VghLantern__PrintDocument__Heading('Project Totals') +
@@ -216,11 +248,77 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the Specification Body for One Lantern
+    // ------------------------------------------------------------
+    // One lantern's own tables, printed after that lantern's drawing so the T codes in
+    // the component schedule are read against the plan view they are marked on. That
+    // adjacency is the whole reason the specification is split per lantern: a reader
+    // holding the Kitchen drawing should not be leafing through the Dining Room
+    // takeoff to find what T04 is.
+    function VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml(viewState, lanternIndex) {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        var Tables         =  window.VghLantern__Specification__TakeoffTableRenderer;
+        if (!DocumentModel || !Tables) {
+            return '<p class="' + CSS_EMPTY + '">Specification modules are not available.</p>';
+        }
+
+        var model  =  DocumentModel.VghLantern__Specification__DocumentModel__BuildFromState();
+        if (!model) {
+            return '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
+        }
+
+        var entry  =  VghLantern__PrintDocument__FindLantern(model, lanternIndex);
+        if (!entry) {
+            return '<p class="' + CSS_EMPTY + '">This lantern has no specification content.</p>';
+        }
+
+        return '<div class="' + CSS_ROOT + '">' +
+               VghLantern__PrintDocument__BuildMasthead(model, entry.Title) +
+               VghLantern__PrintDocument__BuildLanternTakeoff(entry, viewState || {}, true) +
+               '</div>';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the Full Print-Faithful Specification Body
+    // ------------------------------------------------------------
+    // The whole specification as one continuous document: the project summary followed
+    // by every lantern. Retained for any surface that wants the specification on its
+    // own rather than interleaved with the drawings.
+    function VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml(viewState) {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        if (!DocumentModel) {
+            return '<p class="' + CSS_EMPTY + '">Specification modules are not available.</p>';
+        }
+
+        var model  =  DocumentModel.VghLantern__Specification__DocumentModel__BuildFromState();
+        if (!model) {
+            return '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
+        }
+
+        var html  =  VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml(viewState);
+        var i;
+
+        for (i = 0; i < model.Lanterns.length; i++) {
+            html  +=  '<div class="' + CSS_ROOT + '">' +
+                      VghLantern__PrintDocument__BuildLanternTakeoff(model.Lanterns[i], viewState || {}) +
+                      '</div>';
+        }
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
     return {
         VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml :
-            VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml,
+        VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml :
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml,
+        VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml :
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml
     };
 
 // endregion -------------------------------------------------------------------

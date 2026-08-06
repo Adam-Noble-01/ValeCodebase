@@ -325,10 +325,12 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
 
     // SUB FUNCTION | Write Every Table for One Lantern
     // ------------------------------------------------------------
-    function VghLantern__SpecPainter__WriteLanternTakeoff(cursor, entry, viewState) {
+    // isOwnPage suppresses the lantern heading, because on a page of its own the
+    // masthead already names the lantern.
+    function VghLantern__SpecPainter__WriteLanternTakeoff(cursor, entry, viewState, isOwnPage) {
         var style  =  cursor.Style;
 
-        VghLantern__SpecPainter__WriteHeading(cursor, entry.Title, style.HeadingPt);
+        if (!isOwnPage) VghLantern__SpecPainter__WriteHeading(cursor, entry.Title, style.HeadingPt);
 
         if (viewState.ShowComponentSchedule) {
             VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Component, entry.Takeoff.Components);
@@ -341,6 +343,39 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     }
     // ------------------------------------------------------------
 
+
+    // SUB FUNCTION | Write the Document Masthead
+    // ------------------------------------------------------------
+    // Mirrors PrintDocumentRenderer's masthead so the printed page and the previewed
+    // page open with the same two lines.
+    function VghLantern__SpecPainter__WriteMasthead(cursor, model, titleSuffix) {
+        var style  =  cursor.Style;
+
+        VghLantern__SpecPainter__WriteHeading(cursor,
+            model.Meta.DocumentTitle + (titleSuffix ? ('  -  ' + titleSuffix) : ''), style.TitlePt);
+
+        VghLantern__SpecPainter__WriteParagraph(cursor,
+            [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
+                .filter(function(part) { return !!part; }).join('  |  '),
+            style.BodyPt);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Find One Lantern's Entry in a Built Model
+    // ------------------------------------------------------------
+    // Matched on LanternIndex rather than array position: the model omits any lantern
+    // the solver rejected, so position would pair the wrong takeoff with the drawing
+    // it is printed behind.
+    function VghLantern__SpecPainter__FindLantern(model, lanternIndex) {
+        var i;
+        for (i = 0; i < model.Lanterns.length; i++) {
+            if (model.Lanterns[i].LanternIndex === lanternIndex) return model.Lanterns[i];
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -348,33 +383,27 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Paint the Specification Onto an Already-Opened PDF Page
+    // FUNCTION | Paint the Project Summary Onto an Already-Opened PDF Page
     // ------------------------------------------------------------
-    // Flows onto further pages through the writer's page context as it fills up.
-    function VghLantern__DocPreview__SpecificationPdfPainter__Paint(doc, pageContext, page, model, viewState) {
+    // What the whole job amounts to: the schedule, the totals and the job notes. Flows
+    // onto further pages through the writer's page context as it fills up.
+    function VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary(doc, pageContext, page, model, viewState) {
         if (!doc || !page || !model) return false;
 
         var style   =  VghLantern__SpecPainter__ResolveStyle();
         var cursor  =  VghLantern__SpecPainter__CreateCursor(doc, pageContext, page, style);
-        var i;
 
-        VghLantern__SpecPainter__WriteHeading(cursor, model.Meta.DocumentTitle, style.TitlePt);
-        VghLantern__SpecPainter__WriteParagraph(cursor,
-            [model.Meta.ProjectCode, model.Meta.ProjectName, model.Meta.ClientName]
-                .filter(function(part) { return !!part; }).join('  |  '),
-            style.BodyPt);
+        VghLantern__SpecPainter__WriteMasthead(cursor, model, '');
 
         // Staff-authored warnings lead and print red: they are free text a person
-        // wrote about this job, not a rule the application evaluated.
+        // wrote about this job, not a rule the application evaluated. They sit on the
+        // summary rather than being repeated per lantern because each one already
+        // names the lantern it came from.
         VghLantern__SpecPainter__WriteWarningList(cursor, 'Document Warnings', model.UserWarnings, style.UserWarningColour);
         VghLantern__SpecPainter__WriteWarningList(cursor, 'Warnings',          model.Warnings,     null);
 
         VghLantern__SpecPainter__WriteHeading(cursor, 'Lantern Schedule', style.HeadingPt);
         VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Schedule, model.ScheduleRows);
-
-        for (i = 0; i < model.Lanterns.length; i++) {
-            VghLantern__SpecPainter__WriteLanternTakeoff(cursor, model.Lanterns[i], viewState);
-        }
 
         if (model.Aggregate && viewState.ShowTakeoffSchedule) {
             VghLantern__SpecPainter__WriteHeading(cursor, 'Project Totals', style.HeadingPt);
@@ -392,11 +421,30 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Build the Page Descriptor for the Specification
+    // FUNCTION | Paint One Lantern's Specification Onto an Already-Opened PDF Page
     // ------------------------------------------------------------
-    // One descriptor covers the whole specification however long it runs; the painter
-    // asks the writer for further pages as it fills them.
-    function VghLantern__DocPreview__SpecificationPdfPainter__BuildPage(page, model, viewState) {
+    function VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern(doc, pageContext, page, model, viewState, lanternIndex) {
+        if (!doc || !page || !model) return false;
+
+        var entry  =  VghLantern__SpecPainter__FindLantern(model, lanternIndex);
+        if (!entry) return false;
+
+        var style   =  VghLantern__SpecPainter__ResolveStyle();
+        var cursor  =  VghLantern__SpecPainter__CreateCursor(doc, pageContext, page, style);
+
+        VghLantern__SpecPainter__WriteMasthead(cursor, model, entry.Title);
+        VghLantern__SpecPainter__WriteLanternTakeoff(cursor, entry, viewState, true);
+
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the Page Descriptor for the Project Summary
+    // ------------------------------------------------------------
+    // One descriptor covers the whole summary however long it runs; the painter asks
+    // the writer for further pages as it fills them.
+    function VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage(page, model, viewState) {
         if (!page || !model) return null;
 
         return {
@@ -404,7 +452,28 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
             WidthMm  : page.WidthMm,
             HeightMm : page.HeightMm,
             Paint    : function(doc, pageContext) {
-                return VghLantern__DocPreview__SpecificationPdfPainter__Paint(doc, pageContext, page, model, viewState);
+                return VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary(doc, pageContext, page, model, viewState);
+            }
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the Page Descriptor for One Lantern's Specification
+    // ------------------------------------------------------------
+    // Returns null for a lantern the model does not hold, which drops the page rather
+    // than printing a masthead over nothing. A lantern the solver rejected is already
+    // reported by the issue banner, so the pack does not need to say so twice.
+    function VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage(page, model, viewState, lanternIndex) {
+        if (!page || !model) return null;
+        if (!VghLantern__SpecPainter__FindLantern(model, lanternIndex)) return null;
+
+        return {
+            Kind     : PAGE_KIND,
+            WidthMm  : page.WidthMm,
+            HeightMm : page.HeightMm,
+            Paint    : function(doc, pageContext) {
+                return VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern(doc, pageContext, page, model, viewState, lanternIndex);
             }
         };
     }
@@ -414,9 +483,11 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DocPreview__SpecificationPdfPainter__PageKind   : PAGE_KIND,
-        VghLantern__DocPreview__SpecificationPdfPainter__Paint      : VghLantern__DocPreview__SpecificationPdfPainter__Paint,
-        VghLantern__DocPreview__SpecificationPdfPainter__BuildPage  : VghLantern__DocPreview__SpecificationPdfPainter__BuildPage
+        VghLantern__DocPreview__SpecificationPdfPainter__PageKind               : PAGE_KIND,
+        VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary    : VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary,
+        VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern           : VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern,
+        VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage: VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage,
+        VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage       : VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage
     };
 
 // endregion -------------------------------------------------------------------

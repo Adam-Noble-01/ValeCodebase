@@ -59,10 +59,13 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
     // so it lives on the project file rather than in a user's preferences.
     const TOGGLE_KEYS  =  [
         'ShowWelcomeLetter',
+        'ShowProjectSummary',
         'ShowDrawingSheet',
+        'ShowDrawingNotes',
         'ShowTakeoffSchedule',
         'ShowComponentSchedule',
         'ShowJobNotes',
+        'ShowDrawingTermsPages',
         'ShowTermsPages'
     ];
     // ------------------------------------------------------------

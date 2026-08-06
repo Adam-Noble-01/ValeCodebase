@@ -87,6 +87,39 @@
                 "EmptyBehaviour": "warn"
             }
         ],
+        "VghLantern__Terms__Config__DrawingTermsDocument": {
+            "DocumentTitle"             : "General Drawing Terms",
+            "IntroductionText"          : "The following notes, limitations and omissions apply to every drawing issued with this quotation. Where a drawing carries notes of its own, those notes are printed immediately after that drawing and are read in addition to these.",
+            "EmptyStateMessage"         : "The general drawing terms are switched off, so no drawing terms document will be issued.",
+            "LibraryFailureMessage"     : "The general drawing terms library could not be loaded. The drawing terms document cannot be issued until it is available.",
+
+            "ReviewNoticeEnabled"       : true,
+            "ReviewNoticeHeading"       : "Note on the status of these drawing terms",
+            "ReviewNoticeText"          : "These drawing terms have not yet been reviewed or approved by Vale Garden Houses' legal advisers. They are issued as a working draft to describe the intended basis on which the drawings are read, and should not be relied upon as final wording.",
+
+            "LanternDocumentTitlePattern": "{lanternTitle}  -  Drawing Notes",
+            "LanternIntroductionText"   : "The following notes apply to this drawing in particular, and are read in addition to the General Drawing Terms at the back of this document.",
+            "LanternSectionLabel"       : "Drawing Notes",
+            "LanternSectionNumber"      : 1,
+            "LanternNote"               : "A lantern's own drawing notes are their own one-section document, printed immediately after that lantern's sheet. The section number restarts at 1 for each lantern because these notes are cited against a drawing, not against the pack - 'note 1.03 on the Kitchen drawing' is unambiguous in a way that a pack-wide running number would not be once a lantern is added or removed.",
+
+            "DocumentNote"              : "The drawing terms are a SEPARATE DOCUMENT from the business terms of engagement in VghLantern__Terms__Config__Document above, with their own title, their own introduction, their own numbering series and their own review notice. One is read by whoever is setting out on site, the other by whoever is signing the order. They are deliberately not sections of one another, because switching the payment terms off should have nothing to do with whether a contractor is told not to scale off a drawing."
+        },
+
+        "VghLantern__Terms__Config__DrawingTermsSections": [
+            {
+                "Key"           : "drawingGeneral",
+                "Number"        : 1,
+                "Label"         : "General Drawing Terms, Limitations and Omissions",
+                "Source"        : "library",
+                "SourceFile"    : "Na__Terms__11__GeneralDrawingTerms__.md",
+                "IsCritical"    : false,
+                "DefaultEnabled": true,
+                "EmptyBehaviour": "warn"
+            }
+        ],
+        "VghLantern__Terms__Config__DrawingTermsSectionsNote": "The section table for the General Drawing Terms document. Numbered in its own series starting at 1, independent of the business terms sections, because the two documents are cited separately. Add a section here to add a page to the drawing terms document; the loader picks up any SourceFile named in this table exactly as it does for the business terms.",
+
         "VghLantern__Terms__Config__SectionsNote": "Number is FIXED and is what makes a clause citable. Never renumber a section to close a gap - a section switched off simply does not print, and the sections around it keep their numbers so a term quoted on a previous document still means the same clause. Source is either 'project:critical', 'project:special' or 'library' with a SourceFile. EmptyBehaviour 'hide' drops an empty section silently (a project with no special terms is normal); 'warn' raises a Preview and Send warning because an empty standard section means a missing or unreadable markdown file.",
 
         "VghLantern__Terms__Config__Style": {
@@ -127,6 +160,9 @@
             "TermsQrBaseUrlNote"        : "PLACEHOLDER ADDRESS. This is the localhost development link so the code is scannable and testable today. Replace it with the hosted Vale client terms URL when the online portal exists. Changing this one key is the whole migration - no JS anywhere knows the address.",
             "TermsQrQueryPattern"       : "?doc=terms&project={projectCode}",
             "TermsQrQueryPatternNote"   : "Tokens: projectCode. VghLantern__Terms__QrLink__.js both builds this and reads it back on inbound navigation, so the link the code encodes and the link the app answers cannot drift.",
+
+            "DrawingTermsQrQueryPattern"     : "?doc=drawingTerms&project={projectCode}&lantern={lanternIndex}",
+            "DrawingTermsQrQueryPatternNote" : "Tokens: projectCode, lanternIndex. This is what every drawing sheet encodes, because a contractor scanning a sheet wants the drawing omissions and limitations rather than the payment schedule. The code is the same whether or not that lantern has notes of its own: the application resolves it on arrival, showing the lantern's own notes where they exist and the General Drawing Terms where they do not. That way writing a lantern's first note does not invalidate a code already printed on an issued sheet. TermsQrQueryPattern above is still used for a project-level link with no lantern in scope.",
 
             "CellWidthMm"               : 52,
             "CellWidthMmNote"           : "Relative share of the titleblock strip is not used here: this cell is an absolute width taken off the right-hand end, and the flexible field cells divide what is left. That keeps the QR square a fixed printed size whatever paper the sheet is on.",

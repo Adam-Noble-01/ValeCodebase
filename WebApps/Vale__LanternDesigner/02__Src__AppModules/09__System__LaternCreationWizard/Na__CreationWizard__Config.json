@@ -1,0 +1,62 @@
+{
+    "VghLantern__CreationWizard__Config": {
+        "VghLantern__CreationWizard__Config__Description": "System configuration overlay for the Lantern Creation Wizard. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('CreationWizard'). The wizard collects only the decisions that shape a new lantern; every other value stays on the schema and seed defaults. To add a future step: add an entry to the Steps array here, then register its field binding in VghLantern__CreationWizard__Steps__.js STEP_BINDINGS. Steps write to existing project-file fields only, so the wizard never touches the JSON schema.",
+
+        "VghLantern__CreationWizard__Config__Behaviour": {
+            "Enabled"             : true,
+            "RunForFirstLantern"  : true,
+            "SectionTransitionMs" : 340,
+            "AutoFocusDelayMs"    : 140,
+            "BehaviourNote"       : "Enabled false restores the old silent default-lantern creation on every path. RunForFirstLantern false limits the wizard to the editor's + Add Lantern button. SectionTransitionMs drives the overlay entrance and the section expand/collapse; AutoFocusDelayMs holds the caret back until the section is mostly open so the focus scroll never fights the animation."
+        },
+
+        "VghLantern__CreationWizard__Config__Chrome": {
+            "TitleFirstLantern"         : "Set Out Your Roof Lantern",
+            "TitleAdditionalLantern"    : "Add Another Lantern",
+            "SubtitleFirstLantern"      : "A few quick answers and the lantern is standing in the configurator. Everything else starts on Vale defaults and can be refined at any time.",
+            "SubtitleAdditionalLantern" : "Shape the new lantern before it joins the project. Everything else starts on Vale defaults and can be refined at any time.",
+            "StepCounterTemplate"       : "Step {current} of {total}",
+            "NextButtonLabel"           : "Next",
+            "CancelButtonLabel"         : "Cancel",
+            "CreateButtonLabel"         : "Create Lantern",
+            "AllCompleteHint"           : "All set. Create the lantern, or click any answer above to change it.",
+            "EnterKeyHint"              : "Press Enter to confirm each answer"
+        },
+
+        "VghLantern__CreationWizard__Config__Steps": [
+            { "Key": "length", "Enabled": true, "Title": "Lantern Length", "Prompt": "How long is the lantern?",           "Hint": "The long plan axis, measured to the outside face of the builders upstand." },
+            { "Key": "width",  "Enabled": true, "Title": "Lantern Width",  "Prompt": "How wide is the lantern?",           "Hint": "The short plan axis, measured to the outside face of the builders upstand." },
+            { "Key": "pitch",  "Enabled": true, "Title": "Roof Pitch",     "Prompt": "How steep are the roof slopes?",     "Hint": "Slope angle from horizontal. This is the number that sets how tall the roof stands." },
+            { "Key": "finial", "Enabled": true, "Title": "Finials",        "Prompt": "Crown the ridge, or keep it clean?", "Hint": "Each card is the component's real front elevation. Geometry loads once the lantern is created." }
+        ],
+
+        "VghLantern__CreationWizard__Config__NameStep": {
+            "Title"       : "Lantern Name",
+            "Prompt"      : "What should this lantern be called?",
+            "Hint"        : "Names the tab strip entry and the specification schedule row. Leave blank to keep the sequential label.",
+            "Placeholder" : "e.g. Kitchen Lantern",
+            "MaxLength"   : 80
+        },
+
+        "VghLantern__CreationWizard__Config__FinialCards": {
+            "NoFinialsLabel"       : "No Finials",
+            "NoFinialsPreviewText" : "Clean ridge",
+            "NoComponentsMessage"  : "No finial components are available in the library. The lantern can still be created without one."
+        },
+
+        "VghLantern__CreationWizard__Config__PreviewPane": {
+            "PaneTitle"       : "Live Preview",
+            "PlanLabel"       : "Plan",
+            "ElevationLabel"  : "Front Elevation",
+            "NoFinialCaption" : "Clean ridge, no finials"
+        },
+
+        "VghLantern__CreationWizard__Config__Messages": {
+            "DimensionRangeTemplate" : "Enter a value between {min} and {max} {unit}.",
+            "FinialChoiceRequired"   : "Pick a finial card, or choose No Finials to continue.",
+            "BlankNameSummary"       : "Sequential label",
+            "CreatedToastFirst"      : "Lantern created.",
+            "CreatedToastAdditional" : "New lantern added to the project."
+        }
+    }
+}

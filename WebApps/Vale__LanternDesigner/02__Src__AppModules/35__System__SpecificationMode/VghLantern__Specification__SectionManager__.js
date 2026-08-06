@@ -25,6 +25,7 @@
    | Key        | Rendered by                                       |
    | schedule   | ScheduleRenderer BuildLanternSchedule             |
    | linear     | ScheduleRenderer BuildPerLantern('linear')        |
+   | cuttingList| ScheduleRenderer BuildPerLantern('cuttingList')   |
    | areas      | ScheduleRenderer BuildPerLantern('areas')         |
    | components | ScheduleRenderer BuildPerLantern('components')    |
    | finish     | ScheduleRenderer BuildFinishSchedule              |
@@ -161,6 +162,9 @@ const VghLantern__Specification__SectionManager = (function() {
             case 'linear':
                 return Schedules.VghLantern__Specification__ScheduleRenderer__BuildPerLantern(documentModel, 'linear') +
                        Schedules.VghLantern__Specification__ScheduleRenderer__BuildAggregate(documentModel);
+
+            case 'cuttingList':
+                return Schedules.VghLantern__Specification__ScheduleRenderer__BuildPerLantern(documentModel, 'cuttingList');
 
             case 'areas':
                 return Schedules.VghLantern__Specification__ScheduleRenderer__BuildPerLantern(documentModel, 'areas');

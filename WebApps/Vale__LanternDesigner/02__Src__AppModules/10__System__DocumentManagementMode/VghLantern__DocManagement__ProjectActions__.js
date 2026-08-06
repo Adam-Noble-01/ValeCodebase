@@ -11,7 +11,11 @@
 
    DESCRIPTION:
    - Renders the "+ New Project" button into the actions container
-   - New Project opens a modal for entering project metadata
+   - New Project opens the database-first modal: a Vale job number is typed,
+     validated in real time, fetched from the Vale database placeholder and
+     previewed for confirmation before the project is built from the record
+   - The previous manual entry modal remains as the fallback behind the
+     "Not in the Database? Click Here" link for ad hoc and test projects
    - Open action loads a project and switches to the Lantern Editor mode
    - Edit action toggles inline row editing; Save persists metadata via ProjectFileManager
    - Delete action shows a confirmation modal before removing a project
@@ -72,6 +76,41 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         if (!appConfig) return {};
 
         return appConfig['VghLantern__DocManagement__Config__NewProject'] || {};
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read the Database New Project Config Block
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__DbConfig() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return {};
+
+        var appConfig  =  StateManager.VghLantern__StateManager__GetAppConfig();
+        if (!appConfig) return {};
+
+        return appConfig['VghLantern__DocManagement__Config__NewProjectDatabase'] || {};
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read One Database Modal Copy String
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__DbCopy(key) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            VghLantern__ProjectActions__DbConfig(), key,
+            'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProjectDatabase');
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Escape Text for HTML Interpolation
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__Escape(textValue) {
+        return String(textValue == null ? '' : textValue)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
     // ------------------------------------------------------------
 
@@ -141,12 +180,338 @@ const VghLantern__DocManagement__ProjectActions = (function() {
 
 
 // -----------------------------------------------------------------------------
-// REGION | New Project Flow
+// REGION | New Project Flow - Vale Database First
 // -----------------------------------------------------------------------------
+// The preferred way to create a project: type a Vale job number, fetch the
+// client record behind it, confirm the details, and the project builds itself.
+// The manual form below survives as the fallback for ad hoc projects.
 
-    // FUNCTION | Handle New Project Button Click
+    // FUNCTION | Handle New Project Button Click - Open the Database Modal
     // ------------------------------------------------------------
     function VghLantern__ProjectActions__OnNewProjectClick() {
+        VghLantern__ProjectActions__ShowDbEntryModal('');
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Show the Job Number Entry Step
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__ShowDbEntryModal(prefillCode) {
+        var esc  =  VghLantern__ProjectActions__Escape;
+
+        var bodyHtml  =  '';
+        bodyHtml     +=  '<label class="VghLantern__Modal__Label" for="VghLantern__Modal__InputJobNumber">';
+        bodyHtml     +=      esc(VghLantern__ProjectActions__DbCopy('JobNumberLabel'));
+        bodyHtml     +=  '</label>';
+        bodyHtml     +=  '<input id="VghLantern__Modal__InputJobNumber" class="VghLantern__Modal__Input" type="text"';
+        bodyHtml     +=      ' inputmode="numeric" autocomplete="off" data-vghlantern-noautofill="true"';
+        bodyHtml     +=      ' placeholder="' + esc(VghLantern__ProjectActions__DbCopy('JobNumberPlaceholder')) + '"';
+        bodyHtml     +=      ' value="' + esc(prefillCode || '') + '">';
+        bodyHtml     +=  '<div id="VghLantern__Modal__ValidationMsg" class="VghLantern__Modal__ValidationMsg"></div>';
+        bodyHtml     +=  '<p class="VghLantern__DocManagement__DbHint">' + esc(VghLantern__ProjectActions__DbCopy('JobNumberHint')) + '</p>';
+        bodyHtml     +=  '<div class="VghLantern__DocManagement__DbManualRow">';
+        bodyHtml     +=      '<button type="button" id="VghLantern__Modal__BtnManualEntry" class="VghLantern__DocManagement__DbManualLink">';
+        bodyHtml     +=          esc(VghLantern__ProjectActions__DbCopy('ManualEntryLinkText'));
+        bodyHtml     +=      '</button>';
+        bodyHtml     +=  '</div>';
+
+        var actionsHtml  =  '';
+        actionsHtml     +=  '<button id="VghLantern__Modal__BtnCancel" class="VghLantern__Modal__BtnSecondary">';
+        actionsHtml     +=      esc(VghLantern__ProjectActions__DbCopy('CancelButtonLabel'));
+        actionsHtml     +=  '</button>';
+        actionsHtml     +=  '<button id="VghLantern__Modal__BtnDbFetch" class="VghLantern__Modal__BtnPrimary" disabled>';
+        actionsHtml     +=      esc(VghLantern__ProjectActions__DbCopy('FetchButtonLabel'));
+        actionsHtml     +=  '</button>';
+
+        VghLantern__ProjectActions__ShowModal(VghLantern__ProjectActions__DbCopy('ModalTitle'), bodyHtml, actionsHtml);
+
+        var cancelBtn   =  document.getElementById('VghLantern__Modal__BtnCancel');
+        var fetchBtn    =  document.getElementById('VghLantern__Modal__BtnDbFetch');
+        var manualBtn   =  document.getElementById('VghLantern__Modal__BtnManualEntry');
+        var codeInput   =  document.getElementById('VghLantern__Modal__InputJobNumber');
+
+        if (cancelBtn)  cancelBtn.addEventListener('click', VghLantern__ProjectActions__HideModal);
+        if (fetchBtn)   fetchBtn.addEventListener('click', VghLantern__ProjectActions__OnDbFetch);
+        if (manualBtn)  manualBtn.addEventListener('click', VghLantern__ProjectActions__OpenManualNewProjectModal);
+
+        if (codeInput) {
+            codeInput.addEventListener('input', VghLantern__ProjectActions__OnDbEntryInput);
+            codeInput.addEventListener('keydown', function(keyEvent) {
+                if (keyEvent.key === 'Enter' && !keyEvent.repeat) {
+                    keyEvent.preventDefault();
+                    VghLantern__ProjectActions__OnDbFetch();                  // <-- Enter fetches; OnDbFetch re-validates first
+                }
+            });
+            codeInput.focus();
+            VghLantern__ProjectActions__OnDbEntryInput();                     // <-- Prefilled Back-navigation re-arms the fetch button
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Map a Validation Reason to Its User-Facing Copy
+    // ------------------------------------------------------------
+    function VghLantern__ProjectActions__DbReasonMessage(reasonKey) {
+        if (reasonKey === 'nonNumeric')   return VghLantern__ProjectActions__DbCopy('ErrorNonNumeric');
+        if (reasonKey === 'leadingZero')  return VghLantern__ProjectActions__DbCopy('ErrorLeadingZero');
+        if (reasonKey === 'tooLong')      return VghLantern__ProjectActions__DbCopy('ErrorWrongLength');
+        if (reasonKey === 'tooShort')     return VghLantern__ProjectActions__DbCopy('ErrorWrongLength');
+        return '';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Live-Validate the Job Number as It Is Typed
+    // ------------------------------------------------------------
+    // A short entry is a prefix in progress rather than a mistake, so it only
+    // disables the fetch button; the red message is reserved for characters
+    // that can never become a valid Vale job number.
+    function VghLantern__ProjectActions__OnDbEntryInput() {
+        var ClientLookup  =  window.VghLantern__ValeDatabase__ClientLookup;
+        var codeInput     =  document.getElementById('VghLantern__Modal__InputJobNumber');
+        var fetchBtn      =  document.getElementById('VghLantern__Modal__BtnDbFetch');
+        if (!ClientLookup || !codeInput) return;
+
+        var verdict  =  ClientLookup.VghLantern__ValeDatabase__ValidateJobNumber(codeInput.value);
+        var isTypingPrefix  =  (verdict.Reason === 'empty' || verdict.Reason === 'tooShort');
+
+        if (fetchBtn) fetchBtn.disabled  =  !verdict.IsValid;
+
+        if (verdict.IsValid || isTypingPrefix) {
+            VghLantern__ProjectActions__ShowValidationMessage('');
+            codeInput.classList.remove('VghLantern__Modal__Input--invalid');
+            return;
+        }
+
+        VghLantern__ProjectActions__ShowValidationMessage(VghLantern__ProjectActions__DbReasonMessage(verdict.Reason));
+        codeInput.classList.add('VghLantern__Modal__Input--invalid');
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Toggle the Fetching State on the Entry Step
+    // ------------------------------------------------------------
+    // Cancel and the manual-entry link are frozen too: leaving the entry step
+    // while a lookup is in flight would let the resolved lookup re-open a
+    // dismissed modal or stomp the manual form the user had switched to.
+    function VghLantern__ProjectActions__SetDbFetchingState(isFetching) {
+        var codeInput  =  document.getElementById('VghLantern__Modal__InputJobNumber');
+        var fetchBtn   =  document.getElementById('VghLantern__Modal__BtnDbFetch');
+        var cancelBtn  =  document.getElementById('VghLantern__Modal__BtnCancel');
+        var manualBtn  =  document.getElementById('VghLantern__Modal__BtnManualEntry');
+        var msgEl      =  document.getElementById('VghLantern__Modal__ValidationMsg');
+
+        if (codeInput) codeInput.disabled  =  isFetching;
+        if (cancelBtn) cancelBtn.disabled  =  isFetching;
+        if (manualBtn) manualBtn.disabled  =  isFetching;
+        if (fetchBtn) {
+            fetchBtn.disabled     =  isFetching;
+            fetchBtn.textContent  =  VghLantern__ProjectActions__DbCopy(isFetching ? 'FetchingLabel' : 'FetchButtonLabel');
+        }
+        if (msgEl) {
+            msgEl.classList.toggle('VghLantern__Modal__ValidationMsg--info', isFetching);
+            msgEl.textContent  =  isFetching ? VghLantern__ProjectActions__DbCopy('FetchingMessage') : '';
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Fetch the Client Record and Advance to the Preview
+    // ------------------------------------------------------------
+    async function VghLantern__ProjectActions__OnDbFetch() {
+        var ClientLookup  =  window.VghLantern__ValeDatabase__ClientLookup;
+        var codeInput     =  document.getElementById('VghLantern__Modal__InputJobNumber');
+        if (!ClientLookup || !codeInput) return;
+
+        var jobNumberText  =  codeInput.value.trim();
+        var verdict        =  ClientLookup.VghLantern__ValeDatabase__ValidateJobNumber(jobNumberText);
+        if (!verdict.IsValid) {
+            VghLantern__ProjectActions__ShowValidationMessage(VghLantern__ProjectActions__DbReasonMessage(verdict.Reason));
+            codeInput.classList.add('VghLantern__Modal__Input--invalid');
+            return;                                                           // <-- Enter pressed on a not-yet-valid entry
+        }
+
+        VghLantern__ProjectActions__SetDbFetchingState(true);
+        var result  =  await ClientLookup.VghLantern__ValeDatabase__FetchClientRecord(jobNumberText);
+
+        // Belt and braces behind the frozen buttons above: if the entry step is
+        // no longer on screen (dismissed, or replaced by another feature that
+        // drives the shared modal root), the stale result is abandoned.
+        var modalRoot  =  document.getElementById(MODAL_ROOT_ID);
+        if (!document.getElementById('VghLantern__Modal__BtnDbFetch') ||
+            !modalRoot || !modalRoot.classList.contains(MODAL_VISIBLE_CLASS)) {
+            return;                                                           // <-- Entry step gone mid-fetch; nothing to update
+        }
+
+        if (result && result.Ok) {
+            await VghLantern__ProjectActions__ShowDbPreviewModal(jobNumberText, result.Record);
+            return;                                                           // <-- The preview replaced the entry step's DOM
+        }
+
+        VghLantern__ProjectActions__SetDbFetchingState(false);
+        var messageKey  =  (result && result.Error === 'unavailable') ? 'LookupUnavailableMessage' : 'NotFoundMessage';
+        VghLantern__ProjectActions__ShowValidationMessage(
+            VghLantern__ProjectActions__DbCopy(messageKey).replace('{JobNumber}', jobNumberText));
+        codeInput.focus();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Show the Fetched Client Record for Confirmation
+    // ------------------------------------------------------------
+    // Rows render whatever columns the client table declares (minus the job
+    // number, which the intro line carries), so a future database column
+    // appears here without this modal changing.
+    async function VghLantern__ProjectActions__ShowDbPreviewModal(jobNumberText, clientRecord) {
+        var ClientLookup  =  window.VghLantern__ValeDatabase__ClientLookup;
+        var esc           =  VghLantern__ProjectActions__Escape;
+        var columns       =  await ClientLookup.VghLantern__ValeDatabase__GetColumns();
+
+        var bodyHtml  =  '';
+        bodyHtml     +=  '<p class="VghLantern__DocManagement__DbIntro">';
+        bodyHtml     +=      esc(VghLantern__ProjectActions__DbCopy('PreviewIntro')).replace('{JobNumber}', '<strong>' + esc(jobNumberText) + '</strong>');
+        bodyHtml     +=  '</p>';
+        bodyHtml     +=  '<div class="VghLantern__DocManagement__DbPreview">';
+
+        for (var i = 0; i < columns.length; i++) {
+            var column  =  columns[i];
+            if (!column || column.Key === 'JobNumber') continue;              // <-- The intro line already names the job number
+
+            var cellValue  =  clientRecord[column.Key];
+            bodyHtml      +=  '<div class="VghLantern__DocManagement__DbPreviewRow">';
+            bodyHtml      +=      '<span class="VghLantern__DocManagement__DbPreviewLabel">' + esc(column.Label || column.Key) + '</span>';
+            bodyHtml      +=      '<span class="VghLantern__DocManagement__DbPreviewValue">' + esc(cellValue == null ? '' : cellValue) + '</span>';
+            bodyHtml      +=  '</div>';
+        }
+
+        bodyHtml     +=  '</div>';
+        bodyHtml     +=  '<p class="VghLantern__DocManagement__DbQuestion">' + esc(VghLantern__ProjectActions__DbCopy('PreviewQuestion')) + '</p>';
+        bodyHtml     +=  '<div id="VghLantern__Modal__ValidationMsg" class="VghLantern__Modal__ValidationMsg"></div>';
+
+        var actionsHtml  =  '';
+        actionsHtml     +=  '<button id="VghLantern__Modal__BtnDbBack" class="VghLantern__Modal__BtnSecondary">';
+        actionsHtml     +=      esc(VghLantern__ProjectActions__DbCopy('BackButtonLabel'));
+        actionsHtml     +=  '</button>';
+        actionsHtml     +=  '<button id="VghLantern__Modal__BtnDbAccept" class="VghLantern__Modal__BtnPrimary">';
+        actionsHtml     +=      esc(VghLantern__ProjectActions__DbCopy('AcceptButtonLabel'));
+        actionsHtml     +=  '</button>';
+
+        VghLantern__ProjectActions__ShowModal(VghLantern__ProjectActions__DbCopy('ConfirmTitle'), bodyHtml, actionsHtml);
+
+        var backBtn    =  document.getElementById('VghLantern__Modal__BtnDbBack');
+        var acceptBtn  =  document.getElementById('VghLantern__Modal__BtnDbAccept');
+
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                VghLantern__ProjectActions__ShowDbEntryModal(jobNumberText);  // <-- Back keeps the typed number
+            });
+        }
+
+        if (acceptBtn) {
+            acceptBtn.addEventListener('click', function() {
+                VghLantern__ProjectActions__OnDbAcceptCreate(jobNumberText, clientRecord);
+            });
+            acceptBtn.addEventListener('keydown', function(keyEvent) {
+                if (keyEvent.key === 'Enter' && keyEvent.repeat) {
+                    keyEvent.preventDefault();                                // <-- A held Enter from the entry step must not auto-accept
+                }
+            });
+            acceptBtn.focus();                                                // <-- A fresh Enter press accepts via the focused button
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Project from the Confirmed Client Record
+    // ------------------------------------------------------------
+    // Field mapping: the job number is the project code, the site name is the
+    // project name (matching the house-name style of manually created
+    // projects), and the record's document name and client name land in their
+    // metadata slots. SiteAddress and Author are the two schema fields no UI
+    // collected before this flow existed; the database record fills both.
+    function VghLantern__ProjectActions__OnDbAcceptCreate(jobNumberText, clientRecord) {
+        var ProjectFileManager  =  window.VghLantern__AppData__ProjectFileManager;
+        var StateManager        =  window.VghLantern__AppCore__StateManager;
+        var ModeManager         =  window.VghLantern__AppCore__ModeManager;
+        var ClientLookup        =  window.VghLantern__ValeDatabase__ClientLookup;
+
+        if (!ProjectFileManager) {
+            VghLantern__ProjectActions__ShowValidationMessage('Project storage is unavailable.');
+            return;
+        }
+
+        var existing  =  ProjectFileManager.VghLantern__ProjectFileManager__LoadProject(jobNumberText);
+        if (existing) {
+            VghLantern__ProjectActions__ShowValidationMessage('Project code ' + jobNumberText + ' already exists.');
+            return;                                                           // <-- Never silently overwrite
+        }
+
+        var composedAddress  =  ClientLookup
+            ? ClientLookup.VghLantern__ValeDatabase__ComposeSiteAddress(clientRecord)
+            : '';
+
+        var projectData  =  ProjectFileManager.VghLantern__ProjectFileManager__CreateProject(
+            jobNumberText,
+            clientRecord.SiteName       || '',
+            clientRecord.DocumentName   || '',
+            clientRecord.ClientName     || '',
+            composedAddress,
+            clientRecord.AccountManager || '');
+
+        if (!projectData) {
+            VghLantern__ProjectActions__ShowValidationMessage('Could not create the project. See the console for detail.');
+            return;
+        }
+
+        if (StateManager) {
+            StateManager.VghLantern__StateManager__SetCurrentProject(projectData); // <-- Make the new project active
+        }
+
+        // The welcome letter's recipient block is per-project letter data, so the
+        // record's postal address is seeded through the LetterModel, the letter's
+        // one writer. SetField marks the project dirty, so the standard autosave
+        // persists the seeding moments later through the one existing write path.
+        var LetterModel  =  window.VghLantern__ClientDoc__LetterModel;
+        if (LetterModel && LetterModel.VghLantern__ClientDoc__LetterModel__SetField) {
+            LetterModel.VghLantern__ClientDoc__LetterModel__SetField(projectData, 'clientAddressLine1',    clientRecord.SiteName    || '');
+            LetterModel.VghLantern__ClientDoc__LetterModel__SetField(projectData, 'clientAddressStreet',   clientRecord.SiteAddress || '');
+            LetterModel.VghLantern__ClientDoc__LetterModel__SetField(projectData, 'clientAddressTownCity', clientRecord.PostTown    || '');
+            LetterModel.VghLantern__ClientDoc__LetterModel__SetField(projectData, 'clientAddressPostCode', clientRecord.Postcode    || '');
+        }
+
+        VghLantern__ProjectActions__HideModal();
+        VghLantern__ProjectActions__RefreshProjectList();
+        VghLantern__ProjectActions__Toast(
+            'Project ' + jobNumberText + ' created for ' + (clientRecord.ClientName || 'the client') + '.', 'success');
+
+        if (ModeManager) {
+            var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+            var config      =  VghLantern__ProjectActions__NewProjectConfig();
+            var landingMode =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                config, 'LandingModeKey', 'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProject');
+            ModeManager.VghLantern__ModeManager__SwitchToMode(landingMode);    // <-- Straight into the Lantern Editor
+        }
+
+        // The Creation Wizard pops over the freshly opened editor exactly as
+        // it does for the manual flow, prefilled project metadata and all.
+        var CreationWizard  =  window.VghLantern__CreationWizard__Controller;
+        if (CreationWizard) CreationWizard.VghLantern__CreationWizard__Controller__BeginFirstLantern();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | New Project Flow - Manual Entry Fallback
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Open the Manual New Project Modal
+    // ------------------------------------------------------------
+    // The original pre-database form, now reached via the "Not in the
+    // Database? Click Here" link. Kept for ad hoc projects and for testing
+    // without touching client data.
+    function VghLantern__ProjectActions__OpenManualNewProjectModal() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var NEW_PROJECT_LABEL  =  'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProject';
         var config  =  VghLantern__ProjectActions__NewProjectConfig();
@@ -244,6 +609,13 @@ const VghLantern__DocManagement__ProjectActions = (function() {
                 config, 'LandingModeKey', 'Na__DocManagement__Config.json -> VghLantern__DocManagement__Config__NewProject');
             ModeManager.VghLantern__ModeManager__SwitchToMode(landingMode);        // <-- Straight into the Lantern Editor
         }
+
+        // The Creation Wizard pops over the freshly opened editor to shape the
+        // seeded first lantern. It declines by itself (returning false, needing
+        // no handling here) when disabled in config or unavailable, leaving the
+        // seed lantern standing exactly as before the wizard existed.
+        var CreationWizard  =  window.VghLantern__CreationWizard__Controller;
+        if (CreationWizard) CreationWizard.VghLantern__CreationWizard__Controller__BeginFirstLantern();
     }
     // ------------------------------------------------------------
 
@@ -419,7 +791,7 @@ const VghLantern__DocManagement__ProjectActions = (function() {
         if (StateManager) {
             var current  =  StateManager.VghLantern__StateManager__GetCurrentProject();
             var currentCode  =  current && current['VghLantern__ProjectFile__Metadata']
-                ? current['VghLantern__ProjectFile__Metadata']['ProjectCode']
+                ? current['VghLantern__ProjectFile__Metadata']['VghLantern__ProjectFile__Metadata__ProjectCode']
                 : '';
 
             if (currentCode === projectCode) {
@@ -520,9 +892,10 @@ const VghLantern__DocManagement__ProjectActions = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__ProjectActions__Init             : VghLantern__ProjectActions__Init,
-        VghLantern__ProjectActions__Render           : VghLantern__ProjectActions__Render,
-        VghLantern__ProjectActions__OpenProject      : VghLantern__ProjectActions__OpenProject,
+        VghLantern__ProjectActions__Init                : VghLantern__ProjectActions__Init,
+        VghLantern__ProjectActions__Render              : VghLantern__ProjectActions__Render,
+        VghLantern__ProjectActions__OnNewProjectClick   : VghLantern__ProjectActions__OnNewProjectClick,
+        VghLantern__ProjectActions__OpenProject         : VghLantern__ProjectActions__OpenProject,
         VghLantern__ProjectActions__OnEditProjectClick  : VghLantern__ProjectActions__OnEditProjectClick,
         VghLantern__ProjectActions__OnSaveEditClick     : VghLantern__ProjectActions__OnSaveEditClick,
         VghLantern__ProjectActions__OnCancelEditClick   : VghLantern__ProjectActions__OnCancelEditClick,

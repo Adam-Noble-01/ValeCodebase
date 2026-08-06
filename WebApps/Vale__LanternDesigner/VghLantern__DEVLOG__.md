@@ -3,6 +3,288 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.0 - 06-Aug-2026
+### The app learns who you are: a landing screen greets the user by name, and a Vale job number now builds the whole project
+
+Until now the app booted straight into the project table, and creating a
+project meant typing the code, the name, the client and the document by hand -
+four fields the Vale business database already knows. The app also had no idea
+who was using it.
+
+Boot now lands on a welcome card: the Lantern Designer logo, a greeting that
+writes itself out character by character with the signed in user's name, and
+two doors - View Project Library and Create New Project. Every navigation tab
+sits greyed and unclickable until one of those doors is taken, so the landing
+screen is a true front porch rather than just another tab. A sign in gate
+covers the card on first visit; a successful sign in is remembered in a cookie
+for a month, so the gate only ever asks once per device. Sign out lives as a
+small link on the card footer.
+
+Create New Project is now database-first. The modal asks for a Vale standard
+job number (4 or 5 digits, no leading zero), validates it in red as it is
+typed, fetches the client record behind it, and shows the details for
+confirmation - accept (or press Enter) and the project builds itself with the
+client name, composed site address and account manager already in the
+metadata, then drops straight into the Creation Wizard as before. The real
+Vale SQL database does not exist here yet: a phoney client table stands in
+for it, shaped like the SELECT the future integration will run.
+The old manual form survives behind a "Not in the Database? Click Here" link
+for ad hoc and test projects.
+
+#### Added - `02__Src__AppModules/08__System__UserLogin/`
+- **`VghLantern__UserLogin__SessionManager__.js`** - cookie-backed session over the
+  test account list. A cookie rather than localStorage because the PWA cache
+  purge wipes localStorage; the cookie survives maintenance and carries its
+  own one month expiry, so no code has to check a stored date.
+- **`VghLantern__UserLogin__LoginModal__.js`** - the sign in gate. It owns its own
+  overlay above the shared modal layer rather than using #VghLantern__Modal__Root,
+  because the shared root is rewritten by whichever feature speaks last and a
+  gate must survive all of them.
+- **`Na__UserLogin__UserAccounts__.json`** - three plain text test accounts (Adam
+  Noble among them). Deliberately not a security boundary; the file says so.
+
+#### Added - `02__Src__AppModules/11__System__LandingScreen/`
+- **`VghLantern__LandingScreen__Controller__.js`** - the landing card and its
+  typewriter greeting, re-typed on every entry and on every sign in. The tab
+  lock is one modifier class on the nav bar container rather than per-tab
+  disabling, because Init's project gating rewrites the per-tab classes on
+  every projectChanged and would fight any per-tab lock.
+
+#### Added - `02__Src__AppModules/12__System__ValeDatabaseApi/`
+- **`VghLantern__ValeDatabase__ClientLookup__.js`** - job number validation and the
+  simulated fetch. Async by contract even against a local JSON file, so every
+  caller is already written for the real SQL round trip; a config latency
+  makes the fetching state visible in demos.
+- **`Na__ValeDatabase__ClientRecords__.json`** - the phoney client table: a Columns
+  block mirroring the future result set and five hand-authored Rows. The
+  preview modal renders whatever Columns declares, so a new database column
+  appears in the UI without code changes.
+- **`Na__ValeDatabase__FutureDeveloperNotes__.md`** - what this placeholder is, how
+  it is wired, and the four things the real integration replaces.
+- **`Na__ValeDatabase__ValidTestCodes__.md`** - the five job numbers that resolve,
+  with their clients.
+
+#### Changed - `02__Src__AppModules/10__System__DocumentManagementMode/`
+- **`VghLantern__DocManagement__ProjectActions__.js`** - the + New Project button and
+  the landing screen both open the database modal now; the original four-field
+  form was renamed to the manual fallback and is reached only through the
+  modal's link. The database flow fills SiteAddress and Author, the two
+  metadata fields the schema always had but no UI ever collected.
+
+#### Changed - core wiring
+- **`VghLantern__AppCore__StateManager__.js`** - gains currentUser plus a
+  'userChanged' event, so the greeting reacts to sign in rather than polling.
+- **`VghLantern__AppCore__ModeManager__.js`** - a LandingScreen mode descriptor;
+  **`VghLantern__AppCore__Init__.js`** boots the three new systems and renders the
+  landing mode; **`VghLantern__AppCore__ConfigLoader__.js`** merges the three new
+  config overlays; the app shell gains the landing panel and script tags; the
+  main config's DefaultMode is now LandingScreen; the modal stylesheet gains
+  an invalid-input state and an info variant of the validation line; the
+  service worker cache token was bumped.
+
+#### Changed - the database record now reaches the paperwork
+- The welcome letter's recipient block printed its literal
+  `{{ClientAddress__*}}` placeholder tokens even on a database-created
+  project, because nothing ever wrote real values over the seeds. The accept
+  step now feeds the record's structured address into the letter's four
+  address fields through the LetterModel, and the composed site address and
+  account manager ride into the project metadata on the create call itself -
+  `ProjectFileManager` CreateProject grew trailing siteAddress and author
+  parameters so one write carries everything, rather than a second save
+  racing the first.
+- **`VghLantern__ClientDoc__LetterModel__.js`** - the sign-off now belongs to
+  whoever is signed in: seed and render-time fallback both prefer the session
+  user's name and role over the `{{UserName}}`/`{{UserJobTitle}}` tokens, a
+  stored value that is still a literal placeholder re-resolves instead of
+  freezing the token, and the unsigned-letter warning judges the resolved
+  name so a letter signed by the session user stops warning.
+
+#### Fixed - three ways the new flows could misbehave
+- An in-flight database lookup ignored Cancel and the manual-entry link: the
+  resolved fetch could re-open a dismissed modal or overwrite the manual form
+  mid-typing. Both escape routes now freeze during the fetch, and a stale
+  resolution is abandoned if the entry step is no longer on screen.
+- A held Enter key could ride from the job number field straight through the
+  preview's focused Accept button and create the project unconfirmed; key
+  repeats are now ignored on both steps.
+- Signing out mid-greeting left the old typewriter chain running against the
+  rebuilt card; every card rebuild now cancels the chain first. The sign-out
+  path also clears the reshown login gate's fields, and the landing tab lock
+  now holds against keyboard activation, not just pointer clicks.
+- The client lookup cached the phoney table in memory for the whole session,
+  so edits to Na__ValeDatabase__ClientRecords__.json kept serving the old
+  records until the app was fully reloaded - immune to every cache bust
+  because the request never left the page. The table is now fetched fresh
+  from disk on every lookup, exactly as a real database round trip would be.
+- The localhost server now stamps a fresh PWA_SW_VERSION_TOKEN into the
+  service worker on every start and every console --r restart, so a server
+  restart pushes a complete client cache purge; --no-cache-bust opts out.
+### The document pack learns to count: every lantern gets its own drawing, its own notes and its own specification
+
+Preview and Send could only ever issue one drawing. The pack was four fixed
+pages - letter, drawing, specification, terms - and on a three-lantern job the
+drawing was whichever lantern happened to be selected, while the specification
+ran all three takeoffs together in one list. The T codes that mark glaze bar
+types are per lantern and are going onto the plan views, so a reader holding the
+Kitchen drawing was being asked to find T04 in a schedule covering the whole job.
+
+The pack is now walked rather than listed. Each lantern contributes its drawing,
+its own drawing notes where any have been written, and its own specification, in
+that order, and the pack closes with the general drawing terms and the business
+terms of engagement.
+
+#### Added - `02__Src__AppModules/30__System__DrawingEditorMode/`
+- **`VghLantern__DrawingEditor__SheetBaker__.js`** - composes a sheet per lantern on an
+  offscreen stage, using that lantern's own recorded paper, scale, gutter shares
+  and camera, and its own solved geometry. It never switches the active lantern:
+  doing so would fire `lanternSelected` and rebuild three modes per lantern to
+  compose a page none of them are showing. It borrows the session sheet setup
+  through `CaptureSessionSetup` / `AdoptLanternForBake` / `RestoreSessionSetup`
+  and hands it back in a `finally`, so a lantern that throws mid-bake cannot
+  leave the Drawing Editor on someone else's paper. Results are cached against
+  the lantern serialised, which is a complete description of what its sheet would
+  look like, so nothing anywhere has to remember to invalidate anything.
+
+#### Added - `02__Src__AppModules/37__System__ClientDocumentMode/`
+- **`VghLantern__ClientDoc__DrawingNotesEditor__.js`** - a tab per lantern, each showing
+  its note count, over the same BlockEditor card list the terms use. Notes are
+  stored on the lantern rather than in a map keyed by index on the project,
+  because a map would need resequencing on every add, delete or reorder and one
+  missed resequence attaches the Kitchen notes to the Dining Room drawing.
+
+#### Added - `02__Src__AppModules/38__System__TermsAndConditions/`
+- **`Na__Terms__Library/Na__Terms__11__GeneralDrawingTerms__.md`** - the omissions and
+  limitations covering every drawing in the pack, numbered in its own series.
+
+#### Changed - Three documents from one engine
+`VghLantern__Terms__DocumentModel__.js` now assembles any numbered document from
+a section table: the business terms, the general drawing terms, and one lantern's
+own notes. They differ only in which table they draw on and which config block
+titles them, so they are one function with a spec rather than three near-copies
+that would drift a clause number apart. The screen renderer and the PDF painter
+both already took a model, so both were reused unchanged.
+
+#### Changed - The page plan
+`DocumentState` returns an ordered list of `{ Kind, LanternIndex }` instead of a
+flat list of kinds. `PageOrder` gains a `perLantern` marker - not a page, but the
+point at which the schedule is walked - and `PerLanternOrder` says what each
+lantern contributes. Both the preview and the exporter read that one plan, and a
+per-lantern builder takes its lantern from the plan entry rather than inferring
+one from where it sits in the pack.
+
+#### Fixed - Three ways a baked sheet could show the wrong lantern
+- The PDF painter and `BuildBakedSlotContent` both framed views against
+  `GetSolvedSkeleton()`, which publishes the ACTIVE lantern only. Painting four
+  sheets in a row would have centred every one of them on whichever lantern the
+  editor was showing. The skeleton now travels on the sheet descriptor.
+- The titleblock read its scale label from the live `ScaleManager`, so a pack
+  would have stamped all four sheets with whatever scale the editor was last left
+  on. `BuildForSheet` now takes the descriptor and reads the scale off it.
+- `ViewPlacement`'s markup and snapshot caches are keyed by SLOT, not by lantern.
+  A slot that failed to render for lantern two would have handed back lantern
+  one's linework and the descriptor would have looked perfectly composed. Added
+  `ResetComposedOutput`, called between lanterns, which clears the caches and the
+  2D surfaces but deliberately keeps the GL context alive.
+
+#### Fixed - An infinite render loop waiting to happen
+The bake re-renders on completion and the render queues a bake, so a lantern
+whose geometry cannot be solved - never composing, leaving the pack permanently
+incomplete - would have spun forever. The bake is now attempted once per state of
+the lantern schedule, and an unbakeable lantern is named in the issue banner and
+left alone until something about it changes.
+
+#### Changed - Per-lantern QR codes
+Every sheet encodes `?doc=drawingTerms&project=...&lantern=N`, so scanning the
+Kitchen sheet lands on the Kitchen notes. The code is the same whether or not
+that lantern has notes yet - the application resolves it on arrival, falling
+through to the General Drawing Terms - so writing a lantern's first note does not
+invalidate a code already printed on an issued sheet.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.1.9 - 06-Aug-2026
+### A new lantern starts as a conversation: the Creation Wizard asks the four questions that matter and spawns the answer
+
+A new lantern used to arrive silently. Create a project and a 3000 x 2000 seed
+lantern was already standing; press + and a schema default appeared, and either
+way the real sizes were then teased out of the accordion one section at a time.
+The four decisions that actually shape a lantern - length, width, pitch, and
+whether anything crowns the ridge - deserve to be asked for once, up front, and
+answered while a picture of the consequence draws itself alongside.
+
+#### Added - `02__Src__AppModules/09__System__LaternCreationWizard/`
+- **`Na__CreationWizard__Config.json`** - step order, titles, prompts, hints and every
+  line of copy, plus the behaviour switches: `Enabled` false restores the old
+  silent creation on every path, `RunForFirstLantern` false limits the wizard to
+  the + Add Lantern button. A future parameter is one entry here plus one binding
+  line in Steps.
+- **`VghLantern__CreationWizard__Steps__.js`** - the data layer. Every step binds to a
+  field the project schema already carries (`WidthMm`, `DepthMm`, `PitchDegrees`,
+  the finials block, the identity title), so a wizard-made lantern is
+  indistinguishable from one built in the editor and the schema needed no change.
+  The wizard labels the long axis Length and the short axis Width for the way the
+  question is asked out loud; they land in `WidthMm` and `DepthMm` respectively.
+  Bounds come from the editor's ControlDescriptors, so the wizard cannot accept a
+  value the sliders would refuse; the finial cards come from the same component
+  option resolver the Finials section draws its picture cards from.
+- **`VghLantern__CreationWizard__Overlay__.js`** - the modal surface: linear sections
+  with indicator lamps (hollow while waiting, pulsing ring while active, green
+  with a drawn-on tick once confirmed), collapsed summary rows that reopen on
+  click without losing anything, a progress bar and step counter, Enter to
+  advance, Escape to cancel, focus trapped, and every keydown stopped at the
+  overlay so the editor hotkeys sleep underneath.
+- **`VghLantern__CreationWizard__PreviewSketch__.js`** - the live schematic beside the
+  steps: plan and front elevation redrawn on every keystroke, hips at true 45
+  degrees in plan, roof height from the real pitch trigonometry standing on the
+  lantern's own frame and upstand heights, dimensions in the app's red drawing
+  language, and the chosen finial's baked elevation planted on the ridge ends at
+  honest scale from its overall height.
+- **`VghLantern__CreationWizard__Controller__.js`** - session brain and spawn. The
+  first-lantern flow shapes the seeded lantern in place once a new project lands
+  in the editor; the additional flow holds a fresh default lantern off to the
+  side and only pushes it on Create, so a cancelled wizard adds nothing and a
+  cancelled first lantern keeps its seed defaults. Additional lanterns get a
+  name step feeding the identity title the tab strip and schedule already read;
+  everything the wizard does not ask about keeps its defaults.
+- **`VghLantern__CreationWizard__Styles__Main__.css`** - entrance, section and lamp
+  animation on the Vale token set, grid-rows expand/collapse timed by the config
+  value stamped in as a CSS variable, reduced motion honoured.
+
+#### Changed - integration points
+- **`VghLantern__LanternEditor__Layout__.js`** - `AddLantern` accepts an optional
+  prebuilt lantern and joins the public API; the + button consults the wizard
+  first and falls back to the legacy silent add whenever it declines.
+- **`VghLantern__DocManagement__ProjectActions__.js`** - the new-project flow raises
+  the wizard over the freshly opened editor after the mode switch.
+- **`VghLantern__AppCore__ConfigLoader__.js`** - `Na__CreationWizard__Config.json`
+  joins the overlay list and reads back as `GetSection('CreationWizard')`.
+- **`VghLantern__App__.html`** / **`VghLantern__CoreUi__Styles__Index__.css`** - the four
+  module scripts and the module stylesheet registered.
+- **`Na__ServiceWorker__VghLantern.js`** - cache version token bumped to
+  `2026-08-06-2` so the edited shell files are not served stale.
+
+#### Refined after the first hands-on pass
+- **Preview pane** - plan and front elevation now share one scale and one
+  centreline, solved together so the stacked pair fills the pane instead of
+  floating as two small thumbnails at unrelated sizes; the preview column
+  widened to carry the larger sketch.
+- **Dimension prompting** - only the value being asked for right now renders in
+  the red dimension language, with a gentle opacity pulse as the visual prompt;
+  every resting dimension and the pitch indicator sit in Vale blue.
+- **Finial cards** - square tiles on both the wizard grid and the editor strip
+  (the preview fills whatever the name line leaves), the No Finials / None cells
+  reduced to quiet light grey text on white rather than a boxed grey panel, and
+  the wizard cards gained arrow-key cycling with Enter selecting the focused
+  card and moving the flow on in one stroke.
+- **Anthracite by default** - the schema's frame finish default was an empty
+  string, and library components are coated to match the frame, so the finials
+  of a freshly added lantern rendered in the neutral fallback grey. The default
+  is now Anthracite Grey, matching the palette's own DefaultFinishName. The
+  glaze bar cap already defaulted to the RAL 7016 anthracite entry, which the
+  cap palette names Powder Coated Aluminium.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.1.8 - 05-Aug-2026
 ### The glazing bar becomes a real Vale glaze bar: three parts, three materials, and solids a boolean can cut
 
@@ -386,11 +668,11 @@ Two related faults in one pass.
      environment, while its studio rig had already been dimmed on the assumption
      that there was one. Doubly dark, and only ever on the surfaces that did not
      happen to generate the map.
-  Now split: the equirectangular HDR is CPU side and genuinely shareable, so it
-  downloads and decodes once; the pre-filtered radiance map is built per
-  renderer and held in a WeakMap so it is freed with its renderer. Filtering is
-  a handful of GPU passes on an already resident image, which is the right price
-  for every surface being lit.
+     Now split: the equirectangular HDR is CPU side and genuinely shareable, so it
+     downloads and decodes once; the pre-filtered radiance map is built per
+     renderer and held in a WeakMap so it is freed with its renderer. Filtering is
+     a handful of GPU passes on an already resident image, which is the right price
+     for every surface being lit.
 - Glass consequently inherits scene.environment rather than carrying its own
   map, because one shared material cannot hold the right per-context texture for
   every surface. Its configured EnvMapIntensity is divided by the scene

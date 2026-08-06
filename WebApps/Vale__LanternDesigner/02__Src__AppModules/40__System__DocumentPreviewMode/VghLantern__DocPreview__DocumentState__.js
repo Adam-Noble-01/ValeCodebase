@@ -43,11 +43,42 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // this module had to know the Drawing Editor's slot keys and the preview had to
     // filter the sheet as it rebuilt it. The sheet is now baked whole, so which views
     // it carries is decided where the sheet is composed.
+    //
+    // These switches are per-KIND, not per-lantern. A four-lantern pack is four
+    // drawings under one Drawing Sheets switch, because a toolbar with a switch per
+    // page would be a table of contents with checkboxes, and nobody wants to issue a
+    // pack with lantern three's drawing missing.
     const LETTER_KEYS        =  ['ShowWelcomeLetter'];
+    const SUMMARY_KEYS       =  ['ShowProjectSummary'];
     const DRAWING_VIEW_KEYS  =  ['ShowDrawingSheet'];
+    const DRAWING_NOTE_KEYS  =  ['ShowDrawingNotes'];
     const DOCUMENT_KEYS      =  ['ShowTakeoffSchedule', 'ShowComponentSchedule', 'ShowJobNotes'];
+    const DRAWING_TERMS_KEYS =  ['ShowDrawingTermsPages'];
     const TERMS_KEYS         =  ['ShowTermsPages'];
-    const ALL_TOGGLE_KEYS    =  LETTER_KEYS.concat(DRAWING_VIEW_KEYS, DOCUMENT_KEYS, TERMS_KEYS);
+    const ALL_TOGGLE_KEYS    =  LETTER_KEYS.concat(SUMMARY_KEYS, DRAWING_VIEW_KEYS, DRAWING_NOTE_KEYS,
+                                                   DOCUMENT_KEYS, DRAWING_TERMS_KEYS, TERMS_KEYS);
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Page Kind Names
+    // ------------------------------------------------------------
+    // The vocabulary shared by PageOrder in config, the plan this module builds, and
+    // the builder tables in the preview renderer and the PDF exporter. PER_LANTERN is
+    // not a page: it is the marker in PageOrder saying "walk the schedule here".
+    const KIND_WELCOME_LETTER   =  'welcomeLetter';
+    const KIND_PROJECT_SUMMARY  =  'projectSummary';
+    const KIND_PER_LANTERN      =  'perLantern';
+    const KIND_LANTERN_DRAWING  =  'lanternDrawing';
+    const KIND_LANTERN_NOTES    =  'lanternDrawingTerms';
+    const KIND_LANTERN_SPEC     =  'lanternSpecification';
+    const KIND_DRAWING_TERMS    =  'generalDrawingTerms';
+    const KIND_TERMS            =  'terms';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Project Data Keys
+    // ------------------------------------------------------------
+    const PROJECT_LANTERNS  =  'VghLantern__ProjectFile__Lanterns';
     // ------------------------------------------------------------
 
 
@@ -269,6 +300,33 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Report Whether the Project Summary Page Should Be Included
+    // ------------------------------------------------------------
+    function VghLantern__DocPreview__DocumentState__IncludesProjectSummary() {
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowProjectSummary;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Report Whether the Per-Lantern Drawing Notes Should Be Included
+    // ------------------------------------------------------------
+    // The switch for the SET of them. Whether any given lantern has one is answered by
+    // whether that lantern has notes written against it, which is a content question
+    // rather than a preference.
+    function VghLantern__DocPreview__DocumentState__IncludesDrawingNotes() {
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowDrawingNotes;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Report Whether the General Drawing Terms Should Be Included
+    // ------------------------------------------------------------
+    function VghLantern__DocPreview__DocumentState__IncludesDrawingTermsPages() {
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowDrawingTermsPages;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Report Whether the Terms Pages Should Be Included
     // ------------------------------------------------------------
     // The page-level switch only. Whether any terms SURVIVE that switch is the terms
@@ -355,25 +413,45 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | List Enabled Page Kinds in Config Order
+    // HELPER FUNCTION | Read the Current Project's Lantern Schedule
     // ------------------------------------------------------------
-    // Returns only the kinds that are switched on AND have content. Order comes from
-    // Config__Page.PageOrder so preview and PDF cannot diverge, and an unknown kind in
-    // that array is skipped with a warning rather than silently producing nothing.
-    function VghLantern__DocPreview__DocumentState__ListPageKinds() {
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var pageCfg  =  VghLantern__DocumentState__PageConfig();
-        var order    =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
-            pageCfg, 'PageOrder', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page');
+    function VghLantern__DocumentState__Lanterns() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return [];
 
-        var includes  =  {
-            welcomeLetter : VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter,
-            drawing       : VghLantern__DocPreview__DocumentState__IncludesDrawingPage,
-            specification : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,
-            terms         : VghLantern__DocPreview__DocumentState__IncludesTermsPages
+        var project  =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        return (project && Array.isArray(project[PROJECT_LANTERNS])) ? project[PROJECT_LANTERNS] : [];
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Append One Lantern's Run of Pages to a Plan
+    // ------------------------------------------------------------
+    // The per-lantern run, in PerLanternOrder. Each entry carries the lantern index it
+    // was emitted for, which is what every builder downstream uses to fetch the right
+    // baked sheet, the right takeoff and the right notes. Nothing downstream infers a
+    // lantern from a page's position in the plan.
+    //
+    // A lantern with no drawing notes emits no notes page. That is a content question,
+    // not a preference: the page exists because something was written on it.
+    function VghLantern__DocumentState__PushLanternPages(plan, lantern, lanternIndex, viewState) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var TermsModel    =  window.VghLantern__Terms__DocumentModel;
+        var pageCfg       =  VghLantern__DocumentState__PageConfig();
+
+        var order  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            pageCfg, 'PerLanternOrder', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page');
+
+        var hasNotes  =  !!(TermsModel &&
+            TermsModel.VghLantern__Terms__DocumentModel__LanternNoteTexts(lantern).length);
+
+        var includes  =  {};
+        includes[KIND_LANTERN_DRAWING]  =  function() { return !!viewState.ShowDrawingSheet; };
+        includes[KIND_LANTERN_NOTES]    =  function() { return !!viewState.ShowDrawingNotes && hasNotes; };
+        includes[KIND_LANTERN_SPEC]     =  function() {
+            return VghLantern__DocPreview__DocumentState__IncludesSpecificationPage();
         };
 
-        var kinds  =  [];
         var i, kind;
 
         for (i = 0; i < order.length; i++) {
@@ -381,14 +459,76 @@ const VghLantern__DocPreview__DocumentState = (function() {
 
             if (!includes[kind]) {
                 console.warn('[VghLantern__DocPreview__DocumentState] Unknown page kind "' + kind +
-                    '" in PageOrder. Known kinds are: ' + Object.keys(includes).join(', ') + '.');
+                    '" in PerLanternOrder. Known kinds are: ' + Object.keys(includes).join(', ') + '.');
                 continue;
             }
 
-            if (includes[kind]()) kinds.push(kind);
+            if (includes[kind]()) plan.push({ Kind : kind, LanternIndex : lanternIndex });
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the Ordered Page Plan for the Whole Document
+    // ------------------------------------------------------------
+    // The single description of what the issued pack contains and in what order, read
+    // by the on-screen preview and the PDF exporter alike so the two cannot diverge.
+    //
+    // Returns entries of { Kind, LanternIndex }, where LanternIndex is null for a page
+    // that describes the job rather than a lantern. Order comes from
+    // Config__Page.PageOrder, and an unknown kind in that array is skipped with a
+    // warning rather than silently producing nothing.
+    function VghLantern__DocPreview__DocumentState__BuildPagePlan() {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var pageCfg  =  VghLantern__DocumentState__PageConfig();
+        var order    =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            pageCfg, 'PageOrder', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Page');
+
+        var viewState  =  VghLantern__DocPreview__DocumentState__GetViewState();
+        var lanterns   =  VghLantern__DocumentState__Lanterns();
+
+        var includes  =  {};
+        includes[KIND_WELCOME_LETTER]   =  VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter;
+        includes[KIND_PROJECT_SUMMARY]  =  VghLantern__DocPreview__DocumentState__IncludesProjectSummary;
+        includes[KIND_DRAWING_TERMS]    =  VghLantern__DocPreview__DocumentState__IncludesDrawingTermsPages;
+        includes[KIND_TERMS]            =  VghLantern__DocPreview__DocumentState__IncludesTermsPages;
+
+        var plan  =  [];
+        var i, kind, lanternIndex;
+
+        for (i = 0; i < order.length; i++) {
+            kind  =  order[i];
+
+            // The marker, not a page: this is where the lantern schedule is walked.
+            if (kind === KIND_PER_LANTERN) {
+                for (lanternIndex = 0; lanternIndex < lanterns.length; lanternIndex++) {
+                    VghLantern__DocumentState__PushLanternPages(plan, lanterns[lanternIndex], lanternIndex, viewState);
+                }
+                continue;
+            }
+
+            if (!includes[kind]) {
+                console.warn('[VghLantern__DocPreview__DocumentState] Unknown page kind "' + kind +
+                    '" in PageOrder. Known kinds are: ' + Object.keys(includes).join(', ') + ', ' + KIND_PER_LANTERN + '.');
+                continue;
+            }
+
+            if (includes[kind]()) plan.push({ Kind : kind, LanternIndex : null });
         }
 
-        return kinds;
+        return plan;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve the Caption for One Page Kind
+    // ------------------------------------------------------------
+    // Used by the preview to label pages in the stage. A pack running to twenty pages
+    // is unnavigable without them; the printed page is unaffected, because its own
+    // masthead or titleblock identifies it.
+    function VghLantern__DocPreview__DocumentState__PageKindLabel(kind) {
+        var labels  =  VghLantern__DocumentState__PageConfig().PageKindLabels || {};
+        return labels[kind] || kind;
     }
     // ------------------------------------------------------------
 
@@ -410,17 +550,33 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
     return {
         LETTER_KEYS                                                  : LETTER_KEYS,
+        SUMMARY_KEYS                                                 : SUMMARY_KEYS,
         DRAWING_VIEW_KEYS                                            : DRAWING_VIEW_KEYS,
+        DRAWING_NOTE_KEYS                                            : DRAWING_NOTE_KEYS,
         DOCUMENT_KEYS                                                : DOCUMENT_KEYS,
+        DRAWING_TERMS_KEYS                                           : DRAWING_TERMS_KEYS,
         TERMS_KEYS                                                   : TERMS_KEYS,
         ALL_TOGGLE_KEYS                                              : ALL_TOGGLE_KEYS,
+
+        KIND_WELCOME_LETTER                                          : KIND_WELCOME_LETTER,
+        KIND_PROJECT_SUMMARY                                         : KIND_PROJECT_SUMMARY,
+        KIND_LANTERN_DRAWING                                         : KIND_LANTERN_DRAWING,
+        KIND_LANTERN_NOTES                                           : KIND_LANTERN_NOTES,
+        KIND_LANTERN_SPEC                                            : KIND_LANTERN_SPEC,
+        KIND_DRAWING_TERMS                                           : KIND_DRAWING_TERMS,
+        KIND_TERMS                                                   : KIND_TERMS,
+
         VghLantern__DocPreview__DocumentState__GetViewState           : VghLantern__DocPreview__DocumentState__GetViewState,
         VghLantern__DocPreview__DocumentState__SetViewStatePartial    : VghLantern__DocPreview__DocumentState__SetViewStatePartial,
         VghLantern__DocPreview__DocumentState__IncludesDrawingPage    : VghLantern__DocPreview__DocumentState__IncludesDrawingPage,
         VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter  : VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter,
+        VghLantern__DocPreview__DocumentState__IncludesProjectSummary : VghLantern__DocPreview__DocumentState__IncludesProjectSummary,
+        VghLantern__DocPreview__DocumentState__IncludesDrawingNotes   : VghLantern__DocPreview__DocumentState__IncludesDrawingNotes,
+        VghLantern__DocPreview__DocumentState__IncludesDrawingTermsPages : VghLantern__DocPreview__DocumentState__IncludesDrawingTermsPages,
         VghLantern__DocPreview__DocumentState__IncludesTermsPages     : VghLantern__DocPreview__DocumentState__IncludesTermsPages,
         VghLantern__DocPreview__DocumentState__IncludesSpecificationPage : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,
-        VghLantern__DocPreview__DocumentState__ListPageKinds          : VghLantern__DocPreview__DocumentState__ListPageKinds,
+        VghLantern__DocPreview__DocumentState__BuildPagePlan          : VghLantern__DocPreview__DocumentState__BuildPagePlan,
+        VghLantern__DocPreview__DocumentState__PageKindLabel          : VghLantern__DocPreview__DocumentState__PageKindLabel,
         VghLantern__DocPreview__DocumentState__SetPaperSize           : VghLantern__DocPreview__DocumentState__SetPaperSize,
         VghLantern__DocPreview__DocumentState__DescribePage           : VghLantern__DocPreview__DocumentState__DescribePage
     };

@@ -159,6 +159,12 @@
             tabs[i].addEventListener('click', function(e) {
                 var tab  =  e.currentTarget;
                 if (tab.classList.contains('VghLantern__App__NavTab--disabled')) return;
+
+                // The landing lock CSS stops pointer clicks, but a focused tab
+                // still fires click on Enter - the lock must hold there too.
+                var navBar  =  document.getElementById('VghLantern__App__NavigationBar');
+                if (navBar && navBar.classList.contains('VghLantern__App__NavigationBar--landingLocked')) return;
+
                 var mode  =  tab.dataset.mode;
                 if (mode) ModeManager.VghLantern__ModeManager__SwitchToMode(mode);
             });
@@ -188,6 +194,11 @@
             SheetManager.VghLantern__DrawingEditor__SheetManager__Init();      // <-- Subscribes the sheet to the geometry solve
         }
 
+        var SheetBaker  =  window.VghLantern__DrawingEditor__SheetBaker;
+        if (SheetBaker && SheetBaker.VghLantern__DrawingEditor__SheetBaker__Init) {
+            SheetBaker.VghLantern__DrawingEditor__SheetBaker__Init();          // <-- Drops every baked drawing when the project changes
+        }
+
         var SpecSectionManager  =  window.VghLantern__Specification__SectionManager;
         if (SpecSectionManager && SpecSectionManager.VghLantern__Specification__SectionManager__Init) {
             SpecSectionManager.VghLantern__Specification__SectionManager__Init(); // <-- Subscribes the schedule to the takeoff
@@ -201,6 +212,21 @@
         var ClientDocLayout  =  window.VghLantern__ClientDoc__Layout;
         if (ClientDocLayout && ClientDocLayout.VghLantern__ClientDoc__Layout__Init) {
             ClientDocLayout.VghLantern__ClientDoc__Layout__Init();             // <-- Delegated block card, field and section switch listeners
+        }
+
+        var LandingScreen  =  window.VghLantern__LandingScreen__Controller;
+        if (LandingScreen && LandingScreen.VghLantern__LandingScreen__Init) {
+            LandingScreen.VghLantern__LandingScreen__Init();                   // <-- Nav tab lock and greeting re-type subscriptions
+        }
+
+        var UserLoginSession  =  window.VghLantern__UserLogin__SessionManager;
+        if (UserLoginSession && UserLoginSession.VghLantern__UserLogin__SessionManager__Init) {
+            UserLoginSession.VghLantern__UserLogin__SessionManager__Init();    // <-- Restore the signed in user from the session cookie
+        }
+
+        var UserLoginModal  =  window.VghLantern__UserLogin__LoginModal;
+        if (UserLoginModal && UserLoginModal.VghLantern__UserLogin__LoginModal__Init) {
+            UserLoginModal.VghLantern__UserLogin__LoginModal__Init();          // <-- Show the sign in gate when no session was restored
         }
     }
     // ------------------------------------------------------------
@@ -322,6 +348,7 @@
         }
         VghLantern__AppCore__PreviousModeId  =  modeId;
 
+        if (modeId === 'LandingScreen')   VghLantern__AppCore__RenderLandingScreen();
         if (modeId === 'DocManagement')   await VghLantern__AppCore__RenderDocumentManagement();
         if (modeId === 'LanternEditor')   await VghLantern__AppCore__RenderLanternEditor();
         if (modeId === 'Viewport3d')      await VghLantern__AppCore__RenderViewport3d();
@@ -330,6 +357,17 @@
         if (modeId === 'ClientDocument')  await VghLantern__AppCore__RenderClientDocument();
         if (modeId === 'DocumentPreview') await VghLantern__AppCore__RenderDocumentPreview();
         if (modeId === 'ComponentIndex')  VghLantern__AppCore__RenderComponentIndex();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Render Landing Screen Mode
+    // ------------------------------------------------------------
+    function VghLantern__AppCore__RenderLandingScreen() {
+        var LandingScreen  =  window.VghLantern__LandingScreen__Controller;
+        if (LandingScreen && LandingScreen.VghLantern__LandingScreen__Render) {
+            LandingScreen.VghLantern__LandingScreen__Render();                // <-- Rebuild the card and restart the typed greeting
+        }
     }
     // ------------------------------------------------------------
 

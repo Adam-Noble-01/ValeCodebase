@@ -23,15 +23,30 @@
 
    OUTPUT CONTRACT - TakeoffResult:
 
+   TWO LINEAR TABLES, ANSWERING DIFFERENT QUESTIONS:
+   Linear is a purchasing figure - the total run of each section per lantern, which
+   is what stock is ordered against. CuttingList is a workshop figure - the distinct
+   lengths that run is broken into and how many of each. They are not the same
+   number seen twice: fifty-two glaze bars on a hipped lantern are one common
+   rafter length plus a progression of shorter bars wrapping each hip, and a run
+   total cannot express that. The cut runs always sum back to the section run.
+
+   Only sections whose individual members are solved carry cuts. The builders
+   upstand and the base frame are continuous perimeter runs mitred on site, so they
+   appear in Linear and are deliberately absent from CuttingList.
+
    {
        Meta : {
            LanternId, LanternTitle, Quantity,
            RoofForm, WidthMm, DepthMm, PitchDegrees,
            IsDerivedFromValidGeometry
        },
-       Linear     : [ { Key, Label, ProfileId, LengthMmEach, LengthMEach,
-                        LengthMTotal, MemberCount,
+       Linear     : [ { Key, Label, ProfileId, RunMmEach, LengthMEach,
+                        LengthMTotal, MemberCount, CutTypes?,
                         SectionWidthMm?, SectionHeightMm? } ],
+       CuttingList: [ { Key, SectionKey, Label, ProfileId, TypeRef,
+                        CutLengthMm, CountEach, CountTotal,
+                        LengthMEach, LengthMTotal } ],
        Areas      : [ { Key, Label, AreaSqMmEach, AreaSqMEach, AreaSqMTotal } ],
        Components : [ { Key, Label, ComponentId, CountEach, CountTotal } ],
        Totals     : { LinearMEach, LinearMTotal,
@@ -105,10 +120,65 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
 // REGION | Row Builders
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Group a Member List Into Distinct Cut Lengths
+    // ------------------------------------------------------------
+    // A run total is not a cutting list. Fifty-two glaze bars on a hipped lantern
+    // are not fifty-two different bars: the commons are all one length, and the
+    // bars wrapping each hip step down in a regular progression, so the whole set
+    // resolves to a handful of distinct cuts repeated many times. That handful is
+    // what a saw is set to and what a workshop counts, and totalling the run threw
+    // it away.
+    //
+    // Lengths are grouped on the nearest whole millimetre. Two bars whose solved
+    // lengths differ in the third decimal are the same cut - nobody sets a saw to
+    // a micron - and rounding first is what stops floating point noise splitting
+    // one real type into two near-identical rows.
+    //
+    // Types are numbered longest first, which is the order a cutting list is
+    // written in and the order stock is broken down in.
+    function VghLantern__QuantityTakeoff__CutTypes(memberList, quantity) {
+        if (!Array.isArray(memberList) || memberList.length === 0) return [];
+
+        var buckets  =  {};
+        var i, lengthMm, key;
+
+        for (i = 0; i < memberList.length; i++) {
+            lengthMm  =  Number(memberList[i] && memberList[i].LengthMm) || 0;
+            if (lengthMm <= 0) continue;
+
+            key  =  String(Math.round(lengthMm));
+            if (!buckets[key]) buckets[key]  =  { LengthMm : Math.round(lengthMm), CountEach : 0 };
+            buckets[key].CountEach++;
+        }
+
+        var types  =  Object.keys(buckets).map(function(k) { return buckets[k]; });
+        types.sort(function(a, b) { return b.LengthMm - a.LengthMm; });
+
+        var out  =  [];
+        for (i = 0; i < types.length; i++) {
+            var runMEach  =  (types[i].LengthMm * types[i].CountEach) / MM_PER_METRE;
+
+            out.push({
+                TypeRef      : 'T' + String(i + 1).padStart(2, '0'),
+                LengthMm     : types[i].LengthMm,
+                CountEach    : types[i].CountEach,
+                CountTotal   : types[i].CountEach * quantity,
+                LengthMEach  : VghLantern__QuantityTakeoff__Round(runMEach, LINEAR_DP),
+                LengthMTotal : VghLantern__QuantityTakeoff__Round(runMEach * quantity, LINEAR_DP)
+            });
+        }
+        return out;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Push a Linear Section Row
     // ------------------------------------------------------------
+    // lengthMm is the TOTAL run for one lantern, not the length of one member.
     // sectionSizeOpts may carry SectionWidthMm / SectionHeightMm for prism
-    // members (base frame) where pricing needs the ring beam cross-section.
+    // members (base frame) where pricing needs the ring beam cross-section, and
+    // MemberList for the sections whose individual members are known, which is
+    // what lets the cutting list below report real cut lengths.
     function VghLantern__QuantityTakeoff__PushLinear(rows, key, label, profileId, lengthMm, memberCount, quantity, sectionSizeOpts) {
         if (lengthMm <= 0) return;
 
@@ -118,11 +188,15 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             Key          : key,
             Label        : label,
             ProfileId    : profileId || '',
-            LengthMmEach : Math.round(lengthMm),
+            RunMmEach    : Math.round(lengthMm),
             LengthMEach  : VghLantern__QuantityTakeoff__Round(lengthMEach, LINEAR_DP),
             LengthMTotal : VghLantern__QuantityTakeoff__Round(lengthMEach * quantity, LINEAR_DP),
             MemberCount  : memberCount
         };
+
+        if (sectionSizeOpts && Array.isArray(sectionSizeOpts.MemberList)) {
+            row.CutTypes  =  VghLantern__QuantityTakeoff__CutTypes(sectionSizeOpts.MemberList, quantity);
+        }
 
         if (sectionSizeOpts) {
             if (sectionSizeOpts.SectionWidthMm  != null) row.SectionWidthMm  =  Math.round(Number(sectionSizeOpts.SectionWidthMm)  || 0);
@@ -223,20 +297,25 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
         var Solver  =  window.VghLantern__Geometry__SkeletonSolver;
         var rows    =  [];
 
+        function membersFor(roleKey) {
+            return Solver.VghLantern__SkeletonSolver__MembersByRole(skeleton, roleKey) || [];
+        }
         function totalFor(roleKey) {
             return Solver.VghLantern__SkeletonSolver__TotalLengthForRole(skeleton, roleKey);
         }
         function countFor(roleKey) {
-            return Solver.VghLantern__SkeletonSolver__MembersByRole(skeleton, roleKey).length;
+            return membersFor(roleKey).length;
         }
 
         VghLantern__QuantityTakeoff__PushLinear(rows, 'ridge', 'Ridge Section',
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_RIDGE_HIPS, 'Lantern__RidgeAndHips__Config__RidgeProfileId', ''),
-            totalFor('ridge'), countFor('ridge'), quantity);
+            totalFor('ridge'), countFor('ridge'), quantity,
+            { MemberList : membersFor('ridge') });
 
         VghLantern__QuantityTakeoff__PushLinear(rows, 'hip', 'Hip Section',
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_RIDGE_HIPS, 'Lantern__RidgeAndHips__Config__HipProfileId', ''),
-            totalFor('hip'), countFor('hip'), quantity);
+            totalFor('hip'), countFor('hip'), quantity,
+            { MemberList : membersFor('hip') });
 
         // There is no eaves row. The eaves ring is the line where the roof plane
         // meets the upstand, not a length of anything: the metal along it belongs
@@ -270,21 +349,28 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
         // a change of trim depth reaches the takeoff without an edit and the
         // section areas quoted are the ones actually extruded.
         if (barSet && barSet.Meta) {
-            var barParts   =  VghLantern__QuantityTakeoff__GlazeBarParts(lantern);
-            var barCount   =  (barSet.Meta.LongSlopeBarCount * 2) + (barSet.Meta.ShortSlopeBarCount * 2);
-            var transomOn  =  barSet.Meta.TransomEnabled ? 2 : 0;
+            var barParts  =  VghLantern__QuantityTakeoff__GlazeBarParts(lantern);
+            var allBars   =  Array.isArray(barSet.Bars) ? barSet.Bars : [];
             var partIndex, barPart;
+
+            // Split the set by role rather than trusting the meta counts. The bar
+            // records are the same objects the 3D builder extruded, so a cut length
+            // reported here is the length of a solid that exists in the model.
+            var barMembers      =  allBars.filter(function(bar) { return bar && bar.Role !== 'transom'; });
+            var transomMembers  =  allBars.filter(function(bar) { return bar && bar.Role === 'transom'; });
 
             for (partIndex = 0; partIndex < barParts.length; partIndex++) {
                 barPart  =  barParts[partIndex];
 
                 VghLantern__QuantityTakeoff__PushLinear(rows, 'glazeBar__' + barPart.PartKey, barPart.PartName,
-                    barPart.AssetId, barSet.Meta.TotalBarLengthMm, barCount, quantity,
-                    { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType, SpecMaterial : barPart.SpecMaterial });
+                    barPart.AssetId, barSet.Meta.TotalBarLengthMm, barMembers.length, quantity,
+                    { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType,
+                      SpecMaterial : barPart.SpecMaterial, MemberList : barMembers });
 
                 VghLantern__QuantityTakeoff__PushLinear(rows, 'transom__' + barPart.PartKey, barPart.PartName + ' - Transom',
-                    barPart.AssetId, barSet.Meta.TotalTransomLengthMm, transomOn, quantity,
-                    { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType, SpecMaterial : barPart.SpecMaterial });
+                    barPart.AssetId, barSet.Meta.TotalTransomLengthMm, transomMembers.length, quantity,
+                    { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType,
+                      SpecMaterial : barPart.SpecMaterial, MemberList : transomMembers });
             }
         }
 
@@ -295,6 +381,49 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
                 totalFor('ridge'), countFor('ridge'), quantity);
         }
 
+        return rows;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Flatten Every Section's Cut Types Into One Cutting List
+    // ------------------------------------------------------------
+    // One row per section per distinct cut length, in section order and longest
+    // cut first within each section. This is the table a workshop sets a saw
+    // from, so it deliberately leads with the cut length and the number off
+    // rather than with a run total, which is a purchasing figure and not a
+    // cutting one.
+    //
+    // Sections whose members are not individually known contribute nothing: the
+    // builders upstand and the base frame are continuous perimeter runs mitred on
+    // site, and inventing four equal "cuts" for them would read as instruction.
+    function VghLantern__QuantityTakeoff__BuildCuttingListRows(linearRows) {
+        var rows  =  [];
+        var i, j, section, cut;
+
+        for (i = 0; i < linearRows.length; i++) {
+            section  =  linearRows[i];
+            if (!Array.isArray(section.CutTypes) || section.CutTypes.length === 0) continue;
+
+            for (j = 0; j < section.CutTypes.length; j++) {
+                cut  =  section.CutTypes[j];
+
+                rows.push({
+                    Key           : section.Key + '__' + cut.TypeRef,
+                    SectionKey    : section.Key,
+                    Label         : section.Label,
+                    ProfileId     : section.ProfileId,
+                    TypeRef       : cut.TypeRef,
+                    CutLengthMm   : cut.LengthMm,
+                    CountEach     : cut.CountEach,
+                    CountTotal    : cut.CountTotal,
+                    LengthMEach   : cut.LengthMEach,
+                    LengthMTotal  : cut.LengthMTotal,
+                    ElementType   : section.ElementType  || '',
+                    SpecMaterial  : section.SpecMaterial || ''
+                });
+            }
+        }
         return rows;
     }
     // ------------------------------------------------------------
@@ -406,6 +535,7 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
                 IsDerivedFromValidGeometry  : skeleton.Meta.IsValid === true
             },
             Linear      : linearRows,
+            CuttingList : VghLantern__QuantityTakeoff__BuildCuttingListRows(linearRows),
             Areas       : areaRows,
             Components  : componentRows,
             Totals : {
@@ -428,6 +558,7 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
     // once with a combined length.
     function VghLantern__QuantityTakeoff__AggregateProject(takeoffList) {
         var linearMap     =  {};
+        var cutMap        =  {};
         var componentMap  =  {};
         var totalLinearM  =  0;
         var totalGlazing  =  0;
@@ -444,6 +575,30 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
                     linearMap[mapKey]  =  { Key: row.Key, Label: row.Label, ProfileId: row.ProfileId, LengthMTotal: 0 };
                 }
                 linearMap[mapKey].LengthMTotal  +=  row.LengthMTotal;
+            }
+
+            // Cuts merge on section AND length, never on the type reference. Two
+            // lanterns of different sizes both have a longest common rafter called
+            // T01 and they are not the same cut, so merging on the label would
+            // silently add unlike pieces together. The merged list is renumbered
+            // afterwards so the project sheet reads T01 down again.
+            for (j = 0; j < (takeoffList[i].CuttingList || []).length; j++) {
+                row     =  takeoffList[i].CuttingList[j];
+                mapKey  =  row.SectionKey + '::' + row.ProfileId + '::' + row.CutLengthMm;
+                if (!cutMap[mapKey]) {
+                    cutMap[mapKey]  =  {
+                        SectionKey    : row.SectionKey,
+                        Label         : row.Label,
+                        ProfileId     : row.ProfileId,
+                        CutLengthMm   : row.CutLengthMm,
+                        CountTotal    : 0,
+                        LengthMTotal  : 0,
+                        ElementType   : row.ElementType,
+                        SpecMaterial  : row.SpecMaterial
+                    };
+                }
+                cutMap[mapKey].CountTotal    +=  row.CountTotal;
+                cutMap[mapKey].LengthMTotal  +=  row.LengthMTotal;
             }
 
             for (j = 0; j < takeoffList[i].Components.length; j++) {
@@ -477,8 +632,35 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             return out;
         }
 
+        // Renumber the merged cuts: grouped by section in the order the sections
+        // were first met, longest cut first inside each, so the project sheet
+        // reads T01 down exactly as a single-lantern sheet does.
+        var sectionOrder  =  [];
+        var mergedCuts    =  flatten(cutMap, LINEAR_DP, 'LengthMTotal');
+
+        for (i = 0; i < mergedCuts.length; i++) {
+            if (sectionOrder.indexOf(mergedCuts[i].SectionKey) === -1) sectionOrder.push(mergedCuts[i].SectionKey);
+        }
+        mergedCuts.sort(function(a, b) {
+            var bySection  =  sectionOrder.indexOf(a.SectionKey) - sectionOrder.indexOf(b.SectionKey);
+            return bySection !== 0 ? bySection : (b.CutLengthMm - a.CutLengthMm);
+        });
+
+        var runningSection  =  '';
+        var runningIndex    =  0;
+        for (i = 0; i < mergedCuts.length; i++) {
+            if (mergedCuts[i].SectionKey !== runningSection) {
+                runningSection  =  mergedCuts[i].SectionKey;
+                runningIndex    =  0;
+            }
+            runningIndex++;
+            mergedCuts[i].TypeRef  =  'T' + String(runningIndex).padStart(2, '0');
+            mergedCuts[i].Key      =  mergedCuts[i].SectionKey + '__' + mergedCuts[i].TypeRef;
+        }
+
         return {
             Linear      : flatten(linearMap, LINEAR_DP, 'LengthMTotal'),
+            CuttingList : mergedCuts,
             Components  : flatten(componentMap, 0, null),
             Totals : {
                 LinearMTotal         : VghLantern__QuantityTakeoff__Round(totalLinearM, LINEAR_DP),

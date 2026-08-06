@@ -179,17 +179,25 @@ const VghLantern__Terms__MarkdownLoader = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Load Every Library File Named by the Section Table
+    // FUNCTION | Load Every Library File Named by Either Section Table
     // ------------------------------------------------------------
     // Called once when the Client Doc tab or Preview and Send first needs the terms.
     // Resolves when every file has settled, successfully or not.
+    //
+    // Both tables are walked - the business terms of engagement and the general
+    // drawing terms - because a document pack needs both and one fetch pass is
+    // cheaper than two round trips at two different moments. Adding a section to
+    // either table is enough to have its file fetched; there is no second list of
+    // filenames to remember to update.
     async function VghLantern__Terms__MarkdownLoader__EnsureLoaded() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         if (!ConfigLoader) return false;
 
         var termsCfg  =  ConfigLoader.VghLantern__ConfigLoader__GetSection('Terms') || {};
         var sections  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
-            termsCfg, 'VghLantern__Terms__Config__Sections', 'Na__Terms__Config.json');
+                             termsCfg, 'VghLantern__Terms__Config__Sections', 'Na__Terms__Config.json')
+                         .concat(ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+                             termsCfg, 'VghLantern__Terms__Config__DrawingTermsSections', 'Na__Terms__Config.json'));
 
         var pending  =  [];
         var i;

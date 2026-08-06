@@ -89,37 +89,101 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Build the Specification Page Descriptor
+    // HELPER FUNCTION | Get the Document Page Geometry
     // ------------------------------------------------------------
-    function VghLantern__PdfExporter__BuildSpecificationPage(viewState) {
+    function VghLantern__PdfExporter__Page() {
         var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
-        var SpecModel      =  window.VghLantern__Specification__DocumentModel;
-        var SpecPainter    =  window.VghLantern__DocPreview__SpecificationPdfPainter;
-        if (!DocumentState || !SpecModel || !SpecPainter) return null;
+        return DocumentState ? DocumentState.VghLantern__DocPreview__DocumentState__DescribePage() : null;
+    }
+    // ------------------------------------------------------------
 
-        var model  =  SpecModel.VghLantern__Specification__DocumentModel__BuildFromState();
-        if (!model) return null;
 
-        return SpecPainter.VghLantern__DocPreview__SpecificationPdfPainter__BuildPage(
-            DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(), model, viewState
+    // SUB FUNCTION | Build the Project Summary Page Descriptor
+    // ------------------------------------------------------------
+    function VghLantern__PdfExporter__BuildProjectSummaryPage(viewState, specModel) {
+        var SpecPainter  =  window.VghLantern__DocPreview__SpecificationPdfPainter;
+        var page         =  VghLantern__PdfExporter__Page();
+        if (!SpecPainter || !specModel || !page) return null;
+
+        return SpecPainter.VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage(
+            page, specModel, viewState
         );
     }
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Build the Drawing Sheet Page Descriptor
+    // SUB FUNCTION | Build One Lantern's Specification Page Descriptor
     // ------------------------------------------------------------
-    // The sheet is described by the Drawing Editor and wrapped by its own painter, so
-    // this document's drawing page and the Drawing Editor's own download are the same
-    // page built by the same code.
-    function VghLantern__PdfExporter__BuildDrawingPage() {
-        var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
-        var Painter       =  window.VghLantern__DrawingEditor__SheetPdfPainter;
-        if (!SheetManager || !Painter) return null;
+    function VghLantern__PdfExporter__BuildLanternSpecPage(viewState, specModel, lanternIndex) {
+        var SpecPainter  =  window.VghLantern__DocPreview__SpecificationPdfPainter;
+        var page         =  VghLantern__PdfExporter__Page();
+        if (!SpecPainter || !specModel || !page) return null;
 
-        return Painter.VghLantern__DrawingEditor__SheetPdfPainter__BuildPage(
-            SheetManager.VghLantern__DrawingEditor__SheetManager__DescribeSheet()
+        return SpecPainter.VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage(
+            page, specModel, viewState, lanternIndex
         );
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build One Lantern's Drawing Sheet Page Descriptor
+    // ------------------------------------------------------------
+    // The sheet comes from the baker, which composes it exactly as the Drawing Editor
+    // would, so this document's drawing pages and the Drawing Editor's own download
+    // are the same page built by the same code.
+    function VghLantern__PdfExporter__BuildDrawingPage(bakedSheets, lanternIndex) {
+        var Painter  =  window.VghLantern__DrawingEditor__SheetPdfPainter;
+        if (!Painter) return null;
+
+        var sheet  =  bakedSheets ? bakedSheets[lanternIndex] : null;
+        if (!sheet) return null;
+
+        return Painter.VghLantern__DrawingEditor__SheetPdfPainter__BuildPage(sheet);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build One Lantern's Drawing Notes Page Descriptor
+    // ------------------------------------------------------------
+    // Painted by the terms painter from a terms model, because a drawing notes page is
+    // a numbered note list - the same object a terms document is, from a different
+    // source. Returns null for a lantern with no notes, which is how the page drops
+    // out of the pack.
+    function VghLantern__PdfExporter__BuildLanternNotesPage(lanternIndex) {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var TermsModel    =  window.VghLantern__Terms__DocumentModel;
+        var Painter       =  window.VghLantern__Terms__PdfPainter;
+        var page          =  VghLantern__PdfExporter__Page();
+        if (!StateManager || !TermsModel || !Painter || !page) return null;
+
+        var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        var lanterns  =  (project && Array.isArray(project['VghLantern__ProjectFile__Lanterns']))
+            ? project['VghLantern__ProjectFile__Lanterns'] : [];
+
+        var model  =  TermsModel.VghLantern__Terms__DocumentModel__BuildLanternDrawingTerms(
+            project, lanterns[lanternIndex], lanternIndex
+        );
+        if (!model) return null;
+
+        return Painter.VghLantern__Terms__PdfPainter__BuildPage(page, model);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the General Drawing Terms Page Descriptor
+    // ------------------------------------------------------------
+    // The omissions and limitations covering the whole pack, and where a titleblock QR
+    // code lands when its lantern has no notes of its own.
+    function VghLantern__PdfExporter__BuildDrawingTermsPage() {
+        var TermsModel  =  window.VghLantern__Terms__DocumentModel;
+        var Painter     =  window.VghLantern__Terms__PdfPainter;
+        var page        =  VghLantern__PdfExporter__Page();
+        if (!TermsModel || !Painter || !page) return null;
+
+        var model  =  TermsModel.VghLantern__Terms__DocumentModel__BuildDrawingTermsFromState();
+        if (!model) return null;
+
+        return Painter.VghLantern__Terms__PdfPainter__BuildPage(page, model);
     }
     // ------------------------------------------------------------
 
@@ -129,17 +193,15 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // The letter is resolved by the Client Doc mode's model and painted by its own
     // painter, so the letter in this document is the letter that mode previews.
     function VghLantern__PdfExporter__BuildWelcomeLetterPage() {
-        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
-        var LetterModel    =  window.VghLantern__ClientDoc__LetterModel;
-        var Painter        =  window.VghLantern__ClientDoc__LetterPdfPainter;
-        if (!DocumentState || !LetterModel || !Painter) return null;
+        var LetterModel  =  window.VghLantern__ClientDoc__LetterModel;
+        var Painter      =  window.VghLantern__ClientDoc__LetterPdfPainter;
+        var page         =  VghLantern__PdfExporter__Page();
+        if (!LetterModel || !Painter || !page) return null;
 
         var letter  =  LetterModel.VghLantern__ClientDoc__LetterModel__BuildFromState();
         if (!letter) return null;
 
-        return Painter.VghLantern__ClientDoc__LetterPdfPainter__BuildPage(
-            DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(), letter
-        );
+        return Painter.VghLantern__ClientDoc__LetterPdfPainter__BuildPage(page, letter);
     }
     // ------------------------------------------------------------
 
@@ -150,17 +212,15 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // because it is one continuously numbered document. The clause numbers come from
     // the terms model, which is the same model the preview and the editor read.
     function VghLantern__PdfExporter__BuildTermsPage() {
-        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
-        var TermsModel     =  window.VghLantern__Terms__DocumentModel;
-        var Painter        =  window.VghLantern__Terms__PdfPainter;
-        if (!DocumentState || !TermsModel || !Painter) return null;
+        var TermsModel  =  window.VghLantern__Terms__DocumentModel;
+        var Painter     =  window.VghLantern__Terms__PdfPainter;
+        var page        =  VghLantern__PdfExporter__Page();
+        if (!TermsModel || !Painter || !page) return null;
 
         var model  =  TermsModel.VghLantern__Terms__DocumentModel__BuildFromState();
         if (!model) return null;
 
-        return Painter.VghLantern__Terms__PdfPainter__BuildPage(
-            DocumentState.VghLantern__DocPreview__DocumentState__DescribePage(), model
-        );
+        return Painter.VghLantern__Terms__PdfPainter__BuildPage(page, model);
     }
     // ------------------------------------------------------------
 
@@ -189,38 +249,63 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         }
 
         var viewState  =  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState();
-        var pageKinds  =  DocumentState.VghLantern__DocPreview__DocumentState__ListPageKinds();
-        if (!pageKinds.length) {
+        var plan       =  DocumentState.VghLantern__DocPreview__DocumentState__BuildPagePlan();
+        if (!plan.length) {
             VghLantern__PdfExporter__ReportFailure(VghLantern__PdfExporter__IssueMessage('EmptySelectionMessage'));
             return false;
         }
 
-        // One builder per page kind. Adding a page kind is adding a row here and a row
-        // in DocumentState's include table, and nothing else.
-        var builders  =  {
-            welcomeLetter : VghLantern__PdfExporter__BuildWelcomeLetterPage,
-            drawing       : VghLantern__PdfExporter__BuildDrawingPage,
-            specification : function() { return VghLantern__PdfExporter__BuildSpecificationPage(viewState); },
-            terms         : VghLantern__PdfExporter__BuildTermsPage
-        };
+        // Every drawing in the pack is composed before a single page is written.
+        // Awaited here rather than per page because the bake borrows the Drawing
+        // Editor's session sheet setup, and interleaving that with painting would mean
+        // handing it back and taking it again for every sheet.
+        var SheetBaker   =  window.VghLantern__DrawingEditor__SheetBaker;
+        var bakedSheets  =  SheetBaker
+            ? await SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll()
+            : [];
 
-        var pages  =  [];
+        // Built once and shared by every specification page. Solving the takeoff for
+        // the whole project per lantern page would repeat the same arithmetic once per
+        // lantern squared.
+        var SpecModel  =  window.VghLantern__Specification__DocumentModel;
+        var specModel  =  SpecModel ? SpecModel.VghLantern__Specification__DocumentModel__BuildFromState() : null;
+
+        // One builder per page kind. Adding a page kind is adding a row here and a row
+        // in DocumentState's include table, and nothing else. Each is handed the plan
+        // entry, so a per-lantern builder reads its lantern from the plan rather than
+        // inferring one from where it happens to be in the pack.
+        var builders  =  {};
+        builders[DocumentState.KIND_WELCOME_LETTER]   =  function()      { return VghLantern__PdfExporter__BuildWelcomeLetterPage(); };
+        builders[DocumentState.KIND_PROJECT_SUMMARY]  =  function()      { return VghLantern__PdfExporter__BuildProjectSummaryPage(viewState, specModel); };
+        builders[DocumentState.KIND_LANTERN_DRAWING]  =  function(entry) { return VghLantern__PdfExporter__BuildDrawingPage(bakedSheets, entry.LanternIndex); };
+        builders[DocumentState.KIND_LANTERN_NOTES]    =  function(entry) { return VghLantern__PdfExporter__BuildLanternNotesPage(entry.LanternIndex); };
+        builders[DocumentState.KIND_LANTERN_SPEC]     =  function(entry) { return VghLantern__PdfExporter__BuildLanternSpecPage(viewState, specModel, entry.LanternIndex); };
+        builders[DocumentState.KIND_DRAWING_TERMS]    =  function()      { return VghLantern__PdfExporter__BuildDrawingTermsPage(); };
+        builders[DocumentState.KIND_TERMS]            =  function()      { return VghLantern__PdfExporter__BuildTermsPage(); };
+
+        var pages         =  [];
+        var missingSheets =  0;
         var i, page;
 
-        for (i = 0; i < pageKinds.length; i++) {
-            if (!builders[pageKinds[i]]) continue;
-            page  =  builders[pageKinds[i]]();
+        for (i = 0; i < plan.length; i++) {
+            if (!builders[plan[i].Kind]) continue;
+            page  =  builders[plan[i].Kind](plan[i]);
 
-            // A drawing page the user asked for that cannot be built is a blocking
-            // problem, not a page to quietly leave out of an issued document. The
-            // letter and the terms are different: an empty letter or a document with
-            // every terms section switched off are states the user chose, and they are
-            // reported as warnings by the issue handler rather than refused here.
-            if (!page && pageKinds[i] === 'drawing') {
-                VghLantern__PdfExporter__ReportFailure(VghLantern__PdfExporter__IssueMessage('NoDrawingSheetMessage'));
-                return false;
+            // A drawing the user asked for that cannot be composed is a blocking
+            // problem, not a page to quietly leave out of an issued document. Counted
+            // rather than refused on the spot so the message can name how many, which
+            // on a four-lantern job is the difference between a useful report and a
+            // user re-exporting three times to find them all.
+            if (!page && plan[i].Kind === DocumentState.KIND_LANTERN_DRAWING) {
+                missingSheets++;
+                continue;
             }
             if (page) pages.push(page);
+        }
+
+        if (missingSheets) {
+            VghLantern__PdfExporter__ReportFailure(VghLantern__PdfExporter__IssueMessage('NoDrawingSheetMessage'));
+            return false;
         }
 
         var project  =  StateManager ? StateManager.VghLantern__StateManager__GetCurrentProject() : null;

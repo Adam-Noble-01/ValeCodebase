@@ -20,6 +20,7 @@
    - appConfigLoaded          : app config JSON parsed
    - componentIndexLoaded     : component library index parsed
    - profileIndexLoaded       : profile library index parsed
+   - userChanged              : a user signed in or out
    - projectChanged           : a project was loaded, created or cleared
    - lanternSelected          : active lantern index changed
    - lanternUpdated           : active lantern config mutated
@@ -47,6 +48,7 @@ const VghLantern__AppCore__StateManager = (function() {
         appConfig               : null,                                      // <-- Parsed VghLantern__AppConfig__Main__.json
         componentIndex          : null,                                      // <-- Parsed VghLantern__ComponentDataIndex__.json
         profileIndex            : null,                                      // <-- Parsed VghLantern__ProfileDataIndex__.json
+        currentUser             : null,                                      // <-- Signed in user { UserId, UserName, Role } or null
         currentProject          : null,                                      // <-- Currently loaded project data
         currentLanternIndex     : -1,                                        // <-- Index of lantern being edited (-1 = none)
         solvedSkeleton          : null,                                      // <-- Last SkeletonSolver result (mm space)
@@ -154,6 +156,30 @@ const VghLantern__AppCore__StateManager = (function() {
     function VghLantern__StateManager__SetProfileIndex(index) {
         VghLantern__StateManager__State.profileIndex  =  index;
         VghLantern__StateManager__Emit('profileIndexLoaded', index);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | User Session State
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Set Current Signed In User
+    // ------------------------------------------------------------
+    // Written by the UserLogin SessionManager only; everything else reads.
+    function VghLantern__StateManager__SetCurrentUser(userData) {
+        VghLantern__StateManager__State.currentUser  =  userData;
+        VghLantern__StateManager__Emit('userChanged', userData);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get Current Signed In User
+    // ------------------------------------------------------------
+    function VghLantern__StateManager__GetCurrentUser() {
+        return VghLantern__StateManager__State.currentUser;
     }
     // ------------------------------------------------------------
 
@@ -326,6 +352,9 @@ const VghLantern__AppCore__StateManager = (function() {
         VghLantern__StateManager__SetAppConfig              : VghLantern__StateManager__SetAppConfig,
         VghLantern__StateManager__SetComponentIndex         : VghLantern__StateManager__SetComponentIndex,
         VghLantern__StateManager__SetProfileIndex           : VghLantern__StateManager__SetProfileIndex,
+
+        VghLantern__StateManager__SetCurrentUser            : VghLantern__StateManager__SetCurrentUser,
+        VghLantern__StateManager__GetCurrentUser            : VghLantern__StateManager__GetCurrentUser,
 
         VghLantern__StateManager__SetCurrentProject         : VghLantern__StateManager__SetCurrentProject,
         VghLantern__StateManager__SetCurrentLanternIndex    : VghLantern__StateManager__SetCurrentLanternIndex,

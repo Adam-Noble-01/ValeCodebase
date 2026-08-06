@@ -68,6 +68,7 @@ const VghLantern__Terms__DocumentModel = (function() {
     const SOURCE_LIBRARY           =  'library';
     const SOURCE_PROJECT_CRITICAL  =  'project:critical';
     const SOURCE_PROJECT_SPECIAL   =  'project:special';
+    const SOURCE_LANTERN_NOTES     =  'lantern:drawingNotes';                  // <-- Resolved against the lantern on the build context, not the project
     // ------------------------------------------------------------
 
 
@@ -86,9 +87,32 @@ const VghLantern__Terms__DocumentModel = (function() {
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Lantern Data Keys
+    // ------------------------------------------------------------
+    const LANTERN_NOTES_BLOCK  =  'Lantern__DrawingNotes__Config';
+    const LANTERN_NOTES_FIELD  =  'Lantern__DrawingNotes__Config__Notes';
+    const LANTERN_IDENTITY     =  'Lantern__Identity__Config';
+    const LANTERN_TITLE_FIELD  =  'Lantern__Identity__Config__Title';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Config Block Names
+    // ------------------------------------------------------------
+    // Two documents, each with its own config block and its own section table. The
+    // business terms of engagement and the drawing terms are read by different people
+    // for different reasons, so they are separate documents rather than one document
+    // with a switch in it.
+    const BLOCK_TERMS_DOCUMENT    =  'Document';
+    const BLOCK_TERMS_SECTIONS    =  'VghLantern__Terms__Config__Sections';
+    const BLOCK_DRAWING_DOCUMENT  =  'DrawingTermsDocument';
+    const BLOCK_DRAWING_SECTIONS  =  'VghLantern__Terms__Config__DrawingTermsSections';
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Config Labels
     // ------------------------------------------------------------
     const DOCUMENT_LABEL   =  'Na__Terms__Config.json -> VghLantern__Terms__Config__Document';
+    const DRAWING_LABEL    =  'Na__Terms__Config.json -> VghLantern__Terms__Config__DrawingTermsDocument';
     const NUMBERING_LABEL  =  'Na__Terms__Config.json -> VghLantern__Terms__Config__Numbering';
     // ------------------------------------------------------------
 
@@ -111,17 +135,32 @@ const VghLantern__Terms__DocumentModel = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | List the Configured Sections in Document Order
+    // HELPER FUNCTION | Read a Named Section Table From Config
     // ------------------------------------------------------------
-    // Exposed because the editor and the Preview and Send toolbar both build their
-    // toggle lists from it, and neither should hold its own copy of the section table.
-    function VghLantern__Terms__DocumentModel__ListSections() {
+    function VghLantern__TermsModel__SectionTable(tableKey) {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         if (!ConfigLoader) return [];
 
         var termsCfg  =  ConfigLoader.VghLantern__ConfigLoader__GetSection('Terms') || {};
-        return ConfigLoader.VghLantern__ConfigLoader__RequireArray(
-            termsCfg, 'VghLantern__Terms__Config__Sections', 'Na__Terms__Config.json');
+        return ConfigLoader.VghLantern__ConfigLoader__RequireArray(termsCfg, tableKey, 'Na__Terms__Config.json');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Configured Business Terms Sections in Document Order
+    // ------------------------------------------------------------
+    // Exposed because the editor and the Preview and Send toolbar both build their
+    // toggle lists from it, and neither should hold its own copy of the section table.
+    function VghLantern__Terms__DocumentModel__ListSections() {
+        return VghLantern__TermsModel__SectionTable(BLOCK_TERMS_SECTIONS);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Configured General Drawing Terms Sections in Document Order
+    // ------------------------------------------------------------
+    function VghLantern__Terms__DocumentModel__ListDrawingTermsSections() {
+        return VghLantern__TermsModel__SectionTable(BLOCK_DRAWING_SECTIONS);
     }
     // ------------------------------------------------------------
 
@@ -147,8 +186,13 @@ const VghLantern__Terms__DocumentModel = (function() {
     // The project file holds only explicit overrides, so a section added to config
     // later arrives at its configured default on a project that predates it rather
     // than silently switched off.
+    //
+    // Both section tables are searched because both documents' switches share one
+    // override map on the project. Their keys are distinct by construction, so there
+    // is no collision to guard against and no second map to keep in step.
     function VghLantern__Terms__DocumentModel__IsSectionEnabled(project, sectionKey) {
-        var sections  =  VghLantern__Terms__DocumentModel__ListSections();
+        var sections  =  VghLantern__Terms__DocumentModel__ListSections()
+                             .concat(VghLantern__Terms__DocumentModel__ListDrawingTermsSections());
         var overrides =  VghLantern__TermsModel__ToggleOverrides(project);
         var i;
 
@@ -196,11 +240,12 @@ const VghLantern__Terms__DocumentModel = (function() {
 // REGION | Clause Sourcing
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Read a Project Term List as Plain Strings
+    // HELPER FUNCTION | Read a List of Term Records as Plain Strings
     // ------------------------------------------------------------
-    function VghLantern__TermsModel__ProjectTermTexts(project, fieldKey) {
-        var block  =  (project && project[CLIENT_DOC_BLOCK]) || {};
-        var list   =  block[fieldKey];
+    // The record shape is shared by every authored list in the application - the
+    // project's critical and special terms and each lantern's drawing notes - so one
+    // reader serves all three.
+    function VghLantern__TermsModel__RecordTexts(list) {
         if (!Array.isArray(list)) return [];
 
         var texts  =  [];
@@ -216,16 +261,43 @@ const VghLantern__Terms__DocumentModel = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Read a Project Term List as Plain Strings
+    // ------------------------------------------------------------
+    function VghLantern__TermsModel__ProjectTermTexts(project, fieldKey) {
+        var block  =  (project && project[CLIENT_DOC_BLOCK]) || {};
+        return VghLantern__TermsModel__RecordTexts(block[fieldKey]);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read One Lantern's Drawing Notes as Plain Strings
+    // ------------------------------------------------------------
+    // Exposed because the page plan needs to know whether a lantern has any notes
+    // before it decides to give that lantern a Drawing Terms page, and the QR link
+    // needs the same answer before it decides which address to encode. Asking here
+    // rather than each of them reading the block keeps "has notes" one answer.
+    function VghLantern__Terms__DocumentModel__LanternNoteTexts(lantern) {
+        var block  =  (lantern && lantern[LANTERN_NOTES_BLOCK]) || {};
+        return VghLantern__TermsModel__RecordTexts(block[LANTERN_NOTES_FIELD]);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Collect the Raw Clause Texts for One Section
     // ------------------------------------------------------------
-    function VghLantern__TermsModel__SourceTexts(section, project) {
+    // context is { Project, Lantern }. The lantern is null for both pack-level
+    // documents and is only read by the lantern drawing notes source.
+    function VghLantern__TermsModel__SourceTexts(section, context) {
         var Loader  =  window.VghLantern__Terms__MarkdownLoader;
 
         if (section.Source === SOURCE_PROJECT_CRITICAL) {
-            return VghLantern__TermsModel__ProjectTermTexts(project, FIELD_CRITICAL);
+            return VghLantern__TermsModel__ProjectTermTexts(context.Project, FIELD_CRITICAL);
         }
         if (section.Source === SOURCE_PROJECT_SPECIAL) {
-            return VghLantern__TermsModel__ProjectTermTexts(project, FIELD_SPECIAL);
+            return VghLantern__TermsModel__ProjectTermTexts(context.Project, FIELD_SPECIAL);
+        }
+        if (section.Source === SOURCE_LANTERN_NOTES) {
+            return VghLantern__Terms__DocumentModel__LanternNoteTexts(context.Lantern);
         }
         if (section.Source === SOURCE_LIBRARY && Loader) {
             return Loader.VghLantern__Terms__MarkdownLoader__ClausesFor(section.SourceFile);
@@ -277,21 +349,30 @@ const VghLantern__Terms__DocumentModel = (function() {
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Build the Full Numbered Terms Document for a Project
+    // SUB FUNCTION | Assemble One Numbered Document From a Section Table
     // ------------------------------------------------------------
-    // The one call every surface makes. Returns null only when there is no project,
-    // which the caller reports; an otherwise empty document is returned as an empty
-    // document with its issues attached, because "everything is switched off" is a
-    // state the user chose and should see rather than a failure.
-    function VghLantern__Terms__DocumentModel__Build(project) {
+    // The engine behind all three documents this module produces: the business terms
+    // of engagement, the general drawing terms, and a single lantern's drawing notes.
+    // They differ only in which section table they draw on, which config block titles
+    // them, and whether a lantern is in scope - so they are one function with a spec
+    // rather than three near-copies that would drift a clause number apart.
+    //
+    // spec is:
+    //   Sections        the section table, already read from config
+    //   DocumentCfg     the block carrying the title, introduction and review notice
+    //   DocumentLabel   that block's config label, for the strict readers
+    //   TitleOverride   optional, used by a lantern document to name its own lantern
+    //   IntroKey        which key in DocumentCfg holds the introduction
+    //   RespectToggles  false for a lantern document, whose notes have no switch
+    function VghLantern__TermsModel__Assemble(spec, context) {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var Tokens        =  window.VghLantern__AppUtils__DocumentTokens;
         var Loader        =  window.VghLantern__Terms__MarkdownLoader;
-        if (!ConfigLoader || !project) return null;
 
-        var documentCfg  =  VghLantern__TermsModel__Block('Document');
-        var sections     =  VghLantern__Terms__DocumentModel__ListSections();
-        var tokenTable   =  Tokens ? Tokens.VghLantern__AppUtils__DocumentTokens__BuildTable(project) : {};
+        var documentCfg  =  spec.DocumentCfg;
+        var label        =  spec.DocumentLabel;
+        var sections     =  spec.Sections;
+        var tokenTable   =  Tokens ? Tokens.VghLantern__AppUtils__DocumentTokens__BuildTable(context.Project) : {};
 
         var builtSections  =  [];
         var flatTerms      =  [];
@@ -306,7 +387,8 @@ const VghLantern__Terms__DocumentModel = (function() {
 
         for (s = 0; s < sections.length; s++) {
             section  =  sections[s];
-            if (!VghLantern__Terms__DocumentModel__IsSectionEnabled(project, section.Key)) continue;
+            if (spec.RespectToggles !== false &&
+                !VghLantern__Terms__DocumentModel__IsSectionEnabled(context.Project, section.Key)) continue;
 
             // A library section whose file would not load is reported as a failure
             // rather than as an empty section, because the two need different fixes.
@@ -316,7 +398,7 @@ const VghLantern__Terms__DocumentModel = (function() {
                 continue;
             }
 
-            texts         =  VghLantern__TermsModel__SourceTexts(section, project);
+            texts         =  VghLantern__TermsModel__SourceTexts(section, context);
             sectionTerms  =  [];
 
             for (i = 0; i < texts.length; i++) {
@@ -359,7 +441,7 @@ const VghLantern__Terms__DocumentModel = (function() {
 
         var introduction  =  Tokens
             ? Tokens.VghLantern__AppUtils__DocumentTokens__Resolve(
-                  ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'IntroductionText', DOCUMENT_LABEL),
+                  ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, spec.IntroKey, label),
                   tokenTable).Text
             : '';
 
@@ -369,16 +451,18 @@ const VghLantern__Terms__DocumentModel = (function() {
         // were making. Switching ReviewNoticeEnabled off removes both the notice and
         // the Preview and Send warning that goes with it.
         var reviewNotice  =  null;
-        if (ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(documentCfg, 'ReviewNoticeEnabled', DOCUMENT_LABEL)) {
+        if (spec.ShowReviewNotice !== false &&
+            ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(documentCfg, 'ReviewNoticeEnabled', label)) {
             reviewNotice  =  {
-                Heading : ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'ReviewNoticeHeading', DOCUMENT_LABEL),
-                Text    : ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'ReviewNoticeText',    DOCUMENT_LABEL)
+                Heading : ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'ReviewNoticeHeading', label),
+                Text    : ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'ReviewNoticeText',    label)
             };
             issues.IsUnreviewed  =  true;
         }
 
         return {
-            Title        : ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'DocumentTitle', DOCUMENT_LABEL),
+            Title        : spec.TitleOverride ||
+                           ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'DocumentTitle', label),
             Introduction : introduction,
             ReviewNotice : reviewNotice,
             Sections     : builtSections,
@@ -386,6 +470,86 @@ const VghLantern__Terms__DocumentModel = (function() {
             TotalTerms   : flatTerms.length,
             Issues       : issues
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the Full Numbered Terms Document for a Project
+    // ------------------------------------------------------------
+    // The business terms of engagement - the document the client signs against.
+    // Returns null only when there is no project, which the caller reports; an
+    // otherwise empty document is returned as an empty document with its issues
+    // attached, because "everything is switched off" is a state the user chose and
+    // should see rather than a failure.
+    function VghLantern__Terms__DocumentModel__Build(project) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader || !project) return null;
+
+        return VghLantern__TermsModel__Assemble({
+            Sections      : VghLantern__Terms__DocumentModel__ListSections(),
+            DocumentCfg   : VghLantern__TermsModel__Block(BLOCK_TERMS_DOCUMENT),
+            DocumentLabel : DOCUMENT_LABEL,
+            IntroKey      : 'IntroductionText'
+        }, { Project : project, Lantern : null });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build the General Drawing Terms Document for a Project
+    // ------------------------------------------------------------
+    // The omissions and limitations that apply to every drawing in the pack. Its own
+    // document with its own numbering series, printed ahead of the business terms and
+    // pointed at by any titleblock QR code whose lantern has no notes of its own.
+    function VghLantern__Terms__DocumentModel__BuildDrawingTerms(project) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader || !project) return null;
+
+        return VghLantern__TermsModel__Assemble({
+            Sections      : VghLantern__Terms__DocumentModel__ListDrawingTermsSections(),
+            DocumentCfg   : VghLantern__TermsModel__Block(BLOCK_DRAWING_DOCUMENT),
+            DocumentLabel : DRAWING_LABEL,
+            IntroKey      : 'IntroductionText'
+        }, { Project : project, Lantern : null });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Build One Lantern's Own Drawing Notes Document
+    // ------------------------------------------------------------
+    // Returns null when the lantern has no notes, which is what makes the page drop
+    // out of the pack rather than printing an empty heading. The section is not run
+    // past the toggle map: a lantern's notes are switched on by being written, and a
+    // switch for a page that only exists when it has content would be a second way to
+    // say the same thing.
+    function VghLantern__Terms__DocumentModel__BuildLanternDrawingTerms(project, lantern, lanternIndex) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        if (!ConfigLoader || !project || !lantern) return null;
+        if (!VghLantern__Terms__DocumentModel__LanternNoteTexts(lantern).length) return null;
+
+        var documentCfg  =  VghLantern__TermsModel__Block(BLOCK_DRAWING_DOCUMENT);
+        var identity     =  lantern[LANTERN_IDENTITY] || {};
+        var title        =  identity[LANTERN_TITLE_FIELD] || ('Lantern ' + ((lanternIndex || 0) + 1));
+
+        var section  =  {
+            Key            : 'lanternDrawingNotes',
+            Number         : ConfigLoader.VghLantern__ConfigLoader__RequireNumber(documentCfg, 'LanternSectionNumber', DRAWING_LABEL),
+            Label          : ConfigLoader.VghLantern__ConfigLoader__RequireString(documentCfg, 'LanternSectionLabel',  DRAWING_LABEL),
+            Source         : SOURCE_LANTERN_NOTES,
+            IsCritical     : false,
+            EmptyBehaviour : EMPTY_BEHAVIOUR_HIDE
+        };
+
+        return VghLantern__TermsModel__Assemble({
+            Sections         : [section],
+            DocumentCfg      : documentCfg,
+            DocumentLabel    : DRAWING_LABEL,
+            IntroKey         : 'LanternIntroductionText',
+            RespectToggles   : false,
+            ShowReviewNotice : false,                                          // <-- The pack's own notice carries this; repeating it per lantern is noise
+            TitleOverride    : ConfigLoader.VghLantern__ConfigLoader__RequireString(
+                                   documentCfg, 'LanternDocumentTitlePattern', DRAWING_LABEL)
+                                   .replace('{lanternTitle}', title)
+        }, { Project : project, Lantern : lantern });
     }
     // ------------------------------------------------------------
 
@@ -403,15 +567,33 @@ const VghLantern__Terms__DocumentModel = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the General Drawing Terms for the Currently Open Project
+    // ------------------------------------------------------------
+    function VghLantern__Terms__DocumentModel__BuildDrawingTermsFromState() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return null;
+
+        return VghLantern__Terms__DocumentModel__BuildDrawingTerms(
+            StateManager.VghLantern__StateManager__GetCurrentProject()
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__Terms__DocumentModel__Build              : VghLantern__Terms__DocumentModel__Build,
-        VghLantern__Terms__DocumentModel__BuildFromState     : VghLantern__Terms__DocumentModel__BuildFromState,
-        VghLantern__Terms__DocumentModel__ListSections       : VghLantern__Terms__DocumentModel__ListSections,
-        VghLantern__Terms__DocumentModel__IsSectionEnabled   : VghLantern__Terms__DocumentModel__IsSectionEnabled,
-        VghLantern__Terms__DocumentModel__SetSectionEnabled  : VghLantern__Terms__DocumentModel__SetSectionEnabled,
-        VghLantern__Terms__DocumentModel__FormatNumber       : VghLantern__Terms__DocumentModel__FormatNumber
+        VghLantern__Terms__DocumentModel__Build                       : VghLantern__Terms__DocumentModel__Build,
+        VghLantern__Terms__DocumentModel__BuildFromState              : VghLantern__Terms__DocumentModel__BuildFromState,
+        VghLantern__Terms__DocumentModel__BuildDrawingTerms           : VghLantern__Terms__DocumentModel__BuildDrawingTerms,
+        VghLantern__Terms__DocumentModel__BuildDrawingTermsFromState  : VghLantern__Terms__DocumentModel__BuildDrawingTermsFromState,
+        VghLantern__Terms__DocumentModel__BuildLanternDrawingTerms    : VghLantern__Terms__DocumentModel__BuildLanternDrawingTerms,
+        VghLantern__Terms__DocumentModel__LanternNoteTexts            : VghLantern__Terms__DocumentModel__LanternNoteTexts,
+        VghLantern__Terms__DocumentModel__ListSections                : VghLantern__Terms__DocumentModel__ListSections,
+        VghLantern__Terms__DocumentModel__ListDrawingTermsSections    : VghLantern__Terms__DocumentModel__ListDrawingTermsSections,
+        VghLantern__Terms__DocumentModel__IsSectionEnabled            : VghLantern__Terms__DocumentModel__IsSectionEnabled,
+        VghLantern__Terms__DocumentModel__SetSectionEnabled           : VghLantern__Terms__DocumentModel__SetSectionEnabled,
+        VghLantern__Terms__DocumentModel__FormatNumber                : VghLantern__Terms__DocumentModel__FormatNumber
     };
 
 // endregion -------------------------------------------------------------------

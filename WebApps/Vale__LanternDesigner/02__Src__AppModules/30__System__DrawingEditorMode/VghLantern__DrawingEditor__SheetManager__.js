@@ -201,12 +201,15 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
     function VghLantern__SheetManager__ReadState() {
         var StateManager  =  window.VghLantern__AppCore__StateManager;
-        if (!StateManager) return { Project: null, Lantern: null, Geometry: null };
+        if (!StateManager) return { Project: null, Lantern: null, LanternIndex: 0, Geometry: null };
+
+        var appState  =  StateManager.VghLantern__StateManager__GetState() || {};
 
         return {
-            Project  : StateManager.VghLantern__StateManager__GetCurrentProject(),
-            Lantern  : StateManager.VghLantern__StateManager__GetCurrentLantern(),
-            Geometry : {
+            Project      : StateManager.VghLantern__StateManager__GetCurrentProject(),
+            Lantern      : StateManager.VghLantern__StateManager__GetCurrentLantern(),
+            LanternIndex : (typeof appState.currentLanternIndex === 'number') ? appState.currentLanternIndex : 0,
+            Geometry     : {
                 Skeleton : StateManager.VghLantern__StateManager__GetSolvedSkeleton(),
                 BarSet   : StateManager.VghLantern__StateManager__GetSolvedBarSet()
             }
@@ -504,6 +507,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
                SheetSurface.VghLantern__DrawingEditor__SheetSurface__BuildHtml(layout, {
                    Project           : state.Project,
                    Lantern           : state.Lantern,
+                   LanternIndex      : state.LanternIndex,                      // <-- The titleblock QR code names the lantern it is printed on
                    LogoAsset         : logoAsset,
                    SlotContentHtml   : null,                                   // <-- Frames stay empty; ViewPlacement mounts live surfaces into them
                    ShowResizeHandles : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(
@@ -675,7 +679,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         VghLantern__SheetManager__ActiveLayout  =  reSolved;
         SheetSurface.VghLantern__DrawingEditor__SheetSurface__ApplyLayout(
-            drag.SheetEl, reSolved, state.Project, state.Lantern,
+            drag.SheetEl, reSolved, state,
             SheetChrome ? SheetChrome.VghLantern__DrawingEditor__SheetChrome__CachedLogo() : null
         );
     }
@@ -802,6 +806,12 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // The paper size is not repeated as its own field: Layout.Page already carries
     // the size key, the label, the orientation and the millimetres, and a second copy
     // is a second thing that can disagree.
+    //
+    // Skeleton and LanternIndex travel with the sheet because a descriptor may be held
+    // and painted long after the editor has moved on to another lantern. A pack of
+    // four drawings paints four descriptors in a row, and every one of them has to
+    // frame its views, caption its scale and encode its QR code from what it was
+    // composed with rather than from whatever the editor is showing at the time.
     function VghLantern__DrawingEditor__SheetManager__DescribeSheet() {
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
@@ -816,8 +826,112 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             ViewSnapshots    : ViewPlacement ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectSnapshots() : {},
             IsComposed       : ViewPlacement ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput() : false,
             Project          : state.Project,
-            Lantern          : state.Lantern
+            Lantern          : state.Lantern,
+            LanternIndex     : state.LanternIndex,
+            Skeleton         : state.Geometry ? state.Geometry.Skeleton : null
         };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Offscreen Bake Support
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Take a Snapshot of the Session Sheet Setup
+    // ------------------------------------------------------------
+    // Everything the bake is about to overwrite. The sheet setup lives in module
+    // variables shared with the on-screen editor, so composing a lantern the user is
+    // not looking at means borrowing that state and handing it back exactly as found.
+    // Doing this here rather than in the baker is deliberate: the variables are
+    // private to this module, and a snapshot taken anywhere else would be a list of
+    // fields to remember to update.
+    function VghLantern__DrawingEditor__SheetManager__CaptureSessionSetup() {
+        var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+
+        return {
+            SheetSizeKey    : VghLantern__SheetManager__SheetSizeKey,
+            Orientation     : VghLantern__SheetManager__Orientation,
+            IsScaleManual   : VghLantern__SheetManager__IsScaleManual,
+            ColumnSharesPct : VghLantern__SheetManager__ColumnSharesPct
+                                  ? VghLantern__SheetManager__ColumnSharesPct.slice() : null,
+            RowSharesPct    : VghLantern__SheetManager__RowSharesPct
+                                  ? VghLantern__SheetManager__RowSharesPct.slice() : null,
+            ZoomFactor      : VghLantern__SheetManager__ZoomFactor,
+            ActiveLayout    : VghLantern__SheetManager__ActiveLayout,
+            Denominator     : ScaleManager
+                                  ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator() : null,
+            CameraStates    : ViewPlacement
+                                  ? ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates() : null
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put a Captured Session Sheet Setup Back
+    // ------------------------------------------------------------
+    // Written under the restore guard so handing the editor its own state back is not
+    // recorded as the user having changed anything - a bake must never mark a project
+    // dirty, or opening Preview and Send would queue a save on every project opened.
+    function VghLantern__DrawingEditor__SheetManager__RestoreSessionSetup(snapshot) {
+        if (!snapshot) return;
+
+        var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+
+        VghLantern__SheetManager__IsRestoring  =  true;
+
+        try {
+            VghLantern__SheetManager__SheetSizeKey     =  snapshot.SheetSizeKey;
+            VghLantern__SheetManager__Orientation      =  snapshot.Orientation;
+            VghLantern__SheetManager__IsScaleManual    =  snapshot.IsScaleManual;
+            VghLantern__SheetManager__ColumnSharesPct  =  snapshot.ColumnSharesPct;
+            VghLantern__SheetManager__RowSharesPct     =  snapshot.RowSharesPct;
+            VghLantern__SheetManager__ZoomFactor       =  snapshot.ZoomFactor;
+            VghLantern__SheetManager__ActiveLayout     =  snapshot.ActiveLayout;
+
+            if (ScaleManager && typeof snapshot.Denominator === 'number') {
+                ScaleManager.VghLantern__DrawingEditor__ScaleManager__SetDenominator(snapshot.Denominator);
+            }
+            if (ViewPlacement && snapshot.CameraStates) {
+                ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates(snapshot.CameraStates);
+            }
+        } finally {
+            VghLantern__SheetManager__IsRestoring  =  false;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Adopt One Lantern's Sheet Setup and Solve Its Layout
+    // ------------------------------------------------------------
+    // Loads that lantern's recorded sheet setup, auto-fits the scale where the user
+    // has not pinned one, and returns the solved paper layout. This is the same
+    // sequence Render performs for the active lantern, which is what makes a baked
+    // sheet the sheet the user would see if they selected that lantern by hand.
+    //
+    // Takes a lantern rather than an index, and never touches the active selection:
+    // switching the selection would fire lanternSelected, re-solve the geometry the
+    // viewports are showing, and repaint two other modes to compose a page.
+    function VghLantern__DrawingEditor__SheetManager__AdoptLanternForBake(lantern, geometry) {
+        VghLantern__SheetManager__ApplyLayoutBlock(
+            VghLantern__SheetManager__LanternLayoutBlock(lantern, false) || {}
+        );
+
+        var layout  =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
+        if (!layout) return null;
+
+        // The fit changes the scale, not the paper, so the solved layout stands. This
+        // is the same order Render uses: settle the scale before anything quotes it.
+        if (geometry && geometry.Skeleton && !VghLantern__SheetManager__IsScaleManual) {
+            VghLantern__SheetManager__ApplyAutoFit(layout, geometry);
+        }
+
+        VghLantern__SheetManager__ActiveLayout  =  layout;
+        return layout;
     }
     // ------------------------------------------------------------
 
@@ -940,31 +1054,22 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Restore the Sheet Setup From the Active Lantern
+    // SUB FUNCTION | Load One Layout Block Into the Session State
     // ------------------------------------------------------------
-    // A lantern with no recorded layout falls back to the config defaults, which is
-    // exactly what a newly added lantern should do. The legacy project-level block
-    // is only consulted when no lantern is selected yet.
-    function VghLantern__SheetManager__RestoreLayoutState() {
+    // The whole of "become this sheet setup", separated from deciding whose setup it
+    // is. Restoring the active lantern and baking a lantern the editor is not looking
+    // at are the same operation on different blocks, and one implementation of it is
+    // what stops a baked sheet drifting from the sheet the user approved.
+    function VghLantern__SheetManager__ApplyLayoutBlock(block) {
         var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
         var GRID_LABEL     =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__ViewGrid';
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
-        var StateManager   =  window.VghLantern__AppCore__StateManager;
         var gridCfg        =  VghLantern__SheetManager__GridConfig();
         var columns        =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Columns', GRID_LABEL);
         var rows           =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(gridCfg, 'Rows',    GRID_LABEL);
 
-        var lantern        =  StateManager ? StateManager.VghLantern__StateManager__GetCurrentLantern() : null;
-        var block;
-
-        if (lantern) {
-            block  =  VghLantern__SheetManager__LanternLayoutBlock(lantern, false) || {};
-        } else {
-            block  =  VghLantern__SheetManager__ProjectBlockAsLanternKeys(
-                VghLantern__SheetManager__ProjectLayoutBlock()
-            );
-        }
+        block  =  block || {};
 
         VghLantern__SheetManager__IsRestoring  =  true;
 
@@ -999,13 +1104,36 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             }
 
             VghLantern__SheetManager__ActiveLayout  =  null;
-
-            if (StateManager) {
-                var state  =  StateManager.VghLantern__StateManager__GetState();
-                VghLantern__SheetManager__LayoutLanternIndex  =  state.currentLanternIndex;
-            }
         } finally {
             VghLantern__SheetManager__IsRestoring  =  false;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Restore the Sheet Setup From the Active Lantern
+    // ------------------------------------------------------------
+    // A lantern with no recorded layout falls back to the config defaults, which is
+    // exactly what a newly added lantern should do. The legacy project-level block
+    // is only consulted when no lantern is selected yet.
+    function VghLantern__SheetManager__RestoreLayoutState() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var lantern       =  StateManager ? StateManager.VghLantern__StateManager__GetCurrentLantern() : null;
+        var block;
+
+        if (lantern) {
+            block  =  VghLantern__SheetManager__LanternLayoutBlock(lantern, false) || {};
+        } else {
+            block  =  VghLantern__SheetManager__ProjectBlockAsLanternKeys(
+                VghLantern__SheetManager__ProjectLayoutBlock()
+            );
+        }
+
+        VghLantern__SheetManager__ApplyLayoutBlock(block);
+
+        if (StateManager) {
+            var state  =  StateManager.VghLantern__StateManager__GetState();
+            VghLantern__SheetManager__LayoutLanternIndex  =  state.currentLanternIndex;
         }
     }
     // ------------------------------------------------------------
@@ -1371,7 +1499,14 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         VghLantern__DrawingEditor__SheetManager__SheetSizeKey     : VghLantern__DrawingEditor__SheetManager__SheetSizeKey,
         VghLantern__DrawingEditor__SheetManager__Orientation      : VghLantern__DrawingEditor__SheetManager__Orientation,
         VghLantern__DrawingEditor__SheetManager__NoteCameraChanged : VghLantern__DrawingEditor__SheetManager__NoteCameraChanged,
-        VghLantern__DrawingEditor__SheetManager__OnModeExit       : VghLantern__DrawingEditor__SheetManager__OnModeExit
+        VghLantern__DrawingEditor__SheetManager__OnModeExit       : VghLantern__DrawingEditor__SheetManager__OnModeExit,
+
+        // Offscreen bake support. Consumed by SheetBaker only - these lend the session
+        // sheet setup out and take it back, which nothing but a bake has any business
+        // doing.
+        VghLantern__DrawingEditor__SheetManager__CaptureSessionSetup : VghLantern__DrawingEditor__SheetManager__CaptureSessionSetup,
+        VghLantern__DrawingEditor__SheetManager__RestoreSessionSetup : VghLantern__DrawingEditor__SheetManager__RestoreSessionSetup,
+        VghLantern__DrawingEditor__SheetManager__AdoptLanternForBake : VghLantern__DrawingEditor__SheetManager__AdoptLanternForBake
     };
 
 // endregion -------------------------------------------------------------------

@@ -262,9 +262,10 @@ const VghLantern__Specification__ScheduleRenderer = (function() {
         if (!documentModel || !TableRenderer) return '';
 
         var builders  =  {
-            linear     : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable,
-            areas      : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable,
-            components : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable
+            linear      : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable,
+            cuttingList : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildCuttingListTable,
+            areas       : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable,
+            components  : TableRenderer.VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable
         };
 
         var buildFn  =  builders[tableKind];

@@ -137,22 +137,75 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
 
     // SUB FUNCTION | Collect Issues from the View State Selection
     // ------------------------------------------------------------
+    // Asked of the page plan rather than of each switch in turn. The plan is what the
+    // document actually contains, so a pack that comes out empty for any reason -
+    // every switch off, or a project with no lanterns to walk - is reported the same
+    // way, and adding a page kind does not mean remembering to add it here too.
     function VghLantern__DocIssue__CollectSelectionIssues(messages) {
         var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
         if (!DocumentState) return [];
 
-        var hasDrawing  =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesDrawingPage();
-        var hasSpec     =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesSpecificationPage();
-        var hasLetter   =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter();
-        var hasTerms    =  DocumentState.VghLantern__DocPreview__DocumentState__IncludesTermsPages();
-
-        if (!hasDrawing && !hasSpec && !hasLetter && !hasTerms) {
+        if (!DocumentState.VghLantern__DocPreview__DocumentState__BuildPagePlan().length) {
             var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
             return [VghLantern__DocIssue__Make(SEVERITY_ERROR, ConfigLoader.VghLantern__ConfigLoader__RequireString(
                 messages, 'EmptySelectionMessage', 'Na__DocPreview__Config.json -> VghLantern__DocPreview__Config__Issues'))];
         }
 
         return [];
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Collect Issues Raised by the Drawing Bake
+    // ------------------------------------------------------------
+    // Reports the state of the pack's drawings: a notice while they are still being
+    // composed, and a warning naming any lantern whose sheet could not be built.
+    //
+    // A missing sheet is a warning here and an error at export. On screen the user can
+    // see which page is blank and carry on working; issuing a pack with a drawing
+    // silently absent is a different matter, so the exporter refuses.
+    function VghLantern__DocIssue__CollectDrawingIssues(messages) {
+        var ConfigLoader   =  window.VghLantern__AppCore__ConfigLoader;
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var SheetBaker     =  window.VghLantern__DrawingEditor__SheetBaker;
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
+        if (!DocumentState || !SheetBaker || !StateManager) return [];
+        if (!DocumentState.VghLantern__DocPreview__DocumentState__IncludesDrawingPage()) return [];
+
+        var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        var lanterns  =  (project && Array.isArray(project['VghLantern__ProjectFile__Lanterns']))
+            ? project['VghLantern__ProjectFile__Lanterns'] : [];
+        if (!lanterns.length) return [];
+
+        var sheets  =  SheetBaker.VghLantern__DrawingEditor__SheetBaker__PeekAll();
+        if (sheets.length !== lanterns.length) {
+            return [VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'SheetsBakingMessage', ISSUES_LABEL))];
+        }
+
+        // A hole in the cache means one of two different things: the sheet has not
+        // been composed YET, or it could not be composed at all. They are told apart
+        // by whether a bake is still running, which is why the notice and the warning
+        // are separate messages rather than one hedged one.
+        var pending  =  [];
+        var i, identity;
+
+        for (i = 0; i < sheets.length; i++) {
+            if (sheets[i]) continue;
+            identity  =  lanterns[i]['Lantern__Identity__Config'] || {};
+            pending.push(identity['Lantern__Identity__Config__Title'] || ('Lantern ' + (i + 1)));
+        }
+
+        if (!pending.length) return [];
+
+        if (!SheetBaker.VghLantern__DrawingEditor__SheetBaker__IsComplete()) {
+            return [VghLantern__DocIssue__Make(SEVERITY_WARNING,
+                ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'SheetsBakingMessage', ISSUES_LABEL))];
+        }
+
+        return [VghLantern__DocIssue__Make(SEVERITY_WARNING,
+            ConfigLoader.VghLantern__ConfigLoader__RequireString(messages, 'LanternSheetFailedMessage', ISSUES_LABEL)
+                .replace('{lanterns}', pending.join(', ')))];
     }
     // ------------------------------------------------------------
 
@@ -272,6 +325,7 @@ const VghLantern__DocPreview__DocIssueHandler = (function() {
         if (!hasBlockingStateIssue) {
             issues  =  issues
                 .concat(VghLantern__DocIssue__CollectSelectionIssues(messages))
+                .concat(VghLantern__DocIssue__CollectDrawingIssues(messages))
                 .concat(VghLantern__DocIssue__CollectSpecificationIssues())
                 .concat(VghLantern__DocIssue__CollectLetterIssues(messages))
                 .concat(VghLantern__DocIssue__CollectTermsIssues(messages));

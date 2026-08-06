@@ -108,17 +108,29 @@
         outline                            : none;
         border-color                       : var(--VghLantern_AccentBlue);
     }
+
+    .VghLantern__Modal__Input--invalid,
+    .VghLantern__Modal__Input--invalid:focus {
+        border-color                       : var(--VghLantern_ErrorRed);
+        background                         : var(--VghLantern_ErrorBackground);
+    }
     /* ------------------------------------------------------------ */
 
 
     /* MODAL | Inline Validation Message */
     /* ------------------------------------------------------------ */
+    /* Red by default; the --info variant restyles the same line for   */
+    /* neutral progress notes such as a database fetch in flight.      */
     .VghLantern__Modal__ValidationMsg {
         min-height                         : 1.2em;
         font-size                          : var(--Vale_FontSize_Small);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--VghLantern_ErrorRed);
         margin-bottom                      : var(--Vale_Spacing_Small);
+    }
+
+    .VghLantern__Modal__ValidationMsg--info {
+        color                              : var(--VghLantern_AccentBlue);
     }
     /* ------------------------------------------------------------ */
 

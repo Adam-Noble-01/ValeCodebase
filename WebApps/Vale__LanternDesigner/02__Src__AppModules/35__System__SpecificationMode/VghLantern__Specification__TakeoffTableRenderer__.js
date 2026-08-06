@@ -51,7 +51,7 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     // ------------------------------------------------------------
     const LINEAR_KEYS  =  ['LengthMEach', 'LengthMTotal'];
     const AREA_KEYS    =  ['AreaSqMEach', 'AreaSqMTotal'];
-    const MM_KEYS      =  ['WidthMm', 'DepthMm', 'LengthMmEach', 'AreaSqMmEach', 'SectionWidthMm', 'SectionHeightMm'];
+    const MM_KEYS      =  ['WidthMm', 'DepthMm', 'RunMmEach', 'CutLengthMm', 'AreaSqMmEach', 'SectionWidthMm', 'SectionHeightMm'];
     const PITCH_KEYS   =  ['PitchDegrees'];
     // ------------------------------------------------------------
 
@@ -263,6 +263,36 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the Cutting List Table
+    // ------------------------------------------------------------
+    // The workshop-facing counterpart to Section Lengths. That table answers how
+    // much stock to buy; this one answers what to cut it into, which is a
+    // different question and was previously not answered anywhere: fifty-two
+    // glaze bars appeared as one run total, and the six distinct lengths behind
+    // it - one common rafter length plus the progression of shorter bars wrapping
+    // each hip - had to be worked out by hand off the drawing.
+    //
+    // The totals row counts pieces rather than metres. Metres are already totalled
+    // on Section Lengths, and the number a workshop checks against is how many
+    // pieces should come off the saw.
+    function VghLantern__Specification__TakeoffTableRenderer__BuildCuttingListTable(takeoff) {
+        if (!takeoff || !Array.isArray(takeoff.CuttingList) || takeoff.CuttingList.length === 0) return '';
+
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            VghLantern__TakeoffTable__TablesConfig(), 'CuttingListColumns', TABLES_CONFIG_LABEL);
+
+        var pieceTotal  =  0;
+        var i;
+        for (i = 0; i < takeoff.CuttingList.length; i++) pieceTotal  +=  takeoff.CuttingList[i].CountTotal;
+
+        return VghLantern__Specification__TakeoffTableRenderer__BuildTable(
+            columns, takeoff.CuttingList, { CountTotal : pieceTotal }, 'Total pieces'
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build the Glazing Areas Table
     // ------------------------------------------------------------
     // No totals row: the takeoff already emits a "Total Gross" area row, and a
@@ -316,6 +346,20 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
             { LengthMTotal : aggregate.Totals.LinearMTotal }, 'Total linear'
         );
 
+        if (Array.isArray(aggregate.CuttingList) && aggregate.CuttingList.length > 0) {
+            var cutCols  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(tablesCfg, 'CuttingListColumns', TABLES_CONFIG_LABEL).filter(function(column) {
+                return column.Key !== 'CountEach' && column.Key !== 'LengthMEach';
+            });
+
+            var pieceTotal  =  0;
+            var i;
+            for (i = 0; i < aggregate.CuttingList.length; i++) pieceTotal  +=  aggregate.CuttingList[i].CountTotal;
+
+            html  +=  VghLantern__Specification__TakeoffTableRenderer__BuildTable(
+                cutCols, aggregate.CuttingList, { CountTotal : pieceTotal }, 'Total pieces'
+            );
+        }
+
         html  +=  VghLantern__Specification__TakeoffTableRenderer__BuildTable(
             componentCols, aggregate.Components,
             { CountTotal : aggregate.Totals.ComponentCountTotal }, 'Total components'
@@ -337,6 +381,7 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     return {
         VghLantern__Specification__TakeoffTableRenderer__BuildTable           : VghLantern__Specification__TakeoffTableRenderer__BuildTable,
         VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable     : VghLantern__Specification__TakeoffTableRenderer__BuildLinearTable,
+        VghLantern__Specification__TakeoffTableRenderer__BuildCuttingListTable : VghLantern__Specification__TakeoffTableRenderer__BuildCuttingListTable,
         VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable       : VghLantern__Specification__TakeoffTableRenderer__BuildAreaTable,
         VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable  : VghLantern__Specification__TakeoffTableRenderer__BuildComponentTable,
         VghLantern__Specification__TakeoffTableRenderer__BuildAggregateTable  : VghLantern__Specification__TakeoffTableRenderer__BuildAggregateTable

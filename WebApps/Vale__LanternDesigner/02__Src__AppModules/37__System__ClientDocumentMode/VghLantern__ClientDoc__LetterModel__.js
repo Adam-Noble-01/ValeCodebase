@@ -179,11 +179,12 @@ const VghLantern__ClientDoc__LetterModel = (function() {
     // The salutation, the sign-off and the client address all start from a config
     // default the first time a project opens here, for the same reason: an empty
     // field on a client-facing letter reads as unfinished rather than as a choice.
-    // The sign-off and client address defaults are literal tokens - {{UserName}},
-    // {{ClientAddress__Line01}} and so on - printed exactly as written because they
-    // are never passed through VghLantern__AppUtils__DocumentTokens. They exist so
-    // the letterhead is laid out and formatted correctly today; a future system that
-    // knows the signed-in user and the client's postal address replaces them.
+    // The client address defaults are literal tokens - {{ClientAddress__Line01}}
+    // and so on - printed exactly as written because they are never passed through
+    // VghLantern__AppUtils__DocumentTokens; the database-first project flow writes
+    // real address values over them at creation. The sign-off seeds from the
+    // signed-in user (see FieldSeedValue below), falling back to its literal
+    // token only when no user session exists.
     const FIELD_DEFAULT_CONFIG_KEY_MAP  =  {
         salutation            : 'DefaultSalutation',
         signOffName           : 'DefaultSignOffName',
@@ -196,31 +197,115 @@ const VghLantern__ClientDoc__LetterModel = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Write the Template Onto a Project That Has No Letter Yet
+    // HELPER FUNCTION | Split the Metadata Site Address Into Letter Lines
     // ------------------------------------------------------------
-    // Runs once per project, the first time the Client Doc tab opens it. Returns true
-    // when it wrote something, so the caller knows the project changed.
+    // The project metadata stores ONE composed address line, written by the
+    // database-first create flow as "Site Name, street parts, Post Town,
+    // County, Postcode". This reverses that composition so a project created
+    // before the letter seeding existed can still fill its recipient block:
+    // first part is the address line, last is the postcode, third from last
+    // is the town, and the county between them is dropped as UK postal
+    // convention allows. Returns null when no site address is recorded.
+    function VghLantern__LetterModel__SiteAddressParts(project) {
+        var metadata  =  (project && project['VghLantern__ProjectFile__Metadata']) || {};
+        var composed  =  metadata['VghLantern__ProjectFile__Metadata__SiteAddress'];
+        if (typeof composed !== 'string' || composed.trim() === '') return null;
+
+        var parts  =  composed.split(',')
+            .map(function(part) { return part.trim(); })
+            .filter(function(part) { return part.length > 0; });
+
+        if (parts.length < 4) {
+            return {                                                         // <-- Too short to be the composed format; best effort in order
+                Line1    : parts[0] || '',
+                Street   : parts[1] || '',
+                TownCity : parts[2] || '',
+                PostCode : ''
+            };
+        }
+
+        return {
+            Line1    : parts[0],
+            Street   : parts.slice(1, parts.length - 3).join(', '),
+            TownCity : parts[parts.length - 3],
+            PostCode : parts[parts.length - 1]
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Best Available Seed Value for a Letter Field
+    // ------------------------------------------------------------
+    // The sign-off belongs to whoever is signed in, and the recipient address
+    // belongs to the project's recorded site address, so those fields prefer
+    // their live sources over the config's literal placeholder tokens. Every
+    // other field seeds from config exactly as before. Used by the
+    // materialisation seed and the render-time fallback alike, so the two can
+    // never disagree about what an unfilled field shows.
+    function VghLantern__LetterModel__FieldSeedValue(project, fieldName, letterCfg) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var currentUser   =  (StateManager && StateManager.VghLantern__StateManager__GetCurrentUser)
+            ? StateManager.VghLantern__StateManager__GetCurrentUser()
+            : null;
+
+        if (currentUser) {
+            if (fieldName === 'signOffName' && currentUser.UserName) return currentUser.UserName;
+            if (fieldName === 'signOffRole' && currentUser.Role)     return currentUser.Role;
+        }
+
+        var addressParts  =  VghLantern__LetterModel__SiteAddressParts(project);
+        if (addressParts) {
+            if (fieldName === 'clientAddressLine1')    return addressParts.Line1;
+            if (fieldName === 'clientAddressStreet')   return addressParts.Street;
+            if (fieldName === 'clientAddressTownCity') return addressParts.TownCity;
+            if (fieldName === 'clientAddressPostCode') return addressParts.PostCode;
+        }
+
+        return ConfigLoader.VghLantern__ConfigLoader__RequireString(
+            letterCfg, FIELD_DEFAULT_CONFIG_KEY_MAP[fieldName], LETTER_LABEL);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Materialise the Template and Refresh Placeholder Fields
+    // ------------------------------------------------------------
+    // The body template is written once per project, the first time the Client
+    // Doc tab opens it. The named fields are refreshed on EVERY open: a field
+    // still holding its seed - empty, or a literal {{Token}} - re-seeds from
+    // today's best source (the signed-in user, the project's site address), so
+    // a project created before those sources existed heals itself the moment
+    // it is opened. A value anyone actually authored is never touched, and a
+    // token is never churned into a different token. Returns true when it
+    // wrote something, so the caller knows the project changed.
     function VghLantern__ClientDoc__LetterModel__EnsureMaterialised(project) {
         var block  =  VghLantern__LetterModel__EnsureBlock(project);
         if (!block) return false;
-        if (block[FIELD_BODY] !== '') return false;                            // <-- This project already has its own letter
 
-        block[FIELD_BODY]  =  VghLantern__ClientDoc__LetterModel__TemplateBody();
+        var letterCfg  =  VghLantern__LetterModel__Block('Letter');
+        var didWrite   =  false;
+        var fieldName, projectKey, storedValue, seedValue;
 
-        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var letterCfg     =  VghLantern__LetterModel__Block('Letter');
-        var fieldName, projectKey;
-
-        for (fieldName in FIELD_DEFAULT_CONFIG_KEY_MAP) {
-            projectKey  =  FIELD_KEY_MAP[fieldName];
-            if (typeof block[projectKey] === 'string' && block[projectKey] !== '') continue;
-
-            block[projectKey]  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(
-                letterCfg, FIELD_DEFAULT_CONFIG_KEY_MAP[fieldName], LETTER_LABEL);
+        if (block[FIELD_BODY] === '') {
+            block[FIELD_BODY]  =  VghLantern__ClientDoc__LetterModel__TemplateBody();
+            didWrite  =  true;
         }
 
-        VghLantern__LetterModel__MarkDirty();
-        return true;
+        for (fieldName in FIELD_DEFAULT_CONFIG_KEY_MAP) {
+            projectKey   =  FIELD_KEY_MAP[fieldName];
+            storedValue  =  (typeof block[projectKey] === 'string') ? block[projectKey] : '';
+            if (!VghLantern__LetterModel__IsPlaceholderOrEmpty(storedValue)) continue;  // <-- Authored by someone; never overwrite
+
+            seedValue  =  VghLantern__LetterModel__FieldSeedValue(project, fieldName, letterCfg);
+            if (seedValue === storedValue) continue;                                    // <-- Seed unchanged; nothing to write
+            if (storedValue !== '' && VghLantern__LetterModel__IsPlaceholderOrEmpty(seedValue)) continue;  // <-- Never swap one token for another
+
+            block[projectKey]  =  seedValue;
+            didWrite  =  true;
+        }
+
+        if (didWrite) VghLantern__LetterModel__MarkDirty();
+        return didWrite;
     }
     // ------------------------------------------------------------
 
@@ -348,16 +433,18 @@ const VghLantern__ClientDoc__LetterModel = (function() {
             return result.Text;
         }
 
-        // HELPER | Read a named field, falling back to its configured default
+        // HELPER | Read a named field, falling back to its best seed value
         // A project materialised before a field existed has nothing stored against
         // it, so without this the block that field feeds would silently vanish from
-        // an older letter while appearing on every new one.
+        // an older letter while appearing on every new one. A stored value that is
+        // still a literal {{Token}} placeholder is the seed rather than something
+        // anyone wrote, so it re-resolves against today's best source - which for
+        // the sign-off is the signed-in user - instead of freezing the token.
         function fieldOrDefault(fieldName) {
             var stored  =  VghLantern__ClientDoc__LetterModel__ReadField(project, fieldName);
-            if (stored !== '') return stored;
+            if (!VghLantern__LetterModel__IsPlaceholderOrEmpty(stored)) return stored;
 
-            return ConfigLoader.VghLantern__ConfigLoader__RequireString(
-                letterCfg, FIELD_DEFAULT_CONFIG_KEY_MAP[fieldName], LETTER_LABEL);
+            return VghLantern__LetterModel__FieldSeedValue(project, fieldName, letterCfg);
         }
 
         // Tokens are resolved on the raw body BEFORE it is parsed, so a token sitting
@@ -366,6 +453,8 @@ const VghLantern__ClientDoc__LetterModel = (function() {
         var Parser  =  window.VghLantern__ClientDoc__MarkdownParser;
         var body    =  resolve(VghLantern__ClientDoc__LetterModel__ReadBody(project));
         var blocks  =  Parser ? Parser.VghLantern__ClientDoc__MarkdownParser__Parse(body) : [];
+
+        var signOffName  =  fieldOrDefault('signOffName');                     // <-- Resolved once; the letter and its unsigned warning must agree
 
         return {
             ShowLetterhead : ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(letterCfg, 'ShowLetterhead',   LETTER_LABEL),
@@ -405,18 +494,18 @@ const VghLantern__ClientDoc__LetterModel = (function() {
             Blocks         : blocks,
 
             SignOffPhrase  : ConfigLoader.VghLantern__ConfigLoader__RequireString(letterCfg, 'DefaultSignOffPhrase', LETTER_LABEL),
-            SignOffName    : fieldOrDefault('signOffName'),
+            SignOffName    : signOffName,
             SignOffRole    : fieldOrDefault('signOffRole'),
 
             Issues         : {
                 UnresolvedTokens : unresolved,
                 IsEmpty          : body.trim() === '',
 
-                // A name that is still the {{UserName}} placeholder is not a
-                // signature, so Preview and Send must keep warning about it just as
-                // it did when the field was left blank.
-                IsUnsigned       : VghLantern__LetterModel__IsPlaceholderOrEmpty(
-                                       VghLantern__ClientDoc__LetterModel__ReadField(project, 'signOffName'))
+                // Judged on the RESOLVED name: a sign-off filled in from the
+                // signed-in user is a signature even though the stored field
+                // still holds its seed, while a letter that resolves to the
+                // {{UserName}} placeholder is still unsigned.
+                IsUnsigned       : VghLantern__LetterModel__IsPlaceholderOrEmpty(signOffName)
             }
         };
     }

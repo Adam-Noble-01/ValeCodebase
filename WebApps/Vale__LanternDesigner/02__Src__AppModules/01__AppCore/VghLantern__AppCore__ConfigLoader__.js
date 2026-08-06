@@ -62,7 +62,11 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         { Label : 'Env2d',           Path : '02__Src__AppModules/05__Env2d__SvgRenderPipeline/Na__Env2d__Config.json' },
         { Label : 'Env3d',           Path : '02__Src__AppModules/06__Env3d__ThreeRenderPipeline/Na__Env3d__Config.json' },
         { Label : 'CrossSection',    Path : '02__Src__AppModules/26__System__CrossSectionView/Na__CrossSection__Config.json' },
+        { Label : 'UserLogin',       Path : '02__Src__AppModules/08__System__UserLogin/Na__UserLogin__Config.json' },
+        { Label : 'CreationWizard',  Path : '02__Src__AppModules/09__System__LaternCreationWizard/Na__CreationWizard__Config.json' },
         { Label : 'DocManagement',   Path : '02__Src__AppModules/10__System__DocumentManagementMode/Na__DocManagement__Config.json' },
+        { Label : 'LandingScreen',   Path : '02__Src__AppModules/11__System__LandingScreen/Na__LandingScreen__Config.json' },
+        { Label : 'ValeDatabase',    Path : '02__Src__AppModules/12__System__ValeDatabaseApi/Na__ValeDatabase__Config.json' },
         { Label : 'LanternEditor',   Path : '02__Src__AppModules/20__System__LanternAssembly__EditorMode/Na__LanternEditor__Config.json' },
         { Label : 'EditorWarnings',  Path : '02__Src__AppModules/20__System__LanternAssembly__EditorMode/Na__LanternEditor__Warnings__.json' },
         { Label : 'DrawingEditor',   Path : '02__Src__AppModules/30__System__DrawingEditorMode/Na__DrawingEditor__Config.json' },
@@ -92,6 +96,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
     let VghLantern__ConfigLoader__Env2d             =  null;                 // <-- 2D SVG environment settings
     let VghLantern__ConfigLoader__Env3d             =  null;                 // <-- 3D Three.js environment settings
     let VghLantern__ConfigLoader__CrossSection      =  null;                 // <-- 3D cross section cut appearance and tuning
+    let VghLantern__ConfigLoader__CreationWizard    =  null;                 // <-- Lantern creation wizard steps, copy and behaviour
     let VghLantern__ConfigLoader__LanternEditor     =  null;                 // <-- Editor layout and section settings
     let VghLantern__ConfigLoader__EditorWarnings    =  null;                 // <-- Editor manufacturing warning rule table
     let VghLantern__ConfigLoader__DrawingEditor     =  null;                 // <-- Sheet, scale and titleblock settings
@@ -214,6 +219,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
         VghLantern__ConfigLoader__Env2d            =  configData['VghLantern__Env2d__Config']                   || {};
         VghLantern__ConfigLoader__Env3d            =  configData['VghLantern__Env3d__Config']                   || {};
         VghLantern__ConfigLoader__CrossSection     =  configData['VghLantern__CrossSection__Config']            || {};
+        VghLantern__ConfigLoader__CreationWizard   =  configData['VghLantern__CreationWizard__Config']          || {};
         VghLantern__ConfigLoader__LanternEditor    =  configData['VghLantern__LanternEditor__Config']           || {};
         VghLantern__ConfigLoader__EditorWarnings   =  configData['VghLantern__LanternEditor__Warnings__Config'] || {};
         VghLantern__ConfigLoader__DrawingEditor    =  configData['VghLantern__DrawingEditor__Config']           || {};
@@ -290,6 +296,7 @@ const VghLantern__AppCore__ConfigLoader = (function() {
             'Env2d'            : VghLantern__ConfigLoader__Env2d,
             'Env3d'            : VghLantern__ConfigLoader__Env3d,
             'CrossSection'     : VghLantern__ConfigLoader__CrossSection,
+            'CreationWizard'   : VghLantern__ConfigLoader__CreationWizard,
             'LanternEditor'    : VghLantern__ConfigLoader__LanternEditor,
             'EditorWarnings'   : VghLantern__ConfigLoader__EditorWarnings,
             'DrawingEditor'    : VghLantern__ConfigLoader__DrawingEditor,

@@ -1,0 +1,224 @@
+/* =============================================================================
+ * VGHLANTERN - LANDING SCREEN STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__LandingScreen__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : Landing Screen
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Boot landing card with logo, typed greeting and entry buttons
+ * CREATED    : 06-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Centred welcome card over the standard light content background
+ * - Typewriter greeting with a blinking caret that settles once typed
+ * - Outline-invert library button beside the solid primary create button
+ * - Footer with version line, thin rule, copyright and the sign out link
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Landing Panel and Card
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT | Panel Centring Wrapper */
+    /* ------------------------------------------------------------ */
+    #VghLantern__LandingScreen__Container {
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        min-height                         : calc(100vh - var(--Vale_HeaderHeight) - var(--VghLantern_NavHeight) - (2 * var(--Vale_Spacing_Large)));
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Welcome Card Shell */
+    /* ------------------------------------------------------------ */
+    .VghLantern__LandingScreen__Card {
+        width                              : 100%;
+        max-width                          : calc(560px * var(--Vale_UIScale));
+        padding                            : calc(var(--Vale_Spacing_XXLarge) + var(--Vale_Spacing_Medium)) var(--Vale_Spacing_XXLarge);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 8px 32px rgba(23, 43, 58, 0.10);
+        text-align                         : center;
+        animation                          : VghLantern__LandingScreen__CardIn 240ms ease-out;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* CARD | Product Logo */
+    /* ------------------------------------------------------------ */
+    /* The logo artwork carries its own border box, so it sits plain. */
+    .VghLantern__LandingScreen__Logo {
+        width                              : calc(300px * var(--Vale_UIScale));
+        max-width                          : 80%;
+        margin-bottom                      : var(--Vale_Spacing_XXLarge);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Typed Greeting
+ * ----------------------------------------------------------------------------- */
+
+    /* GREETING | Written Line */
+    /* ------------------------------------------------------------ */
+    /* min-height reserves the line so the card does not jump when the */
+    /* typewriter starts, and holds space while it is still empty.     */
+    .VghLantern__LandingScreen__Greeting {
+        min-height                         : 1.5em;
+        font-size                          : var(--Vale_FontSize_SubHeading);
+        font-weight                        : var(--Vale_FontWeight_Light);
+        font-style                         : italic;
+        color                              : var(--Vale_TextPrimary);
+        letter-spacing                     : 0.01em;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GREETING | Blinking Caret */
+    /* ------------------------------------------------------------ */
+    .VghLantern__LandingScreen__Caret {
+        display                            : inline-block;
+        width                              : calc(2px * var(--Vale_UIScale));
+        height                             : 1em;
+        margin-left                        : calc(2px * var(--Vale_UIScale));
+        vertical-align                     : text-bottom;
+        background                         : var(--Vale_PrimaryBrand);
+        animation                          : VghLantern__LandingScreen__CaretBlink 1s steps(1) infinite;
+        transition                         : opacity var(--Vale_Transition_Slow);
+    }
+
+    .VghLantern__LandingScreen__Caret--settled {
+        opacity                            : 0;
+        animation                          : none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Entry Buttons
+ * ----------------------------------------------------------------------------- */
+
+    /* ACTIONS | Button Row */
+    /* ------------------------------------------------------------ */
+    .VghLantern__LandingScreen__Actions {
+        display                            : flex;
+        justify-content                    : center;
+        gap                                : var(--Vale_Spacing_Medium);
+        margin-top                         : var(--Vale_Spacing_XXLarge);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACTIONS | Outline Entry Buttons */
+    /* ------------------------------------------------------------ */
+    /* Both entry doors carry equal weight, so neither is filled at    */
+    /* rest; the brand fill, the slight scale jump and the drop shadow */
+    /* are hover-only feedback.                                        */
+    .VghLantern__LandingScreen__BtnOutline {
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_PrimaryBrand);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderPrimary);
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        transition                         : background-color var(--Vale_Transition_Fast),
+                                             color var(--Vale_Transition_Fast),
+                                             transform var(--Vale_Transition_Fast),
+                                             box-shadow var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__LandingScreen__BtnOutline:hover {
+        color                              : var(--Vale_TextLight);
+        background-color                   : var(--Vale_PrimaryBrand);
+        transform                          : scale(1.05);
+        box-shadow                         : 0 4px 12px rgba(23, 43, 58, 0.22);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Card Footer
+ * ----------------------------------------------------------------------------- */
+
+    /* FOOTER | Version, Rule and Copyright */
+    /* ------------------------------------------------------------ */
+    .VghLantern__LandingScreen__Footer {
+        margin-top                         : calc(var(--Vale_Spacing_XXLarge) + var(--Vale_Spacing_Large));
+    }
+
+    .VghLantern__LandingScreen__Version {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-style                         : italic;
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__LandingScreen__Rule {
+        width                              : 60%;
+        margin                             : var(--Vale_Spacing_XLarge) auto;
+        border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__LandingScreen__Copyright {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOOTER | Signed In Row and Sign Out Link */
+    /* ------------------------------------------------------------ */
+    .VghLantern__LandingScreen__SignedInRow {
+        margin-top                         : var(--Vale_Spacing_XLarge);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+    }
+
+    .VghLantern__LandingScreen__SignOutLink {
+        padding                            : 0;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--VghLantern_AccentBlue);
+        background                         : none;
+        border                             : none;
+        cursor                             : pointer;
+    }
+
+    .VghLantern__LandingScreen__SignOutLink:hover {
+        text-decoration                    : underline;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * ANIMATION | Card Entrance and Caret Blink
+ * ----------------------------------------------------------------------------- */
+
+    /* KEYFRAMES | Card Rise-In and Caret Blink */
+    /* ------------------------------------------------------------ */
+    @keyframes VghLantern__LandingScreen__CardIn {
+        from { transform: translateY(8px) scale(0.98); opacity: 0; }
+        to   { transform: translateY(0)   scale(1);    opacity: 1; }
+    }
+
+    @keyframes VghLantern__LandingScreen__CaretBlink {
+        0%, 100% { opacity: 1; }
+        50%      { opacity: 0; }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

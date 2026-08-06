@@ -318,6 +318,98 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * COMPONENT | Lantern Tab Context Menu
+ * ----------------------------------------------------------------------------- */
+
+    /* MENU | Right Click Panel */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__TabContextMenu {
+        position                           : fixed;
+        z-index                            : var(--Vale_ZIndex_Tooltip);
+        display                            : flex;
+        flex-direction                     : column;
+        min-width                          : 170px;
+        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+        background-color                   : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Action Item */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__TabContextMenuItem {
+        display                            : block;
+        width                              : 100%;
+        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextPrimary);
+        text-align                         : left;
+        background-color                   : transparent;
+        border                             : none;
+        border-radius                      : var(--Vale_BorderRadius);
+        cursor                             : pointer;
+        white-space                        : nowrap;
+    }
+
+    .VghLantern__Editor__TabContextMenuItem:hover {
+        background-color                   : var(--Vale_HoverBackground);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Destructive Action Item */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__TabContextMenuItem--danger {
+        color                               : var(--VghLantern_ErrorRed);
+    }
+
+    .VghLantern__Editor__TabContextMenuItem--danger:hover {
+        background-color                    : var(--VghLantern_ErrorBackground);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Disabled Action Item */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__TabContextMenuItem--disabled,
+    .VghLantern__Editor__TabContextMenuItem--disabled:hover {
+        color                                : var(--Vale_TextSubtle);
+        background-color                    : transparent;
+        cursor                               : not-allowed;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Divider Between Items */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__TabContextMenuDivider {
+        height                              : 1px;
+        margin                              : calc(var(--Vale_Spacing_Small) / 2) 0;
+        background-color                    : var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MENU | Explanatory Note Under a Disabled Item */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Editor__TabContextMenuHint {
+        max-width                          : 200px;
+        margin                             : calc(var(--Vale_Spacing_Small) / 2) 0 0;
+        padding                            : 0 var(--Vale_Spacing_Small);
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        line-height                        : 1.35;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
  * COMPONENT | Viewport Hosts and Preview Split
  * ----------------------------------------------------------------------------- */
 
@@ -1176,10 +1268,13 @@
 
     /* CARD | One Selectable Component */
     /* ------------------------------------------------------------ */
+    /* Square tiles: the preview fills whatever the name line leaves, so the
+       strip reads as a set of drawings rather than wide slabs.                */
     .VghLantern__ControlPanel__Card {
         display                            : flex;
         flex-direction                     : column;
         align-items                        : center;
+        aspect-ratio                       : 1 / 1;
         gap                                : calc(var(--Vale_Spacing_Small) / 2);
         padding                            : var(--Vale_Spacing_Small);
         font-family                        : var(--Vale_FontFamily);
@@ -1221,10 +1316,15 @@
     /* The stroke is set here rather than on the path so the whole strip restyles
        from one rule, and non-scaling-stroke on the path keeps a tall spire and a
        squat ball drawn at the same visual line weight.                          */
+    /* flex-basis 0, never auto: an svg carrying a tall component's own viewBox
+       has a huge intrinsic height, and basis auto would feed that straight into
+       the card, stretching it far past square. At basis 0 the preview claims no
+       height of its own and simply fills whatever the 1:1 card leaves over.    */
     .VghLantern__ControlPanel__CardPreview {
         display                            : block;
         width                              : 100%;
-        height                             : 74px;
+        flex                               : 1 1 0;
+        min-height                         : 0;
         stroke                             : var(--Vale_TextPrimary);
         stroke-width                       : 1;
         stroke-linecap                     : round;
@@ -1236,14 +1336,14 @@
 
     /* CARD | Preview Placeholder */
     /* ------------------------------------------------------------ */
+    /* Quiet by design: words on white rather than a boxed grey panel, so the
+       None choice never competes with the component drawings beside it.       */
     .VghLantern__ControlPanel__CardEmpty {
         display                            : flex;
         align-items                        : center;
         justify-content                    : center;
         font-size                          : var(--Vale_FontSize_Small);
-        color                              : var(--Vale_TextSecondary);
-        background-color                   : var(--Vale_BackgroundLight);
-        border-radius                      : var(--Vale_BorderRadius);
+        color                              : var(--Vale_BorderLight);
     }
     /* ------------------------------------------------------------ */
 

@@ -1,0 +1,12 @@
+{
+    "VghLantern__ValeDatabase__Config__Description": "System configuration overlay for the placeholder Vale Database API. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly. The lookup module simulates an async SQL fetch against the phoney client table; when the real Vale SQL endpoint exists, ClientTablePath is replaced by a request URL and SimulatedLatencyMs is retired.",
+
+    "VghLantern__ValeDatabase__Config__Lookup": {
+        "ClientTablePath"       : "02__Src__AppModules/12__System__ValeDatabaseApi/Na__ValeDatabase__ClientRecords__.json",
+        "SimulatedLatencyMs"    : 650,
+        "SimulatedLatencyNote"  : "Artificial delay before a lookup resolves, so the fetching state is actually visible when demonstrating the flow. A real database round trip provides its own latency; set to 0 once the SQL integration lands.",
+        "JobNumberMinDigits"    : 4,
+        "JobNumberMaxDigits"    : 5,
+        "JobNumberRuleNote"     : "Vale standard job numbers are plain integers of 4 or 5 digits with no leading zero, e.g. 1256 or 15134."
+    }
+}

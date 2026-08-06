@@ -13,27 +13,45 @@
             "ScreenPixelsPerMm"         : 3.2,
             "ScreenPixelsPerMmNote"     : "Screen zoom only. Page geometry is authored in paper millimetres so the on-screen page and the exported PDF are the same document at two magnifications.",
             "PaperNote"                 : "These settings size the specification pages. The drawing sheet keeps whatever paper the Drawing Editor is set to, which is why one exported document can run A4 portrait schedules into an A3 or A1 landscape drawing.",
-            "PageOrder"                 : ["welcomeLetter", "drawing", "specification", "terms"],
-            "PageOrderNote"             : "Enabled pages are emitted in this order: the covering letter, then the drawing the client looks at, then the specification that describes it, then the terms it is all issued under. The terms are last because they are read last and referred back to; they are one flowing page descriptor however many sheets they run to, because they are one continuously numbered document."
+            "PageOrder"                 : ["welcomeLetter", "projectSummary", "perLantern", "generalDrawingTerms", "terms"],
+            "PageOrderNote"             : "Enabled pages are emitted in this order. 'perLantern' is not a page: it is the point in the pack where the schedule is walked, emitting PerLanternOrder once for every lantern on the project. Everything before it describes the job as a whole, everything after it applies to the whole pack. The terms are last because they are read last and referred back to; they are one flowing page descriptor however many sheets they run to, because they are one continuously numbered document.",
+
+            "PerLanternOrder"           : ["lanternDrawing", "lanternDrawingTerms", "lanternSpecification"],
+            "PerLanternOrderNote"       : "Repeated once per lantern, in schedule order. The drawing leads because it is what the client looks at; its own drawing notes follow it so a caveat about that drawing is read against it; the specification comes last because its T codes are marked on the plan view two pages earlier. A lantern with no drawing notes of its own simply omits that page - the page exists because it has content, so there is no switch for it to fall out of step with.",
+
+            "PageKindLabels": {
+                "welcomeLetter"        : "Welcome Letter",
+                "projectSummary"       : "Project Summary",
+                "lanternDrawing"       : "Drawing",
+                "lanternDrawingTerms"  : "Drawing Notes",
+                "lanternSpecification" : "Specification",
+                "generalDrawingTerms"  : "General Drawing Terms",
+                "terms"                : "Terms and Conditions"
+            },
+            "PageKindLabelsNote"        : "Used by the preview to caption each page in the stage so a long pack can be navigated. Not printed on the page itself - the page's own masthead or titleblock does that."
         },
 
         "VghLantern__DocPreview__Config__ViewState": {
             "DefaultShowWelcomeLetter"    : true,
+            "DefaultShowProjectSummary"   : true,
             "DefaultShowDrawingSheet"     : true,
+            "DefaultShowDrawingNotes"     : true,
             "DefaultShowTakeoffSchedule"  : true,
             "DefaultShowComponentSchedule": true,
             "DefaultShowJobNotes"         : true,
+            "DefaultShowDrawingTermsPages": true,
             "DefaultShowTermsPages"       : true,
             "PersistViewState"            : true,
             "PersistViewStateNote"        : "When true the toggles round-trip through 08__LocalUserData via the user menu config endpoint, so a user's preferred output shape survives a reload. Toggle keys deliberately mirror VghLantern__UserMenu__ModeDocumentPreview__Config so the persistence layer needs no key translation.",
             "DrawingSheetToggleNote"      : "One switch, because the drawing page is the composed Drawing Editor sheet baked in whole. Which views appear on that sheet, and how the grid is balanced, is decided in the Drawing Editor. Dropping a single view here would leave a hole in the sheet's grid rather than reflowing it.",
             "TermsToggleNote"             : "ShowTermsPages is the page-level switch and is a per-user preference like every other key in this block. Which SECTIONS the terms document contains is NOT here - that is document content, so it lives on the project file and is edited by both the Client Doc tab and the Terms group in this mode's toolbar. One value, two surfaces, nothing to drift.",
+            "DrawingNotesToggleNote"      : "ShowDrawingNotes governs the per-lantern Drawing Notes pages as a set. Switching it off drops all of them; it does not decide whether any given lantern has one, which is answered by whether that lantern has notes written against it.",
             "ToggleGrouping": {
-                "Document"              : ["ShowWelcomeLetter", "ShowDrawingSheet", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes", "ShowTermsPages"],
+                "Document"              : ["ShowWelcomeLetter", "ShowProjectSummary", "ShowDrawingSheet", "ShowDrawingNotes", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes", "ShowDrawingTermsPages", "ShowTermsPages"],
                 "DrawingViews"          : ["ShowDrawingSheet"],
                 "DocumentSections"      : ["ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes"]
             },
-            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the drawing page when ShowDrawingSheet is on, the terms pages when ShowTermsPages is on, and the specification pages when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
+            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the project summary when ShowProjectSummary is on, a lantern's drawing when ShowDrawingSheet is on, its drawing notes when ShowDrawingNotes is on AND that lantern has notes, the general drawing terms when ShowDrawingTermsPages is on, the business terms when ShowTermsPages is on, and a lantern's specification when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
         },
 
         "VghLantern__DocPreview__Config__Toolbar": {
@@ -51,10 +69,13 @@
             "DocumentGroupLabel"        : "Document",
             "ToggleLabels": {
                 "ShowWelcomeLetter"     : "Welcome Letter",
-                "ShowDrawingSheet"      : "Drawing Sheet",
+                "ShowProjectSummary"    : "Project Summary",
+                "ShowDrawingSheet"      : "Drawing Sheets",
+                "ShowDrawingNotes"      : "Drawing Notes",
                 "ShowTakeoffSchedule"   : "Takeoff Schedule",
                 "ShowComponentSchedule" : "Component Schedule",
                 "ShowJobNotes"          : "Job Notes",
+                "ShowDrawingTermsPages" : "General Drawing Terms",
                 "ShowTermsPages"        : "Terms Pages"
             }
         },
@@ -94,6 +115,9 @@
             "NoLanternMessage"          : "This project has no lanterns to document.",
             "UnsolvedGeometryMessage"   : "Lantern geometry has not been solved - open the Lantern Editor to resolve it.",
             "NoDrawingSheetMessage"     : "Visit the Drawing Editor once so the sheet can be composed before export.",
+            "SheetsBakingMessage"       : "Composing a drawing for each lantern. The pack will finish building in a moment.",
+            "SheetsBakingMessageNote"   : "A notice rather than a warning. The first preview of a multi-lantern project has to rasterise a 3D view per lantern, which takes a few seconds; saying so is better than an apparently stalled page.",
+            "LanternSheetFailedMessage" : "A drawing could not be composed for {lanterns}, so those sheets are omitted. Open the Lantern Editor to resolve the geometry.",
             "EmptySelectionMessage"     : "Every content section is switched off - nothing to preview.",
             "TermsLibraryFailedMessage" : "The standard terms library could not be read, so the terms document is incomplete. Switch the terms pages off or restore the missing file before issuing.",
             "TermsUnreviewedMessage"    : "These terms have not been through legal review. The document closes with a notice saying so.",

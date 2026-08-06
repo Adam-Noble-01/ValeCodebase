@@ -176,7 +176,12 @@ const VghLantern__DrawingEditor__SheetSurface = (function() {
         var content       =  {};
         if (!layout) return content;
 
-        var skeleton  =  StateManager ? StateManager.VghLantern__StateManager__GetSolvedSkeleton() : null;
+        // The sheet's own skeleton where it carries one, which a baked sheet always
+        // does. Framing a baked view against the published solve would centre every
+        // drawing in a multi-lantern pack on whichever lantern is currently active.
+        var skeleton  =  (sheet && sheet.Skeleton)
+            ? sheet.Skeleton
+            : (StateManager ? StateManager.VghLantern__StateManager__GetSolvedSkeleton() : null);
         var i, placement, slot, snapshot, markup, framed;
 
         for (i = 0; i < layout.Slots.length; i++) {
@@ -247,12 +252,15 @@ const VghLantern__DrawingEditor__SheetSurface = (function() {
     // ------------------------------------------------------------
     // The overlay is the whole of the sheet that is not a view. Its viewBox is the
     // paper in millimetres, so it carries the solved coordinates unchanged.
-    function VghLantern__DrawingEditor__SheetSurface__BuildChromeSvg(layout, project, lantern, logoAsset) {
+    // sheet is a sheet descriptor: { Project, Lantern, LanternIndex, ScaleLabel }.
+    // Passing it whole rather than picking it apart is what lets a baked sheet caption
+    // and encode itself from what it was baked with rather than from live state.
+    function VghLantern__DrawingEditor__SheetSurface__BuildChromeSvg(layout, sheet, logoAsset) {
         var SheetChrome  =  window.VghLantern__DrawingEditor__SheetChrome;
         if (!SheetChrome || !layout) return '';
 
         var primitives  =  SheetChrome.VghLantern__DrawingEditor__SheetChrome__BuildForSheet(
-            layout, project, lantern, logoAsset
+            layout, sheet, logoAsset
         );
 
         return SheetChrome.VghLantern__DrawingEditor__SheetChrome__ToSvgMarkup(
@@ -317,7 +325,14 @@ const VghLantern__DrawingEditor__SheetSurface = (function() {
                'data-vgh-sheet-orientation="' + VghLantern__SheetSurface__Escape(layout.Page.Orientation) + '">' +
                framesHtml +
                VghLantern__DrawingEditor__SheetSurface__BuildChromeSvg(
-                   layout, settings.Project, settings.Lantern, settings.LogoAsset
+                   layout,
+                   {
+                       Project      : settings.Project,
+                       Lantern      : settings.Lantern,
+                       LanternIndex : settings.LanternIndex,
+                       ScaleLabel   : settings.ScaleLabel
+                   },
+                   settings.LogoAsset
                ) +
                (settings.ShowResizeHandles ? VghLantern__SheetSurface__BuildResizeHandles(layout) : '') +
                '</div>';
@@ -387,7 +402,7 @@ const VghLantern__DrawingEditor__SheetSurface = (function() {
     // ------------------------------------------------------------
     // Used by the live gutter drag. Only boxes and the overlay move; no view is
     // re-rendered and no surface is remounted, so a drag stays smooth.
-    function VghLantern__DrawingEditor__SheetSurface__ApplyLayout(sheetElement, layout, project, lantern, logoAsset) {
+    function VghLantern__DrawingEditor__SheetSurface__ApplyLayout(sheetElement, layout, sheet, logoAsset) {
         if (!sheetElement || !layout) return;
 
         var pxPerMm  =  VghLantern__DrawingEditor__SheetSurface__PixelsPerMm(layout);
@@ -415,7 +430,7 @@ const VghLantern__DrawingEditor__SheetSurface = (function() {
         var chromeEl  =  sheetElement.querySelector('.' + CSS_SHEET_CHROME);
         if (chromeEl) {
             chromeEl.outerHTML  =  VghLantern__DrawingEditor__SheetSurface__BuildChromeSvg(
-                layout, project, lantern, logoAsset
+                layout, sheet, logoAsset
             );
         }
 

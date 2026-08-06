@@ -1,0 +1,31 @@
+{
+    "VghLantern__ValeDatabase__ClientTable__Description": "Phony stand-in for the Vale Garden Houses SQL client database. Columns mirrors the shape of the result set the real SELECT would return, and Rows holds five hand-authored client records keyed by JobNumber, so the job number fetch flow can be demonstrated end to end without a database connection. Replace this file with the real API integration; see Na__ValeDatabase__FutureDeveloperNotes__.md in this folder.",
+
+    "VghLantern__ValeDatabase__ClientTable__SourceQueryNote": "Future integration target: SELECT JobNumber, ClientName, SiteName, SiteAddress, PostTown, County, Postcode, ContactPhone, ContactEmail, DocumentName, AccountManager FROM ValeClients WHERE JobNumber = ?",
+
+    "VghLantern__ValeDatabase__ClientTable__Columns": [
+        { "Key": "JobNumber",       "SqlType": "INT",            "Label": "Job Number"       },
+        { "Key": "ClientName",      "SqlType": "NVARCHAR(120)",  "Label": "Client Name"      },
+        { "Key": "SiteName",        "SqlType": "NVARCHAR(120)",  "Label": "Site Name"        },
+        { "Key": "SiteAddress",     "SqlType": "NVARCHAR(240)",  "Label": "Site Address"     },
+        { "Key": "PostTown",        "SqlType": "NVARCHAR(60)",   "Label": "Post Town"        },
+        { "Key": "County",          "SqlType": "NVARCHAR(60)",   "Label": "County"           },
+        { "Key": "Postcode",        "SqlType": "NVARCHAR(10)",   "Label": "Postcode"         },
+        { "Key": "ContactPhone",    "SqlType": "NVARCHAR(20)",   "Label": "Phone"            },
+        { "Key": "ContactEmail",    "SqlType": "NVARCHAR(120)",  "Label": "Email"            },
+        { "Key": "DocumentName",    "SqlType": "NVARCHAR(120)",  "Label": "Document"         },
+        { "Key": "AccountManager",  "SqlType": "NVARCHAR(60)",   "Label": "Account Manager"  }
+    ],
+
+    "VghLantern__ValeDatabase__ClientTable__Rows": [
+        { "JobNumber": 1256,  "ClientName": "Mr & Mrs Harrington",      "SiteName": "The Old Rectory",    "SiteAddress": "Church Lane, Harlaxton",        "PostTown": "Grantham",         "County": "Lincolnshire",     "Postcode": "NG32 1HD", "ContactPhone": "01476 870211", "ContactEmail": "harrington.rectory@example.co.uk",     "DocumentName": "Orangery Roof Lantern",       "AccountManager": "Val Frederickson" },
+        { "JobNumber": 2456,  "ClientName": "Dr Eleanor Whitfield",     "SiteName": "Willow Barn",        "SiteAddress": "Mill Road, Langham",            "PostTown": "Oakham",           "County": "Rutland",          "Postcode": "LE15 7JE", "ContactPhone": "01572 723488", "ContactEmail": "e.whitfield@example.co.uk",            "DocumentName": "Kitchen Extension Lantern",   "AccountManager": "Val Frederickson" },
+        { "JobNumber": 3417,  "ClientName": "Mr James Pemberton",       "SiteName": "14 Castlegate",      "SiteAddress": "Castlegate",                    "PostTown": "Newark-on-Trent",  "County": "Nottinghamshire",  "Postcode": "NG24 1AZ", "ContactPhone": "01636 704592", "ContactEmail": "j.pemberton@example.co.uk",            "DocumentName": "Garden Room Twin Lanterns",   "AccountManager": "Val Frederickson" },
+        { "JobNumber": 15134, "ClientName": "Mrs Sarah Ellison",        "SiteName": "Ashworth Hall",      "SiteAddress": "Hall Drive, Asfordby",          "PostTown": "Melton Mowbray",   "County": "Leicestershire",   "Postcode": "LE14 3SA", "ContactPhone": "01664 812077", "ContactEmail": "s.ellison@example.co.uk",              "DocumentName": "Pool House Roof Lanterns",    "AccountManager": "Val Frederickson" },
+        { "JobNumber": 94756, "ClientName": "Mr & Mrs Okafor",          "SiteName": "The Coach House",    "SiteAddress": "High Street, St Martins",       "PostTown": "Stamford",         "County": "Lincolnshire",     "Postcode": "PE9 2LJ",  "ContactPhone": "01780 482355", "ContactEmail": "okafor.coachhouse@example.co.uk",      "DocumentName": "Dining Room Roof Lantern",    "AccountManager": "Val Frederickson" },
+        { "JobNumber": 1234,  "ClientName": "Mr Sylvester Stallone",    "SiteName": "Rocky Ridge",        "SiteAddress": "Belton Lane, Manthorpe",        "PostTown": "Grantham",         "County": "Lincolnshire",     "Postcode": "NG31 8FQ", "ContactPhone": "01476 561234", "ContactEmail": "s.stallone@hollywoodmail.com",         "DocumentName": "Home Gym Roof Lantern",       "AccountManager": "Val Frederickson" },
+        { "JobNumber": 1235,  "ClientName": "Mr Arnold Schwarzenegger", "SiteName": "Oak Villa",          "SiteAddress": "Springfield Road, Denton",      "PostTown": "Grantham",         "County": "Lincolnshire",     "Postcode": "NG32 2AL", "ContactPhone": "01476 400965", "ContactEmail": "a.schwarzenegger@hollywoodmail.com",   "DocumentName": "Conservatory Lantern",        "AccountManager": "Val Frederickson" },
+        { "JobNumber": 1236,  "ClientName": "Mr Jean-Claude Van Damme", "SiteName": "The Brussels House", "SiteAddress": "Arnoldfield Estate, Grantham",  "PostTown": "Grantham",         "County": "Lincolnshire",     "Postcode": "NG31 8JB", "ContactPhone": "01476 332245", "ContactEmail": "jcvd@hollywoodmail.com",               "DocumentName": "Studio Skylight",             "AccountManager": "Val Frederickson" },
+        { "JobNumber": 1237,  "ClientName": "Mr Bruce Willis",          "SiteName": "Nakatomi Lodge",     "SiteAddress": "Beacon Lane, Barrowby",         "PostTown": "Grantham",         "County": "Lincolnshire",     "Postcode": "NG31 9RN", "ContactPhone": "01476 909222", "ContactEmail": "b.willis@hollywoodmail.com",           "DocumentName": "Roof Lantern Replacement",    "AccountManager": "Val Frederickson" }
+    ]
+}

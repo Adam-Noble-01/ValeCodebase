@@ -6,9 +6,9 @@
         "VghLantern__ProjectFile__Metadata__DocumentName": "Bay Manor Glazebars",
         "VghLantern__ProjectFile__Metadata__ClientName": "Dr Glazebaramara",
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
-        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "For Approval",
         "VghLantern__ProjectFile__Metadata__DateCreated": "05-Aug-2026",
-        "VghLantern__ProjectFile__Metadata__DateModified": "05-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "06-Aug-2026",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -56,7 +56,7 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 3000,
+                "Lantern__Dimensions__Config__WidthMm": 5000,
                 "Lantern__Dimensions__Config__DepthMm": 2000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 25
             },
@@ -105,14 +105,36 @@
                 "Lantern__Notes__Config__InternalComments": ""
             },
             "Lantern__DrawingLayout__Config": {
-                "Lantern__DrawingLayout__Config__SheetSizeKey": null,
-                "Lantern__DrawingLayout__Config__Orientation": null,
-                "Lantern__DrawingLayout__Config__ScaleDenominator": null,
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A4",
+                "Lantern__DrawingLayout__Config__Orientation": "landscape",
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
                 "Lantern__DrawingLayout__Config__ScaleIsManual": false,
-                "Lantern__DrawingLayout__Config__ColumnSharesPct": null,
-                "Lantern__DrawingLayout__Config__RowSharesPct": null,
-                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1,
-                "Lantern__DrawingLayout__Config__ViewCameraStates": {}
+                "Lantern__DrawingLayout__Config__ColumnSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__RowSharesPct": [
+                    50,
+                    50
+                ],
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.8964808793049517,
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {
+                    "threeDimensional": {
+                        "Position": {
+                            "x": 5.067868445572205,
+                            "y": 3.1701350893836464,
+                            "z": 6.053250799142135
+                        },
+                        "Target": {
+                            "x": 0.3629387565133856,
+                            "y": -0.23233484560898598,
+                            "z": 0.0312154135745084
+                        }
+                    }
+                }
+            },
+            "Lantern__DrawingNotes__Config": {
+                "Lantern__DrawingNotes__Config__Notes": []
             }
         }
     ]

@@ -743,6 +743,36 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Clear the Composed Output Between Two Sheets
+    // ------------------------------------------------------------
+    // The markup and snapshot caches are keyed by SLOT, not by lantern, because for
+    // the editor there is only ever one lantern on the sheet. A bake composes several
+    // in a row through the same caches, so anything left behind by the last one has to
+    // go: a slot that fails to render for lantern two would otherwise hand back
+    // lantern one's linework, and the descriptor would look perfectly composed.
+    //
+    // The 2D surfaces are disposed with it - they belong to a sheet element that is
+    // about to be discarded. The 3D snapshot surface deliberately survives, because
+    // building a GL context per lantern would cost more than everything else in the
+    // bake put together, and its own cache is keyed by lantern rather than by slot.
+    function VghLantern__DrawingEditor__ViewPlacement__ResetComposedOutput() {
+        var Env2d  =  window.VghLantern__Env2d__RenderPipeline;
+        var slotKey;
+
+        if (Env2d) {
+            for (slotKey in VghLantern__ViewPlacement__Surfaces) {
+                if (!Object.prototype.hasOwnProperty.call(VghLantern__ViewPlacement__Surfaces, slotKey)) continue;
+                Env2d.VghLantern__Env2d__RenderPipeline__Dispose(VghLantern__ViewPlacement__Surfaces[slotKey]);
+            }
+        }
+
+        VghLantern__ViewPlacement__Surfaces          =  {};
+        VghLantern__ViewPlacement__CachedSvgMarkup   =  {};
+        VghLantern__ViewPlacement__CachedSnapshots   =  {};
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Dispose Every Surface Held by the Placement Layer
     // ------------------------------------------------------------
     // Called on mode exit. The offscreen 3D stage is torn down too, because holding
@@ -793,6 +823,7 @@ const VghLantern__DrawingEditor__ViewPlacement = (function() {
         VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates   : VghLantern__DrawingEditor__ViewPlacement__CollectCameraStates,
         VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates   : VghLantern__DrawingEditor__ViewPlacement__RestoreCameraStates,
         VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput     : VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput,
+        VghLantern__DrawingEditor__ViewPlacement__ResetComposedOutput   : VghLantern__DrawingEditor__ViewPlacement__ResetComposedOutput,
         VghLantern__DrawingEditor__ViewPlacement__DisposeAll            : VghLantern__DrawingEditor__ViewPlacement__DisposeAll
     };
 

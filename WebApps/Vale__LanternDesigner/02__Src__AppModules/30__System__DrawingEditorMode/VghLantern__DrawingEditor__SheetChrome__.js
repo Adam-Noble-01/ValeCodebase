@@ -452,7 +452,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // The QR is square and exactly as tall as the strip allows, so its printed size
     // needs no dimension of its own - change the titleblock height and the code
     // follows it.
-    function VghLantern__SheetChrome__SolveTermsCell(titleRect, project) {
+    function VghLantern__SheetChrome__SolveTermsCell(titleRect, project, lantern, lanternIndex) {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var QrEncoder     =  window.VghLantern__AppUtils__QrEncoder;
         var QrLink        =  window.VghLantern__Terms__QrLink;
@@ -467,7 +467,11 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         solved.CellWidthMm  =  VghLantern__SheetChrome__Number(config, 'CellWidthMm', 'DrawingQrBlock');
         if (!solved.CellWidthMm) return solved;
 
-        var url      =  QrLink ? QrLink.VghLantern__Terms__QrLink__BuildUrl(project) : '';
+        // The lantern is named in the code so a scanned sheet lands on that sheet's
+        // own notes. Every sheet in a multi-lantern pack therefore carries a slightly
+        // different code, which is the point - one code for four drawings tells the
+        // reader nothing about the drawing in front of them.
+        var url      =  QrLink ? QrLink.VghLantern__Terms__QrLink__BuildUrl(project, lantern, lanternIndex) : '';
         var encoded  =  (url && QrEncoder) ? QrEncoder.VghLantern__AppUtils__QrEncoder__Encode(url) : null;
         if (!encoded) return solved;                                           // <-- Cell without a code beats a code that scans to nothing
 
@@ -666,7 +670,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // whatever is left between them by relative share. Row WidthMm values are those
     // shares, not absolute widths, so adding a row rebalances the strip rather than
     // overflowing it - and the two fixed cells keep their printed size on every paper.
-    function VghLantern__SheetChrome__BuildTitleBlock(list, layout, fields, fonts, style, logoAsset, project) {
+    function VghLantern__SheetChrome__BuildTitleBlock(list, layout, fields, fonts, style, logoAsset, project, lantern, lanternIndex) {
         var rect      =  layout.TitleBlock;
         var titleCfg  =  VghLantern__SheetChrome__Block('TitleBlock');
         var rows      =  Array.isArray(titleCfg.Rows) ? titleCfg.Rows : [];
@@ -699,7 +703,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         var valueBaseY   =  VghLantern__SheetChrome__BaselineCentred(valueBandY, valueBandH, fonts.TitleValueMm);
         var labelBaseY   =  VghLantern__SheetChrome__BaselineFromTop(rect.Y + labelTopMm, fonts.TitleLabelMm);
 
-        var terms  =  VghLantern__SheetChrome__SolveTermsCell(rect, project);
+        var terms  =  VghLantern__SheetChrome__SolveTermsCell(rect, project, lantern, lanternIndex);
         VghLantern__SheetChrome__BuildTermsCell(list, rect, terms, style);
 
         if (!rows.length) return;
@@ -839,8 +843,9 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
 
     // FUNCTION | Build Every Chrome Primitive for a Solved Layout
     // ------------------------------------------------------------
-    // context is { ScaleLabel, Project, Fields, LogoAsset }. Nothing here reads the
-    // DOM or the exporter, so the same call serves both surfaces.
+    // context is { ScaleLabel, Project, Lantern, LanternIndex, Fields, LogoAsset }.
+    // Nothing here reads the DOM or the exporter, so the same call serves both
+    // surfaces.
     function VghLantern__DrawingEditor__SheetChrome__Build(layout, context) {
         if (!layout) return [];
 
@@ -855,7 +860,8 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         }
 
         VghLantern__SheetChrome__BuildTitleBlock(list, layout, ctx.Fields || {}, fonts, style,
-                                                 ctx.LogoAsset || null, ctx.Project || null);
+                                                 ctx.LogoAsset || null, ctx.Project || null,
+                                                 ctx.Lantern || null, ctx.LanternIndex);
 
         return list;
     }
@@ -865,20 +871,37 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     // FUNCTION | Build Chrome Primitives for a Project's Sheet
     // ------------------------------------------------------------
     // The one call both the Drawing Editor and the PDF exporter make. Resolving the
-    // titleblock fields and the scale label here rather than in each caller is what
-    // stops a sheet and its export quoting different values.
+    // titleblock fields here rather than in each caller is what stops a sheet and its
+    // export quoting different values.
     // Deliberately synchronous - hand it the logo from LoadLogo or CachedLogo.
-    function VghLantern__DrawingEditor__SheetChrome__BuildForSheet(layout, project, lantern, logoAsset) {
+    //
+    // sheet is a sheet descriptor: { Project, Lantern, LanternIndex, ScaleLabel }.
+    // It is the descriptor rather than loose arguments because everything the chrome
+    // needs to know about which drawing this is now travels together, and because a
+    // BAKED sheet must not be captioned from live module state. ScaleLabel is read off
+    // the descriptor for exactly that reason: a pack painting four sheets in a row
+    // would otherwise stamp all four with whatever scale the editor was last left on.
+    function VghLantern__DrawingEditor__SheetChrome__BuildForSheet(layout, sheet, logoAsset) {
         var TitleBlock    =  window.VghLantern__DrawingEditor__TitleBlockRenderer;
         var ScaleManager  =  window.VghLantern__DrawingEditor__ScaleManager;
 
+        var descriptor  =  sheet || {};
+        var project     =  descriptor.Project || null;
+        var lantern     =  descriptor.Lantern || null;
+
+        var scaleLabel  =  (typeof descriptor.ScaleLabel === 'string' && descriptor.ScaleLabel !== '')
+            ? descriptor.ScaleLabel
+            : (ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__FormatLabel() : '');
+
         return VghLantern__DrawingEditor__SheetChrome__Build(layout, {
-            ScaleLabel : ScaleManager ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__FormatLabel() : '',
-            Project    : project || null,                                      // <-- The terms callout encodes this project's code
-            Fields     : TitleBlock
+            ScaleLabel   : scaleLabel,
+            Project      : project,                                            // <-- The terms callout encodes this project's code
+            Lantern      : lantern,                                            // <-- ...and this lantern's place in its schedule
+            LanternIndex : descriptor.LanternIndex,
+            Fields       : TitleBlock
                 ? TitleBlock.VghLantern__DrawingEditor__TitleBlockRenderer__ResolveFields(project, lantern)
                 : {},
-            LogoAsset  : logoAsset || null
+            LogoAsset    : logoAsset || null
         });
     }
     // ------------------------------------------------------------

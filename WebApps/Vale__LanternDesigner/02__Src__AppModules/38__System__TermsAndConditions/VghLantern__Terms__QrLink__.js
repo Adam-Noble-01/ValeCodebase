@@ -41,11 +41,14 @@ const VghLantern__Terms__QrLink = (function() {
 
     // MODULE CONSTANTS | Query Parameter Names
     // ------------------------------------------------------------
-    // Mirrors TermsQrQueryPattern in config. Named here because reading a query
-    // needs the parameter names as data, which a pattern string cannot supply.
-    const QUERY_PARAM_DOC      =  'doc';
-    const QUERY_PARAM_PROJECT  =  'project';
-    const QUERY_VALUE_TERMS    =  'terms';
+    // Mirrors TermsQrQueryPattern and DrawingTermsQrQueryPattern in config. Named
+    // here because reading a query needs the parameter names as data, which a pattern
+    // string cannot supply.
+    const QUERY_PARAM_DOC           =  'doc';
+    const QUERY_PARAM_PROJECT       =  'project';
+    const QUERY_PARAM_LANTERN       =  'lantern';
+    const QUERY_VALUE_TERMS         =  'terms';
+    const QUERY_VALUE_DRAWING_TERMS =  'drawingTerms';
     // ------------------------------------------------------------
 
 
@@ -92,7 +95,18 @@ const VghLantern__Terms__QrLink = (function() {
     // Returns an empty string when the QR block is switched off or there is no
     // project code, which the caller treats as "draw no code" rather than drawing a
     // code that scans to a broken address.
-    function VghLantern__Terms__QrLink__BuildUrl(project) {
+    //
+    // A sheet always names its own lantern, so a scanned drawing always asks for the
+    // DRAWING terms - the omissions and limitations a contractor setting out needs -
+    // rather than the business terms of engagement. Whether that lantern has notes of
+    // its own is not decided here: the encoded address is the same either way and the
+    // inbound handler resolves it against the pack. That keeps the fallback in one
+    // place, and means writing a lantern's first note does not invalidate a code
+    // already printed on an issued sheet.
+    //
+    // Called with no lantern (a project-level link), it falls back to the general
+    // terms address, which is what the pre-lantern callers still expect.
+    function VghLantern__Terms__QrLink__BuildUrl(project, lantern, lanternIndex) {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var config        =  VghLantern__QrLink__Config();
         if (!ConfigLoader) return '';
@@ -103,11 +117,17 @@ const VghLantern__Terms__QrLink = (function() {
         var projectCode  =  metadata['VghLantern__ProjectFile__Metadata__ProjectCode'] || '';
         if (projectCode === '') return '';
 
-        var baseUrl  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'TermsQrBaseUrl',      QR_LABEL);
-        var pattern  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'TermsQrQueryPattern', QR_LABEL);
-        if (baseUrl === '' || pattern === '') return '';
+        var baseUrl  =  ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'TermsQrBaseUrl', QR_LABEL);
+        if (baseUrl === '') return '';
 
-        return baseUrl + pattern.replace('{projectCode}', encodeURIComponent(projectCode));
+        var pattern  =  lantern
+            ? ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'DrawingTermsQrQueryPattern', QR_LABEL)
+            : ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'TermsQrQueryPattern',        QR_LABEL);
+        if (pattern === '') return '';
+
+        return baseUrl + pattern
+            .replace('{projectCode}',  encodeURIComponent(projectCode))
+            .replace('{lanternIndex}', encodeURIComponent(String(typeof lanternIndex === 'number' ? lanternIndex : 0)));
     }
     // ------------------------------------------------------------
 
@@ -121,12 +141,23 @@ const VghLantern__Terms__QrLink = (function() {
 
     // SUB FUNCTION | Read the Terms Deep Link From the Current Address
     // ------------------------------------------------------------
+    // Answers both addresses the application prints. A drawing link carries a lantern
+    // index; a terms link does not, and lands on the business terms as it always has.
     function VghLantern__QrLink__ReadInboundRequest() {
         var params  =  new URLSearchParams(window.location.search);
-        if (params.get(QUERY_PARAM_DOC) !== QUERY_VALUE_TERMS) return null;
+        var doc     =  params.get(QUERY_PARAM_DOC);
+
+        if (doc !== QUERY_VALUE_TERMS && doc !== QUERY_VALUE_DRAWING_TERMS) return null;
 
         var projectCode  =  params.get(QUERY_PARAM_PROJECT) || '';
-        return { ProjectCode : projectCode.trim() };
+        var rawLantern   =  params.get(QUERY_PARAM_LANTERN);
+        var lanternIndex =  parseInt(rawLantern, 10);
+
+        return {
+            ProjectCode    : projectCode.trim(),
+            IsDrawingTerms : doc === QUERY_VALUE_DRAWING_TERMS,
+            LanternIndex   : isNaN(lanternIndex) ? null : lanternIndex
+        };
     }
     // ------------------------------------------------------------
 
@@ -176,12 +207,43 @@ const VghLantern__Terms__QrLink = (function() {
             }
         }
 
+        // A drawing link names the lantern whose sheet was scanned. Selecting it first
+        // means the editor opens on that lantern's notes rather than on whichever
+        // lantern happened to be active, and it is what lets the scroll below find
+        // them. An index the project no longer holds is ignored rather than obeyed,
+        // because a code on an issued sheet outlives the schedule it was printed from.
+        var targetLantern  =  null;
+        if (request.IsDrawingTerms && request.LanternIndex !== null) {
+            var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+            var lanterns  =  project ? project['VghLantern__ProjectFile__Lanterns'] : null;
+
+            if (Array.isArray(lanterns) && lanterns[request.LanternIndex]) {
+                StateManager.VghLantern__StateManager__SetCurrentLanternIndex(request.LanternIndex);
+                targetLantern  =  lanterns[request.LanternIndex];
+            }
+        }
+
         ModeManager.VghLantern__ModeManager__SwitchToMode(ModeManager.MODE_CLIENT_DOCUMENT, false);
 
         // The mode paints on the switch above, so the scroll is queued behind it.
+        //
+        // Which anchor to land on is the fallback the printed code deliberately does
+        // not encode: a scanned drawing goes to that lantern's own notes when it has
+        // any, and to the general drawing terms when it has none.
         window.setTimeout(function() {
-            var Layout  =  window.VghLantern__ClientDoc__Layout;
-            if (Layout && Layout.VghLantern__ClientDoc__Layout__ScrollToTerms) {
+            var Layout      =  window.VghLantern__ClientDoc__Layout;
+            var TermsModel  =  window.VghLantern__Terms__DocumentModel;
+            if (!Layout) return;
+
+            var hasOwnNotes  =  !!(targetLantern && TermsModel &&
+                TermsModel.VghLantern__Terms__DocumentModel__LanternNoteTexts(targetLantern).length);
+
+            if (request.IsDrawingTerms && Layout.VghLantern__ClientDoc__Layout__ScrollToDrawingNotes) {
+                Layout.VghLantern__ClientDoc__Layout__ScrollToDrawingNotes(hasOwnNotes);
+                return;
+            }
+
+            if (Layout.VghLantern__ClientDoc__Layout__ScrollToTerms) {
                 Layout.VghLantern__ClientDoc__Layout__ScrollToTerms();
             }
         }, 0);

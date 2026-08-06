@@ -482,6 +482,56 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * REGION | Drawing Notes Lantern Tabs
+ * ----------------------------------------------------------------------------- */
+
+    /* One tab per lantern, wrapping rather than scrolling: a project with six
+       lanterns should show all six at once in a narrow edit column, because the
+       whole point of the count on each tab is being able to check the set at a
+       glance. */
+    .VghLantern__ClientDoc__LanternTabs {
+        display                        : flex;
+        flex-wrap                      : wrap;
+        gap                            : 4px;
+        margin-bottom                  : var(--Vale_Spacing_Medium);
+    }
+
+    .VghLantern__ClientDoc__LanternTab {
+        display                        : flex;
+        flex-direction                 : column;
+        align-items                    : flex-start;
+        gap                            : 2px;
+        padding                        : 6px 10px;
+        font-family                    : inherit;
+        font-size                      : var(--Vale_FontSize_Small);
+        color                          : var(--Vale_TextSecondary);
+        background                     : var(--Vale_BackgroundLight);
+        border                         : 1px solid var(--Vale_BorderLight);
+        cursor                         : pointer;
+    }
+
+    .VghLantern__ClientDoc__LanternTab:hover {
+        background                     : var(--Vale_HoverBackground);
+    }
+
+    .VghLantern__ClientDoc__LanternTab--active {
+        color                          : var(--Vale_TextPrimary);
+        font-weight                    : var(--Vale_FontWeight_SemiBold);
+        background                     : var(--Vale_BackgroundWhite);
+        border-color                   : var(--Vale_PrimaryBrand);
+    }
+
+    .VghLantern__ClientDoc__LanternTabCount {
+        font-size                      : var(--Vale_FontSize_Small);
+        font-weight                    : var(--Vale_FontWeight_Regular);
+        color                          : var(--Vale_TextSecondary);
+        font-variant-numeric           : tabular-nums;
+    }
+
+/* #endregion -------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
  * REGION | Preview Column
  * ----------------------------------------------------------------------------- */
 

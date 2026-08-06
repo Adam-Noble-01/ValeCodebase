@@ -18,7 +18,8 @@
    - Applies every layout dimension from editor config as CSS custom properties, so
      the split proportions are configurable without touching the stylesheet.
    - Owns the lantern tab strip: which lantern of a multi-lantern project is being
-     edited, and adding another one.
+     edited, adding another one, and renaming or deleting one via its right click
+     menu.
    - Owns the draggable resize handles between the 2D/3D preview panes and between
      the preview column and the controls column.
 
@@ -73,6 +74,13 @@ const VghLantern__LanternEditor__Layout = (function() {
     const CSS_BAR_BTN        =  'VghLantern__Editor__BarBtn';
     const CSS_BTN_ACTIVE     =  'VghLantern__Editor__BarBtn--active';
 
+    const CSS_TAB_CONTEXT_MENU      =  'VghLantern__Editor__TabContextMenu';
+    const CSS_TAB_CONTEXT_ITEM      =  'VghLantern__Editor__TabContextMenuItem';
+    const CSS_TAB_CONTEXT_DANGER    =  'VghLantern__Editor__TabContextMenuItem--danger';
+    const CSS_TAB_CONTEXT_DISABLED  =  'VghLantern__Editor__TabContextMenuItem--disabled';
+    const CSS_TAB_CONTEXT_DIVIDER   =  'VghLantern__Editor__TabContextMenuDivider';
+    const CSS_TAB_CONTEXT_HINT      =  'VghLantern__Editor__TabContextMenuHint';
+
     const CSS_SPLIT_VERT     =  'VghLantern__Editor__Preview--splitVertical';
     const CSS_SPLIT_HORZ     =  'VghLantern__Editor__Preview--splitHorizontal';
     const CSS_HIDDEN         =  'VghLantern__Editor__Hidden';
@@ -92,9 +100,13 @@ const VghLantern__LanternEditor__Layout = (function() {
     const ATTR_LANTERN_INDEX  =  'data-vgh-lantern-index';
     const ATTR_ACTION         =  'data-vgh-action';
     const ATTR_RESIZE         =  'data-vgh-resize';
+    const ATTR_CONTEXT_ACTION =  'data-vgh-context-action';
 
     const ACTION_ADD_LANTERN  =  'addLantern';
     const ACTION_TOGGLE_3D    =  'toggle3d';
+
+    const CONTEXT_ACTION_RENAME  =  'renameLantern';
+    const CONTEXT_ACTION_DELETE  =  'deleteLantern';
 
     const RESIZE_CONTROLS     =  'controls';                                  // <-- Preview column vs controls column
     const RESIZE_PREVIEW_3D   =  'preview3d';                                 // <-- 2D drawing vs in-editor 3D
@@ -126,6 +138,7 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
     let VghLantern__EditorLayout__IsBuilt         =  false;                  // <-- Scaffolding built and listeners bound
     let VghLantern__EditorLayout__Is3dMounted     =  false;                  // <-- 3D host has paid its WebGL cost
+    let VghLantern__EditorLayout__OpenContextMenu =  null;                   // <-- { El, OnOutsideClick, OnKey } while a tab's right click menu is open
     // ------------------------------------------------------------
 
 
@@ -347,6 +360,8 @@ const VghLantern__LanternEditor__Layout = (function() {
     function VghLantern__EditorLayout__RenderGlobalBar() {
         var barEl  =  document.getElementById(ID_GLOBAL_BAR);
         if (!barEl) return;
+
+        VghLantern__EditorLayout__CloseTabContextMenu();                     // <-- A rebuild invalidates any open menu's tab reference
 
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var LAYOUT_LABEL  =  'Na__LanternEditor__Config.json -> VghLantern__LanternEditor__Config__Layout';
@@ -693,18 +708,21 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Append a Fresh Default Lantern and Select It
+    // SUB FUNCTION | Append a New Lantern and Select It
     // ------------------------------------------------------------
     // Mutates the lanterns array in place rather than calling SetCurrentProject,
     // which would clear the selection and force a needless full reload.
-    function VghLantern__EditorLayout__AddLantern() {
+    // Accepts an optional prebuilt lantern so the Creation Wizard can hand over
+    // a fully configured block; with no argument it appends a schema default,
+    // which is also the fallback path when the wizard is disabled.
+    function VghLantern__EditorLayout__AddLantern(prebuiltLantern) {
         var StateManager     =  window.VghLantern__AppCore__StateManager;
         var SchemaValidator  =  window.VghLantern__AppUtils__ProjectSchemaValidator;
         var lanterns         =  VghLantern__EditorLayout__Lanterns();
         if (!StateManager || !SchemaValidator || !lanterns) return;
 
         var newIndex  =  lanterns.length;
-        lanterns.push(SchemaValidator.VghLantern__SchemaValidator__BuildDefaultLantern(newIndex));
+        lanterns.push(prebuiltLantern || SchemaValidator.VghLantern__SchemaValidator__BuildDefaultLantern(newIndex));
 
         StateManager.VghLantern__StateManager__MarkDirty();                   // <-- Triggers the autosave path in AppCore
         StateManager.VghLantern__StateManager__SetCurrentLanternIndex(newIndex);
@@ -712,28 +730,193 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Remove the Active Lantern and Select Its Neighbour
+    // FUNCTION | Remove One Lantern and Keep the Active Tab Pointed Correctly
     // ------------------------------------------------------------
-    // Called from the Lantern Info section's Delete Lantern button, which is
-    // itself hidden via VisibleWhen whenever only one lantern remains; the
-    // length guard here is a second line of defence against the same mistake.
+    // lanternIndex defaults to the active tab, which is what keeps the Lantern
+    // Info section's Delete Lantern button (itself hidden via VisibleWhen
+    // whenever only one lantern remains; the length guard here is a second
+    // line of defence against the same mistake) working unchanged. The tab
+    // strip's right click menu instead passes an explicit index, since the tab
+    // under the cursor is often not the one currently open for editing.
     // Splicing in place (rather than SetCurrentProject) keeps the rest of the
     // project - and the tab strip - untouched bar the one removed entry.
-    function VghLantern__EditorLayout__DeleteLantern() {
+    function VghLantern__EditorLayout__DeleteLantern(lanternIndex) {
         var StateManager  =  window.VghLantern__AppCore__StateManager;
         var lanterns      =  VghLantern__EditorLayout__Lanterns();
         if (!StateManager || !lanterns || lanterns.length <= 1) return;
 
         var state         =  StateManager.VghLantern__StateManager__GetState();
-        var removedIndex  =  state.currentLanternIndex;
+        var activeIndex   =  state.currentLanternIndex;
+        var removedIndex  =  (typeof lanternIndex === 'number') ? lanternIndex : activeIndex;
         if (removedIndex < 0 || removedIndex >= lanterns.length) return;
 
         lanterns.splice(removedIndex, 1);
 
-        var newIndex  =  Math.min(removedIndex, lanterns.length - 1);         // <-- Land on the same slot, or the new last lantern
+        // Removing the active tab itself lands on the same slot (or the new
+        // last lantern); removing one before it shifts the active tab's index
+        // down by one; removing one after it leaves the active tab untouched.
+        var newIndex;
+        if (removedIndex === activeIndex) {
+            newIndex  =  Math.min(removedIndex, lanterns.length - 1);
+        } else if (removedIndex < activeIndex) {
+            newIndex  =  activeIndex - 1;
+        } else {
+            newIndex  =  activeIndex;
+        }
 
         StateManager.VghLantern__StateManager__MarkDirty();                   // <-- Triggers the autosave path in AppCore
         StateManager.VghLantern__StateManager__SetCurrentLanternIndex(newIndex);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Lantern Tab Context Menu
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Close the Open Tab Context Menu, if Any
+    // ------------------------------------------------------------
+    function VghLantern__EditorLayout__CloseTabContextMenu() {
+        var menu  =  VghLantern__EditorLayout__OpenContextMenu;
+        if (!menu) return;
+
+        VghLantern__EditorLayout__OpenContextMenu  =  null;
+        document.removeEventListener('pointerdown', menu.OnOutsideClick, true);
+        document.removeEventListener('keydown', menu.OnKey, true);
+        if (menu.El && menu.El.parentNode) menu.El.parentNode.removeChild(menu.El);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Ask for a New Name, Then Rename the Given Lantern
+    // ------------------------------------------------------------
+    // Writes straight into the lanterns array, the same way AddLantern and
+    // DeleteLantern do, rather than routing through the control panel's field
+    // binding, which only ever edits the active lantern - a right click can
+    // target a tab that is not the one currently open for editing.
+    function VghLantern__EditorLayout__RequestRenameLanternAt(lanternIndex) {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var ConfirmModal  =  window.VghLantern__AppCore__ConfirmModal;
+        var lanterns      =  VghLantern__EditorLayout__Lanterns();
+        if (!StateManager || !ConfirmModal || !ConfirmModal.VghLantern__ConfirmModal__Prompt) return;
+        if (!lanterns || lanternIndex < 0 || lanternIndex >= lanterns.length) return;
+
+        var lantern    =  lanterns[lanternIndex];
+        var identity   =  lantern['Lantern__Identity__Config'] || (lantern['Lantern__Identity__Config'] = {});
+        var currentTitle  =  identity['Lantern__Identity__Config__Title'] || '';
+
+        ConfirmModal.VghLantern__ConfirmModal__Prompt({
+            Title        : 'Rename Lantern',
+            Label        : 'Lantern Name',
+            InitialValue : currentTitle,
+            Placeholder  : VghLantern__EditorLayout__LanternTabLabel(lantern, lanternIndex),
+            MaxLength    : 80,
+            ConfirmLabel : 'Save',
+            OnConfirm    : function(nextTitle) {
+                identity['Lantern__Identity__Config__Title']  =  nextTitle;    // <-- Blank restores the sequential "Lantern N" label
+
+                StateManager.VghLantern__StateManager__MarkDirty();            // <-- Triggers the autosave path in AppCore
+                VghLantern__EditorLayout__RenderGlobalBar();
+
+                var state  =  StateManager.VghLantern__StateManager__GetState();
+                if (lanternIndex === state.currentLanternIndex) VghLantern__EditorLayout__RenderControlsPanel();
+            }
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Ask for Confirmation, Then Delete the Given Lantern
+    // ------------------------------------------------------------
+    // Named from the tab strip rather than "active lantern" because a right
+    // click can target a tab other than the one currently open in the editor.
+    function VghLantern__EditorLayout__RequestDeleteLanternAt(lanternIndex) {
+        var ConfirmModal  =  window.VghLantern__AppCore__ConfirmModal;
+        var lanterns      =  VghLantern__EditorLayout__Lanterns();
+        if (!lanterns || lanternIndex < 0 || lanternIndex >= lanterns.length || lanterns.length <= 1) return;
+
+        var label  =  VghLantern__EditorLayout__LanternTabLabel(lanterns[lanternIndex], lanternIndex);
+
+        if (!ConfirmModal) {
+            VghLantern__EditorLayout__DeleteLantern(lanternIndex);            // <-- Fail open rather than silently drop the action
+            return;
+        }
+
+        ConfirmModal.VghLantern__ConfirmModal__Show({
+            Title        : 'Delete "' + label + '"?',
+            Message      : 'This permanently removes "' + VghLantern__EditorLayout__Escape(label) +
+                            '" and all of its configuration from the project. This cannot be undone.',
+            ConfirmLabel : 'Delete Lantern',
+            Danger       : true,
+            OnConfirm    : function() { VghLantern__EditorLayout__DeleteLantern(lanternIndex); }
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build and Show the Right Click Menu for One Lantern Tab
+    // ------------------------------------------------------------
+    function VghLantern__EditorLayout__OpenTabContextMenu(lanternIndex, clientX, clientY) {
+        VghLantern__EditorLayout__CloseTabContextMenu();
+
+        var lanterns  =  VghLantern__EditorLayout__Lanterns();
+        if (!lanterns) return;
+
+        var canDelete    =  lanterns.length > 1;                              // <-- A project must always keep at least one lantern
+        var deleteClass  =  CSS_TAB_CONTEXT_ITEM + ' ' + CSS_TAB_CONTEXT_DANGER + (canDelete ? '' : ' ' + CSS_TAB_CONTEXT_DISABLED);
+
+        var menuEl  =  document.createElement('div');
+        menuEl.className  =  CSS_TAB_CONTEXT_MENU;
+        menuEl.setAttribute('role', 'menu');
+        menuEl.innerHTML  =
+            '<button type="button" class="' + CSS_TAB_CONTEXT_ITEM + '" role="menuitem" ' +
+                ATTR_CONTEXT_ACTION + '="' + CONTEXT_ACTION_RENAME + '">Rename Lantern</button>' +
+            '<div class="' + CSS_TAB_CONTEXT_DIVIDER + '"></div>' +
+            '<button type="button" class="' + deleteClass + '" role="menuitem"' + (canDelete ? '' : ' disabled') + ' ' +
+                ATTR_CONTEXT_ACTION + '="' + CONTEXT_ACTION_DELETE + '">Delete Lantern</button>' +
+            (canDelete ? '' : '<p class="' + CSS_TAB_CONTEXT_HINT + '">A project must keep at least one lantern.</p>');
+
+        document.body.appendChild(menuEl);
+
+        // Positioned only once the menu has a measurable size, and clamped so
+        // it cannot render off the right or bottom edge of the viewport.
+        var menuRect  =  menuEl.getBoundingClientRect();
+        var left      =  Math.min(clientX, window.innerWidth  - menuRect.width  - 4);
+        var top       =  Math.min(clientY, window.innerHeight - menuRect.height - 4);
+        menuEl.style.left  =  Math.max(4, left) + 'px';
+        menuEl.style.top   =  Math.max(4, top)  + 'px';
+
+        menuEl.addEventListener('click', function(ev) {
+            var itemEl  =  ev.target.closest('[' + ATTR_CONTEXT_ACTION + ']');
+            if (!itemEl || itemEl.disabled) return;
+
+            var action  =  itemEl.getAttribute(ATTR_CONTEXT_ACTION);
+            VghLantern__EditorLayout__CloseTabContextMenu();
+
+            if (action === CONTEXT_ACTION_RENAME) VghLantern__EditorLayout__RequestRenameLanternAt(lanternIndex);
+            if (action === CONTEXT_ACTION_DELETE) VghLantern__EditorLayout__RequestDeleteLanternAt(lanternIndex);
+        });
+
+        function onOutsideClick(ev) {
+            if (menuEl.contains(ev.target)) return;
+            VghLantern__EditorLayout__CloseTabContextMenu();
+        }
+        function onKey(ev) {
+            if (ev.key !== 'Escape') return;
+            VghLantern__EditorLayout__CloseTabContextMenu();
+        }
+
+        // Deferred so the same right click that opens the menu cannot also be
+        // read as the outside click that immediately closes it again on
+        // platforms where a context menu gesture also raises a pointer event.
+        setTimeout(function() {
+            document.addEventListener('pointerdown', onOutsideClick, true);
+            document.addEventListener('keydown', onKey, true);
+        }, 0);
+
+        VghLantern__EditorLayout__OpenContextMenu  =  { El: menuEl, OnOutsideClick: onOutsideClick, OnKey: onKey };
     }
     // ------------------------------------------------------------
 
@@ -765,13 +948,30 @@ const VghLantern__LanternEditor__Layout = (function() {
 
             var action  =  actionEl.getAttribute(ATTR_ACTION);
             if (action === ACTION_ADD_LANTERN) {
-                VghLantern__EditorLayout__AddLantern();
+                // The Creation Wizard collects the new lantern's essentials and
+                // calls back into AddLantern with the finished block on Create.
+                // Begin returns false when the wizard is disabled or unavailable,
+                // in which case the legacy silent default add still works.
+                var Wizard  =  window.VghLantern__CreationWizard__Controller;
+                if (!Wizard || !Wizard.VghLantern__CreationWizard__Controller__BeginAdditionalLantern()) {
+                    VghLantern__EditorLayout__AddLantern();
+                }
                 return;
             }
             if (action === ACTION_TOGGLE_3D) {
                 var state  =  StateManager.VghLantern__StateManager__GetState();
                 StateManager.VghLantern__StateManager__Set3dViewportVisible(!state.is3dViewportVisible);
             }
+        });
+
+        // Right click a lantern tab for its own Rename / Delete menu, in place
+        // of the browser's default context menu.
+        barEl.addEventListener('contextmenu', function(ev) {
+            var tabEl  =  ev.target.closest('[' + ATTR_LANTERN_INDEX + ']');
+            if (!tabEl) return;
+
+            ev.preventDefault();
+            VghLantern__EditorLayout__OpenTabContextMenu(Number(tabEl.getAttribute(ATTR_LANTERN_INDEX)), ev.clientX, ev.clientY);
         });
     }
     // ------------------------------------------------------------
@@ -866,6 +1066,7 @@ const VghLantern__LanternEditor__Layout = (function() {
     return {
         VghLantern__LanternEditor__Layout__Init           : VghLantern__LanternEditor__Layout__Init,
         VghLantern__LanternEditor__Layout__Refresh        : VghLantern__LanternEditor__Layout__Refresh,
+        VghLantern__LanternEditor__Layout__AddLantern     : VghLantern__EditorLayout__AddLantern,
         VghLantern__LanternEditor__Layout__DeleteLantern  : VghLantern__EditorLayout__DeleteLantern
     };
 

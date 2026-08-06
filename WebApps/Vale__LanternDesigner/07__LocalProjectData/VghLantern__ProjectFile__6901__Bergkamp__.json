@@ -75,7 +75,7 @@
             "Lantern__GlazingBars__Config": {
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
-                "Lantern__GlazingBars__Config__TrimOptionId": "45_1032",
+                "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
                 "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
                 "Lantern__GlazingBars__Config__TrimFinish": "Neutral White"
             },
@@ -95,7 +95,7 @@
             "Lantern__BuildersUpstandAndBase__Config": {
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
-                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 100,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
             },
             "Lantern__Ventilation__Config": {
@@ -114,30 +114,30 @@
                 "Lantern__Notes__Config__InternalComments": ""
             },
             "Lantern__DrawingLayout__Config": {
-                "Lantern__DrawingLayout__Config__SheetSizeKey": "A3",
+                "Lantern__DrawingLayout__Config__SheetSizeKey": "A4",
                 "Lantern__DrawingLayout__Config__Orientation": "landscape",
-                "Lantern__DrawingLayout__Config__ScaleDenominator": 20,
+                "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
                 "Lantern__DrawingLayout__Config__ScaleIsManual": true,
                 "Lantern__DrawingLayout__Config__ColumnSharesPct": [
                     55.84303068821747,
                     44.15696931178253
                 ],
                 "Lantern__DrawingLayout__Config__RowSharesPct": [
-                    42.492954337671414,
-                    57.50704566232858
+                    37.03643136629155,
+                    62.96356863370845
                 ],
-                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.2382581060987796,
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.7052396173226891,
                 "Lantern__DrawingLayout__Config__ViewCameraStates": {
                     "threeDimensional": {
                         "Position": {
-                            "x": 3.5088927220612396,
-                            "y": 5.357298311467052,
-                            "z": 4.831297616643609
+                            "x": 3.9744974140008105,
+                            "y": 5.583599265291343,
+                            "z": 4.902690352609709
                         },
                         "Target": {
-                            "x": -0.08914346655237035,
-                            "y": 0.29140126363111846,
-                            "z": 0.22079789039326644
+                            "x": 0.18709089967069648,
+                            "y": 0.25107605704299857,
+                            "z": 0.049532746030402544
                         }
                     }
                 }

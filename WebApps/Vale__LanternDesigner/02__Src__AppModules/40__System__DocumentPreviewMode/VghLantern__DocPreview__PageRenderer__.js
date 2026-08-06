@@ -80,9 +80,21 @@ const VghLantern__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // MODULE VARIABLES | Binding Guard
+    // MODULE CONSTANTS | PDF Writer Page Kind for Flowing Pages
     // ------------------------------------------------------------
-    let VghLantern__PageRenderer__IsBound  =  false;                           // <-- Delegated toolbar listener attaches once
+    // Every flowing page in the pack - letter, summary, notes, specification, terms -
+    // foots the same way, and the writer decides that by kind. Naming the writer's
+    // kind here rather than passing the plan's kind through keeps the preview footer
+    // and the file footer answering to the same rule.
+    const PDF_KIND_SPECIFICATION  =  'specification';
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Binding and Bake Guards
+    // ------------------------------------------------------------
+    let VghLantern__PageRenderer__IsBound     =  false;                        // <-- Delegated toolbar listener attaches once
+    let VghLantern__PageRenderer__IsBaking    =  false;                        // <-- One queued bake at a time; its completion re-renders
+    let VghLantern__PageRenderer__LastBakeKey =  null;                         // <-- Schedule state the last bake was attempted against
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -121,16 +133,6 @@ const VghLantern__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Describe the Composed Drawing Sheet
-    // ------------------------------------------------------------
-    function VghLantern__PageRenderer__DescribeSheet() {
-        var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
-        return SheetManager
-            ? SheetManager.VghLantern__DrawingEditor__SheetManager__DescribeSheet()
-            : null;
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -157,8 +159,13 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         // One group for everything that is a page-level switch, because that is what
         // they are. The terms SECTION switches are a different kind of thing and get
         // their own group below.
+        //
+        // Listed in the order the pages appear in the pack, so the toolbar reads as a
+        // table of contents rather than as a bag of options.
         var keys  =  DocumentState.LETTER_KEYS
-            .concat(DocumentState.DRAWING_VIEW_KEYS, DocumentState.DOCUMENT_KEYS, DocumentState.TERMS_KEYS);
+            .concat(DocumentState.SUMMARY_KEYS, DocumentState.DRAWING_VIEW_KEYS,
+                    DocumentState.DRAWING_NOTE_KEYS, DocumentState.DOCUMENT_KEYS,
+                    DocumentState.DRAWING_TERMS_KEYS, DocumentState.TERMS_KEYS);
 
         var html  =  '<div class="' + CSS_TOOLBAR_GROUP + '">' +
                      '<span class="' + CSS_TOOLBAR_LABEL + '">' +
@@ -365,20 +372,19 @@ const VghLantern__DocPreview__PageRenderer = (function() {
 // REGION | Page Bodies
 // -----------------------------------------------------------------------------
 
-    // SUB FUNCTION | Build the Drawing Sheet Page
+    // SUB FUNCTION | Build the Drawing Sheet Page for One Lantern
     // ------------------------------------------------------------
-    // Built by the Drawing Editor's own SheetSurface from the Drawing Editor's own
-    // solved layout, with the composed views baked into the frames. Nothing about the
-    // sheet is decided here, which is the whole point.
-    function VghLantern__PageRenderer__BuildDrawingPage() {
+    // Built by the Drawing Editor's own SheetSurface from that lantern's own solved
+    // layout, with its composed views baked into the frames. Nothing about the sheet
+    // is decided here, which is the whole point.
+    function VghLantern__PageRenderer__BuildDrawingPage(sheet) {
         var SheetSurface  =  window.VghLantern__DrawingEditor__SheetSurface;
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var SheetChrome   =  window.VghLantern__DrawingEditor__SheetChrome;
-        var sheet         =  VghLantern__PageRenderer__DescribeSheet();
 
         if (!SheetSurface || !sheet || !sheet.Layout) {
             return '<div class="' + CSS_PAGE_SCALER + '"><p class="' + CSS_EMPTY + '">' +
-                   'Visit the Drawing Editor once so the sheet can be composed.' +
+                   'This drawing has not been composed yet.' +
                    '</p></div>';
         }
 
@@ -390,6 +396,8 @@ const VghLantern__DocPreview__PageRenderer = (function() {
             PixelsPerMm       : pxPerMm,
             Project           : sheet.Project,
             Lantern           : sheet.Lantern,
+            LanternIndex      : sheet.LanternIndex,
+            ScaleLabel        : sheet.ScaleLabel,                              // <-- The scale this sheet was composed at, not the editor's current one
             LogoAsset         : SheetChrome ? SheetChrome.VghLantern__DrawingEditor__SheetChrome__CachedLogo() : null,
             SlotContentHtml   : SheetSurface.VghLantern__DrawingEditor__SheetSurface__BuildBakedSlotContent(sheet),
             ShowResizeHandles : false                                          // <-- A preview page is read, not composed
@@ -402,35 +410,85 @@ const VghLantern__DocPreview__PageRenderer = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Build the Body of One Flowing Page Kind
+    // SUB FUNCTION | Build One Lantern's Drawing Notes Body
     // ------------------------------------------------------------
-    // Returns the whole document as one unbroken body. Splitting it across pages is
-    // the paginator's job, further down, because that needs measuring and this does
-    // not. Each renderer here is the same one that feeds the matching PDF painter.
-    function VghLantern__PageRenderer__BuildFlowingBody(kind) {
+    // Rendered by the terms screen renderer from a terms model, because a drawing
+    // notes page is a numbered note list - the same object a terms document is, from
+    // a different source. Returns an empty string for a lantern with no notes, which
+    // the plan should already have excluded.
+    function VghLantern__PageRenderer__BuildLanternNotesBody(lanternIndex) {
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
+        var TermsModel     =  window.VghLantern__Terms__DocumentModel;
+        var TermsRenderer  =  window.VghLantern__Terms__ScreenRenderer;
+        if (!StateManager || !TermsModel || !TermsRenderer) {
+            return '<p class="' + CSS_EMPTY + '">No drawing notes available.</p>';
+        }
+
+        var project   =  StateManager.VghLantern__StateManager__GetCurrentProject();
+        var lanterns  =  (project && Array.isArray(project['VghLantern__ProjectFile__Lanterns']))
+            ? project['VghLantern__ProjectFile__Lanterns'] : [];
+
+        var model  =  TermsModel.VghLantern__Terms__DocumentModel__BuildLanternDrawingTerms(
+            project, lanterns[lanternIndex], lanternIndex
+        );
+
+        return model
+            ? TermsRenderer.VghLantern__Terms__ScreenRenderer__BuildHtml(model)
+            : '<p class="' + CSS_EMPTY + '">This lantern has no drawing notes.</p>';
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Body of One Flowing Page
+    // ------------------------------------------------------------
+    // Returns the whole of that page's content as one unbroken body. Splitting it
+    // across pages is the paginator's job, further down, because that needs measuring
+    // and this does not. Each renderer here is the same one that feeds the matching
+    // PDF painter, which is what keeps the preview and the file the same document.
+    function VghLantern__PageRenderer__BuildFlowingBody(entry) {
         var LetterRenderer  =  window.VghLantern__ClientDoc__LetterScreenRenderer;
         var TermsRenderer   =  window.VghLantern__Terms__ScreenRenderer;
+        var TermsModel      =  window.VghLantern__Terms__DocumentModel;
         var PrintDocument   =  window.VghLantern__DocPreview__PrintDocumentRenderer;
         var DocumentState   =  window.VghLantern__DocPreview__DocumentState;
+        if (!DocumentState) return '';
 
-        if (kind === 'welcomeLetter') {
+        var viewState  =  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState();
+
+        if (entry.Kind === DocumentState.KIND_WELCOME_LETTER) {
             return LetterRenderer
                 ? LetterRenderer.VghLantern__ClientDoc__LetterScreenRenderer__BuildFromState()
                 : '<p class="' + CSS_EMPTY + '">No welcome letter available.</p>';
         }
 
-        if (kind === 'terms') {
+        if (entry.Kind === DocumentState.KIND_TERMS) {
             return TermsRenderer
                 ? TermsRenderer.VghLantern__Terms__ScreenRenderer__BuildFromState()
                 : '<p class="' + CSS_EMPTY + '">No terms document available.</p>';
         }
 
+        if (entry.Kind === DocumentState.KIND_DRAWING_TERMS) {
+            return (TermsRenderer && TermsModel)
+                ? TermsRenderer.VghLantern__Terms__ScreenRenderer__BuildHtml(
+                      TermsModel.VghLantern__Terms__DocumentModel__BuildDrawingTermsFromState())
+                : '<p class="' + CSS_EMPTY + '">No drawing terms available.</p>';
+        }
+
+        if (entry.Kind === DocumentState.KIND_LANTERN_NOTES) {
+            return VghLantern__PageRenderer__BuildLanternNotesBody(entry.LanternIndex);
+        }
+
+        if (!PrintDocument) return '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
+
         // Specification. Uses the print-faithful renderer (same model path as the PDF
         // painter), not the Specification Mode card UI.
-        return (PrintDocument && DocumentState)
-            ? PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildSpecificationHtml(
-                  DocumentState.VghLantern__DocPreview__DocumentState__GetViewState())
-            : '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
+        if (entry.Kind === DocumentState.KIND_LANTERN_SPEC) {
+            return PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml(
+                viewState, entry.LanternIndex
+            );
+        }
+
+        return PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml(viewState);
     }
     // ------------------------------------------------------------
 
@@ -457,49 +515,123 @@ const VghLantern__DocPreview__PageRenderer = (function() {
             : '';
 
         var Paginator  =  window.VghLantern__DocPreview__FlowPaginator;
-        var pageKinds  =  DocumentState.VghLantern__DocPreview__DocumentState__ListPageKinds();
+        var SheetBaker =  window.VghLantern__DrawingEditor__SheetBaker;
+        var plan       =  DocumentState.VghLantern__DocPreview__DocumentState__BuildPagePlan();
+
+        // Read rather than awaited: this render is synchronous, and a preview that
+        // blanks for four seconds while a pack rasterises is worse than one that
+        // paints immediately and fills its drawings in. Anything not yet composed
+        // shows as a pending page, and the bake queued below re-renders when it lands.
+        var bakedSheets  =  SheetBaker
+            ? SheetBaker.VghLantern__DrawingEditor__SheetBaker__PeekAll()
+            : [];
 
         // PASS ONE | Work out what the physical pages are.
-        // Flowing kinds are measured and cut into as many pages as they need; the
+        // Flowing kinds are measured and cut into as many pages as they need; a
         // drawing sheet is always exactly one. Nothing is wrapped yet, because a
         // footer cannot say "of 7" until the 7 is known - the same reason the PDF
         // writer stamps its footers only after every painter has finished.
         var slots  =  [];
-        var i, kind, page, body, bodies, b;
+        var i, entry, page, body, bodies, b;
 
-        for (i = 0; i < pageKinds.length; i++) {
-            kind  =  pageKinds[i];
+        for (i = 0; i < plan.length; i++) {
+            entry  =  plan[i];
 
-            if (kind === 'drawing') {
-                slots.push({ IsSheet : true, Html : VghLantern__PageRenderer__BuildDrawingPage() });
+            if (entry.Kind === DocumentState.KIND_LANTERN_DRAWING) {
+                slots.push({
+                    IsSheet : true,
+                    Kind    : entry.Kind,
+                    Html    : VghLantern__PageRenderer__BuildDrawingPage(bakedSheets[entry.LanternIndex])
+                });
                 continue;
             }
 
             page  =  DocumentState.VghLantern__DocPreview__DocumentState__DescribePage();
-            body  =  VghLantern__PageRenderer__BuildFlowingBody(kind);
+            body  =  VghLantern__PageRenderer__BuildFlowingBody(entry);
 
             bodies  =  Paginator
                 ? Paginator.VghLantern__DocPreview__FlowPaginator__Split(body, page)
                 : [body];
 
             for (b = 0; b < bodies.length; b++) {
-                slots.push({ IsSheet : false, Kind : kind, Page : page, Body : bodies[b] });
+                slots.push({ IsSheet : false, Kind : entry.Kind, Page : page, Body : bodies[b] });
             }
         }
 
         // PASS TWO | Wrap each page now the total is known.
+        //
+        // The page kind passed to the footer is the writer's own kind name, not the
+        // plan's: the writer decides footer eligibility by kind, and a drawing sheet
+        // carries its own titleblock rather than a running footer whatever the plan
+        // calls it.
         var pagesHtml  =  '';
 
         for (i = 0; i < slots.length; i++) {
             pagesHtml  +=  slots[i].IsSheet
                 ? slots[i].Html
                 : VghLantern__PageRenderer__WrapFlowingPage(
-                      slots[i].Page, slots[i].Body, slots[i].Kind, i + 1, slots.length);
+                      slots[i].Page, slots[i].Body, PDF_KIND_SPECIFICATION, i + 1, slots.length);
         }
 
         container.innerHTML  =  VghLantern__PageRenderer__BuildToolbar() +
                                 bannerHtml +
                                 '<div class="' + CSS_STAGE + '">' + pagesHtml + '</div>';
+
+        VghLantern__PageRenderer__QueueSheetBake();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Describe What a Bake Would Currently Be Working From
+    // ------------------------------------------------------------
+    // The project's lantern schedule serialised. The baker keys its own cache the same
+    // way, so two renders with the same key would produce byte-identical sheets and
+    // the second bake would be pure waste.
+    function VghLantern__PageRenderer__BakeKey() {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        if (!StateManager) return null;
+
+        try {
+            var project  =  StateManager.VghLantern__StateManager__GetCurrentProject();
+            return JSON.stringify(project ? project['VghLantern__ProjectFile__Lanterns'] : null);
+        } catch (e) {
+            return null;                                                       // <-- Unserialisable: treat every render as a new attempt
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Compose Any Missing Drawings and Re-Render Once They Land
+    // ------------------------------------------------------------
+    // The bake is fire-and-forget: the page above is already on screen, and this fills
+    // its drawings in when they are ready.
+    //
+    // Gated on the schedule having CHANGED since the last attempt, not on the pack
+    // being incomplete. A lantern whose geometry cannot be solved never produces a
+    // sheet, so "incomplete" would stay true forever - and since the bake re-renders
+    // on completion, and the render queues a bake, that is an infinite loop rather
+    // than a missing drawing. Attempting once per state of the schedule means an
+    // unbakeable lantern is reported by the issue banner and left alone until
+    // something about it actually changes.
+    function VghLantern__PageRenderer__QueueSheetBake() {
+        var SheetBaker  =  window.VghLantern__DrawingEditor__SheetBaker;
+        if (!SheetBaker) return;
+        if (VghLantern__PageRenderer__IsBaking) return;
+        if (SheetBaker.VghLantern__DrawingEditor__SheetBaker__IsComplete()) return;
+
+        var key  =  VghLantern__PageRenderer__BakeKey();
+        if (key !== null && key === VghLantern__PageRenderer__LastBakeKey) return;
+
+        VghLantern__PageRenderer__IsBaking     =  true;
+        VghLantern__PageRenderer__LastBakeKey  =  key;
+
+        void SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll().then(function() {
+            VghLantern__PageRenderer__IsBaking  =  false;
+            if (VghLantern__PageRenderer__IsModeVisible()) VghLantern__DocPreview__PageRenderer__Render();
+        }, function(bakeError) {
+            VghLantern__PageRenderer__IsBaking  =  false;
+            console.error('[VghLantern__DocPreview__PageRenderer] Drawing bake failed:', bakeError);
+        });
     }
     // ------------------------------------------------------------
 

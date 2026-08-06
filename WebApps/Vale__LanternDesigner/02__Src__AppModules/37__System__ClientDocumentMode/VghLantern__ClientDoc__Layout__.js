@@ -44,6 +44,7 @@ const VghLantern__ClientDoc__Layout = (function() {
     const DOM_EDIT_COLUMN  =  'VghLantern__ClientDoc__EditColumn';
     const DOM_PREVIEW      =  'VghLantern__ClientDoc__PreviewColumn';
     const DOM_TERMS_ANCHOR =  'VghLantern__ClientDoc__TermsAnchor';
+    const DOM_DRAWING_TERMS_ANCHOR =  'VghLantern__ClientDoc__DrawingTermsAnchor';
     const DOM_SPLIT        =  'VghLantern__ClientDoc__SplitHost';
     const DOM_SPLITTER     =  'VghLantern__ClientDoc__SplitHandle';
     // ------------------------------------------------------------
@@ -60,6 +61,7 @@ const VghLantern__ClientDoc__Layout = (function() {
     const CSS_PREVIEW_PAGE  =  'VghLantern__ClientDoc__PreviewPage';
     const CSS_EMPTY         =  'VghLantern__ClientDoc__EmptyState';
     const CSS_SPLITTER      =  'VghLantern__ClientDoc__Splitter';
+    const CSS_LANTERN_TABS  =  'VghLantern__ClientDoc__LanternTabs';           // <-- Scroll target for a scanned drawing with its own notes
     const CSS_IS_DRAGGING   =  'VghLantern__ClientDoc__Split--dragging';
     // ------------------------------------------------------------
 
@@ -174,6 +176,7 @@ const VghLantern__ClientDoc__Layout = (function() {
 
         var LetterRenderer  =  window.VghLantern__ClientDoc__LetterScreenRenderer;
         var TermsRenderer   =  window.VghLantern__Terms__ScreenRenderer;
+        var TermsModel      =  window.VghLantern__Terms__DocumentModel;
 
         var letterHtml  =  LetterRenderer
             ? LetterRenderer.VghLantern__ClientDoc__LetterScreenRenderer__BuildFromState()
@@ -182,7 +185,16 @@ const VghLantern__ClientDoc__Layout = (function() {
             ? TermsRenderer.VghLantern__Terms__ScreenRenderer__BuildFromState()
             : '';
 
+        // The general drawing terms preview between the two, because that is where the
+        // page sits in the issued pack and because it is where a scanned drawing lands
+        // when its lantern has no notes of its own.
+        var drawingTermsHtml  =  (TermsRenderer && TermsModel)
+            ? TermsRenderer.VghLantern__Terms__ScreenRenderer__BuildHtml(
+                  TermsModel.VghLantern__Terms__DocumentModel__BuildDrawingTermsFromState())
+            : '';
+
         host.innerHTML  =  '<div class="' + CSS_PREVIEW_PAGE + '">' + letterHtml + '</div>' +
+                           '<div class="' + CSS_PREVIEW_PAGE + '" id="' + DOM_DRAWING_TERMS_ANCHOR + '">' + drawingTermsHtml + '</div>' +
                            '<div class="' + CSS_PREVIEW_PAGE + '" id="' + DOM_TERMS_ANCHOR + '">' + termsHtml + '</div>';
     }
     // ------------------------------------------------------------
@@ -198,9 +210,13 @@ const VghLantern__ClientDoc__Layout = (function() {
 
         var LetterEditor  =  window.VghLantern__ClientDoc__LetterEditor;
         var TermsEditor   =  window.VghLantern__ClientDoc__TermsEditor;
+        var NotesEditor   =  window.VghLantern__ClientDoc__DrawingNotesEditor;
         var BlockEditor   =  window.VghLantern__ClientDoc__BlockEditor;
 
+        // Ordered as the pack is: the letter that opens it, the drawing notes that go
+        // with each drawing, then the terms it is all issued under.
         host.innerHTML  =  (LetterEditor ? LetterEditor.VghLantern__ClientDoc__LetterEditor__BuildHtml() : '') +
+                           (NotesEditor  ? NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__BuildHtml() : '') +
                            (TermsEditor  ? TermsEditor.VghLantern__ClientDoc__TermsEditor__BuildHtml()   : '');
 
         if (BlockEditor) BlockEditor.VghLantern__ClientDoc__BlockEditor__AutoGrowAll(host);
@@ -364,9 +380,26 @@ const VghLantern__ClientDoc__Layout = (function() {
 
     // FUNCTION | Scroll the Preview to the Terms Document
     // ------------------------------------------------------------
-    // The landing point for a scanned drawing QR code.
+    // The landing point for a scanned QR code carrying the project terms link.
     function VghLantern__ClientDoc__Layout__ScrollToTerms() {
         var anchor  =  document.getElementById(DOM_TERMS_ANCHOR);
+        if (anchor && anchor.scrollIntoView) anchor.scrollIntoView({ behavior : 'smooth', block : 'start' });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Scroll to the Drawing Notes a Scanned Sheet Asked For
+    // ------------------------------------------------------------
+    // hasOwnNotes decides which of two places the reader is taken to: the editor panel
+    // holding that lantern's own notes, or the general drawing terms in the preview
+    // column. That is the fallback the printed code deliberately does not encode, so
+    // that writing a lantern's first note does not invalidate a code already issued.
+    function VghLantern__ClientDoc__Layout__ScrollToDrawingNotes(hasOwnNotes) {
+        var anchor  =  hasOwnNotes
+            ? document.querySelector('.' + CSS_LANTERN_TABS)
+            : document.getElementById(DOM_DRAWING_TERMS_ANCHOR);
+
+        if (!anchor) anchor  =  document.getElementById(DOM_DRAWING_TERMS_ANCHOR);
         if (anchor && anchor.scrollIntoView) anchor.scrollIntoView({ behavior : 'smooth', block : 'start' });
     }
     // ------------------------------------------------------------
@@ -380,19 +413,28 @@ const VghLantern__ClientDoc__Layout = (function() {
 
     // SUB FUNCTION | Route a Block Card Action to the Editor That Owns It
     // ------------------------------------------------------------
-    // Only the terms panels use block cards now. The letter is one field, and its
-    // controls carry the letter editor's own action attribute instead.
+    // The terms panels and the per-lantern drawing notes panels both use block cards;
+    // each editor is asked whether the panel is its own. The letter is one field, and
+    // its controls carry the letter editor's own action attribute instead.
     function VghLantern__ClientDocLayout__RouteAction(button) {
-        var BlockEditor  =  window.VghLantern__ClientDoc__BlockEditor;
-        var TermsEditor  =  window.VghLantern__ClientDoc__TermsEditor;
-        if (!BlockEditor || !TermsEditor) return false;
+        var BlockEditor   =  window.VghLantern__ClientDoc__BlockEditor;
+        var TermsEditor   =  window.VghLantern__ClientDoc__TermsEditor;
+        var NotesEditor   =  window.VghLantern__ClientDoc__DrawingNotesEditor;
+        if (!BlockEditor) return false;
 
         var action    =  button.getAttribute(BlockEditor.VghLantern__ClientDoc__BlockEditor__ActionAttribute);
         var panelKey  =  button.getAttribute(BlockEditor.VghLantern__ClientDoc__BlockEditor__PanelAttribute);
         var blockId   =  button.getAttribute(BlockEditor.VghLantern__ClientDoc__BlockEditor__BlockIdAttribute);
 
-        if (!TermsEditor.VghLantern__ClientDoc__TermsEditor__OwnsPanel(panelKey)) return false;
-        return TermsEditor.VghLantern__ClientDoc__TermsEditor__HandleAction(panelKey, action, blockId);
+        if (TermsEditor && TermsEditor.VghLantern__ClientDoc__TermsEditor__OwnsPanel(panelKey)) {
+            return TermsEditor.VghLantern__ClientDoc__TermsEditor__HandleAction(panelKey, action, blockId);
+        }
+
+        if (NotesEditor && NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__OwnsPanel(panelKey)) {
+            return NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__HandleAction(panelKey, action, blockId);
+        }
+
+        return false;
     }
     // ------------------------------------------------------------
 
@@ -403,8 +445,10 @@ const VghLantern__ClientDoc__Layout = (function() {
         container.addEventListener('input', function(e) {
             var LetterEditor  =  window.VghLantern__ClientDoc__LetterEditor;
             var TermsEditor   =  window.VghLantern__ClientDoc__TermsEditor;
+            var NotesEditor   =  window.VghLantern__ClientDoc__DrawingNotesEditor;
 
             if (TermsEditor && TermsEditor.VghLantern__ClientDoc__TermsEditor__HandleInput(e.target)) return;
+            if (NotesEditor && NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__HandleInput(e.target)) return;
             if (LetterEditor) LetterEditor.VghLantern__ClientDoc__LetterEditor__HandleInput(e.target);
         });
 
@@ -425,7 +469,22 @@ const VghLantern__ClientDoc__Layout = (function() {
 
         container.addEventListener('click', function(e) {
             var LetterEditor  =  window.VghLantern__ClientDoc__LetterEditor;
+            var NotesEditor   =  window.VghLantern__ClientDoc__DrawingNotesEditor;
             if (!BlockEditor) return;
+
+            // The lantern tab strip is tested first because a tab is not a block card
+            // and would otherwise fall through to the letter's action handler.
+            if (NotesEditor) {
+                var tabButton  =  e.target.closest
+                    ? e.target.closest('[' + NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__TabAttribute() + ']')
+                    : null;
+                if (tabButton) {
+                    if (NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__HandleTabClick(tabButton)) {
+                        VghLantern__ClientDoc__Layout__RefreshEditor();
+                    }
+                    return;
+                }
+            }
 
             var blockButton  =  e.target.closest
                 ? e.target.closest('[' + BlockEditor.VghLantern__ClientDoc__BlockEditor__ActionAttribute + ']')
@@ -479,16 +538,22 @@ const VghLantern__ClientDoc__Layout = (function() {
         VghLantern__ClientDocLayout__BindClicks(container);
         VghLantern__ClientDocLayout__BindSplitter(container);
 
-        // Only the terms panels reorder. The letter is one field, and a paragraph in
-        // it moves by being cut and pasted like any other prose.
+        // The terms panels and the drawing notes panels reorder. The letter is one
+        // field, and a paragraph in it moves by being cut and pasted like any other
+        // prose.
         if (BlockEditor) {
             BlockEditor.VghLantern__ClientDoc__BlockEditor__BindDragReorder(container, function(panelKey, blockId, targetIndex) {
                 var TermsEditor  =  window.VghLantern__ClientDoc__TermsEditor;
-                if (!TermsEditor || !TermsEditor.VghLantern__ClientDoc__TermsEditor__OwnsPanel(panelKey)) return;
+                var NotesEditor  =  window.VghLantern__ClientDoc__DrawingNotesEditor;
+                var didReorder   =  false;
 
-                if (TermsEditor.VghLantern__ClientDoc__TermsEditor__HandleReorder(panelKey, blockId, targetIndex)) {
-                    VghLantern__ClientDoc__Layout__RefreshEditor();
+                if (TermsEditor && TermsEditor.VghLantern__ClientDoc__TermsEditor__OwnsPanel(panelKey)) {
+                    didReorder  =  TermsEditor.VghLantern__ClientDoc__TermsEditor__HandleReorder(panelKey, blockId, targetIndex);
+                } else if (NotesEditor && NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__OwnsPanel(panelKey)) {
+                    didReorder  =  NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__HandleReorder(panelKey, blockId, targetIndex);
                 }
+
+                if (didReorder) VghLantern__ClientDoc__Layout__RefreshEditor();
             });
         }
 
@@ -513,9 +578,11 @@ const VghLantern__ClientDoc__Layout = (function() {
     function VghLantern__ClientDoc__Layout__Flush() {
         var LetterEditor  =  window.VghLantern__ClientDoc__LetterEditor;
         var TermsEditor   =  window.VghLantern__ClientDoc__TermsEditor;
+        var NotesEditor   =  window.VghLantern__ClientDoc__DrawingNotesEditor;
 
         if (LetterEditor) LetterEditor.VghLantern__ClientDoc__LetterEditor__Flush();
         if (TermsEditor)  TermsEditor.VghLantern__ClientDoc__TermsEditor__Flush();
+        if (NotesEditor)  NotesEditor.VghLantern__ClientDoc__DrawingNotesEditor__Flush();
     }
     // ------------------------------------------------------------
 
@@ -542,6 +609,7 @@ const VghLantern__ClientDoc__Layout = (function() {
         VghLantern__ClientDoc__Layout__RefreshEditor   : VghLantern__ClientDoc__Layout__RefreshEditor,
         VghLantern__ClientDoc__Layout__RefreshPreview  : VghLantern__ClientDoc__Layout__RefreshPreview,
         VghLantern__ClientDoc__Layout__ScrollToTerms   : VghLantern__ClientDoc__Layout__ScrollToTerms,
+        VghLantern__ClientDoc__Layout__ScrollToDrawingNotes : VghLantern__ClientDoc__Layout__ScrollToDrawingNotes,
         VghLantern__ClientDoc__Layout__Flush           : VghLantern__ClientDoc__Layout__Flush,
         VghLantern__ClientDoc__Layout__OnModeExit      : VghLantern__ClientDoc__Layout__OnModeExit
     };

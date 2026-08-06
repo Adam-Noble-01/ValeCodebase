@@ -1,0 +1,10 @@
+{
+    "VghLantern__UserLogin__Accounts__Description": "Test user accounts for the prototype login gate. Passwords are deliberately plain text: this is a demonstration credential set for a client side prototype, not a security boundary, and it ships in a public repository. The future user system replaces this file with real authentication; nothing outside 08__System__UserLogin reads it.",
+
+    "VghLantern__UserLogin__Accounts__Records": [
+        { "UserId": "adam-noble",  "UserName": "Adam Noble",  "Password": "Test123",  "Role": "Developer" },
+        { "UserId": "jimmy-w",     "UserName": "Jimmy Jaws",  "Password": "Test123",  "Role": "Designer"  },
+        { "UserId": "vale-sales",  "UserName": "Vale Sales",  "Password": "ValeSales", "Role": "Sales"    },
+        { "UserId": "vale-demo",   "UserName": "Vale Demo",   "Password": "ValeDemo",  "Role": "Demo"     }
+    ]
+}

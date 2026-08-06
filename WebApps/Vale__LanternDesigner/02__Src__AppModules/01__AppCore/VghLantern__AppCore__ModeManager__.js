@@ -35,6 +35,7 @@ const VghLantern__AppCore__ModeManager = (function() {
 
     // MODULE CONSTANTS | Mode Identifiers
     // ------------------------------------------------------------
+    const MODE_LANDING_SCREEN   =  'LandingScreen';                          // <-- Boot welcome card; tabs locked until left
     const MODE_DOC_MANAGEMENT   =  'DocManagement';                          // <-- Project manager table
     const MODE_LANTERN_EDITOR   =  'LanternEditor';                          // <-- 2D configurator + control panel
     const MODE_VIEWPORT_3D      =  'Viewport3d';                             // <-- Dedicated full-screen 3D view
@@ -51,6 +52,7 @@ const VghLantern__AppCore__ModeManager = (function() {
     // PanelId      : DOM id of the section in VghLantern__App__.html
     // IsFullBleed  : strip panel padding so a viewport can fill the area
     const VghLantern__ModeManager__ModeDescriptors  =  {
+        'LandingScreen'    : { PanelId : 'VghLantern__App__ModeLandingScreen',   IsFullBleed : false },
         'DocManagement'    : { PanelId : 'VghLantern__App__ModeDocManagement',   IsFullBleed : false },
         'LanternEditor'    : { PanelId : 'VghLantern__App__ModeLanternEditor',   IsFullBleed : true  },
         'Viewport3d'       : { PanelId : 'VghLantern__App__ModeViewport3d',      IsFullBleed : true  },
@@ -197,6 +199,7 @@ const VghLantern__AppCore__ModeManager = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
+        MODE_LANDING_SCREEN                       : MODE_LANDING_SCREEN,
         MODE_DOC_MANAGEMENT                       : MODE_DOC_MANAGEMENT,
         MODE_LANTERN_EDITOR                       : MODE_LANTERN_EDITOR,
         MODE_VIEWPORT_3D                          : MODE_VIEWPORT_3D,

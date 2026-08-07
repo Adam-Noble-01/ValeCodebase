@@ -6,7 +6,7 @@
             "SchemaVersion"                     : "1.0.0",
             "CreatedDate"                       : "05-Aug-2026",
             "MigrationNote"                     : "Finish palette migrated out of VghLantern__AppConfig__Main__.json and the role colours out of Na__Env3d__Config.json VghLantern__Env3d__Config__Materials. AppCore__ConfigLoader derives the legacy FinishOptions section from the Finishes array below, so existing option-list consumers read this file without knowing it moved.",
-            "PaletteNote"                       : "THREE selectable palettes, one per element that is actually specified separately. Finishes is the frame. CapFinishes is the glaze bar cap, outside the roof. JoineryFinishes is the glaze bar trim, inside the room. They are separate arrays rather than one list with tags because a cap is never offered an interior eggshell and the trim is never offered a powder coat, and a single list would have to be filtered at every call site to say so.",
+            "PaletteNote"                       : "TWO selectable exterior finishes share one Finishes palette: Exterior Finish (frame / components) and Glaze Bar Cap Finish, which follows Exterior Finish as a macro unless Advanced Finishes diverges it. JoineryFinishes is the interior eggshell palette for trim, cornice and eaves trim. CapFinishes below mirrors Finishes names so the glaze bar cap material lookup stays flat-shaded without duplicating colour intent.",
             "RenderModelNote"                   : "Metalness / Roughness workflow. ClearCoat above zero promotes the material to a THREE.MeshPhysicalMaterial, which is what gives powder coat its thin lacquer sheen over a matt pigment layer, and at a much lower value the soft broad sheen of an eggshell joinery paint."
         },
 
@@ -66,11 +66,11 @@
             "FallbackNote"                      : "Used only when a lantern stores a finish name that is no longer in the palette above. A neutral coated aluminium tone, deliberately not matching any real product."
         },
 
-        "VghLantern__PbrMaterials__Config__CapFinishesNote": "The glaze bar cap is the decorative capping seen from OUTSIDE the roof, and it is specified on its own rather than following the frame. The frame is painted joinery and the outside of the roof carries lead flashing, so the frame colour has no bearing on what the cap is finished in. Powder Coated Aluminium is the standard and is what a cap is supplied in unless a job says otherwise.",
+        "VghLantern__PbrMaterials__Config__CapFinishesNote": "The glaze bar cap follows Exterior Finish by default (same finish names as Finishes above). This CapFinishes list keeps FlatShading for the welded bar stack and matches Finishes names so CapFinish and FrameFinish stay in lockstep. Advanced Finishes may diverge CapFinish; a mixed-exterior warning then surfaces.",
 
         "VghLantern__PbrMaterials__Config__CapFinishes": [
             {
-                "Name"                          : "Powder Coated Aluminium",
+                "Name"                          : "Anthracite Grey",
                 "MatCode"                       : "MAT620__Metal__Aluminium__PowderCoated__RAL7016",
                 "RalReference"                  : "RAL 7016 Anthracite Grey",
                 "HexColor"                      : "#383E42",
@@ -84,11 +84,12 @@
                 "EnvMapIntensity"               : 0.9,
                 "FlatShading"                   : true,
                 "FlatShadingNote"               : "Matches the core and the trim, so the three parts of one bar shade alike.",
-                "Description"                   : "The standard Vale cap. Satin polyester powder coat over the extruded aluminium capping.",
-                "IsDefault"                     : true
+                "Description"                   : "The standard Vale cap, colour matched to Exterior Finish Anthracite Grey.",
+                "IsDefault"                     : true,
+                "LegacyNames"                   : [ "Powder Coated Aluminium" ]
             },
             {
-                "Name"                          : "White",
+                "Name"                          : "White Painted",
                 "MatCode"                       : "MAT621__Metal__Aluminium__PowderCoated__OffWhite",
                 "RalReference"                  : "Off white - nearest RAL 9010 Pure White",
                 "HexColor"                      : "#EDEAE2",
@@ -100,7 +101,8 @@
                 "EnvMapIntensity"               : 0.9,
                 "FlatShading"                   : true,
                 "Description"                   : "A warm off white rather than a stark brilliant white, so the roof lines read soft against sky.",
-                "IsDefault"                     : false
+                "IsDefault"                     : false,
+                "LegacyNames"                   : [ "White" ]
             },
             {
                 "Name"                          : "Lead",
@@ -119,18 +121,9 @@
             }
         ],
 
-        "VghLantern__PbrMaterials__Config__JoineryFinishesNote": "The glaze bar trim is INTERNAL joinery - it is the moulding seen from inside the room, and it is either left as natural timber or painted. Every paint below is an EGGSHELL, which is the sheen interior joinery is specified in: it holds a soft broad highlight and nothing more. Nothing here should ever be given a gloss response. ClearCoat is deliberately near zero with a high ClearCoatRoughness, which is what a low sheen paint film actually does to light; raising ClearCoat toward 0.3 or dropping Roughness below 0.4 would turn these into the gloss paint this note exists to prevent.",
+        "VghLantern__PbrMaterials__Config__JoineryFinishesNote": "INTERNAL joinery paints - glaze bar trim, interior cornice and eaves trim. Every paint below is an EGGSHELL, which is the sheen interior joinery is specified in: it holds a soft broad highlight and nothing more. Nothing here should ever be given a gloss response. ClearCoat is deliberately near zero with a high ClearCoatRoughness, which is what a low sheen paint film actually does to light; raising ClearCoat toward 0.3 or dropping Roughness below 0.4 would turn these into the gloss paint this note exists to prevent.",
 
         "VghLantern__PbrMaterials__Config__JoineryFinishes": [
-            {
-                "Name"                          : "Natural Douglas Fir",
-                "MatCode"                       : "MAT310__Timber__DouglasFir__ClearFinish",
-                "UsesMaterial"                  : "Timber",
-                "UsesMaterialNote"              : "Resolves to the Timber role material below rather than restating it, so bare douglas fir is described in exactly one place.",
-                "Substrate"                     : "Douglas fir, clear finished",
-                "Description"                   : "The trim left bare: clear finished softwood, no pigment.",
-                "IsDefault"                     : false
-            },
             {
                 "Name"                          : "Neutral White",
                 "MatCode"                       : "MAT330__Paint__Joinery__Eggshell__NeutralWhite",
@@ -149,6 +142,38 @@
                 "IsDefault"                     : false
             },
             {
+                "Name"                          : "Farrow and Ball Wevet",
+                "MatCode"                       : "MAT335__Paint__Joinery__Eggshell__FbWevet",
+                "PaintReference"                : "Farrow & Ball No.273 Wevet",
+                "HexColor"                      : "#ECEBE9",
+                "HexColorNote"                  : "A delicate white with a barely-there grey cast. Cooler and quieter than Neutral White, so it reads as joinery paint rather than bare plaster.",
+                "Substrate"                     : "Eggshell joinery paint on douglas fir",
+                "Roughness"                     : 0.55,
+                "Metalness"                     : 0.0,
+                "ClearCoat"                     : 0.06,
+                "ClearCoatRoughness"            : 0.62,
+                "EnvMapIntensity"               : 0.50,
+                "FlatShading"                   : true,
+                "Description"                   : "A soft grey-white. Cleaner than Neutral White without going brilliant, and easy under a divided roof.",
+                "IsDefault"                     : false
+            },
+            {
+                "Name"                          : "Farrow and Ball Ammonite",
+                "MatCode"                       : "MAT336__Paint__Joinery__Eggshell__FbAmmonite",
+                "PaintReference"                : "Farrow & Ball No.274 Ammonite",
+                "HexColor"                      : "#D8D6CF",
+                "HexColorNote"                  : "A light understated grey, neither warm nor cool. Sits a step deeper than Wevet without tipping into French Gray.",
+                "Substrate"                     : "Eggshell joinery paint on douglas fir",
+                "Roughness"                     : 0.55,
+                "Metalness"                     : 0.0,
+                "ClearCoat"                     : 0.06,
+                "ClearCoatRoughness"            : 0.62,
+                "EnvMapIntensity"               : 0.50,
+                "FlatShading"                   : true,
+                "Description"                   : "A quiet light grey. Calm under a divided roof and easy beside stone or painted walls.",
+                "IsDefault"                     : true
+            },
+            {
                 "Name"                          : "Farrow and Ball French Gray",
                 "MatCode"                       : "MAT331__Paint__Joinery__Eggshell__FbFrenchGray",
                 "PaintReference"                : "Farrow & Ball No.18 French Gray",
@@ -161,8 +186,8 @@
                 "ClearCoatRoughness"            : 0.62,
                 "EnvMapIntensity"               : 0.50,
                 "FlatShading"                   : true,
-                "Description"                   : "The house default, and the most forgiving of the four. Reads as a warm putty in low light and as a soft green-grey in full sun, so it sits with almost any room below it.",
-                "IsDefault"                     : true
+                "Description"                   : "A warm putty grey. Reads softer in low light and as a soft green-grey in full sun, so it sits with almost any room below it.",
+                "IsDefault"                     : false
             },
             {
                 "Name"                          : "Farrow and Ball Card Room Green",
@@ -442,8 +467,8 @@
                 "GrainRepeatVNote"              : "Tiles per metre along the beam - roughly one figure repeat every 1.2m, close to a real board length. NOT held at 1 the way the metal grains are: those clothe a glaze bar a metre or two long, so one tile stretched the run is barely noticed; a head beam runs the full length of a lantern side, and one tile stretched across 5 or 7 metres is exactly what reads as a soft, blurry blotch rather than timber."
             },
             "Timber": {
-                "Description"                   : "Douglas fir, unpainted. The glaze bar trim as supplied, seen from inside the room.",
-                "ReachedByNote"                 : "Nothing asks for this role by name. The JoineryFinishes palette entry 'Natural Douglas Fir' declares UsesMaterial: 'Timber' and is resolved to this block, so bare fir is described here once and chosen up there alongside the paints that replace it.",
+                "Description"                   : "Douglas fir, unpainted. Retained as a role block for any mesh that still needs a bare softwood look; it is no longer offered as a selectable Joinery Finish.",
+                "ReachedByNote"                 : "Nothing asks for this role by name from the JoineryFinishes palette any more. Natural Douglas Fir was removed from the selectable paints; this block remains for internal / legacy mesh roles that still resolve to Timber.",
                 "HexColor"                      : "#C9A876",
                 "HexColorNote"                  : "Warm mid tan. Douglas fir runs pinker and more golden than oak, and this sits at the finished rather than the freshly machined end of its range.",
                 "Roughness"                     : 0.62,
@@ -454,6 +479,17 @@
                 "EnvMapIntensityNote"           : "Low. The trim faces into the room, away from the sky the environment map is built from, so a strong reflection would read as wet.",
                 "FlatShading"                   : true,
                 "FlatShadingNote"               : "Matches the core and cap so the three parts of one bar shade alike."
+            },
+            "Plywood": {
+                "Description"                   : "12mm plywood, bare. The cornice packer behind the interior cornice - packs the moulding out the thickness of plasterboard.",
+                "ReachedByNote"                 : "Nothing asks for this role by name and it is not part of any selectable finish palette. The packer is fixed bare plywood the same way the head beam is fixed Sapele.",
+                "HexColor"                      : "#D2C2A0",
+                "HexColorNote"                  : "Pale birch-ply face. Lighter and cooler than douglas fir so the packer reads as a packing piece rather than as joinery.",
+                "Roughness"                     : 0.78,
+                "RoughnessNote"                 : "Unfinished ply - matter than sealed softwood.",
+                "Metalness"                     : 0.0,
+                "EnvMapIntensity"               : 0.35,
+                "FlatShading"                   : true
             },
             "SkeletonLine": {
                 "HexColor"                      : "#172B3A",

@@ -77,6 +77,10 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_CARD_PREVIEW    =  'VghLantern__ControlPanel__CardPreview';
     const CSS_CARD_NAME       =  'VghLantern__ControlPanel__CardName';
     const CSS_CARD_EMPTY      =  'VghLantern__ControlPanel__CardEmpty';
+    const CSS_CARD_SWATCH     =  'VghLantern__ControlPanel__Card--swatch';
+    const CSS_SWATCH_GRID     =  'VghLantern__ControlPanel__SwatchGrid';
+    const CSS_SWATCH          =  'VghLantern__ControlPanel__Swatch';
+    const CSS_SWATCH_TIMBER   =  'VghLantern__ControlPanel__Swatch--timber';
     // ------------------------------------------------------------
 
 
@@ -312,14 +316,18 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
 
         if (descriptor.AllowEmpty) {
             var noneSelected  =  selected === '';
+            var noneLabel     =  descriptor.EmptyOptionLabel || 'None';
             html  +=  '<button type="button"'
                    +      ' class="' + CSS_CARD + (noneSelected ? ' ' + CSS_CARD_SELECTED : '') + '"'
                    +      ' ' + ATTR_CONTROL + '="' + VghLantern__ControlPanel__Escape(descriptor.Key) + '"'
                    +      ' ' + ATTR_ROLE + '="card"'
                    +      ' ' + ATTR_VALUE + '=""'
-                   +      ' aria-pressed="' + (noneSelected ? 'true' : 'false') + '">'
-                   +      '<div class="' + CSS_CARD_PREVIEW + ' ' + CSS_CARD_EMPTY + '">None</div>'
-                   +      '<span class="' + CSS_CARD_NAME + '">None</span>'
+                   +      ' aria-pressed="' + (noneSelected ? 'true' : 'false') + '"'
+                   +      ' title="' + VghLantern__ControlPanel__Escape(noneLabel) + '">'
+                   +      '<div class="' + CSS_CARD_PREVIEW + ' ' + CSS_CARD_EMPTY + '">'
+                   +          VghLantern__ControlPanel__Escape(noneLabel) + '</div>'
+                   +      '<span class="' + CSS_CARD_NAME + '">'
+                   +          VghLantern__ControlPanel__Escape(noneLabel) + '</span>'
                    +  '</button>';
         }
 
@@ -334,6 +342,70 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         if (selected !== '' && !VghLantern__ControlPanel__OptionsContain(options, selected)) {
             html  +=  '<p class="' + CSS_CONTROL_HINT + '">Stored value "'
                    +      VghLantern__ControlPanel__Escape(selected) + '" is not in the current library.</p>';
+        }
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Build One Finish Swatch Card
+    // ------------------------------------------------------------
+    // Colour / material chips for finish palettes: no SVG product outline, just
+    // the HexColor (or a timber hatch placeholder when UsesMaterial is Timber).
+    function VghLantern__ControlPanel__BuildSwatchCard(descriptor, option, isSelected) {
+        var swatchStyle  =  '';
+        var swatchClass  =  CSS_SWATCH;
+
+        if (option.HexColor) {
+            swatchStyle  =  ' style="background-color:' + VghLantern__ControlPanel__Escape(option.HexColor) + ';"';
+        } else if (option.UsesMaterial === 'Timber') {
+            swatchClass  +=  ' ' + CSS_SWATCH_TIMBER;
+        } else {
+            swatchClass  +=  ' ' + CSS_CARD_EMPTY;
+        }
+
+        var html  =  '<button type="button"'
+                  +      ' class="' + CSS_CARD + ' ' + CSS_CARD_SWATCH + (isSelected ? ' ' + CSS_CARD_SELECTED : '') + '"'
+                  +      ' ' + ATTR_CONTROL + '="' + VghLantern__ControlPanel__Escape(descriptor.Key) + '"'
+                  +      ' ' + ATTR_ROLE + '="card"'
+                  +      ' ' + ATTR_VALUE + '="' + VghLantern__ControlPanel__Escape(option.Value) + '"'
+                  +      ' aria-pressed="' + (isSelected ? 'true' : 'false') + '"'
+                  +      ' title="' + VghLantern__ControlPanel__Escape(option.Label) + '">';
+        html     +=      '<div class="' + swatchClass + '"' + swatchStyle + '></div>';
+        html     +=      '<span class="' + CSS_CARD_NAME + '">' + VghLantern__ControlPanel__Escape(option.Label) + '</span>';
+        html     +=  '</button>';
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Build a Finish Swatch Card Strip
+    // ------------------------------------------------------------
+    function VghLantern__ControlPanel__BuildSwatchCards(descriptor, currentValue) {
+        var Descriptors  =  window.VghLantern__LanternEditor__ControlDescriptors;
+        if (!Descriptors) return '';
+
+        var options   =  Descriptors.VghLantern__ControlDescriptors__ResolveOptions(descriptor);
+        var selected  =  String(currentValue === null || currentValue === undefined ? '' : currentValue);
+
+        if (options.length === 0) {
+            return '<p class="' + CSS_CONTROL_HINT + '">No finishes available.</p>';
+        }
+
+        var html  =  '<div class="' + CSS_CARD_GRID + ' ' + CSS_SWATCH_GRID + '" role="radiogroup">';
+        var i;
+
+        for (i = 0; i < options.length; i++) {
+            html  +=  VghLantern__ControlPanel__BuildSwatchCard(descriptor, options[i], String(options[i].Value) === selected);
+        }
+
+        html  +=  '</div>';
+
+        if (selected !== '' && !VghLantern__ControlPanel__OptionsContain(options, selected)) {
+            html  +=  '<p class="' + CSS_CONTROL_HINT + '">Stored value "'
+                   +      VghLantern__ControlPanel__Escape(selected) + '" is not in the current palette.</p>';
         }
 
         return html;
@@ -439,6 +511,8 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             inputHtml  =  VghLantern__ControlPanel__BuildSelect(descriptor, currentValue);
         } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeCards) {
             inputHtml  =  VghLantern__ControlPanel__BuildCards(descriptor, currentValue);
+        } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeSwatchCards) {
+            inputHtml  =  VghLantern__ControlPanel__BuildSwatchCards(descriptor, currentValue);
         } else if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeText
                 || descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeTextarea) {
             inputHtml  =  VghLantern__ControlPanel__BuildTextField(descriptor, currentValue);

@@ -362,6 +362,44 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Collect Mixed Joinery Paint Warnings
+    // ------------------------------------------------------------
+    function VghLantern__WarningSystem__CollectMixedJoineryFinishes(lantern) {
+        var FinishSync  =  window.VghLantern__AppUtils__JoineryFinishSync;
+        if (!FinishSync) return [];
+
+        var message  =  FinishSync.VghLantern__JoineryFinishSync__MixedFinishMessage(lantern);
+        if (!message) return [];
+
+        return [{
+            Key      : 'mixedJoineryFinishes',
+            Severity : SEVERITY_WARNING,
+            Message  : message,
+            Origin   : 'finishSync'
+        }];
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Collect Mixed Exterior Finish Warnings
+    // ------------------------------------------------------------
+    function VghLantern__WarningSystem__CollectMixedExteriorFinishes(lantern) {
+        var FinishSync  =  window.VghLantern__AppUtils__JoineryFinishSync;
+        if (!FinishSync) return [];
+
+        var message  =  FinishSync.VghLantern__JoineryFinishSync__MixedExteriorFinishMessage(lantern);
+        if (!message) return [];
+
+        return [{
+            Key      : 'mixedExteriorFinishes',
+            Severity : SEVERITY_WARNING,
+            Message  : message,
+            Origin   : 'finishSync'
+        }];
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Evaluate the Rule Table Against a Lantern
     // ------------------------------------------------------------
     // Returns a severity-sorted entry list and caches it for HasBlockingWarnings.
@@ -395,6 +433,8 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
 
         entries  =  entries.concat(VghLantern__WarningSystem__CollectGeometryNotes(skeleton, barSet));
         entries  =  entries.concat(VghLantern__WarningSystem__CollectUserWarning(lantern));
+        entries  =  entries.concat(VghLantern__WarningSystem__CollectMixedJoineryFinishes(lantern));
+        entries  =  entries.concat(VghLantern__WarningSystem__CollectMixedExteriorFinishes(lantern));
 
         entries.sort(function(a, b) {
             return VghLantern__WarningSystem__Severity(b.Severity).Rank - VghLantern__WarningSystem__Severity(a.Severity).Rank;

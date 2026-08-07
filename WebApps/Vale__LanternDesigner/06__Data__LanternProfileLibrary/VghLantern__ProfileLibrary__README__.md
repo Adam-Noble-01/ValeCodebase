@@ -72,15 +72,18 @@ so no module hardcodes a category-to-role table.
 
 | Role key | Skeleton member |
 |---|---|
-| `glazingBar` | Rafters and slope bars |
-| `transom` | Horizontal bar across a slope |
 | `ridge` | Horizontal ridge line |
 | `hip` | Hip from ridge end to eaves corner |
 | `verge` | Gable verge (shares the hip section) |
-| `eaves` | Decorative cornice / eaves section at the slope foot |
-| `buildersUpstand` | Site-built builders upstand (not Vale manufacture) |
-| `buildersUpstandPost` | Vertical corner post of the builders upstand |
-| `frame` | Vale base frame ring sitting on the upstand |
+
+Roles that are **not** swept sections (no profile dropdown, absent from
+`ROLE_PROFILE_FIELDS`):
+
+| Role key | Why it is not a profile |
+|---|---|
+| `glazingBar` / `transom` | Three-part Vale glaze bar composite (`GlazeBarSystem`) |
+| `eaves` | Datum ring only - not a part |
+| `buildersUpstand` / `buildersUpstandPost` / `frame` | Solid prisms from `MeshBuilder__BuildersUpstandBox` |
 
 The role-to-config-field mapping lives in one place only:
 `ROLE_PROFILE_FIELDS` inside `VghLantern__AppData__ProfileIndexLoader__.js`.

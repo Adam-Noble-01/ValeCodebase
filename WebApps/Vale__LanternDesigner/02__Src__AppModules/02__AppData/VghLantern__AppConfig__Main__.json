@@ -60,8 +60,8 @@
                 "Lantern__GlazingBars__Config__TargetSpacingMm": 390,
                 "Lantern__GlazingBars__Config__TrimOptionId": "45_1031",
                 "Lantern__GlazingBars__Config__HorizontalTransomEnabled": false,
-                "Lantern__GlazingBars__Config__CapFinish": "Powder Coated Aluminium",
-                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball French Gray"
+                "Lantern__GlazingBars__Config__CapFinish": "Anthracite Grey",
+                "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball Ammonite"
             },
             "Lantern__RidgeAndHips__Config": {
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
@@ -79,8 +79,14 @@
             "Lantern__BuildersUpstandAndBase__Config": {
                 "Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm": 150,
                 "Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm": 110,
-                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75,
-                "Lantern__BuildersUpstandAndBase__Config__UpstandProfileId": ""
+                "Lantern__BuildersUpstandAndBase__Config__FrameHeightMm": 75
+            },
+            "Lantern__InteriorJoinery__Config": {
+                "Lantern__InteriorJoinery__Config__CorniceOptionId": "49_1001",
+                "Lantern__InteriorJoinery__Config__EavesTrimEnabled": true,
+                "Lantern__InteriorJoinery__Config__CornicePackerEnabled": true,
+                "Lantern__InteriorJoinery__Config__CorniceFinish": "Farrow and Ball Ammonite",
+                "Lantern__InteriorJoinery__Config__EavesTrimFinish": "Farrow and Ball Ammonite"
             },
             "Lantern__Ventilation__Config": {
                 "Lantern__Ventilation__Config__Enabled": false,
@@ -90,6 +96,8 @@
             },
             "Lantern__FinishAndGlazing__Config": {
                 "Lantern__FinishAndGlazing__Config__FrameFinish": "Anthracite Grey",
+                "Lantern__FinishAndGlazing__Config__JoineryPaintFinish": "Farrow and Ball Ammonite",
+                "Lantern__FinishAndGlazing__Config__AdvancedFinishesOpen": false,
                 "Lantern__FinishAndGlazing__Config__GlazingSpec": "Double Glazed Laminate Over",
                 "Lantern__FinishAndGlazing__Config__GlazingTint": "Clear"
             },

@@ -82,13 +82,21 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // in Na__PbrMaterials__Config.json. A project saved before the bar carried its
     // own finishes has neither field, and these are written in on load.
     //
-    // The trim default is a PAINT rather than the bare timber those older projects
-    // were drawn with. That is deliberate: it is the finish most jobs are actually
-    // specified in, and a project saved before the field existed had no recorded
-    // intention to preserve - it had the one appearance the app could draw. Any
-    // job that wanted bare fir can say so now, which it could not before.
-    const SCHEMA__DEFAULT_CAP_FINISH      =  'Powder Coated Aluminium';
-    const SCHEMA__DEFAULT_TRIM_FINISH     =  'Farrow and Ball French Gray';
+    // The trim default is a PAINT rather than bare timber. That is deliberate: it
+    // is the finish most jobs are actually specified in. Natural Douglas Fir was
+    // retired from the joinery palette; saved jobs that still hold that name are
+    // remapped onto this default on load.
+    // Cap finish follows Exterior Finish (FrameFinish). Legacy CapFinishes names
+    // are remapped onto the Finishes palette names so CapFinish and FrameFinish
+    // share one vocabulary.
+    const SCHEMA__DEFAULT_CAP_FINISH      =  'Anthracite Grey';
+    const SCHEMA__DEFAULT_TRIM_FINISH     =  'Farrow and Ball Ammonite';
+    const SCHEMA__DEFAULT_CORNICE_ID      =  '49_1001';
+    const SCHEMA__RETIRED_JOINERY_FINISH  =  'Natural Douglas Fir';
+    const SCHEMA__CAP_FINISH_ALIASES      =  {
+        'Powder Coated Aluminium' : 'Anthracite Grey',
+        'White'                   : 'White Painted'
+    };
     // ------------------------------------------------------------
 
 
@@ -126,8 +134,15 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // belongs to the upstand and the frame beneath - so it is no longer swept,
     // scheduled or offered as a choice. Nothing to migrate: the field named a
     // profile that was never authored, and every project on disk stores it empty.
+    //
+    // UpstandProfileId is the same story for the builders upstand itself. The
+    // upstand is a site-built hollow box sized by height and thickness, not a
+    // swept Vale section - MeshBuilder__BuildersUpstandBox owns it as a solid
+    // prism. No buildersUpstand profile was ever authored, the dropdown always
+    // showed "- none selected -", and every project stores the field empty.
     const SCHEMA__RETIRED_UPSTAND_FIELDS  =  [
-        'Lantern__BuildersUpstandAndBase__Config__EavesProfileId'
+        'Lantern__BuildersUpstandAndBase__Config__EavesProfileId',
+        'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'
     ];
     // ------------------------------------------------------------
 
@@ -269,6 +284,29 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             return true;
         }
         return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Remap a Retired Joinery Finish Name Onto the Default Paint
+    // ------------------------------------------------------------
+    function VghLantern__SchemaValidator__RemapRetiredJoineryFinish(configObj, key) {
+        if (!configObj || configObj[key] !== SCHEMA__RETIRED_JOINERY_FINISH) return false;
+        configObj[key]  =  SCHEMA__DEFAULT_TRIM_FINISH;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Remap Legacy Cap Finish Names Onto Exterior Finish Names
+    // ------------------------------------------------------------
+    function VghLantern__SchemaValidator__RemapCapFinishAlias(configObj, key) {
+        if (!configObj) return false;
+        var current  =  configObj[key];
+        var mapped   =  (typeof current === 'string') ? SCHEMA__CAP_FINISH_ALIASES[current] : null;
+        if (!mapped) return false;
+        configObj[key]  =  mapped;
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -456,8 +494,14 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         // because a bar is always supplied with both of them finished somehow -
         // an empty string here would mean "no cap finish", which is not a thing a
         // Vale bar can be.
-        if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__CapFinish',  SCHEMA__DEFAULT_CAP_FINISH))  didMutate  =  true;
+        // Cap finish follows Exterior Finish. Prefer the lantern's frame finish when
+        // seeding a missing field; remap retired CapFinishes names onto that vocabulary.
+        var finishCfgForBars  =  lantern['Lantern__FinishAndGlazing__Config'] || {};
+        var exteriorFinish    =  finishCfgForBars['Lantern__FinishAndGlazing__Config__FrameFinish'] || SCHEMA__DEFAULT_FRAME_FINISH;
+        if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__CapFinish',  exteriorFinish)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__RemapCapFinishAlias(barsCfg, 'Lantern__GlazingBars__Config__CapFinish')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__TrimFinish', SCHEMA__DEFAULT_TRIM_FINISH)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__RemapRetiredJoineryFinish(barsCfg, 'Lantern__GlazingBars__Config__TrimFinish')) didMutate  =  true;
 
         return didMutate;
     }
@@ -512,10 +556,13 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             lantern['Lantern__BuildersUpstandAndBase__Config']  =  target;
         }
 
+        // KerbProfileId is dropped with the block - it was the legacy name of
+        // UpstandProfileId, a section choice that was never authored and is now
+        // retired. Height, thickness and frame height are the only fields that
+        // still mean anything on the new block.
         var fieldMap  =  [
             ['Lantern__KerbAndBase__Config__KerbHeightMm',    'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm'],
             ['Lantern__KerbAndBase__Config__KerbThicknessMm', 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm'],
-            ['Lantern__KerbAndBase__Config__KerbProfileId',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
             ['Lantern__KerbAndBase__Config__FrameHeightMm',   'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm']
         ];
 
@@ -551,8 +598,6 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm',    SCHEMA__DEFAULT_UPSTAND_HEIGHT_MM,    SCHEMA__MIN_UPSTAND_HEIGHT_MM,    SCHEMA__MAX_UPSTAND_HEIGHT_MM))    didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm', SCHEMA__DEFAULT_UPSTAND_THICKNESS_MM, SCHEMA__MIN_UPSTAND_THICKNESS_MM, SCHEMA__MAX_UPSTAND_THICKNESS_MM)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyIntField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',   SCHEMA__DEFAULT_FRAME_HEIGHT_MM,   SCHEMA__MIN_FRAME_HEIGHT_MM,   SCHEMA__MAX_FRAME_HEIGHT_MM))   didMutate  =  true;
-
-        if (VghLantern__SchemaValidator__ApplyStringField(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', '')) didMutate  =  true;
 
         for (var i = 0; i < SCHEMA__RETIRED_UPSTAND_FIELDS.length; i++) {
             if (SCHEMA__RETIRED_UPSTAND_FIELDS[i] in upstandCfg) {
@@ -596,8 +641,46 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         }
 
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__FrameFinish', SCHEMA__DEFAULT_FRAME_FINISH)) didMutate  =  true;
+
+        // Joinery Paint Finish is the job macro. Prefer an existing trim finish
+        // on migration so a saved job keeps the paint it was drawn with.
+        var barsCfg     =  lantern['Lantern__GlazingBars__Config'] || {};
+        var trimFinish  =  barsCfg['Lantern__GlazingBars__Config__TrimFinish'] || SCHEMA__DEFAULT_TRIM_FINISH;
+        if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__JoineryPaintFinish', trimFinish)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__RemapRetiredJoineryFinish(finishCfg, 'Lantern__FinishAndGlazing__Config__JoineryPaintFinish')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyBoolField(finishCfg, 'Lantern__FinishAndGlazing__Config__AdvancedFinishesOpen', false)) didMutate  =  true;
+
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__GlazingSpec', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(finishCfg, 'Lantern__FinishAndGlazing__Config__GlazingTint', '')) didMutate  =  true;
+
+        return didMutate;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Normalise Lantern Interior Joinery Block
+    // ------------------------------------------------------------
+    function VghLantern__SchemaValidator__NormaliseInteriorJoinery(lantern) {
+        var didMutate   =  false;
+        var joineryCfg  =  lantern['Lantern__InteriorJoinery__Config'];
+        var finishCfg   =  lantern['Lantern__FinishAndGlazing__Config'] || {};
+        var macro       =  finishCfg['Lantern__FinishAndGlazing__Config__JoineryPaintFinish'] || SCHEMA__DEFAULT_TRIM_FINISH;
+
+        if (VghLantern__SchemaValidator__ApplyStringField(joineryCfg, 'Lantern__InteriorJoinery__Config__CorniceOptionId', SCHEMA__DEFAULT_CORNICE_ID)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyBoolField(joineryCfg, 'Lantern__InteriorJoinery__Config__EavesTrimEnabled', true)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyBoolField(joineryCfg, 'Lantern__InteriorJoinery__Config__CornicePackerEnabled', true)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(joineryCfg, 'Lantern__InteriorJoinery__Config__CorniceFinish', macro)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(joineryCfg, 'Lantern__InteriorJoinery__Config__EavesTrimFinish', macro)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__RemapRetiredJoineryFinish(joineryCfg, 'Lantern__InteriorJoinery__Config__CorniceFinish')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__RemapRetiredJoineryFinish(joineryCfg, 'Lantern__InteriorJoinery__Config__EavesTrimFinish')) didMutate  =  true;
+
+        // No Cornice also means no packer - keep the enable flag honest with the card.
+        if (joineryCfg['Lantern__InteriorJoinery__Config__CorniceOptionId'] === '') {
+            if (joineryCfg['Lantern__InteriorJoinery__Config__CornicePackerEnabled'] !== false) {
+                joineryCfg['Lantern__InteriorJoinery__Config__CornicePackerEnabled']  =  false;
+                didMutate  =  true;
+            }
+        }
 
         return didMutate;
     }
@@ -713,6 +796,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             'Lantern__RidgeAndHips__Config',
             'Lantern__Finials__Config',
             'Lantern__BuildersUpstandAndBase__Config',
+            'Lantern__InteriorJoinery__Config',
             'Lantern__Ventilation__Config',
             'Lantern__FinishAndGlazing__Config',
             'Lantern__Notes__Config',
@@ -733,6 +817,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__NormaliseBuildersUpstandAndBase(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseVentilation(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseFinishAndGlazing(lantern)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__NormaliseInteriorJoinery(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseNotes(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseDrawingNotes(lantern)) didMutate  =  true;
         if (VghLantern__SchemaValidator__NormaliseLanternDrawingLayout(lantern)) didMutate  =  true;

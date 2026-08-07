@@ -12,7 +12,7 @@
    DESCRIPTION:
    - Renders a card gallery of every asset in the two data libraries
    - Two library tabs: Components (finials, bases, cresting, vents) and Profiles
-     (glazing bars, ridge, hip, eaves and builders upstand sections)
+     (ridge and hip sections; glaze bars live in their own system index)
    - Category filter chips plus a live text search across id, name and category
    - A component card draws its index entry's baked Preview2d block - the
      asset's front elevation flattened to SVG path data at build time, or a

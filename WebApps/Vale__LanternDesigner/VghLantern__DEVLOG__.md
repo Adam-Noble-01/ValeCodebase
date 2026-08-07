@@ -3,6 +3,96 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.7 - 07-Aug-2026
+### Lantern Editor default 3D preview share widened by 20%
+
+#### Changed - `Na__LanternEditor__Config.json` layout defaults
+- `Split3dSharePct` raised from **40** to **60** so the in-editor 3D viewport
+  opens 20 percentage points wider by default (2D drawing left, 3D right).
+- Bootstrap and CSS fallbacks in `VghLantern__LanternEditor__Layout__.js` and
+  `VghLantern__LanternEditor__Styles__Main__.css` updated to match.
+
+### Interior Joinery assembly, and Finishes and Materials as one place
+
+Two related additions land together: the interior joinery that clads the inside
+of the lantern upstand, and a proper Finishes and Materials section that stops
+paint choices living as scattered dropdowns next to the things they finish.
+
+#### Interior Joinery
+The eaves datum ring from v0.2.4 is now also the sweep path for three interior
+parts, authored in the same Plan2D section frame as the base frame (0,0 = eaves
+datum, +x inboard into the room):
+
+- **Wales Cornice** (`49_1001`, default) and **Classic Interior Cornice VG103**
+  (`49_1002`) - selectable SVG cards in a new Interior Joinery editor section
+- **12mm Ply Cornice Packer** (`49_1021`) - always fitted, bare plywood
+- **Eaves Trim** (`49_1011`) - always fitted; its top edge remaps onto
+  `y = x * tan(pitch)` so steeper roofs do not clip the board through the eaves
+
+Hand-authored system index at `49_1000__InternalTrims/`, loader / geometry /
+mesh builder mirroring the base frame stack. Wired into the live 3D pipeline and
+the projected-edges model stage.
+
+#### Finishes and Materials
+New editor section before Ventilation:
+
+1. **Exterior Finish** - swatch cards; the former Frame Finish, moved out of
+   Frame and Builders Upstand
+2. **Joinery Paint Finish** - job macro; writing it syncs glaze bar trim,
+   cornice and eaves trim finishes
+3. **Advanced Finishes** - expandable per-element swatches (cap, trim, cornice,
+   eaves trim). Mixed joinery paints are allowed and surface a warning via
+   `JoineryFinishSync` + WarningSystem
+
+Cap / Trim finish dropdowns leave the Glaze Bars section. Frame Finish leaves
+Builders Upstand. Finish options render as colour chips (`swatchCards`), not
+product SVG cards.
+
+#### Schema
+- `Lantern__InteriorJoinery__Config` (cornice option, packer/trim flags, per-element finishes)
+- `Lantern__FinishAndGlazing__Config__JoineryPaintFinish` (macro; migrates from existing trim finish)
+- `Lantern__FinishAndGlazing__Config__AdvancedFinishesOpen`
+
+#### Added
+- `06__Data__LanternProfileLibrary/49_1000__InternalTrims/VghLantern__InteriorJoinerySystem__Index__.json`
+- `VghLantern__AppData__InteriorJoinerySystemLoader__.js`
+- `VghLantern__Geometry__InteriorJoineryAssembly__.js`
+- `VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__.mjs`
+- `VghLantern__LanternEditor__Section__InteriorJoinery__.js`
+- `VghLantern__LanternEditor__Section__FinishesAndMaterials__.js`
+- `VghLantern__AppUtils__JoineryFinishSync__.js`
+- Plywood fixed material role in `Na__PbrMaterials__Config.json` / MaterialLibrary
+
+#### Changed
+- Editor section order, ControlDescriptors / ControlPanel (swatch cards),
+  schema seed/normalise, takeoff rows, RenderPipeline + projected edges,
+  Init library load, App__.html script tags
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.6 - 07-Aug-2026
+### Removed - The Upstand Section dropdown
+
+The builders upstand is a site-built hollow box sized by height and thickness,
+not a swept Vale section. The "Upstand Section" control always listed only
+"- none selected -" because no `buildersUpstand` profile was ever authored, and
+the solid mesh path (`MeshBuilder__BuildersUpstandBox`) never read the field.
+
+#### Removed
+- Editor descriptor `upstandProfileId` from Frame and Builders Upstand
+- `ROLE_PROFILE_FIELDS` mappings for `buildersUpstand` / `buildersUpstandPost`
+- Seed default and schema normalisation of
+  `Lantern__BuildersUpstandAndBase__Config__UpstandProfileId`
+- Legacy kerb migration of `KerbProfileId` into that field
+- Takeoff read of the empty profile id (row stays; id is blank)
+
+#### Schema
+- Field added to `SCHEMA__RETIRED_UPSTAND_FIELDS` and stripped on load, same
+  pattern as the already-retired `EavesProfileId`. Existing project files keep
+  loading; the empty key is deleted on normalise.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.2.5 - 07-Aug-2026
 ### Lead flashing quieter, Sapele lighter
 

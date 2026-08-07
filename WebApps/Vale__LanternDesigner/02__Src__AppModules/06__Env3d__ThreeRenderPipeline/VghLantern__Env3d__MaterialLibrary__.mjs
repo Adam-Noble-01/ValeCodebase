@@ -101,6 +101,7 @@ import {
     const ROLE_MILL_ALUMINIUM =  'millAluminium';                            // <-- Bare extrusion: the concealed glaze bar core
     const ROLE_LEAD_FLASHING  =  'leadFlashing';                             // <-- Patination oiled leadwork on the base frame
     const ROLE_SAPELE_HARDWOOD =  'sapeleHardwood';                          // <-- The head beam: bare sealed hardwood, never the frame paint
+    const ROLE_PLYWOOD         =  'plywood';                                 // <-- 12mm ply cornice packer, bare
 
     const ROLE_BAR_CAP        =  'glazeBarCap';                              // <-- Glaze bar cap, finished from its own palette
     const ROLE_BAR_TRIM       =  'glazeBarTrim';                             // <-- Glaze bar trim, finished from the joinery palette
@@ -109,13 +110,10 @@ import {
     // glass or a GRP kerb has no finish to choose, so asking for one of them with
     // a finish name returns the same material either way.
     //
-    // The two glaze bar roles are NOT in this list. They used to be - the cap
-    // followed the frame and the trim was always bare douglas fir - but both are
-    // now specified in their own right, so each caches per finish name like the
-    // frame does. Bare douglas fir did not disappear with the fixed trim: it is
-    // the Timber role BLOCK, reached through the joinery palette's Natural Douglas
-    // Fir entry, which delegates to it rather than restating its numbers.
-    const FIXED_COLOUR_ROLES  =  [ROLE_GLAZING, ROLE_SKELETON_LINE, ROLE_BUILDERS_UPSTAND, ROLE_GRP, ROLE_MILL_ALUMINIUM, ROLE_LEAD_FLASHING, ROLE_SAPELE_HARDWOOD];
+    // The two glaze bar roles are NOT in this list. Cap finish follows Exterior
+    // Finish (shared finish names; CapFinishes mirrors Finishes with FlatShading).
+    // Trim finish is the joinery paint macro consumer.
+    const FIXED_COLOUR_ROLES  =  [ROLE_GLAZING, ROLE_SKELETON_LINE, ROLE_BUILDERS_UPSTAND, ROLE_GRP, ROLE_MILL_ALUMINIUM, ROLE_LEAD_FLASHING, ROLE_SAPELE_HARDWOOD, ROLE_PLYWOOD];
 
     const PBR_CONFIG_KEY      =  'VghLantern__PbrMaterials__Config';         // <-- Palette and surface response SSOT
     const PBR_FINISHES_KEY    =  'VghLantern__PbrMaterials__Config__Finishes';
@@ -238,7 +236,12 @@ import {
 
         for (let i = 0; i < finishList.length; i++) {
             const finish  =  finishList[i];
-            if (!finish || finish.Name !== finishName) continue;
+            if (!finish) continue;
+
+            const legacyNames  =  Array.isArray(finish.LegacyNames) ? finish.LegacyNames : [];
+            const nameMatch    =  finish.Name === finishName
+                || legacyNames.indexOf(finishName) !== -1;
+            if (!nameMatch) continue;
 
             return {
                 HexColor           : finish.HexColor || fallback.HexColor,
@@ -879,6 +882,16 @@ import {
         } else if (roleKey === ROLE_SAPELE_HARDWOOD) {
             material  =  VghLantern__Env3d__MaterialLibrary__BuildSapeleHardwood();
 
+        } else if (roleKey === ROLE_PLYWOOD) {
+            const ply  =  VghLantern__Env3d__MaterialLibrary__RoleBlock('Plywood');
+            material  =  new THREE.MeshStandardMaterial({
+                color       : new THREE.Color(ply.HexColor || '#D2C2A0'),
+                roughness   : (typeof ply.Roughness === 'number') ? ply.Roughness : 0.78,
+                metalness   : (typeof ply.Metalness === 'number') ? ply.Metalness : 0,
+                flatShading : ply.FlatShading !== false
+            });
+            if (typeof ply.EnvMapIntensity === 'number') material.envMapIntensity  =  ply.EnvMapIntensity;
+
         } else if (roleKey === ROLE_BUILDERS_UPSTAND) {
             // The kerb declares which material it is finished in rather than
             // carrying a colour, so changing the whole kerb finish is one config
@@ -980,10 +993,14 @@ import {
         return VghLantern__Env3d__MaterialLibrary__Get(ROLE_SAPELE_HARDWOOD, null);
     }
 
-    // The two finished faces of a glaze bar, each specified in its own right. The
-    // cap does NOT follow the frame: the frame is painted joinery and the outside
-    // of the roof is dressed in lead flashing, so what the frame is painted has no
-    // bearing on the capping above it.
+    export function VghLantern__Env3d__MaterialLibrary__Plywood() {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_PLYWOOD, null);
+    }
+
+    // The two finished faces of a glaze bar. Cap finish follows Exterior Finish
+    // (same finish names as the frame palette, looked up via CapFinishes which
+    // mirrors those names with FlatShading for the welded bar). Trim finish is
+    // the interior joinery macro consumer.
     export function VghLantern__Env3d__MaterialLibrary__GlazeBarCap(capFinishName) {
         return VghLantern__Env3d__MaterialLibrary__Get(ROLE_BAR_CAP, capFinishName);
     }

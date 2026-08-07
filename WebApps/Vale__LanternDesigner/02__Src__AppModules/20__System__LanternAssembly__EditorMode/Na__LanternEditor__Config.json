@@ -11,7 +11,7 @@
             "ControlsPanelDefaultWidthPx"   : 504,
             "PreviewPanelMinWidthPx"        : 280,
             "Split3dOrientation"            : "horizontal",
-            "Split3dSharePct"               : 40,
+            "Split3dSharePct"               : 60,
             "Split3dShareMinPct"            : 25,
             "Split3dShareMaxPct"            : 70,
             "SplitNote"                     : "Drag the resize handles to live-adjust the controls column width and the 2D/3D share. Split3dOrientation horizontal places drawing left and 3D right; vertical stacks them."
@@ -29,6 +29,8 @@
             { "Key": "finials",          "Label": "Finials",             "DefaultOpen": false, "Enabled": true },
             { "Key": "ridgeAndHips",     "Label": "Ridge and Hips",      "DefaultOpen": false, "Enabled": true },
             { "Key": "buildersUpstandAndBase",      "Label": "Frame and Builders Upstand",      "DefaultOpen": false, "Enabled": true },
+            { "Key": "interiorJoinery",  "Label": "Interior Joinery",    "DefaultOpen": false, "Enabled": true },
+            { "Key": "finishesAndMaterials", "Label": "Finishes and Materials", "DefaultOpen": false, "Enabled": true },
             { "Key": "ventilation",      "Label": "Ventilation",         "DefaultOpen": false, "Enabled": true },
             { "Key": "glazing",          "Label": "Glazing",             "DefaultOpen": false, "Enabled": true },
             { "Key": "warningsAndComments", "Label": "Warnings and Comments", "DefaultOpen": false, "Enabled": true },

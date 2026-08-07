@@ -68,6 +68,7 @@ import { VghLantern__Env3d__EnvironmentMap__Ready } from './VghLantern__Env3d__E
 import { VghLantern__Env3d__MeshBuilder__Skeleton__Build, VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode } from './VghLantern__Env3d__MeshBuilder__Skeleton__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build } from './VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build } from './VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__.mjs';
+import { VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__Build } from './VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
 import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build } from './VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs';
 import {
@@ -293,6 +294,9 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // The Vale base frame: head beam, eaves extrusion and lead flashing
         // swept around the eaves datum ring.
         surface.LastBaseFrameSummary  =  await VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build(solidFrameGroup, skeleton, lantern);
+
+        // Interior joinery: cornice, packer and eaves trim on the same datum ring.
+        surface.LastInteriorJoinerySummary  =  await VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__Build(solidFrameGroup, skeleton, lantern);
 
         await VghLantern__Env3d__MeshBuilder__Skeleton__Build(solidFrameGroup, skeleton, barSet, lantern);
 

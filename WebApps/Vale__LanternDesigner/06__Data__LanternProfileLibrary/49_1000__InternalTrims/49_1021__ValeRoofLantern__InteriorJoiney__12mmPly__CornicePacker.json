@@ -1,0 +1,835 @@
+{
+  "meta"                          : {
+    "schema"           : "Na__Asset__UnifiedComponentSchema",
+    "schemaVersion"    : "1.1.0",
+    "generator"        : "Na__ComponentEditorTools::Na__ExportTools - Export tab multi-view exporter",
+    "generatedDate"    : "07-Aug-2026",
+    "sourceModel"      : "SketchUp__ModelWorkshop__AssetExporter__Active__.skp",
+    "sourceAsset"      : "49_1021__ValeRoofLantern__InteriorJoiney__12mmPly__CornicePacker__.json",
+    "exportedScenes"   : [
+        {
+            "sceneName" : "FixedAxis__FrontElevation",
+            "viewKey"   : "Na__Asset__Elevation2D__Front"
+        },
+        {
+            "sceneName" : "FixedAxis__RightElevation",
+            "viewKey"   : "Na__Asset__Elevation2D__Right"
+        },
+        {
+            "sceneName" : "FixedAxis__TopPlan",
+            "viewKey"   : "Na__Asset__Plan2D__Top"
+        },
+        {
+            "sceneName" : "DefinitionEntities",
+            "viewKey"   : "Na__Asset__Mesh3D"
+        }
+    ],
+    "exportWarnings"   : [],
+    "namingConvention" : "All custom keys prefixed Na__. Three-stage form Na__Section__SubSection__FieldName.",
+    "fieldPrefixes"    : {
+        "Na__Asset__"     : "Top-level asset metadata and content blocks",
+        "Na__Geometry__"  : "Geometry sub-fields (BoundingBox, Counts, OriginNote, CoordSystem, Paths)",
+        "Na__View__"      : "2D projection provenance (source view, camera axes, projection type)",
+        "Na__Object__"    : "3D hierarchy nodes (ids, names, tags, transforms)",
+        "Na__Hierarchy__" : "3D object hierarchy block metadata"
+    }
+  },
+  "Na__Asset__Metadata"           : {
+    "Na__Asset__Metadata__Id"           : "49_1021",
+    "Na__Asset__Metadata__Name"         : "49_1021__ValeRoofLantern__InteriorJoiney__12mmPly__CornicePacker__.json",
+    "Na__Asset__Metadata__CategoryId"   : "",
+    "Na__Asset__Metadata__CategoryName" : "",
+    "Na__Asset__Metadata__Description"  : "",
+    "Na__Asset__Metadata__Revision"     : "A",
+    "Na__Asset__Metadata__Author"       : "",
+    "Na__Asset__Metadata__CreatedDate"  : "07-Aug-2026",
+    "Na__Asset__Metadata__DataStatus"   : "Draft - auto-captured by Component Editor Export tab, awaiting audit",
+    "Na__Asset__Metadata__Material"     : "",
+    "Na__Asset__Metadata__Tags"         : []
+  },
+  "Na__Asset__ValeSpecification"  : {
+    "Na__Asset__ValeSpec__ProductCode" : "49_1021",
+    "Na__Asset__ValeSpec__ProductName" : "",
+    "Na__Asset__ValeSpec__Supplier"    : "",
+    "Na__Asset__ValeSpec__Material"    : "",
+    "Na__Asset__ValeSpec__Finish"      : "",
+    "Na__Asset__ValeSpec__Notes"       : ""
+  },
+  "Na__Asset__Elevation2D__Front" : {
+    "Na__View__SourceSceneName" : "FixedAxis__FrontElevation",
+    "Na__View__ProjectionType"  : "OrthographicEdgeProjection | silhouette + camera-facing hard edges | raytest hidden-edge cull | circle refit",
+    "Na__View__ViewDirection"   : "+Y",
+    "Na__Geometry__OriginNote"  : "Local 0,0 = 00__OriginPoint centre projected into this view. Front Elevation of asset.",
+    "Na__Geometry__CoordSystem" : "View plane | X=world +X, Y=world +Z | view direction +Y | Units=mm | depth discarded",
+    "Na__Geometry__BoundingBox" : {
+        "Na__Geometry__MinX_mm"   : -5.0,
+        "Na__Geometry__MaxX_mm"   : 7.0,
+        "Na__Geometry__MinY_mm"   : -300.0,
+        "Na__Geometry__MaxY_mm"   : 0.0,
+        "Na__Geometry__Width_mm"  : 12.0,
+        "Na__Geometry__Height_mm" : 300.0
+    },
+    "Na__Geometry__Counts"      : {
+        "Na__Geometry__EdgeCount"    : 11,
+        "Na__Geometry__ArcCount"     : 0,
+        "Na__Geometry__LineCount"    : 4,
+        "Na__Geometry__PolygonCount" : 0,
+        "Na__Geometry__CircleCount"  : 0
+    },
+    "Na__Geometry__Paths"       : [
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.0,
+                "Y" : 0.0
+            },
+            "End_mm"     : {
+                "X" : 7.0,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : -5.0,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : 7.0,
+                "Y" : -300.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 7.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : 7.0,
+                "Y" : 0.0
+            }
+        }
+    ]
+  },
+  "Na__Asset__Elevation2D__Right" : {
+    "Na__View__SourceSceneName" : "FixedAxis__RightElevation",
+    "Na__View__ProjectionType"  : "OrthographicEdgeProjection | silhouette + camera-facing hard edges | raytest hidden-edge cull | circle refit",
+    "Na__View__ViewDirection"   : "-X",
+    "Na__Geometry__OriginNote"  : "Local 0,0 = 00__OriginPoint centre projected into this view. Right Elevation of asset.",
+    "Na__Geometry__CoordSystem" : "View plane | X=world +Y, Y=world +Z | view direction -X | Units=mm | depth discarded",
+    "Na__Geometry__BoundingBox" : {
+        "Na__Geometry__MinX_mm"   : -151.0,
+        "Na__Geometry__MaxX_mm"   : -4.0,
+        "Na__Geometry__MinY_mm"   : -300.0,
+        "Na__Geometry__MaxY_mm"   : 0.0,
+        "Na__Geometry__Width_mm"  : 147.0,
+        "Na__Geometry__Height_mm" : 300.0
+    },
+    "Na__Geometry__Counts"      : {
+        "Na__Geometry__EdgeCount"    : 12,
+        "Na__Geometry__ArcCount"     : 0,
+        "Na__Geometry__LineCount"    : 5,
+        "Na__Geometry__PolygonCount" : 0,
+        "Na__Geometry__CircleCount"  : 0
+    },
+    "Na__Geometry__Paths"       : [
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -4.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : -4.0,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -151.0,
+                "Y" : 0.0
+            },
+            "End_mm"     : {
+                "X" : -100.0,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -100.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : -100.0,
+                "Y" : 0.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -151.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : -100.0,
+                "Y" : -300.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -151.0,
+                "Y" : -300.0
+            },
+            "End_mm"     : {
+                "X" : -151.0,
+                "Y" : 0.0
+            }
+        }
+    ]
+  },
+  "Na__Asset__Plan2D__Top"        : {
+    "Na__View__SourceSceneName" : "FixedAxis__TopPlan",
+    "Na__View__ProjectionType"  : "OrthographicEdgeProjection | silhouette + camera-facing hard edges | raytest hidden-edge cull | circle refit",
+    "Na__View__ViewDirection"   : "-Z",
+    "Na__Geometry__OriginNote"  : "Local 0,0 = 00__OriginPoint centre projected into this view. Top Plan of asset.",
+    "Na__Geometry__CoordSystem" : "View plane | X=world +X, Y=world +Y | view direction -Z | Units=mm | depth discarded",
+    "Na__Geometry__BoundingBox" : {
+        "Na__Geometry__MinX_mm"   : -5.0,
+        "Na__Geometry__MaxX_mm"   : 7.0,
+        "Na__Geometry__MinY_mm"   : -151.0,
+        "Na__Geometry__MaxY_mm"   : -100.0,
+        "Na__Geometry__Width_mm"  : 12.0,
+        "Na__Geometry__Height_mm" : 51.0
+    },
+    "Na__Geometry__Counts"      : {
+        "Na__Geometry__EdgeCount"    : 13,
+        "Na__Geometry__ArcCount"     : 0,
+        "Na__Geometry__LineCount"    : 4,
+        "Na__Geometry__PolygonCount" : 0,
+        "Na__Geometry__CircleCount"  : 0
+    },
+    "Na__Geometry__Paths"       : [
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.0,
+                "Y" : -100.0
+            },
+            "End_mm"     : {
+                "X" : 7.0,
+                "Y" : -100.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.0,
+                "Y" : -151.0
+            },
+            "End_mm"     : {
+                "X" : -5.0,
+                "Y" : -100.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : -5.0,
+                "Y" : -151.0
+            },
+            "End_mm"     : {
+                "X" : 7.0,
+                "Y" : -151.0
+            }
+        },
+        {
+            "PathType"   : "Line",
+            "VertexName" : "",
+            "Start_mm"   : {
+                "X" : 7.0,
+                "Y" : -151.0
+            },
+            "End_mm"     : {
+                "X" : 7.0,
+                "Y" : -100.0
+            }
+        }
+    ]
+  },
+  "Na__Asset__Mesh3D"             : {
+    "Na__Geometry__OriginNote"  : "Local 0,0,0 = centre of 00__OriginPoint group.",
+    "Na__Geometry__CoordSystem" : "Right-handed | X=right, Y=front, Z=up | Units=mm",
+    "Na__Geometry__BoundingBox" : {
+        "Na__Geometry__MinX_mm" : -5.0,
+        "Na__Geometry__MaxX_mm" : 7.0,
+        "Na__Geometry__MinY_mm" : -151.0,
+        "Na__Geometry__MaxY_mm" : -100.0,
+        "Na__Geometry__MinZ_mm" : -300.0,
+        "Na__Geometry__MaxZ_mm" : 0.0
+    },
+    "Na__Geometry__Counts"      : {
+        "Na__Geometry__VertexCount"     : 24,
+        "Na__Geometry__FaceCount"       : 6,
+        "Na__Geometry__EdgeCount"       : 12,
+        "Na__Geometry__HardEdgeCount"   : 12,
+        "Na__Geometry__SoftEdgeCount"   : 0,
+        "Na__Geometry__SmoothEdgeCount" : 0
+    },
+    "Na__Geometry__Vertices"    : [
+        {
+            "VertexId"   : "V001",
+            "VertexName" : "Na__Mesh__Vertex__V001",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 1.0
+        },
+        {
+            "VertexId"   : "V002",
+            "VertexName" : "Na__Mesh__Vertex__V002",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 1.0
+        },
+        {
+            "VertexId"   : "V003",
+            "VertexName" : "Na__Mesh__Vertex__V003",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 1.0
+        },
+        {
+            "VertexId"   : "V004",
+            "VertexName" : "Na__Mesh__Vertex__V004",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 1.0
+        },
+        {
+            "VertexId"   : "V005",
+            "VertexName" : "Na__Mesh__Vertex__V005",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : -1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V006",
+            "VertexName" : "Na__Mesh__Vertex__V006",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : -1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V007",
+            "VertexName" : "Na__Mesh__Vertex__V007",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : -1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V008",
+            "VertexName" : "Na__Mesh__Vertex__V008",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : -1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V009",
+            "VertexName" : "Na__Mesh__Vertex__V009",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : -1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V010",
+            "VertexName" : "Na__Mesh__Vertex__V010",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : -1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V011",
+            "VertexName" : "Na__Mesh__Vertex__V011",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : -1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V012",
+            "VertexName" : "Na__Mesh__Vertex__V012",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : -1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V013",
+            "VertexName" : "Na__Mesh__Vertex__V013",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : -1.0
+        },
+        {
+            "VertexId"   : "V014",
+            "VertexName" : "Na__Mesh__Vertex__V014",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : -1.0
+        },
+        {
+            "VertexId"   : "V015",
+            "VertexName" : "Na__Mesh__Vertex__V015",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : -1.0
+        },
+        {
+            "VertexId"   : "V016",
+            "VertexName" : "Na__Mesh__Vertex__V016",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : -1.0
+        },
+        {
+            "VertexId"   : "V017",
+            "VertexName" : "Na__Mesh__Vertex__V017",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V018",
+            "VertexName" : "Na__Mesh__Vertex__V018",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V019",
+            "VertexName" : "Na__Mesh__Vertex__V019",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -151.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V020",
+            "VertexName" : "Na__Mesh__Vertex__V020",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 1.0,
+            "Normal_Y"   : 0.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V021",
+            "VertexName" : "Na__Mesh__Vertex__V021",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V022",
+            "VertexName" : "Na__Mesh__Vertex__V022",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : 0.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V023",
+            "VertexName" : "Na__Mesh__Vertex__V023",
+            "PosX_mm"    : 7.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 1.0,
+            "Normal_Z"   : 0.0
+        },
+        {
+            "VertexId"   : "V024",
+            "VertexName" : "Na__Mesh__Vertex__V024",
+            "PosX_mm"    : -5.0,
+            "PosY_mm"    : -100.0,
+            "PosZ_mm"    : -300.0,
+            "Normal_X"   : 0.0,
+            "Normal_Y"   : 1.0,
+            "Normal_Z"   : 0.0
+        }
+    ],
+    "Na__Geometry__Faces"       : [
+        {
+            "FaceId"              : "F001",
+            "FaceName"            : "Na__Mesh__Face__F001",
+            "OuterLoop_VertexIds" : [
+                "V001",
+                "V002",
+                "V003",
+                "V004"
+            ],
+            "InnerLoops"          : [],
+            "Normal"              : [
+                0.0,
+                0.0,
+                1.0
+            ],
+            "Area_mm2"            : 612.0,
+            "MaterialName"        : "00__Plywood",
+            "Na__Object__NodeId"  : "OBJ0002"
+        },
+        {
+            "FaceId"              : "F002",
+            "FaceName"            : "Na__Mesh__Face__F002",
+            "OuterLoop_VertexIds" : [
+                "V005",
+                "V006",
+                "V007",
+                "V008"
+            ],
+            "InnerLoops"          : [],
+            "Normal"              : [
+                0.0,
+                -1.0,
+                0.0
+            ],
+            "Area_mm2"            : 3600.0,
+            "MaterialName"        : "00__Plywood",
+            "Na__Object__NodeId"  : "OBJ0002"
+        },
+        {
+            "FaceId"              : "F003",
+            "FaceName"            : "Na__Mesh__Face__F003",
+            "OuterLoop_VertexIds" : [
+                "V009",
+                "V010",
+                "V011",
+                "V012"
+            ],
+            "InnerLoops"          : [],
+            "Normal"              : [
+                -1.0,
+                0.0,
+                0.0
+            ],
+            "Area_mm2"            : 15300.0,
+            "MaterialName"        : "00__Plywood",
+            "Na__Object__NodeId"  : "OBJ0002"
+        },
+        {
+            "FaceId"              : "F004",
+            "FaceName"            : "Na__Mesh__Face__F004",
+            "OuterLoop_VertexIds" : [
+                "V013",
+                "V014",
+                "V015",
+                "V016"
+            ],
+            "InnerLoops"          : [],
+            "Normal"              : [
+                0.0,
+                0.0,
+                -1.0
+            ],
+            "Area_mm2"            : 612.0,
+            "MaterialName"        : "00__Plywood",
+            "Na__Object__NodeId"  : "OBJ0002"
+        },
+        {
+            "FaceId"              : "F005",
+            "FaceName"            : "Na__Mesh__Face__F005",
+            "OuterLoop_VertexIds" : [
+                "V017",
+                "V018",
+                "V019",
+                "V020"
+            ],
+            "InnerLoops"          : [],
+            "Normal"              : [
+                1.0,
+                0.0,
+                0.0
+            ],
+            "Area_mm2"            : 15300.0,
+            "MaterialName"        : "00__Plywood",
+            "Na__Object__NodeId"  : "OBJ0002"
+        },
+        {
+            "FaceId"              : "F006",
+            "FaceName"            : "Na__Mesh__Face__F006",
+            "OuterLoop_VertexIds" : [
+                "V021",
+                "V022",
+                "V023",
+                "V024"
+            ],
+            "InnerLoops"          : [],
+            "Normal"              : [
+                0.0,
+                1.0,
+                0.0
+            ],
+            "Area_mm2"            : 3600.0,
+            "MaterialName"        : "00__Plywood",
+            "Na__Object__NodeId"  : "OBJ0002"
+        }
+    ],
+    "Na__Geometry__Edges"       : [
+        {
+            "EdgeId"       : "E001",
+            "StartVertex"  : "V004",
+            "EndVertex"    : "V001",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E002",
+            "StartVertex"  : "V002",
+            "EndVertex"    : "V003",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E003",
+            "StartVertex"  : "V002",
+            "EndVertex"    : "V001",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E004",
+            "StartVertex"  : "V003",
+            "EndVertex"    : "V004",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E005",
+            "StartVertex"  : "V002",
+            "EndVertex"    : "V007",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E006",
+            "StartVertex"  : "V007",
+            "EndVertex"    : "V008",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E007",
+            "StartVertex"  : "V003",
+            "EndVertex"    : "V008",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E008",
+            "StartVertex"  : "V001",
+            "EndVertex"    : "V011",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E009",
+            "StartVertex"  : "V007",
+            "EndVertex"    : "V011",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E010",
+            "StartVertex"  : "V015",
+            "EndVertex"    : "V011",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E011",
+            "StartVertex"  : "V008",
+            "EndVertex"    : "V015",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        },
+        {
+            "EdgeId"       : "E012",
+            "StartVertex"  : "V004",
+            "EndVertex"    : "V015",
+            "IsSoft"       : false,
+            "IsSmooth"     : false,
+            "IsHidden"     : false,
+            "CastsShadows" : true
+        }
+    ]
+  },
+  "Na__Asset__ObjectHierarchy3D"  : {
+    "Na__Hierarchy__OriginNote"  : "Hierarchy captured from the component definition with nested groups/components preserved.",
+    "Na__Hierarchy__CoordSystem" : "Right-handed | X=right, Y=front, Z=up | Units=mm",
+    "Na__Hierarchy__Objects"     : [
+        {
+            "Na__Object__NodeId"                    : "OBJ0001",
+            "Na__Object__ParentNodeId"              : null,
+            "Na__Object__EntityType"                : "ComponentDefinition",
+            "Na__Object__Name"                      : "49_1021__ValeRoofLantern__InteriorJoiney__12mmPly__CornicePacker__.json",
+            "Na__Object__DefinitionName"            : "49_1021__ValeRoofLantern__InteriorJoiney__12mmPly__CornicePacker__.json",
+            "Na__Object__TagName"                   : "",
+            "Na__Object__LocalTransform__Matrix4x4" : [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0]
+            ],
+            "Na__Object__WorldTransform__Matrix4x4" : [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 1.0]
+            ],
+            "Na__Object__DirectFaceCount"           : 0
+        },
+        {
+            "Na__Object__NodeId"                    : "OBJ0002",
+            "Na__Object__ParentNodeId"              : "OBJ0001",
+            "Na__Object__EntityType"                : "Group",
+            "Na__Object__Name"                      : "",
+            "Na__Object__DefinitionName"            : "Group#12",
+            "Na__Object__TagName"                   : "Layer0",
+            "Na__Object__LocalTransform__Matrix4x4" : [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.081538, 0.0, 0.0, 1.0]
+            ],
+            "Na__Object__WorldTransform__Matrix4x4" : [
+                [1.0, 0.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0, 0.0],
+                [0.0, 0.0, 1.0, 0.0],
+                [0.081538, 0.0, 0.0, 1.0]
+            ],
+            "Na__Object__DirectFaceCount"           : 6
+        }
+    ]
+  },
+  "Na__Asset__Glb3D__Url"         : null,
+  "Na__Asset__Has2dPlan"          : true,
+  "Na__Asset__Has2dElevation"     : true,
+  "Na__Asset__Has2dProfile"       : false,
+  "Na__Asset__Has3d"              : true,
+  "Na__Asset__PlacementBehaviour" : {
+    "Na__Asset__PlacementBehaviour__ApplicableRoles" : [],
+    "Na__Asset__PlacementBehaviour__AnchorPoint"     : "seatingCentre",
+    "Na__Asset__PlacementBehaviour__AlignToVertical" : true,
+    "Na__Asset__PlacementBehaviour__RequiresBase"    : null,
+    "Na__Asset__PlacementBehaviour__OverallHeightMm" : 300.0,
+    "Na__Asset__PlacementBehaviour__SeatingWidthMm"  : null
+  }
+}

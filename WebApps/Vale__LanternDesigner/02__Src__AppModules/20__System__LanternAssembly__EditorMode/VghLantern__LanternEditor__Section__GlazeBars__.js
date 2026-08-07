@@ -75,7 +75,7 @@ const VghLantern__LanternEditor__Section__GlazeBars = (function() {
                 Field         : 'Lantern__GlazingBars__Config__TrimOptionId',
                 OptionsSource : 'glazeBarTrims',
                 AllowEmpty    : false,
-                Hint          : 'The internal douglas fir moulding. Each card shows the whole bar: cap, core and that trim.'
+                Hint          : 'The internal joinery moulding. Each card shows the whole bar: cap, core and that trim.'
             },
             {
                 Key         : 'targetSpacingMm',
@@ -94,31 +94,6 @@ const VghLantern__LanternEditor__Section__GlazeBars = (function() {
                 Block : BARS_BLOCK,
                 Field : 'Lantern__GlazingBars__Config__HorizontalTransomEnabled',
                 Hint  : 'Adds a mid-height bar across each slope.'
-            },
-            {
-                Key   : 'barFinishHeading',
-                Type  : 'heading',
-                Label : 'Bar Finishes'
-            },
-            {
-                Key           : 'capFinish',
-                Type          : 'select',
-                Label         : 'Cap Finish',
-                Block         : BARS_BLOCK,
-                Field         : 'Lantern__GlazingBars__Config__CapFinish',
-                OptionsSource : 'capFinishes',
-                AllowEmpty    : false,
-                Hint          : 'The external capping, seen from the garden. Powder coated aluminium is standard.'
-            },
-            {
-                Key           : 'trimFinish',
-                Type          : 'select',
-                Label         : 'Trim Finish',
-                Block         : BARS_BLOCK,
-                Field         : 'Lantern__GlazingBars__Config__TrimFinish',
-                OptionsSource : 'trimFinishes',
-                AllowEmpty    : false,
-                Hint          : 'The internal moulding, seen from the room. Paints are eggshell on douglas fir.'
             }
         ];
     }

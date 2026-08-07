@@ -190,6 +190,7 @@
             "PickGlazing"                     : true,
             "PickBase"                        : true,
             "PickComponents"                  : true,
+            "PickInteriorJoinery"             : true,
             "PickCategoryNote"                : "Each pickable class can be switched off independently. A disabled class is not registered, so the cursor sees straight through it to whatever sits behind.",
 
             "PinOnClick"                      : true,

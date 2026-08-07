@@ -1,0 +1,112 @@
+{
+    "VghLantern__InteriorJoinerySystem__Meta": {
+        "SchemaVersion": "1.0.0",
+        "CreatedDate": "07-Aug-2026",
+        "LibraryRoot": "06__Data__LanternProfileLibrary/49_1000__InternalTrims/",
+        "Description": "Interior joinery around the lantern upstand: a selectable cornice, a fixed 12mm plywood packer behind it, and an 18mm eaves trim whose top edge follows the roof pitch. Swept around the same eaves datum ring as the base frame.",
+        "SectionFrameNote": "All parts use Na__Asset__Plan2D__Top as the sweep section, matching the base frame convention. Section 0,0 is the EAVES DATUM POINT. Section +x runs inboard into the room (cornice and packer sit on the positive-x side). Section -y runs down toward the seating benchmark at y=-100 and below. Section +y runs up. The eaves trim top edge is authored to the reference pitch plane y = x * tan(ReferencePitchDegrees); at any other pitch InteriorJoineryAssembly remaps top-edge vertices onto the current pitch plane.",
+        "ReferencePitchDegrees": 19.88,
+        "ReferencePitchNote": "atan(6.551/18) from the exported eaves trim top at x=18. Matches the base frame weathered-top reference pitch.",
+        "ElementTypeVocabulary": [
+            "Trim",
+            "Packer"
+        ],
+        "HandAuthored": true,
+        "HandAuthoredNote": "Written by hand rather than generated. A folder scan cannot know which asset fills which slot, or which cornice option is the default."
+    },
+    "VghLantern__InteriorJoinerySystem__Parts": [
+        {
+            "PartKey": "cornice",
+            "PartName": "Interior Cornice",
+            "Selectable": true,
+            "AlwaysPresent": false,
+            "AlwaysPresentNote": "Optional. Empty CorniceOptionId means No Cornice - cornice and packer are both omitted from the assembly.",
+            "ElementType": "Trim",
+            "SpecMaterial": "Sapele Hardwood",
+            "SpecFinishNote": "Paint finish matches the job Joinery Paint Finish (same palette as glaze bar trims).",
+            "InheritsJoineryFinish": true,
+            "DefaultOptionId": "49_1001",
+            "Description": "A decorative cornice that runs around the interior of the lantern upstand.",
+            "Options": [
+                {
+                    "OptionId": "49_1001",
+                    "AssetId": "49_1001",
+                    "Label": "Wales Cornice",
+                    "JsonUrl": "49_1001__ValeRoofLantern__InteriorJoiney__WalesCornice__.json",
+                    "ElementType": "Trim",
+                    "SpecMaterial": "Sapele Hardwood",
+                    "SectionMinXMm": 7,
+                    "SectionMaxXMm": 68,
+                    "SectionMinYMm": -151,
+                    "SectionMaxYMm": -73,
+                    "IsDefault": true,
+                    "Description": "A decorative cornice that runs around the interior of the lantern upstand, this is the default option for roof lanterns.",
+                    "Preview2d": {
+                        "ViewBox": "5 71 65 82",
+                        "PathData": "M 41.939 124.579 L 43.499 122.261 M 40.077 126.661 L 41.939 124.579 M 37.947 128.468 L 40.077 126.661 M 35.589 129.966 L 37.947 128.468 M 33.049 131.127 L 35.589 129.966 M 30.373 131.93 L 33.049 131.127 M 29 132.191 L 30.373 131.93 M 29 140.5 L 29 132.191 M 19 140.5 L 29 140.5 M 18.405 142.339 L 19 140.5 M 17.577 144.075 L 18.405 142.339 M 16.53 145.676 L 17.577 144.075 M 15.284 147.112 L 16.53 145.676 M 13.864 148.355 L 15.284 147.112 M 12.294 149.382 L 13.864 148.355 M 10.606 150.175 L 12.294 149.382 M 8.83 150.718 L 10.606 150.175 M 7 151 L 8.83 150.718 M 7 151 L 7 100 M 7 100 L 35.006 73 M 35.006 73 L 68 73 M 68 91.5 L 68 73 M 64.517 92.303 L 68 91.5 M 61.176 93.573 L 64.517 92.303 M 58.039 95.285 L 61.176 93.573 M 55.164 97.408 L 58.039 95.285 M 52.604 99.903 L 55.164 97.408 M 50.407 102.722 L 52.604 99.903 M 48.615 105.814 L 50.407 102.722 M 47.259 109.122 L 48.615 105.814 M 46.367 112.582 L 47.259 109.122 M 45.599 117.099 L 46.367 112.582 M 44.726 119.752 L 45.599 117.099 M 43.499 122.261 L 44.726 119.752",
+                        "WidthMm": 61,
+                        "HeightMm": 78,
+                        "PreviewNote": "Section outline from Plan2D Top - the moulding as swept around the eaves datum ring."
+                    }
+                },
+                {
+                    "OptionId": "49_1002",
+                    "AssetId": "49_1002",
+                    "Label": "Classic Interior Cornice VG103",
+                    "JsonUrl": "49_1002__ValeRoofLantern__InteriorJoiney__ClassicInteriorCornice__VG103__.json",
+                    "ElementType": "Trim",
+                    "SpecMaterial": "Sapele Hardwood",
+                    "SectionMinXMm": 7,
+                    "SectionMaxXMm": 110,
+                    "SectionMinYMm": -179.379,
+                    "SectionMaxYMm": -64.379,
+                    "IsDefault": false,
+                    "Description": "A larger decorative cornice that runs around the interior of the lantern upstand, this is an option available used on larger lanterns, but not the default.",
+                    "Preview2d": {
+                        "ViewBox": "5 62.379 107 119",
+                        "PathData": "M 13.983 173.775 L 14.214 171.539 M 13.983 179.379 L 13.983 173.775 M 7 179.379 L 13.983 179.379 M 7 179.379 L 7 100 M 7 100 L 44 100 M 44 100 L 79.621 64.379 M 79.621 64.379 L 110 64.379 M 110 78.379 L 110 64.379 M 107.078 78.797 L 110 78.379 M 104.237 79.597 L 107.078 78.797 M 101.527 80.765 L 104.237 79.597 M 98.995 82.282 L 101.527 80.765 M 96.685 84.119 L 98.995 82.282 M 94.638 86.246 L 96.685 84.119 M 92.891 88.624 L 94.638 86.246 M 92.138 89.895 L 92.891 88.624 M 90.895 92.571 L 92.138 89.895 M 90.008 94.738 L 90.895 92.571 M 88.835 96.765 L 90.008 94.738 M 87.4 98.615 L 88.835 96.765 M 85.726 100.253 L 87.4 98.615 M 83.847 101.649 L 85.726 100.253 M 81.795 102.778 L 83.847 101.649 M 79.61 103.619 L 81.795 102.778 M 77.331 104.155 L 79.61 103.619 M 75 104.379 L 77.331 104.155 M 75 111.429 L 75 104.379 M 73.038 111.827 L 75 111.429 M 71.195 112.609 L 73.038 111.827 M 69.544 113.742 L 71.195 112.609 M 68.152 115.181 L 69.544 113.742 M 67.075 116.868 L 68.152 115.181 M 66.355 118.737 L 67.075 116.868 M 66.022 120.711 L 66.355 118.737 M 66 121.379 L 66.022 120.711 M 66 140.879 L 66 121.379 M 34.5 140.879 L 66 140.879 M 34.5 145.379 L 34.5 140.879 M 34.289 147.525 L 34.5 145.379 M 33.663 149.588 L 34.289 147.525 M 32.646 151.49 L 33.663 149.588 M 31.278 153.157 L 32.646 151.49 M 29.611 154.525 L 31.278 153.157 M 27.71 155.541 L 29.611 154.525 M 25.646 156.167 L 27.71 155.541 M 23.5 156.379 L 25.646 156.167 M 23.5 162.92 L 23.5 156.379 M 21.314 163.442 L 23.5 162.92 M 19.28 164.398 L 21.314 163.442 M 17.484 165.75 L 19.28 164.398 M 16.002 167.44 L 17.484 165.75 M 14.897 169.397 L 16.002 167.44 M 14.214 171.539 L 14.897 169.397",
+                        "WidthMm": 103,
+                        "HeightMm": 115,
+                        "PreviewNote": "Section outline from Plan2D Top - the moulding as swept around the eaves datum ring."
+                    }
+                }
+            ]
+        },
+        {
+            "PartKey": "cornicePacker",
+            "PartName": "12mm Ply Cornice Packer",
+            "AssetId": "49_1021",
+            "JsonUrl": "49_1021__ValeRoofLantern__InteriorJoiney__12mmPly__CornicePacker.json",
+            "Selectable": false,
+            "AlwaysPresent": false,
+            "AlwaysPresentNote": "Fitted only when a cornice is chosen. No Cornice omits the packer with the moulding.",
+            "ElementType": "Packer",
+            "SpecMaterial": "12mm Plywood",
+            "SpecFinishNote": "Bare plywood joinery - not painted.",
+            "InheritsJoineryFinish": false,
+            "SectionMinXMm": -5,
+            "SectionMaxXMm": 7,
+            "SectionMinYMm": -151,
+            "SectionMaxYMm": -100,
+            "Description": "A plywood packing piece to pack the cornice out the thickness of plasterboard."
+        },
+        {
+            "PartKey": "eavesTrim",
+            "PartName": "Eaves Trim",
+            "AssetId": "49_1011",
+            "JsonUrl": "49_1011__ValeRoofLantern__InteriorJoiney__EavesTrim__.json",
+            "Selectable": false,
+            "AlwaysPresent": true,
+            "ElementType": "Trim",
+            "SpecMaterial": "18mm Painted Timber",
+            "SpecFinishNote": "Matches configured Joinery Paint Finish for the job.",
+            "InheritsJoineryFinish": true,
+            "ReslopesTopWithRoofPitch": true,
+            "SectionMinXMm": 0,
+            "SectionMaxXMm": 18,
+            "SectionMinYMm": -100,
+            "SectionMaxYMm": 6.551,
+            "Description": "A painted timber infill piece that clads the back of the base frame under the eaves. Its top most edge is adjusted with the roof lantern pitch so it does not clip through on steeper pitches."
+        }
+    ]
+}

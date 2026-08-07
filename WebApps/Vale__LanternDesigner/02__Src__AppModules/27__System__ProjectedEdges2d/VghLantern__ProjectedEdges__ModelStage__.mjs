@@ -68,6 +68,7 @@ import { MeshBVH } from 'three-mesh-bvh';
 import { VghLantern__Env3d__MeshBuilder__Skeleton__Build }           from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__Skeleton__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build } from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build }  from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__.mjs';
+import { VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__Build } from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build }            from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
 import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build }  from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs';
 import { VghLantern__Env3d__ComponentLoader__Glb__Build }            from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__ComponentLoader__Glb__.mjs';
@@ -101,6 +102,7 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
         if (model.IncludeFrame === true) {
             VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(stage, skeleton, lantern);
             await VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build(stage, skeleton, lantern);
+            await VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__Build(stage, skeleton, lantern);
             await VghLantern__Env3d__MeshBuilder__Skeleton__Build(stage, skeleton, barSet, lantern);
         }
 

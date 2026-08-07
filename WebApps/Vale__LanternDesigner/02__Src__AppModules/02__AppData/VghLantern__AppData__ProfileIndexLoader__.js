@@ -11,7 +11,7 @@
 
    DESCRIPTION:
    - Loads VghLantern__ProfileDataIndex__.json - the generated catalogue of swept
-     cross-sections (glazing bars, ridge, hip, eaves / builders upstand).
+     cross-sections (ridge and hip; glaze bars live in their own system index).
    - Fetch order: the server API route first (served no-store so the index stays
      live while authoring), then the static file as a fallback.
    - Memoises the parsed index and builds a ProfileId lookup Map.
@@ -182,7 +182,7 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
 
     // FUNCTION | List Profile Index Entries Suitable for a Skeleton Role
     // ------------------------------------------------------------
-    // Role is one of: glazingBar | ridge | hip | eaves | buildersUpstand | frame.
+    // Role is one of: ridge | hip | verge.
     // Entries declare their applicable roles so the editor can filter option
     // lists without hardcoding which category maps to which skeleton member.
     function VghLantern__ProfileIndexLoader__ListEntriesForRole(roleKey) {
@@ -291,17 +291,16 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
     // id. VghLantern__AppData__GlazeBarSystemLoader owns those two roles, and
     // their absence here is what stops anything resolving them to a lone outline.
     //
-    // 'eaves' and 'frame' are absent because neither is a swept section. The
-    // eaves ring is a datum, not a part - the metal on that line belongs to the
-    // upstand and the frame beneath it - and the frame is built as a solid prism
-    // by MeshBuilder__BuildersUpstandBox. Both used to point at an eaves profile
-    // id that never named a real profile.
+    // 'eaves', 'frame', 'buildersUpstand' and 'buildersUpstandPost' are absent
+    // because none of them is a swept section. The eaves ring is a datum, not a
+    // part - the metal on that line belongs to the upstand and the frame beneath
+    // it - and the builders upstand plus frame are built as solid prisms by
+    // MeshBuilder__BuildersUpstandBox. Both used to point at profile ids that
+    // never named a real profile (EavesProfileId / UpstandProfileId, both retired).
     const ROLE_PROFILE_FIELDS  =  {
-        'ridge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__RidgeProfileId'],
-        'hip'        : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
-        'verge'      : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
-                'buildersUpstand'       : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId'],
-        'buildersUpstandPost'   : ['Lantern__BuildersUpstandAndBase__Config',   'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId']
+        'ridge'  : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__RidgeProfileId'],
+        'hip'    : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId'],
+        'verge'  : ['Lantern__RidgeAndHips__Config',  'Lantern__RidgeAndHips__Config__HipProfileId']
     };
     // ------------------------------------------------------------
 

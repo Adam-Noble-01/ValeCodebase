@@ -127,7 +127,7 @@ const VghLantern__LanternEditor__Layout = (function() {
     // ------------------------------------------------------------
     // Bootstrap-only placeholders before ApplyLayoutVariables() first reads config.
     const BOOTSTRAP_CONTROLS_WIDTH_PX   =  504;
-    const BOOTSTRAP_3D_SHARE_PCT        =  40;
+    const BOOTSTRAP_3D_SHARE_PCT        =  60;
 
     const EMPTY_PROJECT_MESSAGE          =  'No project loaded.';
     const CONTROLS_UNAVAILABLE_MESSAGE   =  'The control panel module failed to load.';

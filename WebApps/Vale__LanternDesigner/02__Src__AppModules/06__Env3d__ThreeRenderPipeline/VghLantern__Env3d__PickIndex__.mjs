@@ -75,10 +75,11 @@ import { VghLantern__Env3d__SceneGroupSet__Solid3d } from './VghLantern__Env3d__
     // HoverInspector config block. A disabled category is never registered at all,
     // so it costs nothing at raycast time rather than being filtered later.
     const CATEGORY_ENABLE_FIELDS  =  {
-        member     : 'PickMembers',                                          // <-- Swept or line-drawn structural members
-        glazing    : 'PickGlazing',                                          // <-- Solved glazing faces
-        base       : 'PickBase',                                             // <-- Builders upstand and base frame prisms
-        component  : 'PickComponents'                                        // <-- Placed GLB finials, bases, cresting
+        member           : 'PickMembers',                                    // <-- Swept or line-drawn structural members
+        glazing          : 'PickGlazing',                                    // <-- Solved glazing faces
+        base             : 'PickBase',                                       // <-- Builders upstand and base frame prisms
+        component        : 'PickComponents',                                 // <-- Placed GLB finials, bases, cresting
+        interiorJoinery  : 'PickInteriorJoinery'                             // <-- Cornice, packer and eaves trim ring
     };
     // ------------------------------------------------------------
 

@@ -60,7 +60,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     // ------------------------------------------------------------
     const BLOCK_DIMENSIONS   =  'Lantern__Dimensions__Config';               // <-- Width, depth, eaves projection
     const BLOCK_ROOF_PITCH   =  'Lantern__RoofPitch__Config';                // <-- Pitch angle, the sole driver of roof height
-    const BLOCK_UPSTAND         =  'Lantern__BuildersUpstandAndBase__Config';              // <-- Builders Upstand height and section ids
+    const BLOCK_UPSTAND         =  'Lantern__BuildersUpstandAndBase__Config';              // <-- Builders Upstand height and thickness
     const BLOCK_GLAZING_BARS =  'Lantern__GlazingBars__Config';              // <-- Bar profile and target spacing
 
     const PITCH_MIN_DEGREES  =  5;                                           // <-- Mirrors the schema validator's pitch bounds

@@ -403,8 +403,30 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
                 });
         }
 
+        // Interior joinery - continuous rings on the eaves datum perimeter,
+        // read from the interior joinery system index.
+        var InteriorJoineryLoader  =  window.VghLantern__AppData__InteriorJoinerySystemLoader;
+        var joineryPartList        =  InteriorJoineryLoader
+            ? (InteriorJoineryLoader.VghLantern__InteriorJoinerySystemLoader__DescribeParts(lantern) || [])
+            : [];
+        var joineryPartIndex, joineryPart;
+
+        for (joineryPartIndex = 0; joineryPartIndex < joineryPartList.length; joineryPartIndex++) {
+            joineryPart  =  joineryPartList[joineryPartIndex];
+
+            VghLantern__QuantityTakeoff__PushLinear(rows, 'interiorJoinery__' + joineryPart.PartKey, joineryPart.PartName,
+                joineryPart.AssetId, datumPerimeterMm, 4, quantity, {
+                    SectionWidthMm  : Math.abs((Number(joineryPart.SectionMaxXMm) || 0) - (Number(joineryPart.SectionMinXMm) || 0)),
+                    SectionHeightMm : Math.abs((Number(joineryPart.SectionMaxYMm) || 0) - (Number(joineryPart.SectionMinYMm) || 0)),
+                    ElementType     : joineryPart.ElementType,
+                    SpecMaterial    : joineryPart.SpecMaterial
+                });
+        }
+
+        // Site-built hollow box sized by height and thickness - not a swept
+        // Vale section, so there is no profile id to quote on the row.
         VghLantern__QuantityTakeoff__PushLinear(rows, 'buildersUpstand', 'Builders Upstand',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', ''),
+            '',
             (Number(base.UpstandHeightMm) > 0 ? outerPerimeterMm : 0), 4, quantity);
 
         // A glaze bar is three parts, so it is three rows - and the three parts

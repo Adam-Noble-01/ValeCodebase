@@ -60,10 +60,11 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
     // MODULE CONSTANTS | Category and Member Role Display Names
     // ------------------------------------------------------------
     const CATEGORY_LABELS  =  {
-        member     : 'Structural Member',
-        glazing    : 'Glazing',
-        base       : 'Base Assembly',
-        component  : 'Placed Component'
+        member           : 'Structural Member',
+        glazing          : 'Glazing',
+        base             : 'Base Assembly',
+        component        : 'Placed Component',
+        interiorJoinery  : 'Interior Joinery'
     };
 
     const MEMBER_ROLE_LABELS  =  {
@@ -431,6 +432,17 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Describe an Interior Joinery Ring Part
+    // ------------------------------------------------------------
+    // Cornice, packer and eaves trim carry the same userData stamp as base
+    // frame system parts, so the facts come from the mesh rather than the
+    // lantern config block.
+    function VghLantern__Env3d__InspectStats__DescribeInteriorJoinery(pick) {
+        return VghLantern__Env3d__InspectStats__DescribeBaseFramePart(pick);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Describe a Base Assembly Prism
     // ------------------------------------------------------------
     // The upstand and the frame share one footprint and one wall thickness, so they
@@ -531,10 +543,11 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
 
         let described;
 
-        if      (pick.CategoryKey === 'member')    described  =  VghLantern__Env3d__InspectStats__DescribeMember(pick, lantern);
-        else if (pick.CategoryKey === 'glazing')   described  =  VghLantern__Env3d__InspectStats__DescribeGlazing(pick, lantern);
-        else if (pick.CategoryKey === 'base')      described  =  VghLantern__Env3d__InspectStats__DescribeBase(pick, lantern);
-        else if (pick.CategoryKey === 'component') described  =  VghLantern__Env3d__InspectStats__DescribeComponent(pick, lantern, skeleton);
+        if      (pick.CategoryKey === 'member')            described  =  VghLantern__Env3d__InspectStats__DescribeMember(pick, lantern);
+        else if (pick.CategoryKey === 'glazing')           described  =  VghLantern__Env3d__InspectStats__DescribeGlazing(pick, lantern);
+        else if (pick.CategoryKey === 'base')              described  =  VghLantern__Env3d__InspectStats__DescribeBase(pick, lantern);
+        else if (pick.CategoryKey === 'component')         described  =  VghLantern__Env3d__InspectStats__DescribeComponent(pick, lantern, skeleton);
+        else if (pick.CategoryKey === 'interiorJoinery')   described  =  VghLantern__Env3d__InspectStats__DescribeInteriorJoinery(pick);
         else return null;
 
         const instanceCount  =  (pick.CategoryKey === 'component') ? 1 : pick.EntryCount;

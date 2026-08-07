@@ -447,7 +447,7 @@
 
     #VghLantern__LanternEditor__PreviewPanel.VghLantern__Editor__Preview--splitVertical
     .VghLantern__Editor__Viewport3dHost {
-        flex                               : 0 0 var(--VghLantern_Editor3dSharePct, 40%);
+        flex                               : 0 0 var(--VghLantern_Editor3dSharePct, 60%);
     }
     /* ------------------------------------------------------------ */
 
@@ -460,7 +460,7 @@
 
     #VghLantern__LanternEditor__PreviewPanel.VghLantern__Editor__Preview--splitHorizontal
     .VghLantern__Editor__Viewport3dHost {
-        flex                               : 0 0 var(--VghLantern_Editor3dSharePct, 40%);
+        flex                               : 0 0 var(--VghLantern_Editor3dSharePct, 60%);
     }
     /* ------------------------------------------------------------ */
 
@@ -1334,6 +1334,37 @@
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextPrimary);
         line-height                        : 1.25;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SWATCH CARDS | Finish Colour / Material Chips */
+    /* ------------------------------------------------------------ */
+    .VghLantern__ControlPanel__SwatchGrid {
+        grid-template-columns              : repeat(auto-fill, minmax(96px, 1fr));
+    }
+
+    .VghLantern__ControlPanel__Card--swatch {
+        aspect-ratio                       : auto;
+        min-height                         : 88px;
+    }
+
+    .VghLantern__ControlPanel__Swatch {
+        width                              : 100%;
+        height                             : 36px;
+        border-radius                      : calc(var(--Vale_BorderRadius) / 2);
+        border                             : 1px solid var(--Vale_BorderLight);
+        flex-shrink                        : 0;
+    }
+
+    .VghLantern__ControlPanel__Swatch--timber {
+        background                         : repeating-linear-gradient(
+                                                 90deg,
+                                                 #C9A876 0px,
+                                                 #C9A876 3px,
+                                                 #B8925F 3px,
+                                                 #B8925F 6px
+                                             );
     }
     /* ------------------------------------------------------------ */
 

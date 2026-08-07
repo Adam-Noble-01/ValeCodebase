@@ -89,6 +89,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const TYPE_TEXTAREA     =  'textarea';                                   // <-- Multi-line free text entry
     const TYPE_BUTTON       =  'button';                                     // <-- Fires an Action, holds no value
     const TYPE_CARDS        =  'cards';                                      // <-- Single choice shown as selectable preview cards
+    const TYPE_SWATCH_CARDS =  'swatchCards';                                // <-- Single choice shown as colour / material swatches
     // ------------------------------------------------------------
 
 
@@ -104,6 +105,8 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         'ridgeAndHips'     : { Global : 'VghLantern__LanternEditor__Section__RidgeAndHips',     Fn : 'VghLantern__Section__RidgeAndHips__Build'     },
         'finials'          : { Global : 'VghLantern__LanternEditor__Section__Finials',          Fn : 'VghLantern__Section__Finials__Build'          },
         'buildersUpstandAndBase'      : { Global : 'VghLantern__LanternEditor__Section__BuildersUpstandAndBase',      Fn : 'VghLantern__Section__BuildersUpstandAndBase__Build'      },
+        'interiorJoinery'  : { Global : 'VghLantern__LanternEditor__Section__InteriorJoinery',  Fn : 'VghLantern__Section__InteriorJoinery__Build'  },
+        'finishesAndMaterials' : { Global : 'VghLantern__LanternEditor__Section__FinishesAndMaterials', Fn : 'VghLantern__Section__FinishesAndMaterials__Build' },
         'ventilation'      : { Global : 'VghLantern__LanternEditor__Section__Ventilation',      Fn : 'VghLantern__Section__Ventilation__Build'      },
         'glazing'          : { Global : 'VghLantern__LanternEditor__Section__Glazing',          Fn : 'VghLantern__Section__Glazing__Build'          },
         'warningsAndComments' : { Global : 'VghLantern__LanternEditor__Section__WarningsAndComments', Fn : 'VghLantern__Section__WarningsAndComments__Build' }
@@ -209,7 +212,14 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         if (!Array.isArray(paletteList)) return [];
 
         return paletteList.map(function(finish) {
-            return { Value : finish.Name, Label : finish.Name, Disabled : false };
+            return {
+                Value         : finish.Name,
+                Label         : finish.Name,
+                Disabled      : false,
+                HexColor      : finish.HexColor || null,
+                UsesMaterial  : finish.UsesMaterial || null,
+                Description   : finish.Description || ''
+            };
         });
     }
     // ------------------------------------------------------------
@@ -315,6 +325,13 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             var GlazeBars  =  window.VghLantern__AppData__GlazeBarSystemLoader;
             if (!GlazeBars) return [];
             return GlazeBars.VghLantern__GlazeBarSystemLoader__ListTrimOptions();
+        }
+
+        // Interior cornice options from the hand-authored interior joinery system.
+        if (sourceName === 'interiorCornices') {
+            var InteriorJoinery  =  window.VghLantern__AppData__InteriorJoinerySystemLoader;
+            if (!InteriorJoinery) return [];
+            return InteriorJoinery.VghLantern__InteriorJoinerySystemLoader__ListCorniceOptions();
         }
 
         return [];
@@ -444,7 +461,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         // Cards are a select in every respect but presentation, so they share
         // its coercion. Without this the id would fall through to the numeric
         // branch below and be parsed into NaN.
-        if (descriptor.Type === TYPE_SELECT || descriptor.Type === TYPE_CARDS) {
+        if (descriptor.Type === TYPE_SELECT || descriptor.Type === TYPE_CARDS || descriptor.Type === TYPE_SWATCH_CARDS) {
             return String(rawValue === null || rawValue === undefined ? '' : rawValue);
         }
 
@@ -494,6 +511,19 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         }
 
         block[descriptor.Field]  =  nextValue;
+
+        // Finish macros re-sync their consumers. Advanced per-element writes may
+        // diverge; the WarningSystem surfaces mixed finishes on the next evaluate.
+        var FinishSync  =  window.VghLantern__AppUtils__JoineryFinishSync;
+        if (FinishSync) {
+            if (FinishSync.VghLantern__JoineryFinishSync__IsMacroField(descriptor)) {
+                FinishSync.VghLantern__JoineryFinishSync__ApplyMacroWrite(lantern, nextValue);
+            }
+            if (FinishSync.VghLantern__JoineryFinishSync__IsExteriorMacroField(descriptor)) {
+                FinishSync.VghLantern__JoineryFinishSync__ApplyExteriorMacroWrite(lantern, nextValue);
+            }
+        }
+
         return { DidChange : true, Value : nextValue };
     }
     // ------------------------------------------------------------
@@ -585,6 +615,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__TypeTextarea    : TYPE_TEXTAREA,
         VghLantern__ControlDescriptors__TypeButton      : TYPE_BUTTON,
         VghLantern__ControlDescriptors__TypeCards       : TYPE_CARDS,
+        VghLantern__ControlDescriptors__TypeSwatchCards : TYPE_SWATCH_CARDS,
 
         VghLantern__ControlDescriptors__BuildSections   : VghLantern__ControlDescriptors__BuildSections,
         VghLantern__ControlDescriptors__Normalise       : VghLantern__ControlDescriptors__Normalise,

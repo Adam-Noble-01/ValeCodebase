@@ -82,14 +82,16 @@
     async function VghLantern__AppCore__LoadDataLibraries() {
         var ComponentIndexLoader   =  window.VghLantern__AppData__ComponentIndexLoader;
         var ProfileIndexLoader     =  window.VghLantern__AppData__ProfileIndexLoader;
-        var GlazeBarSystemLoader   =  window.VghLantern__AppData__GlazeBarSystemLoader;
-        var BaseFrameSystemLoader  =  window.VghLantern__AppData__BaseFrameSystemLoader;
+        var GlazeBarSystemLoader         =  window.VghLantern__AppData__GlazeBarSystemLoader;
+        var BaseFrameSystemLoader        =  window.VghLantern__AppData__BaseFrameSystemLoader;
+        var InteriorJoinerySystemLoader  =  window.VghLantern__AppData__InteriorJoinerySystemLoader;
 
         var pending  =  [];
-        if (ComponentIndexLoader)  pending.push(ComponentIndexLoader.VghLantern__ComponentIndexLoader__LoadIndex());
-        if (ProfileIndexLoader)    pending.push(ProfileIndexLoader.VghLantern__ProfileIndexLoader__LoadIndex());
-        if (GlazeBarSystemLoader)  pending.push(GlazeBarSystemLoader.VghLantern__GlazeBarSystemLoader__LoadIndex());
-        if (BaseFrameSystemLoader) pending.push(BaseFrameSystemLoader.VghLantern__BaseFrameSystemLoader__LoadIndex());
+        if (ComponentIndexLoader)         pending.push(ComponentIndexLoader.VghLantern__ComponentIndexLoader__LoadIndex());
+        if (ProfileIndexLoader)           pending.push(ProfileIndexLoader.VghLantern__ProfileIndexLoader__LoadIndex());
+        if (GlazeBarSystemLoader)         pending.push(GlazeBarSystemLoader.VghLantern__GlazeBarSystemLoader__LoadIndex());
+        if (BaseFrameSystemLoader)        pending.push(BaseFrameSystemLoader.VghLantern__BaseFrameSystemLoader__LoadIndex());
+        if (InteriorJoinerySystemLoader)  pending.push(InteriorJoinerySystemLoader.VghLantern__InteriorJoinerySystemLoader__LoadIndex());
         await Promise.all(pending);
     }
     // ------------------------------------------------------------

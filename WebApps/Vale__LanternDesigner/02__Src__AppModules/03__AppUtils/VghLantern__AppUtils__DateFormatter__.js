@@ -13,8 +13,11 @@
    - Formats dates in Vale standard formats
    - Supports: "30 Jul 2026", "Thu 30 Jul 2026", "Thursday 30th Jul 2026"
    - Vale data storage format is "30-Jul-2026" (DD-MMM-YYYY)
+   - Vale timestamp storage format is "30-Jul-2026 14:32:07" (DD-MMM-YYYY HH:mm:ss),
+     used for DateCreated / DateModified so same-day saves stay sort-distinct
    - Ordinal suffixes with superscript support (th, st, nd, rd)
-   - Accepts Date objects, "DD-MMM-YYYY" strings, or legacy ISO date strings
+   - Accepts Date objects, "DD-MMM-YYYY" strings, "DD-MMM-YYYY HH:mm:ss" strings,
+     or legacy ISO date strings
 
    ============================================================================= */
 
@@ -34,8 +37,9 @@ const VghLantern__AppUtils__DateFormatter = (function() {
 
     // MODULE CONSTANTS | Supported Date String Patterns
     // ------------------------------------------------------------
-    const PATTERN_DD_MMM_YYYY  =  /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/;      // <-- Vale storage format "30-Jul-2026"
-    const PATTERN_ISO_DATE     =  /^(\d{4})-(\d{2})-(\d{2})$/;              // <-- Legacy stored format "2026-07-30"
+    const PATTERN_DD_MMM_YYYY_HMS  =  /^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/;  // <-- Vale timestamp format "30-Jul-2026 14:32:07"
+    const PATTERN_DD_MMM_YYYY      =  /^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/;      // <-- Vale storage format "30-Jul-2026"
+    const PATTERN_ISO_DATE         =  /^(\d{4})-(\d{2})-(\d{2})$/;              // <-- Legacy stored format "2026-07-30"
     // ------------------------------------------------------------
 
 
@@ -56,7 +60,18 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     function VghLantern__DateFormatter__ParseDateString(text) {
         var trimmed  =  String(text).trim();
 
-        var valeMatch  =  PATTERN_DD_MMM_YYYY.exec(trimmed);                // <-- Try Vale storage format first
+        var valeHmsMatch  =  PATTERN_DD_MMM_YYYY_HMS.exec(trimmed);         // <-- Try Vale timestamp format first (carries hours/minutes/seconds)
+        if (valeHmsMatch) {
+            var hmsMonthIndex  =  VghLantern__DateFormatter__MonthNameToIndex(valeHmsMatch[2]);
+            if (hmsMonthIndex >= 0) {
+                return new Date(
+                    parseInt(valeHmsMatch[3], 10), hmsMonthIndex, parseInt(valeHmsMatch[1], 10),
+                    parseInt(valeHmsMatch[4], 10), parseInt(valeHmsMatch[5], 10), parseInt(valeHmsMatch[6], 10)
+                );
+            }
+        }
+
+        var valeMatch  =  PATTERN_DD_MMM_YYYY.exec(trimmed);                // <-- Try Vale storage format (date-only)
         if (valeMatch) {
             var monthIndex  =  VghLantern__DateFormatter__MonthNameToIndex(valeMatch[2]);
             if (monthIndex >= 0) {
@@ -98,10 +113,10 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Zero-Pad Day to Two Digits
+    // HELPER FUNCTION | Zero-Pad a Day, Hour, Minute, or Second to Two Digits
     // ------------------------------------------------------------
-    function VghLantern__DateFormatter__PadDay(day) {
-        return day < 10 ? '0' + day : '' + day;
+    function VghLantern__DateFormatter__PadTwoDigits(value) {
+        return value < 10 ? '0' + value : '' + value;
     }
     // ------------------------------------------------------------
 
@@ -110,7 +125,18 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
     function VghLantern__DateFormatter__FormatShort(input) {
         var d  =  VghLantern__DateFormatter__ToDate(input);
-        return VghLantern__DateFormatter__PadDay(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+        return VghLantern__DateFormatter__PadTwoDigits(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Format: "30th Jul 2026" (plain text ordinal, short form)
+    // ------------------------------------------------------------
+    function VghLantern__DateFormatter__FormatShortOrdinal(input) {
+        var d       =  VghLantern__DateFormatter__ToDate(input);
+        var day     =  d.getDate();
+        var suffix  =  VghLantern__DateFormatter__GetOrdinalSuffix(day);
+        return VghLantern__DateFormatter__PadTwoDigits(day) + suffix + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
@@ -119,7 +145,7 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
     function VghLantern__DateFormatter__FormatWithDay(input) {
         var d  =  VghLantern__DateFormatter__ToDate(input);
-        return DAYS_SHORT[d.getDay()] + ' ' + VghLantern__DateFormatter__PadDay(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+        return DAYS_SHORT[d.getDay()] + ' ' + VghLantern__DateFormatter__PadTwoDigits(d.getDate()) + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
@@ -130,7 +156,7 @@ const VghLantern__AppUtils__DateFormatter = (function() {
         var d       =  VghLantern__DateFormatter__ToDate(input);
         var day     =  d.getDate();
         var suffix  =  VghLantern__DateFormatter__GetOrdinalSuffix(day);
-        return DAYS_FULL[d.getDay()] + ' ' + VghLantern__DateFormatter__PadDay(day) + suffix + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+        return DAYS_FULL[d.getDay()] + ' ' + VghLantern__DateFormatter__PadTwoDigits(day) + suffix + ' ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
@@ -141,7 +167,7 @@ const VghLantern__AppUtils__DateFormatter = (function() {
         var d       =  VghLantern__DateFormatter__ToDate(input);
         var day     =  d.getDate();
         var suffix  =  VghLantern__DateFormatter__GetOrdinalSuffix(day);
-        return DAYS_FULL[d.getDay()] + ' ' + VghLantern__DateFormatter__PadDay(day) + '<sup>' + suffix + '</sup> ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
+        return DAYS_FULL[d.getDay()] + ' ' + VghLantern__DateFormatter__PadTwoDigits(day) + '<sup>' + suffix + '</sup> ' + MONTHS_SHORT[d.getMonth()] + ' ' + d.getFullYear();
     }
     // ------------------------------------------------------------
 
@@ -150,7 +176,21 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // ------------------------------------------------------------
     function VghLantern__DateFormatter__FormatDdMmmYyyy(input) {
         var d  =  VghLantern__DateFormatter__ToDate(input);
-        return VghLantern__DateFormatter__PadDay(d.getDate()) + '-' + MONTHS_SHORT[d.getMonth()] + '-' + d.getFullYear();
+        return VghLantern__DateFormatter__PadTwoDigits(d.getDate()) + '-' + MONTHS_SHORT[d.getMonth()] + '-' + d.getFullYear();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Format Vale Timestamp Storage String "30-Jul-2026 14:32:07"
+    // ------------------------------------------------------------
+    // Used for DateCreated / DateModified so entries saved on the same day
+    // remain sort-distinct instead of tying at midnight.
+    function VghLantern__DateFormatter__FormatDdMmmYyyyHms(input) {
+        var d  =  VghLantern__DateFormatter__ToDate(input);
+        return VghLantern__DateFormatter__FormatDdMmmYyyy(d) + ' ' +
+            VghLantern__DateFormatter__PadTwoDigits(d.getHours())   + ':' +
+            VghLantern__DateFormatter__PadTwoDigits(d.getMinutes()) + ':' +
+            VghLantern__DateFormatter__PadTwoDigits(d.getSeconds());
     }
     // ------------------------------------------------------------
 
@@ -160,7 +200,7 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     function VghLantern__DateFormatter__FormatIso(input) {
         var d  =  VghLantern__DateFormatter__ToDate(input);
         var m  =  d.getMonth() + 1;
-        return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + VghLantern__DateFormatter__PadDay(d.getDate());
+        return d.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + VghLantern__DateFormatter__PadTwoDigits(d.getDate());
     }
     // ------------------------------------------------------------
 
@@ -168,13 +208,15 @@ const VghLantern__AppUtils__DateFormatter = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DateFormatter__FormatShort       : VghLantern__DateFormatter__FormatShort,
-        VghLantern__DateFormatter__FormatWithDay     : VghLantern__DateFormatter__FormatWithDay,
-        VghLantern__DateFormatter__FormatFullDay     : VghLantern__DateFormatter__FormatFullDay,
-        VghLantern__DateFormatter__FormatFullDayHtml : VghLantern__DateFormatter__FormatFullDayHtml,
-        VghLantern__DateFormatter__FormatDdMmmYyyy   : VghLantern__DateFormatter__FormatDdMmmYyyy,
-        VghLantern__DateFormatter__FormatIso         : VghLantern__DateFormatter__FormatIso,
-        VghLantern__DateFormatter__ToDate            : VghLantern__DateFormatter__ToDate
+        VghLantern__DateFormatter__FormatShort        : VghLantern__DateFormatter__FormatShort,
+        VghLantern__DateFormatter__FormatShortOrdinal : VghLantern__DateFormatter__FormatShortOrdinal,
+        VghLantern__DateFormatter__FormatWithDay      : VghLantern__DateFormatter__FormatWithDay,
+        VghLantern__DateFormatter__FormatFullDay      : VghLantern__DateFormatter__FormatFullDay,
+        VghLantern__DateFormatter__FormatFullDayHtml  : VghLantern__DateFormatter__FormatFullDayHtml,
+        VghLantern__DateFormatter__FormatDdMmmYyyy    : VghLantern__DateFormatter__FormatDdMmmYyyy,
+        VghLantern__DateFormatter__FormatDdMmmYyyyHms : VghLantern__DateFormatter__FormatDdMmmYyyyHms,
+        VghLantern__DateFormatter__FormatIso          : VghLantern__DateFormatter__FormatIso,
+        VghLantern__DateFormatter__ToDate             : VghLantern__DateFormatter__ToDate
     };
 
 })();

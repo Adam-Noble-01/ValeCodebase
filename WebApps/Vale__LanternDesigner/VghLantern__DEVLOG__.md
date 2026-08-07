@@ -3,6 +3,201 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.2 - 07-Aug-2026
+### The split 2D view stops fighting the user: one drawing scale for both panes, and a pan is only ever a pan
+
+Two faults in the editor's split 2D view, with one shared cause between them: the
+chrome and the drawing surface were not properly separated.
+
+The first was visible on every open. Each pane fitted itself to its own view, so a
+5000 x 2500 plan and a 5000 x 820 front elevation landed on scales that differed by
+more than a factor of two. Two views of the same lantern, drawn at two different
+sizes, one above the other. Nothing about that reads as a design decision; it reads
+as something broken.
+
+The second was worse to use than to look at. Dragging to pan inside either pane made
+the drawing shudder and then jump to a different view. The tab handler matched on the
+`data-vgh-view` attribute, and the Env2d root carries that same attribute to identify
+which view it is drawing. So every pointer-up inside a viewport bubbled into the tab
+handler with the surface itself as the target: a click in the upper pane re-emitted
+the view it was already on and forced a full redraw, and a click in the lower pane
+switched the upper pane onto the lower pane's view.
+
+#### Changed - `02__Src__AppModules/20__System__LanternAssembly__EditorMode/`
+- **`VghLantern__LanternEditor__ViewportHost__2d__.js`**
+  - The tab listener now matches the tab class, never the view-key attribute. That
+    boundary is the fix and the file says so at the listener, at the routing helper
+    and in the header, because the attribute selector will look like the tidier
+    option to anyone who meets this code cold.
+  - The lower pane's "Second view" dropdown is gone, replaced by the same three
+    button strip the upper pane has. The upper strip writes the active view to
+    StateManager because the hotkeys and the drawing editor both read it; the lower
+    strip stays local, exactly as the dropdown did, and must never touch that state.
+  - Re-emitting the view the primary is already showing is now a no-op rather than a
+    surface rebuild. The host tracks the view its primary surface actually holds, so
+    a redundant `activeView2dChanged` cannot discard the user's pan and zoom.
+  - New framing pass: every mounted pane is fitted to the solved geometry, then all
+    of them are re-framed onto the tightest of the resulting scales. Tightest, never
+    loosest, so the shared value can never push a pane past its own frame. It runs at
+    init, when the split is opened, when either pane changes view, and on the Fit
+    button. It does not run on a geometry solve, so editing a dimension never yanks
+    the view out from under the person editing it.
+  - The initial pass is deferred by one frame on purpose. The editor applies the 3D
+    split share immediately after this host mounts, so a fit measured during the
+    mount is measured against a pane width that is about to change. A pass that
+    cannot measure the panes reports failure and leaves the retry flag down, so the
+    next redraw tries again rather than baking in a meaningless frame.
+- **`Na__LanternEditor__Config.json`** - `ViewFitMarginFactor`. The fit is measured
+  from the skeleton members alone, so the dimension chains, the finials and the view
+  title all sit outside it. The shared scale steps back by this fraction so they land
+  inside the frame rather than against its edge.
+- **`VghLantern__LanternEditor__Styles__Main__.css`** - the three dropdown rules are
+  deleted, not left orphaned. The lower strip reuses the upper strip's control with a
+  top rule to separate it from the drawing above.
+
+#### Changed - `02__Src__AppModules/05__Env2d__SvgRenderPipeline/`
+- **`VghLantern__Env2d__RenderPipeline__.js`** - `GetViewScale` and `ApplyViewScale`,
+  added as a pair so a host showing more than one surface can put them on one drawing
+  scale without reaching inside a surface handle. `GetViewScale` returns the tighter
+  of the two axis ratios, because `preserveAspectRatio` is `meet` and the viewBox
+  width alone is not what the user is looking at. `ApplyViewScale` rebuilds the
+  viewBox to the host's own aspect, so `meet` letterboxes nothing and the scale asked
+  for is the scale that lands. Neither re-renders; only the viewBox moves.
+
+#### Known limits
+- The shared scale is a starting point, not a lock. Each pane still pans and zooms
+  entirely on its own afterwards, and the F hotkey still fits whichever single pane
+  the pointer is over. Only the Fit button restores the pair.
+- Nothing re-frames when the editor's panels are resized. The SVG rescales itself
+  cleanly, and Fit is one click away.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.1 - 06-Aug-2026
+### The 3D model can now draw itself in 2D: projected linework sits under the authored drawing, on request
+
+Keeping the 2D renderers and the 3D mesh builders in step has always been hand
+work. Every view a product needs - plan, front, side - is a separate piece of 2D
+drawing code, and every one of them can drift from the model it claims to
+describe. Drawing them all by hand for every product would be an enormous amount
+of labour, and the labour buys something that is only as true as the last person
+to edit both sides.
+
+This release adds the other half of a joint approach. The real Env3d solid model
+is now built off screen, projected orthographically through three-edge-projection,
+and painted as a grey underlay BENEATH the existing 2D drawing. The 2D system
+keeps what it is good at - dimensions, the auto-dims chain, editable values,
+authored finial paths - and the projection supplies clean visual linework that is
+guaranteed to reflect the 3D model, because it IS the 3D model measured rather
+than a second interpretation of it.
+
+The whole thing runs on one pleasing piece of arithmetic. three-edge-projection
+projects along a fixed axis and emits points of the form (x, 0, z). Model space is
++Z up in millimetres, Env3d world is +Y up in metres, and Env2d draws in
+millimetres with y down. Solve for the rotation that puts the viewer on +Y for
+each view and the library's own output falls out equal to the Env2d projector,
+scaled by the world-per-millimetre factor. All three views then share one
+read-back - `sx = px / s`, `sy = pz / s` - so the blue underlay landed on top of
+the authored linework with no fitting, centring or alignment step of any kind.
+Plan needs no rotation at all; it is the library's native orientation.
+
+#### Nothing is projected until asked for, and that is a measured decision
+A full lantern is around 40,000 triangles once the finials are in, and a single
+view costs 7 to 11 seconds. The per-phase breakdown puts 86 percent of that inside
+the library's edge clipping pass, 13 percent in intersection edges and 1 percent in
+extraction - so the expensive part is not reachable from this side of the boundary.
+A render is therefore an explicit step the user takes once the sheet layout is
+settled, not something that happens behind every redraw.
+
+#### Two optimisations that were tried, measured, and removed
+Both are recorded in the source rather than quietly reverted, because both look
+obviously correct on paper and would otherwise be attempted again.
+
+- **Welding vertices to drawing resolution.** At 1:50 a 0.25mm pen cannot resolve a
+  12.5mm feature, so finer detail cannot appear on paper - a sound argument that
+  made the projection SLOWER, 11.5 seconds against 7.5, while thinning the linework.
+  Welding rewrites the triangle set, and the clipping pass reacts worse to the long
+  thin triangles it produces than to the many small regular ones it replaced.
+- **A scale-derived minimum segment length.** Raising the floor from 0.5mm to a
+  drawing-resolution 3.1mm cut the output from 4,442 segments to 1,528 and visibly
+  lost detail. Short segments carry real geometry, not just clipping crumbs.
+
+#### Added - `02__Src__AppModules/27__System__ProjectedEdges2d/`
+- **`VghLantern__ProjectedEdges__Bootstrap__.mjs`** - the only file that touches
+  anything outside the folder, and it wraps rather than edits. Env2d publishes its
+  pipeline as an object on window; this replaces two function properties with
+  wrappers that call the originals unchanged. Env2d has no knowledge of the feature,
+  carries no call site for it, and gains no layer in its stack.
+- **`VghLantern__ProjectedEdges__ModelStage__.mjs`** - builds the solid model into a
+  detached group using the SAME Env3d mesh builders the live viewport uses. No
+  renderer, no camera, no WebGL context. Nothing here is ever disposed and the file
+  says why at length: the stage is never rendered so no GPU resource exists for it,
+  and the GLB components are `clone(true)` of a session cache that SHARES geometry
+  with the live 3D view - a dispose pass here would empty the finials out of the
+  real viewport.
+- **`VghLantern__ProjectedEdges__Projector__.mjs`** - the orientation basis per view
+  and the only call into three-edge-projection. Carries the full derivation of the
+  three bases, so a projection that ever lands rotated or mirrored has exactly one
+  place to be wrong.
+- **`VghLantern__ProjectedEdges__SvgLayer__.mjs`** - owns a group inserted as the
+  first child of the viewport root, which is what puts it underneath every authored
+  layer. Deliberately outside the Env2d LAYER_ORDER stack; the header records the
+  three Env2d behaviours checked to confirm that is safe.
+- **`VghLantern__ProjectedEdges__Pipeline__.mjs`** - caches results by lantern and
+  view, caches the staged model by lantern alone so three views build the meshes
+  once, and runs every projection through one serial queue. That queue is a
+  correctness requirement, not a preference: orienting a stage re-parents it, so two
+  concurrent projections sharing a cached stage would silently project one view
+  through the other's basis.
+- **`VghLantern__ProjectedEdges__Scheduler__.mjs`** - drives the library's generators
+  on our own time slice. Its own async wrapper waits a full animation frame after
+  every 30ms work slice, spending about a third of the elapsed time sitting still.
+- **`VghLantern__ProjectedEdges__ToolbarButton__.mjs`** - the render control, injected
+  into the Lantern Editor viewport cluster and the Drawing Editor toolbar from the
+  outside. Three states rather than a toggle, because a toggle implies the thing
+  behind it is cheap: Render is the press that costs, Hide and Show are instant.
+  Both buttons drive one pipeline, so they can never disagree.
+- **`VghLantern__ProjectedEdges__ProgressOverlay__.mjs`** - the ValeVision3D loading
+  overlay pattern, reused so staff meet one animation for "something is rendering"
+  across both applications. It covers the window on purpose: the projection yields
+  often enough to keep the interface painting, so without a cover the sheet looks
+  editable and an edit made mid-render invalidates the work being waited on.
+- **`VghLantern__ProjectedEdges__ConfigAccess__.mjs`** - fetches this module's own
+  config rather than registering with AppCore__ConfigLoader, which holds a hardcoded
+  manifest and a module variable per section. Keeps the feature liftable whole.
+- **`Na__ProjectedEdges__Config.json`** - every number the module uses, each with the
+  measurement or reasoning behind it. The cache key block is the one to read: the
+  lantern carries its own sheet setup, so without an exclusion list adjusting a
+  gutter would discard a render the user had just waited half a minute for.
+- **`VghLantern__ProjectedEdges__Styles__Main__.css`** - Vale tokens throughout. Line
+  colour, width and opacity are NOT here; they are written as presentation
+  attributes, because a CSS rule would beat the attribute and take the config file
+  out of the loop - and because attributes are what carry the layer through
+  `ToSvgMarkup` onto a sheet and into a PDF, where this stylesheet does not reach.
+
+#### Changed - Application shell
+- **`VghLantern__App__.html`** - one module script tag.
+- **`03__Style__AppStylesheets/VghLantern__CoreUi__Styles__Index__.css`** - one import.
+  With the wrapping bootstrap, these two lines plus the folder are the entire
+  footprint: delete them and the application returns to its previous behaviour with
+  no orphan calls anywhere.
+- **`Na__ServiceWorker__VghLantern.js`** - cache version token bumped. Renaming a
+  module mid-session left the browser running an old bootstrap against a new
+  pipeline, which surfaces as an import error naming an export that does exist.
+
+#### Known limits
+- A first sheet compose serialises its frames to markup before the projection has
+  finished, so the underlay reaches an exported PDF from the second compose onward.
+  Making the sheet wait would put the most expensive operation in the application on
+  the critical path of every redraw.
+- Hidden edges are computed by the library and discarded. `result.hiddenEdges` is
+  ready for a dashed layer whenever that is wanted.
+- The remaining performance lever is `IncludeIntersectionEdges`, worth roughly 13
+  percent. Beyond that the honest options are a Web Worker, which makes the cost
+  invisible rather than smaller, or the vendor's WebGPU generator.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.2.0 - 06-Aug-2026
 ### The app learns who you are: a landing screen greets the user by name, and a Vale job number now builds the whole project
 

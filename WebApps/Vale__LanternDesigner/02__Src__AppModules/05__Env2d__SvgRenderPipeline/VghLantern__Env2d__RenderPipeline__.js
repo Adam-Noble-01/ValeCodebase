@@ -27,6 +27,16 @@
      Render(surface, skeleton, bars, lantern)          draw / redraw it
      Dispose(surface)                                  tear it down
 
+   FRAMING:
+
+     ZoomExtents(surface, skeleton)                    refit to the geometry
+     GetViewScale(surface)           -> px per mm      what the user sees now
+     ApplyViewScale(surface, pxPerMm)                  re-frame at an exact scale
+
+   GetViewScale and ApplyViewScale exist as a pair so a host showing more than one
+   surface can put them all on one drawing scale, the way a drawing sheet does.
+   Neither re-renders; only the viewBox moves.
+
    A surface is an opaque handle. Callers hold it and pass it back; they never
    reach into its internals.
 
@@ -318,6 +328,53 @@ const VghLantern__Env2d__RenderPipeline = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Read the Pixels-per-Millimetre a Surface Is Currently Drawn At
+    // ------------------------------------------------------------
+    // preserveAspectRatio is "meet", so the tighter of the two axis ratios is the
+    // scale that actually lands on screen. A caller comparing two surfaces has to
+    // compare that number, never the viewBox width on its own.
+    function VghLantern__Env2d__RenderPipeline__GetViewScale(surface) {
+        if (!surface || !surface.Instance || !surface.HostElement) return 0;
+
+        var rect  =  surface.HostElement.getBoundingClientRect();
+        var box   =  surface.Instance.GetViewBox();
+
+        if (!(rect.width > 0) || !(rect.height > 0)) return 0;
+        if (!(box.Width  > 0) || !(box.Height > 0)) return 0;
+
+        return Math.min(rect.width / box.Width, rect.height / box.Height);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Re-Frame a Surface at an Exact Scale, Keeping Its Current Centre
+    // ------------------------------------------------------------
+    // The counterpart to GetViewScale: it is how two surfaces are put on one
+    // drawing scale. The viewBox is rebuilt to the host's own aspect so "meet"
+    // letterboxes nothing and the requested scale is the scale the user sees.
+    function VghLantern__Env2d__RenderPipeline__ApplyViewScale(surface, pixelsPerMm) {
+        if (!surface || !surface.Instance || !surface.HostElement) return;
+        if (!(pixelsPerMm > 0)) return;
+
+        var rect  =  surface.HostElement.getBoundingClientRect();
+        if (!(rect.width > 0) || !(rect.height > 0)) return;
+
+        var box      =  surface.Instance.GetViewBox();
+        var centreX  =  box.MinX + (box.Width  / 2);
+        var centreY  =  box.MinY + (box.Height / 2);
+        var width    =  rect.width  / pixelsPerMm;
+        var height   =  rect.height / pixelsPerMm;
+
+        surface.Instance.SetViewBox({
+            MinX   : centreX - (width  / 2),
+            MinY   : centreY - (height / 2),
+            Width  : width,
+            Height : height
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // SUB HELPER FUNCTION | Copy the Painted Style of One Node Onto Itself
     // ------------------------------------------------------------
     function VghLantern__Env2d__RenderPipeline__InlineOneStyle(liveNode, cloneNode) {
@@ -383,6 +440,8 @@ const VghLantern__Env2d__RenderPipeline = (function() {
         VghLantern__Env2d__RenderPipeline__Render       : VghLantern__Env2d__RenderPipeline__Render,
         VghLantern__Env2d__RenderPipeline__SetView      : VghLantern__Env2d__RenderPipeline__SetView,
         VghLantern__Env2d__RenderPipeline__ZoomExtents  : VghLantern__Env2d__RenderPipeline__ZoomExtents,
+        VghLantern__Env2d__RenderPipeline__GetViewScale : VghLantern__Env2d__RenderPipeline__GetViewScale,
+        VghLantern__Env2d__RenderPipeline__ApplyViewScale : VghLantern__Env2d__RenderPipeline__ApplyViewScale,
         VghLantern__Env2d__RenderPipeline__ToSvgMarkup  : VghLantern__Env2d__RenderPipeline__ToSvgMarkup,
         VghLantern__Env2d__RenderPipeline__Dispose      : VghLantern__Env2d__RenderPipeline__Dispose
     };

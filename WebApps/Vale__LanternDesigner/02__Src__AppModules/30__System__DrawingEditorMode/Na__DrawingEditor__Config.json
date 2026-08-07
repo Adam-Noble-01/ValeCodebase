@@ -3,7 +3,8 @@
         "VghLantern__DrawingEditor__Config__Description": "System configuration for the Drawing Editor mode. Merged over VghLantern__AppConfig__Main__.json by AppCore ConfigLoader and read back through ConfigLoader.GetSection('DrawingEditor'). Sheet sizes, frame slots, scale steps and titleblock rows all live here so no sheet dimension is ever hardcoded in a module.",
 
         "VghLantern__DrawingEditor__Config__Sheet": {
-            "DefaultSheetSize"          : "A3",
+            "DefaultSheetSize"          : "A4",
+            "DefaultSheetSizeNote"      : "A Vale lantern drawing is an A4 landscape sheet unless the views genuinely will not fit on one. This is the seed the sheet starts on; the auto layout ladder in the Scales block is what decides whether it stays there.",
             "DefaultOrientation"        : "landscape",
             "MarginMm"                  : 5,
             "TitleBlockHeightMm"        : 10,
@@ -111,15 +112,28 @@
             "TitleLabelWeight"          : "normal",
             "TitleLabelTrackingMm"      : 0.05,
             "TitleLabelUppercase"       : true,
-            "TitleValueWeight"          : "bold",
+            "TitleValueWeight"          : "normal",
+            "TitleValueWeightNote"      : "Regular, not bold. jsPDF's standard Helvetica only embeds regular and bold by reference - there is no semi-bold cut available without adding a separate embedded font file - so regular is the lighter of the two weights this titleblock can actually offer on both screen and PDF.",
             "TrackingNote"              : "Letter spacing in millimetres, not ems, because a PDF content stream sets character spacing in the page unit. Both renderers add it after every glyph."
         },
 
         "VghLantern__DrawingEditor__Config__Scales": {
-            "AvailableScaleDenominators": [5, 10, 20, 25, 50, 100],
-            "PreferredScaleDenominator" : 20,
+            "AvailableScaleDenominators": [10, 20, 50, 100],
+            "AvailableScaleDenominatorsNote": "1:5 and 1:25 were withdrawn. Neither is a scale a Vale lantern drawing is issued at - 1:5 puts a single bar across a sheet and 1:25 is not a scale rule anyone on the shop floor carries - and leaving them selectable meant a sheet could be sent out on one. 1:10 and 1:20 stay because they are legitimate hand picks for a detail sheet, but the auto layout never chooses them.",
+            "PreferredScaleDenominator" : 50,
+            "PreferredScaleDenominatorNote": "The scale a Vale lantern drawing is issued at, and the floor the auto fit starts from. The fit never chooses anything FINER than this even when a small lantern would allow it - a tiny lantern drawn at 1:10 is a different document to every other drawing in the pack. Finer scales remain hand-selectable from the toolbar.",
             "AutoFitEnabled"            : true,
             "AutoFitPaddingFactor"      : 1.08,
+
+            "AutoFitLadder": [
+                { "SheetSizeKey": "A4", "Orientation": "landscape", "ScaleDenominator": 50  },
+                { "SheetSizeKey": "A3", "Orientation": "landscape", "ScaleDenominator": 50  },
+                { "SheetSizeKey": "A4", "Orientation": "landscape", "ScaleDenominator": 100 },
+                { "SheetSizeKey": "A3", "Orientation": "landscape", "ScaleDenominator": 100 }
+            ],
+            "AutoFitLadderNote"         : "Paper AND scale are chosen together, by walking this list in order and stopping at the first rung where every orthographic view fits its frame. Order is deliberate: keep 1:50 and grow the paper before giving up 1:50, because a drawing everyone can put a scale rule against matters more than the sheet it arrives on. The fourth rung is a backstop that should never be reached - a lantern that will not fit A4 at 1:100 is off the scale of anything Vale has built - and it exists only so the fallback is a small drawing rather than a clipped one.",
+            "AutoFitLadderRungNote"     : "SheetSizeKey must name an entry in Sheet.SheetSizes and ScaleDenominator must appear in AvailableScaleDenominators. A rung failing either test is skipped with a console error rather than silently drawing the sheet at a scale its titleblock does not quote.",
+
             "UniformScaleAcrossViews"   : true,
             "UniformScaleAcrossViewsNote": "Vale drawings quote one scale for all orthographic views on a sheet, so the fit routine picks the coarsest scale that suits every view rather than fitting each frame independently.",
             "ScaleLabelPrefix"          : "Scale 1:"
@@ -147,16 +161,17 @@
             "FieldPaddingNote"          : "Screen CSS and PDF titleblock both read these millimetre paddings so the strip matches on paper.",
             "SingleRowLayout"           : true,
             "SingleRowLayoutNote"       : "All fields sit on one horizontal strip. WidthMm values are relative flex shares, not absolute widths that would force wrapping.",
+            "DateOrdinalSuffixScale"    : 0.62,
+            "DateOrdinalSuffixScaleNote": "The Date value is split into day / ordinal suffix / month-year at render time so the 'th' in '07th Aug 2026' can print small and raised, like real typeset ordinals. This is the suffix run's size as a fraction of FontSizeValueMm; the raise is derived from that so its top lines up with the day number's cap height.",
             "Rows": [
-                { "Key": "projectName",   "Label": "Project",  "WidthMm": 28 },
-                { "Key": "projectCode",   "Label": "Code",     "WidthMm": 12 },
-                { "Key": "clientName",    "Label": "Client",   "WidthMm": 22 },
-                { "Key": "drawingNumber", "Label": "Drg No.",  "WidthMm": 16 },
-                { "Key": "revision",      "Label": "Rev",      "WidthMm": 6  },
-                { "Key": "scale",         "Label": "Scale",    "WidthMm": 14 },
-                { "Key": "issueDate",     "Label": "Date",     "WidthMm": 14 }
+                { "Key": "clientName",    "Label": "Client",       "WidthMm": 22 },
+                { "Key": "siteAddress",   "Label": "Site Address", "WidthMm": 50 },
+                { "Key": "drawingNumber", "Label": "Drawing No.",  "WidthMm": 16 },
+                { "Key": "revision",      "Label": "Rev",          "WidthMm": 6  },
+                { "Key": "scale",         "Label": "Scale",        "WidthMm": 18 },
+                { "Key": "issueDate",     "Label": "Date",         "WidthMm": 15 }
             ],
-            "RowsNote"                  : "Row Key maps to a field the TitleBlockRenderer resolves from the project and lantern. WidthMm is a relative share of the strip. Element is omitted from the strip - it lives on the lantern schedule instead. An unresolved key still renders so the strip layout stays stable."
+            "RowsNote"                  : "Row Key maps to a field the TitleBlockRenderer resolves from the project and lantern. WidthMm is a relative share of the strip. Element is omitted from the strip - it lives on the lantern schedule instead. An unresolved key still renders so the strip layout stays stable. The Scale value has the sheet size (from the solved layout's Page.Label) appended by SheetChrome at render time, so it reads 'Scale 1:50 @ A4' without a separate Paper Size row."
         },
 
         "VghLantern__DrawingEditor__Config__AnnotationsRemovedNote": "The sheet no longer carries a notes block. It printed three standing sentences about millimetres, figured dimensions and glazing, plus the project job notes. Those three sentences are now clauses in the project's terms document, and the sheet carries the terms callout in the bottom right instead - a QR code taking the reader to the full terms rather than a summary of three of them beside the views. Job notes are unaffected: they are still typed in the Specification tab and still print on the specification document under its ShowJobNotes toggle. The callout is configured in Na__Terms__Config.json under VghLantern__Terms__Config__DrawingQrBlock.",
@@ -173,10 +188,11 @@
         "VghLantern__DrawingEditor__Config__PdfExport": {
             "FilenamePattern"           : "VghLantern__{projectCode}__{drawingNumber}__{sheetSize}",
             "FilenamePatternNote"        : "Tokens: projectCode, projectName, drawingNumber, lanternTitle, revision, sheetSize, scale. Unresolved tokens collapse to nothing rather than printing literally.",
-            "RasterPixelsPerMm"         : 12,
-            "RasterPixelsPerMmNote"     : "Roughly 305 dpi. jsPDF cannot place vector SVG, so orthographic views are rasterised at this density; raise for finer linework at the cost of file size.",
-            "SnapshotPixelsPerMm"       : 12,
-            "SnapshotPixelsPerMmNote"   : "Pixel density the 3D snapshot is rendered at. The buffer is sized from the frame's paper millimetres at this density, which is what gives the snapshot the frame's exact aspect - the same image then fills the same rectangle on screen and on paper with no fitting between them. Falls back to RasterPixelsPerMm.",
+            "RasterPixelsPerMm"         : 24,
+            "RasterPixelsPerMmNote"     : "Roughly 610 dpi, doubled from 12 (305 dpi) because thin drafting linework was visibly soft on a printed sheet. jsPDF cannot place vector SVG, so orthographic views are rasterised at this density; raise for finer linework at the cost of file size. Views are written as PNG rather than JPEG - JPEG haloed thin dark lines - so file size grows roughly with the square of this number.",
+            "SnapshotPixelsPerMm"       : 24,
+            "SnapshotPixelsPerMmNote"   : "Pixel density the 3D snapshot is rendered at, doubled alongside RasterPixelsPerMm so the perspective view does not read as the soft one on a sheet of otherwise crisp linework. The buffer is sized from the frame's paper millimetres at this density, which is what gives the snapshot the frame's exact aspect - the same image then fills the same rectangle on screen and on paper with no fitting between them. Falls back to RasterPixelsPerMm.",
+            "SnapshotSupersampleNote"   : "Env3d Snapshot.SupersampleFactor multiplies this again before the render is averaged back down, and SnapshotExporter clamps the product to a 36 megapixel budget. At A4 the doubled density still fits the full 2x supersample; on larger paper the clamp tapers the supersample rather than the output, so the image stays the requested size and loses only some edge smoothing.",
             "BlockGapMm"                : 3,
             "BlockGapMmNote"            : "Legacy fallback. Prefer Sheet.BlockGapMm - both screen and PDF read Sheet first.",
             "PaintingNote"              : "How a sheet is painted lives in SheetStyle and only there. This block used to carry a duplicate set of stroke widths and colours as a fallback, which meant a colour could be changed in the obvious place and silently overridden from here.",

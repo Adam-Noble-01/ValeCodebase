@@ -28,6 +28,14 @@
    Joinery staff read drawings with a scale rule. 1:23.7 is unusable even if it fits
    the frame perfectly, so the fit routine only ever chooses from the standard list.
 
+   WHY THE FIT NEVER GOES FINER THAN THE PREFERRED SCALE:
+   A Vale lantern drawing is a 1:50 drawing. A small lantern would fit its frame at
+   1:20 and the old fit took it, because it walked the whole list from the finest end
+   and stopped at the first that fitted - which is how a pack of drawings ended up
+   with a different scale on every sheet. PreferredScaleDenominator is now the floor
+   the fit starts at, so the only direction it can move is coarser, and only when the
+   views genuinely will not fit.
+
    ============================================================================= */
 
 // =============================================================================
@@ -45,6 +53,10 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     // Only used if AvailableScaleDenominators is absent from JSON entirely - a
     // config authoring bug, not a value this module is entitled to define.
     const FALLBACK_DENOMINATORS  =  [10, 20, 50, 100];
+
+    const LADDER_KEY_SHEET_SIZE  =  'SheetSizeKey';                           // <-- Rung field names, quoted once
+    const LADDER_KEY_ORIENTATION =  'Orientation';
+    const LADDER_KEY_DENOMINATOR =  'ScaleDenominator';
 
     const SCALES_LABEL  =  'Na__DrawingEditor__Config.json -> VghLantern__DrawingEditor__Config__Scales';
     // ------------------------------------------------------------
@@ -159,38 +171,110 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Choose the Finest Denominator That Fits Every View
+    // HELPER FUNCTION | List the Denominators the Auto Fit May Choose From
     // ------------------------------------------------------------
-    // requests is an array of { Extents, FrameWidthMm, FrameHeightMm }, one per
-    // orthographic frame on the sheet. Returns the chosen denominator; the coarsest
-    // available is returned when nothing fits, because a small drawing beats a
-    // clipped one.
-    function VghLantern__DrawingEditor__ScaleManager__FitToRequests(requests) {
+    // The available list minus everything finer than the preferred scale. 1:10 and
+    // 1:20 stay selectable by hand for a detail sheet; they are simply not something
+    // the sheet drops to on its own.
+    function VghLantern__ScaleManager__FitCandidates() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
-        var scaleCfg    =  VghLantern__ScaleManager__ScaleConfig();
-        var available   =  VghLantern__ScaleManager__Denominators();
-        var padding     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(scaleCfg, 'AutoFitPaddingFactor', SCALES_LABEL);
+        var available     =  VghLantern__ScaleManager__Denominators();
+        var preferred     =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            VghLantern__ScaleManager__ScaleConfig(), 'PreferredScaleDenominator', SCALES_LABEL);
+
+        var candidates  =  available.filter(function(denominator) { return denominator >= preferred; });
+
+        return candidates.length ? candidates : available;                        // <-- Preferred coarser than everything listed is a config bug, not a reason to draw nothing
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Test Whether Every View Fits Its Frame at One Denominator
+    // ------------------------------------------------------------
+    // The whole of "does this sheet work at 1:N", exposed because the auto layout
+    // ladder asks it of a paper size this module knows nothing about. requests is an
+    // array of { Extents, FrameWidthMm, FrameHeightMm }, one per orthographic frame.
+    function VghLantern__DrawingEditor__ScaleManager__RequestsFitAt(requests, denominator) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var padding       =  ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
+            VghLantern__ScaleManager__ScaleConfig(), 'AutoFitPaddingFactor', SCALES_LABEL);
+
+        if (!Array.isArray(requests) || !requests.length) return true;            // <-- Nothing to fit is trivially fitted
+        if (!denominator || denominator <= 0) return false;
+
+        var i;
+        for (i = 0; i < requests.length; i++) {
+            if (!VghLantern__ScaleManager__ExtentFits(
+                requests[i].Extents, requests[i].FrameWidthMm, requests[i].FrameHeightMm, denominator, padding
+            )) return false;
+        }
+
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Choose the Finest Permitted Denominator That Fits Every View
+    // ------------------------------------------------------------
+    // Used when the paper is fixed - either pinned by hand or because no ladder is
+    // configured - so the scale is the only thing left to move. Walks from the
+    // preferred scale upward and stops at the first that fits; the coarsest available
+    // is returned when nothing does, because a small drawing beats a clipped one.
+    function VghLantern__DrawingEditor__ScaleManager__FitToRequests(requests) {
+        var candidates  =  VghLantern__ScaleManager__FitCandidates();
 
         if (!Array.isArray(requests) || !requests.length) return VghLantern__DrawingEditor__ScaleManager__GetDenominator();
 
-        var i, j, denominator, allFit;
-        for (i = 0; i < available.length; i++) {
-            denominator  =  available[i];
-            allFit       =  true;
-
-            for (j = 0; j < requests.length; j++) {
-                if (!VghLantern__ScaleManager__ExtentFits(
-                    requests[j].Extents, requests[j].FrameWidthMm, requests[j].FrameHeightMm, denominator, padding
-                )) {
-                    allFit  =  false;
-                    break;
-                }
+        var i;
+        for (i = 0; i < candidates.length; i++) {
+            if (VghLantern__DrawingEditor__ScaleManager__RequestsFitAt(requests, candidates[i])) {
+                return VghLantern__DrawingEditor__ScaleManager__SetDenominator(candidates[i]);
             }
-
-            if (allFit) return VghLantern__DrawingEditor__ScaleManager__SetDenominator(denominator);
         }
 
-        return VghLantern__DrawingEditor__ScaleManager__SetDenominator(available[available.length - 1]);
+        return VghLantern__DrawingEditor__ScaleManager__SetDenominator(candidates[candidates.length - 1]);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | List the Auto Layout Ladder Rungs in Order
+    // ------------------------------------------------------------
+    // Each rung is a paper AND a scale to try together. Returned as plain objects so
+    // the caller - which owns the paper - can solve each one; this module validates
+    // only the half it owns, the denominator, and drops a rung quoting a scale that
+    // is not selectable. Letting one through would set a scale SetDenominator then
+    // refuses, leaving the sheet drawn at one scale and captioned with another.
+    //
+    // An empty result is not an error: it means no ladder is configured, and the
+    // caller falls back to fitting the scale inside whatever paper it already has.
+    function VghLantern__DrawingEditor__ScaleManager__ListAutoFitLadder() {
+        var scaleCfg   =  VghLantern__ScaleManager__ScaleConfig();
+        var configured =  scaleCfg.AutoFitLadder;
+        if (!Array.isArray(configured) || !configured.length) return [];
+
+        var available  =  VghLantern__ScaleManager__Denominators();
+        var rungs      =  [];
+        var i, rung, denominator;
+
+        for (i = 0; i < configured.length; i++) {
+            rung         =  configured[i] || {};
+            denominator  =  parseFloat(rung[LADDER_KEY_DENOMINATOR]);
+
+            if (isNaN(denominator) || available.indexOf(denominator) === -1) {
+                console.error('[VghLantern__ScaleManager] AutoFitLadder rung ' + i + ' quotes scale 1:' +
+                    rung[LADDER_KEY_DENOMINATOR] + ', which is not in AvailableScaleDenominators (' +
+                    SCALES_LABEL + '). Rung skipped.');
+                continue;
+            }
+
+            rungs.push({
+                SheetSizeKey     : rung[LADDER_KEY_SHEET_SIZE],
+                Orientation      : rung[LADDER_KEY_ORIENTATION],
+                ScaleDenominator : denominator
+            });
+        }
+
+        return rungs;
     }
     // ------------------------------------------------------------
 
@@ -232,12 +316,14 @@ const VghLantern__DrawingEditor__ScaleManager = (function() {
     // PUBLIC API
     // ------------------------------------------------------------
     return {
-        VghLantern__DrawingEditor__ScaleManager__GetDenominator    : VghLantern__DrawingEditor__ScaleManager__GetDenominator,
-        VghLantern__DrawingEditor__ScaleManager__SetDenominator    : VghLantern__DrawingEditor__ScaleManager__SetDenominator,
-        VghLantern__DrawingEditor__ScaleManager__ListDenominators  : VghLantern__DrawingEditor__ScaleManager__ListDenominators,
-        VghLantern__DrawingEditor__ScaleManager__FitToRequests     : VghLantern__DrawingEditor__ScaleManager__FitToRequests,
-        VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled  : VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled,
-        VghLantern__DrawingEditor__ScaleManager__FormatLabel       : VghLantern__DrawingEditor__ScaleManager__FormatLabel
+        VghLantern__DrawingEditor__ScaleManager__GetDenominator     : VghLantern__DrawingEditor__ScaleManager__GetDenominator,
+        VghLantern__DrawingEditor__ScaleManager__SetDenominator     : VghLantern__DrawingEditor__ScaleManager__SetDenominator,
+        VghLantern__DrawingEditor__ScaleManager__ListDenominators   : VghLantern__DrawingEditor__ScaleManager__ListDenominators,
+        VghLantern__DrawingEditor__ScaleManager__ListAutoFitLadder  : VghLantern__DrawingEditor__ScaleManager__ListAutoFitLadder,
+        VghLantern__DrawingEditor__ScaleManager__RequestsFitAt      : VghLantern__DrawingEditor__ScaleManager__RequestsFitAt,
+        VghLantern__DrawingEditor__ScaleManager__FitToRequests      : VghLantern__DrawingEditor__ScaleManager__FitToRequests,
+        VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled   : VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled,
+        VghLantern__DrawingEditor__ScaleManager__FormatLabel        : VghLantern__DrawingEditor__ScaleManager__FormatLabel
     };
 
 // endregion -------------------------------------------------------------------

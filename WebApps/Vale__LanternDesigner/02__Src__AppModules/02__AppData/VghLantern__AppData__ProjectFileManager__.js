@@ -48,11 +48,15 @@ const VghLantern__AppData__ProjectFileManager = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Get Today's Date in Vale Storage Format "30-Jul-2026"
+    // HELPER FUNCTION | Get Current Timestamp in Vale Storage Format "30-Jul-2026 14:32:07"
     // ------------------------------------------------------------
+    // Carries hours/minutes/seconds (not just the day) so that DateCreated and
+    // DateModified stay sort-distinct when multiple projects are touched on the
+    // same day - a date-only stamp ties every same-day save at midnight, which
+    // is what made the project list's Last Modified order look random.
     function VghLantern__ProjectFileManager__GetTodayStamp() {
         return window.VghLantern__AppUtils__DateFormatter
-            .VghLantern__DateFormatter__FormatDdMmmYyyy(new Date());         // <-- DateFormatter is the date format SSOT
+            .VghLantern__DateFormatter__FormatDdMmmYyyyHms(new Date());      // <-- DateFormatter is the date format SSOT
     }
     // ------------------------------------------------------------
 
@@ -413,6 +417,7 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 'VghLantern__ProjectFile__DrawingLayout__Orientation'       : null,
                 'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator'  : null,
                 'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual'     : false,
+                'VghLantern__ProjectFile__DrawingLayout__PaperIsManual'     : false,
                 'VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct'   : null,
                 'VghLantern__ProjectFile__DrawingLayout__RowSharesPct'      : null,
                 'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor'   : 1,
@@ -551,11 +556,11 @@ const VghLantern__AppData__ProjectFileManager = (function() {
                 if (!json.ok) throw new Error(json.error || 'Unknown error');
 
                 var projects       =  json.data;
-                var freshManifest  =  [];
+                var freshManifest  =  new Array(projects.length);         // <-- Indexed slots keep the server's mtime order even though fetches below resolve out of order
                 var loadPromises   =  [];
 
                 for (var i = 0; i < projects.length; i++) {
-                    (function(entry) {
+                    (function(entry, index) {
                         var promise  =  fetch(API_BASE + '/' + encodeURIComponent(entry.projectCode))
                             .then(function(r) { return r.json(); })
                             .then(function(pJson) {
@@ -567,32 +572,27 @@ const VghLantern__AppData__ProjectFileManager = (function() {
 
                                 localStorage.setItem(storageKey, JSON.stringify(mergedProjectData)); // <-- Populate cache from disk using normalised schema
                                 var metadata  =  mergedProjectData ? mergedProjectData['VghLantern__ProjectFile__Metadata'] : null;
-                                if (metadata) {
-                                    freshManifest.push(
-                                        VghLantern__ProjectFileManager__BuildManifestEntryFromMetadata(entry.projectCode, metadata, entry)
+                                freshManifest[index]  =  metadata
+                                    ? VghLantern__ProjectFileManager__BuildManifestEntryFromMetadata(entry.projectCode, metadata, entry)
+                                    : VghLantern__ProjectFileManager__BuildManifestEntry(
+                                        entry.projectCode,
+                                        entry.projectName,
+                                        entry.documentName,
+                                        entry.clientName,
+                                        entry.status,
+                                        entry.dateCreated,
+                                        entry.dateModified
                                     );
-                                } else {
-                                    freshManifest.push(
-                                        VghLantern__ProjectFileManager__BuildManifestEntry(
-                                            entry.projectCode,
-                                            entry.projectName,
-                                            entry.documentName,
-                                            entry.clientName,
-                                            entry.status,
-                                            entry.dateCreated,
-                                            entry.dateModified
-                                        )
-                                    );
-                                }
                             });
                         loadPromises.push(promise);
-                    })(projects[i]);
+                    })(projects[i], i);
                 }
 
                 return Promise.all(loadPromises).then(function() {
-                    VghLantern__ProjectFileManager__SaveManifest(freshManifest);  // <-- Rebuild manifest from disk
-                    console.log('[VghLantern__ProjectFileManager] Synced ' + freshManifest.length + ' project(s) from server.');
-                    return freshManifest;
+                    var orderedManifest  =  freshManifest.filter(function(entry) { return !!entry; }); // <-- Drop slots for any project whose fetch failed
+                    VghLantern__ProjectFileManager__SaveManifest(orderedManifest);  // <-- Rebuild manifest from disk, preserving server mtime order
+                    console.log('[VghLantern__ProjectFileManager] Synced ' + orderedManifest.length + ' project(s) from server.');
+                    return orderedManifest;
                 });
             })
             .catch(function(err) {

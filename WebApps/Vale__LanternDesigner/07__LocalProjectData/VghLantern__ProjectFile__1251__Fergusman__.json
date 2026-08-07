@@ -36,8 +36,8 @@
         "VghLantern__ProjectFile__ClientDocument__Description": "The client-facing welcome letter and this project's own terms. Standard terms live in the markdown library; only their on/off state is recorded here.",
         "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
         "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch.",
-        "VghLantern__ProjectFile__ClientDocument__SignOffName": "{{UserName}}",
-        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "{{UserJobTitle}}",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "Adam Noble",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "Developer",
         "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
         "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [
             {
@@ -122,25 +122,25 @@
                 "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
                 "Lantern__DrawingLayout__Config__ScaleIsManual": false,
                 "Lantern__DrawingLayout__Config__ColumnSharesPct": [
-                    50,
-                    50
+                    51.267491036169766,
+                    48.732508963830234
                 ],
                 "Lantern__DrawingLayout__Config__RowSharesPct": [
-                    50,
-                    50
+                    44.23858661464305,
+                    55.76141338535695
                 ],
-                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.3376429520243915,
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 4,
                 "Lantern__DrawingLayout__Config__ViewCameraStates": {
                     "threeDimensional": {
                         "Position": {
-                            "x": 2.6787561842231207,
-                            "y": 4.194822995474163,
-                            "z": 3.2651476538509976
+                            "x": 6.005228992732552,
+                            "y": 4.90535060867252,
+                            "z": -4.606876172785296
                         },
                         "Target": {
-                            "x": 0.6269674014178329,
-                            "y": -0.09248853931645656,
-                            "z": -0.28282242671957164
+                            "x": 0.1488498055645977,
+                            "y": 0.12458706785168051,
+                            "z": 0.32071446304564283
                         }
                     }
                 }

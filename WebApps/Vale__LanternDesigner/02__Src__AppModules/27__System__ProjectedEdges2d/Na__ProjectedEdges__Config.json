@@ -1,0 +1,87 @@
+{
+    "VghLantern__ProjectedEdges__Config": {
+
+        "VghLantern__ProjectedEdges__Config__Meta": {
+            "Description"                 : "3D to 2D edge projection layer. Builds the real Env3d solid model off screen, projects it orthographically through three-edge-projection, and paints the resulting linework UNDERNEATH the existing Env2d drawing. Read by the ProjectedEdges bootstrap only - deliberately NOT registered with AppCore__ConfigLoader, so this module owns its own configuration and stays removable as one folder plus two include lines.",
+            "Enabled"                     : true,
+            "Views"                       : ["frontElevation", "sideElevation", "plan"],
+            "ViewLabels"                  : {
+                "frontElevation"          : "Front elevation",
+                "sideElevation"           : "Side elevation",
+                "plan"                    : "Plan view"
+            },
+            "LogTimings"                  : true
+        },
+
+        "VghLantern__ProjectedEdges__Config__Render": {
+            "Description"                 : "Nothing is projected until the user asks for it. Measured cost is 7 to 11 seconds PER VIEW on a real lantern and repeated attempts to bring that down have not succeeded, so the operation is treated as a deliberate step the user takes once the sheet layout is settled - not as something that happens behind every redraw. A render covers every view listed in Meta.Views that currently has a viewport on screen.",
+            "AutoRenderOnLoad"            : false,
+            "RepaintFromCacheOnRedraw"    : true
+        },
+
+        "VghLantern__ProjectedEdges__Config__Model": {
+            "Description"                 : "Which parts of the Env3d solid model are staged for projection. Every flag drives the SAME mesh builder the live 3D viewport uses, so anything switched on here is guaranteed to be the geometry on screen in 3D.",
+            "IncludeFrame"                : true,
+            "IncludeGlazeBars"            : true,
+            "IncludeGlazing"              : true,
+            "IncludeComponents"           : true
+        },
+
+        "VghLantern__ProjectedEdges__Config__Projection": {
+            "Description"                 : "Passed to three-edge-projection. AngleThresholdDegrees is the dihedral angle above which a shared triangle edge counts as a hard edge; higher values keep less linework and cost less time. IncludeIntersectionEdges adds the lines where two solids cut through one another, which is what draws a finial spike against the ridge behind it. Measured phase split on a 39k triangle lantern: 86 percent clipping, 13 percent intersection, 1 percent extraction.",
+            "AngleThresholdDegrees"       : 50,
+            "IncludeIntersectionEdges"    : true,
+            "IterationTimeMs"             : 30,
+            "MinimumSegmentLengthMm"      : 0.5
+        },
+
+        "VghLantern__ProjectedEdges__Config__CacheKey": {
+            "Description"                 : "Lantern blocks that do NOT change the 3D model and must therefore be excluded from the projection cache key. Lantern__DrawingLayout__Config is the important one: it holds paper size, orientation, scale, gutter shares and the sheet camera, all recorded onto the lantern, so without this list adjusting the sheet layout would discard a render the user had just waited half a minute for. A DENYLIST rather than an allowlist on purpose - a block added later and forgotten here costs a needless re-render, where a forgotten allowlist entry would leave the wrong lantern on screen.",
+            "IgnoredLanternBlocks"        : [
+                "Lantern__Identity__Config",
+                "Lantern__Notes__Config",
+                "Lantern__DrawingNotes__Config",
+                "Lantern__DrawingLayout__Config"
+            ]
+        },
+
+        "VghLantern__ProjectedEdges__Config__Performance": {
+            "Description"                 : "Scheduling and reuse. YieldEveryMs is the important one: the library's own async driver waits a whole animation frame after EVERY work slice, which throws away roughly a third of the wall clock. This module drives the generator itself and hands the browser a frame only this often. It is kept moderate rather than maximal because the progress spinner has to keep turning while a render runs.",
+            "YieldEveryMs"                : 250,
+            "ReuseStagedModel"            : true,
+            "CacheBoundsTrees"            : true,
+            "BvhMaxLeafSize"              : 1,
+            "MaxCachedResults"            : 16,
+            "MaxCachedStages"             : 2
+        },
+
+        "VghLantern__ProjectedEdges__Config__Toolbar": {
+            "Description"                 : "The Drawing Editor toolbar control. Injected next to Download PDF by this module, never by the Drawing Editor, so the toolbar builder carries no knowledge of this feature. The button walks three states: nothing rendered yet, rendered and shown, rendered and hidden. Showing and hiding a rendered result repaints the live viewports directly rather than re-rendering the sheet, which matters because a sheet render re-captures the 3D snapshot.",
+            "ShowButton"                  : true,
+            "LabelRender"                 : "Render 3D Linework",
+            "LabelHide"                   : "Hide 3D Linework",
+            "LabelShow"                   : "Show 3D Linework",
+            "LabelWorking"                : "Rendering...",
+            "TitleRender"                 : "Project the 3D model into every orthographic view. Takes several seconds per view.",
+            "TitleHide"                   : "Hide the projected linework, keeping it ready to show again",
+            "TitleShow"                   : "Show the projected linework already rendered for this lantern",
+            "TitleStale"                  : "The lantern has changed since this was rendered. Render again to bring it up to date."
+        },
+
+        "VghLantern__ProjectedEdges__Config__Progress": {
+            "Description"                 : "Progress overlay shown while a render runs, matching the ValeVision3D loading overlay used when images are rendering: semi-transparent white with a subtle blur, a Vale blue ring on a light track, and a status line beneath it.",
+            "ShowOverlay"                 : true,
+            "TitleText"                   : "Projecting 3D linework",
+            "SuccessText"                 : "Linework ready",
+            "SuccessHoldMs"               : 900,
+            "ErrorText"                   : "Projection failed - see the console for details"
+        },
+
+        "VghLantern__ProjectedEdges__Config__Appearance": {
+            "Description"                 : "Mid grey drafting linework, rgb(60, 60, 60). Stroke width is in true drawing millimetres, matching the Env2d convention, so it scales like real linework rather than staying a fixed screen thickness.",
+            "StrokeColour"                : "rgb(60, 60, 60)",
+            "StrokeWidthMm"               : 2.5,
+            "StrokeOpacity"               : 1
+        }
+    }
+}

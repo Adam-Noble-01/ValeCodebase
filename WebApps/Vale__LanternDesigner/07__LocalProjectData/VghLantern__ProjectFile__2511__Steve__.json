@@ -8,7 +8,7 @@
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "06-Aug-2026",
-        "VghLantern__ProjectFile__Metadata__DateModified": "06-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__DateModified": "07-Aug-2026 08:54:40",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -30,7 +30,8 @@
         "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
         "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
         "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
-        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {}
+        "VghLantern__ProjectFile__DrawingLayout__ViewCameraStates": {},
+        "VghLantern__ProjectFile__DrawingLayout__PaperIsManual": false
     },
     "VghLantern__ProjectFile__ClientDocument": {
         "VghLantern__ProjectFile__ClientDocument__Description": "The client-facing welcome letter and this project's own terms. Standard terms live in the markdown library; only their on/off state is recorded here.",
@@ -60,7 +61,7 @@
                 "Lantern__Form__Config__PlanRotationDeg": 0
             },
             "Lantern__Dimensions__Config": {
-                "Lantern__Dimensions__Config__WidthMm": 4000,
+                "Lantern__Dimensions__Config__WidthMm": 4200,
                 "Lantern__Dimensions__Config__DepthMm": 3000,
                 "Lantern__Dimensions__Config__EavesProjectionMm": 25
             },
@@ -121,7 +122,7 @@
                     35.481840871773954,
                     64.51815912822605
                 ],
-                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.7973158564688876,
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.445004739930005,
                 "Lantern__DrawingLayout__Config__ViewCameraStates": {
                     "threeDimensional": {
                         "Position": {
@@ -135,7 +136,8 @@
                             "z": -0.025714246080294358
                         }
                     }
-                }
+                },
+                "Lantern__DrawingLayout__Config__PaperIsManual": false
             },
             "Lantern__DrawingNotes__Config": {
                 "Lantern__DrawingNotes__Config__Notes": []
@@ -216,7 +218,8 @@
                     50
                 ],
                 "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.1735108709918103,
-                "Lantern__DrawingLayout__Config__ViewCameraStates": {}
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {},
+                "Lantern__DrawingLayout__Config__PaperIsManual": false
             },
             "Lantern__DrawingNotes__Config": {
                 "Lantern__DrawingNotes__Config__Notes": []
@@ -294,7 +297,8 @@
                 "Lantern__DrawingLayout__Config__ColumnSharesPct": null,
                 "Lantern__DrawingLayout__Config__RowSharesPct": null,
                 "Lantern__DrawingLayout__Config__SheetZoomFactor": 1,
-                "Lantern__DrawingLayout__Config__ViewCameraStates": {}
+                "Lantern__DrawingLayout__Config__ViewCameraStates": {},
+                "Lantern__DrawingLayout__Config__PaperIsManual": false
             }
         },
         {
@@ -388,7 +392,8 @@
                             "z": -0.015835626245101764
                         }
                     }
-                }
+                },
+                "Lantern__DrawingLayout__Config__PaperIsManual": false
             }
         }
     ]

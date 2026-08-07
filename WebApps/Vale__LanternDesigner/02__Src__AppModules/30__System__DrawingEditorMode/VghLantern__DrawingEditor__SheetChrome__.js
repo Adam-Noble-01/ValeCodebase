@@ -57,6 +57,7 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
     const MM_PER_POINT        =  0.352778;                                    // <-- One point in millimetres
     const CAP_HEIGHT_RATIO    =  0.717;                                       // <-- Helvetica cap height as a fraction of type size
     const TRUNCATION_SUFFIX   =  '...';                                       // <-- Three dots, not an ellipsis glyph, so WinAnsi is never in question
+    const ORDINAL_SUFFIX_PATTERN  =  /^(\d{1,2})(st|nd|rd|th)(.*)$/i;         // <-- Splits "07th Aug 2026" into day / suffix / tail for the titleblock date
     // ------------------------------------------------------------
 
 
@@ -579,21 +580,48 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
             ConfigLoader.VghLantern__ConfigLoader__RequireString(config, 'BodyText', LABEL),
             bodyMm, 'normal', textRoom, maxLines
         );
-        var i;
+
+        // A paragraph shorter than BodyMaxLines is nudged down by half of whatever
+        // room it leaves at the bottom, so it centres between the underside of the
+        // heading and the cell's bottom padding rather than sitting jammed against
+        // the heading with all the slack left dangling below it. A paragraph that
+        // already fills every allowed line gets no nudge - cursorY is already
+        // exactly where the heading's own line-height put it, never tighter than
+        // before.
+        var spaceBottomY    =  titleRect.Y + titleRect.HeightMm - padVMm;
+        var bodyBlockMm     =  bodyLines.length * bodyLineMm;
+        var centeringGapMm  =  Math.max(0, (spaceBottomY - cursorY - bodyBlockMm) / 2);
+        cursorY  +=  centeringGapMm;
+
+        var i, lineTrackingMm, lineWidthMm;
 
         for (i = 0; i < bodyLines.length; i++) {
             // A line that would run past the strip is dropped rather than overflowing
             // it, which on a titleblock would read as a printing fault.
             if (cursorY + bodyLineMm > titleRect.Y + titleRect.HeightMm - padVMm) break;
 
+            // Every wrapped line but the paragraph's last is stretched to the full
+            // text width by adding letter-spacing, the same TrackingMm both renderers
+            // already add after every glyph - so the block reads as a justified
+            // column with a flush right edge instead of word-wrap's ragged one. The
+            // last line is left at its natural spacing: stretching two or three words
+            // across the same width as a full line above it would read as a fault,
+            // not as justified type.
+            lineTrackingMm  =  0;
+            if (i < bodyLines.length - 1 && bodyLines[i].length > 0) {
+                lineWidthMm     =  VghLantern__DrawingEditor__SheetChrome__MeasureTextMm(bodyLines[i], bodyMm, 'normal', 0);
+                lineTrackingMm  =  Math.max(0, (textRoom - lineWidthMm) / bodyLines[i].length);
+            }
+
             VghLantern__SheetChrome__PushText(list, {
-                X         : textX,
-                BaselineY : VghLantern__SheetChrome__BaselineFromTop(cursorY, bodyMm),
-                Text      : bodyLines[i],
-                FontMm    : bodyMm,
-                Weight    : 'normal',
-                Colour    : style.MutedColour,
-                Align     : 'left'
+                X          : textX,
+                BaselineY  : VghLantern__SheetChrome__BaselineFromTop(cursorY, bodyMm),
+                Text       : bodyLines[i],
+                FontMm     : bodyMm,
+                Weight     : 'normal',
+                Colour     : style.MutedColour,
+                Align      : 'left',
+                TrackingMm : lineTrackingMm
             });
 
             cursorY  +=  bodyLineMm;
@@ -659,6 +687,67 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
         };
 
         return solved;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Resolve a Row's Raw Value, With Any Field-Specific Composition
+    // ------------------------------------------------------------
+    // Only the Scale row does anything beyond a straight field lookup: the paper size
+    // is not a row of its own (there is nowhere in the strip that reads as "Paper" on
+    // its own terms), it is quoted alongside the ratio it applies to, taken from this
+    // sheet's own solved layout rather than the live SheetManager selection so a baked
+    // pack page never quotes the paper the editor happens to be showing.
+    function VghLantern__SheetChrome__ResolveRowValue(rowKey, rawValue, layout) {
+        if (rowKey === 'scale' && rawValue && layout && layout.Page && layout.Page.Label) {
+            return rawValue + ' @ ' + layout.Page.Label;
+        }
+        return rawValue;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Push a Date Value With Its Ordinal Suffix Set Small and Raised
+    // ------------------------------------------------------------
+    // "07th Aug 2026" is pushed as three runs - "07", "th", " Aug 2026" - so the suffix
+    // can print smaller and raised, the way a typeset ordinal reads, rather than as a
+    // full-size "th" sitting on the same baseline as the day number. Falls back to a
+    // single run for any value that does not open with a day ordinal, which is what
+    // keeps this safe to call for a blank or otherwise-shaped date.
+    function VghLantern__SheetChrome__PushDateValue(list, x, baselineY, text, fonts, style, titleCfg) {
+        var match  =  ORDINAL_SUFFIX_PATTERN.exec(text);
+        if (!match) {
+            VghLantern__SheetChrome__PushText(list, {
+                X: x, BaselineY: baselineY, Text: text, FontMm: fonts.TitleValueMm,
+                Weight: style.TitleValueWeight, Colour: style.InkColour, Align: 'left'
+            });
+            return;
+        }
+
+        var dayText       =  match[1];
+        var suffixText    =  match[2];
+        var tailText      =  match[3];
+        var suffixScale   =  VghLantern__SheetChrome__Number(titleCfg, 'DateOrdinalSuffixScale', 'TitleBlock');
+        var suffixFontMm  =  fonts.TitleValueMm * suffixScale;
+        var raiseMm       =  (fonts.TitleValueMm - suffixFontMm) * CAP_HEIGHT_RATIO;      // <-- Lines the suffix's top up with the day number's cap height
+        var cursorX       =  x;
+
+        VghLantern__SheetChrome__PushText(list, {
+            X: cursorX, BaselineY: baselineY, Text: dayText, FontMm: fonts.TitleValueMm,
+            Weight: style.TitleValueWeight, Colour: style.InkColour, Align: 'left'
+        });
+        cursorX  +=  VghLantern__DrawingEditor__SheetChrome__MeasureTextMm(dayText, fonts.TitleValueMm, style.TitleValueWeight, 0);
+
+        VghLantern__SheetChrome__PushText(list, {
+            X: cursorX, BaselineY: baselineY - raiseMm, Text: suffixText, FontMm: suffixFontMm,
+            Weight: style.TitleValueWeight, Colour: style.InkColour, Align: 'left'
+        });
+        cursorX  +=  VghLantern__DrawingEditor__SheetChrome__MeasureTextMm(suffixText, suffixFontMm, style.TitleValueWeight, 0);
+
+        VghLantern__SheetChrome__PushText(list, {
+            X: cursorX, BaselineY: baselineY, Text: tailText, FontMm: fonts.TitleValueMm,
+            Weight: style.TitleValueWeight, Colour: style.InkColour, Align: 'left'
+        });
     }
     // ------------------------------------------------------------
 
@@ -738,7 +827,8 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
             );
 
             valueText  =  VghLantern__DrawingEditor__SheetChrome__FitText(
-                String(fields[rows[i].Key] || ''), fonts.TitleValueMm, style.TitleValueWeight, 0, textRoom
+                VghLantern__SheetChrome__ResolveRowValue(rows[i].Key, String(fields[rows[i].Key] || ''), layout),
+                fonts.TitleValueMm, style.TitleValueWeight, 0, textRoom
             );
 
             VghLantern__SheetChrome__PushText(list, {
@@ -752,15 +842,21 @@ const VghLantern__DrawingEditor__SheetChrome = (function() {
                 TrackingMm : style.TitleLabelTrackingMm
             });
 
-            VghLantern__SheetChrome__PushText(list, {
-                X         : cursorX + padHMm,
-                BaselineY : valueBaseY,
-                Text      : valueText,
-                FontMm    : fonts.TitleValueMm,
-                Weight    : style.TitleValueWeight,
-                Colour    : style.InkColour,
-                Align     : 'left'
-            });
+            // The date carries its ordinal suffix as a small raised run; every other
+            // field prints as the one plain run it has always been.
+            if (rows[i].Key === 'issueDate') {
+                VghLantern__SheetChrome__PushDateValue(list, cursorX + padHMm, valueBaseY, valueText, fonts, style, titleCfg);
+            } else {
+                VghLantern__SheetChrome__PushText(list, {
+                    X         : cursorX + padHMm,
+                    BaselineY : valueBaseY,
+                    Text      : valueText,
+                    FontMm    : fonts.TitleValueMm,
+                    Weight    : style.TitleValueWeight,
+                    Colour    : style.InkColour,
+                    Align     : 'left'
+                });
+            }
 
             cursorX  +=  cellWidth;
         }

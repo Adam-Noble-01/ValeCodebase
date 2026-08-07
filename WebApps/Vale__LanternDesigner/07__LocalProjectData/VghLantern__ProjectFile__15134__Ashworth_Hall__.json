@@ -1,17 +1,17 @@
 {
     "VghLantern__ProjectFile__Metadata": {
         "VghLantern__ProjectFile__Metadata__Description": "Project identity and document tracking metadata.",
-        "VghLantern__ProjectFile__Metadata__ProjectCode": "2525",
-        "VghLantern__ProjectFile__Metadata__ProjectName": "Bay Manor",
-        "VghLantern__ProjectFile__Metadata__DocumentName": "Bay Manor Glazebars",
-        "VghLantern__ProjectFile__Metadata__ClientName": "Dr Glazebaramara",
-        "VghLantern__ProjectFile__Metadata__SiteAddress": "",
-        "VghLantern__ProjectFile__Metadata__DocumentStatus": "For Approval",
-        "VghLantern__ProjectFile__Metadata__DateCreated": "05-Aug-2026",
-        "VghLantern__ProjectFile__Metadata__DateModified": "06-Aug-2026",
+        "VghLantern__ProjectFile__Metadata__ProjectCode": "15134",
+        "VghLantern__ProjectFile__Metadata__ProjectName": "Ashworth Hall",
+        "VghLantern__ProjectFile__Metadata__DocumentName": "Pool House Roof Lanterns",
+        "VghLantern__ProjectFile__Metadata__ClientName": "Mrs Sarah Ellison",
+        "VghLantern__ProjectFile__Metadata__SiteAddress": "Ashworth Hall, Hall Drive, Asfordby, Melton Mowbray, Leicestershire, LE14 3SA",
+        "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
+        "VghLantern__ProjectFile__Metadata__DateCreated": "07-Aug-2026 08:57:25",
+        "VghLantern__ProjectFile__Metadata__DateModified": "07-Aug-2026 10:08:15",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
-        "VghLantern__ProjectFile__Metadata__Author": "",
+        "VghLantern__ProjectFile__Metadata__Author": "Val Frederickson",
         "VghLantern__ProjectFile__Metadata__SchemaVersion": "1.0.0"
     },
     "VghLantern__ProjectFile__GlobalSettings": {
@@ -27,6 +27,7 @@
         "VghLantern__ProjectFile__DrawingLayout__Orientation": null,
         "VghLantern__ProjectFile__DrawingLayout__ScaleDenominator": null,
         "VghLantern__ProjectFile__DrawingLayout__ScaleIsManual": false,
+        "VghLantern__ProjectFile__DrawingLayout__PaperIsManual": false,
         "VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct": null,
         "VghLantern__ProjectFile__DrawingLayout__RowSharesPct": null,
         "VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor": 1,
@@ -36,20 +37,20 @@
         "VghLantern__ProjectFile__ClientDocument__Description": "The client-facing welcome letter and this project's own terms. Standard terms live in the markdown library; only their on/off state is recorded here.",
         "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
         "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch.",
-        "VghLantern__ProjectFile__ClientDocument__SignOffName": "Adam Noble",
-        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "Developer",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "Jimmy Jaws",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "Designer",
         "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
         "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
         "VghLantern__ProjectFile__ClientDocument__SectionToggles": {},
-        "VghLantern__ProjectFile__ClientDocument__ClientAddressLine1": "{{ClientAddress__Line01}}",
-        "VghLantern__ProjectFile__ClientDocument__ClientAddressStreet": "{{ClientAddress__StreetName}}",
-        "VghLantern__ProjectFile__ClientDocument__ClientAddressTownCity": "{{ClientAddress__Town/City}}",
-        "VghLantern__ProjectFile__ClientDocument__ClientAddressPostCode": "{{ClientAddress__PostCode}}"
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressLine1": "Ashworth Hall",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressStreet": "Hall Drive, Asfordby",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressTownCity": "Melton Mowbray",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressPostCode": "LE14 3SA"
     },
     "VghLantern__ProjectFile__Lanterns": [
         {
             "Lantern__Identity__Config": {
-                "Lantern__Identity__Config__Id": "ltn_996322_0",
+                "Lantern__Identity__Config__Id": "ltn_445628_0",
                 "Lantern__Identity__Config__Title": "",
                 "Lantern__Identity__Config__Reference": "",
                 "Lantern__Identity__Config__SortOrder": 0,
@@ -108,37 +109,38 @@
                 "Lantern__Notes__Config__DocumentWarning": "",
                 "Lantern__Notes__Config__InternalComments": ""
             },
+            "Lantern__DrawingNotes__Config": {
+                "Lantern__DrawingNotes__Config__Notes": []
+            },
             "Lantern__DrawingLayout__Config": {
                 "Lantern__DrawingLayout__Config__SheetSizeKey": "A4",
                 "Lantern__DrawingLayout__Config__Orientation": "landscape",
                 "Lantern__DrawingLayout__Config__ScaleDenominator": 50,
                 "Lantern__DrawingLayout__Config__ScaleIsManual": false,
+                "Lantern__DrawingLayout__Config__PaperIsManual": true,
                 "Lantern__DrawingLayout__Config__ColumnSharesPct": [
-                    63.06187820731283,
-                    36.93812179268717
+                    54.31009688612038,
+                    45.68990311387962
                 ],
                 "Lantern__DrawingLayout__Config__RowSharesPct": [
-                    51.46390423309708,
-                    48.53609576690292
+                    44.64564246985947,
+                    55.35435753014053
                 ],
-                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.93290040600921,
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 2.2355251205717535,
                 "Lantern__DrawingLayout__Config__ViewCameraStates": {
                     "threeDimensional": {
                         "Position": {
-                            "x": 5.067868445572205,
-                            "y": 3.1701350893836464,
-                            "z": 6.053250799142135
+                            "x": 6.661036191814661,
+                            "y": 2.292648519610712,
+                            "z": 4.6188641974351485
                         },
                         "Target": {
-                            "x": 0.3629387565133856,
-                            "y": -0.23233484560898598,
-                            "z": 0.0312154135745084
+                            "x": 0.23448077010972157,
+                            "y": 0.2445361225004734,
+                            "z": -0.063049164735219
                         }
                     }
                 }
-            },
-            "Lantern__DrawingNotes__Config": {
-                "Lantern__DrawingNotes__Config__Notes": []
             }
         }
     ]

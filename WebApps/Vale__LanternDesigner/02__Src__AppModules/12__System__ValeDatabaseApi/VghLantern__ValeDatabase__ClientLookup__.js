@@ -185,7 +185,11 @@ const VghLantern__ValeDatabase__ClientLookup = (function() {
     // ------------------------------------------------------------
     // The project file stores one SiteAddress string; the table stores the
     // address broken into fields as the real database will. Joined here in
-    // one place so every consumer composes the identical line.
+    // one place so every consumer - the letter, the specification schedule,
+    // the drawing titleblock - composes the identical, complete line. A
+    // consumer that needs less than this (the titleblock drops county for
+    // space) trims what this returns rather than this returning less than
+    // the full address, which would silently shortchange every other reader.
     function VghLantern__ValeDatabase__ComposeSiteAddress(record) {
         if (!record) return '';
 

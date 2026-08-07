@@ -663,6 +663,11 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         }
         if (VghLantern__SchemaValidator__ApplyBoolField(layoutCfg, 'Lantern__DrawingLayout__Config__ScaleIsManual', false)) didMutate  =  true;
 
+        // Defaults to false on a project saved before the auto layout ladder existed,
+        // which is correct: the paper such a file recorded is one the app picked, and
+        // the ladder should be free to re-fit it rather than treating it as a choice.
+        if (VghLantern__SchemaValidator__ApplyBoolField(layoutCfg, 'Lantern__DrawingLayout__Config__PaperIsManual', false)) didMutate  =  true;
+
         if (!Array.isArray(layoutCfg['Lantern__DrawingLayout__Config__ColumnSharesPct'])) {
             layoutCfg['Lantern__DrawingLayout__Config__ColumnSharesPct']  =  null;
             didMutate  =  true;
@@ -817,6 +822,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             didMutate  =  true;
         }
         if (VghLantern__SchemaValidator__ApplyBoolField(layoutCfg, 'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual', false)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyBoolField(layoutCfg, 'VghLantern__ProjectFile__DrawingLayout__PaperIsManual', false)) didMutate  =  true;
 
         if (!Array.isArray(layoutCfg['VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct'])) {
             layoutCfg['VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct']  =  null;
@@ -851,7 +857,8 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             && layoutCfg['Lantern__DrawingLayout__Config__ScaleDenominator'] === null
             && layoutCfg['Lantern__DrawingLayout__Config__ColumnSharesPct'] === null
             && layoutCfg['Lantern__DrawingLayout__Config__RowSharesPct'] === null
-            && layoutCfg['Lantern__DrawingLayout__Config__ScaleIsManual'] !== true;
+            && layoutCfg['Lantern__DrawingLayout__Config__ScaleIsManual'] !== true
+            && layoutCfg['Lantern__DrawingLayout__Config__PaperIsManual'] !== true;
     }
     // ------------------------------------------------------------
 
@@ -872,6 +879,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
             ['VghLantern__ProjectFile__DrawingLayout__Orientation',      'Lantern__DrawingLayout__Config__Orientation'],
             ['VghLantern__ProjectFile__DrawingLayout__ScaleDenominator', 'Lantern__DrawingLayout__Config__ScaleDenominator'],
             ['VghLantern__ProjectFile__DrawingLayout__ScaleIsManual',    'Lantern__DrawingLayout__Config__ScaleIsManual'],
+            ['VghLantern__ProjectFile__DrawingLayout__PaperIsManual',    'Lantern__DrawingLayout__Config__PaperIsManual'],
             ['VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct',  'Lantern__DrawingLayout__Config__ColumnSharesPct'],
             ['VghLantern__ProjectFile__DrawingLayout__RowSharesPct',     'Lantern__DrawingLayout__Config__RowSharesPct'],
             ['VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor',  'Lantern__DrawingLayout__Config__SheetZoomFactor'],

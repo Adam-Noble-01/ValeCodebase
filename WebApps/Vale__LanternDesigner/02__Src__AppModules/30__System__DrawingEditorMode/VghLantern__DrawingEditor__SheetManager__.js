@@ -103,6 +103,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     const LAYOUT_ORIENTATION       =  'Lantern__DrawingLayout__Config__Orientation';
     const LAYOUT_SCALE             =  'Lantern__DrawingLayout__Config__ScaleDenominator';
     const LAYOUT_SCALE_MANUAL      =  'Lantern__DrawingLayout__Config__ScaleIsManual';
+    const LAYOUT_PAPER_MANUAL      =  'Lantern__DrawingLayout__Config__PaperIsManual';
     const LAYOUT_COLUMN_SHARES     =  'Lantern__DrawingLayout__Config__ColumnSharesPct';
     const LAYOUT_ROW_SHARES        =  'Lantern__DrawingLayout__Config__RowSharesPct';
     const LAYOUT_ZOOM              =  'Lantern__DrawingLayout__Config__SheetZoomFactor';
@@ -113,6 +114,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     const LAYOUT_PROJECT_ORIENTATION    =  'VghLantern__ProjectFile__DrawingLayout__Orientation';
     const LAYOUT_PROJECT_SCALE          =  'VghLantern__ProjectFile__DrawingLayout__ScaleDenominator';
     const LAYOUT_PROJECT_SCALE_MANUAL   =  'VghLantern__ProjectFile__DrawingLayout__ScaleIsManual';
+    const LAYOUT_PROJECT_PAPER_MANUAL   =  'VghLantern__ProjectFile__DrawingLayout__PaperIsManual';
     const LAYOUT_PROJECT_COLUMN_SHARES  =  'VghLantern__ProjectFile__DrawingLayout__ColumnSharesPct';
     const LAYOUT_PROJECT_ROW_SHARES     =  'VghLantern__ProjectFile__DrawingLayout__RowSharesPct';
     const LAYOUT_PROJECT_ZOOM           =  'VghLantern__ProjectFile__DrawingLayout__SheetZoomFactor';
@@ -125,6 +127,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     let VghLantern__SheetManager__SheetSizeKey    =  null;                    // <-- Null means "use the config default"
     let VghLantern__SheetManager__Orientation     =  null;
     let VghLantern__SheetManager__IsScaleManual   =  false;                   // <-- User picked a scale; auto fit stands down until reset
+    let VghLantern__SheetManager__IsPaperManual   =  false;                   // <-- User picked a sheet size or orientation; the ladder leaves the paper alone
     let VghLantern__SheetManager__IsSubscribed    =  false;                   // <-- Guards duplicate StateManager listeners
     let VghLantern__SheetManager__RedrawTimerId   =  null;
     let VghLantern__SheetManager__IsRendering     =  false;                   // <-- Prevents overlapping async sheet builds
@@ -228,13 +231,26 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // the same size on every sheet, so the layout is now a pure function of the paper
     // and the grid shares.
     function VghLantern__DrawingEditor__SheetManager__SolveLayout() {
-        var SheetPdfLayout  =  window.VghLantern__DrawingEditor__SheetPdfLayout;
-        if (!SheetPdfLayout) return null;
-
-        var sheetSize  =  SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__SheetSizeMm(
+        return VghLantern__SheetManager__SolveLayoutFor(
             VghLantern__DrawingEditor__SheetManager__SheetSizeKey(),
             VghLantern__DrawingEditor__SheetManager__Orientation()
         );
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Solve the Paper Layout of an Arbitrary Sheet Size
+    // ------------------------------------------------------------
+    // The same solve as above against a paper the sheet has not adopted, which is how
+    // the auto layout ladder asks "would the views fit on A4?" without the editor
+    // flickering through every rung it rejects. Returns null for a size key that is
+    // not in the sheet size table, so a mistyped ladder rung is skipped rather than
+    // silently drawn on the default paper.
+    function VghLantern__SheetManager__SolveLayoutFor(sheetSizeKey, orientation) {
+        var SheetPdfLayout  =  window.VghLantern__DrawingEditor__SheetPdfLayout;
+        if (!SheetPdfLayout) return null;
+
+        var sheetSize  =  SheetPdfLayout.VghLantern__DrawingEditor__SheetPdfLayout__SheetSizeMm(sheetSizeKey, orientation);
         if (!sheetSize) return null;
 
         VghLantern__SheetManager__EnsureShares();                             // <-- Solver reads the shares back through GetGridShares
@@ -519,16 +535,153 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Apply Auto Fit to the Scale Before Any View Is Drawn
+    // SUB HELPER FUNCTION | Solve One Candidate Paper and Its Fit Requests
     // ------------------------------------------------------------
-    function VghLantern__SheetManager__ApplyAutoFit(layout, geometry) {
+    // Memoised across a ladder walk because the ladder revisits the same two papers at
+    // different scales, and building the requests means measuring the skeleton once
+    // per view. The requests depend on the paper only - the scale is what is tested
+    // against them - so one entry per paper serves every rung that names it.
+    function VghLantern__SheetManager__AutoLayoutCandidate(cache, sheetSizeKey, orientation, geometry) {
+        var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+        var cacheKey       =  String(sheetSizeKey) + '|' + String(orientation);
+
+        if (Object.prototype.hasOwnProperty.call(cache, cacheKey)) return cache[cacheKey];
+
+        var layout  =  VghLantern__SheetManager__SolveLayoutFor(sheetSizeKey, orientation);
+
+        cache[cacheKey]  =  layout
+            ? {
+                Layout   : layout,
+                Requests : ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(layout, geometry)
+            }
+            : null;
+
+        return cache[cacheKey];
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Build the Rungs This Walk Is Allowed to Consider
+    // ------------------------------------------------------------
+    // A hand-picked scale narrows the ladder to its paper steps: the rungs are walked
+    // in the same order, but every one of them is tested at the scale the user pinned
+    // rather than the scale it carries, and repeated papers collapse. That way pinning
+    // 1:20 still moves a big lantern from A4 up to A3 rather than clipping it.
+    function VghLantern__SheetManager__AutoLayoutRungs(pinnedDenominator) {
+        var ScaleManager  =  window.VghLantern__DrawingEditor__ScaleManager;
+        var ladder        =  ScaleManager.VghLantern__DrawingEditor__ScaleManager__ListAutoFitLadder();
+
+        if (!pinnedDenominator) return ladder;
+
+        var rungs  =  [];
+        var seen   =  {};
+        var i, rung, paperKey;
+
+        for (i = 0; i < ladder.length; i++) {
+            rung      =  ladder[i];
+            paperKey  =  String(rung.SheetSizeKey) + '|' + String(rung.Orientation);
+            if (seen[paperKey]) continue;
+
+            seen[paperKey]  =  true;
+            rungs.push({
+                SheetSizeKey     : rung.SheetSizeKey,
+                Orientation      : rung.Orientation,
+                ScaleDenominator : pinnedDenominator
+            });
+        }
+
+        return rungs;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Settle the Paper and the Scale Before Any View Is Drawn
+    // ------------------------------------------------------------
+    // Walks the configured ladder and adopts the first rung on which every
+    // orthographic view fits its frame, which is how a sheet lands on A4 at 1:50 and
+    // only grows from there. Returns the solved layout of the rung it settled on so
+    // the caller does not solve the same paper twice, or null when it changed nothing.
+    //
+    // Falling off the end of the ladder adopts the last rung rather than giving up: a
+    // lantern too big for the coarsest paper and scale Vale issues is drawn small, not
+    // clipped, and the drawing itself is then the report that something is unusual.
+    //
+    // Both pins on means the user has described the sheet completely and this stands
+    // down entirely.
+    function VghLantern__SheetManager__ApplyAutoLayout(geometry) {
         var ScaleManager   =  window.VghLantern__DrawingEditor__ScaleManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
-        if (!ScaleManager || !ViewPlacement) return;
-        if (!ScaleManager.VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled()) return;
+        if (!ScaleManager || !ViewPlacement) return null;
+        if (!ScaleManager.VghLantern__DrawingEditor__ScaleManager__IsAutoFitEnabled()) return null;
+        if (VghLantern__SheetManager__IsScaleManual && VghLantern__SheetManager__IsPaperManual) return null;
 
-        var requests  =  ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(layout, geometry);
-        if (requests.length) ScaleManager.VghLantern__DrawingEditor__ScaleManager__FitToRequests(requests);
+        // Paper pinned by hand: the ladder may not move it, so the scale is the only
+        // thing left to fit and this is the pre-ladder behaviour unchanged.
+        if (VghLantern__SheetManager__IsPaperManual) {
+            var pinnedLayout  =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
+            if (!pinnedLayout) return null;
+
+            var pinnedRequests  =  ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(pinnedLayout, geometry);
+            if (pinnedRequests.length) ScaleManager.VghLantern__DrawingEditor__ScaleManager__FitToRequests(pinnedRequests);
+            return pinnedLayout;
+        }
+
+        var pinnedDenominator  =  VghLantern__SheetManager__IsScaleManual
+            ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator()
+            : null;
+
+        var rungs  =  VghLantern__SheetManager__AutoLayoutRungs(pinnedDenominator);
+        if (!rungs.length) {                                                   // <-- No ladder configured; fit the scale inside the paper we already have
+            var currentLayout  =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
+            if (!currentLayout || pinnedDenominator) return currentLayout;
+
+            var currentRequests  =  ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__BuildFitRequests(currentLayout, geometry);
+            if (currentRequests.length) ScaleManager.VghLantern__DrawingEditor__ScaleManager__FitToRequests(currentRequests);
+            return currentLayout;
+        }
+
+        var cache      =  {};
+        var lastValid  =  null;
+        var i, rung, candidate;
+
+        for (i = 0; i < rungs.length; i++) {
+            rung       =  rungs[i];
+            candidate  =  VghLantern__SheetManager__AutoLayoutCandidate(cache, rung.SheetSizeKey, rung.Orientation, geometry);
+            if (!candidate) continue;                                          // <-- Rung names a paper the sheet size table does not hold
+
+            lastValid  =  { Rung : rung, Candidate : candidate };
+
+            if (ScaleManager.VghLantern__DrawingEditor__ScaleManager__RequestsFitAt(candidate.Requests, rung.ScaleDenominator)) {
+                return VghLantern__SheetManager__AdoptAutoLayout(rung, candidate);
+            }
+        }
+
+        if (!lastValid) return null;                                           // <-- Every rung named an unknown paper; leave the sheet as it is
+        return VghLantern__SheetManager__AdoptAutoLayout(lastValid.Rung, lastValid.Candidate);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB HELPER FUNCTION | Adopt a Ladder Rung as the Sheet Setup
+    // ------------------------------------------------------------
+    // Written straight onto the session variables rather than through the toolbar
+    // path, because this is the sheet arriving at its own answer rather than the user
+    // choosing one - neither pin is set and nothing is recorded as an edit.
+    function VghLantern__SheetManager__AdoptAutoLayout(rung, candidate) {
+        var ScaleManager  =  window.VghLantern__DrawingEditor__ScaleManager;
+
+        // Taken from the solved page rather than from the rung, so the session state is
+        // what was actually measured. A rung that leaves the orientation out is solved
+        // against the config default, and this is what records that resolution instead
+        // of storing the blank and resolving it again on every later read.
+        VghLantern__SheetManager__SheetSizeKey  =  candidate.Layout.Page.SizeKey;
+        VghLantern__SheetManager__Orientation   =  candidate.Layout.Page.Orientation;
+
+        if (!VghLantern__SheetManager__IsScaleManual) {
+            ScaleManager.VghLantern__DrawingEditor__ScaleManager__SetDenominator(rung.ScaleDenominator);
+        }
+
+        return candidate.Layout;
     }
     // ------------------------------------------------------------
 
@@ -548,14 +701,15 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         try {
             var state     =  VghLantern__SheetManager__ReadState();
             var hasModel  =  !!(state.Lantern && state.Geometry.Skeleton);
-            var layout    =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
 
-            // Scale first: the toolbar select, the frame captions and the titleblock
-            // all quote it, so it must be settled before any of them render. A scale
-            // the user picked by hand is never overridden by the auto fit.
-            if (hasModel && layout && !VghLantern__SheetManager__IsScaleManual) {
-                VghLantern__SheetManager__ApplyAutoFit(layout, state.Geometry);
-            }
+            // Paper and scale first: the toolbar selects, the frame captions and the
+            // titleblock all quote them, so both must be settled before any of them
+            // render. The ladder may move the paper as well as the scale, so it runs
+            // ahead of the solve rather than against an already-solved sheet - and it
+            // hands back the layout of the rung it chose so the paper is solved once.
+            // Anything the user pinned by hand is left exactly as they set it.
+            var layout  =  hasModel ? VghLantern__SheetManager__ApplyAutoLayout(state.Geometry) : null;
+            if (!layout) layout  =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
 
             VghLantern__SheetManager__RenderToolbar();
             VghLantern__SheetManager__BindToolbar();
@@ -856,6 +1010,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             SheetSizeKey    : VghLantern__SheetManager__SheetSizeKey,
             Orientation     : VghLantern__SheetManager__Orientation,
             IsScaleManual   : VghLantern__SheetManager__IsScaleManual,
+            IsPaperManual   : VghLantern__SheetManager__IsPaperManual,
             ColumnSharesPct : VghLantern__SheetManager__ColumnSharesPct
                                   ? VghLantern__SheetManager__ColumnSharesPct.slice() : null,
             RowSharesPct    : VghLantern__SheetManager__RowSharesPct
@@ -888,6 +1043,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             VghLantern__SheetManager__SheetSizeKey     =  snapshot.SheetSizeKey;
             VghLantern__SheetManager__Orientation      =  snapshot.Orientation;
             VghLantern__SheetManager__IsScaleManual    =  snapshot.IsScaleManual;
+            VghLantern__SheetManager__IsPaperManual    =  snapshot.IsPaperManual;
             VghLantern__SheetManager__ColumnSharesPct  =  snapshot.ColumnSharesPct;
             VghLantern__SheetManager__RowSharesPct     =  snapshot.RowSharesPct;
             VghLantern__SheetManager__ZoomFactor       =  snapshot.ZoomFactor;
@@ -921,14 +1077,15 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             VghLantern__SheetManager__LanternLayoutBlock(lantern, false) || {}
         );
 
-        var layout  =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
+        // Same order as Render: the ladder settles the paper and the scale together and
+        // returns the layout of the rung it chose, so a baked sheet lands on the paper
+        // the user would see if they selected that lantern by hand. Only a lantern with
+        // no geometry to fit falls through to solving the recorded paper directly.
+        var layout  =  (geometry && geometry.Skeleton)
+            ? VghLantern__SheetManager__ApplyAutoLayout(geometry)
+            : null;
+        if (!layout) layout  =  VghLantern__DrawingEditor__SheetManager__SolveLayout();
         if (!layout) return null;
-
-        // The fit changes the scale, not the paper, so the solved layout stands. This
-        // is the same order Render uses: settle the scale before anything quotes it.
-        if (geometry && geometry.Skeleton && !VghLantern__SheetManager__IsScaleManual) {
-            VghLantern__SheetManager__ApplyAutoFit(layout, geometry);
-        }
 
         VghLantern__SheetManager__ActiveLayout  =  layout;
         return layout;
@@ -1003,6 +1160,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
         mapped[LAYOUT_ORIENTATION]    =  projectBlock[LAYOUT_PROJECT_ORIENTATION];
         mapped[LAYOUT_SCALE]          =  projectBlock[LAYOUT_PROJECT_SCALE];
         mapped[LAYOUT_SCALE_MANUAL]   =  projectBlock[LAYOUT_PROJECT_SCALE_MANUAL];
+        mapped[LAYOUT_PAPER_MANUAL]   =  projectBlock[LAYOUT_PROJECT_PAPER_MANUAL];
         mapped[LAYOUT_COLUMN_SHARES]  =  projectBlock[LAYOUT_PROJECT_COLUMN_SHARES];
         mapped[LAYOUT_ROW_SHARES]     =  projectBlock[LAYOUT_PROJECT_ROW_SHARES];
         mapped[LAYOUT_ZOOM]           =  projectBlock[LAYOUT_PROJECT_ZOOM];
@@ -1036,6 +1194,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator()
             : null;
         block[LAYOUT_SCALE_MANUAL]  =  VghLantern__SheetManager__IsScaleManual;
+        block[LAYOUT_PAPER_MANUAL]  =  VghLantern__SheetManager__IsPaperManual;
         block[LAYOUT_COLUMN_SHARES] =  VghLantern__SheetManager__ColumnSharesPct.slice();
         block[LAYOUT_ROW_SHARES]    =  VghLantern__SheetManager__RowSharesPct.slice();
         block[LAYOUT_ZOOM]          =  VghLantern__SheetManager__ZoomFactor;
@@ -1083,7 +1242,12 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
                 ? block[LAYOUT_ORIENTATION]
                 : null;
 
+            // Absent means false, which is what re-fits a project saved before the auto
+            // layout ladder existed: its recorded paper is a default the app chose, not
+            // a choice the user made, so the ladder is free to move it back to A4.
             VghLantern__SheetManager__IsScaleManual =  block[LAYOUT_SCALE_MANUAL] === true;
+            VghLantern__SheetManager__IsPaperManual =  block[LAYOUT_PAPER_MANUAL] === true;
+
             if (ScaleManager && typeof block[LAYOUT_SCALE] === 'number') {
                 ScaleManager.VghLantern__DrawingEditor__ScaleManager__SetDenominator(block[LAYOUT_SCALE]);
             }
@@ -1174,6 +1338,7 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
             ? ScaleManager.VghLantern__DrawingEditor__ScaleManager__GetDenominator()
             : null;
         block[LAYOUT_SCALE_MANUAL]  =  VghLantern__SheetManager__IsScaleManual;
+        block[LAYOUT_PAPER_MANUAL]  =  VghLantern__SheetManager__IsPaperManual;
         block[LAYOUT_COLUMN_SHARES] =  VghLantern__SheetManager__ColumnSharesPct
             ? VghLantern__SheetManager__ColumnSharesPct.slice()
             : null;
@@ -1219,7 +1384,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         if (sizeSelect) {
             sizeSelect.addEventListener('change', function(e) {
-                VghLantern__SheetManager__SheetSizeKey  =  e.currentTarget.value;
+                VghLantern__SheetManager__SheetSizeKey   =  e.currentTarget.value;
+                VghLantern__SheetManager__IsPaperManual  =  true;              // <-- The choice sticks; the auto layout ladder no longer moves the paper
                 VghLantern__SheetManager__RecordLayoutState('drawingLayout:sheetSize');
                 void VghLantern__DrawingEditor__SheetManager__Render();
             });
@@ -1227,7 +1393,8 @@ const VghLantern__DrawingEditor__SheetManager = (function() {
 
         if (orientSelect) {
             orientSelect.addEventListener('change', function(e) {
-                VghLantern__SheetManager__Orientation  =  e.currentTarget.value;
+                VghLantern__SheetManager__Orientation    =  e.currentTarget.value;
+                VghLantern__SheetManager__IsPaperManual  =  true;              // <-- Orientation is half the paper choice, so it pins the same way
                 VghLantern__SheetManager__RecordLayoutState('drawingLayout:orientation');
                 void VghLantern__DrawingEditor__SheetManager__Render();
             });

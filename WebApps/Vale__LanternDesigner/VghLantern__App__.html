@@ -458,6 +458,13 @@
     <!-- VghLantern__Env3d__WhenReady(cb), which is published synchronously.         -->
     <script type="module" src="02__Src__AppModules/06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__Bootstrap__.mjs"></script>
 
+    <!-- EXPERIMENT - Projected Edges 3D to 2D overlay.                              -->
+    <!-- Self contained in 27__System__ProjectedEdges2d. It wraps the published   -->
+    <!-- Env2d render pipeline rather than being called from it, so this tag and the  -->
+    <!-- stylesheet import in the CoreUi index are the only references to it anywhere -->
+    <!-- in the application. Delete both plus the folder to remove it completely.     -->
+    <script type="module" src="02__Src__AppModules/27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__Bootstrap__.mjs"></script>
+
     <!-- endregion --------------------------------------------------------- -->
 
 

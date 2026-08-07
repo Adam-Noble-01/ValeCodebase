@@ -79,6 +79,8 @@
             "DualViewShareMinPct"      : 25,
             "DualViewShareMaxPct"      : 75,
             "DualViewNote"             : "Dual view stacks a second 2D surface under the primary so plan and an elevation can be compared at once. Orientation vertical = stacked; horizontal = side by side.",
+            "ViewFitMarginFactor"      : 0.10,
+            "ViewFitMarginFactorNote"  : "Extra breathing room applied once the panes have been put on one drawing scale. The fit is measured from the skeleton members alone, so the dimension chains, the finials and the view title all sit outside it. Stepping the shared scale back by this fraction brings them inside the frame instead of against its edge.",
             "ProfileTraceNote"         : "Profile traces are off by default in the editor because they read as clutter at configurator zoom levels. The drawing editor turns them on for the issued sheet."
         },
 

@@ -535,37 +535,6 @@
     /* ------------------------------------------------------------ */
 
 
-    /* BAR | Secondary Pane View Picker */
-    /* ------------------------------------------------------------ */
-    .VghLantern__Editor__Viewport2dSecondaryBar {
-        display                            : flex;
-        align-items                        : center;
-        gap                                : var(--Vale_Spacing_Small);
-        flex                               : 0 0 auto;
-        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
-        background-color                   : var(--Vale_BackgroundWhite);
-        border-bottom                      : 1px solid var(--Vale_BorderLight);
-    }
-
-    .VghLantern__Editor__Viewport2dSecondaryLabel {
-        font-size                          : var(--Vale_FontSize_Small);
-        color                              : var(--Vale_TextSecondary);
-        white-space                        : nowrap;
-    }
-
-    .VghLantern__Editor__Viewport2dSecondarySelect {
-        flex                               : 1 1 auto;
-        min-width                          : 0;
-        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
-        font-family                        : var(--Vale_FontFamily);
-        font-size                          : var(--Vale_FontSize_Small);
-        color                              : var(--Vale_TextPrimary);
-        background-color                   : var(--Vale_BackgroundWhite);
-        border                             : 1px solid var(--Vale_BorderLight);
-        border-radius                      : var(--Vale_BorderRadius);
-        cursor                             : pointer;
-    }
-    /* ------------------------------------------------------------ */
 
 
     /* CANVAS | 3D Renderer Host */
@@ -607,6 +576,16 @@
         padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
         background-color                   : var(--Vale_BackgroundWhite);
         border-bottom                      : 1px solid var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TABS | Lower Pane Strip in the Split 2D View */
+    /* ------------------------------------------------------------ */
+    /* Same control as the upper strip. The top rule is what separates it from the
+       drawing above it, since the split handle sits flush against both panes. */
+    .VghLantern__Editor__ViewTabs--secondary {
+        border-top                         : 1px solid var(--Vale_BorderLight);
     }
     /* ------------------------------------------------------------ */
 

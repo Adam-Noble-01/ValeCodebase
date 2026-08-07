@@ -1,0 +1,179 @@
+/* =============================================================================
+ * VGHLANTERN - PROJECTED EDGES STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__ProjectedEdges__Styles__Main__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : ProjectedEdges - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Presentation for the 3D to 2D projection layer and its controls
+ * CREATED    : 06-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Every colour here is a Vale design token. The one deliberate exception is the
+ *   spinner track, which mirrors the ValeVision3D loading overlay it is modelled on.
+ * - Linework colour, width and opacity are NOT declared here. They are written as
+ *   presentation attributes by the SVG layer module, because a CSS rule would beat
+ *   the attribute and take the config file out of the loop - and because attributes
+ *   are what carry the layer through Env2d__RenderPipeline__ToSvgMarkup onto a
+ *   drawing sheet and into a PDF, where this stylesheet does not reach.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Projected Edge Layer
+ * ----------------------------------------------------------------------------- */
+
+    /* Passive, exactly like every other non-dimension layer in the 2D viewport. */
+    .VghLantern__ProjectedEdges__Layer {
+        pointer-events                    : none;
+    }
+
+    /* A projected lantern is one path holding thousands of subpaths. Geometric
+       precision keeps the linework true when the viewport is zoomed well past
+       sheet scale, which is where a projection is judged. */
+    .VghLantern__ProjectedEdges__Path {
+        shape-rendering                   : geometricPrecision;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Drawing Editor Toolbar Button
+ * ----------------------------------------------------------------------------- */
+
+    /* Carries the Drawing Editor's own ToolButton class so it inherits that
+       toolbar's sizing, typography and hover transition. Only state colouring is
+       declared here, and all of it in Vale tokens.
+
+       Idle is a quiet outline: rendering is an action the user chooses, not the
+       normal condition of the sheet, so the control should not compete with
+       Download PDF beside it. */
+
+    .VghLantern__ProjectedEdges__ToolButton {
+        background-color                  : transparent;
+        color                             : var(--Vale_TextPrimary);
+        box-shadow                        : inset 0 0 0 1px var(--Vale_BorderLight);
+    }
+
+    .VghLantern__ProjectedEdges__ToolButton:hover:not(:disabled) {
+        background-color                  : var(--Vale_HoverBackground);
+        color                             : var(--Vale_TextPrimary);
+    }
+
+    /* Rendered and on screen. Solid Vale brand, matching Download PDF, because at
+       this point the layer is part of what the sheet is showing. */
+    .VghLantern__ProjectedEdges__ToolButton--shown,
+    .VghLantern__ProjectedEdges__ToolButton--shown:hover:not(:disabled) {
+        background-color                  : var(--Vale_PrimaryBrand);
+        color                             : var(--Vale_TextLight);
+        box-shadow                        : none;
+    }
+
+    .VghLantern__ProjectedEdges__ToolButton--working {
+        cursor                            : progress;
+    }
+
+    .VghLantern__ProjectedEdges__ToolButton:disabled {
+        opacity                           : 0.55;
+        cursor                            : default;
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Render Progress Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* Modelled on the ValeVision3D layout export overlay, which is the pattern
+       staff already read as "something is rendering". Same semi-transparent white
+       sheet, same subtle blur, same Vale blue ring on a pale track.
+
+       It covers the window on purpose. The projection yields often enough to keep
+       the interface painting, so without a cover the sheet looks editable, and an
+       edit made mid-render invalidates the very work being waited on. */
+
+    .VghLantern__ProjectedEdges__Overlay {
+        position                          : fixed;
+        top                               : 0;
+        left                              : 0;
+        width                             : 100vw;
+        height                            : 100vh;
+        background-color                  : rgba(255, 255, 255, 0.92);
+        display                           : none;
+        flex-direction                    : column;
+        justify-content                   : center;
+        align-items                       : center;
+        z-index                           : var(--Vale_ZIndex_Modal);
+        opacity                           : 0;
+        transition                        : opacity 0.35s ease-out;
+        backdrop-filter                   : blur(4px);
+    }
+
+    .VghLantern__ProjectedEdges__Overlay--visible {
+        display                           : flex;
+        opacity                           : 1;
+    }
+
+    /* Spinner geometry and timing are lifted directly from ValeVision3D so the two
+       applications turn at the same rate and read as one family. */
+    .VghLantern__ProjectedEdges__Overlay__Spinner {
+        width                             : 80px;
+        height                            : 80px;
+        border-radius                     : 50%;
+        border                            : 6px solid #e0e0e0;
+        border-top-color                  : var(--Vale_PrimaryBrand);
+        animation                         : VghLantern__ProjectedEdges__Spin 1s linear infinite;
+        margin-bottom                     : var(--Vale_Spacing_Large);
+    }
+
+    @keyframes VghLantern__ProjectedEdges__Spin {
+        0%   { transform: rotate(0deg);   }
+        100% { transform: rotate(360deg); }
+    }
+
+    .VghLantern__ProjectedEdges__Overlay__Title {
+        margin                            : 0 0 var(--Vale_Spacing_Small) 0;
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_SubHeading);
+        font-weight                       : var(--Vale_FontWeight_SemiBold);
+        color                             : var(--Vale_TextPrimary);
+        letter-spacing                    : 0.5px;
+        text-align                        : center;
+    }
+
+    .VghLantern__ProjectedEdges__Overlay__Status {
+        margin                            : 0;
+        min-height                        : 1.4em;                            /* <-- Reserved, so the count below does not jump as the phase name changes */
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_Standard);
+        font-weight                       : var(--Vale_FontWeight_Regular);
+        color                             : var(--Vale_TextSecondary);
+        letter-spacing                    : 0.5px;
+        text-align                        : center;
+        transition                        : color 0.3s ease;
+    }
+
+    .VghLantern__ProjectedEdges__Overlay__Status--success {
+        color                             : #2a7d4f;
+        font-weight                       : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__ProjectedEdges__Overlay__Status--error {
+        color                             : #b2372f;
+        font-weight                       : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__ProjectedEdges__Overlay__Count {
+        margin                            : var(--Vale_Spacing_Small) 0 0 0;
+        min-height                        : 1.2em;                            /* <-- Reserved for the same reason */
+        font-family                       : var(--Vale_FontFamily);
+        font-size                         : var(--Vale_FontSize_Small);
+        color                             : var(--Vale_TextSubtle);
+        letter-spacing                    : 0.5px;
+        text-align                        : center;
+    }
+
+/* #endregion ------------------------------------------------------------------- */

@@ -164,8 +164,8 @@
             "DrawingTermsQrQueryPattern"     : "?doc=drawingTerms&project={projectCode}&lantern={lanternIndex}",
             "DrawingTermsQrQueryPatternNote" : "Tokens: projectCode, lanternIndex. This is what every drawing sheet encodes, because a contractor scanning a sheet wants the drawing omissions and limitations rather than the payment schedule. The code is the same whether or not that lantern has notes of its own: the application resolves it on arrival, showing the lantern's own notes where they exist and the General Drawing Terms where they do not. That way writing a lantern's first note does not invalidate a code already printed on an issued sheet. TermsQrQueryPattern above is still used for a project-level link with no lantern in scope.",
 
-            "CellWidthMm"               : 52,
-            "CellWidthMmNote"           : "Relative share of the titleblock strip is not used here: this cell is an absolute width taken off the right-hand end, and the flexible field cells divide what is left. That keeps the QR square a fixed printed size whatever paper the sheet is on.",
+            "CellWidthMm"               : 57,
+            "CellWidthMmNote"           : "Relative share of the titleblock strip is not used here: this cell is an absolute width taken off the right-hand end, and the flexible field cells divide what is left. That keeps the QR square a fixed printed size whatever paper the sheet is on. Raised from 52 to 57 (+10%) because the body copy was truncating at 4 lines; Site Address's share in Na__DrawingEditor__Config.json was trimmed to compensate so this growth is not entirely felt by the other field cells.",
             "CellPaddingHMm"            : 1.4,
             "QrPaddingMm"               : 0.6,
             "QrPaddingMmNote"           : "Inset above and below the code inside the strip. The printed QR edge length is the titleblock height less twice this, so the code is exactly as tall as the strip it sits in and nothing about it needs a second dimension to stay in step.",

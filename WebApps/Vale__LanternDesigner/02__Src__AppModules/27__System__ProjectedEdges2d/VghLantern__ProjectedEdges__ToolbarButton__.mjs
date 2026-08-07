@@ -63,9 +63,11 @@ import {
 
 import {
     VghLantern__ProjectedEdges__Pipeline__RenderAll,
+    VghLantern__ProjectedEdges__Pipeline__EnsureRendered,
     VghLantern__ProjectedEdges__Pipeline__Show,
     VghLantern__ProjectedEdges__Pipeline__Hide,
-    VghLantern__ProjectedEdges__Pipeline__Status
+    VghLantern__ProjectedEdges__Pipeline__Status,
+    VGHLANTERN__PROJECTED_EDGES__CHANGED_EVENT
 } from './VghLantern__ProjectedEdges__Pipeline__.mjs';
 
 import {
@@ -271,12 +273,67 @@ import {
     }
     // ------------------------------------------------------------
 
+
+    // MODULE INITIALISATION | Follow Renders Nobody Pressed a Button For
+    // ------------------------------------------------------------
+    // Rendering is automatic now, so most renders begin and end without this module
+    // being involved. Without this the control would go on offering to render
+    // something that had already rendered itself.
+    window.addEventListener(VGHLANTERN__PROJECTED_EDGES__CHANGED_EVENT, function() {
+        VghLantern__ProjectedEdges__ToolbarButton__Sync();
+    });
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
 // REGION | Actions
 // -----------------------------------------------------------------------------
+
+    // FUNCTION | Render From Somewhere Other Than a Button
+    // ------------------------------------------------------------
+    // The shared entry point for the keyboard shortcut and for the gate in front of
+    // Preview and Send. It behaves exactly as pressing the button does, with two
+    // differences that matter to a caller who is not a button:
+    //
+    //   It always ENDS SHOWN. A hidden layer is a state the user chose with a
+    //   button; someone asking for a render from the keyboard, or a screen about to
+    //   issue a drawing, wants to see the result.
+    //
+    //   It returns what happened, so a caller that must not continue until the
+    //   linework exists can await it and know whether anything was actually done.
+    //
+    // A render already in progress is joined rather than started again.
+    export async function VghLantern__ProjectedEdges__ToolbarButton__ForceRender() {
+        if (VghLantern__ProjectedEdges__Pipeline__Status().IsWorking) {
+            return { Rendered : 0, Total : 0, WasBusy : true };
+        }
+
+        VghLantern__ProjectedEdges__ProgressOverlay__Open();
+        VghLantern__ProjectedEdges__ToolbarButton__Sync();
+
+        let failed  =  false;
+        let outcome =  { Rendered : 0, Total : 0 };
+
+        try {
+            outcome  =  await VghLantern__ProjectedEdges__Pipeline__EnsureRendered(function(progress) {
+                VghLantern__ProjectedEdges__ProgressOverlay__Update(progress);
+            });
+        } catch (renderError) {
+            failed  =  true;
+            console.error('[VghLantern ProjectedEdges] Render failed:', renderError);
+        }
+
+        VghLantern__ProjectedEdges__Pipeline__Show();
+        VghLantern__ProjectedEdges__ProgressOverlay__Close({ IsError : failed });
+        VghLantern__ProjectedEdges__ToolbarButton__Sync();
+
+        outcome.Failed  =  failed;
+        return outcome;
+    }
+    // ------------------------------------------------------------
+
 
     // SUB FUNCTION | Run a Render With the Progress Overlay Attached
     // ------------------------------------------------------------

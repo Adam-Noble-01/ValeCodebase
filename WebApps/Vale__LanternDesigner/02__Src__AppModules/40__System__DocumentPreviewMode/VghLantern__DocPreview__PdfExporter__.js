@@ -231,6 +231,36 @@ const VghLantern__DocPreview__PdfExporter = (function() {
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
+    // SUB FUNCTION | Guarantee the Projected Linework Before Anything Is Issued
+    // ------------------------------------------------------------
+    // The projection keeps itself up to date on a short delay, which covers a person
+    // working in the editors. It does not cover this: a document can be opened and
+    // exported faster than that delay, and a drawing that leaves the office showing
+    // less than the model says is the one failure worth spending a second to avoid.
+    //
+    // So the export waits for it, every time. When everything is already in hand -
+    // which it usually is - this costs a promise and returns immediately.
+    //
+    // Returns whether anything was actually rendered, which the caller needs in
+    // order to know whether the baked sheets it is about to use are still current.
+    async function VghLantern__PdfExporter__EnsureLineworkRendered() {
+        var ProjectedEdges  =  window.VghLantern__ProjectedEdges;
+        if (!ProjectedEdges || !ProjectedEdges.VghLantern__ProjectedEdges__ForceRender) return false;
+
+        try {
+            var outcome  =  await ProjectedEdges.VghLantern__ProjectedEdges__ForceRender();
+            return !!(outcome && outcome.Rendered > 0);
+        } catch (renderError) {
+            // Not fatal. A pack without projected linework is still a valid pack,
+            // and refusing to export because a backdrop layer failed would be a
+            // worse answer than exporting the drawing that was on screen.
+            console.error('[VghLantern__PdfExporter] Projected linework render failed; exporting without it:', renderError);
+            return false;
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Export the Previewed Document as a PDF
     // ------------------------------------------------------------
     async function VghLantern__DocPreview__PdfExporter__Export() {
@@ -255,11 +285,24 @@ const VghLantern__DocPreview__PdfExporter = (function() {
             return false;
         }
 
+        // Nothing is issued showing less than the model says.
+        var lineworkChanged  =  await VghLantern__PdfExporter__EnsureLineworkRendered();
+
         // Every drawing in the pack is composed before a single page is written.
         // Awaited here rather than per page because the bake borrows the Drawing
         // Editor's session sheet setup, and interleaving that with painting would mean
         // handing it back and taking it again for every sheet.
         var SheetBaker   =  window.VghLantern__DrawingEditor__SheetBaker;
+
+        // Baked sheets are cached against the lantern's signature, and that signature
+        // does not change when linework is added to a lantern that already had a
+        // sheet. So a render that produced something new has to discard them, or the
+        // pack is written from sheets composed before the linework existed - which
+        // would look exactly like the render having silently done nothing.
+        if (lineworkChanged && SheetBaker && SheetBaker.VghLantern__DrawingEditor__SheetBaker__Clear) {
+            SheetBaker.VghLantern__DrawingEditor__SheetBaker__Clear();
+        }
+
         var bakedSheets  =  SheetBaker
             ? await SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll()
             : [];

@@ -10,6 +10,17 @@ Purpose:
 - Provide project CRUD API backed by 07__LocalProjectData/ on disk
 - Serve the generated component and profile library indexes with no-store caching
 
+Flags:
+- Start-up  : --port --host --silent --log-file --no-cache-bust
+- Dev mode  : -D --d --D --dev --Dev --DevMode --devmode
+              Logs every changed key on every project save. OFF by default.
+              A project carrying rendered projected linework holds tens of
+              thousands of coordinates that are rewritten whenever the shape
+              changes, so leaving this on buries every other line in the log.
+              Accepted on the command line AND typed at the running console,
+              where it toggles.
+- Runtime   : --r --R --restart --Restart   (typed at the console, restarts)
+
 Notes:
 - Despite the "FlaskServer" filename this uses the Python stdlib ThreadingHTTPServer.
   The name is retained for consistency with the sibling Vale WebApps.
@@ -51,6 +62,7 @@ NA__SERVER__PROFILE_INDEX_PATH      = (NA__SERVER__APP_ROOT_PATH / "06__Data__La
 NA__SERVER__SERVICE_WORKER_PATH     = (NA__SERVER__APP_ROOT_PATH / "Na__ServiceWorker__VghLantern.js").resolve()
 NA__SERVER__DEFAULT_PORT            = 8006                                       # <-- Reserved port for the Lantern Designer
 NA__SERVER__OUTPUT_LOG_HANDLE       = None
+NA__SERVER__DEV_MODE                = False                                      # <-- Set from the command line; see Na__Server__HandleProjectSave
 
 NA__SERVER__SW_VERSION_TOKEN_PATTERN = re.compile(r"(const PWA_SW_VERSION_TOKEN\s*=\s*)'[^']*'")  # Matches the one token line in the service worker
 
@@ -468,25 +480,42 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
             except Exception as read_error:
                 print(f"[WARN] Could not parse existing project file {file_path.name}: {read_error}")
 
-        baseline_project_data = existing_project_data if existing_project_data is not None else {}
-        change_entries = Na__Server__CollectJsonDiffEntries(baseline_project_data, project_data)
+        # Per-key change logging is a DEVELOPMENT tool and is off unless asked for.
+        #
+        # It was written when a project was a few hundred hand-authored values and
+        # naming every one that moved was genuinely useful. Projects now carry
+        # rendered linework - tens of thousands of coordinates per lantern, rewritten
+        # whenever the shape changes - and diffing that produces thousands of lines
+        # per autosave, which buries everything worth reading.
+        #
+        # The whole diff is skipped rather than merely silenced. Walking both trees
+        # costs real time on every save, and there is no point paying it to build a
+        # list nobody is going to read.
+        if NA__SERVER__DEV_MODE:
+            baseline_project_data = existing_project_data if existing_project_data is not None else {}
+            change_entries = Na__Server__CollectJsonDiffEntries(baseline_project_data, project_data)
 
-        print(
-            f"[PROJECT_SAVE] code={project_code} source={update_source} "
-            f"payloadBytes={content_length} changedKeys={len(change_entries)}"
-        )
-        if not change_entries:
-            print(f"[PROJECT_SAVE] code={project_code} source={update_source} no key/value updates detected.")
+            print(
+                f"[PROJECT_SAVE] code={project_code} source={update_source} "
+                f"payloadBytes={content_length} changedKeys={len(change_entries)}"
+            )
+            if not change_entries:
+                print(f"[PROJECT_SAVE] code={project_code} source={update_source} no key/value updates detected.")
+            else:
+                for change_entry in change_entries:
+                    path_label  = change_entry["path"]
+                    change_type = change_entry["changeType"]
+                    old_value   = Na__Server__JsonValueToLogValue(change_entry["oldValue"])
+                    new_value   = Na__Server__JsonValueToLogValue(change_entry["newValue"])
+                    print(
+                        f"[PROJECT_CHANGE] code={project_code} source={update_source} "
+                        f"path={path_label} change={change_type} old={old_value} new={new_value}"
+                    )
         else:
-            for change_entry in change_entries:
-                path_label  = change_entry["path"]
-                change_type = change_entry["changeType"]
-                old_value   = Na__Server__JsonValueToLogValue(change_entry["oldValue"])
-                new_value   = Na__Server__JsonValueToLogValue(change_entry["newValue"])
-                print(
-                    f"[PROJECT_CHANGE] code={project_code} source={update_source} "
-                    f"path={path_label} change={change_type} old={old_value} new={new_value}"
-                )
+            print(
+                f"[PROJECT_SAVE] code={project_code} source={update_source} "
+                f"payloadBytes={content_length}"
+            )
 
         NA__SERVER__PROJECT_DATA_PATH.mkdir(parents=True, exist_ok=True)
         try:
@@ -604,7 +633,7 @@ class Na__Server__HttpServer(ThreadingHTTPServer):
 
 
 # -----------------------------------------------------------------------------
-# REGION | Console Flags - Runtime Restart Commands
+# REGION | Console Flags - Runtime Commands
 # -----------------------------------------------------------------------------
 
 NA__SERVER__RESTART_FLAG_TOKENS = {
@@ -612,6 +641,19 @@ NA__SERVER__RESTART_FLAG_TOKENS = {
     "--R",
     "--restart",
     "--Restart"
+}
+
+# Accepted both on the command line and typed at the running console. The same
+# spellings work in both places on purpose: a flag that starts the server one way
+# and is rejected when typed at it would be a small, needless trap.
+NA__SERVER__DEV_FLAG_TOKENS = {
+    "-D",
+    "--d",
+    "--D",
+    "--dev",
+    "--Dev",
+    "--DevMode",
+    "--devmode"
 }
 
 
@@ -635,6 +677,8 @@ def Na__Server__ConsoleCommandReader(command_queue: SimpleQueue, stop_event: thr
 def Na__Server__TryHandleQueuedConsoleCommands(command_queue: SimpleQueue) -> bool:
     # HELPER FUNCTION | Process Queued Console Commands
     # ------------------------------------------------------------
+    global NA__SERVER__DEV_MODE
+
     should_restart_server = False
     while True:
         try:
@@ -650,8 +694,23 @@ def Na__Server__TryHandleQueuedConsoleCommands(command_queue: SimpleQueue) -> bo
             should_restart_server = True
             break
 
+        # Toggled rather than set, so the same keystroke that turns the noise on
+        # turns it off again once whatever was being chased has been found.
+        if command_value in NA__SERVER__DEV_FLAG_TOKENS:
+            NA__SERVER__DEV_MODE = not NA__SERVER__DEV_MODE
+            print("=============================================================================")
+            print(f" VGHLANTERN - DEV MODE {'ON' if NA__SERVER__DEV_MODE else 'OFF'} ({command_value})")
+            if NA__SERVER__DEV_MODE:
+                print(" Per-key project change logging is now ON. Expect thousands of lines")
+                print(" per save on any project carrying rendered linework.")
+            else:
+                print(" Per-key project change logging is now OFF.")
+            print("=============================================================================")
+            continue
+
         print(f' [WARN] Unknown console command: "{command_value}"')
-        print(" [WARN] Supported restart flags: --r | --R | --restart | --Restart")
+        print(" [WARN] Restart flags  : --r | --R | --restart | --Restart")
+        print(" [WARN] Dev mode flags : -D | --d | --dev | --Dev | --DevMode")
     return should_restart_server
     # ------------------------------------------------------------
 
@@ -874,8 +933,17 @@ def main() -> int:
     parser.add_argument("--silent", action="store_true", help="Redirect output to log file for no-console launches")
     parser.add_argument("--log-file", type=str, default="Na__VghLanternServer__Startup.log", help="Log file path relative to app root")
     parser.add_argument("--no-cache-bust", action="store_true", help="Skip stamping a fresh service worker cache token on start and restart")
+    parser.add_argument(
+        "-D", "--d", "--D", "--dev", "--Dev", "--DevMode", "--devmode",
+        dest="dev_mode",
+        action="store_true",
+        help="Development logging. Prints every changed key on every project save. Off by default because rendered linework makes that thousands of lines per save. Also toggleable at the running console with the same flags."
+    )
     args = parser.parse_args()
     # ------------------------------------------------------------
+
+    global NA__SERVER__DEV_MODE
+    NA__SERVER__DEV_MODE = args.dev_mode
 
     Na__Server__ConfigureOutputStreams(args.silent, args.log_file)
 
@@ -903,6 +971,12 @@ def main() -> int:
     print(" Press Ctrl+C to stop server")
     if not args.silent:
         print(" Restart flags  : --r | --R | --restart | --Restart")
+        print(" Dev mode flags : -D | --d | --D | --dev | --Dev | --DevMode")
+        print(f"                  currently {'ON' if NA__SERVER__DEV_MODE else 'OFF'}. Logs every changed key on every")
+        print("                  project save. Off by default: a project carrying rendered")
+        print("                  linework produces thousands of lines per save.")
+        print("                  Works as a start-up flag OR typed at this console to toggle.")
+        print(" Startup flags  : --port | --host | --silent | --log-file | --no-cache-bust")
         print(" Cache bust     : every start and restart stamps a fresh service worker")
         print("                  token, so clients drop ALL cached files on next load")
         print("                  (disable with --no-cache-bust)")

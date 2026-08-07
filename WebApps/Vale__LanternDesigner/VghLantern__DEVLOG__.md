@@ -3,6 +3,229 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.3 - 07-Aug-2026
+### The projected linework stops being something you wait for: a rewritten engine, and a drawing that keeps itself up to date
+
+v0.2.1 added projected linework and was honest about its cost: 7 to 11 seconds per
+view, three views to a lantern, and a note in the config saying repeated attempts to
+bring that down had not succeeded. It was therefore built as a deliberate step. You
+settled the sheet, pressed a button, and waited half a minute.
+
+That step is gone. The projection now keeps itself current: change a dimension and a
+picture of every view appears almost at once, with the exact vector linework
+following a second or so behind it. Nobody presses anything.
+
+The measured change on a real lantern, all three views:
+
+    Before   21 to 33 seconds        7 to 11 per view, every view paying full price
+    After    around 1.4 seconds      1.2 to 1.5 for the first, about 0.1 for each of the rest
+
+#### The vendored library had a bug, and it was costing roughly half the work
+`three-edge-projection` v0.0.10 culls back faces inside its innermost loop with
+`tri.plane.normal.dot(UP_VECTOR) !== inverted` - a NUMBER compared against a BOOLEAN
+using strict inequality, which is true for every triangle ever tested. Front side
+materials, which is nearly everything on a lantern once the glazing is set aside,
+therefore culled nothing at all and the clip pass carried about twice the occluders
+it was designed to. The library's own WebGPU kernel has the predicate right, so this
+is a transcription slip upstream rather than a decision. Worth reporting.
+
+#### Why the rewrite was possible at all, and what it turns on
+The occlusion pass asks one question per edge: which parts of it does something pass
+over. Answering it reads the occluders, which never change, and writes only that
+edge's own answer. No edge consults another, and covered ranges merge as a union,
+which does not care what order they arrived in.
+
+That single property is what everything else rests on. It makes the work splittable
+across cores with a result identical to the serial one - not approximately, as a
+property of the algorithm - and it makes an edge abandonable the moment its covered
+ranges reach the whole of it.
+
+The second decision was to have the kernel take TYPED ARRAYS rather than meshes.
+Import maps are scoped to the document, so a module worker cannot resolve the bare
+specifiers the vendored libraries use internally, and the usual answer is a bundler
+this application does not have and does not want. Taking numbers instead means there
+is nothing to resolve: the worker loads three plain files and starts. That constraint
+is load bearing and is stated at the head of every file it touches.
+
+#### What made the second and third views nearly free
+Work divides into what belongs to a LANTERN and what belongs to a VIEW, and the
+expensive half turned out to be the first: reading every mesh, analysing every
+geometry for candidate edges, and finding every line where two solids cut through one
+another. None of that changes when the drawing does.
+
+The cut lines are the clearest case. The pass expresses each mesh pair in the frame of
+the first, so turning the lantern to face a different view multiplies both matrices by
+the same rotation and the inverse cancels it. The answer is identical for the plan,
+the front and the side. The vendored generator had no way to exploit that - its entry
+point takes a scene and hands back finished lines, with nowhere to put a result that
+outlives one call - so it recomputed all of it, three times, every render.
+
+#### Added - `02__Src__AppModules/27__System__ProjectedEdges2d/`
+- **`VghLantern__ProjectedEdges__ClipKernel__.mjs`** - the occlusion pass. Imports
+  nothing. Carries the fixed back face predicate, hoists per triangle work that was
+  being recomputed for every edge pairing, drops a full separating axis update that
+  the vendored code computed per pair and then read two fields of, and abandons an
+  edge the moment its covered ranges reach [0, 1]. Descent is ordered highest child
+  first so the tall occluder that saturates an edge is usually met early.
+- **`VghLantern__ProjectedEdges__FlatBvh__.mjs`** - binned SAH tree over flat typed
+  arrays. Exists rather than reusing three-mesh-bvh for two reasons stated in its
+  header: bare specifiers cannot resolve in a worker, and the clip pass needs a
+  stable triangle number to look up hoisted data, which MeshBVH's index reordering
+  takes away.
+- **`VghLantern__ProjectedEdges__SoupBuilder__.mjs`** - turns the lantern to face a
+  view and culls what cannot occlude. A view basis is a signed permutation of the
+  axes, so facing a view is moving three numbers and occasionally flipping a sign,
+  exactly, with no trigonometry. Culled triangles are never built rather than merely
+  skipped, so the tree is around half the size and every traversal through it shorter.
+- **`VghLantern__ProjectedEdges__StageSampler__.mjs`** - the last module in the chain
+  that knows three.js exists. Everything downstream sees numbers.
+- **`VghLantern__ProjectedEdges__EdgeExtractor__.mjs`** - hard, silhouette and
+  intersection edges. Per geometry candidate analysis is cached, so a lantern carrying
+  eight identical finials analyses one. Self intersections are cached per geometry
+  too, which is the library's own unfinished TODO. Pairs whose world boxes miss each
+  other are settled by six comparisons rather than a tree descent.
+- **`VghLantern__ProjectedEdges__WorkerPool__.mjs`** and
+  **`VghLantern__ProjectedEdges__ClipWorker__.mjs`** - a persistent pool taking one
+  fewer worker than the machine has cores. Occluders go out once per view; the slices
+  that follow are four numbers each, so the edge list can be cut far finer than the
+  worker count and dealt out as workers fall idle. Below 8,000 edges the pool is not
+  woken at all, because every worker needs its own copy of the occluders and that is
+  not repaid on small work.
+- **`VghLantern__ProjectedEdges__CpuBackend__.mjs`** - orders the work and decides
+  what is worth keeping between views.
+- **`VghLantern__ProjectedEdges__WebGpuBackend__.mjs`** - drives the compute shader
+  implementation that already ships inside the vendored package, on a compute-only
+  renderer this module creates and keeps to itself. Off by default. Its rough edges
+  are documented in the file rather than discovered later: a 128 MB buffer allocated
+  per call whose dispose is commented out upstream, an unguarded progress callback
+  that throws if omitted, and single precision that makes it near-identical rather
+  than identical.
+- **`VghLantern__ProjectedEdges__RasterPreview__.mjs`** - the provisional picture.
+  Renders the SAME culled triangles and the SAME extracted edges the kernel is about
+  to work through, through an orthographic camera whose frustum is the same millimetre
+  bounds, so it lands on the drawing with no fitting step. Its camera up vector is
+  world negative z, because the drawing's y runs down the page while world z runs up
+  it; getting that backwards mirrors the preview and is not subtle.
+- **`VghLantern__ProjectedEdges__LineworkStore__.mjs`** - the project file block.
+  Coordinates are plain readable numbers on purpose: the point of storing them is that
+  something other than this module can read them later.
+- **`VghLantern__ProjectedEdges__DiffHarness__.mjs`** - written before the
+  optimisations it exists to check. Compares two projections as multisets of
+  order-normalised, quantised segments, and reports total drawn length alongside,
+  because bucketing can be fooled by a segment on a boundary and a continuous measure
+  cannot.
+
+#### Changed - `02__Src__AppModules/27__System__ProjectedEdges2d/`
+- **`VghLantern__ProjectedEdges__Projector__.mjs`** - keeps the view basis table and
+  the read-back that makes alignment unnecessary, and gains backend dispatch. Three
+  backends: `cpu` is the default and the reference output, `webgpu` is opt-in with
+  automatic fallback, and `legacy` is the unmodified vendored generator, kept working
+  for one reason - the DiffHarness needs something known-good to hold the rewrite to,
+  and "what shipped before" is the only definition of that which matters.
+- **`VghLantern__ProjectedEdges__Pipeline__.mjs`** - realtime scheduling, two-pass
+  rendering, view prioritisation, persistence and the automatic cache restore.
+- **`VghLantern__ProjectedEdges__SvgLayer__.mjs`** - places and retires the
+  provisional image. `Clear` deliberately does not touch it: the Pipeline repaints
+  every surface whenever any one view finishes, so clearing there would strip the
+  placeholders off the views still computing.
+- **`VghLantern__ProjectedEdges__ToolbarButton__.mjs`** - the button is no longer
+  required for anything and is now mainly a show and hide toggle. `ForceRender` is
+  exported for the hotkey and the export gate.
+- **`VghLantern__ProjectedEdges__Scheduler__.mjs`** - yield budget 250 ms to 64 ms.
+  That number used to govern throughput on a render nobody could interrupt. It now
+  governs how long an ABANDONED render takes to notice, which is a different question
+  with a different answer.
+- **`VghLantern__ProjectedEdges__ProgressOverlay__.mjs`** - marked REDUNDANT and left
+  working. See the known limits below.
+- **`Na__ProjectedEdges__Config.json`** - `Render.Realtime`, `Render.RealtimeDebounceMs`,
+  `Performance.Backend`, `Performance.MaxWorkers`, `Performance.MinimumEdgesForWorkers`,
+  `Performance.ClipBvhMaxLeafSize`, and the `Preview` and `Persistence` blocks.
+  `Lantern__ProjectedLinework__Data` is added to `CacheKey.IgnoredLanternBlocks`, and
+  that entry is not optional: storing linework on a lantern would otherwise change
+  that lantern's own fingerprint and invalidate the linework just stored.
+
+#### The drawing now renders itself, and in the right order
+Every change to a lantern schedules a render. The debounce is the whole design:
+dragging a dimension emits a render per frame, and starting a projection on each one
+would be a queue whose every entry is obsolete before it finishes. So each change
+pushes the start back, and a change arriving mid-render abandons it.
+
+Jobs are then ordered by what the user is actually looking at, in three tiers: on
+screen with real size, mounted but zero-size, and not mounted at all. Without this the
+order was whatever `Meta.Views` happened to list, and that list ends with the plan -
+so editing a dimension while looking at a plan meant waiting for both elevations
+before the view on screen was touched. Unseen views are still rendered, just
+afterwards, so switching tabs a moment later still finds them ready.
+
+A render also covers every configured view rather than only the mounted ones. Before,
+rendering from the Drawing Editor left the Lantern Editor blank and the reverse, because
+each computed only its own frames and the other's cache keys were never filled.
+
+#### Changed - elsewhere
+- **`02__Src__AppModules/01__AppCore/VghLantern__AppCore__Init__.js`** - the
+  `FORCE_RENDER_LINEWORK` hotkey action, and a forced render before the Preview and
+  Send screen composes anything.
+- **`02__Src__AppModules/02__AppData/VghLantern__AppData__Hotkeys__Main__.json`** -
+  Alt+Shift+R, listed twice. The matcher compares `event.key` exactly and does not
+  fold case, and holding Shift makes the browser report an uppercase R, so both
+  spellings are registered rather than relying on one.
+- **`02__Src__AppModules/40__System__DocumentPreviewMode/VghLantern__DocPreview__PdfExporter__.js`**
+  - nothing is issued showing less than the model says. The export waits for the
+  linework every time. It also clears the sheet bake cache when that render produced
+  something new: baked sheets are keyed on the lantern's signature, and that signature
+  does not change when linework is added to a lantern that already had a sheet, so
+  without this the pack would be written from sheets composed before the linework
+  existed - which looks exactly like the render having silently done nothing.
+- **`VghLantern__FlaskServer__Localhost__.py`** - per-key project change logging is
+  now a development flag, off by default: `-D`, `--d`, `--D`, `--dev`, `--Dev`,
+  `--DevMode`, `--devmode`, accepted on the command line and typed at the running
+  console, where it toggles. A project carrying rendered linework holds tens of
+  thousands of coordinates that are rewritten whenever the shape changes, so leaving
+  it on buried every other line. The whole diff is skipped rather than merely
+  silenced, because walking both trees costs real time on every save and there is no
+  point paying it to build a list nobody reads.
+
+#### Verification
+The kernel is checked numerically outside the browser - occlusion, the back face fix,
+the coverage early out, the three axis maps, and that a sharded run equals a whole
+run. Cross-module named imports are checked to resolve, which caught a rename that a
+syntax check could not see and that would have broken the module at load.
+
+For the real model, `VghLantern__ProjectedEdges__Debug.Diff('cpu', 'legacy')` renders
+the views on screen through both the new kernel and the untouched vendored generator
+and reports every segment that moved. The rewrite is mathematically equivalent, not
+bit for bit identical - some expressions are rearranged and some normalisations were
+proved redundant and removed - so that harness is how the claim is held up rather
+than asserted.
+
+#### Known limits
+- **The intersection pass is the remaining floor.** It is around 900 ms of a first
+  render and cannot be shortened by ordering, because exact linework genuinely needs
+  the cut lines before it can clip anything. It is paid once per lantern and shared by
+  all three views, but a dimension change rebuilds every frame and bar geometry, so the
+  per-geometry caches miss by design. Parallelising it across the worker pool is the
+  next real win and needs a zero-import triangle-triangle intersection kernel.
+- **Stored linework has a ceiling.** A busy lantern is a few hundred kilobytes, and
+  autosave puts the whole project through localStorage, whose quota is shared across
+  every project. A view over 25,000 segments, or a block over 900 kB, is not stored
+  and says so in the console - the linework stays on screen, it simply does not
+  survive the session. If those warnings appear in normal use, storage should move off
+  localStorage to the Flask side.
+- **The progress overlay is dormant, not deleted.** Realtime rendering has not yet
+  been proven on every machine in the office. If it turns out to be slow on other
+  hardware the way back is two config values and no code: `Render.Realtime` false and
+  `Progress.ShowOverlay` true, and the original press-the-button-and-watch-the-spinner
+  behaviour returns intact. Do not delete that module or its stylesheet rules on the
+  grounds that nothing calls them.
+- **WebGPU is opt-in and unproven here.** It accelerates the occlusion pass alone and
+  cannot use the per lantern caching, so on a warm cache it can genuinely LOSE to the
+  CPU backend on the second and third views. Measure with the harness before trusting
+  it, and expect visible against hidden to flip where two faces are nearly coincident.
+- **A sheet baked during a render would catch a preview image.** It would equally
+  catch half-finished linework, so there is nothing here worth guarding beyond it.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.2.2 - 07-Aug-2026
 ### The split 2D view stops fighting the user: one drawing scale for both panes, and a pan is only ever a pan
 

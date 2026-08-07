@@ -36,6 +36,19 @@
         shape-rendering                   : geometricPrecision;
     }
 
+    /* The provisional picture shown while a view is being projected. Opacity is
+       written as an attribute by the SVG layer, from config, for the same reason
+       the linework colours are: a rule here would beat it and take the config file
+       out of the loop.
+
+       What IS declared here is the pixel filtering. A preview is a raster standing
+       in for vectors and it will nearly always be resampled, so smoothing it is
+       what stops it reading as a screenshot of something jagged. */
+    .VghLantern__ProjectedEdges__Preview {
+        pointer-events                    : none;
+        image-rendering                   : auto;
+    }
+
 /* #endregion ------------------------------------------------------------------- */
 
 

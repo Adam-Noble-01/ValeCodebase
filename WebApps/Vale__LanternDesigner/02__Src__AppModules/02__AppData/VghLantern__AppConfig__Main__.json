@@ -2,7 +2,7 @@
     "VghLantern__Application__Config": {
         "VghLantern__Application__Config__Description": "Core application identity, version, and global paths for the VghLantern Roof Lantern Designer. This file is the single source of truth for app-wide settings; system specific settings live in each system folder and are merged over this file by AppCore ConfigLoader.",
         "VghLantern__Application__Config__AppName": "VghLantern Roof Lantern Designer",
-        "VghLantern__Application__Config__AppVersion": "0.4.0",
+        "VghLantern__Application__Config__AppVersion": "0.5.0",
         "VghLantern__Application__Config__ServerPort": 8006,
         "VghLantern__Application__Config__ProjectDataFolder": "07__LocalProjectData",
         "VghLantern__Application__Config__UserDataFolder": "08__LocalUserData",

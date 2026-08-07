@@ -80,6 +80,24 @@
             "shiftKey"    : false,
             "action"      : "SAVE_PROJECT",
             "description" : "Save the current project immediately"
+        },
+        {
+            "id"          : "force_render_linework_upper",
+            "key"         : "R",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : true,
+            "action"      : "FORCE_RENDER_LINEWORK",
+            "description" : "Force a projected linework render in every view. This is the variant that actually fires: holding Shift makes the browser report the key as an uppercase R."
+        },
+        {
+            "id"          : "force_render_linework_lower",
+            "key"         : "r",
+            "altKey"      : true,
+            "ctrlKey"     : false,
+            "shiftKey"    : true,
+            "action"      : "FORCE_RENDER_LINEWORK",
+            "description" : "The same shortcut for keyboard layouts and Caps Lock states that report a lowercase r while Shift is held. The matcher compares event.key exactly and does not fold case, so both spellings are listed rather than relying on one."
         }
     ]
 }

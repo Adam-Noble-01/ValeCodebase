@@ -6,12 +6,34 @@
    NAMESPACE  : VghLantern
    MODULE     : ProjectedEdges - ProgressOverlay
    AUTHOR     : Adam Noble - Noble Architecture
+   STATUS     : REDUNDANT as of 07-Aug-2026. Dormant, not deleted - see below.
    PURPOSE    : Show what a running projection is doing, and how far through it is
    CREATED    : 06-Aug-2026
 
+   ---------------------------------------------------------------------------
+
+   REDUNDANT, AND WHY IT IS STILL HERE
+
+   This overlay was written for a projection that took the better part of a minute
+   and had to account for itself. It no longer applies. Rendering is realtime: a
+   provisional picture of each view appears in a fraction of a second and the exact
+   linework replaces it within a second or two, so a full-screen blocking sheet now
+   costs more attention than the wait it was describing.
+
+   It is switched off in config - Progress.ShowOverlay is false - rather than
+   removed, and every function below still works. The realtime model has not yet
+   been proven on every machine in the office, and if it turns out to be slow on
+   other hardware the way back is two config values and no code at all:
+
+       Render.Realtime      false     the toolbar button starts renders again
+       Progress.ShowOverlay true      and this overlay reports them again
+
+   Do not delete this file or its stylesheet rules on the grounds that nothing
+   calls them. Something is meant to be able to, on short notice.
+
+   ---------------------------------------------------------------------------
+
    DESCRIPTION:
-   - A render takes several seconds per view and covers three views, so it needs to
-     account for itself. Silence would read as a hung application.
    - Modelled on the ValeVision3D layout export overlay, which is the pattern staff
      already recognise as "something is rendering": a semi-transparent white sheet
      with a light blur, a Vale blue ring turning on a pale track, and a status line
@@ -20,12 +42,16 @@
 
    ---------------------------------------------------------------------------
 
-   WHY THE OVERLAY COVERS THE WHOLE WINDOW
+   WHY THE OVERLAY COVERED THE WHOLE WINDOW
 
-   The projection runs on the main thread. It yields often enough to keep the
-   interface painting, which is exactly what makes a full cover necessary rather
-   than optional: without it the sheet looks usable, and a user who edits a
-   dimension mid-render invalidates the work they are waiting for.
+   The projection ran on the main thread. It yielded often enough to keep the
+   interface painting, which is exactly what made a full cover necessary rather
+   than optional: without it the sheet looked usable, and a user who edited a
+   dimension mid-render invalidated the work they were waiting for.
+
+   That reasoning is now obsolete in an instructive way. Editing mid-render is no
+   longer a hazard to guard against, it is the expected way to use the feature:
+   the change simply abandons the render in flight and schedules another.
 
    ============================================================================= */
 

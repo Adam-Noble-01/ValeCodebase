@@ -14,7 +14,9 @@
         },
 
         "VghLantern__ProjectedEdges__Config__Render": {
-            "Description"                 : "Nothing is projected until the user asks for it. Measured cost is 7 to 11 seconds PER VIEW on a real lantern and repeated attempts to bring that down have not succeeded, so the operation is treated as a deliberate step the user takes once the sheet layout is settled - not as something that happens behind every redraw. A render covers every view listed in Meta.Views that currently has a viewport on screen.",
+            "Description"                 : "The projection keeps itself up to date. Every change to a lantern schedules a fresh render; a provisional picture of each view appears within a fraction of a second and the exact linework replaces it as it arrives. Nobody presses anything. This became reasonable only once the rewritten backend brought a full three-view render down from around thirty seconds to under two, and it rests on the debounce below: dragging a dimension emits a render per frame, so the work starts only when the shape has been still for RealtimeDebounceMs, and a change arriving mid-render abandons it rather than finishing a projection of a shape that no longer exists. Set Realtime false to return to the original behaviour, where the toolbar button is the only thing that starts a projection - which is the switch to reach for if a machine turns out not to keep up. A render always covers every view listed in Meta.Views, not merely the ones on screen, so switching between the Lantern Editor and the Drawing Editor never finds a blank drawing.",
+            "Realtime"                    : true,
+            "RealtimeDebounceMs"          : 160,
             "AutoRenderOnLoad"            : false,
             "RepaintFromCacheOnRedraw"    : true
         },
@@ -28,11 +30,12 @@
         },
 
         "VghLantern__ProjectedEdges__Config__Projection": {
-            "Description"                 : "Passed to three-edge-projection. AngleThresholdDegrees is the dihedral angle above which a shared triangle edge counts as a hard edge; higher values keep less linework and cost less time. IncludeIntersectionEdges adds the lines where two solids cut through one another, which is what draws a finial spike against the ridge behind it. Measured phase split on a 39k triangle lantern: 86 percent clipping, 13 percent intersection, 1 percent extraction.",
+            "Description"                 : "What counts as a line, and how finely it is drawn. AngleThresholdDegrees is the dihedral angle above which a shared triangle edge counts as a hard edge; higher values keep less linework and cost less time. IncludeIntersectionEdges adds the lines where two solids cut through one another, which is what draws a finial spike against the ridge behind it - it is now computed once per lantern rather than once per view. Measured phase split on a 39k triangle lantern BEFORE the rewrite: 86 percent clipping, 13 percent intersection, 1 percent extraction. EdgeLiftWorldUnits nudges every edge a hair towards the viewer so that a line lying exactly in its own surface is not judged to be hidden by it; it is in stage units (metres) and 1e-6 is one thousandth of a millimetre. IterationTimeMs applies to the legacy backend only.",
             "AngleThresholdDegrees"       : 50,
             "IncludeIntersectionEdges"    : true,
             "IterationTimeMs"             : 30,
-            "MinimumSegmentLengthMm"      : 0.5
+            "MinimumSegmentLengthMm"      : 0.5,
+            "EdgeLiftWorldUnits"          : 0.000001
         },
 
         "VghLantern__ProjectedEdges__Config__CacheKey": {
@@ -41,18 +44,40 @@
                 "Lantern__Identity__Config",
                 "Lantern__Notes__Config",
                 "Lantern__DrawingNotes__Config",
-                "Lantern__DrawingLayout__Config"
+                "Lantern__DrawingLayout__Config",
+                "Lantern__ProjectedLinework__Data"
             ]
         },
 
+        "VghLantern__ProjectedEdges__Config__Persistence": {
+            "Description"                 : "Storing rendered linework in the project file so it survives between sessions. The block is written onto the lantern it belongs to, carries a fingerprint of the shape that produced it, and is ignored on load if that shape has since changed - see the CacheKey denylist above, which MUST list this block so that writing it does not itself change the fingerprint. Size is the thing to watch: coordinates are stored as plain readable numbers on purpose, so a busy lantern adds a few hundred kilobytes, and a project holds several lanterns. Autosave puts the whole project through localStorage, which has a quota measured in a handful of megabytes across ALL projects, so a ceiling is enforced: a view with more segments than MaxSegmentsPerView, or a block that would exceed MaxKilobytes, is not stored and says so in the console. The linework is still on screen, it simply will not survive the session. Set Enabled false to never store any.",
+            "Enabled"                     : true,
+            "MaxSegmentsPerView"          : 25000,
+            "MaxKilobytes"                : 900,
+            "RestoreOnLoad"               : true
+        },
+
         "VghLantern__ProjectedEdges__Config__Performance": {
-            "Description"                 : "Scheduling and reuse. YieldEveryMs is the important one: the library's own async driver waits a whole animation frame after EVERY work slice, which throws away roughly a third of the wall clock. This module drives the generator itself and hands the browser a frame only this often. It is kept moderate rather than maximal because the progress spinner has to keep turning while a render runs.",
-            "YieldEveryMs"                : 250,
+            "Description"                 : "Who does the work and how it is scheduled. Backend picks the engine: 'cpu' is this module's own kernel spread across web workers and is the default and the reference output; 'webgpu' hands the occlusion pass to the graphics card through the vendored compute implementation and falls back to cpu automatically where WebGPU is missing; 'legacy' is the unmodified vendored generator, kept so the DiffHarness always has something known-good to compare against. MaxWorkers is a ceiling, not a target - the pool takes one fewer than the machine's core count and never more than this. ClipBvhMaxLeafSize is small on purpose: a node test is six comparisons where a triangle test is a plane trim and an overlap solve, so paying for more node tests to avoid triangle tests is the right trade here. YieldEveryMs governs only the main-thread fallback path, where there are no workers to run behind; BvhMaxLeafSize and CacheBoundsTrees apply to the three-mesh-bvh trees that ModelStage primes, which the intersection pass and the legacy backend still use.",
+            "Backend"                     : "cpu",
+            "MaxWorkers"                  : 8,
+            "MinimumEdgesForWorkers"      : 8000,
+            "ClipBvhMaxLeafSize"          : 4,
+            "YieldEveryMs"                : 64,
             "ReuseStagedModel"            : true,
             "CacheBoundsTrees"            : true,
             "BvhMaxLeafSize"              : 1,
             "MaxCachedResults"            : 16,
             "MaxCachedStages"             : 2
+        },
+
+        "VghLantern__ProjectedEdges__Config__Preview": {
+            "Description"                 : "The provisional picture shown while a view is being projected. It is the SAME occluders seen from the SAME direction, rendered by the graphics card in a few milliseconds, placed at exactly the millimetres the vector linework will occupy - so it is truthful about the shape while being obviously not the finished drawing. Deliberately faint: it is a placeholder, and anyone glancing at the screen should be able to tell at once that the real linework has not arrived yet. It is removed the moment a view's exact segments land, and again in a finally block when a render ends for any reason, so it cannot travel into a sheet bake or a PDF. Set Enabled false to wait on a blank drawing instead.",
+            "Enabled"                     : true,
+            "MaxPixels"                   : 2048,
+            "FillColour"                  : "#ffffff",
+            "LineColour"                  : "rgb(60, 60, 60)",
+            "Opacity"                     : 0.45
         },
 
         "VghLantern__ProjectedEdges__Config__Toolbar": {
@@ -69,8 +94,8 @@
         },
 
         "VghLantern__ProjectedEdges__Config__Progress": {
-            "Description"                 : "Progress overlay shown while a render runs, matching the ValeVision3D loading overlay used when images are rendering: semi-transparent white with a subtle blur, a Vale blue ring on a light track, and a status line beneath it.",
-            "ShowOverlay"                 : true,
+            "Description"                 : "REDUNDANT AS OF 07-Aug-2026, KEPT DELIBERATELY. The progress overlay belonged to a projection that took half a minute and had to announce itself. Rendering is now realtime: a provisional picture appears almost at once and the exact linework follows within a second or two, so a full-screen blocking overlay costs more attention than the wait it describes. ShowOverlay is therefore false and the module is dormant - not deleted, because the realtime model has not yet been proven on every machine in the office. If the projection turns out to be slow on other hardware, set Realtime false in the Render block and ShowOverlay true here, and the original press-the-button-and-watch-the-spinner behaviour returns intact. The module and its stylesheet are still loaded and still work; nothing needs rewriting to bring them back.",
+            "ShowOverlay"                 : false,
             "TitleText"                   : "Projecting 3D linework",
             "SuccessText"                 : "Linework ready",
             "SuccessHoldMs"               : 900,

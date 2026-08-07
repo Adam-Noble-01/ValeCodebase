@@ -34,10 +34,27 @@
    full lantern with glazing and finials it is simply thrown away time.
 
    This module drives the same generators itself and hands the browser a frame only
-   every YieldEveryMs. At the shipped 250 the loop runs about 94 percent of the
-   time instead of 65, and the interface still gets a frame four times a second.
-   Raising it goes faster and feels chunkier in exact proportion; the number is in
-   Na__ProjectedEdges__Config.json precisely so that trade stays visible.
+   every YieldEveryMs. Raising it goes faster and feels chunkier in exact
+   proportion; the number is in Na__ProjectedEdges__Config.json precisely so that
+   trade stays visible.
+
+   ---------------------------------------------------------------------------
+
+   WHY THE BUDGET WAS LOWERED FROM 250 TO 64
+
+   The original 250 was right for what this was: a projection the user pressed a
+   button for and then waited half a minute for, where throughput was everything and
+   a quarter-second stutter cost nothing anybody would notice.
+
+   Rendering is now realtime, and the budget governs something else entirely - how
+   long an ABANDONED render takes to notice it has been abandoned. Every edit
+   cancels the work in flight, but the cancel is only seen at a yield point, so a
+   250 budget meant up to a quarter of a second of computing a shape the user had
+   already moved on from, while the interface sat still.
+
+   At 64 the loop still runs around 80 percent of the time rather than 94, so the
+   arithmetic is genuinely a little slower. It buys a drawing that keeps up with the
+   hand editing it, which is now the thing worth optimising for.
 
    ---------------------------------------------------------------------------
 

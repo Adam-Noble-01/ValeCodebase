@@ -269,6 +269,23 @@
             },
             'SAVE_PROJECT': function() {
                 VghLantern__AppCore__AutosaveCurrentProject('manual:hotkeySave');
+            },
+            'FORCE_RENDER_LINEWORK': function() {
+                // Alt+Shift+R. Rendering is automatic, so this is a manual nudge for
+                // the cases automation cannot cover: a view whose linework was too
+                // large to store, a machine with the realtime loop switched off, or
+                // simply wanting it now rather than after the debounce.
+                //
+                // Published by the ProjectedEdges bootstrap. Absent if that module
+                // is disabled, which is a reason to say nothing rather than to warn:
+                // a shortcut for a feature that is switched off should be quiet.
+                var ProjectedEdges  =  window.VghLantern__ProjectedEdges;
+                if (!ProjectedEdges || !ProjectedEdges.VghLantern__ProjectedEdges__ForceRender) return;
+
+                Promise.resolve(ProjectedEdges.VghLantern__ProjectedEdges__ForceRender())
+                    .catch(function(renderError) {
+                        console.error('[VghLantern__Hotkeys] Forced linework render failed:', renderError);
+                    });
             }
         };
     }
@@ -463,6 +480,19 @@
         var PageRenderer   =  window.VghLantern__DocPreview__PageRenderer;
         var SheetManager   =  window.VghLantern__DrawingEditor__SheetManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+
+        // Projected linework first, before anything composes a sheet from it. The
+        // realtime loop normally has this in hand already, in which case this costs
+        // nothing; what it covers is arriving here before that loop has caught up,
+        // which is exactly the moment somebody is about to issue a drawing.
+        var ProjectedEdges  =  window.VghLantern__ProjectedEdges;
+        if (ProjectedEdges && ProjectedEdges.VghLantern__ProjectedEdges__ForceRender) {
+            try {
+                await ProjectedEdges.VghLantern__ProjectedEdges__ForceRender();
+            } catch (lineworkError) {
+                console.error('[VghLantern__Init] Projected linework render failed before preview:', lineworkError);
+            }
+        }
 
         if (SheetManager && ViewPlacement &&
             !ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput()) {

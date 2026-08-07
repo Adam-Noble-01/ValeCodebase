@@ -60,12 +60,16 @@ import {
 import {
     VghLantern__ProjectedEdges__Pipeline__Sync,
     VghLantern__ProjectedEdges__Pipeline__Detach,
+    VghLantern__ProjectedEdges__Pipeline__Show,
+    VghLantern__ProjectedEdges__Pipeline__Hide,
+    VghLantern__ProjectedEdges__Pipeline__Status,
     VghLantern__ProjectedEdges__Pipeline__BuildDebugApi
 } from './VghLantern__ProjectedEdges__Pipeline__.mjs';
 
 import {
     VghLantern__ProjectedEdges__ToolbarButton__Attach,
-    VghLantern__ProjectedEdges__ToolbarButton__Sync
+    VghLantern__ProjectedEdges__ToolbarButton__Sync,
+    VghLantern__ProjectedEdges__ToolbarButton__ForceRender
 } from './VghLantern__ProjectedEdges__ToolbarButton__.mjs';
 
 // =============================================================================
@@ -82,7 +86,8 @@ import {
     const RENDER_FN_NAME     =  'VghLantern__Env2d__RenderPipeline__Render';
     const DISPOSE_FN_NAME    =  'VghLantern__Env2d__RenderPipeline__Dispose';
 
-    const DEBUG_GLOBAL_NAME  =  'VghLantern__ProjectedEdges__Debug';
+    const DEBUG_GLOBAL_NAME   =  'VghLantern__ProjectedEdges__Debug';
+    const PUBLIC_GLOBAL_NAME  =  'VghLantern__ProjectedEdges';
     const INSTALLED_FLAG     =  '__VghLantern__ProjectedEdges__Installed';    // <-- Stamped on the Env2d object, so a double load cannot double wrap
 
     const ATTACH_RETRY_MS    =  50;                                           // <-- Module scripts are deferred and Env2d is a classic script, so it is normally already there
@@ -175,6 +180,34 @@ import {
     VghLantern__ProjectedEdges__Bootstrap__Attach(0);
 
     window[DEBUG_GLOBAL_NAME]  =  VghLantern__ProjectedEdges__Pipeline__BuildDebugApi();
+
+    // ------------------------------------------------------
+    // The public handle, for the parts of the application that are classic
+    // scripts rather than modules and so cannot import any of this: the
+    // hotkey action map, and the gate in front of Preview and Send.
+    //
+    // Deliberately small. Everything on it is something another module has a
+    // real need to do, and nothing on it exposes the pipeline's internals -
+    // the console helpers live on their own global and are a separate promise
+    // to nobody.
+    // ------------------------------------------------------
+    window[PUBLIC_GLOBAL_NAME]  =  {
+
+        // Render whatever is missing, show the result, and resolve only once the
+        // linework exists. Safe to call when everything is already in hand: it
+        // returns almost immediately having done nothing.
+        VghLantern__ProjectedEdges__ForceRender : function() {
+            return VghLantern__ProjectedEdges__ToolbarButton__ForceRender();
+        },
+
+        // What the caller would need to decide whether a drawing is ready to issue.
+        VghLantern__ProjectedEdges__Status : function() {
+            return VghLantern__ProjectedEdges__Pipeline__Status();
+        },
+
+        VghLantern__ProjectedEdges__Show : VghLantern__ProjectedEdges__Pipeline__Show,
+        VghLantern__ProjectedEdges__Hide : VghLantern__ProjectedEdges__Pipeline__Hide
+    };
 
     // The toolbar button waits for config, because its labels and its very presence
     // are config values. The render hook above deliberately does not.

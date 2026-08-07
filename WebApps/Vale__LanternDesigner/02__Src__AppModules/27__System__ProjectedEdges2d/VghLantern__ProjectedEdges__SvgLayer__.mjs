@@ -40,8 +40,39 @@
 
    ---------------------------------------------------------------------------
 
+   ---------------------------------------------------------------------------
+
+   THE PROVISIONAL PREVIEW, AND HOW IT IS KEPT OUT OF THE POST
+
+   While a view is being projected it shows a picture of itself instead: see the
+   RasterPreview module for what that is and why it lines up. It is placed as an
+   <image> BELOW this module's own group, so the real linework paints over it as it
+   arrives rather than under it.
+
+   The one hazard worth stating, because ToSvgMarkup clones the whole root and would
+   carry an image into a sheet and into a PDF: a preview must never outlive the
+   render it belongs to. Three things enforce that, and all three are needed -
+
+       Paint          clears the preview before drawing vectors, so the instant a
+                      view's real segments land its placeholder is gone.
+       Remove         clears it too, so switching the feature off at runtime leaves
+                      nothing of it behind.
+       RenderAll      clears every surface's preview in a finally block, so an
+                      abandoned or failed render cannot leave one behind.
+
+   Clear is the deliberate exception and does NOT touch it - see the note on that
+   function for why taking the preview there would strip the placeholders off the
+   views that have not finished yet.
+
+   A sheet baked DURING a render would still catch a preview, but it would equally
+   catch half-finished linework, so there is nothing here worth guarding beyond it.
+
+   ---------------------------------------------------------------------------
+
    PUBLIC API:
        Paint(instance, segments)   draw a Float32Array of [x0,y0,x1,y1, ...]
+       PaintPreview(instance, preview)  place the provisional image
+       ClearPreview(instance)      take the provisional image away
        Clear(instance)             empty the layer, leaving it in place
        Remove(instance)            take the layer out of the SVG entirely
 
@@ -60,9 +91,12 @@ import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern_
     // MODULE CONSTANTS | Namespace, Classes and Attributes
     // ------------------------------------------------------------
     const SVG_NAMESPACE   =  'http://www.w3.org/2000/svg';                    // <-- W3C constant, not an application value
+    const XLINK_NAMESPACE =  'http://www.w3.org/1999/xlink';
     const CSS_LAYER       =  'VghLantern__ProjectedEdges__Layer';
     const CSS_PATH        =  'VghLantern__ProjectedEdges__Path';
+    const CSS_PREVIEW     =  'VghLantern__ProjectedEdges__Preview';
     const ATTR_LAYER      =  'data-vgh-projected-edges';
+    const ATTR_PREVIEW    =  'data-vgh-projected-edges-preview';
     // ------------------------------------------------------------
 
 
@@ -107,11 +141,31 @@ import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern_
 
     // FUNCTION | Empty the Layer Without Removing It
     // ------------------------------------------------------------
+    // Deliberately leaves the provisional image alone, and the reason is worth
+    // spelling out because the opposite seems more obvious.
+    //
+    // The Pipeline repaints EVERY surface each time any one view finishes. A view
+    // still being computed has no result yet, so it comes through here - and if
+    // this took the preview with it, finishing the first view would strip the
+    // placeholders off the other two. The preview belongs to the render, not to
+    // the layer's contents, so Paint retires it when the real linework lands and
+    // RenderAll retires the rest in a finally.
     export function VghLantern__ProjectedEdges__SvgLayer__Clear(instance) {
         if (!instance || !instance.Root) return;
 
         const existing  =  instance.Root.querySelector('.' + CSS_LAYER);
         if (existing) existing.textContent  =  '';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Take the Provisional Image Away
+    // ------------------------------------------------------------
+    export function VghLantern__ProjectedEdges__SvgLayer__ClearPreview(instance) {
+        if (!instance || !instance.Root) return;
+
+        const existing  =  instance.Root.querySelector('.' + CSS_PREVIEW);
+        if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
     }
     // ------------------------------------------------------------
 
@@ -125,6 +179,8 @@ import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern_
 
         const existing  =  instance.Root.querySelector('.' + CSS_LAYER);
         if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+
+        VghLantern__ProjectedEdges__SvgLayer__ClearPreview(instance);         // <-- Switching the feature off must leave nothing of it behind
     }
     // ------------------------------------------------------------
 
@@ -178,6 +234,11 @@ import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern_
         const group  =  VghLantern__ProjectedEdges__SvgLayer__Ensure(instance);
         if (!group) return 0;
 
+        // The real thing has arrived, so the stand-in goes. Done before the early
+        // return below as well as after it: a view that legitimately projects to
+        // nothing must not be left showing a picture of something.
+        VghLantern__ProjectedEdges__SvgLayer__ClearPreview(instance);
+
         group.textContent  =  '';
         if (!segments || segments.length < 4) return 0;
 
@@ -195,6 +256,48 @@ import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern_
 
         group.appendChild(pathEl);
         return Math.floor(segments.length / 4);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Place the Provisional Image Beneath Everything
+    // ------------------------------------------------------------
+    // preview is what RasterPreview produced: a data URL and the drawing rectangle
+    // it belongs in, both already in millimetres, so the image is positioned by
+    // quoting those four numbers and nothing else.
+    //
+    // Inserted at the very front of the root on EVERY call rather than only on
+    // creation. The vector group also inserts itself at the front, so whichever of
+    // the two was added last would otherwise end up on top, and a picture painted
+    // over the linework it was standing in for is worse than no picture at all.
+    //
+    // Both href and the xlink form are set. The plain one is correct for every
+    // browser this application runs in; the xlink one is what older SVG consumers
+    // read, and the sheet markup travels outside the browser into the PDF export.
+    export function VghLantern__ProjectedEdges__SvgLayer__PaintPreview(instance, preview) {
+        if (!instance || !instance.Root || !preview || !preview.DataUrl) return false;
+
+        const appearance  =  VghLantern__ProjectedEdges__ConfigAccess__Section('Preview');
+        const root        =  instance.Root;
+
+        VghLantern__ProjectedEdges__SvgLayer__ClearPreview(instance);
+
+        const image  =  document.createElementNS(SVG_NAMESPACE, 'image');
+        image.setAttribute('class', CSS_PREVIEW);
+        image.setAttribute(ATTR_PREVIEW, instance.ViewKey || '');
+
+        image.setAttribute('x',      preview.Rect.X);
+        image.setAttribute('y',      preview.Rect.Y);
+        image.setAttribute('width',  preview.Rect.Width);
+        image.setAttribute('height', preview.Rect.Height);
+        image.setAttribute('preserveAspectRatio', 'none');                    // <-- The rectangle IS the extents; never letterbox it
+        image.setAttribute('opacity', (typeof appearance.Opacity === 'number') ? appearance.Opacity : 0.45);
+
+        image.setAttribute('href', preview.DataUrl);
+        image.setAttributeNS(XLINK_NAMESPACE, 'xlink:href', preview.DataUrl);
+
+        root.insertBefore(image, root.firstChild);
+        return true;
     }
     // ------------------------------------------------------------
 

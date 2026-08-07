@@ -78,16 +78,10 @@ const VghLantern__LanternEditor__Section__FormAndSize = (function() {
                 Decimals  : 1,
                 Hint      : 'Slope angle from horizontal; sets the height of the roof.'
             },
-            {
-                Key       : 'eavesProjectionMm',
-                Type      : 'slider',
-                Label     : 'Eaves Projection',
-                Block     : 'Lantern__Dimensions__Config',
-                Field     : 'Lantern__Dimensions__Config__EavesProjectionMm',
-                BoundsKey : 'EavesProjectionMm',
-                Unit      : 'mm',
-                Hint      : 'Overhang of the eaves beyond the builders upstand face.'
-            },
+            // The Eaves Projection slider is RETIRED: the roof springs from the
+            // eaves datum on the head beam inner face, and the overhangs at the
+            // eaves are fixed by the Vale product (glaze bar cap +170mm along
+            // the pitch past the datum), not by a configurable projection.
             {
                 Key       : 'quantity',
                 Type      : 'slider',

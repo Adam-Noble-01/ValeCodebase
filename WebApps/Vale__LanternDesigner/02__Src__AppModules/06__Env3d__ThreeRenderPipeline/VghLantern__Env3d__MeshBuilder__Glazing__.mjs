@@ -102,6 +102,95 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Extend a Face's Eaves Edge Down to the Cap Ends
+    // ------------------------------------------------------------
+    // The solved face stops on the eaves datum ring, but the real glass runs
+    // down the slope past the datum with the bars, ending level with the glaze
+    // bar cap ends (the cap extension along the pitch, from the base frame
+    // system).
+    //
+    // HOW THE CORNERS MOVE - this is the part that keeps the hips closed.
+    // Every eaves vertex slides along its OWN upslope boundary edge, extended:
+    // for a corner that edge is the hip (or the pane's ridge-end edge), so the
+    // pane's mitred side stays collinear with the hip line rather than
+    // swinging sideways. The slide distance is scaled so the movement's
+    // down-slope component is exactly the cap extension - the whole eaves edge
+    // lands parallel to the datum, one extension down the pitch, at the cap
+    // end level. On an equal-pitch hip the two adjacent panes extend along the
+    // same 3D hip line by the same amount, so their extended corners COINCIDE
+    // and no gap can open. Points above the eaves never move; the solved face
+    // is not touched, so set-out and area takeoff keep the datum geometry.
+    function VghLantern__Env3d__GlazingBuilder__ExtendPointsToCapEnds(face, skeleton) {
+        const points    =  face.Points;
+        const Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
+        const meta      =  skeleton.Meta || {};
+        const eavesMm   =  Number(meta.EavesLevelMm);
+        if (!Assembly || !isFinite(eavesMm)) return points;
+
+        const extensionMm  =  Number(Assembly.VghLantern__BaseFrameAssembly__EavesInterface().GlazeBarCapExtensionAlongPitchMm) || 0;
+        if (extensionMm <= 0) return points;
+
+        const count    =  points.length;
+        const onEaves  =  points.map(function(pt) { return Math.abs(pt.z - eavesMm) <= 0.5; });
+        const eavesPts =  points.filter(function(pt, i) { return onEaves[i]; });
+        if (eavesPts.length < 2 || eavesPts.length >= count) return points;
+
+        // In-plane down-slope unit for this face: horizontal outward normal of
+        // the eaves edge (away from the centroid) pitched down by the face
+        // pitch. Used to scale each vertex's slide and as the fallback
+        // direction if a boundary edge ever degenerates.
+        const pitchRad  =  (Number(face.PitchDegrees) || 0) * (Math.PI / 180);
+
+        let cx = 0, cy = 0;
+        for (let i = 0; i < count; i++) { cx += points[i].x; cy += points[i].y; }
+        cx /= count; cy /= count;
+
+        const ex  =  eavesPts[1].x - eavesPts[0].x;
+        const ey  =  eavesPts[1].y - eavesPts[0].y;
+        const el  =  Math.hypot(ex, ey);
+        if (el <= 0) return points;
+
+        let nx  =  ey / el;
+        let ny  =  -ex / el;
+        if (((eavesPts[0].x - cx) * nx) + ((eavesPts[0].y - cy) * ny) < 0) { nx = -nx; ny = -ny; }
+
+        const slopeDir  =  {
+            x : nx * Math.cos(pitchRad),
+            y : ny * Math.cos(pitchRad),
+            z : -Math.sin(pitchRad)
+        };
+
+        return points.map(function(pt, i) {
+            if (!onEaves[i]) return pt;
+
+            // The upslope neighbour on the polygon boundary - the hip end or
+            // ridge end this vertex's side edge runs up to.
+            const prev   =  points[(i + count - 1) % count];
+            const next   =  points[(i + 1) % count];
+            const upper  =  !onEaves[(i + count - 1) % count] ? prev
+                         :  !onEaves[(i + 1) % count]         ? next
+                         :  null;
+
+            let dirX  =  slopeDir.x, dirY  =  slopeDir.y, dirZ  =  slopeDir.z;
+
+            if (upper) {
+                const ux   =  pt.x - upper.x;
+                const uy   =  pt.y - upper.y;
+                const uz   =  pt.z - upper.z;
+                const ul   =  Math.hypot(ux, uy, uz);
+                if (ul > 0) { dirX = ux / ul; dirY = uy / ul; dirZ = uz / ul; }
+            }
+
+            // Scale so the slide's down-slope component equals the extension.
+            const denom  =  (dirX * slopeDir.x) + (dirY * slopeDir.y) + (dirZ * slopeDir.z);
+            const slide  =  denom > 0.1 ? extensionMm / denom : extensionMm;
+
+            return { x: pt.x + (dirX * slide), y: pt.y + (dirY * slide), z: pt.z + (dirZ * slide) };
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Convert a Face's Model Points to Offset World Points
     // ------------------------------------------------------------
     // The solved face plane IS the glaze bar datum - the same section zero the
@@ -231,7 +320,11 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
             // name one slope out of a mesh holding all four.
             const triangleStart  =  vertices.length / VERTICES_PER_TRIANGLE;
 
-            const worldPoints  =  VghLantern__Env3d__GlazingBuilder__OffsetFacePoints(face, outerFaceWorld);
+            // The glass runs past the datum to the cap ends; the pick record
+            // stays the solved face so the inspector reports datum geometry.
+            const extendedFace  =  { Points : VghLantern__Env3d__GlazingBuilder__ExtendPointsToCapEnds(face, skeleton) };
+
+            const worldPoints  =  VghLantern__Env3d__GlazingBuilder__OffsetFacePoints(extendedFace, outerFaceWorld);
             const outward      =  VghLantern__Env3d__GlazingBuilder__FaceNormal(worldPoints);
             VghLantern__Env3d__GlazingBuilder__BuildSlab(worldPoints, outward, thicknessWorld, vertices);
 

@@ -13,6 +13,19 @@
         "AccountsPath"         : "02__Src__AppModules/08__System__UserLogin/Na__UserLogin__UserAccounts__.json"
     },
 
+    "VghLantern__UserLogin__Config__AccountMenu": {
+        "AvatarMaxInitials"     : 2,
+        "AvatarMaxInitialsNote" : "How many letters the header avatar carries. Two reads as a monogram (Adam Noble becomes AN); a longer name spends its last slot on the final word, so the surname is never the letter that gets dropped.",
+        "AvatarTitleTemplate"   : "Signed in as {UserName}",
+        "RoleFallbackText"      : "Vale Design Suite",
+        "RoleFallbackNote"      : "Second line of the menu identity block for an account whose record carries no Role.",
+        "HomeScreenLabel"       : "Home Screen",
+        "HomeScreenNote"        : "Returns to the landing card from any mode. The loaded project is left untouched, so leaving the landing screen again lands back on the same drawing.",
+        "SwitchUserLabel"       : "Switch User",
+        "SignOutLabel"          : "Sign Out",
+        "SignOutNote"           : "Switch User and Sign Out run the same routine: clear the session cookie and re-open the login gate over the landing screen. Two labels, because the two mental models arrive at the same place."
+    },
+
     "VghLantern__UserLogin__Config__Copy": {
         "ModalTitle"               : "Sign in to continue",
         "ModalSubtitle"            : "Enter your Vale Design Suite credentials. Your session is remembered on this device for one month.",

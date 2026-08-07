@@ -154,10 +154,11 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         var base        =  skeleton.Base || {};
         var halfWidth   =  meta.WidthMm / 2;
         var halfDepth   =  meta.DepthMm / 2;
-        var eavesHalfW  =  meta.EavesHalfWidthMm;
-        var eavesHalfD  =  meta.EavesHalfDepthMm;
         var Pt          =  VghLantern__Env2d__DimensionRenderer__Pt;
 
+        // No eavesProjection run any more: the roof springs from the eaves
+        // datum ring INSIDE the envelope (head beam inner face), so there is no
+        // oversailing projection left to dimension in plan.
         var runs  =  {
             'width' : {
                 Start : Pt(-halfWidth, -halfDepth, 0),
@@ -170,12 +171,6 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
                 End   : Pt(halfWidth,  halfDepth, 0),
                 Side  : SIDE_RIGHT,
                 Chain : 0
-            },
-            'eavesProjection' : {
-                Start : Pt(-eavesHalfW, halfDepth, 0),
-                End   : Pt(-halfWidth,  halfDepth, 0),
-                Side  : SIDE_BELOW,
-                Chain : 1
             }
         };
 
@@ -186,7 +181,7 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
                 Start : Pt(-halfWidth,                       -halfDepth, 0),
                 End   : Pt(-base.InnerHalfWidthMm,           -halfDepth, 0),
                 Side  : SIDE_BELOW,
-                Chain : 2
+                Chain : 1
             };
         }
 
@@ -203,11 +198,6 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             };
         }
 
-        // Suppress a zero-length eaves dimension rather than drawing a stub.
-        if (Math.abs(eavesHalfW - halfWidth) < 1 && Math.abs(eavesHalfD - halfDepth) < 1) {
-            delete runs['eavesProjection'];
-        }
-
         return runs;
     }
     // ------------------------------------------------------------
@@ -222,7 +212,6 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         var Pt          =  VghLantern__Env2d__DimensionRenderer__Pt;
 
         var acrossHalf  =  isFront ? (meta.WidthMm / 2)      : (meta.DepthMm / 2);
-        var eavesHalf   =  isFront ? meta.EavesHalfWidthMm   : meta.EavesHalfDepthMm;
         var depthKey    =  isFront ? 'width'                 : 'depth';
 
         // Build points on the near face so the projection is unambiguous.
@@ -241,8 +230,10 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             Chain : 0
         };
 
-        // The base reads bottom-up on the same side: builders upstand, then the frame that
-        // sits on it, then the overall height chained outside both.
+        // The base reads bottom-up on the same side: builders upstand, then the
+        // overall height chained outside it. The retired frameHeight and
+        // eavesProjection runs are gone: the head beam is a fixed product
+        // section and the roof springs from the inboard eaves datum.
         runs['upstandHeight']  =  {
             Start : acrossPt(acrossHalf, 0),
             End   : acrossPt(acrossHalf, meta.UpstandTopLevelMm),
@@ -250,31 +241,14 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             Chain : 0
         };
 
-        runs['frameHeight']  =  {
-            Start : acrossPt(acrossHalf, meta.UpstandTopLevelMm),
-            End   : acrossPt(acrossHalf, meta.EavesLevelMm),
-            Side  : SIDE_RIGHT,
-            Chain : 1
-        };
-
         runs['overallHeight']  =  {
             Start : acrossPt(acrossHalf, 0),
             End   : acrossPt(acrossHalf, meta.OverallHeightMm),
             Side  : SIDE_RIGHT,
-            Chain : 2
+            Chain : 1
         };
 
-        if (Math.abs(eavesHalf - acrossHalf) >= 1) {
-            runs['eavesProjection']  =  {
-                Start : acrossPt(-eavesHalf,  0),
-                End   : acrossPt(-acrossHalf, 0),
-                Side  : SIDE_BELOW,
-                Chain : 1
-            };
-        }
-
         if (meta.UpstandHeightMm  <= 0) delete runs['upstandHeight'];
-        if (meta.FrameHeightMm <= 0) delete runs['frameHeight'];
 
         return runs;
     }

@@ -86,6 +86,9 @@
         </div>
         <div class="app-header__logo-container app-header__logo-container--right">
             <h1 class="app-header__title">Lantern Designer</h1>
+            <!-- Account avatar and user menu. Empty until a user signs in;   -->
+            <!-- VghLantern__UserLogin__AccountMenu owns everything inside it. -->
+            <div id="VghLantern__AccountMenu__Mount" class="VghLantern__AccountMenu"></div>
         </div>
     </header>
     <!-- endregion ----------------------------------------------------------------- -->
@@ -267,6 +270,7 @@
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__RoofPitchCalculator__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__SkeletonSolver__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__SectionLoopBuilder__.js"></script>
+    <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__BaseFrameAssembly__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__GlazeBarLayout__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__ConstraintResolver__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__QuantityTakeoff__.js"></script>
@@ -293,6 +297,7 @@
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__ComponentIndexLoader__.js"></script>
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__ProfileIndexLoader__.js"></script>
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__GlazeBarSystemLoader__.js"></script>
+    <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__BaseFrameSystemLoader__.js"></script>
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__ProjectFileManager__.js"></script>
 
     <!-- App Core (depends on data layer) -->
@@ -323,6 +328,7 @@
     <!-- System: User Login (cookie session gate shown over the landing screen) -->
     <script src="02__Src__AppModules/08__System__UserLogin/VghLantern__UserLogin__SessionManager__.js"></script>
     <script src="02__Src__AppModules/08__System__UserLogin/VghLantern__UserLogin__LoginModal__.js"></script>
+    <script src="02__Src__AppModules/08__System__UserLogin/VghLantern__UserLogin__AccountMenu__.js"></script>
 
     <!-- System: Landing Screen (boot welcome card; locks the nav tabs while active) -->
     <script src="02__Src__AppModules/11__System__LandingScreen/VghLantern__LandingScreen__Controller__.js"></script>

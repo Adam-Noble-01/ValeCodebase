@@ -35,6 +35,13 @@
    with the mesh it describes. Clearing a model group cannot leave a stale index
    behind, because there is no index to go stale.
 
+   WHY RESOLVE CHECKS VISIBILITY ITSELF:
+   Three's raycaster tests geometry with no regard to .visible at any level - an
+   element view or a display mode that hides a layer does not stop a ray finding
+   it. Left unchecked, a reviewer could hover a member the viewport is not even
+   drawing. Resolve is the one place every pick passes through, so it is the one
+   place that needs to know.
+
    ============================================================================= */
 
 import {
@@ -147,6 +154,26 @@ import { VghLantern__Env3d__SceneGroupSet__Solid3d } from './VghLantern__Env3d__
 // REGION | Hit Resolution
 // -----------------------------------------------------------------------------
 
+    // FUNCTION | Whether an Object Sits Entirely Inside Visible Ancestors
+    // ------------------------------------------------------------
+    // The renderer skips a whole subtree the moment one ancestor is invisible, but
+    // the raycaster does not - intersectObjects tests geometry with no regard to
+    // .visible at any level. Element view and display mode both hide layers by
+    // toggling .visible somewhere in the graph - one on the element mesh itself,
+    // the other on the solid group above it - so one upward walk covers both
+    // without this module needing to know either exists.
+    export function VghLantern__Env3d__PickIndex__IsVisible(node) {
+        let current  =  node;
+
+        while (current) {
+            if (current.visible === false) return false;
+            current  =  current.parent;
+        }
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Walk up From a Hit Object to the Nearest Pick Table
     // ------------------------------------------------------------
     // A GLB component arrives as a Group of meshes, so the ray hits a child while
@@ -209,6 +236,7 @@ import { VghLantern__Env3d__SceneGroupSet__Solid3d } from './VghLantern__Env3d__
     // ground grid and the highlight overlay stay unpickable without a filter list.
     export function VghLantern__Env3d__PickIndex__Resolve(intersection) {
         if (!intersection || !intersection.object) return null;
+        if (!VghLantern__Env3d__PickIndex__IsVisible(intersection.object)) return null;
 
         const owner  =  VghLantern__Env3d__PickIndex__FindTableOwner(intersection.object);
         if (!owner) return null;

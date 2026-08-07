@@ -16,16 +16,20 @@
    - SCOPE: Vale builds and supplies the lantern, including the base frame.
      The builders prepare the upstand on site; the app shows that upstand for
      context and dimensioning, but it is not Vale manufactured scope.
-   - The base is two stacked parts sharing one footprint:
-       FRAME              Vale's own base frame, sitting on the upstand. Its
-                          thickness follows the upstand wall by definition, so
-                          only its height is a control.
+   - The base is two stacked parts sharing one outer face:
+       HEAD BEAM          Vale's own base frame (46_1001): a fixed Sapele
+                          product section 125 wide x 96 tall seated atop the
+                          upstand, outer face flush with the upstand outer
+                          face. Being a fixed product it carries NO size
+                          control - the old Frame Height slider is retired.
        BUILDERS UPSTAND   Site-built studwork upstand on the roof. A hollow box
                           whose OUTER face is the lantern width and depth,
                           walled at the upstand thickness, with the hole through
                           it forming the reveal.
-   - Both heights raise the eaves line, so every elevation dimension depends on
-     this section; the SkeletonSolver reads all three numbers straight from here.
+   - The upstand height raises the seating benchmark and with it the eaves
+     datum, so every elevation dimension depends on this section; the
+     SkeletonSolver reads the upstand numbers straight from here and the head
+     beam numbers from the base frame system index.
    - Frame Finish closes the frame subsection. It used to live in a section of its
      own that asked what the whole lantern was coated in, which was one question
      standing in for three elements that are specified separately. The frame is one
@@ -77,16 +81,6 @@ const VghLantern__LanternEditor__Section__BuildersUpstandAndBase = (function() {
                 Key   : 'baseFrameHeading',
                 Type  : 'heading',
                 Label : 'Frame'
-            },
-            {
-                Key       : 'frameHeightMm',
-                Type      : 'slider',
-                Label     : 'Frame Height',
-                Block     : UPSTAND_BLOCK,
-                Field     : 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',
-                BoundsKey : 'FrameHeightMm',
-                Unit      : 'mm',
-                Hint      : 'Height of the Vale base frame sitting on the builders upstand. Its thickness follows the upstand wall.'
             },
             {
                 Key           : 'frameFinish',

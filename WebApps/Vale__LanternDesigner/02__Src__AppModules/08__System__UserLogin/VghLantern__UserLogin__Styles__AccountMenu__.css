@@ -1,0 +1,244 @@
+/* =============================================================================
+ * VGHLANTERN - ACCOUNT MENU STYLES
+ * =============================================================================
+ *
+ * FILE       : VghLantern__UserLogin__Styles__AccountMenu__.css
+ * NAMESPACE  : VghLantern
+ * MODULE     : User Login - Account Menu
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Header initials avatar and its signed in user menu
+ * CREATED    : 07-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Circular Vale blue avatar sitting at the right end of the app header
+ * - Dropdown panel anchored to the avatar, carrying the identity block and
+ *   the Home Screen / Switch User / Sign Out actions
+ * - The panel needs no z-index of its own against the app: the header is
+ *   already the top layer at --Vale_ZIndex_Header, so the panel paints over
+ *   the nav bar and the mode panels beneath it
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Avatar Button
+ * ----------------------------------------------------------------------------- */
+
+    /* ACCOUNT MENU | Mount Wrapper */
+    /* ------------------------------------------------------------ */
+    /* Positioning context for the absolutely placed dropdown panel.  */
+    /* Empty and zero width while no user is signed in.               */
+    .VghLantern__AccountMenu {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        margin-left                        : var(--Vale_Spacing_Large);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Circular Initials Avatar */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__Avatar {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : calc(38px * var(--Vale_UIScale));
+        height                             : calc(38px * var(--Vale_UIScale));
+        padding                            : 0;
+        border                             : none;
+        border-radius                      : 50%;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.03em;
+        line-height                        : 1;
+        cursor                             : pointer;
+        user-select                        : none;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             box-shadow var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__AccountMenu__Avatar:hover {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+    }
+
+    .VghLantern__AccountMenu__Avatar:focus-visible {
+        outline                            : 2px solid var(--VghLantern_AccentBlue);
+        outline-offset                     : 2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Avatar Open State Ring */
+    /* ------------------------------------------------------------ */
+    /* A soft halo rather than a colour change, so the avatar still    */
+    /* reads as the same control while its menu is showing.            */
+    .VghLantern__AccountMenu--open .VghLantern__AccountMenu__Avatar {
+        background                         : var(--Vale_PrimaryBrand_Dark);
+        box-shadow                         : 0 0 0 3px rgba(23, 43, 58, 0.16);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * COMPONENT | Dropdown Panel
+ * ----------------------------------------------------------------------------- */
+
+    /* ACCOUNT MENU | Panel Shell */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__Panel {
+        position                           : absolute;
+        top                                : calc(100% + var(--Vale_Spacing_Small));
+        right                              : 0;
+        display                            : none;
+        min-width                          : calc(240px * var(--Vale_UIScale));
+        padding                            : var(--Vale_Spacing_Small);
+        background                         : var(--Vale_BackgroundWhite);
+        border                             : 1px solid var(--Vale_BorderLight);
+        border-radius                      : var(--Vale_BorderRadius);
+        box-shadow                         : 0 12px 30px rgba(23, 43, 58, 0.22);
+        animation                          : VghLantern__AccountMenu__PanelIn 160ms ease-out;
+    }
+
+    .VghLantern__AccountMenu--open .VghLantern__AccountMenu__Panel {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Identity Block */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__Identity {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : var(--Vale_Spacing_Small);
+        padding                            : var(--Vale_Spacing_Small);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Identity Avatar Repeat */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__IdentityAvatar {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        flex                               : 0 0 auto;
+        width                              : calc(34px * var(--Vale_UIScale));
+        height                             : calc(34px * var(--Vale_UIScale));
+        border-radius                      : 50%;
+        background                         : var(--Vale_PrimaryBrand);
+        color                              : var(--Vale_TextLight);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.03em;
+        line-height                        : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Identity Name and Role Lines */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__IdentityText {
+        display                            : flex;
+        flex-direction                     : column;
+        min-width                          : 0;
+    }
+
+    .VghLantern__AccountMenu__IdentityName {
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextPrimary);
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+    }
+
+    .VghLantern__AccountMenu__IdentityRole {
+        font-size                          : var(--Vale_FontSize_Small);
+        color                              : var(--Vale_TextSubtle);
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Separator Rule */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__Rule {
+        height                             : 1px;
+        margin                             : var(--Vale_Spacing_Small) 0;
+        background                         : var(--Vale_BorderLight);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Menu Item Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__AccountMenu__Item {
+        display                            : block;
+        width                              : 100%;
+        padding                            : calc(9px * var(--Vale_UIScale)) var(--Vale_Spacing_Small);
+        background                         : transparent;
+        border                             : none;
+        border-radius                      : calc(var(--Vale_BorderRadius) / 2);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Standard);
+        font-weight                        : var(--Vale_FontWeight_Regular);
+        color                              : var(--Vale_TextPrimary);
+        text-align                         : left;
+        white-space                        : nowrap;
+        cursor                             : pointer;
+        transition                         : background var(--Vale_Transition_Fast),
+                                             color var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__AccountMenu__Item:hover {
+        background                         : var(--Vale_HoverBackground);
+    }
+
+    .VghLantern__AccountMenu__Item:focus-visible {
+        outline                            : 2px solid var(--VghLantern_AccentBlue);
+        outline-offset                     : -2px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Sign Out Item */
+    /* ------------------------------------------------------------ */
+    /* Sign out ends the session, so it carries the same red the app  */
+    /* uses for any other action that discards state.                 */
+    .VghLantern__AccountMenu__Item--danger {
+        color                              : var(--VghLantern_ErrorRed);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__AccountMenu__Item--danger:hover {
+        background                         : var(--VghLantern_ErrorBackground);
+        color                              : var(--VghLantern_ErrorRed);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * ANIMATION | Panel Entrance
+ * ----------------------------------------------------------------------------- */
+
+    /* KEYFRAMES | Panel Drop */
+    /* ------------------------------------------------------------ */
+    @keyframes VghLantern__AccountMenu__PanelIn {
+        from { transform: translateY(-6px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

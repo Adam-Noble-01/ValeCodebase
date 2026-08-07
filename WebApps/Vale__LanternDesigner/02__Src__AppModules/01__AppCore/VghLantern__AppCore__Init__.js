@@ -72,20 +72,24 @@
 
     // SUB FUNCTION | Load Every Data Library Index
     // ------------------------------------------------------------
-    // The glaze bar system index joins the component and profile catalogues here
-    // rather than being fetched on first render, because the takeoff reads it
-    // synchronously and the editor's trim picker needs its card previews before
-    // the first paint. It is a few kilobytes; the asset files it points at are
-    // the large ones, and those are still fetched on demand.
+    // The glaze bar and base frame system indexes join the component and
+    // profile catalogues here rather than being fetched on first render,
+    // because the takeoff reads both synchronously, the skeleton solver reads
+    // the base frame datum numbers synchronously, and the editor's trim picker
+    // needs its card previews before the first paint. Each index is a few
+    // kilobytes; the asset files they point at are the large ones, and those
+    // are still fetched on demand.
     async function VghLantern__AppCore__LoadDataLibraries() {
-        var ComponentIndexLoader  =  window.VghLantern__AppData__ComponentIndexLoader;
-        var ProfileIndexLoader    =  window.VghLantern__AppData__ProfileIndexLoader;
-        var GlazeBarSystemLoader  =  window.VghLantern__AppData__GlazeBarSystemLoader;
+        var ComponentIndexLoader   =  window.VghLantern__AppData__ComponentIndexLoader;
+        var ProfileIndexLoader     =  window.VghLantern__AppData__ProfileIndexLoader;
+        var GlazeBarSystemLoader   =  window.VghLantern__AppData__GlazeBarSystemLoader;
+        var BaseFrameSystemLoader  =  window.VghLantern__AppData__BaseFrameSystemLoader;
 
         var pending  =  [];
-        if (ComponentIndexLoader) pending.push(ComponentIndexLoader.VghLantern__ComponentIndexLoader__LoadIndex());
-        if (ProfileIndexLoader)   pending.push(ProfileIndexLoader.VghLantern__ProfileIndexLoader__LoadIndex());
-        if (GlazeBarSystemLoader) pending.push(GlazeBarSystemLoader.VghLantern__GlazeBarSystemLoader__LoadIndex());
+        if (ComponentIndexLoader)  pending.push(ComponentIndexLoader.VghLantern__ComponentIndexLoader__LoadIndex());
+        if (ProfileIndexLoader)    pending.push(ProfileIndexLoader.VghLantern__ProfileIndexLoader__LoadIndex());
+        if (GlazeBarSystemLoader)  pending.push(GlazeBarSystemLoader.VghLantern__GlazeBarSystemLoader__LoadIndex());
+        if (BaseFrameSystemLoader) pending.push(BaseFrameSystemLoader.VghLantern__BaseFrameSystemLoader__LoadIndex());
         await Promise.all(pending);
     }
     // ------------------------------------------------------------
@@ -227,6 +231,11 @@
         var UserLoginModal  =  window.VghLantern__UserLogin__LoginModal;
         if (UserLoginModal && UserLoginModal.VghLantern__UserLogin__LoginModal__Init) {
             UserLoginModal.VghLantern__UserLogin__LoginModal__Init();          // <-- Show the sign in gate when no session was restored
+        }
+
+        var AccountMenu  =  window.VghLantern__UserLogin__AccountMenu;
+        if (AccountMenu && AccountMenu.VghLantern__UserLogin__AccountMenu__Init) {
+            AccountMenu.VghLantern__UserLogin__AccountMenu__Init();            // <-- Header avatar, home screen route and sign out
         }
     }
     // ------------------------------------------------------------

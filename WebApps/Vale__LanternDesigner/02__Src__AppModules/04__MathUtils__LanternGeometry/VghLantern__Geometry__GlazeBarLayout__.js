@@ -53,11 +53,16 @@
            ResolvedLongSpacingMm, ResolvedShortSpacingMm,
            TotalBarLengthMm, TransomEnabled, TotalTransomLengthMm
        },
-       Bars     : [ { Id, Role, SlopeKey, Start, End, LengthMm } ],
+       Bars     : [ { Id, Role, SlopeKey, Start, End, LengthMm, EavesEnd } ],
        Warnings : []
    }
 
    Bar roles : 'glazingBar' | 'transom'
+   EavesEnd  : 'start' | 'end' | null - which endpoint sits on the eaves datum
+               ring. LengthMm is the DATUM length between the solved endpoints;
+               the per-part cut lengths at the eaves (core +42.5 along pitch,
+               cap +170, trim plumb cut) are applied downstream from this stamp
+               via VghLantern__Geometry__BaseFrameAssembly.
 
    ShortSlopeBarCount is derived, not entered - it is the number of wrapped hip
    end legs on one hip end face. Both spacing values report the single set-out
@@ -246,7 +251,11 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
 
     // HELPER FUNCTION | Push a Bar onto the Collection
     // ------------------------------------------------------------
-    function VghLantern__GlazeBarLayout__PushBar(bars, id, role, slopeKey, startPt, endPt) {
+    // eavesEndKey says which endpoint sits on the eaves datum ring: 'start',
+    // 'end' or null (transoms never touch it). Downstream consumers - the 3D
+    // composite's per-part end cuts and the takeoff's per-part lengths - read
+    // the stamp rather than re-deriving it from levels.
+    function VghLantern__GlazeBarLayout__PushBar(bars, id, role, slopeKey, startPt, endPt, eavesEndKey) {
         var Solver  =  window.VghLantern__Geometry__SkeletonSolver;
         var length  =  Solver.VghLantern__SkeletonSolver__Distance(startPt, endPt);
         if (length <= 0) return;
@@ -257,7 +266,8 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
             SlopeKey : slopeKey,
             Start    : startPt,
             End      : endPt,
-            LengthMm : length
+            LengthMm : length,
+            EavesEnd : eavesEndKey === 'start' || eavesEndKey === 'end' ? eavesEndKey : null
         });
     }
     // ------------------------------------------------------------
@@ -283,7 +293,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
                 VghLantern__GlazeBarLayout__LevelAtShortOffset(frame, endShortOffset)
             );
 
-            VghLantern__GlazeBarLayout__PushBar(bars, 'bar_' + slopeKey + '_' + i, 'glazingBar', slopeKey, startPt, endPt);
+            VghLantern__GlazeBarLayout__PushBar(bars, 'bar_' + slopeKey + '_' + i, 'glazingBar', slopeKey, startPt, endPt, 'start');
         }
     }
     // ------------------------------------------------------------
@@ -313,7 +323,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
             startPt  =  frame.MapTo(hipLongOffset, shortSign * shortOffset, level);
             endPt    =  frame.MapTo(longSign * frame.HalfLongMm, shortSign * shortOffset, frame.EavesLevelMm);
 
-            VghLantern__GlazeBarLayout__PushBar(bars, 'bar_hip_' + slopeKey + '_' + hipKey + '_' + i, 'glazingBar', slopeKey, startPt, endPt);
+            VghLantern__GlazeBarLayout__PushBar(bars, 'bar_hip_' + slopeKey + '_' + hipKey + '_' + i, 'glazingBar', slopeKey, startPt, endPt, 'end');
         }
     }
     // ------------------------------------------------------------
@@ -329,7 +339,7 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
         var startPt  =  frame.MapTo(longSign * frame.RidgeHalfLengthMm, 0, frame.EavesLevelMm + frame.RiseMm);
         var endPt    =  frame.MapTo(longSign * frame.HalfLongMm,        0, frame.EavesLevelMm);
 
-        VghLantern__GlazeBarLayout__PushBar(bars, 'bar_hipcentre_' + slopeKey, 'glazingBar', slopeKey, startPt, endPt);
+        VghLantern__GlazeBarLayout__PushBar(bars, 'bar_hipcentre_' + slopeKey, 'glazingBar', slopeKey, startPt, endPt, 'end');
     }
     // ------------------------------------------------------------
 
@@ -353,7 +363,8 @@ const VghLantern__Geometry__GlazeBarLayout = (function() {
                 'transom',
                 signs[i] < 0 ? 'short-' : 'short+',
                 frame.MapTo(-halfExtent, signs[i] * shortOffset, level),
-                frame.MapTo( halfExtent, signs[i] * shortOffset, level)
+                frame.MapTo( halfExtent, signs[i] * shortOffset, level),
+                null
             );
         }
     }

@@ -408,11 +408,38 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Describe a Base Frame System Part
+    // ------------------------------------------------------------
+    // The head beam, eaves extrusion, lead flashing and spot welds carry the
+    // same userData stamp set the glaze bar parts do, so they are described
+    // from the mesh rather than from the prism block.
+    function VghLantern__Env3d__InspectStats__DescribeBaseFramePart(pick) {
+        const data   =  pick.Object3d ? pick.Object3d.userData : {};
+        const record =  pick.Record || {};
+        const facts  =  [];
+
+        if (data.VghLantern__AssetId)      VghLantern__Env3d__InspectStats__Push(facts, 'Product code', data.VghLantern__AssetId);
+        if (data.VghLantern__SpecMaterial) VghLantern__Env3d__InspectStats__Push(facts, 'Material',     data.VghLantern__SpecMaterial);
+        if (data.VghLantern__PartFinish)   VghLantern__Env3d__InspectStats__Push(facts, 'Finish',       data.VghLantern__PartFinish);
+        if (record.PerimeterMm)            VghLantern__Env3d__InspectStats__Push(facts, 'Datum ring perimeter', VghLantern__Env3d__InspectStats__Metres(record.PerimeterMm));
+
+        return {
+            TypeLabel : data.VghLantern__PartName || pick.RoleKey,
+            Facts     : facts
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Describe a Base Assembly Prism
     // ------------------------------------------------------------
     // The upstand and the frame share one footprint and one wall thickness, so they
     // report the same set-out and differ only in height and who supplies them.
     function VghLantern__Env3d__InspectStats__DescribeBase(pick, lantern) {
+        if (pick.Object3d && pick.Object3d.userData && pick.Object3d.userData.VghLantern__PartName) {
+            return VghLantern__Env3d__InspectStats__DescribeBaseFramePart(pick);
+        }
+
         const base       =  pick.Record  || {};
         const isUpstand  =  pick.RoleKey !== 'frame';
         const facts      =  [];

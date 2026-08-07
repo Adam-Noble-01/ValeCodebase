@@ -29,33 +29,39 @@
    - +X              : the width axis.
    - +Y              : the depth axis.
    - +Z              : vertically up.
-   - Builders Upstand base       : z = 0
-   - Builders Upstand top        : z = upstandHeightMm
-   - Frame top/eaves : z = upstandHeightMm + frameHeightMm
-   - Ridge / apex    : z = upstandHeightMm + frameHeightMm + riseMm
+   - Builders Upstand base : z = 0
+   - Builders Upstand top  : z = upstandHeightMm   (the +/-0000 seating benchmark)
+   - Head beam top         : z = upstandHeightMm + headBeamHeightMm (96)
+   - EAVES DATUM           : z = upstandHeightMm + eavesDatumRiseMm (100)
+   - Ridge / apex          : z = eaves datum + riseMm
 
-   The long axis is whichever of width/depth is greater once the eaves
-   projection is added. The ridge always runs along the long axis.
+   The long axis is whichever of width/depth is greater. The ridge always runs
+   along the long axis.
 
    ---------------------------------------------------------------------------
 
-   THE BASE ASSEMBLY - KERB THEN FRAME:
-   The lantern sits on a two-part base, stacked and sharing one footprint:
+   THE BASE ASSEMBLY - UPSTAND THEN HEAD BEAM:
+   The lantern sits on a two-part base, stacked and sharing one outer face:
 
-     KERB   the studwork upstand built on the roof. A hollow rectangular prism:
-            outer face = the lantern's width x depth, wall thickness = the builders upstand
-            thickness, and the hole through it is the reveal the daylight comes
-            down. Width and depth are ALWAYS measured to the OUTER face.
-     FRAME  the lantern's own base frame, sitting directly on the builders upstand. Same
-            footprint and same wall thickness as the builders upstand by definition; only
-            its height is free. Emitted as a CLOSED box - base ring, top ring and
-            four corner posts - so it projects to a full rectangle in elevation
-            the same way the upstand does. Both are solids, and a solid reads as
-            an outline, not as a pair of loose rails.
+     UPSTAND    the studwork upstand built on the roof by others. A hollow
+                rectangular prism: outer face = the lantern's width x depth,
+                wall thickness = the builders upstand thickness, and the hole
+                through it is the reveal the daylight comes down. Width and
+                depth are ALWAYS measured to the OUTER face.
+     HEAD BEAM  the Vale Sapele base frame seated directly atop the upstand,
+                outer face flush with the upstand outer face. A fixed product
+                section - 125mm wide x 96mm tall (46_1001) - so its size is
+                read from the base frame system, never from a slider. Its
+                underside on the upstand top is the +/-0000 benchmark every
+                level on a sheet is measured from.
 
-   The roof springs from the top of the frame, so EavesLevelMm is the frame top,
-   not the builders upstand top. Builders upstand and frame are described together in the Base block
-   below, which is what the 3D environment extrudes into a solid.
+   THE EAVES DATUM: the roof does NOT spring from the outer envelope. The
+   eaves datum ring sits on the head beam INNER face plane - inset one head
+   beam width (125mm) from each stated face - at +100mm above the seating
+   benchmark. Glaze bar datum lines pass through that ring; the aluminium
+   eaves extrusion (46_1002) and lead flashing (46_1003) are swept around the
+   assembly relative to it. The retired EavesProjectionMm field is carried in
+   Meta for reporting but has no geometric effect.
 
    ---------------------------------------------------------------------------
 
@@ -64,14 +70,15 @@
    {
        Meta : {
            RoofForm, IsValid, Warnings[],
-           WidthMm, DepthMm, EavesProjectionMm,
+           WidthMm, DepthMm, EavesProjectionMm (retired, reported only),
            UpstandHeightMm, UpstandThicknessMm, FrameHeightMm,
-           EavesHalfWidthMm, EavesHalfDepthMm,
+           HeadBeamWidthMm, HeadBeamHeightMm, EavesDatumRiseMm,
+           EavesHalfWidthMm, EavesHalfDepthMm  (the EAVES DATUM ring half extents),
            LongAxis            : 'x' | 'y',
            PitchDegrees, RiseMm, RidgeLengthMm,
            ShortRafterLengthMm, LongRafterLengthMm,
            HipLengthMm, HipAngleDegrees,
-           UpstandTopLevelMm, EavesLevelMm, RidgeLevelMm, OverallHeightMm
+           UpstandTopLevelMm, FrameTopLevelMm, EavesLevelMm, RidgeLevelMm, OverallHeightMm
        },
        Base : {
            UpstandHeightMm, UpstandThicknessMm, FrameHeightMm,
@@ -131,8 +138,34 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
     // hand-edited file solves to the same geometry the editor would produce.
     const FALLBACK_UPSTAND_HEIGHT_MM     =  150;                                // <-- Standard Vale upstand height
     const FALLBACK_UPSTAND_THICKNESS_MM  =  110;                                // <-- Standard studwork upstand wall thickness
-    const FALLBACK_FRAME_HEIGHT_MM    =  50;                                 // <-- Standard base frame height
     const MIN_REVEAL_DIMENSION_MM     =  100;                                // <-- Below this the hole is not a usable reveal
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Head Beam and Eaves Datum Fallbacks
+    // ------------------------------------------------------------
+    // The live numbers come from the base frame system index through
+    // VghLantern__Geometry__BaseFrameAssembly. These mirror that index exactly
+    // and exist only so a solve that somehow runs before the module chain is
+    // complete produces the same lantern.
+    const FALLBACK_HEAD_BEAM_WIDTH_MM   =  125;                              // <-- 46_1001 standard section width
+    const FALLBACK_HEAD_BEAM_HEIGHT_MM  =  96;                               // <-- 46_1001 standard section height
+    const FALLBACK_DATUM_RISE_MM        =  100;                              // <-- Eaves datum above the seating benchmark
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Head Beam and Datum Numbers (synchronous)
+    // ------------------------------------------------------------
+    function VghLantern__SkeletonSolver__DatumGeometry() {
+        var Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
+        if (Assembly) return Assembly.VghLantern__BaseFrameAssembly__DatumGeometry();
+
+        return {
+            HeadBeamWidthMm           : FALLBACK_HEAD_BEAM_WIDTH_MM,
+            HeadBeamHeightMm          : FALLBACK_HEAD_BEAM_HEIGHT_MM,
+            EavesDatumRiseAboveSeatMm : FALLBACK_DATUM_RISE_MM
+        };
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -305,11 +338,11 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             VghLantern__SkeletonSolver__PushPosts(members, 'buildersUpstandPost', 'buildersUpstandPost', outerBase, outerUpstandTop);
         }
 
-        // FRAME - the lantern base frame sitting on the builders upstand.
-        // Closed as a box in its own right, exactly as the upstand below it is,
-        // so an elevation reads a complete rectangle FrameHeightMm tall across
+        // FRAME - the Sapele head beam seated on the builders upstand. Closed as
+        // a box in its own right, exactly as the upstand below it is, so an
+        // elevation reads a complete rectangle one head beam height tall across
         // the full width or depth rather than two unterminated rails. Its base
-        // ring sits on the upstand top, which is where the two physically meet.
+        // ring sits on the upstand top - the +/-0000 seating benchmark.
         if (context.FrameHeightMm > 0) {
             VghLantern__SkeletonSolver__PushRing(members, 'frameBase', 'frame', outerUpstandTop);
             VghLantern__SkeletonSolver__PushRing(members, 'frameTop',  'frame', outerFrameTop);
@@ -326,8 +359,10 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             VghLantern__SkeletonSolver__PushPosts(members, 'revealPost', 'buildersUpstandReveal', innerBase, innerTop);
         }
 
-        // EAVES - the ring the roof springs from, oversailing the frame.
-        var eavesRing  =  VghLantern__SkeletonSolver__Ring(mapTo, context.EavesHalfLongMm, context.EavesHalfShortMm, frameTopMm);
+        // EAVES DATUM - the ring the roof springs from: the head beam inner face
+        // plane, 100mm above the seating benchmark. Inboard of the outer
+        // envelope, not oversailing it.
+        var eavesRing  =  VghLantern__SkeletonSolver__Ring(mapTo, context.EavesHalfLongMm, context.EavesHalfShortMm, context.EavesLevelMm);
         VghLantern__SkeletonSolver__PushRing(members, 'eaves', 'eaves', eavesRing);
 
         return eavesRing;
@@ -479,18 +514,28 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
         var roofForm       =  formCfg['Lantern__Form__Config__RoofForm'] || ROOF_FORM_HIPPED_RIDGE;
         var widthMm        =  Number(dimsCfg['Lantern__Dimensions__Config__WidthMm']) || 0;
         var depthMm        =  Number(dimsCfg['Lantern__Dimensions__Config__DepthMm']) || 0;
-        var eavesProjMm    =  Number(dimsCfg['Lantern__Dimensions__Config__EavesProjectionMm']) || 0;
+        var eavesProjMm    =  Number(dimsCfg['Lantern__Dimensions__Config__EavesProjectionMm']) || 0;   // <-- Retired field, reported only
 
         // BASE ASSEMBLY - width and depth are measured to the OUTER builders upstand face.
         var upstandHeightMm     =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm',    FALLBACK_UPSTAND_HEIGHT_MM));
         var upstandThicknessMm  =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__UpstandThicknessMm', FALLBACK_UPSTAND_THICKNESS_MM));
-        var frameHeightMm    =  Math.max(0, VghLantern__SkeletonSolver__ReadNumber(upstandCfg, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',   FALLBACK_FRAME_HEIGHT_MM));
 
-        var upstandTopLevelMm   =  upstandHeightMm;
-        var frameTopLevelMm  =  upstandHeightMm + frameHeightMm;
+        // HEAD BEAM AND EAVES DATUM - fixed product numbers, never user driven.
+        // The retired FrameHeightMm slider value is deliberately not read: the
+        // base frame is the 46_1001 head beam and its height is the product's.
+        var datumGeometry     =  VghLantern__SkeletonSolver__DatumGeometry();
+        var headBeamWidthMm   =  datumGeometry.HeadBeamWidthMm;
+        var headBeamHeightMm  =  datumGeometry.HeadBeamHeightMm;
+        var datumRiseMm       =  datumGeometry.EavesDatumRiseAboveSeatMm;
 
-        var eavesHalfX  =  (widthMm / 2) + eavesProjMm;
-        var eavesHalfY  =  (depthMm / 2) + eavesProjMm;
+        var upstandTopLevelMm  =  upstandHeightMm;
+        var frameTopLevelMm    =  upstandHeightMm + headBeamHeightMm;
+        var eavesDatumLevelMm  =  upstandHeightMm + datumRiseMm;
+
+        // The roof springs from the eaves datum ring: the head beam INNER face
+        // plane, one beam width inboard of each stated face.
+        var eavesHalfX  =  (widthMm / 2) - headBeamWidthMm;
+        var eavesHalfY  =  (depthMm / 2) - headBeamWidthMm;
 
         var longAxis        =  eavesHalfX >= eavesHalfY ? 'x' : 'y';
         var eavesHalfLong   =  Math.max(eavesHalfX, eavesHalfY);
@@ -521,7 +566,10 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             EavesProjectionMm  : eavesProjMm,
             UpstandHeightMm       : upstandHeightMm,
             UpstandThicknessMm    : upstandThicknessMm,
-            FrameHeightMm      : frameHeightMm,
+            HeadBeamWidthMm    : headBeamWidthMm,
+            HeadBeamHeightMm   : headBeamHeightMm,
+            EavesDatumRiseMm   : datumRiseMm,
+            FrameHeightMm      : headBeamHeightMm,
             LongAxis           : longAxis,
             MapTo              : VghLantern__SkeletonSolver__BuildAxisMapper(longAxis),
             EavesHalfLongMm    : eavesHalfLong,
@@ -534,8 +582,8 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             RidgeHalfLengthMm  : ridgeHalfLength,
             UpstandTopLevelMm     : upstandTopLevelMm,
             FrameTopLevelMm    : frameTopLevelMm,
-            EavesLevelMm       : frameTopLevelMm,
-            RidgeLevelMm       : frameTopLevelMm + pitchSet.RiseMm,
+            EavesLevelMm       : eavesDatumLevelMm,
+            RidgeLevelMm       : eavesDatumLevelMm + pitchSet.RiseMm,
             PitchSet           : pitchSet,
             Warnings           : warnings
         };
@@ -552,12 +600,14 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
             context.Warnings.push('Width and depth must each be at least ' + MIN_PLAN_DIMENSION_MM + ' mm.');
             isValid  =  false;
         }
+        if (context.EavesHalfShortMm <= 0) {
+            context.Warnings.push('The plan is too small for the ' + Math.round(context.HeadBeamWidthMm)
+                + ' mm head beam each side - no glazed opening remains inside the eaves datum.');
+            isValid  =  false;
+        }
         if (context.PitchSet.RiseMm <= 0) {
             context.Warnings.push('The roof pitch resolves to no rise at all - the roof would be flat.');
             isValid  =  false;
-        }
-        if (context.EavesProjectionMm > context.UpstandHalfShortMm) {
-            context.Warnings.push('Eaves projection exceeds half the short span - check the overhang.');
         }
         if (!context.HasReveal) {
             context.Warnings.push('A builders upstand thickness of ' + Math.round(context.UpstandThicknessMm)
@@ -637,6 +687,9 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
                 UpstandHeightMm         : context.UpstandHeightMm,
                 UpstandThicknessMm      : context.UpstandThicknessMm,
                 FrameHeightMm        : context.FrameHeightMm,
+                HeadBeamWidthMm      : context.HeadBeamWidthMm,
+                HeadBeamHeightMm     : context.HeadBeamHeightMm,
+                EavesDatumRiseMm     : context.EavesDatumRiseMm,
                 LongAxis             : context.LongAxis,
                 EavesHalfWidthMm     : context.LongAxis === 'x' ? context.EavesHalfLongMm : context.EavesHalfShortMm,
                 EavesHalfDepthMm     : context.LongAxis === 'x' ? context.EavesHalfShortMm : context.EavesHalfLongMm,
@@ -649,6 +702,7 @@ const VghLantern__Geometry__SkeletonSolver = (function() {
                 HipLengthMm          : pitchSet.HipLengthMm,
                 HipAngleDegrees      : pitchSet.HipAngleDegrees,
                 UpstandTopLevelMm       : context.UpstandTopLevelMm,
+                FrameTopLevelMm      : context.FrameTopLevelMm,
                 EavesLevelMm         : context.EavesLevelMm,
                 RidgeLevelMm         : context.RidgeLevelMm,
                 OverallHeightMm      : context.RidgeLevelMm

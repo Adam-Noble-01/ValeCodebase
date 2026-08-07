@@ -14,7 +14,7 @@
                 "ProjectionKey"               : "plan",
                 "HorizontalAxisLabel"         : "Width",
                 "VerticalAxisLabel"           : "Depth",
-                "DimensionKeys"               : ["width", "depth", "eavesProjection", "ridgeLength", "upstandThickness"]
+                "DimensionKeys"               : ["width", "depth", "ridgeLength", "upstandThickness"]
             },
             "frontElevation": {
                 "Label"                       : "Front Elevation",
@@ -22,7 +22,7 @@
                 "ProjectionKey"               : "frontElevation",
                 "HorizontalAxisLabel"         : "Width",
                 "VerticalAxisLabel"           : "Height",
-                "DimensionKeys"               : ["width", "overallHeight", "upstandHeight", "frameHeight", "pitch"]
+                "DimensionKeys"               : ["width", "overallHeight", "upstandHeight", "pitch"]
             },
             "sideElevation": {
                 "Label"                       : "Side Elevation",
@@ -30,7 +30,7 @@
                 "ProjectionKey"               : "sideElevation",
                 "HorizontalAxisLabel"         : "Depth",
                 "VerticalAxisLabel"           : "Height",
-                "DimensionKeys"               : ["depth", "overallHeight", "upstandHeight", "frameHeight", "pitch"]
+                "DimensionKeys"               : ["depth", "overallHeight", "upstandHeight", "pitch"]
             }
         },
 

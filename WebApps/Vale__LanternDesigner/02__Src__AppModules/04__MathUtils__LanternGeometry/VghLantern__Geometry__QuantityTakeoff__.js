@@ -230,6 +230,47 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Apply the Per-Part Eaves End Adjustment to Bar Lengths
+    // ------------------------------------------------------------
+    // Returns { Members, TotalMm }: the same bar records where no adjustment
+    // applies, shallow copies with an adjusted LengthMm where one does. The
+    // delta comes from the BaseFrameAssembly geometry module - core and cap
+    // extensions along the pitch, trim plumb cut to the long point - so this
+    // list and the 3D solids are cut by one set of maths. Without the module
+    // the datum lengths pass through untouched.
+    function VghLantern__QuantityTakeoff__AdjustedBarMembers(partKey, members, eavesLevelMm, trimDepthMm) {
+        var Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
+        var out       =  [];
+        var totalMm   =  0;
+        var i, bar, deltaMm;
+
+        for (i = 0; i < members.length; i++) {
+            bar      =  members[i];
+            deltaMm  =  Assembly
+                ? Assembly.VghLantern__BaseFrameAssembly__PartLengthDeltaMm(partKey, bar, eavesLevelMm, trimDepthMm)
+                : 0;
+
+            if (deltaMm === 0) {
+                out.push(bar);
+            } else {
+                out.push({
+                    Id       : bar.Id,
+                    Role     : bar.Role,
+                    SlopeKey : bar.SlopeKey,
+                    Start    : bar.Start,
+                    End      : bar.End,
+                    EavesEnd : bar.EavesEnd,
+                    LengthMm : bar.LengthMm + deltaMm
+                });
+            }
+            totalMm  +=  out[out.length - 1].LengthMm;
+        }
+
+        return { Members: out, TotalMm: totalMm };
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Push an Area Row
     // ------------------------------------------------------------
     function VghLantern__QuantityTakeoff__PushArea(rows, key, label, areaSqMm, quantity) {
@@ -317,33 +358,65 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             totalFor('hip'), countFor('hip'), quantity,
             { MemberList : membersFor('hip') });
 
-        // There is no eaves row. The eaves ring is the line where the roof plane
-        // meets the upstand, not a length of anything: the metal along it belongs
-        // to the upstand and the frame beneath, both of which are already
-        // measured below. Totalling it as a section put a run round the roof that
-        // nothing is ordered for.
-
-        // The builders upstand and the frame are prisms, not swept members, so their runs come
-        // from the Base block rather than from a member-role total. Summing the
-        // 'buildersUpstand' role would double-count: the solver draws that box at both its
-        // base and its top, and each ring is one full perimeter.
+        // THE BASE FRAME SYSTEM - three continuous rings around the lantern,
+        // read from the base frame system index so the names, product codes and
+        // specification materials come from data rather than being restated:
+        //   headBeam        46_1001  Sapele, 125 x 96, runs the outer envelope
+        //   eavesExtrusion  46_1002  mill aluminium ring on the eaves datum
+        //   leadFlashing    46_1003  patination oiled lead, over the envelope
+        // The old generic 'frame' prism row this replaces carried no profile id
+        // and upstand-derived section sizes.
         var base  =  skeleton.Base || {};
+        var meta  =  skeleton.Meta || {};
 
-        VghLantern__QuantityTakeoff__PushLinear(rows, 'frame', 'Base Frame',
-            '',                                                              // <-- Prism member; no swept profile id
-            (Number(base.FrameHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity, {
-                SectionHeightMm : Number(base.FrameHeightMm) || 0,            // <-- Vale frame ring beam height
-                SectionWidthMm  : Number(base.UpstandThicknessMm) || 0         // <-- Thickness follows the upstand wall
-            });
+        var outerPerimeterMm  =  Number(base.OuterPerimeterMm) || 0;
+        var datumPerimeterMm  =  ((Number(meta.EavesHalfWidthMm) || 0) + (Number(meta.EavesHalfDepthMm) || 0)) * 4;
+
+        var BaseFrameLoader  =  window.VghLantern__AppData__BaseFrameSystemLoader;
+        var basePartList     =  BaseFrameLoader ? (BaseFrameLoader.VghLantern__BaseFrameSystemLoader__DescribeParts() || []) : [];
+        var basePartRuns     =  { headBeam: outerPerimeterMm, eavesExtrusion: datumPerimeterMm, leadFlashing: outerPerimeterMm };
+        var basePartIndex, basePart, basePartRun;
+
+        for (basePartIndex = 0; basePartIndex < basePartList.length; basePartIndex++) {
+            basePart     =  basePartList[basePartIndex];
+            basePartRun  =  Number(basePartRuns[basePart.PartKey]) || 0;
+
+            VghLantern__QuantityTakeoff__PushLinear(rows, 'baseFrame__' + basePart.PartKey, basePart.PartName,
+                basePart.AssetId, basePartRun, 4, quantity, {
+                    SectionWidthMm  : Math.abs((Number(basePart.SectionMaxXMm) || 0) - (Number(basePart.SectionMinXMm) || 0)),
+                    SectionHeightMm : Math.abs((Number(basePart.SectionMaxYMm) || 0) - (Number(basePart.SectionMinYMm) || 0)),
+                    ElementType     : basePart.ElementType,
+                    SpecMaterial    : basePart.SpecMaterial
+                });
+        }
+
+        // Before the system index has loaded the base frame rows would vanish
+        // entirely, so a single fallback row keeps the timber visible using the
+        // solver's own head beam numbers.
+        if (basePartList.length === 0) {
+            VghLantern__QuantityTakeoff__PushLinear(rows, 'baseFrame__headBeam', 'Head Beam',
+                '46_1001', outerPerimeterMm, 4, quantity, {
+                    SectionWidthMm  : Number(meta.HeadBeamWidthMm)  || 0,
+                    SectionHeightMm : Number(meta.HeadBeamHeightMm) || 0,
+                    ElementType     : 'Structural',
+                    SpecMaterial    : 'Sapele Hardwood'
+                });
+        }
 
         VghLantern__QuantityTakeoff__PushLinear(rows, 'buildersUpstand', 'Builders Upstand',
             VghLantern__QuantityTakeoff__Read(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandProfileId', ''),
-            (Number(base.UpstandHeightMm) > 0 ? Number(base.OuterPerimeterMm) || 0 : 0), 4, quantity);
+            (Number(base.UpstandHeightMm) > 0 ? outerPerimeterMm : 0), 4, quantity);
 
-        // A glaze bar is three parts, so it is three rows. Every part runs the
-        // full length of every bar - they are extruded along one datum - so each
-        // takes the same run and the same member count, and differs only in what
-        // it is made of and what it is called on a cutting list.
+        // A glaze bar is three parts, so it is three rows - and the three parts
+        // no longer share one length. At the eaves end of every glazing bar the
+        // core extends 42.5mm along the pitch past the eaves datum, the cap
+        // extends 170mm, and the trim stops short of the datum at a vertical
+        // plumb cut whose reported length is to the LONG POINT (the bottom
+        // arris - the ordering length of the sawn piece). The adjustments come
+        // from VghLantern__Geometry__BaseFrameAssembly, the same maths the 3D
+        // solids are cut with, so a length here is the length of a solid that
+        // exists in the model. Transoms never touch the eaves and pass through
+        // unadjusted.
         //
         // The parts are read from the glaze bar system rather than named here, so
         // a change of trim depth reaches the takeoff without an edit and the
@@ -351,21 +424,20 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
         if (barSet && barSet.Meta) {
             var barParts  =  VghLantern__QuantityTakeoff__GlazeBarParts(lantern);
             var allBars   =  Array.isArray(barSet.Bars) ? barSet.Bars : [];
-            var partIndex, barPart;
+            var partIndex, barPart, adjusted;
 
-            // Split the set by role rather than trusting the meta counts. The bar
-            // records are the same objects the 3D builder extruded, so a cut length
-            // reported here is the length of a solid that exists in the model.
             var barMembers      =  allBars.filter(function(bar) { return bar && bar.Role !== 'transom'; });
             var transomMembers  =  allBars.filter(function(bar) { return bar && bar.Role === 'transom'; });
 
             for (partIndex = 0; partIndex < barParts.length; partIndex++) {
-                barPart  =  barParts[partIndex];
+                barPart   =  barParts[partIndex];
+                adjusted  =  VghLantern__QuantityTakeoff__AdjustedBarMembers(
+                    barPart.PartKey, barMembers, meta.EavesLevelMm, barPart.DepthMm);
 
                 VghLantern__QuantityTakeoff__PushLinear(rows, 'glazeBar__' + barPart.PartKey, barPart.PartName,
-                    barPart.AssetId, barSet.Meta.TotalBarLengthMm, barMembers.length, quantity,
+                    barPart.AssetId, adjusted.TotalMm, barMembers.length, quantity,
                     { SectionAreaSqMm : barPart.SectionAreaSqMm, ElementType : barPart.ElementType,
-                      SpecMaterial : barPart.SpecMaterial, MemberList : barMembers });
+                      SpecMaterial : barPart.SpecMaterial, MemberList : adjusted.Members });
 
                 VghLantern__QuantityTakeoff__PushLinear(rows, 'transom__' + barPart.PartKey, barPart.PartName + ' - Transom',
                     barPart.AssetId, barSet.Meta.TotalTransomLengthMm, transomMembers.length, quantity,

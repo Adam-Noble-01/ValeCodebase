@@ -17,11 +17,16 @@
 
    ---------------------------------------------------------------------------
 
-   THE TWO VIEWS
+   THE THREE VIEWS
 
        full         The finished lantern. Everything visible: cap, core, trim,
                     glass, finials, kerb. This is the default, and the view a
                     client-facing snapshot must be taken in.
+
+       noGlazing    The finished lantern with the glass left out. Cap, core,
+                    trim, finials and kerb all stay - only the Glazing type
+                    drops out. Useful for reading the frame's finished profile
+                    without glass reflections or hidden bars in the way.
 
        structural   The carcass alone. Only elements typed Structural survive -
                     the glaze bar cores and the frame. The decorative capping,
@@ -83,28 +88,37 @@ import {
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | The Two Views and What Each Admits
+    // MODULE CONSTANTS | The Three Views and What Each Admits
     // ------------------------------------------------------------
     export const VghLantern__Env3d__ElementFilter__Full        =  'full';
+    export const VghLantern__Env3d__ElementFilter__NoGlazing   =  'noGlazing';
     export const VghLantern__Env3d__ElementFilter__Structural  =  'structural';
 
     export const VghLantern__Env3d__ElementFilter__Order  =  [
         VghLantern__Env3d__ElementFilter__Full,
+        VghLantern__Env3d__ElementFilter__NoGlazing,
         VghLantern__Env3d__ElementFilter__Structural
     ];
 
     const VIEW_LABELS  =  {
         full       : 'Full Lantern',
+        noGlazing  : 'No Glazing',
         structural : 'Structure Only'
     };
 
-    // A null admitted set means everything. Listing the types the structural view
-    // keeps, rather than the ones it hides, means a type added later is hidden by
+    // A null admitted set means everything. Listing the types each view keeps,
+    // rather than the ones it hides, means a type added later is hidden by
     // default - which is the safe direction: a new decorative element appearing
     // in a structural view is a wrong drawing, a new structural element missing
     // from it is a visible omission somebody reports.
     const VIEW_ADMITS  =  {
         full       : null,
+        noGlazing  : [
+            VghLantern__Env3d__ElementFilter__Type.Structural,
+            VghLantern__Env3d__ElementFilter__Type.Trim,
+            VghLantern__Env3d__ElementFilter__Type.ByOthers,
+            VghLantern__Env3d__ElementFilter__Type.Flashing
+        ],
         structural : [VghLantern__Env3d__ElementFilter__Type.Structural]
     };
     // ------------------------------------------------------------

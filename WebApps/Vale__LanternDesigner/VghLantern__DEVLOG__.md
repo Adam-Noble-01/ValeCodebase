@@ -3,6 +3,201 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.5 - 07-Aug-2026
+### Lead flashing quieter, Sapele lighter
+
+Tuned the two base-frame PBR roles that were reading wrong up close:
+
+- **LeadFlashing** - soft wipe, less drag/mottle/tooth, narrower roughness and
+  metalness bands, softer bump. The narrow cover flashing was reading as noisy
+  mottled grey; it should read as even oiled metal with a quiet cloth pass.
+- **SapeleHardwood** - base/dark/light figure tones lifted in lightness and pulled
+  back in saturation (`#987465` / `#74574D` / `#AB988D`), grain contrast softened.
+  The head beam was a dark mahogany plank; it should read as faded sealed joinery.
+
+All changes are config-only in `Na__PbrMaterials__Config.json` - the procedural
+builders already consume these values, and the texture cache keys include them so
+a reload regenerates the maps.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.4 - 07-Aug-2026
+### The eaves stop being a guess: a real Vale head beam, a real datum point, and a roof that finally springs from the right place
+
+Every lantern the app had drawn until now sprang its roof from the wrong point. The
+glaze bars seated on the outer top corner of a generic base-frame prism, projected
+past the builders upstand by a slider - a construction with no Vale product behind
+it. On a real lantern the roof springs from a specific point on a specific piece of
+timber: the 125 x 96 Sapele head beam that seats atop the builders upstand, outer
+face flush with the stated envelope, and the EAVES DATUM is the point on that beam's
+INNER face, 100mm above the beam's underside - the underside being the +/-0000
+benchmark every level on the sheet is signed from. Nothing in the geometry layer knew
+any of that; it is now the thing everything else is built from.
+
+Three exported profiles made the rebuild possible: the head beam itself (46_1001),
+the mill aluminium eaves extrusion the glaze bar cores weld their reveal to
+(46_1002), and the lead cover flashing that dresses down over the upstand (46_1003).
+All three are authored in one shared section frame whose 0,0 IS the eaves datum
+point, so placing them is a matter of sweeping around the datum ring rather than
+guessing an offset.
+
+#### The datum, not the envelope
+The eaves ring used to sit AT the outer envelope, projected past it by
+`EavesProjectionMm`. It now sits INSIDE the envelope, inset one head beam width
+(125mm) from each stated Length/Width face, at the builders upstand top plus a fixed
+100mm rise. Both `EavesProjectionMm` and the old `FrameHeightMm` slider are retired:
+the base frame is a fixed Vale product section, not a number a user can type. Their
+schema fields remain so an old project file still loads and normalises, but nothing
+in the solve reads them any more.
+
+#### The eaves interface - what the parts actually do at the roof edge
+At the eaves end of every glazing bar the three parts terminate differently, and now
+correctly:
+- the **core** extends 42.5mm along the pitch past the datum, square cut, landing
+  on the eaves extrusion it welds to
+- the **cap** extends 170mm along the pitch past the datum - the visible overhang
+- the **trim** stops SHORT of the datum with a true vertical PLUMB CUT, its plane
+  18mm horizontally inboard of the datum point, reported on the cutting list to the
+  LONG POINT (the sawn piece's ordering length, not the datum-line length)
+
+Those three numbers - 42.5, 170, 18 - are not scattered through the codebase. They
+live once, in the base frame system index, and every consumer (the 3D solids, the
+takeoff, the glazing extension) reads them from the same place.
+
+#### The head beam top re-slopes with pitch, it does not just sit there
+The exported timber was cut for one reference pitch. A lantern is not built at one
+pitch, so the beam's weathered top (the rebate and the lap face the lead flashing
+sits on) is re-solved per lantern: rotated about the datum origin by the pitch
+delta, then re-anchored - the seating face back onto the fixed inner face plane, the
+lap face back onto the fixed 45 degree outer chamfer. Past roughly 28 degrees the lap
+line runs off the bottom of the chamfer before it ever meets it, so the chamfer is
+consumed and the lap dresses straight to the outer face instead; past a floor near
+the beam's own underside the re-slope clamps and warns rather than punching through
+the timber. The lead flashing takes the identical construction, because it lies on
+the beam's lap face and has no top of its own.
+
+#### Two fixes needed after the first pass, both about how far things reach past the datum
+Extending the glass and the hip placeholders down to the cap ends looked right from
+directly above and wrong from every other angle: every eaves vertex was being pushed
+straight down its own pane's slope, so at a hip the two neighbouring panes moved in
+different directions and their shared edge swung off the hip line - a wedge-shaped
+gap opening right where the hip capping should read as one clean seam. The fix moves
+each corner along its OWN boundary edge instead - the hip, or the pane's ridge-end
+edge - scaled so the down-slope component still lands exactly on the cap-end level.
+On an equal-pitch hip both neighbouring panes now extend along the identical 3D line
+by the identical amount, so their corners coincide and the seam cannot open.
+
+Verified the hips really are 45 degrees in plan, which the eaves inset does not
+disturb: ridge length is width minus depth with the SAME 125mm inset cancelling on
+both axes, so the plan legs of every hip stay equal by construction at any lantern
+size - confirmed numerically on a 4000 x 2500 lantern (1125.000mm x 1125.000mm per
+leg, exactly).
+
+#### Added - `06__Data__LanternProfileLibrary/46_1000__BaseFrame/`
+- **`VghLantern__BaseFrameSystem__Index__.json`** - hand-authored, the same pattern
+  as the glaze bar system index: the three part slots, the datum geometry (head beam
+  125 x 96, datum rise 100mm), the eaves interface numbers (42.5 / 170 / 18), and the
+  named reference vertices the pitch re-slope solves against. A build utility
+  scanning a folder cannot know which asset is the beam and which is the flashing, so
+  this stays hand-maintained like its glaze bar counterpart.
+
+#### Added - `02__Src__AppModules/02__AppData/`
+- **`VghLantern__AppData__BaseFrameSystemLoader__.js`** - owns the index and the
+  three asset fetches, and is the synchronous source for the datum numbers the
+  skeleton solver and the constraint resolver both need mid-solve.
+
+#### Added - `02__Src__AppModules/04__MathUtils__LanternGeometry/`
+- **`VghLantern__Geometry__BaseFrameAssembly__.js`** - the one place the eaves datum
+  construction is reasoned about. Resolves the datum ring from a solved skeleton,
+  rotates the eaves extrusion to pitch, re-slopes the beam and flashing tops, and
+  answers the per-part eaves-end length deltas and the trim's plumb-cut plane. Both
+  render environments read this module rather than re-deriving any of it.
+
+#### Added - `02__Src__AppModules/06__Env3d__ThreeRenderPipeline/`
+- **`VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__.mjs`** - sweeps the three
+  base frame parts around the eaves datum ring with true mitred corners: each side's
+  end vertices slide along the side axis onto the corner's vertical mitre plane, so
+  adjacent sides meet on coincident faces and the assembly stays watertight for the
+  cross-section capping pass.
+
+#### Changed - `02__Src__AppModules/04__MathUtils__LanternGeometry/`
+- **`VghLantern__Geometry__SkeletonSolver__.js`** - the eaves ring now sits on the
+  datum (inset 125mm, +100mm above upstand top) instead of the projected outer
+  envelope; `EavesProjectionMm` and the old frame prism height are retired from the
+  solve; new `HeadBeamWidthMm` / `HeadBeamHeightMm` / `EavesDatumRiseMm` /
+  `FrameTopLevelMm` published in Meta.
+- **`VghLantern__Geometry__GlazeBarLayout__.js`** - every bar record now carries an
+  `EavesEnd` stamp (`'start'` / `'end'` / `null`), so downstream consumers know which
+  endpoint sits on the datum without re-deriving it from levels.
+- **`VghLantern__Geometry__ConstraintResolver__.js`** - the overall-height back-solve
+  and the short-slope run both read the datum inset instead of the eaves projection;
+  the `eavesProjection` and `frameHeight` dimension descriptors are retired.
+- **`VghLantern__Geometry__SettingOutModel__.js`** - the eaves datum is now its own
+  published datum family (`Datum__Eaves`), separate from the head beam top
+  (`Datum__Frame`, no longer aliased to the eaves level); new checks confirm the
+  datum's rise above the seating benchmark and its inset from the stated envelope.
+- **`VghLantern__Geometry__QuantityTakeoff__.js`** - the old placeholder `'frame'`
+  row is replaced by three real rows (head beam, eaves extrusion, lead flashing) read
+  from the base frame system; glaze bar part rows no longer share one length - each
+  part's run is adjusted by its own eaves-end delta before it reaches the cutting
+  list.
+- **`VghLantern__AppUtils__ProjectSchemaValidator__.js`** - the legacy rise-driven
+  pitch migration now measures its run from the datum inset, matching the solver.
+
+#### Changed - `02__Src__AppModules/06__Env3d__ThreeRenderPipeline/`
+- **`VghLantern__Env3d__MeshBuilder__Glazing__.mjs`** - every glazing face now
+  extends past the eaves datum to the glaze bar cap-end level. Each eaves corner
+  slides along its own boundary edge (hip or ridge-end edge, not a perpendicular
+  drop), so a hip's two neighbouring panes extend along the same 3D line by the same
+  amount and their shared edge stays closed.
+- **`VghLantern__Env3d__MeshBuilder__Skeleton__.mjs`** - hip members are extended
+  down their own axis to the same cap-end level, so the placeholder hip line reaches
+  the roof edge instead of stopping short of it. Solved members are never mutated;
+  only the swept copies move.
+- **`VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs`** - the three parts now
+  terminate correctly at the eaves: core and cap take a square-cut extension along
+  the pitch, the trim takes a true vertical plumb cut through an arbitrary end plane
+  - `BuildSolid` now accepts one per end and slides that end's vertex ring onto it.
+- **`VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs`** - the generic frame
+  prism this module used to stack on the upstand is retired; the base frame is now
+  the real head beam swept by the new assembly builder.
+- **`VghLantern__Env3d__MaterialLibrary__.mjs`** - a `leadFlashing` role: patination
+  oiled, partial metalness, flat shaded.
+- **`VghLantern__Env3d__RenderPipeline__.mjs`**,
+  **`27__System__ProjectedEdges2d/VghLantern__ProjectedEdges__ModelStage__.mjs`** -
+  both call the new base frame builder, so the headless projection stage matches the
+  live viewport with no separate wiring.
+
+#### Changed - `02__Src__AppModules/05__Env2d__SvgRenderPipeline/` and `20__System__LanternAssembly__EditorMode/`
+- The Eaves Projection and Frame Height sliders are removed from the editor; their
+  dimension runs are removed from the plan and elevation views. The eaves datum
+  reads as a new line style (`Datum__Eaves`) in the 3D setting-out overlay.
+
+#### Considered and rejected - spot welds at the core-to-extrusion junction
+A first pass added a small merged blob mesh at every glazing bar foot, marking the
+welded connection between the core and the eaves extrusion. Pulled before landing:
+worthwhile detail, wrong session to be adding decoration on top of a geometry rebuild
+this size. `VghLantern__Geometry__BaseFrameAssembly__.js` and the new mesh builder
+carry no trace of it.
+
+#### Known limits
+- **The head beam top re-slope clamps at steep pitches.** Past the point where the
+  lap face would exit through the beam's own underside, the timber top stops
+  steepening and a console warning names the pitch it clamped at. The aluminium
+  extrusion still rotates to the true pitch regardless; only the fixed 96mm timber
+  section has a ceiling.
+- **Ridge and hip end cuts on the glaze bar parts are still square.** The eaves end
+  is now correct for all three parts; where a bar meets the ridge or a hip the true
+  cut is a compound mitre, and `BuildSolid` already takes an arbitrary plane per end
+  so the remaining work is deciding which plane, not rebuilding the builder.
+- **The base frame system index is not in the generated profile catalogue**, by the
+  same reasoning the glaze bar system is not: a hand-authored three-part assembly is
+  not something a folder-scanning build utility can assign roles to. It will not
+  appear in the Component Index gallery until (and unless) that gallery is taught
+  about hand-authored systems.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.2.3 - 07-Aug-2026
 ### The projected linework stops being something you wait for: a rewritten engine, and a drawing that keeps itself up to date
 

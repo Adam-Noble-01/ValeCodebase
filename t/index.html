@@ -1,42 +1,45 @@
 <!DOCTYPE html>
 <!-- =============================================================================
-     VALECODEBASE - SHORT TERMS LINK REDIRECT
+     VALE GARDEN HOUSES - GENERAL DRAWING TERMS (SCANNED FROM A DRAWING QR CODE)
      =============================================================================
 
      FILE       : /t/index.html
      PUBLISHED  : https://adam-noble-01.github.io/ValeCodebase/t/
      AUTHOR     : Adam Noble - Noble Architecture
-     PURPOSE    : Shortest possible public address for a drawing's QR terms link
+     PURPOSE    : The page a contractor reaches by scanning the QR code on a drawing
      CREATED    : 07-Aug-2026
 
      DESCRIPTION:
-     - A drawing sheet's QR code is printed about 8.8 mm square. Every character in
-       the encoded URL costs module size, and module size is the whole of whether a
-       phone camera on site can read it. This file exists only to make the address
-       short.
-     - It forwards the query string it was opened with, verbatim, to the Lantern
-       Designer application. It adds nothing, reads nothing and decides nothing.
+     - Self-contained. No application boot, no framework, no data fetch, no local
+       storage. It is one HTML file and one image, so it opens in about a second on
+       site 4G on a phone that has never seen this system before.
+     - Reads ?t= and ?l= only to echo the scanned reference back to the reader. It
+       does not need them, and renders correctly without them.
 
      -----------------------------------------------------------------------------
 
-     WHY A ONE LETTER FOLDER AT THE REPOSITORY ROOT:
-     The application's own published address is 97 characters:
+     WHY THIS IS NOT THE APPLICATION:
+     The QR code used to point at VghLantern__App__.html. That never worked from a
+     phone and could not have: the application resolves a scanned project through
+     ProjectFileManager.LoadProject, which reads localStorage and nothing else, and
+     its SyncFromServer call reaches a Flask endpoint that does not exist on GitHub
+     Pages. On any device that had not already been used to author that project the
+     scan booted the whole PWA, including the 3D pipeline, and then reported that the
+     project was not on the device. Serving the terms as a flat document removes every
+     one of those dependencies.
 
-         https://adam-noble-01.github.io/ValeCodebase/WebApps/Vale__LanternDesigner/VghLantern__App__.html
+     WHY THIS DOCUMENT IS GENERIC:
+     Per-project drawing notes are client data. Published here they would sit on an
+     unauthenticated GitHub Pages site at an enumerable URL, alongside the client name
+     and site address. That work is deliberately deferred until the protected R2
+     bucket and Cloudflare Workers are in place. Until then every scanned code lands
+     on this one document, which contains no project data at all.
 
-     Encoding that plus a project code produces a 49 x 49 module symbol, which at the
-     printed size is a 0.18 mm module - roughly half what a phone camera resolves off
-     paper. Serving the same destination from /t/ cuts the address to 44 characters
-     and the symbol to 33 x 33, a 0.27 mm module. Nothing else about the drawing, the
-     titleblock or the encoder changes.
-
-     The folder name is one character on purpose. That is the entire feature.
-
-     WHY THE QUERY IS FORWARDED UNTOUCHED:
-     This page does not know what a terms link means and must never learn. The
-     application owns both the compact form the QR encodes and the legacy long form
-     that older issued sheets carry, in VghLantern__Terms__QrLink__.js. Expanding the
-     query here would put that knowledge in two places and let the two drift.
+     THE SCANNED URL IS STILL UNIQUE:
+     The code on each sheet still encodes its own project and lantern, so nothing about
+     the printed drawings, the encoder or the query format has to change when the
+     per-project documents arrive. Only this file gets replaced. The reference panel
+     below is the proof of that: it shows the values that came off the sheet.
 
      ============================================================================= -->
 <html lang="en-GB">
@@ -44,75 +47,395 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>Vale Garden Houses - Drawing Terms</title>
+    <title>General Drawing Terms - Vale Garden Houses</title>
 
     <style>
-        body {
-            margin           : 0;
-            min-height        : 100vh;
-            display           : flex;
-            align-items       : center;
-            justify-content   : center;
-            font-family       : system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-            color             : #172b3a;
-            background        : #ffffff;
-            text-align        : center;
-            padding           : 24px;
-            box-sizing        : border-box;
+    /* =========================================================================
+       REGION | Design Tokens
+       ========================================================================= */
+    :root {
+        --vgh-ink            : #172b3a;                 /* Terms HeadingColour      */
+        --vgh-body           : #1e1e1e;                 /* Terms BodyTextColour     */
+        --vgh-number         : #6c757d;                 /* Terms NumberColour       */
+        --vgh-critical       : #d32f2f;                 /* Terms CriticalTermColour */
+        --vgh-paper          : #ffffff;
+        --vgh-page           : #eef1f3;
+        --vgh-rule           : #d6dde2;
+        --vgh-panel          : #f4f7f9;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --vgh-ink        : #e8eef2;
+            --vgh-body       : #d7dee3;
+            --vgh-number     : #94a3ad;
+            --vgh-critical   : #ff8a80;
+            --vgh-paper      : #16202a;
+            --vgh-page       : #0d151c;
+            --vgh-rule       : #2b3a47;
+            --vgh-panel      : #1d2934;
         }
-        p { font-size: 15px; line-height: 1.5; max-width: 34ch; }
-        a { color: #172b3a; }
+    }
+    /* endregion ============================================================= */
+
+
+    /* =========================================================================
+       REGION | Page and Sheet
+       ========================================================================= */
+    * { box-sizing: border-box; }
+
+    body {
+        margin           : 0;
+        padding          : 0;
+        background       : var(--vgh-page);
+        color            : var(--vgh-body);
+        font-family      : system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size        : 16px;
+        line-height      : 1.55;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .vgh-sheet {
+        max-width        : 46rem;
+        margin           : 0 auto;
+        background       : var(--vgh-paper);
+        padding          : 1.5rem 1.25rem 3rem;
+        min-height       : 100vh;
+    }
+
+    @media (min-width: 48rem) {
+        .vgh-sheet { padding: 2.5rem 3rem 4rem; margin: 1.5rem auto; min-height: 0; }
+    }
+    /* endregion ============================================================= */
+
+
+    /* =========================================================================
+       REGION | Masthead
+       ========================================================================= */
+    .vgh-masthead {
+        border-bottom    : 2px solid var(--vgh-ink);
+        padding-bottom   : 1rem;
+        margin-bottom    : 1.5rem;
+    }
+
+    .vgh-masthead__logo {
+        display          : block;
+        width            : 190px;
+        max-width        : 60%;
+        height           : auto;
+        margin-bottom    : 1.25rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        /* The supplied logo is dark ink on transparent, so it needs lifting off a
+           dark ground rather than a separate asset. */
+        .vgh-masthead__logo { filter: invert(1) brightness(1.9); }
+    }
+
+    .vgh-masthead__title {
+        margin           : 0;
+        font-size        : 1.5rem;
+        line-height      : 1.25;
+        color            : var(--vgh-ink);
+        font-weight      : 700;
+        letter-spacing   : 0.01em;
+    }
+
+    .vgh-masthead__standfirst {
+        margin           : 0.75rem 0 0;
+        font-size        : 0.95rem;
+        color            : var(--vgh-body);
+    }
+    /* endregion ============================================================= */
+
+
+    /* =========================================================================
+       REGION | Scanned Reference Panel
+       ========================================================================= */
+    .vgh-reference {
+        background       : var(--vgh-panel);
+        border           : 1px solid var(--vgh-rule);
+        border-radius    : 6px;
+        padding          : 0.9rem 1rem;
+        margin           : 0 0 1.75rem;
+        font-size        : 0.9rem;
+    }
+
+    .vgh-reference__label {
+        display          : block;
+        font-size        : 0.7rem;
+        text-transform   : uppercase;
+        letter-spacing   : 0.09em;
+        color            : var(--vgh-number);
+        margin-bottom    : 0.3rem;
+    }
+
+    .vgh-reference__value {
+        color            : var(--vgh-ink);
+        font-weight      : 700;
+        font-size        : 1.05rem;
+    }
+
+    .vgh-reference__note {
+        margin           : 0.55rem 0 0;
+        font-size        : 0.82rem;
+        line-height      : 1.5;
+        color            : var(--vgh-number);
+    }
+    /* endregion ============================================================= */
+
+
+    /* =========================================================================
+       REGION | Terms Body
+       ========================================================================= */
+    .vgh-section__heading {
+        color            : var(--vgh-ink);
+        font-size        : 1.05rem;
+        font-weight      : 700;
+        margin           : 2rem 0 1rem;
+        padding-bottom   : 0.4rem;
+        border-bottom    : 1px solid var(--vgh-rule);
+    }
+
+    .vgh-terms { list-style: none; margin: 0; padding: 0; counter-reset: vgh-term; }
+
+    .vgh-term {
+        display          : grid;
+        grid-template-columns: 3.1rem 1fr;
+        gap              : 0.4rem;
+        margin-bottom    : 0.9rem;
+        font-size        : 0.95rem;
+    }
+
+    .vgh-term__number {
+        color            : var(--vgh-number);
+        font-variant-numeric: tabular-nums;
+        font-weight      : 600;
+    }
+
+    .vgh-term__body { margin: 0; }
+    /* endregion ============================================================= */
+
+
+    /* =========================================================================
+       REGION | Review Notice and Footer
+       ========================================================================= */
+    .vgh-notice {
+        margin           : 2.5rem 0 0;
+        padding          : 1rem 1.1rem;
+        border-left      : 3px solid var(--vgh-critical);
+        background       : var(--vgh-panel);
+        border-radius    : 0 6px 6px 0;
+    }
+
+    .vgh-notice__heading {
+        margin           : 0 0 0.45rem;
+        color            : var(--vgh-critical);
+        font-size        : 0.95rem;
+        font-weight      : 700;
+    }
+
+    .vgh-notice__body { margin: 0; font-size: 0.88rem; color: var(--vgh-body); }
+
+    .vgh-footer {
+        margin           : 2.5rem 0 0;
+        padding-top      : 1.25rem;
+        border-top       : 1px solid var(--vgh-rule);
+        font-size        : 0.8rem;
+        color            : var(--vgh-number);
+    }
+
+    .vgh-footer p { margin: 0 0 0.5rem; }
+    /* endregion ============================================================= */
     </style>
 </head>
 <body>
 
-    <p id="na-redirect-message">Opening the drawing terms.</p>
+<main class="vgh-sheet">
 
-    <!-- =========================================================================
-         REGION | Forward to the Application
-         ========================================================================= -->
-    <script>
-    (function () {
+    <!-- =====================================================================
+         REGION | Masthead
+         ===================================================================== -->
+    <header class="vgh-masthead">
+        <img class="vgh-masthead__logo"
+             src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+             alt="Vale Garden Houses">
 
-        // MODULE CONSTANT | Destination Relative to This Folder
-        // ------------------------------------------------------------
-        // Relative rather than absolute so the page also resolves when the repository
-        // is served from a different root during local testing.
-        var NA_APP_PATH  =  '../WebApps/Vale__LanternDesigner/VghLantern__App__.html';
-        // ------------------------------------------------------------
+        <h1 class="vgh-masthead__title">General Drawing Terms</h1>
 
-
-        // FUNCTION | Forward the Query String to the Application
-        // ------------------------------------------------------------
-        // location.replace rather than location.href so the redirect does not sit in
-        // the history stack. A contractor pressing Back after scanning should return
-        // to whatever they were doing, not bounce through this page again.
-        function Na__ShortTermsLink__Forward() {
-            var target  =  NA_APP_PATH + (window.location.search || '');
-
-            var manual  =  document.getElementById('na-redirect-message');
-            if (manual) {
-                manual.innerHTML  =  'Opening the drawing terms. ' +
-                    '<a href="' + target + '">Continue</a> if this does not happen automatically.';
-            }
-
-            window.location.replace(target);
-        }
-        // ------------------------------------------------------------
-
-        Na__ShortTermsLink__Forward();
-
-    })();
-    </script>
-
-    <noscript>
-        <p>
-            This link needs JavaScript.
-            <a href="../WebApps/Vale__LanternDesigner/VghLantern__App__.html">Open Lantern Designer</a>
-            and select the drawing terms from the document pack.
+        <p class="vgh-masthead__standfirst">
+            The following notes, limitations and omissions apply to every drawing issued
+            with this quotation. Where a drawing carries notes of its own, those notes are
+            printed immediately after that drawing and are read in addition to these.
         </p>
-    </noscript>
-    <!-- endregion ============================================================== -->
+    </header>
+    <!-- endregion ========================================================== -->
+
+
+    <!-- =====================================================================
+         REGION | Scanned Reference
+         ===================================================================== -->
+    <!-- Populated from the query the QR code carried. Hidden entirely when the
+         page is opened directly, so a bare visit never shows an empty panel. -->
+    <section class="vgh-reference" id="vgh-reference" hidden>
+        <span class="vgh-reference__label">Scanned drawing</span>
+        <span class="vgh-reference__value" id="vgh-reference-value"></span>
+        <p class="vgh-reference__note">
+            Drawing notes specific to this lantern will be issued at this address once the
+            secure client document portal is live. Until then the general terms below apply
+            to every drawing in the pack, including this one.
+        </p>
+    </section>
+    <!-- endregion ========================================================== -->
+
+
+    <!-- =====================================================================
+         REGION | Section 1 - General Drawing Terms, Limitations and Omissions
+         ===================================================================== -->
+    <!-- Clause text mirrors Na__Terms__11__GeneralDrawingTerms__.md. Numbering
+         follows the Terms config: {section}.{term}, section 1, term padded to 2.
+         Every clause states its SUBJECT ONLY and is not approved legal wording,
+         which is what the closing notice says in as many words. -->
+    <h2 class="vgh-section__heading">1. General Drawing Terms, Limitations and Omissions</h2>
+
+    <ol class="vgh-terms">
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.01</span>
+            <p class="vgh-term__body">Status of the drawings at the stage they are issued, and confirmation of what has and has not been surveyed, checked or approved at that stage.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.02</span>
+            <p class="vgh-term__body">Confirmation that figured dimensions govern and that no dimension is to be scaled from the drawing, whatever scale the sheet is issued at.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.03</span>
+            <p class="vgh-term__body">The datum every level and setting out dimension on the sheet is measured from, and what is to be done where no datum is shown.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.04</span>
+            <p class="vgh-term__body">Confirmation that the builders upstand, its dimensions and its tolerances are shown for information only and are the responsibility of others.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.05</span>
+            <p class="vgh-term__body">Structural elements shown on the drawing which are indicative, and confirmation that no structural design of the supporting structure is implied by their appearance.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.06</span>
+            <p class="vgh-term__body">Items shown on the drawing for context which do not form part of our supply, and how they are distinguished on the sheet.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.07</span>
+            <p class="vgh-term__body">Services, drainage, ventilation ducting and electrical provision, and confirmation of what is excluded unless expressly stated in the quotation.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.08</span>
+            <p class="vgh-term__body">Finishes, colours and glass appearance as drawn, and confirmation that the drawing is not a colour reference and that samples govern.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.09</span>
+            <p class="vgh-term__body">The requirement to check every drawing against the site as built and against other trades' information before any work is put in hand.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.10</span>
+            <p class="vgh-term__body">Revision control, superseded issues, and the obligation to work only from the latest revision of a sheet.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.11</span>
+            <p class="vgh-term__body">Copyright and ownership of the drawings, and the purposes for which they may be reproduced or passed to others.</p>
+        </li>
+        <li class="vgh-term">
+            <span class="vgh-term__number">1.12</span>
+            <p class="vgh-term__body">The point at which a drawing becomes a manufacturing drawing, what changes that, and the point after which changes become chargeable.</p>
+        </li>
+    </ol>
+    <!-- endregion ========================================================== -->
+
+
+    <!-- =====================================================================
+         REGION | Review Notice
+         ===================================================================== -->
+    <aside class="vgh-notice">
+        <p class="vgh-notice__heading">Note on the status of these drawing terms</p>
+        <p class="vgh-notice__body">
+            These drawing terms have not yet been reviewed or approved by Vale Garden
+            Houses' legal advisers. They are issued as a working draft to describe the
+            intended basis on which the drawings are read, and should not be relied upon
+            as final wording.
+        </p>
+    </aside>
+    <!-- endregion ========================================================== -->
+
+
+    <footer class="vgh-footer">
+        <p>Vale Garden Houses Ltd</p>
+        <p>Issued with the drawing pack. Read in addition to any notes printed on the drawing itself.</p>
+    </footer>
+
+</main>
+
+<!-- =========================================================================
+     REGION | Scanned Reference Read-Out
+     ========================================================================= -->
+<script>
+(function () {
+
+    // MODULE CONSTANTS | Query Parameter Names
+    // ------------------------------------------------------------
+    // Mirrors the compact pattern in Na__Terms__Config.json, which is built and read
+    // by VghLantern__Terms__QrLink__.js. Display only: nothing here changes what the
+    // reader is shown beyond the reference line.
+    var QUERY_PARAM_PROJECT  =  't';
+    var QUERY_PARAM_LANTERN  =  'l';
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Compose the Vale Drawing Number
+    // ------------------------------------------------------------
+    // Mirrors VghLantern__TitleBlockRenderer__DrawingNumber: project code, then RL,
+    // then the element number zero padded to two digits.
+    //
+    // The titleblock derives the element number from the lantern's SortOrder while the
+    // scanned link carries its ARRAY INDEX. The two agree for a normally ordered
+    // project. They are only used here to print a reference line, so a project whose
+    // sort order has been reshuffled shows a slightly off drawing number rather than
+    // resolving to anything incorrect.
+    function Na__DrawingTerms__ComposeDrawingNumber(projectCode, lanternIndex) {
+        if (lanternIndex === null) return projectCode;
+
+        var elementNumber  =  String(lanternIndex + 1);
+        while (elementNumber.length < 2) elementNumber  =  '0' + elementNumber;
+
+        return projectCode + '-RL' + elementNumber;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show What the Scanned Code Carried
+    // ------------------------------------------------------------
+    function Na__DrawingTerms__ShowScannedReference() {
+        var params       =  new URLSearchParams(window.location.search);
+        var projectCode  =  (params.get(QUERY_PARAM_PROJECT) || '').trim();
+        if (projectCode === '') return;                                        // <-- Opened directly, so no panel
+
+        var rawLantern    =  params.get(QUERY_PARAM_LANTERN);
+        var lanternIndex  =  (rawLantern === null) ? NaN : parseInt(rawLantern, 10);
+        var reference     =  Na__DrawingTerms__ComposeDrawingNumber(
+            projectCode, isNaN(lanternIndex) ? null : lanternIndex);
+
+        var panel  =  document.getElementById('vgh-reference');
+        var value  =  document.getElementById('vgh-reference-value');
+        if (!panel || !value) return;
+
+        value.textContent  =  reference;                                       // <-- textContent, never innerHTML
+        panel.hidden       =  false;
+    }
+    // ------------------------------------------------------------
+
+    Na__DrawingTerms__ShowScannedReference();
+
+})();
+</script>
+<!-- endregion ============================================================== -->
 
 </body>
 </html>

@@ -10,9 +10,13 @@
    CREATED    : 05-Aug-2026
 
    DESCRIPTION:
-   - The whole of "where does the cut go". Two named cuts, both upright, both dead
-     centre on the lantern, derived from the solved bounds rather than from any
-     stored number, so a plane can never disagree with the model it is cutting.
+   - The whole of "where does the cut go". Two named cuts, both upright, both
+     centred on the lantern and derived from the solved bounds rather than from
+     any stored number, so a plane can never disagree with the model it is
+     cutting - then nudged forward along its own normal by a configured offset,
+     because dead centre is exactly where a hip corner brace crosses the ridge
+     and a plane sitting on that singularity caps into a sliver instead of a
+     clean member section.
    - ValeVision places its planes by clicking a face, because it sections whole
      buildings where no two cuts are alike. A lantern is a single symmetrical
      object, so the two cuts a reviewer actually wants are fixed and this module
@@ -45,13 +49,35 @@
    always ends up looking INTO the lantern rather than at the back of an
    uncut half, without the plane needing to chase the camera around.
 
+   ---------------------------------------------------------------------------
+
+   THE FORWARD OFFSET
+
+   Because the normal points at the kept half, sliding the plane's coplanar
+   point forward along that normal pushes the cut boundary deeper INTO the kept
+   half - away from the camera, past the centreline. That is what clears the
+   corner brace: at dead centre the plane sits exactly where a hip brace's
+   diagonal run crosses back to the ridge centreline, so the clip and the brace
+   share a single grazing point and the cap solver caps a sliver instead of a
+   face. Nudging the plane forward moves that intersection down the brace to
+   where it is just a bar crossing a plane, which is all CapGeometry needs.
+
+   Read per orientation from Na__CrossSection__Config.json (Tuning ->
+   LateralForwardOffsetMm / LongitudinalForwardOffsetMm) rather than shared,
+   because the two cuts hit different geometry and Adam tunes them by eye.
+
    ============================================================================= */
 
 import * as THREE from 'three';
 
 import {
-    VghLantern__Env3d__ConfigAccess__PointToWorld
+    VghLantern__Env3d__ConfigAccess__PointToWorld,
+    VghLantern__Env3d__ConfigAccess__MmToWorld
 } from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__ConfigAccess__.mjs';
+
+import {
+    VghLantern__CrossSection__ConfigAccess__RequireNumber
+} from './VghLantern__CrossSection__ConfigAccess__.mjs';
 
 // =============================================================================
 // REGION | Cross Section Plane Solver Module
@@ -121,6 +147,26 @@ import {
 
 
 // -----------------------------------------------------------------------------
+// REGION | Forward Offset
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Read the Configured Forward Offset for an Orientation
+    // ------------------------------------------------------------
+    // Millimetres, along the plane's own normal - see "THE FORWARD OFFSET" above
+    // for why dead centre is the one position that must be avoided.
+    function VghLantern__CrossSection__PlaneSolver__ForwardOffsetMm(orientationKey) {
+        const field  =  (orientationKey === VghLantern__CrossSection__PlaneSolver__Longitudinal)
+            ? 'LongitudinalForwardOffsetMm'
+            : 'LateralForwardOffsetMm';
+
+        return VghLantern__CrossSection__ConfigAccess__RequireNumber('Tuning', field);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
@@ -147,6 +193,12 @@ import {
         const centre  =  new THREE.Vector3(
             extents.CentreWorld.x, extents.CentreWorld.y, extents.CentreWorld.z
         );
+
+        // Pushed forward along the normal, off the dead-centre singularity - see
+        // "THE FORWARD OFFSET" at the top of this file.
+        const forwardOffsetWorld  =  VghLantern__Env3d__ConfigAccess__MmToWorld(
+            VghLantern__CrossSection__PlaneSolver__ForwardOffsetMm(orientationKey));
+        centre.addScaledVector(normal, forwardOffsetWorld);
 
         const plane  =  new THREE.Plane().setFromNormalAndCoplanarPoint(normal, centre);
 

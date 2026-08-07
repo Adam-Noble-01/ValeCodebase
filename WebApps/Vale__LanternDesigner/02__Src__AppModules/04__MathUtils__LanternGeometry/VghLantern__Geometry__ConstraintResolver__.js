@@ -142,18 +142,31 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Horizontal Run of the Short Axis Slope, Eaves to Ridge
+    // HELPER FUNCTION | The Head Beam and Datum Numbers (synchronous)
     // ------------------------------------------------------------
-    // Mirrors the SkeletonSolver: width and depth are measured over the builders upstand and
-    // the eaves project past both, so the eaves half-extent of the SHORT axis is
-    // the run a full-height slope covers. Every rise-to-pitch conversion works
-    // from this number, so the two modules must agree on it exactly.
-    function VghLantern__ConstraintResolver__ShortSlopeRun(lantern) {
-        var widthMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__WidthMm');
-        var depthMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__DepthMm');
-        var eavesMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__EavesProjectionMm');
+    // Mirrors the SkeletonSolver's source: the base frame system through the
+    // BaseFrameAssembly geometry module, with matching fallbacks.
+    function VghLantern__ConstraintResolver__DatumGeometry() {
+        var Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
+        if (Assembly) return Assembly.VghLantern__BaseFrameAssembly__DatumGeometry();
+        return { HeadBeamWidthMm: 125, HeadBeamHeightMm: 96, EavesDatumRiseAboveSeatMm: 100 };
+    }
+    // ------------------------------------------------------------
 
-        return Math.min((widthMm / 2) + eavesMm, (depthMm / 2) + eavesMm);
+
+    // HELPER FUNCTION | Horizontal Run of the Short Axis Slope, Datum to Ridge
+    // ------------------------------------------------------------
+    // Mirrors the SkeletonSolver: the roof springs from the eaves datum ring,
+    // inset one head beam width from each stated face, so the datum half-extent
+    // of the SHORT axis is the run a full-height slope covers. Every
+    // rise-to-pitch conversion works from this number, so the two modules must
+    // agree on it exactly.
+    function VghLantern__ConstraintResolver__ShortSlopeRun(lantern) {
+        var widthMm     =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__WidthMm');
+        var depthMm     =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__DepthMm');
+        var headBeamMm  =  VghLantern__ConstraintResolver__DatumGeometry().HeadBeamWidthMm;
+
+        return (Math.min(widthMm, depthMm) / 2) - headBeamMm;
     }
     // ------------------------------------------------------------
 
@@ -166,20 +179,21 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
 
     // SUB FUNCTION | Apply an Overall Height Edit by Moving the Roof Pitch
     // ------------------------------------------------------------
-    // Holds the whole base assembly and the plan size constant: the builders upstand is
-    // site-fixed, the frame is a standard section, and width and depth are the
-    // opening the lantern has to match. That leaves the pitch as the only free
-    // variable, which is also the only field that drives roof height. Overall
-    // height is measured from the builders upstand base, so the rise the pitch has to
-    // produce is what is left after BOTH the builders upstand and the frame.
+    // Holds the whole base assembly and the plan size constant: the builders
+    // upstand is site-fixed, the head beam is a fixed product section, and
+    // width and depth are the opening the lantern has to match. That leaves the
+    // pitch as the only free variable. Overall height is measured from the
+    // builders upstand base; the roof springs from the EAVES DATUM, which sits
+    // a fixed product rise (100mm) above the upstand top, so the rise the pitch
+    // has to produce is what is left above upstand plus datum rise.
     function VghLantern__ConstraintResolver__ApplyOverallHeight(result, lantern, descriptor, typedValue) {
-        var upstandHeight   =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm');
-        var frameHeight  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm');
-        var baseHeight   =  upstandHeight + frameHeight;
-        var targetRise   =  typedValue - baseHeight;
+        var upstandHeight  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_UPSTAND, 'Lantern__BuildersUpstandAndBase__Config__UpstandHeightMm');
+        var datumRise      =  VghLantern__ConstraintResolver__DatumGeometry().EavesDatumRiseAboveSeatMm;
+        var baseHeight     =  upstandHeight + datumRise;
+        var targetRise     =  typedValue - baseHeight;
 
         if (targetRise <= 0) {
-            result.Warnings.push('Overall height must exceed the ' + baseHeight + ' mm builders upstand and frame below the eaves.');
+            result.Warnings.push('Overall height must exceed the ' + baseHeight + ' mm of builders upstand and eaves datum rise below the roof.');
             return;
         }
 
@@ -198,7 +212,7 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
         nextPitch  =  VghLantern__ConstraintResolver__Clamp(result, nextPitch, PITCH_MIN_DEGREES, PITCH_MAX_DEGREES, 'deg');
 
         VghLantern__ConstraintResolver__WriteField(result, lantern, BLOCK_ROOF_PITCH, 'Lantern__RoofPitch__Config__PitchDegrees', nextPitch);
-        result.Notes.push('Builders Upstand held at ' + upstandHeight + ' mm and frame at ' + frameHeight + ' mm; pitch resolved to ' + nextPitch + ' deg.');
+        result.Notes.push('Builders Upstand held at ' + upstandHeight + ' mm with the eaves datum ' + datumRise + ' mm above it; pitch resolved to ' + nextPitch + ' deg.');
     }
     // ------------------------------------------------------------
 
@@ -206,8 +220,8 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
     // SUB FUNCTION | Apply a Ridge Length Edit by Moving the Depth
     // ------------------------------------------------------------
     // For an equal-pitch hipped roof the ridge length equals width minus depth,
-    // because the eaves projection cancels on both axes. Width is held constant
-    // as it is normally the opening dimension the lantern must match.
+    // because the head beam datum inset cancels on both axes. Width is held
+    // constant as it is normally the opening dimension the lantern must match.
     function VghLantern__ConstraintResolver__ApplyRidgeLength(result, lantern, descriptor, typedValue) {
         var widthMm  =  VghLantern__ConstraintResolver__ReadNumber(lantern, BLOCK_DIMENSIONS, 'Lantern__Dimensions__Config__WidthMm');
         var nextDepth  =  Math.round(widthMm - typedValue);
@@ -269,15 +283,11 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             MaxMm      : 20000,
             Views      : ['plan', 'sideElevation']
         },
-        'eavesProjection' : {
-            Label      : 'Eaves Projection',
-            Block      : BLOCK_DIMENSIONS,
-            Field      : 'Lantern__Dimensions__Config__EavesProjectionMm',
-            Unit       : 'mm',
-            MinMm      : 0,
-            MaxMm      : 600,
-            Views      : ['plan', 'frontElevation', 'sideElevation']
-        },
+        // 'eavesProjection' and 'frameHeight' are RETIRED. The roof springs
+        // from the eaves datum (head beam inner face plane, fixed product
+        // inset) rather than a projected rectangle, and the base frame is the
+        // fixed 125 x 96 head beam rather than a slider-driven prism. The
+        // schema fields remain for old project files but drive nothing.
         'upstandHeight' : {
             Label      : 'Builders Upstand Height',
             Block      : BLOCK_UPSTAND,
@@ -295,15 +305,6 @@ const VghLantern__Geometry__ConstraintResolver = (function() {
             MinMm      : 90,
             MaxMm      : 150,
             Views      : ['plan']
-        },
-        'frameHeight' : {
-            Label      : 'Frame Height',
-            Block      : BLOCK_UPSTAND,
-            Field      : 'Lantern__BuildersUpstandAndBase__Config__FrameHeightMm',
-            Unit       : 'mm',
-            MinMm      : 30,
-            MaxMm      : 100,
-            Views      : ['frontElevation', 'sideElevation']
         },
         'pitch' : {
             Label      : 'Roof Pitch',

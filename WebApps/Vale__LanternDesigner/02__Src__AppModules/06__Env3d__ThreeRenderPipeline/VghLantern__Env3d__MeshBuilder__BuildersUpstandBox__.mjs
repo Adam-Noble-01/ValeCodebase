@@ -52,7 +52,6 @@ import {
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
 import {
-    VghLantern__Env3d__MaterialLibrary__Frame,
     VghLantern__Env3d__MaterialLibrary__BuildersUpstand
 } from './VghLantern__Env3d__MaterialLibrary__.mjs';
 
@@ -71,11 +70,7 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
     const MIN_PRISM_HEIGHT_MM   =  0.5;                                      // <-- Below this a prism is degenerate
     const MIN_FOOTPRINT_MM      =  1;                                        // <-- Below this there is no footprint to extrude
 
-    const FINISH_BLOCK          =  'Lantern__FinishAndGlazing__Config';      // <-- Frame finish lives here
-    const FINISH_FIELD          =  'Lantern__FinishAndGlazing__Config__FrameFinish';
-
     const OBJECT_NAME_UPSTAND      =  'VghLantern__Env3d__Base__BuildersUpstand';
-    const OBJECT_NAME_FRAME     =  'VghLantern__Env3d__Base__Frame';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -178,16 +173,6 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Read the Lantern's Chosen Frame Finish
-    // ------------------------------------------------------------
-    function VghLantern__Env3d__BuildersUpstandBox__FinishName(lantern) {
-        if (!lantern) return '';
-
-        const block  =  lantern[FINISH_BLOCK];
-        return block ? (block[FINISH_FIELD] || '') : '';
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -195,10 +180,13 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
 // REGION | Public Build Entry Point
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Build the Builders Upstand and Frame Solids into a Group
+    // FUNCTION | Build the Builders Upstand Solid into a Group
     // ------------------------------------------------------------
     // The upstand takes the builders-upstand material (site studwork, not Vale
-    // manufacture); the frame takes the lantern's own finish because it is.
+    // manufacture). The generic frame prism this module used to stack on top
+    // has been RETIRED: the Vale base frame is now the real 46_1001 head beam,
+    // swept with its true section by MeshBuilder__BaseFrameAssembly, so
+    // building a placeholder prism in the same place would double the solid.
     export function VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(targetGroup, skeleton, lantern) {
         if (!targetGroup || !skeleton || !skeleton.Base) return;
 
@@ -206,9 +194,6 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
 
         const base  =  skeleton.Base;
 
-        // Each prism is its own object, so it registers as a single pickable
-        // instance carrying the whole Base block - both prisms describe the same
-        // footprint and differ only in which height the inspector should read.
         const upstandMesh  =  VghLantern__Env3d__BuildersUpstandBox__BuildPrism(
             base, base.UpstandBaseLevelMm, base.UpstandHeightMm,
             VghLantern__Env3d__MaterialLibrary__BuildersUpstand(), OBJECT_NAME_UPSTAND
@@ -216,15 +201,6 @@ import { VghLantern__Env3d__PickIndex__RegisterWhole } from './VghLantern__Env3d
         if (upstandMesh) {
             VghLantern__Env3d__PickIndex__RegisterWhole(upstandMesh, 'base', 'buildersUpstand', base);
             targetGroup.add(upstandMesh);
-        }
-
-        const frameMesh  =  VghLantern__Env3d__BuildersUpstandBox__BuildPrism(
-            base, base.UpstandTopLevelMm, base.FrameHeightMm,
-            VghLantern__Env3d__MaterialLibrary__Frame(VghLantern__Env3d__BuildersUpstandBox__FinishName(lantern)), OBJECT_NAME_FRAME
-        );
-        if (frameMesh) {
-            VghLantern__Env3d__PickIndex__RegisterWhole(frameMesh, 'base', 'frame', base);
-            targetGroup.add(frameMesh);
         }
     }
     // ------------------------------------------------------------

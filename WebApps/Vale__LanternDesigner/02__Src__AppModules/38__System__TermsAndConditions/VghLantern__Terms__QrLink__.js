@@ -34,11 +34,18 @@
    the symbol from 41 x 41 modules to 33 x 33 and the module from 0.215 mm to
    0.267 mm, with no change to the titleblock or the encoder.
 
-   THE ADDRESS IS LIVE:
-   TermsQrBaseUrl points at the published GitHub Pages redirect at /t/, which forwards
-   its query string verbatim to this application. The redirect exists purely to keep
-   the encoded address short. It is one JSON key; nothing in this file or any other
-   knows what the address is.
+   THE ADDRESS IS LIVE, AND IT IS NOT THIS APPLICATION:
+   TermsQrBaseUrl points at /t/ on the published GitHub Pages site, which is a flat
+   self-contained General Drawing Terms document. A printed code deliberately does not
+   open this application any more, and must not be pointed back at it: LoadProject
+   reads localStorage and nothing else, and SyncFromServer reaches a Flask endpoint
+   that does not exist on GitHub Pages, so a scan from any phone booted the whole PWA
+   and then reported the project as missing from the device.
+
+   WHY THE INBOUND READERS BELOW STILL EXIST:
+   A pasted deep link still resolves on a machine that actually holds the project,
+   which is worth keeping and costs nothing. No printed code routes through it.
+   It is one JSON key; nothing in this file or any other knows what the address is.
 
    ============================================================================= */
 

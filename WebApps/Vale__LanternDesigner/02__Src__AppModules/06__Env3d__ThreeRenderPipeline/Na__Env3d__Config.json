@@ -171,7 +171,8 @@
 
                 "Datum__Ridge"                : { "Colour": "#cc3333", "WidthPx": 2.5, "Pattern": "dashDot", "Label": "Ridge Datum" },
                 "Datum__Upstand"              : { "Colour": "#1f7fa8", "WidthPx": 2.0, "Pattern": "dashDot", "Label": "Top of Builders Upstand Datum" },
-                "Datum__Frame"                : { "Colour": "#d4762a", "WidthPx": 2.0, "Pattern": "dashDot", "Label": "Top of Framework at Eaves Datum" },
+                "Datum__Frame"                : { "Colour": "#d4762a", "WidthPx": 2.0, "Pattern": "dashDot", "Label": "Top of Head Beam Datum" },
+                "Datum__Eaves"                : { "Colour": "#b0349b", "WidthPx": 2.5, "Pattern": "dashDot", "Label": "Eaves Datum" },
                 "Datum__Deck"                 : { "Colour": "#6b7480", "WidthPx": 1.5, "Pattern": "dashed",  "Label": "Top of Roof Deck" },
                 "Datum__Glazing"              : { "Colour": "#3fa9c9", "WidthPx": 1.5, "Pattern": "dashed",  "Label": "Glazing Plane Datum" }
             },

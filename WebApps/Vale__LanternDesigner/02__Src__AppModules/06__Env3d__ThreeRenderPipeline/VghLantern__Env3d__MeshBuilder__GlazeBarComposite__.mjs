@@ -71,14 +71,29 @@
 
    ---------------------------------------------------------------------------
 
-   KNOWN LIMITATION - END CUTS
+   EAVES END TREATMENTS (the Vale abutment detail)
 
-   Bars are currently extruded square across their own axis at both ends, which
-   is what the module this replaces did. Where a bar meets a hip or the ridge the
-   true cut is a compound mitre, and until that is modelled a takeoff taken from
-   these solids gives a bar's datum length rather than its cut length. The
-   builder is shaped for it - BuildSolid already takes both end planes - so
-   adding mitres is a matter of telling it which plane to use, not of rebuilding.
+   At the eaves end of every glazing bar the three parts terminate differently,
+   driven by VghLantern__Geometry__BaseFrameAssembly and the base frame system
+   index:
+
+       core   extends 42.5mm ALONG THE PITCH past the eaves datum, square cut,
+              landing on the eaves extrusion it is welded to
+       cap    extends 170mm along the pitch past the datum, square cut, the
+              visible overhang throwing water clear
+       trim   stops SHORT of the datum with a clean vertical PLUMB CUT whose
+              plane sits 18mm horizontally inboard of the datum point - the
+              real joinery cut, so the cutting list lengths are honest
+
+   The bar records carry the datum polyline; the adjustments are applied here
+   per part at build time. Bars with no eaves end (transoms) are untouched.
+
+   KNOWN LIMITATION - RIDGE AND HIP END CUTS
+
+   The UPPER end of a bar is still extruded square across its own axis. Where a
+   bar meets a hip or the ridge the true cut is a compound mitre; BuildSolid now
+   takes an arbitrary end plane per end, so adding those mitres is a matter of
+   telling it which plane to use, not of rebuilding.
 
    ============================================================================= */
 
@@ -232,7 +247,11 @@ import {
     //
     // Returns positions in WORLD units already placed on the member, and an index
     // buffer in which every edge is shared by exactly two triangles.
-    function VghLantern__Env3d__GlazeBarComposite__BuildSolid(face, startVec, endVec, targetPositions, targetIndices, targetUvs) {
+    // endPlanes is optional: { Start, End }, each null or a world-space plane
+    // { Point: Vector3, Normal: Vector3 }. Where a plane is given, every vertex
+    // of that end ring is slid along the bar axis onto the plane instead of
+    // sitting square across it - which is exactly what a plumb cut is.
+    function VghLantern__Env3d__GlazeBarComposite__BuildSolid(face, startVec, endVec, targetPositions, targetIndices, targetUvs, endPlanes) {
         const points  =  face.Points;
         const count   =  points.length;
         if (count < 3) return 0;
@@ -240,6 +259,10 @@ import {
         const basis   =  VghLantern__Env3d__GlazeBarComposite__MemberBasis(startVec, endVec);
         const baseIx  =  targetPositions.length / 3;
         const lengthWorld  =  startVec.distanceTo(endVec);
+        const planes  =  [
+            endPlanes && endPlanes.Start ? endPlanes.Start : null,
+            endPlanes && endPlanes.End   ? endPlanes.End   : null
+        ];
 
         // PERIMETER DISTANCE ROUND THE SECTION
         // Used as the U coordinate below, measured in world units so a texture
@@ -257,21 +280,39 @@ import {
         // of the bar - which is what an extrusion's die lines are, and why the
         // brushed grain needs no special mapping to sit the right way round.
         const ends  =  [startVec, endVec];
-        let e, i, sx, sy, origin;
+        let e, i, sx, sy, origin, px, py, pz, plane, denominator, slide;
 
         for (e = 0; e < ends.length; e++) {
             origin  =  ends[e];
+            plane   =  planes[e];
 
             for (i = 0; i < count; i++) {
                 sx  =  VghLantern__Env3d__ConfigAccess__MmToWorld(points[i].x);
                 sy  =  VghLantern__Env3d__ConfigAccess__MmToWorld(points[i].y + SECTION_DATUM_OFFSET_MM);
 
-                targetPositions.push(
-                    origin.x + (basis.Across.x * sx) + (basis.Up.x * sy),
-                    origin.y + (basis.Across.y * sx) + (basis.Up.y * sy),
-                    origin.z + (basis.Across.z * sx) + (basis.Up.z * sy)
-                );
+                px  =  origin.x + (basis.Across.x * sx) + (basis.Up.x * sy);
+                py  =  origin.y + (basis.Across.y * sx) + (basis.Up.y * sy);
+                pz  =  origin.z + (basis.Across.z * sx) + (basis.Up.z * sy);
 
+                // PLANE-CUT END - slide the vertex along the bar axis onto the
+                // cut plane. Vertices at different section depths land at
+                // different stations, which is what makes the cut face read
+                // plumb rather than square.
+                if (plane) {
+                    denominator  =  (basis.Along.x * plane.Normal.x)
+                                 +  (basis.Along.y * plane.Normal.y)
+                                 +  (basis.Along.z * plane.Normal.z);
+                    if (Math.abs(denominator) > 1e-6) {
+                        slide  =  (((plane.Point.x - px) * plane.Normal.x)
+                                +  ((plane.Point.y - py) * plane.Normal.y)
+                                +  ((plane.Point.z - pz) * plane.Normal.z)) / denominator;
+                        px  +=  basis.Along.x * slide;
+                        py  +=  basis.Along.y * slide;
+                        pz  +=  basis.Along.z * slide;
+                    }
+                }
+
+                targetPositions.push(px, py, pz);
                 targetUvs.push(perimeter[i], e === 0 ? 0 : lengthWorld);
             }
         }
@@ -326,6 +367,71 @@ import {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Convert a Model-Space Plumb Plane to World Space
+    // ------------------------------------------------------------
+    // Point takes the standard mm-to-world axis swap. The normal takes the swap
+    // without scaling: a model normal (x, y, 0) lands as world (x, 0, -y) and
+    // stays unit length.
+    function VghLantern__Env3d__GlazeBarComposite__PlaneToWorld(planeMm) {
+        const pointWorld  =  VghLantern__Env3d__ConfigAccess__PointToWorld(planeMm.Point);
+        return {
+            Point  : new THREE.Vector3(pointWorld.x, pointWorld.y, pointWorld.z),
+            Normal : new THREE.Vector3(planeMm.Normal.x, planeMm.Normal.z, -planeMm.Normal.y)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Eaves End Treatment for One Bar of One Part
+    // ------------------------------------------------------------
+    // Answers { StartMm, EndMm, Planes } for the bar as the given part runs it:
+    // core and cap get their datum foot pushed down the slope by the interface
+    // extension (square cut), the trim keeps the datum polyline but takes the
+    // vertical plumb plane at its eaves end. Bars with no eaves end - and any
+    // build where the geometry module is absent - pass through untouched.
+    function VghLantern__Env3d__GlazeBarComposite__EavesTreatment(partKey, bar) {
+        const untouched  =  { StartMm : bar.Start, EndMm : bar.End, Planes : null };
+
+        const Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
+        if (!Assembly) return untouched;
+        if (bar.EavesEnd !== 'start' && bar.EavesEnd !== 'end') return untouched;
+
+        if (partKey === PART_CORE || partKey === PART_CAP) {
+            const iface      =  Assembly.VghLantern__BaseFrameAssembly__EavesInterface();
+            const extension  =  partKey === PART_CORE
+                ? iface.GlazeBarCoreExtensionAlongPitchMm
+                : iface.GlazeBarCapExtensionAlongPitchMm;
+
+            const extended  =  Assembly.VghLantern__BaseFrameAssembly__ExtendedEavesPoint(bar, undefined, extension);
+            if (!extended) return untouched;
+
+            return {
+                StartMm : extended.EndKey === 'start' ? extended.Point : bar.Start,
+                EndMm   : extended.EndKey === 'end'   ? extended.Point : bar.End,
+                Planes  : null
+            };
+        }
+
+        if (partKey === PART_TRIM) {
+            const planeMm  =  Assembly.VghLantern__BaseFrameAssembly__TrimPlumbPlane(bar, undefined);
+            if (!planeMm) return untouched;
+
+            const planeWorld  =  VghLantern__Env3d__GlazeBarComposite__PlaneToWorld(planeMm);
+            return {
+                StartMm : bar.Start,
+                EndMm   : bar.End,
+                Planes  : {
+                    Start : bar.EavesEnd === 'start' ? planeWorld : null,
+                    End   : bar.EavesEnd === 'end'   ? planeWorld : null
+                }
+            };
+        }
+
+        return untouched;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Extrude One Part Along Every Bar and Merge the Result
     // ------------------------------------------------------------
     // One buffer for the whole part rather than one mesh per bar. A divided
@@ -336,20 +442,21 @@ import {
     // memberSpansOut is filled with the triangle span each bar occupies, which is
     // what lets a raycast hit on the merged buffer still name the individual bar
     // it landed on.
-    function VghLantern__Env3d__GlazeBarComposite__BuildPartMesh(faces, bars, material, meshName, memberSpansOut) {
+    function VghLantern__Env3d__GlazeBarComposite__BuildPartMesh(partKey, faces, bars, material, meshName, memberSpansOut) {
         const positions  =  [];
         const indices    =  [];
         const uvs        =  [];
         const minLength  =  VghLantern__Env3d__ConfigAccess__MmToWorld(MIN_MEMBER_LENGTH_MM);
 
-        let b, f, bar, startWorld, endWorld, startVec, endVec, triangleCursor, spanCount;
+        let b, f, bar, treatment, startWorld, endWorld, startVec, endVec, triangleCursor, spanCount;
         triangleCursor  =  0;
 
         for (b = 0; b < bars.length; b++) {
-            bar  =  bars[b];
+            bar        =  bars[b];
+            treatment  =  VghLantern__Env3d__GlazeBarComposite__EavesTreatment(partKey, bar);
 
-            startWorld  =  VghLantern__Env3d__ConfigAccess__PointToWorld(bar.Start);
-            endWorld    =  VghLantern__Env3d__ConfigAccess__PointToWorld(bar.End);
+            startWorld  =  VghLantern__Env3d__ConfigAccess__PointToWorld(treatment.StartMm);
+            endWorld    =  VghLantern__Env3d__ConfigAccess__PointToWorld(treatment.EndMm);
             startVec    =  new THREE.Vector3(startWorld.x, startWorld.y, startWorld.z);
             endVec      =  new THREE.Vector3(endWorld.x,   endWorld.y,   endWorld.z);
 
@@ -357,7 +464,7 @@ import {
 
             spanCount  =  0;
             for (f = 0; f < faces.length; f++) {
-                spanCount  +=  VghLantern__Env3d__GlazeBarComposite__BuildSolid(faces[f], startVec, endVec, positions, indices, uvs);
+                spanCount  +=  VghLantern__Env3d__GlazeBarComposite__BuildSolid(faces[f], startVec, endVec, positions, indices, uvs, treatment.Planes);
             }
             if (spanCount === 0) continue;
 
@@ -492,7 +599,7 @@ import {
             material  =  VghLantern__Env3d__GlazeBarComposite__MaterialForPart(part.PartKey, finishes);
             spans     =  [];
             mesh      =  VghLantern__Env3d__GlazeBarComposite__BuildPartMesh(
-                part.Faces, bars, material,
+                part.PartKey, part.Faces, bars, material,
                 'VghLantern__Env3d__GlazeBar__' + part.PartKey,
                 spans
             );

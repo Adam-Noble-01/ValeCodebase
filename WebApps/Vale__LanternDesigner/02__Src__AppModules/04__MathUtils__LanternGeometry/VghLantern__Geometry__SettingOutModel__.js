@@ -529,36 +529,53 @@ const VghLantern__Geometry__SettingOutModel = (function() {
             ));
         }
 
-        // TOP OF FRAMEWORK AT EAVES | The roof springing line
+        // TOP OF HEAD BEAM | The Vale base frame top, on the outer envelope
         const frameTopRing  =  VghLantern__SettingOutModel__RingOutline(memberIndex, ID_RING_FRAME_TOP);
-        const eavesRing     =  VghLantern__SettingOutModel__RingOutline(memberIndex, ID_RING_EAVES);
-
-        if (frameTopRing || eavesRing) {
+        if (frameTopRing) {
             const datum  =  VghLantern__SettingOutModel__Datum(
-                'Datum__Frame__EavesTopLevel', 'Frame', 'Top of Framework at Eaves',
-                Number(base.FrameTopLevelMm), ['Base.FrameTopLevelMm', 'Meta.EavesLevelMm']
+                'Datum__Frame__TopLevel', 'Frame', 'Top of Head Beam',
+                Number(base.FrameTopLevelMm), ['Base.FrameTopLevelMm', 'Meta.FrameTopLevelMm']
             );
-
-            // Both rings sit at this one level. Drawing both is deliberate: the gap
-            // between them IS the eaves projection, and seeing them coincide is how
-            // a zero-projection lantern announces itself.
-            if (frameTopRing) datum.Outlines.push(frameTopRing);
-            if (eavesRing)    datum.Outlines.push(eavesRing);
+            datum.Outlines.push(frameTopRing);
             datums.push(datum);
 
-            if (eavesRing) {
-                const measured  =  VghLantern__SettingOutModel__RingLevel(eavesRing);
-                checks.push(VghLantern__SettingOutModel__Check(
-                    'Check__Frame__EavesTopLevel', 'Top of framework at eaves',
-                    measured.LevelMm, meta.EavesLevelMm, toleranceMm,
-                    'Measured from the eaves ring corners.'
-                ));
-                checks.push(VghLantern__SettingOutModel__Check(
-                    'Check__Frame__EavesAliasAgrees', 'Eaves level equals base frame top',
-                    Number(meta.EavesLevelMm), base.FrameTopLevelMm, toleranceMm,
-                    'One physical datum published under two names in two blocks. Env2d reads Meta.EavesLevelMm, Env3d reads Base.FrameTopLevelMm.'
-                ));
-            }
+            const measuredFrame  =  VghLantern__SettingOutModel__RingLevel(frameTopRing);
+            checks.push(VghLantern__SettingOutModel__Check(
+                'Check__Frame__TopLevel', 'Top of head beam',
+                measuredFrame.LevelMm, base.FrameTopLevelMm, toleranceMm,
+                'Measured from the frameTop ring corners.'
+            ));
+        }
+
+        // EAVES DATUM | The roof springing line: the head beam inner face plane,
+        // one beam width inboard of each stated face, at the datum rise above
+        // the seating benchmark. Its own datum family now - it no longer shares
+        // a level with the frame top, and it never oversails the envelope.
+        const eavesRing  =  VghLantern__SettingOutModel__RingOutline(memberIndex, ID_RING_EAVES);
+        if (eavesRing) {
+            const datum  =  VghLantern__SettingOutModel__Datum(
+                'Datum__Eaves__Level', 'Eaves', 'Eaves Datum',
+                Number(meta.EavesLevelMm), ['Meta.EavesLevelMm']
+            );
+            datum.Outlines.push(eavesRing);
+            datums.push(datum);
+
+            const measured  =  VghLantern__SettingOutModel__RingLevel(eavesRing);
+            checks.push(VghLantern__SettingOutModel__Check(
+                'Check__Eaves__DatumLevel', 'Eaves datum level',
+                measured.LevelMm, meta.EavesLevelMm, toleranceMm,
+                'Measured from the eaves datum ring corners.'
+            ));
+            checks.push(VghLantern__SettingOutModel__Check(
+                'Check__Eaves__DatumRise', 'Eaves datum rise above upstand top',
+                Number(meta.EavesLevelMm) - Number(meta.UpstandTopLevelMm), Number(meta.EavesDatumRiseMm), toleranceMm,
+                'The datum sits a fixed product rise (100mm) above the seating benchmark.'
+            ));
+            checks.push(VghLantern__SettingOutModel__Check(
+                'Check__Eaves__DatumInset', 'Eaves datum inset from the stated face',
+                (Number(meta.WidthMm) / 2) - Number(meta.EavesHalfWidthMm), Number(meta.HeadBeamWidthMm), toleranceMm,
+                'The datum ring is inset one head beam width (125mm) from each stated Length/Width face.'
+            ));
         }
 
         // RIDGE | A run, not a perimeter - a rectangle at ridge level would be air
@@ -828,9 +845,10 @@ const VghLantern__Geometry__SettingOutModel = (function() {
             if (set) sets.push(set);
         }
 
-        // Every glazing bar must start exactly on the eaves level. There is no
-        // rebate, setback or profile allowance anywhere in the geometry layer, so
-        // this is a zero tolerance identity rather than an approximation.
+        // Every glazing bar DATUM polyline must start exactly on the eaves datum
+        // level. The per-part end treatments (core and cap extensions, trim
+        // plumb cut) are applied downstream of the datum, so the datum feet stay
+        // a zero tolerance identity rather than an approximation.
         const eavesLevelMm  =  Number((skeleton.Meta || {}).EavesLevelMm);
         let worstDelta      =  0;
 

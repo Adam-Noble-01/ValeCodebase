@@ -50,7 +50,7 @@ import {
     VghLantern__Env3d__ConfigAccess__RequireNumber,
     VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
-import { VghLantern__Env3d__PickIndex__Resolve, VghLantern__Env3d__PickIndex__InstanceKey, VghLantern__Env3d__PickIndex__RaycastRoots } from './VghLantern__Env3d__PickIndex__.mjs';
+import { VghLantern__Env3d__PickIndex__Resolve, VghLantern__Env3d__PickIndex__InstanceKey, VghLantern__Env3d__PickIndex__RaycastRoots, VghLantern__Env3d__PickIndex__IsVisible } from './VghLantern__Env3d__PickIndex__.mjs';
 import { VghLantern__CrossSection__IsPointClipped } from '../26__System__CrossSectionView/VghLantern__CrossSection__SystemLogic__.mjs';
 import { VghLantern__Env3d__HighlightLayer__Apply, VghLantern__Env3d__HighlightLayer__Clear } from './VghLantern__Env3d__HighlightLayer__.mjs';
 import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__InspectStats__.mjs';
@@ -408,6 +408,36 @@ import { VghLantern__Env3d__InspectStats__Describe } from './VghLantern__Env3d__
 
         VghLantern__Env3d__HighlightLayer__Clear(surface);
         if (state && typeof state.OnTargetChanged === 'function') state.OnTargetChanged(null);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Drop the Current Target if a View Change Just Hid It
+    // ------------------------------------------------------------
+    // Element view and display mode both toggle .visible with no pointer movement
+    // and no rebuild - the two events everything else here already keys off - so a
+    // pin or a live hover would otherwise keep reporting on a member the reviewer
+    // just told the viewport to hide until the cursor happened to move again.
+    //
+    // A pinned target is released outright, which falls back to hover exactly as
+    // clicking it a second time would. A live hover has no stored object to test,
+    // only its key, so it is cleared and re-run immediately against the pointer's
+    // last known position rather than left to wait for the next frame.
+    export function VghLantern__Env3d__HoverInspector__RevalidateTarget(surface) {
+        const state  =  surface && surface.InspectorState;
+        if (!state) return;
+
+        if (state.PinnedPick) {
+            if (!VghLantern__Env3d__PickIndex__IsVisible(state.PinnedPick.Object3d)) {
+                VghLantern__Env3d__HoverInspector__ReleasePin(surface);
+            }
+            return;
+        }
+
+        if (state.ActiveKey) {
+            state.ActiveKey  =  '';                                          // <-- Force the next pass to re-resolve rather than trust a stale key
+            VghLantern__Env3d__HoverInspector__RunHover(surface);
+        }
     }
     // ------------------------------------------------------------
 

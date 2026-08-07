@@ -381,8 +381,9 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // was never authoritative and may be nothing like the shape on screen. Left
     // alone it would silently change pitch the first time it is reopened, so the
     // rise is converted back to the angle that reproduces it before the fields
-    // are dropped. The run is the eaves half-extent of the SHORT axis, exactly as
-    // the SkeletonSolver measures it, so the roof comes back the same height.
+    // are dropped. The run is the EAVES DATUM half-extent of the SHORT axis -
+    // half the stated dimension less one head beam width - exactly as the
+    // SkeletonSolver measures it, so the roof comes back the same height.
     function VghLantern__SchemaValidator__MigrateRiseDrivenPitch(lantern) {
         var pitchCfg   =  lantern['Lantern__RoofPitch__Config'];
         var driveMode  =  VghLantern__SchemaValidator__CleanToken(pitchCfg['Lantern__RoofPitch__Config__DriveMode']);
@@ -391,11 +392,15 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (driveMode.indexOf(SCHEMA__LEGACY_RISE_DRIVE_MODE) === -1) return false;
         if (!isFinite(riseMm) || riseMm <= 0) return false;
 
+        var Assembly    =  window.VghLantern__Geometry__BaseFrameAssembly;
+        var headBeamMm  =  Assembly
+            ? Assembly.VghLantern__BaseFrameAssembly__DatumGeometry().HeadBeamWidthMm
+            : 125;
+
         var dimsCfg  =  lantern['Lantern__Dimensions__Config'] || {};
-        var widthMm  =  Number(dimsCfg['Lantern__Dimensions__Config__WidthMm'])            || 0;
-        var depthMm  =  Number(dimsCfg['Lantern__Dimensions__Config__DepthMm'])            || 0;
-        var eavesMm  =  Number(dimsCfg['Lantern__Dimensions__Config__EavesProjectionMm'])  || 0;
-        var runMm    =  Math.min((widthMm / 2) + eavesMm, (depthMm / 2) + eavesMm);
+        var widthMm  =  Number(dimsCfg['Lantern__Dimensions__Config__WidthMm'])  || 0;
+        var depthMm  =  Number(dimsCfg['Lantern__Dimensions__Config__DepthMm'])  || 0;
+        var runMm    =  (Math.min(widthMm, depthMm) / 2) - headBeamMm;
 
         if (runMm <= 0) return false;
 

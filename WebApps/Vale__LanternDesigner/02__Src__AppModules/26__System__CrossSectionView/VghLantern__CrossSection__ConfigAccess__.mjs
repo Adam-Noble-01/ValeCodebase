@@ -52,7 +52,7 @@
     const FALLBACK_SECTIONS  =  {
         Feature    : { Enabled : true, HideGroundGridWhenCut : true },
         Appearance : { FillColour : '#f0f0f0', LineColour : '#323232', LineWidthPx : 2.0, FillInsetMm : 1.2, LineInsetMm : 0.4 },
-        Tuning     : { WeldToleranceMm : 0.25, MinLoopAreaMm2 : 20, MaxCrossingSegments : 250000 }
+        Tuning     : { WeldToleranceMm : 0.25, MinLoopAreaMm2 : 20, MaxCrossingSegments : 250000, LateralForwardOffsetMm : 100, LongitudinalForwardOffsetMm : 100 }
     };
     // ------------------------------------------------------------
 

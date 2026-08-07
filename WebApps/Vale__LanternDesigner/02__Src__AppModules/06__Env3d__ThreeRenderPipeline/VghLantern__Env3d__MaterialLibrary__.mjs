@@ -25,8 +25,12 @@
    A finish carrying ClearCoat above zero is built as a THREE.MeshPhysicalMaterial
    rather than a MeshStandardMaterial. That is what separates powder coated
    aluminium - a matt pigment layer under a thin lacquer, so low metalness with a
-   distinct surface sheen - from natural lead, which is real metal and takes high
-   metalness with a broken, roughened reflection instead.
+   distinct surface sheen - from bare mill aluminium, which is real metal and takes
+   high metalness with a broken, roughened reflection instead.
+
+   Patination oiled lead uses that same promotion for the opposite reason. Its
+   clear coat is not a lacquer over pigment but an oil film over genuine metal, so
+   it carries a high metalness AND a coat: two real layers, modelled as two.
 
    ---------------------------------------------------------------------------
 
@@ -73,6 +77,8 @@ import {
 import {
     VghLantern__Env3d__ProceduralTextures__Noise,
     VghLantern__Env3d__ProceduralTextures__BrushedGrain,
+    VghLantern__Env3d__ProceduralTextures__WoodGrain,
+    VghLantern__Env3d__ProceduralTextures__PatinatedLead,
     VghLantern__Env3d__ProceduralTextures__DisposeAll
 } from './VghLantern__Env3d__ProceduralTextures__.mjs';
 
@@ -93,6 +99,8 @@ import {
     const ROLE_SKELETON_LINE  =  'skeletonLine';                             // <-- Line-mode member fallback
     const ROLE_GRP            =  'grp';                                      // <-- Glass reinforced plastic: kerb and flat roof
     const ROLE_MILL_ALUMINIUM =  'millAluminium';                            // <-- Bare extrusion: the concealed glaze bar core
+    const ROLE_LEAD_FLASHING  =  'leadFlashing';                             // <-- Patination oiled leadwork on the base frame
+    const ROLE_SAPELE_HARDWOOD =  'sapeleHardwood';                          // <-- The head beam: bare sealed hardwood, never the frame paint
 
     const ROLE_BAR_CAP        =  'glazeBarCap';                              // <-- Glaze bar cap, finished from its own palette
     const ROLE_BAR_TRIM       =  'glazeBarTrim';                             // <-- Glaze bar trim, finished from the joinery palette
@@ -107,7 +115,7 @@ import {
     // frame does. Bare douglas fir did not disappear with the fixed trim: it is
     // the Timber role BLOCK, reached through the joinery palette's Natural Douglas
     // Fir entry, which delegates to it rather than restating its numbers.
-    const FIXED_COLOUR_ROLES  =  [ROLE_GLAZING, ROLE_SKELETON_LINE, ROLE_BUILDERS_UPSTAND, ROLE_GRP, ROLE_MILL_ALUMINIUM];
+    const FIXED_COLOUR_ROLES  =  [ROLE_GLAZING, ROLE_SKELETON_LINE, ROLE_BUILDERS_UPSTAND, ROLE_GRP, ROLE_MILL_ALUMINIUM, ROLE_LEAD_FLASHING, ROLE_SAPELE_HARDWOOD];
 
     const PBR_CONFIG_KEY      =  'VghLantern__PbrMaterials__Config';         // <-- Palette and surface response SSOT
     const PBR_FINISHES_KEY    =  'VghLantern__PbrMaterials__Config__Finishes';
@@ -619,6 +627,228 @@ import {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build Sapele Hardwood, the Head Beam's Own Material
+    // ------------------------------------------------------------
+    // The head beam (46_1001) is a fixed Vale product section - Sapele, factory
+    // sealed - and unlike the frame, the ridge or the hips it does NOT follow
+    // the lantern's chosen paint finish. It gets its own role, the same way
+    // the bare mill aluminium core does.
+    //
+    // Interlocked-grain hardwoods read by their COLOUR figure, not their
+    // sheen, so unlike every other grained role here the map is a diffuse
+    // colour map (WoodGrain) rather than a roughness map. Roughness stays a
+    // flat config value; only the colour carries the ribbon stripe.
+    function VghLantern__Env3d__MaterialLibrary__BuildSapeleHardwood() {
+        const timber  =  VghLantern__Env3d__MaterialLibrary__RoleBlock('SapeleHardwood');
+
+        const material  =  new THREE.MeshStandardMaterial({
+            color           : new THREE.Color(timber.BaseColorHex || '#8a4a34'),
+            roughness       : (typeof timber.Roughness === 'number')       ? timber.Roughness       : 0.52,
+            metalness       : (typeof timber.Metalness === 'number')       ? timber.Metalness       : 0.0,
+            envMapIntensity : (typeof timber.EnvMapIntensity === 'number') ? timber.EnvMapIntensity : 0.6,
+            flatShading     : timber.FlatShading === true
+        });
+
+        if (timber.GrainEnabled === false) return material;
+
+        try {
+            const grain  =  VghLantern__Env3d__ProceduralTextures__WoodGrain({
+                PixelSize     : timber.GrainPixelSize,
+                LineDensity   : timber.GrainLineDensity,
+                LineContrast  : timber.GrainLineContrast,
+                Wander        : timber.GrainWander,
+                WanderLattice : timber.GrainWanderLattice,
+                BaseColorHex  : timber.BaseColorHex,
+                DarkColorHex  : timber.DarkColorHex,
+                LightColorHex : timber.LightColorHex,
+                Seed          : timber.GrainSeed
+            });
+
+            const repeatU  =  (typeof timber.GrainRepeatU === 'number') ? timber.GrainRepeatU : 4;
+            const repeatV  =  (typeof timber.GrainRepeatV === 'number') ? timber.GrainRepeatV : 0.85;
+
+            const grainMap  =  grain.clone();                                 // <-- Cloned so this material owns its own repeat without disturbing the cached source
+            grainMap.needsUpdate  =  true;
+            grainMap.colorSpace   =  THREE.SRGBColorSpace;                    // <-- Stated explicitly rather than trusted to clone() - this is the one map in the library that is colour, not a scalar quantity, and a silent fall back to linear would wash the timber out
+            grainMap.wrapS  =  THREE.RepeatWrapping;
+            grainMap.wrapT  =  THREE.RepeatWrapping;
+            grainMap.repeat.set(repeatU, repeatV);
+
+            // The map already carries the true tri-tone colour, so the base
+            // colour must go to white - otherwise the tint multiplies through
+            // and the timber renders darker than every configured tone.
+            material.map  =  grainMap;
+            material.color.set('#ffffff');
+
+        } catch (error) {
+            // A canvas that will not allocate is a reason to render the beam
+            // plain, never a reason to fail the whole scene build.
+            console.warn('[VghLantern Env3d] Wood grain could not be generated - head beam renders untextured:', error);
+        }
+
+        return material;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build Newly Installed Patination Oiled Leadwork
+    // ------------------------------------------------------------
+    // The cover flashing that encircles the base frame, and the one surface on
+    // the model that a viewer has strong expectations about: everybody has seen
+    // leadwork, and a flat grey prism where the flashing should be reads as
+    // wrong long before anyone can say why.
+    //
+    // What it is: milled lead, dressed down over the upstand by hand, wiped over
+    // with patination oil the same day so it never blooms into the chalky white
+    // carbonate of neglected leadwork. Newly oiled lead is dark, faintly wet, and
+    // covered in the broad smeary strokes the cloth left. Those strokes are the
+    // whole tell, and no single roughness value can produce them.
+    //
+    // TWO LAYERS, NOT ONE:
+    // The oil is a real film sitting over a real metal, so it is built as one -
+    // a clearcoat over a metallic base - rather than being averaged into the
+    // base roughness. That is what separates it from the powder coats, where the
+    // clearcoat sits over a matt PIGMENT and the metalness stays near zero. Here
+    // there is genuine metal underneath, and the sheen is on top of it.
+    //
+    // WHY EVERY SCALAR ENDS UP AT 1.0:
+    // THREE multiplies each map through its matching scalar. The maps below carry
+    // ABSOLUTE values rather than modulations around a mid point, because four
+    // quantities all keyed to one oil-thickness field is exactly the situation in
+    // which a leftover scalar quietly halves one of them and the surface comes out
+    // darker and flatter than any configured number suggests. Neutralising the
+    // scalars keeps the config values meaning precisely what they say. They are
+    // still set from config first, so if texture generation fails the fallback is
+    // a sensible plain oiled lead rather than a white full-metal one.
+    function VghLantern__Env3d__MaterialLibrary__BuildLeadFlashing() {
+        const lead  =  VghLantern__Env3d__MaterialLibrary__RoleBlock('LeadFlashing');
+
+        const common  =  {
+            color           : new THREE.Color(lead.HexColor || '#565a61'),
+            roughness       : (typeof lead.Roughness === 'number')       ? lead.Roughness       : 0.52,
+            metalness       : (typeof lead.Metalness === 'number')       ? lead.Metalness       : 0.62,
+            envMapIntensity : (typeof lead.EnvMapIntensity === 'number') ? lead.EnvMapIntensity : 0.85,
+            flatShading     : lead.FlatShading !== false
+        };
+
+        // Same promotion rule the finishes use: a clear coat above zero is what
+        // makes a material physical rather than standard.
+        const coat  =  (typeof lead.ClearCoat === 'number') ? lead.ClearCoat : 0;
+
+        const material  =  (coat > 0)
+            ? new THREE.MeshPhysicalMaterial(Object.assign({}, common, {
+                  clearcoat          : coat,
+                  clearcoatRoughness : (typeof lead.ClearCoatRoughness === 'number') ? lead.ClearCoatRoughness : 0.40
+              }))
+            : new THREE.MeshStandardMaterial(common);
+
+        if (lead.ProceduralEnabled === false) return material;
+
+        try {
+            const maps  =  VghLantern__Env3d__ProceduralTextures__PatinatedLead({
+                PixelSize          : lead.PixelSize,
+                RepeatU            : lead.RepeatU,
+                RepeatV            : lead.RepeatV,
+                Anisotropy         : lead.Anisotropy,
+
+                OilStrokeCount     : lead.OilStrokeCount,
+                OilDragCount       : lead.OilDragCount,
+                OilDragWeight      : lead.OilDragWeight,
+                OilMeanderLattice  : lead.OilMeanderLattice,
+                OilMeanderOctaves  : lead.OilMeanderOctaves,
+                OilMeanderWeight   : lead.OilMeanderWeight,
+                OilContrast        : lead.OilContrast,
+                OilBias            : lead.OilBias,
+
+                BloomLattice       : lead.BloomLattice,
+                BloomOctaves       : lead.BloomOctaves,
+                BloomPersistence   : lead.BloomPersistence,
+
+                DressLattice       : lead.DressLattice,
+                DressOctaves       : lead.DressOctaves,
+                DressPersistence   : lead.DressPersistence,
+
+                ToothLattice       : lead.ToothLattice,
+                ToothOctaves       : lead.ToothOctaves,
+                ToothPersistence   : lead.ToothPersistence,
+
+                OiledHex           : lead.OiledHex,
+                OxideHex           : lead.OxideHex,
+                MottleStrength     : lead.MottleStrength,
+                ToothTint          : lead.ToothTint,
+
+                RoughnessOiled     : lead.RoughnessOiled,
+                RoughnessDry       : lead.RoughnessDry,
+                RoughnessMottle    : lead.RoughnessMottle,
+
+                MetalnessOiled     : lead.MetalnessOiled,
+                MetalnessDry       : lead.MetalnessDry,
+
+                DressRelief        : lead.DressRelief,
+                ToothRelief        : lead.ToothRelief,
+                WipeRelief         : lead.WipeRelief,
+
+                CoatOiled          : lead.CoatOiled,
+                CoatDry            : lead.CoatDry,
+                CoatRoughnessOiled : lead.CoatRoughnessOiled,
+                CoatRoughnessDry   : lead.CoatRoughnessDry,
+
+                Seed               : lead.Seed
+            });
+
+            // Record what the plain surface would have been, so anyone tuning the
+            // material later can see the fallback the scalars below overwrote.
+            material.userData.VghLantern__LeadPlainSurface  =  {
+                Color              : common.color.getHexString(),
+                Roughness          : common.roughness,
+                Metalness          : common.metalness,
+                ClearCoat          : coat,
+                ClearCoatRoughness : material.clearcoatRoughness
+            };
+
+            // COLOUR - the map carries the full oiled-to-oxide range, so the tint
+            // it multiplies through has to be white or the flashing renders twice
+            // as dark as either the map or the config colour describes.
+            material.map  =  maps.Albedo;
+            material.color.set('#ffffff');
+
+            // HEIGHT, ROUGHNESS, METALNESS - one texture, three channels. THREE
+            // reads bump from red, roughness from green and metalness from blue,
+            // so this is one GPU upload doing three jobs and the three maps cannot
+            // drift out of step with each other.
+            material.bumpMap       =  maps.Surface;
+            material.bumpScale     =  (typeof lead.BumpScale === 'number') ? lead.BumpScale : 0.0018;
+            material.roughnessMap  =  maps.Surface;
+            material.metalnessMap  =  maps.Surface;
+            material.roughness     =  1.0;
+            material.metalness     =  1.0;
+
+            // THE OIL FILM - only reachable on the physical material. Clearcoat
+            // reads red and clearcoat roughness reads green, both already spoken
+            // for above, which is why the film needs its own texture.
+            //
+            // Note the coat follows the geometric normal rather than the bumped
+            // one: THREE perturbs the base normal from bumpMap but has no bump
+            // equivalent for the coat layer. On relief this shallow the difference
+            // is not visible; it would need a clearcoatNormalMap to correct.
+            if (material.isMeshPhysicalMaterial) {
+                material.clearcoatMap           =  maps.OilFilm;
+                material.clearcoatRoughnessMap  =  maps.OilFilm;
+                material.clearcoat              =  1.0;
+                material.clearcoatRoughness     =  1.0;
+            }
+
+        } catch (error) {
+            // A canvas that will not allocate is a reason to render the flashing
+            // plain, never a reason to fail the whole scene build.
+            console.warn('[VghLantern Env3d] Lead surface maps could not be generated - flashing renders plain:', error);
+        }
+
+        return material;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Material for a Role
     // ------------------------------------------------------------
     function VghLantern__Env3d__MaterialLibrary__Build(roleKey, finishName) {
@@ -642,6 +872,12 @@ import {
 
         } else if (roleKey === ROLE_MILL_ALUMINIUM) {
             material  =  VghLantern__Env3d__MaterialLibrary__BuildMillAluminium();
+
+        } else if (roleKey === ROLE_LEAD_FLASHING) {
+            material  =  VghLantern__Env3d__MaterialLibrary__BuildLeadFlashing();
+
+        } else if (roleKey === ROLE_SAPELE_HARDWOOD) {
+            material  =  VghLantern__Env3d__MaterialLibrary__BuildSapeleHardwood();
 
         } else if (roleKey === ROLE_BUILDERS_UPSTAND) {
             // The kerb declares which material it is finished in rather than
@@ -732,6 +968,16 @@ import {
     // is never seen once the cap and trim are on - so it takes no finish name.
     export function VghLantern__Env3d__MaterialLibrary__MillAluminium() {
         return VghLantern__Env3d__MaterialLibrary__Get(ROLE_MILL_ALUMINIUM, null);
+    }
+
+    export function VghLantern__Env3d__MaterialLibrary__LeadFlashing() {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_LEAD_FLASHING, null);
+    }
+
+    // The head beam. Fixed Sapele hardwood, never the frame paint - takes no
+    // finish name for the same reason the mill aluminium core does not.
+    export function VghLantern__Env3d__MaterialLibrary__SapeleHardwood() {
+        return VghLantern__Env3d__MaterialLibrary__Get(ROLE_SAPELE_HARDWOOD, null);
     }
 
     // The two finished faces of a glaze bar, each specified in its own right. The

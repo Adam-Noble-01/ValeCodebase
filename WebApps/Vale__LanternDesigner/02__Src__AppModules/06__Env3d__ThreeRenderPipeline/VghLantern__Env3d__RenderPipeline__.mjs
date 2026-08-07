@@ -67,6 +67,7 @@ import { VghLantern__Env3d__LightingRig__Attach } from './VghLantern__Env3d__Lig
 import { VghLantern__Env3d__EnvironmentMap__Ready } from './VghLantern__Env3d__EnvironmentMap__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Skeleton__Build, VghLantern__Env3d__MeshBuilder__Skeleton__ActiveMode } from './VghLantern__Env3d__MeshBuilder__Skeleton__.mjs';
 import { VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build } from './VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__.mjs';
+import { VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build } from './VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
 import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build } from './VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs';
 import {
@@ -95,7 +96,8 @@ import {
     VghLantern__Env3d__HoverInspector__Attach,
     VghLantern__Env3d__HoverInspector__Detach,
     VghLantern__Env3d__HoverInspector__Clear,
-    VghLantern__Env3d__HoverInspector__IsAttached
+    VghLantern__Env3d__HoverInspector__IsAttached,
+    VghLantern__Env3d__HoverInspector__RevalidateTarget
 } from './VghLantern__Env3d__HoverInspector__.mjs';
 
 import {
@@ -287,6 +289,11 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // SOLID GEOMETRY | The finished model
         VghLantern__Env3d__MeshBuilder__Glazing__Build(solidGlazingGroup, skeleton);
         VghLantern__Env3d__MeshBuilder__BuildersUpstandBox__Build(solidFrameGroup, skeleton, lantern);
+
+        // The Vale base frame: head beam, eaves extrusion and lead flashing
+        // swept around the eaves datum ring.
+        surface.LastBaseFrameSummary  =  await VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build(solidFrameGroup, skeleton, lantern);
+
         await VghLantern__Env3d__MeshBuilder__Skeleton__Build(solidFrameGroup, skeleton, barSet, lantern);
 
         // The glaze bars are built apart from the rest of the skeleton because
@@ -435,6 +442,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     // 'setOut' the setting out alone.
     export function VghLantern__Env3d__RenderPipeline__SetDisplayMode(surface, modeKey) {
         VghLantern__Env3d__DisplayMode__Apply(surface, modeKey);
+        VghLantern__Env3d__HoverInspector__RevalidateTarget(surface);
     }
     // ------------------------------------------------------------
 
@@ -461,6 +469,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     // the display mode: a reviewer can put the setting out over the structure.
     export function VghLantern__Env3d__RenderPipeline__SetElementView(surface, viewKey) {
         VghLantern__Env3d__ElementFilter__Apply(surface, viewKey);
+        VghLantern__Env3d__HoverInspector__RevalidateTarget(surface);
     }
     // ------------------------------------------------------------
 

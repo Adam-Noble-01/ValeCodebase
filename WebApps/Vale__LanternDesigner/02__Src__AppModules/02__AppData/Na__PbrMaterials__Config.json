@@ -247,6 +247,107 @@
                 "Note"                          : "The builders kerb is a GRP covered upstand, so it takes the GRP material below rather than carrying a colour of its own. Point this at another role key to change what the kerb is finished in."
             },
 
+            "LeadFlashing": {
+                "Description"                   : "Newly installed patination oiled leadwork. The cover flashing encircling the base frame (46_1003): rebated into the head beam top, dressed down over the builders upstand finish. Milled lead is fixed, dressed by hand, and wiped over with patination oil the same day, which is what stops it blooming into the chalky white carbonate everyone recognises as neglected leadwork. Freshly oiled lead is a soft dark grey with a faint wet sheen - the cloth strokes are present but quiet, not a busy mottled grain.",
+                "SurfaceModelNote"              : "Two real layers, modelled as two: a metallic oxidised lead base with an oil film sitting over it as a clear coat. Every map below is derived from one oil-thickness field, so colour, roughness, metalness and sheen all change TOGETHER where the cloth went. Four independent noise fields would read as dirty plastic; one field driving four outputs reads as a cloth dragged over metal. Tuned soft so a narrow flashing band does not read as noisy mottled grey.",
+
+                "HexColor"                      : "#5C6066",
+                "HexColorNote"                  : "The untextured fallback tone and the average the maps land on. Mid grey, darker than any painted frame colour so the flashing reads as metal dressing rather than as joinery. Sits higher than a photographic match because at this metalness the value tints the reflection as much as the diffuse, and a photo-matched grey renders near black.",
+                "Roughness"                     : 0.48,
+                "RoughnessNote"                 : "Fallback only - the packed surface map overrides this per pixel. Oiled lead holds a broad soft sheen: matter than the mill extrusion above it, glossier than GRP.",
+                "Metalness"                     : 0.62,
+                "MetalnessNote"                 : "Fallback only. Lead under patination oil is real metal under an oxide-and-oil film, so it sits well above a coating but below the bare extrusion.",
+                "EnvMapIntensity"               : 0.80,
+                "EnvMapIntensityNote"           : "Below the mill aluminium's. Lead is metal and does return its surroundings, but the oil film and the oxide scatter most of it, and the flashing sits at the base of the lantern where it must not compete with the glazing above.",
+
+                "ClearCoat"                     : 0.36,
+                "ClearCoatNote"                 : "Above zero promotes the material to MeshPhysicalMaterial, which is what makes a coat layer available at all. The oil film map then carries the real per-pixel strength; this number is the promotion trigger and the untextured fallback. Set it to 0 to render the lead as bare metal with no film.",
+                "ClearCoatRoughness"            : 0.40,
+                "ClearCoatRoughnessNote"        : "Fallback only. Patination oil is a soft broad sheen, never a lacquer gloss.",
+
+                "FlatShading"                   : true,
+                "FlatShadingNote"               : "The flashing is dressed in straight welts and steps; flat shading keeps each dressed face reading as a plane. The soft dressing ripple within a face comes from the bump map instead, which is the right division of labour: the arrises are real geometry and must stay crisp, the undulation is surface and must not.",
+
+                "ProceduralEnabled"             : true,
+                "ProceduralEnabledNote"         : "False renders the flashing as the plain fallback surface above. Useful for isolating whether a lighting problem is the material or the scene.",
+
+                "PixelSize"                     : 512,
+                "PixelSizeNote"                 : "Canvas edge for all three maps. With the repeat below one texel lands near 0.5 mm, which is fine enough for the drag marks to read at close range. Drop to 256 if generation time ever matters; it is a one-off cost at first use and the result is cached.",
+
+                "Anisotropy"                    : 16,
+                "AnisotropyNote"                : "The single most important value in this block, and the reason the flashing looked like a grey smear before it was set. A flashing is a long thin band almost always seen at a grazing angle, which compresses it hard in one screen direction and leaves it long in the other. At the default of 1 the GPU picks one mip level for both directions, picks it for the compressed one, and throws away the detail everything else here exists to create. THREE clamps this to whatever the hardware supports, so 16 is safe everywhere. Nothing else in this app sets it yet - the GRP kerb and the mill aluminium bars would both benefit from the same treatment.",
+
+                "RepeatU"                       : 3.2,
+                "RepeatUNote"                   : "Tiles per world unit ACROSS the section profile. The flashing mesh carries UVs in world units, so this is metres and the grain holds its true size on a 900 mm lantern and a 5 m one alike. Lowered from 4.0 so wipe strokes read broader and quieter across the outer face instead of packing fine noise into a narrow band.",
+                "RepeatV"                       : 1.2,
+                "RepeatVNote"                   : "Tiles per world unit ALONG the run, deliberately lower than U. Two reasons. A long straight flashing is exactly where a repeating tile becomes obvious, and stretching the tile lengthways pushes the repeat further out so a typical run sees it only a handful of times. And the stretch is physically right anyway: milled lead comes off a rolling mill and carries its own directional texture down the length of the sheet.",
+
+                "BumpScale"                     : 0.0011,
+                "BumpScaleNote"                 : "Same units as the GRP bump above. Softened so dressing undulation breaks the highlight without the tooth and wipe reading as grainy noise on a band this narrow.",
+
+                "OilStrokeCountNote"            : "THE WIPE. These six values are the whole character of the material: the broad passes of the cloth, the finer drag within each pass, and a slow meander so a stroke fades and strengthens over its run instead of reading as a printed ribbon. Tuned down from the earlier high-contrast set - a flashing this narrow was reading as noisy mottled grey rather than as oiled metal.",
+                "OilStrokeCount"                : 8,
+                "OilDragCount"                  : 22,
+                "OilDragWeight"                 : 0.16,
+                "OilDragWeightNote"             : "How strongly the fine drag marks cut across the broad strokes. Held low so the wipe reads as soft cloth passes rather than a busy rag grain. Raised drag was the main source of the noisy mottled look on a band this narrow.",
+                "OilMeanderLattice"             : 5,
+                "OilMeanderOctaves"             : 2,
+                "OilMeanderWeight"              : 0.16,
+                "OilMeanderWeightNote"          : "The one term that varies ALONG the run. Enough to stop strokes reading as printed ribbons, kept soft so the long face does not break into noisy bands.",
+                "OilContrast"                   : 0.48,
+                "OilContrastNote"               : "How hard the strokes read. Softened so oil thickness varies gently across the face - high contrast was driving every map (colour, roughness, metalness, coat) into a speckled look at once.",
+                "OilBias"                       : 0.14,
+                "OilBiasNote"                   : "Shifts the whole field toward oiled. Positive because this is a properly finished flashing with the odd thin pass, not a half-oiled one. Negative would read as lead that is starting to bloom. The stroke field is re-centred on 0.5 before this is applied, so the number means the same thing on every seed.",
+
+                "BloomLattice"                  : 8,
+                "BloomOctaves"                  : 2,
+                "BloomPersistence"              : 0.40,
+                "BloomNote"                     : "Mid-scale oxide mottle: the variation in the sheet itself, under the oil rather than in it. Feeds colour and roughness only. Kept broad and soft - fine bloom octaves were contributing to the noisy speckled look.",
+
+                "DressLattice"                  : 3,
+                "DressOctaves"                  : 2,
+                "DressPersistence"              : 0.55,
+                "DressNote"                     : "The broad undulation of lead worked down over a substrate by hand. Very low frequency and height only. This is the field that stops each face reading as a machined plane.",
+
+                "ToothLattice"                  : 28,
+                "ToothOctaves"                  : 1,
+                "ToothPersistence"              : 0.40,
+                "ToothNote"                     : "Micro surface for sheen only. Coarsened and single-octave so it no longer reads as grainy noise in the albedo and bump at close range.",
+
+                "OiledHex"                      : "#4A4E54",
+                "OiledHexNote"                  : "The tone where the oil lies thick. Slightly lifted from the earlier deep charcoal so the flashing does not collapse toward black under the oil film.",
+                "OxideHex"                      : "#6E737A",
+                "OxideHexNote"                  : "The tone where the film is thinnest and dry oxide shows through. Gap to OiledHex kept tight - a wide gap was reading as mottled noise rather than as subtle film variation.",
+                "MottleStrength"                : 0.035,
+                "MottleStrengthNote"            : "How far the sheet's own mottle lifts and drops the colour on top of the oil mix. Held low so the albedo stays even.",
+                "ToothTint"                     : 0.015,
+                "ToothTintNote"                 : "A trace of the micro surface in the colour as well as the sheen. Near zero - any more and the tooth lattice speckles the albedo.",
+
+                "RoughnessOiled"                : 0.40,
+                "RoughnessDry"                  : 0.58,
+                "RoughnessBandNote"             : "Oil fills the micro roughness of the oxide, so a thick film reads glossier. Band narrowed so the wipe does not produce noisy sheen patches across a face this narrow.",
+                "RoughnessMottle"               : 0.04,
+
+                "MetalnessOiled"                : 0.72,
+                "MetalnessDry"                  : 0.52,
+                "MetalnessBandNote"             : "Oil WETS the metal rather than covering it, so a thick film reads more metallic, not less. Band narrowed with the roughness band so metalness and sheen stay correlated without speckled hotspots.",
+
+                "DressRelief"                   : 0.78,
+                "ToothRelief"                   : 0.14,
+                "WipeRelief"                    : 0.08,
+                "ReliefNote"                    : "How the three fields share the height map. Dressing dominates; tooth and wipe kept quiet so the bump map does not add grainy noise on top of the oil field.",
+
+                "CoatOiled"                     : 0.48,
+                "CoatDry"                       : 0.12,
+                "CoatNote"                      : "Strength of the oil film layer, from a thick fresh wipe down to almost nothing. This is what gives newly oiled lead its faintly wet look: a soft specular sheen that sits ON the surface and survives even where the metal beneath has gone dull.",
+                "CoatRoughnessOiled"            : 0.30,
+                "CoatRoughnessDry"              : 0.55,
+                "CoatRoughnessNote"             : "The film's own gloss. Band narrowed with the base roughness so the coat does not introduce a second noisy sheen layer.",
+
+                "Seed"                          : 20260807,
+                "SeedNote"                      : "One integer feeding every field in the material, so the strokes, the mottle, the dressing and the tooth are all drawn from one stream and change together if it changes. Fixed rather than random so the same flashing appears on every reload and in every exported snapshot."
+            },
+
             "Grp": {
                 "Description"                   : "Glass reinforced plastic. The material of the builders kerb and any flat roof area abutting the lantern. Laid wet over ply and rolled out by hand, so it is never optically flat - the surface carries a fine granular texture from the chopped strand mat under the topcoat, plus a soft undulation from the roller.",
                 "HexColor"                      : "#C3C1BA",
@@ -305,6 +406,40 @@
                 "GrainRoughnessNote"            : "The grain map is remapped into this band by roughness x map. The spread is what produces the stretched lengthways highlight; too narrow and the metal goes flat, too wide and it reads as dirty. Moved up with the base roughness so the band still straddles it - the shape of the highlight is preserved, only its sharpness came down.",
                 "GrainBumpScale"                : 0.00012,
                 "GrainBumpScaleNote"            : "A whisper of physical relief in world units, so this is metres. Die lines are microns deep in reality - this is here to catch a grazing highlight, not to be seen as texture."
+            },
+            "SapeleHardwood": {
+                "Description"                   : "Sapele hardwood, factory sealed and unpainted. The Vale head beam (46_1001) as supplied, seated atop the builders upstand.",
+                "ReachedByNote"                 : "Nothing asks for this role by name and it is not part of the Finishes/CapFinishes/JoineryFinishes selectable palettes - the head beam is fixed to its own material the same way the mill aluminium core and the lead flashing are, rather than following the lantern's chosen paint finish.",
+                "BaseColorHex"                  : "#987465",
+                "BaseColorHexNote"              : "Faded sealed Sapele: same warm reddish-brown cast as the real timber, but lifted in lightness and pulled back in saturation so the head beam reads as light joinery rather than a dark mahogany plank. Tuned for the in-app lighting, not for a photographic match of freshly oiled stock.",
+                "DarkColorHex"                  : "#74574D",
+                "LightColorHex"                 : "#AB988D",
+                "LightColorHexNote"             : "Sapele's ribbon-stripe figure: interlocked grain reverses direction in bands, so raking light catches alternating bands as darker and lighter than the base tone. Kept close in value and saturation to the faded base - the figure is a soft shift in brown, not a swing toward orange or deep red.",
+                "Roughness"                     : 0.55,
+                "RoughnessNote"                 : "A factory sealed hardwood section - satin, well short of a lacquered veneer. Slightly matter than before so the lighter tone does not pick up a wet sheen.",
+                "Metalness"                     : 0.0,
+                "MetalnessNote"                 : "Timber is a dielectric.",
+                "EnvMapIntensity"               : 0.55,
+                "EnvMapIntensityNote"           : "Low, matching the Timber role below: a matte sealed hardwood does not throw a strong sky reflection.",
+                "FlatShading"                   : true,
+                "FlatShadingNote"               : "The head beam is a machined joinery section with a rebate and a chamfer; flat shading keeps those arrises crisp, matching every other swept section in this file.",
+
+                "GrainEnabled"                  : true,
+                "GrainNote"                     : "The ribbon-stripe figure, generated as a genuine colour map - wood figure is a colour effect first, unlike the mill aluminium's die lines below which are a sheen effect carried as a roughness map.",
+                "GrainPixelSize"                : 1024,
+                "GrainPixelSizeNote"            : "Doubled from the metal grains' 512: this map is stretched across metres of head beam rather than tens of millimetres of glaze bar section, so it needs more source detail to stay crisp up close rather than reading as a soft blur.",
+                "GrainLineDensity"              : 80,
+                "GrainLineDensityNote"          : "Coarser than the mill aluminium's 256 die lines - Sapele's figure runs in broader bands than a machined line - but dense enough to read as many distinct streaks rather than a handful of soft blotches.",
+                "GrainLineContrast"             : 0.26,
+                "GrainLineContrastNote"         : "Softened with the faded palette - high contrast against lighter tones was reading as busy striped mahogany rather than as sealed joinery.",
+                "GrainWander"                   : 0.24,
+                "GrainWanderNote"               : "Higher than the aluminium's 0.15 - interlocked grain wanders and reverses far more than a drawn die line ever does - but held back from the extreme end now that GrainRepeatV gives the figure room to vary over the beam's real length instead of doing all the work inside one stretched tile.",
+                "GrainWanderLattice"            : 10,
+                "GrainSeed"                     : 20260808,
+                "GrainRepeatU"                  : 4,
+                "GrainRepeatUNote"              : "Tiles across the head beam's perimeter - a bigger, slower section than the glaze bar core, so fewer repeats read as one continuous run of timber rather than a printed pattern.",
+                "GrainRepeatV"                  : 0.85,
+                "GrainRepeatVNote"              : "Tiles per metre along the beam - roughly one figure repeat every 1.2m, close to a real board length. NOT held at 1 the way the metal grains are: those clothe a glaze bar a metre or two long, so one tile stretched the run is barely noticed; a head beam runs the full length of a lantern side, and one tile stretched across 5 or 7 metres is exactly what reads as a soft, blurry blotch rather than timber."
             },
             "Timber": {
                 "Description"                   : "Douglas fir, unpainted. The glaze bar trim as supplied, seen from inside the room.",

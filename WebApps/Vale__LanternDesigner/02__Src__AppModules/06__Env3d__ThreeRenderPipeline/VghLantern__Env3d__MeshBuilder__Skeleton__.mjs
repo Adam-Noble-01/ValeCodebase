@@ -262,12 +262,62 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Extend Hip Members Down to the Glaze Bar Cap Ends
+    // ------------------------------------------------------------
+    // The solved hip stops on the eaves datum corner, but the glaze bar caps
+    // beside it run the cap extension along the pitch past the datum - so an
+    // unextended hip nose floats short of the roof edge. Each hip's lower end
+    // is slid down its own axis until it reaches the LEVEL of the cap ends
+    // (datum minus extension x sin(pitch)), which by the roof plane geometry
+    // also lands it on the extended eaves line. Solved members are not
+    // mutated; extended copies are swept. Set-out and takeoff keep the datum
+    // hip lengths.
+    function VghLantern__Env3d__SkeletonBuilder__ExtendHips(members, skeleton) {
+        const Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
+        const meta      =  skeleton.Meta || {};
+        const pitchDeg  =  Number(meta.PitchDegrees);
+        if (!Assembly || !isFinite(pitchDeg)) return members;
+
+        const extensionMm  =  Number(Assembly.VghLantern__BaseFrameAssembly__EavesInterface().GlazeBarCapExtensionAlongPitchMm) || 0;
+        if (extensionMm <= 0) return members;
+
+        const targetDropMm  =  extensionMm * Math.sin(pitchDeg * (Math.PI / 180));
+
+        return members.map(function(member) {
+            if (!member || member.Role !== 'hip') return member;
+
+            const lowKey  =  member.Start.z <= member.End.z ? 'Start' : 'End';
+            const low     =  member[lowKey];
+            const high    =  lowKey === 'Start' ? member.End : member.Start;
+            const dropMm  =  Math.abs(high.z - low.z);
+            const length  =  Number(member.LengthMm) || 0;
+            if (dropMm <= 0 || length <= 0) return member;
+
+            const scale     =  (targetDropMm * (length / dropMm)) / length;   // <-- Along-hip extension as a fraction of the member
+            const extended  =  {
+                Id       : member.Id,
+                Role     : member.Role,
+                LengthMm : length * (1 + scale),
+                Start    : member.Start,
+                End      : member.End
+            };
+            extended[lowKey]  =  {
+                x : low.x + ((low.x - high.x) * scale),
+                y : low.y + ((low.y - high.y) * scale),
+                z : low.z + ((low.z - high.z) * scale)
+            };
+            return extended;
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build Every Structural Member Into the Skeleton Group
     // ------------------------------------------------------------
     export async function VghLantern__Env3d__MeshBuilder__Skeleton__Build(targetGroup, skeleton, barSet, lantern) {
         if (!targetGroup || !skeleton) return;
 
-        const members  =  (skeleton.Members || []).slice();
+        const members  =  VghLantern__Env3d__SkeletonBuilder__ExtendHips((skeleton.Members || []).slice(), skeleton);
 
         // Glazing bars and transoms are members for meshing purposes, even though
         // the geometry brain solves them in a separate pass.

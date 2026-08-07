@@ -35,7 +35,11 @@
             "MinLoopAreaNote"                 : "Loops smaller than this are discarded as slivers. Deliberately far below the ValeVision value: that tool sections buildings, this one sections a glazing bar, and a 20 mm2 loop is a real detail here rather than noise.",
 
             "MaxCrossingSegments"             : 250000,
-            "MaxCrossingSegmentsNote"         : "Hard safety ceiling on contour segments per recompute. Tripping it abandons the fill and the profile line but leaves the clip itself active, so the model is still cut - it just loses its painted face rather than locking the browser."
+            "MaxCrossingSegmentsNote"         : "Hard safety ceiling on contour segments per recompute. Tripping it abandons the fill and the profile line but leaves the clip itself active, so the model is still cut - it just loses its painted face rather than locking the browser.",
+
+            "LateralForwardOffsetMm"          : 100,
+            "LongitudinalForwardOffsetMm"     : 100,
+            "ForwardOffsetNote"               : "How far each cut plane is pushed forward along its own normal, away from the dead-centre position PlaneSolver would otherwise use. Dead centre is exactly where a hip corner brace's diagonal run crosses back to the ridge centreline, so an unoffset lateral cut grazes that singularity and caps a sliver instead of a clean bar. Tune by eye in the 3D View - positive moves the boundary further into the kept half."
         }
     }
 }

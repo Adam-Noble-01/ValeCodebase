@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<!-- =============================================================================
+     VALECODEBASE - SHORT TERMS LINK REDIRECT
+     =============================================================================
+
+     FILE       : /t/index.html
+     PUBLISHED  : https://adam-noble-01.github.io/ValeCodebase/t/
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Shortest possible public address for a drawing's QR terms link
+     CREATED    : 07-Aug-2026
+
+     DESCRIPTION:
+     - A drawing sheet's QR code is printed about 8.8 mm square. Every character in
+       the encoded URL costs module size, and module size is the whole of whether a
+       phone camera on site can read it. This file exists only to make the address
+       short.
+     - It forwards the query string it was opened with, verbatim, to the Lantern
+       Designer application. It adds nothing, reads nothing and decides nothing.
+
+     -----------------------------------------------------------------------------
+
+     WHY A ONE LETTER FOLDER AT THE REPOSITORY ROOT:
+     The application's own published address is 97 characters:
+
+         https://adam-noble-01.github.io/ValeCodebase/WebApps/Vale__LanternDesigner/VghLantern__App__.html
+
+     Encoding that plus a project code produces a 49 x 49 module symbol, which at the
+     printed size is a 0.18 mm module - roughly half what a phone camera resolves off
+     paper. Serving the same destination from /t/ cuts the address to 44 characters
+     and the symbol to 33 x 33, a 0.27 mm module. Nothing else about the drawing, the
+     titleblock or the encoder changes.
+
+     The folder name is one character on purpose. That is the entire feature.
+
+     WHY THE QUERY IS FORWARDED UNTOUCHED:
+     This page does not know what a terms link means and must never learn. The
+     application owns both the compact form the QR encodes and the legacy long form
+     that older issued sheets carry, in VghLantern__Terms__QrLink__.js. Expanding the
+     query here would put that knowledge in two places and let the two drift.
+
+     ============================================================================= -->
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Vale Garden Houses - Drawing Terms</title>
+
+    <style>
+        body {
+            margin           : 0;
+            min-height        : 100vh;
+            display           : flex;
+            align-items       : center;
+            justify-content   : center;
+            font-family       : system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+            color             : #172b3a;
+            background        : #ffffff;
+            text-align        : center;
+            padding           : 24px;
+            box-sizing        : border-box;
+        }
+        p { font-size: 15px; line-height: 1.5; max-width: 34ch; }
+        a { color: #172b3a; }
+    </style>
+</head>
+<body>
+
+    <p id="na-redirect-message">Opening the drawing terms.</p>
+
+    <!-- =========================================================================
+         REGION | Forward to the Application
+         ========================================================================= -->
+    <script>
+    (function () {
+
+        // MODULE CONSTANT | Destination Relative to This Folder
+        // ------------------------------------------------------------
+        // Relative rather than absolute so the page also resolves when the repository
+        // is served from a different root during local testing.
+        var NA_APP_PATH  =  '../WebApps/Vale__LanternDesigner/VghLantern__App__.html';
+        // ------------------------------------------------------------
+
+
+        // FUNCTION | Forward the Query String to the Application
+        // ------------------------------------------------------------
+        // location.replace rather than location.href so the redirect does not sit in
+        // the history stack. A contractor pressing Back after scanning should return
+        // to whatever they were doing, not bounce through this page again.
+        function Na__ShortTermsLink__Forward() {
+            var target  =  NA_APP_PATH + (window.location.search || '');
+
+            var manual  =  document.getElementById('na-redirect-message');
+            if (manual) {
+                manual.innerHTML  =  'Opening the drawing terms. ' +
+                    '<a href="' + target + '">Continue</a> if this does not happen automatically.';
+            }
+
+            window.location.replace(target);
+        }
+        // ------------------------------------------------------------
+
+        Na__ShortTermsLink__Forward();
+
+    })();
+    </script>
+
+    <noscript>
+        <p>
+            This link needs JavaScript.
+            <a href="../WebApps/Vale__LanternDesigner/VghLantern__App__.html">Open Lantern Designer</a>
+            and select the drawing terms from the document pack.
+        </p>
+    </noscript>
+    <!-- endregion ============================================================== -->
+
+</body>
+</html>

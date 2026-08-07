@@ -19,13 +19,26 @@
 
    -----------------------------------------------------------------------------
 
-   THE ADDRESS IS A PLACEHOLDER:
-   TermsQrBaseUrl currently points at the localhost development server. That is
-   deliberate - it makes the printed code scannable and testable today rather than
-   dead until a client portal exists. It is one JSON key, it is labelled as a
-   placeholder in config, and the drawing prints a notice under the code saying so.
-   Replacing it with the hosted Vale terms address is the whole migration; nothing in
-   this file or any other knows what the address is.
+   TWO INBOUND FORMS, ONE OUTBOUND FORM:
+   Newly printed sheets carry the COMPACT form, ?t={projectCode}&l={lanternIndex}, and
+   that is the only form this module builds. Sheets issued before 07-Aug-2026 carry
+   the LEGACY form, ?doc=drawingTerms&project=&lantern=, and that form is still read
+   on the way in. A QR code printed on an issued drawing outlives any config in this
+   repository, so the legacy reader is permanent and must not be deleted.
+
+   WHY THE COMPACT FORM EXISTS:
+   The printed symbol is about 8.8 mm square, so encoded length is the only thing
+   deciding module size, and module size is the only thing deciding whether a phone
+   on site can read it. The legacy query was 41 characters; the compact one is 19.
+   Folded together with the shortened base address that is two QR versions, taking
+   the symbol from 41 x 41 modules to 33 x 33 and the module from 0.215 mm to
+   0.267 mm, with no change to the titleblock or the encoder.
+
+   THE ADDRESS IS LIVE:
+   TermsQrBaseUrl points at the published GitHub Pages redirect at /t/, which forwards
+   its query string verbatim to this application. The redirect exists purely to keep
+   the encoded address short. It is one JSON key; nothing in this file or any other
+   knows what the address is.
 
    ============================================================================= */
 
@@ -39,11 +52,28 @@ const VghLantern__Terms__QrLink = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Query Parameter Names
+    // MODULE CONSTANTS | Compact Query Parameter - The Form Codes Are Printed With
     // ------------------------------------------------------------
-    // Mirrors TermsQrQueryPattern and DrawingTermsQrQueryPattern in config. Named
-    // here because reading a query needs the parameter names as data, which a pattern
-    // string cannot supply.
+    // Mirrors TermsQrQueryPattern and DrawingTermsQrQueryPattern in config. Named here
+    // because reading a query needs the parameter name as data, which a pattern string
+    // cannot supply.
+    //
+    // One character each, because every character costs printed module size.
+    //
+    // The lantern index keeps a parameter of its own rather than riding on the project
+    // code as ?t=15134-0. That suffix form would save two characters and encodes to the
+    // IDENTICAL 33 x 33 symbol, so it saves nothing that matters, and it would be
+    // ambiguous: a project code is a free-form string with no format validation
+    // anywhere in this application, so ?t=AB-15134 could mean project AB lantern 15134
+    // or project AB-15134 with no lantern, and nothing in the value can settle it.
+    const QUERY_PARAM_COMPACT         =  't';
+    const QUERY_PARAM_COMPACT_LANTERN =  'l';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Legacy Query Parameter Names - Inbound Only
+    // ------------------------------------------------------------
+    // The form printed before 07-Aug-2026. No longer built, permanently answered.
     const QUERY_PARAM_DOC           =  'doc';
     const QUERY_PARAM_PROJECT       =  'project';
     const QUERY_PARAM_LANTERN       =  'lantern';
@@ -139,13 +169,43 @@ const VghLantern__Terms__QrLink = (function() {
 // REGION | Inbound - Answering the Link
 // -----------------------------------------------------------------------------
 
-    // SUB FUNCTION | Read the Terms Deep Link From the Current Address
+    // SUB FUNCTION | Read the Compact Terms Deep Link
     // ------------------------------------------------------------
-    // Answers both addresses the application prints. A drawing link carries a lantern
-    // index; a terms link does not, and lands on the business terms as it always has.
-    function VghLantern__QrLink__ReadInboundRequest() {
-        var params  =  new URLSearchParams(window.location.search);
-        var doc     =  params.get(QUERY_PARAM_DOC);
+    // ?t=15134&l=0 is the drawing terms for lantern 0 of project 15134.
+    // ?t=15134     is that project's business terms of engagement.
+    //
+    // The PRESENCE of l is the whole discriminator, which is what lets the request
+    // carry both documents without spending characters on naming which one it wants.
+    // An l that is present but not a number is treated as absent rather than as
+    // lantern zero, because landing on the wrong lantern's notes is worse than
+    // falling back to the general terms.
+    function VghLantern__QrLink__ReadCompactRequest(params) {
+        var value  =  params.get(QUERY_PARAM_COMPACT);
+        if (value === null) return null;
+
+        var projectCode  =  value.trim();
+        if (projectCode === '') return null;
+
+        var rawLantern   =  params.get(QUERY_PARAM_COMPACT_LANTERN);
+        var lanternIndex =  (rawLantern === null) ? NaN : parseInt(rawLantern, 10);
+        var hasLantern   =  !isNaN(lanternIndex);
+
+        return {
+            ProjectCode    : projectCode,
+            IsDrawingTerms : hasLantern,
+            LanternIndex   : hasLantern ? lanternIndex : null
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Read the Legacy Terms Deep Link
+    // ------------------------------------------------------------
+    // The form printed before 07-Aug-2026. Never built any more, always answered: a
+    // code on an issued drawing outlives every config in this repository, and a sheet
+    // in a site bag has no idea the query pattern moved on.
+    function VghLantern__QrLink__ReadLegacyRequest(params) {
+        var doc  =  params.get(QUERY_PARAM_DOC);
 
         if (doc !== QUERY_VALUE_TERMS && doc !== QUERY_VALUE_DRAWING_TERMS) return null;
 
@@ -158,6 +218,21 @@ const VghLantern__Terms__QrLink = (function() {
             IsDrawingTerms : doc === QUERY_VALUE_DRAWING_TERMS,
             LanternIndex   : isNaN(lanternIndex) ? null : lanternIndex
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Read the Terms Deep Link From the Current Address
+    // ------------------------------------------------------------
+    // Answers both forms the application has ever printed. The compact form is tried
+    // first because it is what every newly issued sheet carries; the legacy form is
+    // the fallback. Neither can be mistaken for the other - they share no parameter
+    // name - so the order is about which check pays off most often, not correctness.
+    function VghLantern__QrLink__ReadInboundRequest() {
+        var params  =  new URLSearchParams(window.location.search);
+
+        return VghLantern__QrLink__ReadCompactRequest(params) ||
+               VghLantern__QrLink__ReadLegacyRequest(params);
     }
     // ------------------------------------------------------------
 

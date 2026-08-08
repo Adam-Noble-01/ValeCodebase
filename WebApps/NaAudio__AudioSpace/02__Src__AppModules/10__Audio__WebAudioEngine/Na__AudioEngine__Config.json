@@ -1,0 +1,122 @@
+{
+    "NaAudio__AudioEngine__Config": {
+        "NaAudio__AudioEngine__Config__Meta": {
+            "ConfigLabel"                     : "Audio Engine - Web Audio Graph and Transport",
+            "ConfigVersion"                   : "0.1.0",
+            "ConfigNote"                      : "Everything in this file is a number the audio thread depends on. Timing values are in seconds unless the key says otherwise, because that is the unit the Web Audio clock speaks and converting at the call site is where drift creeps in.",
+            "PerformanceStance"               : "The design manifest calls out browser JavaScript as the known performance ceiling and names a compiled core as the eventual answer. This engine is built to be replaceable for exactly that reason: every module talks to the graph through NaAudio__Engine__AudioHost and NaAudio__Engine__Transport, never to an AudioContext directly, so the layer underneath can be swapped for WebAudio worklets or a WASM core without touching a single spatial module."
+        },
+
+        "NaAudio__AudioEngine__Config__Context": {
+            "SampleRate"                      : null,
+            "SampleRateNote"                  : "null lets the browser pick the hardware rate. Forcing 44100 on a 48k device inserts a resampler in front of everything for no benefit.",
+            "LatencyHint"                     : "interactive",
+            "MasterGain"                      : 0.72,
+            "MasterGainNote"                  : "Headroom, not loudness. Sixteen sample voices summing at unity clips instantly, and the limiter should be catching peaks rather than working continuously.",
+            "LimiterThresholdDb"              : -3.0,
+            "LimiterKneeDb"                   : 6.0,
+            "LimiterRatio"                    : 12.0,
+            "LimiterAttack"                   : 0.003,
+            "LimiterRelease"                  : 0.12,
+            "ResumeRequiresGesture"           : true,
+            "ResumeRequiresGestureNote"       : "Every browser suspends a fresh AudioContext until a user gesture. The boot gate in 40__System__HudOverlay exists solely to supply that gesture, and it must not be removed as 'an unnecessary click'."
+        },
+
+        "NaAudio__AudioEngine__Config__Transport": {
+            "DefaultBpm"                      : 96,
+            "MinBpm"                          : 40,
+            "MaxBpm"                          : 200,
+            "BeatsPerBar"                     : 4,
+            "LookaheadSeconds"                : 0.12,
+            "LookaheadNote"                   : "How far ahead of the audio clock events are scheduled. This is the single most important number in the engine: too small and a busy frame audibly drops a step, too large and a tempo change takes noticeably long to bite.",
+            "SchedulerIntervalMs"             : 25,
+            "SchedulerIntervalNote"           : "The scheduler runs on a timer and only ever asks the audio clock what time it is - it never plays anything itself. Notes are stamped with an absolute AudioContext time so a late timer callback still produces perfectly placed audio.",
+            "SwingAmount"                     : 0.0,
+            "SwingSubdivision"                : 8,
+            "CountInBars"                     : 0
+        },
+
+        "NaAudio__AudioEngine__Config__SamplePlayer": {
+            "MaxConcurrentVoices"             : 48,
+            "MaxConcurrentVoicesNote"         : "Oldest voice is stolen when the cap is reached. Without a cap a stuck sequencer can pile up thousands of buffer sources and take the whole tab down.",
+            "DefaultAttack"                   : 0.001,
+            "DefaultRelease"                  : 0.012,
+            "ReleaseNote"                     : "A tiny release ramp rather than an abrupt stop. Cutting a buffer mid-cycle produces a click that no amount of mixing hides.",
+            "PitchBendSemitoneLimit"           : 24,
+            "DecodeConcurrency"               : 6,
+            "DecodeConcurrencyNote"           : "decodeAudioData is off-thread but the fetches are not. Six in flight saturates a domestic connection without stalling the first paint."
+        },
+
+        "NaAudio__AudioEngine__Config__SynthVoice": {
+            "SynthNote"                       : "A deliberately small subtractive and FM voice, standing in for the ChaosEngine and FluxEngine described in the manifest. It exists so the CubeMod demo has something with real parameters to modulate - it is not the eventual synthesis core.",
+            "Waveforms"                       : ["sine", "triangle", "sawtooth", "square"],
+            "DefaultWaveform"                 : "triangle",
+            "DefaultDetuneCents"              : 7,
+            "OscillatorCount"                 : 2,
+            "FilterType"                      : "lowpass",
+            "FilterCutoffHzMin"               : 120,
+            "FilterCutoffHzMax"               : 9000,
+            "FilterQMin"                      : 0.4,
+            "FilterQMax"                      : 14.0,
+            "FmRatioMin"                      : 0.5,
+            "FmRatioMax"                      : 8.0,
+            "FmIndexMax"                      : 900,
+            "EnvelopeAttackMin"               : 0.004,
+            "EnvelopeAttackMax"               : 1.60,
+            "EnvelopeDecay"                   : 0.24,
+            "EnvelopeSustain"                 : 0.45,
+            "EnvelopeReleaseMin"              : 0.06,
+            "EnvelopeReleaseMax"              : 3.20
+        },
+
+        "NaAudio__AudioEngine__Config__EffectRack": {
+            "EffectNote"                      : "Three effects only, chosen because each one has a parameter set that maps naturally onto a shape the user can grab in 3D. The manifest's wider effect list is deliberately not stubbed out here - an empty module is worse than an absent one.",
+            "Reverb": {
+                "DefaultImpulseAssetId"       : "IRS_ROM0102",
+                "DefaultWetMix"               : 0.26,
+                "MinWetMix"                   : 0.0,
+                "MaxWetMix"                   : 0.85,
+                "PreDelaySeconds"             : 0.012
+            },
+            "Delay": {
+                "DefaultTimeSeconds"          : 0.375,
+                "MinTimeSeconds"              : 0.02,
+                "MaxTimeSeconds"              : 1.60,
+                "DefaultFeedback"             : 0.36,
+                "MaxFeedback"                 : 0.82,
+                "MaxFeedbackNote"             : "Hard ceiling below 1.0. A feedback path at unity is an oscillator, and the user discovering that with the master at listening level is a genuinely unpleasant experience.",
+                "DampingCutoffHz"             : 3200,
+                "TempoSyncEnabled"            : true,
+                "TempoSyncDivisions"          : [0.25, 0.375, 0.5, 0.75, 1.0]
+            },
+            "Filter": {
+                "DefaultCutoffHz"             : 5200,
+                "DefaultQ"                    : 0.9,
+                "Types"                       : ["lowpass", "highpass", "bandpass", "notch"]
+            },
+            "WaveShaper": {
+                "DefaultDrive"                : 0.18,
+                "MaxDrive"                    : 0.90,
+                "CurveResolution"             : 2048,
+                "Oversample"                  : "2x"
+            }
+        },
+
+        "NaAudio__AudioEngine__Config__Metering": {
+            "AnalyserFftSize"                 : 256,
+            "AnalyserSmoothing"               : 0.72,
+            "MeterFloorDb"                    : -60,
+            "MeterUpdateHz"                   : 30,
+            "MeterUpdateHzNote"               : "The visuals read the meter, not the other way round. Sampling faster than the render loop can show is pure waste, and every analyser node costs real audio-thread time."
+        },
+
+        "NaAudio__AudioEngine__Config__ModuleLocking": {
+            "LockNote"                        : "The working / locked dual state from the design manifest. Locking is currently a real audio operation - the module's generators are disconnected and silenced - but the rendered-bounce playback it eventually swaps in is not yet built. See NaAudio__Spatial__LockState__.mjs for exactly where that lands.",
+            "AutoLockEnabled"                 : false,
+            "AutoLockAfterIdleSeconds"        : 120,
+            "AutoLockNote"                    : "Off by default. Automatic locking is the right long-term behaviour but it must not surprise anyone before the bounce-and-replay path exists, or a module simply goes quiet.",
+            "BounceOnLock"                    : false,
+            "BounceTailSeconds"               : 2.0
+        }
+    }
+}

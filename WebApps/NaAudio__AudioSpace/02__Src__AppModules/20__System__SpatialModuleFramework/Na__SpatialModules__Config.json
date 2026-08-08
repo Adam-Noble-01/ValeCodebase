@@ -1,0 +1,134 @@
+{
+    "NaAudio__SpatialModules__Config": {
+        "NaAudio__SpatialModules__Config__Meta": {
+            "ConfigLabel"                     : "Spatial Module Framework - Cages, Pads and Type Defaults",
+            "ConfigVersion"                   : "0.1.0",
+            "ConfigNote"                      : "Shared geometry and behaviour for every spatial module, then per-type defaults. A module type registers itself in NaAudio__Spatial__ModuleRegistry and reads its defaults from the TypeDefaults block here, so a new module never hard-codes its own footprint."
+        },
+
+        "NaAudio__SpatialModules__Config__Shell": {
+            "ShellNote"                       : "The manifest specifies that each module lives inside a bounding box which becomes visible on all six sides when locked. That box is the module SHELL: a pad it stands on, a wireframe cage around it, and a name plate above it. The shell is framework-owned - a module type only ever fills the volume inside it.",
+            "DefaultCageSize"                 : { "x": 2.4, "y": 2.4, "z": 2.4 },
+            "CageEdgeInset"                   : 0.02,
+            "PadEnabled"                      : true,
+            "PadInset"                        : 0.16,
+            "PadThickness"                    : 0.05,
+            "PadCornerSegments"               : 24,
+            "PadShape"                        : "rounded",
+            "PadShapeNote"                    : "rounded | circle | square. A rounded plate under each module is what seats it visually on the floor; without it a module reads as hovering and the space loses its ground.",
+            "LabelEnabled"                    : true,
+            "HoverLiftHeight"                 : 0.06,
+            "HoverLiftSeconds"                : 0.18,
+            "HoverLiftNote"                   : "The module rises a few centimetres under the cursor. Cheap, immediate, and it removes any doubt about which of several overlapping modules the pointer has.",
+            "SelectionRingEnabled"            : true,
+            "SelectionRingRadiusFactor"       : 0.78,
+            "GroundClearance"                 : 0.0
+        },
+
+        "NaAudio__SpatialModules__Config__Layout": {
+            "LayoutNote"                      : "Placement rules used when a module is added without an explicit position. Modules are laid out on a ring rather than a grid, because a ring keeps every module the same distance from the listener at the centre and that is the spatial metaphor the whole application rests on.",
+            "PlacementMode"                   : "ring",
+            "RingRadius"                      : 4.6,
+            "RingRadiusGrowthPerModule"       : 0.28,
+            "MinimumSeparation"               : 2.9,
+            "MinimumSeparationNote"           : "Cages must not intersect. Two overlapping cages make the lock state unreadable and make picking ambiguous.",
+            "CentreKeptClear"                 : true,
+            "CentreKeptClearNote"             : "The middle of the ring is the listener position and the master bus. Nothing is ever placed there."
+        },
+
+        "NaAudio__SpatialModules__Config__PatchGraph": {
+            "PatchGraphNote"                  : "The 3D noodles from the manifest. A cable is a quadratic curve from an output port to an input port, sagging under a fake gravity so it reads as a physical lead rather than a routing diagram line.",
+            "CableSagFactor"                  : 0.22,
+            "CableSagFactorNote"              : "Fraction of the port-to-port distance the midpoint drops. Zero gives an engineering schematic; too high and long cables drag through the floor.",
+            "CableSegments"                   : 34,
+            "CableFlowSpeed"                  : 0.9,
+            "CableFlowEnabled"                : true,
+            "CableFlowNote"                   : "Signal presence is shown by a travelling brightness along the cable, driven by the source module's meter. A silent cable is visibly still, which is how the user finds a broken patch without opening anything.",
+            "PortRadius"                      : 0.085,
+            "PortStandoff"                    : 0.12,
+            "MaxCablesPerInput"               : 8,
+            "MaxCablesPerInputNote"           : "The manifest wants many inputs feeding one effect. Eight is the point past which the cable bundle stops being legible in 3D, not an engine limit."
+        },
+
+        "NaAudio__SpatialModules__Config__LockState": {
+            "LockStateNote"                   : "Working and locked, per the manifest. Locked silences and disconnects the module's generators; the eventual behaviour also plays back a rendered bounce and loops a captured animation, and the hooks for both are already in NaAudio__Spatial__LockState__.mjs.",
+            "TransitionSeconds"               : 0.45,
+            "TransitionNote"                  : "The cage fades in and the body desaturates over this window rather than snapping. A snap reads as a glitch; a fade reads as a state change.",
+            "SilenceRampSeconds"              : 0.08,
+            "AnimationFreezeOnLock"           : true,
+            "AnimationFreezeOnLockNote"       : "A locked module keeps its last animation pose and stops advancing. When the bounce-and-replay path lands this becomes a looped capture instead, which is what the manifest asks for."
+        },
+
+        "NaAudio__SpatialModules__Config__TypeDefaults": {
+            "CircularSequencer": {
+                "TypeLabel"                   : "Circular Sequencer",
+                "TypeNote"                    : "The manifest's radical departure from the linear step sequencer. Steps sit on a circle, a marker sweeps like a clock hand at the project tempo, and the division count is free rather than locked to sixteen.",
+                "CageSize"                    : { "x": 3.4, "y": 1.6, "z": 3.4 },
+                "RingRadius"                  : 1.28,
+                "RingRadiusInner"             : 0.44,
+                "Divisions"                   : 16,
+                "DivisionsMin"                : 3,
+                "DivisionsMax"                : 32,
+                "DivisionsNote"               : "Free division count is the entire point - 3 gives triplets over a beat, 7 gives something no grid sequencer can express without a fight.",
+                "LaneCount"                   : 4,
+                "LaneSpacing"                 : 0.30,
+                "StepBaseSize"                : 0.11,
+                "StepActiveSizeFactor"        : 1.85,
+                "StepTriggerPulseFactor"      : 1.55,
+                "StepPulseDecaySeconds"       : 0.22,
+                "MarkerLength"                : 1.44,
+                "MarkerWidth"                 : 0.035,
+                "HubRadius"                   : 0.20,
+                "StepShapesByLane"            : ["cylinder", "box", "cone", "octahedron"],
+                "StepShapesByLaneNote"        : "Different geometric shapes signify different drum sounds, straight from the manifest. Colour alone is not enough - it fails at distance and it fails for anyone with a colour vision deficiency."
+            },
+            "CubeMod": {
+                "TypeLabel"                   : "CubeMod",
+                "TypeNote"                    : "An XY pad mapped to each of the six faces of a rotatable cube, so one controller carries twelve dimensions instead of two. Rotating the cube brings a different pair of parameters to hand.",
+                "CageSize"                    : { "x": 2.4, "y": 2.4, "z": 2.4 },
+                "CubeSize"                    : 1.15,
+                "CubeCentreHeight"            : 1.10,
+                "FaceInset"                   : 0.008,
+                "PuckRadius"                  : 0.085,
+                "PuckHeight"                  : 0.03,
+                "RotationSnapDegrees"         : 90,
+                "RotationSnapSeconds"         : 0.42,
+                "RotationSnapNote"            : "The cube always settles square to the camera. A cube resting at a random angle makes its front face unusable as a pad.",
+                "IdleSpinRadiansPerSecond"    : 0.0,
+                "FaceParameterMap": [
+                    { "Face": "front",  "AxisX": "filterCutoff", "AxisY": "filterQ",        "Label": "Filter"    },
+                    { "Face": "right",  "AxisX": "fmRatio",      "AxisY": "fmIndex",        "Label": "FM"        },
+                    { "Face": "back",   "AxisX": "detuneCents",  "AxisY": "oscMix",         "Label": "Osc"       },
+                    { "Face": "left",   "AxisX": "attack",       "AxisY": "release",        "Label": "Envelope"  },
+                    { "Face": "top",    "AxisX": "delaySend",    "AxisY": "reverbSend",     "Label": "Sends"     },
+                    { "Face": "bottom", "AxisX": "driveAmount",  "AxisY": "outputGain",     "Label": "Drive"     }
+                ]
+            },
+            "DelayCloud": {
+                "TypeLabel"                   : "DelayCloud",
+                "TypeNote"                    : "An enclosure the user resizes by hand, with sample spheres bouncing inside it. The box dimensions ARE the parameters - length sets reverb decay, width sets delay time, height sets the damping filter - so the shape of the space you can see is the shape of the space you can hear.",
+                "CageSize"                    : { "x": 2.8, "y": 2.8, "z": 2.8 },
+                "BoxSize"                     : { "x": 1.7, "y": 1.5, "z": 1.7 },
+                "BoxSizeMin"                  : { "x": 0.6, "y": 0.5, "z": 0.6 },
+                "BoxSizeMax"                  : { "x": 2.6, "y": 2.6, "z": 2.6 },
+                "BoxCentreHeight"             : 1.30,
+                "SphereCount"                 : 5,
+                "SphereRadius"                : 0.075,
+                "SphereRestitution"           : 0.86,
+                "SphereGravity"               : -3.2,
+                "SphereGravityNote"           : "Well below real gravity. Earth-rate falling in a 1.5 metre box produces a bounce rate far too fast to hear as discrete taps.",
+                "SphereSpeedInitial"          : 1.4,
+                "BounceTriggersTap"           : true,
+                "BounceTapMinInterval"        : 0.06,
+                "BounceTapMinIntervalNote"    : "Guards against a sphere settling into a corner and machine-gunning taps at frame rate.",
+                "HandleSize"                  : 0.10,
+                "HandleAxes"                  : ["x", "y", "z"],
+                "DimensionMap": [
+                    { "Axis": "x", "Parameter": "reverbDecay", "Label": "Length - reverb decay" },
+                    { "Axis": "z", "Parameter": "delayTime",   "Label": "Width - delay time"    },
+                    { "Axis": "y", "Parameter": "damping",     "Label": "Height - damping"      }
+                ]
+            }
+        }
+    }
+}

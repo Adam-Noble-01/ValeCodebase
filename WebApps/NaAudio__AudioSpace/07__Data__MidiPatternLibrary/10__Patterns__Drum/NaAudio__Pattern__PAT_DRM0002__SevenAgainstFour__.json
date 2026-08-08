@@ -1,0 +1,20 @@
+{
+    "NaAudio__Pattern__Meta": {
+        "PatternId"     : "PAT_DRM0002",
+        "Name"          : "Seven Against Four",
+        "Category"      : "10__Patterns__Drum",
+        "SchemaVersion" : "1.0.0",
+        "Author"        : "Adam Noble - Noble Architecture",
+        "Divisions"     : 7,
+        "BeatsPerBar"   : 4,
+        "SuggestedBpm"  : 96,
+        "Description"   : "Seven divisions across a four-beat bar. Here to prove the point: this pattern cannot be expressed on a power-of-two grid without a fight, and on the circular sequencer it is simply a seven. Set the sequencer's Divisions to 7 and it lands on the circle unaltered.",
+        "WhyThisExists" : "The free division count is the reason the sequencer is a circle rather than a row. A library with only sixteen-step patterns in it would quietly hide that."
+    },
+    "NaAudio__Pattern__Lanes": [
+        { "VoiceRole": "kick",    "Steps": "x..x...", "Velocity": 1.00 },
+        { "VoiceRole": "snare",   "Steps": "...x...", "Velocity": 0.85 },
+        { "VoiceRole": "hihat",   "Steps": "x.x.x.x", "Velocity": 0.50 },
+        { "VoiceRole": "tomLow",  "Steps": "......x", "Velocity": 0.75 }
+    ]
+}

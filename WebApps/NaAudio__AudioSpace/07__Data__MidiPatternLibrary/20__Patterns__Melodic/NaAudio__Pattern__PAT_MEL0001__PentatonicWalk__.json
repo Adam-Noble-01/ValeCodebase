@@ -1,0 +1,25 @@
+{
+    "NaAudio__Pattern__Meta": {
+        "PatternId"     : "PAT_MEL0001",
+        "Name"          : "Pentatonic Walk",
+        "Category"      : "20__Patterns__Melodic",
+        "SchemaVersion" : "1.0.0",
+        "Author"        : "Adam Noble - Noble Architecture",
+        "BeatsPerBar"   : 4,
+        "SuggestedBpm"  : 96,
+        "RootNote"      : "C2",
+        "Scale"         : "pentatonicMinor",
+        "Description"   : "The eight-degree figure the CubeMod plays on its own when SelfPlay is on. Written out here so the same line can be handed to any other tonal module.",
+        "DegreeNote"    : "Degrees are scale degrees, not semitones. Degree 5 in a five-note scale is the root an octave up, so a walk can run past the end of the scale and keep climbing - see NaAudio__MusicalMaths__ScaleDegreeToMidi."
+    },
+    "NaAudio__Pattern__Notes": [
+        { "Beat": 0.0, "Degree": 0, "Length": 0.6, "Velocity": 0.70 },
+        { "Beat": 1.0, "Degree": 2, "Length": 0.6, "Velocity": 0.62 },
+        { "Beat": 2.0, "Degree": 4, "Length": 0.6, "Velocity": 0.66 },
+        { "Beat": 3.0, "Degree": 3, "Length": 0.6, "Velocity": 0.58 },
+        { "Beat": 4.0, "Degree": 5, "Length": 0.6, "Velocity": 0.72 },
+        { "Beat": 5.0, "Degree": 4, "Length": 0.6, "Velocity": 0.60 },
+        { "Beat": 6.0, "Degree": 2, "Length": 0.6, "Velocity": 0.64 },
+        { "Beat": 7.0, "Degree": 1, "Length": 0.6, "Velocity": 0.56 }
+    ]
+}

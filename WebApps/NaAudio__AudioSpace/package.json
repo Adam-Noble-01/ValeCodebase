@@ -1,0 +1,20 @@
+{
+  "name": "naaudio-audiospace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AudioSPACE - Spatial Music Production Environment",
+  "author": "Adam Noble - Noble Architecture",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "start": "python NaAudio__LocalServer__Localhost__.py --open",
+    "build-index": "python 60__Dev__WebBuildUtils/NaAudio__BuildUtil__AudioLibraryIndex__.py",
+    "check-index": "python 60__Dev__WebBuildUtils/NaAudio__BuildUtil__AudioLibraryIndex__.py --check",
+    "ingest-samples": "python 61__Dev__AssetAuthoring__SampleLibraryIngest/NaAudio__AssetAuthoring__SampleLibraryIngest__.py --clone"
+  },
+  "dependencies": {
+    "three": "0.184.0"
+  },
+  "dependencyNote": "There is no build step and no node_modules at runtime. Three.js is vendored as a curated file drop under 04__Src__Dependencies__VersionLocked and resolved by the import map in NaAudio__App__.html. This block records the locked version so npm can fetch a matching checkout when the vendor drop needs extending.",
+  "runtimeNote": "AudioSPACE is a static site. The Python server exists so ES modules load at all - file:// blocks them - and so the audio bank gets correct MIME types and range support."
+}

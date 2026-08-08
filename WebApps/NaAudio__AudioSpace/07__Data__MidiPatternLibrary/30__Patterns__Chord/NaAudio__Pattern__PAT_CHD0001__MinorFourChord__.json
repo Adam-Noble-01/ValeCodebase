@@ -1,0 +1,21 @@
+{
+    "NaAudio__Pattern__Meta": {
+        "PatternId"     : "PAT_CHD0001",
+        "Name"          : "Minor Four Chord",
+        "Category"      : "30__Patterns__Chord",
+        "SchemaVersion" : "1.0.0",
+        "Author"        : "Adam Noble - Noble Architecture",
+        "BeatsPerBar"   : 4,
+        "SuggestedBpm"  : 90,
+        "RootNote"      : "A2",
+        "Scale"         : "naturalMinor",
+        "MusicalKey"    : "Am",
+        "Description"   : "i - VI - III - VII in A minor, one chord per bar. Keyed to match the two atmospheric loops in the loop library, so they can be layered without a fight."
+    },
+    "NaAudio__Pattern__Chords": [
+        { "Bar": 0, "Degrees": [0, 2, 4], "Length": 3.6, "Velocity": 0.62, "Label": "i"   },
+        { "Bar": 1, "Degrees": [5, 0, 2], "Length": 3.6, "Velocity": 0.58, "Label": "VI"  },
+        { "Bar": 2, "Degrees": [2, 4, 6], "Length": 3.6, "Velocity": 0.60, "Label": "III" },
+        { "Bar": 3, "Degrees": [6, 1, 3], "Length": 3.6, "Velocity": 0.56, "Label": "VII" }
+    ]
+}

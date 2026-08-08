@@ -1,0 +1,112 @@
+{
+    "NaAudio__Palette__Config": {
+        "NaAudio__Palette__Config__Meta": {
+            "ConfigLabel"           : "AudioSPACE Palette - Muted Geometric",
+            "ConfigVersion"          : "0.1.0",
+            "ConfigNote"             : "Single source of truth for every colour in AudioSPACE, 3D and 2D alike. The CSS custom properties in 03__Style__AppStylesheets/NaAudio__CoreUi__Styles__Variables__.css mirror this file by hand; a browser cannot read a stylesheet variable from JSON. If you change a hex here, change it there.",
+            "DesignIntent"           : "Kandinsky Composition A dialled a long way back. Flat geometric primitives on a warm paper ground, thin dark linework, and a small palette of muted pigments used sparingly. Nothing glossy: every surface is matte, roughness stays high and metalness stays at zero, so a shape reads as painted card rather than plastic.",
+            "AntiGlossRule"          : "No material in this application may have metalness above 0.0 or roughness below 0.60. Specular highlights read as a games engine and fight the flat-pigment look. Depth comes from hue and value separation, not from shine.",
+            "ColourSpaceNote"        : "Hexes are authored in sRGB as they would be picked in a paint program. Three.js is in colour-managed mode, so NaAudio__Env3d__PaletteLibrary passes them through THREE.Color with sRGB conversion rather than treating them as linear values."
+        },
+
+        "NaAudio__Palette__Config__Ground": {
+            "Paper"                  : "#EDE6DA",
+            "PaperNote"              : "The ground everything sits on. A warm bone, not white - white makes every pigment above it read as a highlighter.",
+            "PaperDeep"              : "#DFD5C4",
+            "PaperDeepNote"          : "Horizon end of the backdrop gradient, and the floor plane away from the stage.",
+            "PaperShade"             : "#D2C7B4",
+            "Cream"                  : "#F7F2E7",
+            "GridLine"               : "#C9BCA6",
+            "GridLineMajor"          : "#B3A48B"
+        },
+
+        "NaAudio__Palette__Config__Ink": {
+            "Ink"                    : "#2B2A28",
+            "InkNote"                : "Warm near-black. Used for linework, labels and the thin outline on active shapes. Never pure #000000.",
+            "InkSoft"                : "#5A554E",
+            "InkFaint"               : "#8C857A",
+            "InkGhost"               : "#B4AC9F"
+        },
+
+        "NaAudio__Palette__Config__Pigments": {
+            "PigmentNote"            : "Eight pigments, used flat. Each has a Base for the body of a shape and a Deep for its shadowed face, rim or active state. Nothing else may be introduced without removing something - the restraint is the point.",
+
+            "MillennialPink"         : { "Base": "#DFA9A1", "Deep": "#C0827A", "Label": "Millennial Pink" },
+            "ClayOrange"             : { "Base": "#D98F5C", "Deep": "#B96C40", "Label": "Clay Orange"     },
+            "Terracotta"             : { "Base": "#BC6540", "Deep": "#984D31", "Label": "Terracotta"      },
+            "Ochre"                  : { "Base": "#D3AC5C", "Deep": "#B08B43", "Label": "Ochre"           },
+            "SageGreen"              : { "Base": "#9BB28C", "Deep": "#6E8763", "Label": "Sage Green"      },
+            "SlateBlue"              : { "Base": "#7F96AA", "Deep": "#546A7D", "Label": "Slate Blue"      },
+            "Plum"                   : { "Base": "#8E6577", "Deep": "#6C475B", "Label": "Plum"            },
+            "Bone"                   : { "Base": "#DED3BE", "Deep": "#C4B69C", "Label": "Bone"            }
+        },
+
+        "NaAudio__Palette__Config__VoiceRoles": {
+            "VoiceRoleNote"          : "A drum voice keeps its pigment wherever it appears - on a sequencer step, on a meter, on a patch cable. Colour is an identity in this application, not decoration, so the mapping lives in config and not in the module that happens to draw it first.",
+            "kick"                   : "Terracotta",
+            "snare"                  : "MillennialPink",
+            "hihat"                  : "Ochre",
+            "tomLow"                 : "SlateBlue",
+            "tomMid"                 : "SageGreen",
+            "tomHigh"                : "Plum",
+            "clap"                   : "ClayOrange",
+            "perc"                   : "Ochre",
+            "tonal"                  : "SlateBlue",
+            "pad"                    : "Bone",
+            "bass"                   : "Plum",
+            "impact"                 : "Terracotta",
+            "default"                : "Bone"
+        },
+
+        "NaAudio__Palette__Config__SignalTypes": {
+            "SignalTypeNote"         : "Patch cable colour by what travels down it. Audio is warm, modulation is cool, trigger is dark - readable at a glance from across the space without a legend.",
+            "audio"                  : "ClayOrange",
+            "modulation"             : "SlateBlue",
+            "trigger"                : "Ink",
+            "sidechain"              : "Plum"
+        },
+
+        "NaAudio__Palette__Config__StageProps": {
+            "StagePropNote"          : "The Kandinsky nod. Large flat shapes sitting far behind the working area at very low contrast, so the space reads as a composition rather than as an empty grid. They are scenery: never pickable, never audible.",
+            "BackdropShapes": [
+                { "Shape": "circle",   "Pigment": "MillennialPink", "Opacity": 0.30 },
+                { "Shape": "triangle", "Pigment": "SageGreen",      "Opacity": 0.26 },
+                { "Shape": "arc",      "Pigment": "Ochre",          "Opacity": 0.28 },
+                { "Shape": "bar",      "Pigment": "SlateBlue",      "Opacity": 0.24 },
+                { "Shape": "circle",   "Pigment": "ClayOrange",     "Opacity": 0.22 }
+            ]
+        },
+
+        "NaAudio__Palette__Config__ModuleStates": {
+            "ModuleStateNote"        : "The dual-state system from the design manifest. A working module is fully lit and fully saturated; a locked module dims, desaturates and gains a visible cage on all six sides. The user must be able to tell across the room which modules are still burning CPU.",
+            "working": {
+                "CageOpacity"        : 0.00,
+                "CageColour"         : "InkGhost",
+                "BodyOpacity"        : 1.00,
+                "Desaturation"       : 0.00,
+                "PadPigment"         : "Bone"
+            },
+            "hovered": {
+                "CageOpacity"        : 0.16,
+                "CageColour"         : "InkSoft",
+                "BodyOpacity"        : 1.00,
+                "Desaturation"       : 0.00,
+                "PadPigment"         : "Bone"
+            },
+            "selected": {
+                "CageOpacity"        : 0.34,
+                "CageColour"         : "Ink",
+                "BodyOpacity"        : 1.00,
+                "Desaturation"       : 0.00,
+                "PadPigment"         : "Bone"
+            },
+            "locked": {
+                "CageOpacity"        : 0.52,
+                "CageColour"         : "SlateBlue",
+                "BodyOpacity"        : 0.72,
+                "Desaturation"       : 0.55,
+                "PadPigment"         : "Bone"
+            }
+        }
+    }
+}

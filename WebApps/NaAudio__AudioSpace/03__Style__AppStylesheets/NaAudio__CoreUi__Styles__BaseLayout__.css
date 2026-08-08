@@ -1,0 +1,147 @@
+/* =============================================================================
+ * NAAUDIO - BASE LAYOUT
+ * =============================================================================
+ *
+ * FILE       : NaAudio__CoreUi__Styles__BaseLayout__.css
+ * NAMESPACE  : NaAudio
+ * MODULE     : CSS Base Layout
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : Reset, the full-viewport shell, and the HUD stacking rules
+ * CREATED    : 08-Aug-2026
+ *
+ * DESCRIPTION:
+ * - AudioSPACE is a single full-viewport 3D canvas with a floating overlay on top.
+ *   There is no page, no scroll and no document flow to speak of.
+ * - The HUD layer is the interesting part: it covers the whole viewport so its
+ *   children can be positioned anywhere, but it is transparent to the pointer. Only
+ *   the children opt back in.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * BASE | Reset and Document Shell
+ * ----------------------------------------------------------------------------- */
+
+    /* BASE STYLES | Reset */
+    /* ------------------------------------------------------------ */
+    *,
+    *::before,
+    *::after {
+        box-sizing                         :  border-box;
+    }
+
+    html,
+    body {
+        margin                             :  0;
+        padding                            :  0;
+        width                              :  100%;
+        height                             :  100%;
+        overflow                           :  hidden;                      /* <-- The viewport is the application; nothing scrolls */
+        font-family                        :  var(--NaAudio_FontStack);
+        font-size                          :  var(--NaAudio_FontSizeBase);
+        color                              :  var(--NaAudio_Ink);
+        background-color                   :  var(--NaAudio_Paper);
+        -webkit-font-smoothing             :  antialiased;
+        overscroll-behavior                :  none;                        /* <-- Stops a trackpad zoom gesture bouncing the page */
+    }
+
+    button,
+    input {
+        font-family                        :  inherit;
+        font-size                          :  inherit;
+        color                              :  inherit;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * LAYOUT | Application Shell
+ * ----------------------------------------------------------------------------- */
+
+    /* LAYOUT | The Full Viewport Root */
+    /* ------------------------------------------------------------ */
+    #NaAudio__App__Root {
+        position                           :  fixed;
+        inset                              :  0;
+        display                            :  block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | The 3D Viewport */
+    /* ------------------------------------------------------------ */
+    #NaAudio__App__Viewport {
+        position                           :  absolute;
+        inset                              :  0;
+        z-index                            :  1;
+        touch-action                       :  none;                        /* <-- Or the browser eats the drag gestures for panning */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | The HUD Overlay Layer */
+    /* ------------------------------------------------------------ */
+    /* Covers the viewport so its children can be placed anywhere, but is invisible to */
+    /* the pointer. Without that the overlay would swallow every event before the      */
+    /* canvas ever saw one and the whole 3D space would be unclickable.                */
+    #NaAudio__App__Hud {
+        position                           :  absolute;
+        inset                              :  0;
+        z-index                            :  10;
+        pointer-events                     :  none;
+    }
+
+    /* Each interactive panel opts back in BY NAME. This was once a blanket           */
+    /* `#NaAudio__App__Hud > *` rule, which looked equivalent and was not: the help    */
+    /* overlay is a full-viewport child that sets pointer-events: none on itself while */
+    /* hidden, and an id selector out-specifies a class one. So the blanket rule won,  */
+    /* an invisible sheet covered the entire space, and not one thing in the 3D scene  */
+    /* could be clicked - with nothing visibly wrong to explain why.                   */
+    /*                                                                                 */
+    /* Naming each panel means a new full-viewport overlay cannot repeat that by        */
+    /* accident. A panel that needs the pointer asks for it here.                       */
+    #NaAudio__Hud__BootGate,
+    .NaAudio__Transport,
+    .NaAudio__Diagnostics,
+    .NaAudio__Help__Toggle {
+        pointer-events                     :  auto;
+    }
+
+    /* These two are full-viewport or near it, so they take the pointer only while they */
+    /* are actually on screen - see their own visibility rules in the HUD stylesheet.    */
+    .NaAudio__Inspector--visible,
+    .NaAudio__Help--visible {
+        pointer-events                     :  auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | The WebGL Canvas */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Env3d__Canvas {
+        display                            :  block;
+        width                              :  100%;
+        height                             :  100%;
+        outline                            :  none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* LAYOUT | Focus Ring */
+    /* ------------------------------------------------------------ */
+    /* Visible only for keyboard focus. A terracotta ring on every mouse click would */
+    /* fight a palette built on restraint, but removing it entirely would make the   */
+    /* transport unusable without a mouse.                                           */
+    :focus-visible {
+        outline                            :  2px solid var(--NaAudio_Terracotta);
+        outline-offset                     :  2px;
+    }
+
+    :focus:not(:focus-visible) {
+        outline                            :  none;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

@@ -1,0 +1,44 @@
+{
+    "NaAudio__Dependencies__ImportMap__Index__": {
+        "description"           : "Browser import-map targets for every version-locked vendor library. Paths are relative to NaAudio__App__.html at the project root. This file is the single source of truth for the import map declared inline in the HTML shell; a browser cannot read an import map from JSON, so the two are kept in step by hand.",
+        "lockedSetDate"         : "08-Aug-2026",
+        "curatedDropNote"       : "This is a CURATED drop, not a full npm package copy. Only the files AudioSPACE actually imports are vendored - see the file list below. The sibling Vale Lantern Designer vendors the complete 25 MB Three.js tree; that is right for an application that reaches into a wide range of addons over time. AudioSPACE imports exactly one addon, and this whole application has to stay servable as a static site alongside a binary audio bank, so the full tree would be most of the repository for no benefit.",
+        "howToExtend"           : "To use another Three.js addon: copy it from a matching v0.184.0 checkout into examples/jsm/ keeping its path, add it to vendoredFiles below, and check its own imports - the addons import from the bare 'three' specifier and from each other by relative path, so a missing sibling fails at load with a bare 404.",
+
+        "vendors": {
+            "01__Vendor__ThreeJs__v0.184.0": {
+                "npmName"        : "three",
+                "version"        : "0.184.0",
+                "revision"       : "184",
+                "licence"        : "MIT",
+                "source"         : "https://github.com/mrdoob/three.js",
+                "entry"          : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+                "addons"         : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/",
+                "vendoredFiles": [
+                    "build/three.module.js",
+                    "build/three.core.js",
+                    "examples/jsm/controls/OrbitControls.js",
+                    "examples/jsm/lines/Line2.js",
+                    "examples/jsm/lines/LineGeometry.js",
+                    "examples/jsm/lines/LineMaterial.js",
+                    "examples/jsm/lines/LineSegments2.js",
+                    "examples/jsm/lines/LineSegmentsGeometry.js",
+                    "examples/jsm/utils/BufferGeometryUtils.js"
+                ],
+                "vendoredFileNotes": {
+                    "build/three.core.js"  : "Not imported by the application directly. three.module.js imports it by relative path, so it is not optional - without it the bare 'three' specifier resolves to a module that 404s on its own first import.",
+                    "examples/jsm/lines/*" : "The fat-line addon. Not currently imported by any AudioSPACE module - NaAudio__Env3d__LineFactory uses plain LineSegments deliberately, see the note in that file. Vendored because screen-space line width is the obvious next requirement if the cables ever need to read at a fixed weight."
+                }
+            }
+        },
+
+        "importMap": {
+            "three"          : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+            "three/addons/"  : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/"
+        },
+
+        "notInImportMap": {
+            "WebAudioApi"    : "The audio engine uses the browser's native Web Audio API and has no vendored dependency at all. That is a deliberate stance rather than an omission - see the replaceability note in NaAudio__Engine__AudioHost__.mjs, which is written so this layer can be swapped for AudioWorklets or a compiled core without touching a spatial module."
+        }
+    }
+}

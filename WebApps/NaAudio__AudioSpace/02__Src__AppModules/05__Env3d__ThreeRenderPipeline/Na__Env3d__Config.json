@@ -1,0 +1,139 @@
+{
+    "NaAudio__Env3d__Config": {
+        "NaAudio__Env3d__Config__Meta": {
+            "ConfigLabel"                     : "3D Environment - Three.js Render Pipeline",
+            "ConfigVersion"                   : "0.1.0",
+            "ConfigNote"                      : "Structural and numeric values only. Colour lives in Na__Palette__Config.json and nowhere else. World units are metres and one spatial module occupies roughly a two metre cube, so the space reads at human scale when the camera drops to eye height.",
+            "ThreeRevision"                   : "184",
+            "WorldUnitsPerMetre"              : 1.0
+        },
+
+        "NaAudio__Env3d__Config__Renderer": {
+            "Antialias"                       : true,
+            "MaxPixelRatio"                   : 2,
+            "MaxPixelRatioNote"               : "Capped rather than taken from the device. A 3x retina panel triples the fragment count for no visible gain on flat matte shapes, and the audio thread needs the headroom more than the picture does.",
+            "ShadowsEnabled"                  : true,
+            "ShadowMapSize"                   : 2048,
+            "ShadowsNote"                     : "One shadow-casting light only. A soft contact shadow under each module is what seats a floating shape onto the floor; a second caster produces crossed shadows that read as a rendering fault in a flat composition.",
+            "ToneMapping"                     : "Neutral",
+            "ToneMappingNote"                 : "None | Linear | Reinhard | Cineon | ACESFilmic | AGX | Neutral. Neutral is the Khronos PBR neutral curve. ACES pulls the warmth out of the paper ground and turns the pigments chalky, which is the exact opposite of the intent.",
+            "ToneMappingExposure"             : 0.94,
+            "ContinuousRendering"             : true,
+            "ContinuousRenderingNote"         : "Unlike the Lantern Designer this pipeline draws every frame. The whole point of the environment is that it is animated by audio - a sequencer marker sweeping, a step pulsing, a sphere falling - so there is no idle state to optimise for. Frame cost is controlled by locking modules instead, per the design manifest."
+        },
+
+        "NaAudio__Env3d__Config__Camera": {
+            "FieldOfViewDegrees"              : 46,
+            "NearPlane"                       : 0.1,
+            "FarPlane"                        : 400,
+            "DefaultOrbitAzimuthDegrees"      : 34,
+            "DefaultOrbitElevationDegrees"    : 22,
+            "DefaultDistance"                 : 13.4,
+            "DefaultTargetHeight"             : 1.2,
+            "MinDistance"                     : 2.2,
+            "MaxDistance"                     : 44.0,
+            "MinPolarAngleDegrees"            : 6,
+            "MaxPolarAngleDegrees"            : 87,
+            "MaxPolarAngleNote"               : "Clamped just above the horizon. Looking up through the floor plane exposes the back faces of every pad and breaks the illusion instantly.",
+            "DampingFactor"                   : 0.075,
+            "EnablePan"                       : true,
+            "PanSpeed"                        : 0.85,
+            "ZoomSpeed"                       : 0.75,
+            "FocusFlightSeconds"              : 0.85,
+            "FocusPaddingFactor"              : 2.4,
+            "FocusPaddingNote"                : "How much air is left around a module when the camera flies to it. Below about 2.0 the cage fills the frame and the user loses all sense of where the module sits in the wider space."
+        },
+
+        "NaAudio__Env3d__Config__PresetViews": {
+            "overview"    : { "Label": "Overview",     "AzimuthDegrees":  34, "ElevationDegrees": 22, "Distance": 15.5 },
+            "plan"        : { "Label": "Plan",         "AzimuthDegrees":   0, "ElevationDegrees": 86, "Distance": 18.0 },
+            "eyeLevel"    : { "Label": "Eye Level",    "AzimuthDegrees":  18, "ElevationDegrees":  8, "Distance": 11.0 },
+            "wideStage"   : { "Label": "Wide Stage",   "AzimuthDegrees": 200, "ElevationDegrees": 13, "Distance": 19.0 }
+        },
+
+        "NaAudio__Env3d__Config__Lighting": {
+            "LightingNote"                    : "Deliberately flat, but NOT washed out. These five terms sum, and that is the trap: an earlier tune had them totalling well over 2.5, which drove every pigment toward white and turned the whole composition into beige mush. The key now does the work and the fill terms are kept low, so a pigment stays a pigment. If the space ever looks pale again, this sum is the first place to look.",
+            "HemisphereSkyIntensity"          : 0.42,
+            "HemisphereGroundIntensity"       : 0.24,
+            "AmbientIntensity"                : 0.10,
+            "KeyLightIntensity"               : 1.35,
+            "KeyLightAzimuthDegrees"          : 46,
+            "KeyLightElevationDegrees"        : 52,
+            "KeyLightDistance"                : 26,
+            "KeyLightCastsShadow"             : true,
+            "KeyShadowRadius"                 : 4.5,
+            "KeyShadowBias"                   : -0.0007,
+            "KeyShadowFrustumExtent"          : 26,
+            "FillLightIntensity"              : 0.20,
+            "FillLightAzimuthDegrees"         : -128,
+            "FillLightElevationDegrees"       : 20,
+            "FillLightDistance"               : 22,
+            "RimLightIntensity"               : 0.14,
+            "RimLightAzimuthDegrees"          : 190,
+            "RimLightElevationDegrees"        : 34
+        },
+
+        "NaAudio__Env3d__Config__GroundStage": {
+            "FloorExtent"                     : 240,
+            "FloorExtentNote"                 : "Large enough that the edge never enters frame at maximum orbit distance, so the ground reads as unbounded.",
+            "GridEnabled"                     : true,
+            "GridExtent"                      : 96,
+            "GridSpacing"                     : 1.0,
+            "GridMajorEvery"                  : 4,
+            "GridOpacity"                     : 0.55,
+            "GridOpacityNote"                 : "Faint, but not invisible. The grid is a spatial aid for judging module positions, not a design feature. It was 0.30 on the first tune and vanished entirely once the fog was pushed out - a grid nobody can see is not restraint, it is an absent feature.",
+            "FogEnabled"                      : true,
+            "FogNear"                         : 55,
+            "FogFar"                          : 125,
+            "FogNote"                         : "Fades the far grid and the backdrop shapes into the paper colour. Two things have to be true or the horizon becomes a hard seam across the whole scene. First, the fog colour must equal the background - NaAudio__Env3d__SceneManager takes it from scene.background rather than from config for that reason. Second, FogFar must be CLOSER than the floor plane edge, which sits at half of FloorExtent. At 230 against a 240 unit floor the far edge was only forty percent fogged and the seam was plainly visible; at 125 the floor reaches full fog well before it runs out.",
+            "BackdropEnabled"                 : true,
+            "BackdropShapeCount"              : 5,
+            "BackdropRingRadiusMin"           : 44,
+            "BackdropRingRadiusMax"           : 82,
+            "BackdropHeightMin"               : 2.0,
+            "BackdropHeightMax"               : 20.0,
+            "BackdropScaleMin"                : 6.0,
+            "BackdropScaleMax"                : 18.0,
+            "BackdropSeed"                    : 20260808,
+            "BackdropSeedNote"                : "The backdrop is randomly arranged but seeded, so the composition is identical on every load. A composition that reshuffles on refresh stops being a place the user can learn."
+        },
+
+        "NaAudio__Env3d__Config__Materials": {
+            "MaterialNote"                    : "Every value here exists to keep surfaces matte. See the AntiGlossRule in Na__Palette__Config.json - it is a hard constraint, not a preference.",
+            "BodyRoughness"                   : 0.88,
+            "BodyMetalness"                   : 0.0,
+            "BodyFlatShading"                 : false,
+            "PadRoughness"                    : 0.94,
+            "FloorRoughness"                  : 0.97,
+            "GlassOpacity"                    : 0.13,
+            "GlassRoughness"                  : 0.72,
+            "CageLineWidth"                   : 1.6,
+            "OutlineLineWidth"                : 1.4,
+            "CableLineWidth"                  : 2.6,
+            "EmissivePulseStrength"           : 0.55,
+            "EmissivePulseStrengthNote"       : "How brightly a step or node flashes when it triggers. This is the only place light is allowed to leave a surface, and it decays inside a few frames."
+        },
+
+        "NaAudio__Env3d__Config__Interaction": {
+            "HoverRaycastThrottleMs"          : 32,
+            "HoverRaycastThrottleNote"        : "Raycasting on every pointermove at 120Hz costs more than the render does. Roughly 30Hz is indistinguishable to a hand on a mouse.",
+            "DragPlaneMode"                   : "ground",
+            "DragSnapEnabled"                 : true,
+            "DragSnapSpacing"                 : 0.5,
+            "DoubleClickMs"                   : 300,
+            "PointerDragThresholdPx"          : 4,
+            "PointerDragThresholdNote"        : "Below this a pointerup counts as a click, not a drag. Without it every click nudges the module a few millimetres and the layout slowly rots."
+        },
+
+        "NaAudio__Env3d__Config__Labels": {
+            "Enabled"                         : true,
+            "PixelsPerWorldUnit"              : 128,
+            "FontStack"                       : "'Open Sans', 'Segoe UI', system-ui, sans-serif",
+            "FontSizePx"                      : 34,
+            "PaddingPx"                       : 18,
+            "HeightAboveModule"               : 0.34,
+            "MaxRenderDistance"               : 48,
+            "MaxRenderDistanceNote"           : "Labels beyond this fade out entirely. Twenty legible name plates stacked across the horizon is visual noise, and the whole premise is that the user navigates by spatial memory rather than by reading."
+        }
+    }
+}

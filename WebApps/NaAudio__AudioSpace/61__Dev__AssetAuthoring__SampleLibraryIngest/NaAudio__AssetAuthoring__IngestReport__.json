@@ -1,0 +1,584 @@
+{
+    "NaAudio__IngestReport__Meta": {
+        "GeneratedBy": "61__Dev__AssetAuthoring__SampleLibraryIngest/NaAudio__AssetAuthoring__SampleLibraryIngest__.py",
+        "GeneratedDate": "08-Aug-2026 at 11:46",
+        "SchemaVersion": "1.0.0",
+        "DryRun": false,
+        "FileCount": 105,
+        "TotalBytes": 4497056
+    },
+    "NaAudio__IngestReport__Sources": {
+        "TonejsAudio__Berklee": {
+            "Repository": "https://github.com/Tonejs/audio",
+            "RepoFolder": "tonejs-audio",
+            "SubPath": "berklee",
+            "Origin": "OLPC Berklee Sound Library - http://wiki.laptop.org/go/Sound_samples",
+            "Licence": "CC BY 3.0",
+            "LicenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+            "Attribution": "Berklee College of Music / OLPC Sound Library, CC BY 3.0, via github.com/Tonejs/audio",
+            "CommercialOk": true
+        },
+        "TonejsAudio__Salamander": {
+            "Repository": "https://github.com/Tonejs/audio",
+            "RepoFolder": "tonejs-audio",
+            "SubPath": "salamander",
+            "Origin": "Salamander Grand Piano - Alexander Holm",
+            "Licence": "CC BY 3.0",
+            "LicenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+            "Attribution": "Salamander Grand Piano by Alexander Holm, CC BY 3.0, via github.com/Tonejs/audio",
+            "CommercialOk": true
+        },
+        "TonejsAudio__DrumSamples": {
+            "Repository": "https://github.com/Tonejs/audio",
+            "RepoFolder": "tonejs-audio",
+            "SubPath": "drum-samples",
+            "Origin": "GoogleChromeLabs/web-audio-samples (formerly cwilso/web-audio-samples)",
+            "Licence": "Apache-2.0",
+            "LicenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+            "Attribution": "GoogleChromeLabs/web-audio-samples, Apache-2.0, via github.com/Tonejs/audio",
+            "CommercialOk": true
+        },
+        "TonejsAudio__ImpulseResponses": {
+            "Repository": "https://github.com/Tonejs/audio",
+            "RepoFolder": "tonejs-audio",
+            "SubPath": "impulse-responses",
+            "Origin": "GoogleChromeLabs/web-audio-samples (formerly cwilso/web-audio-samples)",
+            "Licence": "Apache-2.0",
+            "LicenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+            "Attribution": "GoogleChromeLabs/web-audio-samples, Apache-2.0, via github.com/Tonejs/audio",
+            "CommercialOk": true
+        }
+    },
+    "NaAudio__IngestReport__Excluded": {
+        "tonejs-audio/loop": "CC BY-NC-SA 4.0 (Yotam Mann) - non-commercial clause. AudioSPACE may ship commercially, so NC material cannot enter the shipped bank.",
+        "tonejs-audio/casio": "CC BY-NC-SA 4.0 (Yotam Mann) - same reason."
+    },
+    "Written": [
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Cr78/NaAudio__Sample__SMP_DRM10101__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/CR78/kick.mp3",
+            "Bytes": 3338
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Cr78/NaAudio__Sample__SMP_DRM10102__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/CR78/snare.mp3",
+            "Bytes": 2556
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Cr78/NaAudio__Sample__SMP_DRM10103__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/CR78/hihat.mp3",
+            "Bytes": 3339
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Cr78/NaAudio__Sample__SMP_DRM10104__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/CR78/tom1.mp3",
+            "Bytes": 2452
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Cr78/NaAudio__Sample__SMP_DRM10105__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/CR78/tom2.mp3",
+            "Bytes": 2216
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Cr78/NaAudio__Sample__SMP_DRM10106__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/CR78/tom3.mp3",
+            "Bytes": 3364
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Linn/NaAudio__Sample__SMP_DRM10201__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/LINN/kick.mp3",
+            "Bytes": 2241
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Linn/NaAudio__Sample__SMP_DRM10202__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/LINN/snare.mp3",
+            "Bytes": 2581
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Linn/NaAudio__Sample__SMP_DRM10203__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/LINN/hihat.mp3",
+            "Bytes": 9804
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Linn/NaAudio__Sample__SMP_DRM10204__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/LINN/tom1.mp3",
+            "Bytes": 4035
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Linn/NaAudio__Sample__SMP_DRM10205__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/LINN/tom2.mp3",
+            "Bytes": 6884
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Linn/NaAudio__Sample__SMP_DRM10206__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/LINN/tom3.mp3",
+            "Bytes": 5882
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Kpr77/NaAudio__Sample__SMP_DRM10301__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/KPR77/kick.mp3",
+            "Bytes": 3309
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Kpr77/NaAudio__Sample__SMP_DRM10302__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/KPR77/snare.mp3",
+            "Bytes": 3286
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Kpr77/NaAudio__Sample__SMP_DRM10303__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/KPR77/hihat.mp3",
+            "Bytes": 8451
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Kpr77/NaAudio__Sample__SMP_DRM10304__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/KPR77/tom1.mp3",
+            "Bytes": 1460
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Kpr77/NaAudio__Sample__SMP_DRM10305__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/KPR77/tom2.mp3",
+            "Bytes": 4663
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Kpr77/NaAudio__Sample__SMP_DRM10306__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/KPR77/tom3.mp3",
+            "Bytes": 4299
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Techno/NaAudio__Sample__SMP_DRM10401__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Techno/kick.mp3",
+            "Bytes": 5059
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Techno/NaAudio__Sample__SMP_DRM10402__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Techno/snare.mp3",
+            "Bytes": 7664
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Techno/NaAudio__Sample__SMP_DRM10403__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Techno/hihat.mp3",
+            "Bytes": 5373
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Techno/NaAudio__Sample__SMP_DRM10404__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Techno/tom1.mp3",
+            "Bytes": 7496
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Techno/NaAudio__Sample__SMP_DRM10405__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Techno/tom2.mp3",
+            "Bytes": 7783
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__Techno/NaAudio__Sample__SMP_DRM10406__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Techno/tom3.mp3",
+            "Bytes": 8726
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__FourOpFm/NaAudio__Sample__SMP_DRM10501__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/4OP-FM/kick.mp3",
+            "Bytes": 2657
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__FourOpFm/NaAudio__Sample__SMP_DRM10502__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/4OP-FM/snare.mp3",
+            "Bytes": 3438
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__FourOpFm/NaAudio__Sample__SMP_DRM10503__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/4OP-FM/hihat.mp3",
+            "Bytes": 5501
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__FourOpFm/NaAudio__Sample__SMP_DRM10504__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/4OP-FM/tom1.mp3",
+            "Bytes": 3437
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__FourOpFm/NaAudio__Sample__SMP_DRM10505__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/4OP-FM/tom2.mp3",
+            "Bytes": 4478
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/10__Drums__ElectronicKits/KIT__FourOpFm/NaAudio__Sample__SMP_DRM10506__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/4OP-FM/tom3.mp3",
+            "Bytes": 5647
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/20__Drums__AcousticKit/KIT__AcousticStudio/NaAudio__Sample__SMP_DRM20101__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/acoustic-kit/kick.mp3",
+            "Bytes": 6720
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/20__Drums__AcousticKit/KIT__AcousticStudio/NaAudio__Sample__SMP_DRM20102__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/acoustic-kit/snare.mp3",
+            "Bytes": 6379
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/20__Drums__AcousticKit/KIT__AcousticStudio/NaAudio__Sample__SMP_DRM20103__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/acoustic-kit/hihat.mp3",
+            "Bytes": 5030
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/20__Drums__AcousticKit/KIT__AcousticStudio/NaAudio__Sample__SMP_DRM20104__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/acoustic-kit/tom1.mp3",
+            "Bytes": 7580
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/20__Drums__AcousticKit/KIT__AcousticStudio/NaAudio__Sample__SMP_DRM20105__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/acoustic-kit/tom2.mp3",
+            "Bytes": 9091
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/20__Drums__AcousticKit/KIT__AcousticStudio/NaAudio__Sample__SMP_DRM20106__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/acoustic-kit/tom3.mp3",
+            "Bytes": 7233
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/KIT__Bongos/NaAudio__Sample__SMP_DRM30101__Kick__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Bongos/kick.mp3",
+            "Bytes": 4874
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/KIT__Bongos/NaAudio__Sample__SMP_DRM30102__Snare__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Bongos/snare.mp3",
+            "Bytes": 3885
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/KIT__Bongos/NaAudio__Sample__SMP_DRM30103__HiHat__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Bongos/hihat.mp3",
+            "Bytes": 9477
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/KIT__Bongos/NaAudio__Sample__SMP_DRM30104__TomLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Bongos/tom1.mp3",
+            "Bytes": 7060
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/KIT__Bongos/NaAudio__Sample__SMP_DRM30105__TomMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Bongos/tom2.mp3",
+            "Bytes": 9246
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/KIT__Bongos/NaAudio__Sample__SMP_DRM30106__TomHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Bongos/tom3.mp3",
+            "Bytes": 4666
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/30__Perc__HandDrums/NaAudio__Sample__SMP_PRC0311__Djembe__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/Djembe.mp3",
+            "Bytes": 56293
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0402__GrandPianoC2__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/C2.mp3",
+            "Bytes": 110357
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0403__GrandPianoDs2__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Ds2.mp3",
+            "Bytes": 110796
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0404__GrandPianoFs2__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Fs2.mp3",
+            "Bytes": 102320
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0405__GrandPianoA2__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/A2.mp3",
+            "Bytes": 81678
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0406__GrandPianoC3__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/C3.mp3",
+            "Bytes": 78036
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0407__GrandPianoDs3__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Ds3.mp3",
+            "Bytes": 78717
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0408__GrandPianoFs3__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Fs3.mp3",
+            "Bytes": 77933
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0409__GrandPianoA3__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/A3.mp3",
+            "Bytes": 74526
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0410__GrandPianoC4__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/C4.mp3",
+            "Bytes": 78718
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0411__GrandPianoDs4__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Ds4.mp3",
+            "Bytes": 73519
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0412__GrandPianoFs4__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Fs4.mp3",
+            "Bytes": 68219
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0413__GrandPianoA4__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/A4.mp3",
+            "Bytes": 61148
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0414__GrandPianoC5__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/C5.mp3",
+            "Bytes": 68920
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0415__GrandPianoDs5__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Ds5.mp3",
+            "Bytes": 58179
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0416__GrandPianoFs5__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/Fs5.mp3",
+            "Bytes": 51597
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0417__GrandPianoA5__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/A5.mp3",
+            "Bytes": 45747
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/40__Tonal__GrandPiano/NaAudio__Sample__SMP_PNO0418__GrandPianoC6__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/salamander/C6.mp3",
+            "Bytes": 28065
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0501__AnalogueSynthLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Analogsynth2_low.mp3",
+            "Bytes": 117806
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0502__AnalogueSynthLowMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Analogsynth2_lowmid.mp3",
+            "Bytes": 40612
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0503__AnalogueSynthMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Analogsynth2_mid.mp3",
+            "Bytes": 42596
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0504__AnalogueSynthHighMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Analogsynth2_highmid.mp3",
+            "Bytes": 40115
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0505__AnalogueSynthHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Analogsynth2_high.mp3",
+            "Bytes": 47066
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0511__ShortSynthLow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Shortsynth_low.mp3",
+            "Bytes": 12026
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0512__ShortSynthMid__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Shortsynth_mid.mp3",
+            "Bytes": 9165
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0513__ShortSynthHigh__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Shortsynth_high.mp3",
+            "Bytes": 5308
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0521__LongSynthPad__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Longsynth2.mp3",
+            "Bytes": 98821
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0522__LongSynthDrone__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Longsynth5.mp3",
+            "Bytes": 60430
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0531__FmSubBass__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/FM_doublebass2.mp3",
+            "Bytes": 40704
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0532__FmDubHit__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/FM_dubhit1.mp3",
+            "Bytes": 17053
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0541__KalimbaOne__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Kalimba_1.mp3",
+            "Bytes": 8723
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/50__Tonal__SynthOneShots/NaAudio__Sample__SMP_SYN0542__KalimbaThree__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Kalimba_3.mp3",
+            "Bytes": 10179
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0601__HandClap__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Clap1.mp3",
+            "Bytes": 30561
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0602__HandClapRoom__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Clap3.mp3",
+            "Bytes": 23591
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0611__Pling__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Pling1.mp3",
+            "Bytes": 49560
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0612__SmallBell__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/bell1a.mp3",
+            "Bytes": 53144
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0613__ChimeSingleNote__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/chimes-singlenote.mp3",
+            "Bytes": 15216
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0614__WoodBlock__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/woodblock_pitched-do.mp3",
+            "Bytes": 11134
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0621__NaturalReverbHit__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/NaturalReverbHit.mp3",
+            "Bytes": 16985
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0622__ResonantFmLaser__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/Resonant_FM_laser1.mp3",
+            "Bytes": 17717
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0623__GlassHit__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/glasshit1.mp3",
+            "Bytes": 16099
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0631__Cowbell__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/cowbell1_big.mp3",
+            "Bytes": 8923
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0632__Shaker__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/shaker1.mp3",
+            "Bytes": 260138
+        },
+        {
+            "TargetPath": "05__Data__AudioSampleLibrary/60__Fx__ObjectHits/NaAudio__Sample__SMP_FXH0633__Tambourine__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/berklee/tambourine1.mp3",
+            "Bytes": 34457
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1001__BreakTwelve__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/break12.mp3",
+            "Bytes": 117519
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1002__BreakTwentyEight__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/break28.mp3",
+            "Bytes": 131487
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1003__BreakTwentyNine__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/break29.mp3",
+            "Bytes": 126058
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1004__CoolLoopSeven__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/coolloop7.mp3",
+            "Bytes": 65510
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1005__BreakbeatClassic__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/breakbeat.mp3",
+            "Bytes": 60182
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1006__HandDrumLoop__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/handdrum-loop.mp3",
+            "Bytes": 22036
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/20__Loops__Atmospheric/NaAudio__Loop__LOP_ATM2001__Ominous__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/ominous.mp3",
+            "Bytes": 231568
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/20__Loops__Atmospheric/NaAudio__Loop__LOP_ATM2002__BlueYellow__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/blueyellow.mp3",
+            "Bytes": 534130
+        },
+        {
+            "TargetPath": "06__Data__AudioLoopLibrary/30__Loops__Tonal/NaAudio__Loop__LOP_TON3001__OrganEchoChords__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/drum-samples/loops/organ-echo-chords.mp3",
+            "Bytes": 296932
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/10__Ir__Rooms/NaAudio__Ir__IRS_ROM0101__MatrixRoomSmall__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/matrix-reverb1.mp3",
+            "Bytes": 33697
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/10__Ir__Rooms/NaAudio__Ir__IRS_ROM0102__MatrixRoomMedium__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/matrix-reverb2.mp3",
+            "Bytes": 33131
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/10__Ir__Rooms/NaAudio__Ir__IRS_ROM0103__MatrixRoomLarge__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/matrix-reverb3.mp3",
+            "Bytes": 37136
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/10__Ir__Rooms/NaAudio__Ir__IRS_ROM0111__SpatialisedNear__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/spatialized2.mp3",
+            "Bytes": 9433
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/10__Ir__Rooms/NaAudio__Ir__IRS_ROM0112__SpatialisedFar__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/spatialized3.mp3",
+            "Bytes": 28280
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/10__Ir__Rooms/NaAudio__Ir__IRS_ROM0121__DiffusorSoft__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/diffusor1.mp3",
+            "Bytes": 23627
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0201__CosmicPing__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/cosmic-ping.mp3",
+            "Bytes": 25770
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0202__Backwards__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/backwards-2.mp3",
+            "Bytes": 31647
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0203__CombSaw__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/comb-saw3.mp3",
+            "Bytes": 35152
+        },
+        {
+            "TargetPath": "08__Data__ImpulseResponseLibrary/20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0204__FeedbackSpring__.mp3",
+            "SourcePath": "/tmp/claude-0/-home-user-ValeCodebase/18439abc-1acc-5151-b55b-0a1eb3e6dd5d/scratchpad/tonejs-audio/impulse-responses/feedback-spring.mp3",
+            "Bytes": 38204
+        }
+    ],
+    "Missing": []
+}

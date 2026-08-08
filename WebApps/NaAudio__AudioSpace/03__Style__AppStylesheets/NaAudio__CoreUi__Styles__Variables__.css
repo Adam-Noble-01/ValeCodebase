@@ -1,0 +1,104 @@
+/* =============================================================================
+ * NAAUDIO - CSS VARIABLES
+ * =============================================================================
+ *
+ * FILE       : NaAudio__CoreUi__Styles__Variables__.css
+ * NAMESPACE  : NaAudio
+ * MODULE     : CSS Variables
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The design tokens for AudioSPACE, mirroring the palette config
+ * CREATED    : 08-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Every colour here mirrors 02__Src__AppModules/02__AppData/Na__Palette__Config.json,
+ *   which is the single source of truth for the whole application, 3D and 2D alike.
+ * - The duplication is deliberate and unavoidable: a browser cannot read a stylesheet
+ *   custom property out of a JSON file, and the 3D pipeline cannot read one out of a
+ *   stylesheet without a getComputedStyle call per colour at boot.
+ * - IF YOU CHANGE A HEX HERE, CHANGE IT IN Na__Palette__Config.json TOO. The palette
+ *   config is the authority; this file follows it.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * VARIABLES | AudioSPACE Design Tokens
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Palette, Type and Layout */
+    /* ------------------------------------------------------------ */
+    :root {
+        /* Global Scale Macro */
+        --NaAudio_UiScale                  :  1.0;                         /* <-- Global UI scale (1 = 100%) */
+
+        /* Ground - the paper the whole application sits on */
+        --NaAudio_Paper                    :  #EDE6DA;                     /* <-- Warm bone, never white */
+        --NaAudio_PaperDeep                :  #DFD5C4;
+        --NaAudio_PaperShade               :  #D2C7B4;
+        --NaAudio_Cream                    :  #F7F2E7;
+        --NaAudio_GridLine                 :  #C9BCA6;
+        --NaAudio_GridLineMajor            :  #B3A48B;
+
+        /* Ink - linework and type */
+        --NaAudio_Ink                      :  #2B2A28;                     /* <-- Warm near-black, never #000 */
+        --NaAudio_InkSoft                  :  #5A554E;
+        --NaAudio_InkFaint                 :  #8C857A;
+        --NaAudio_InkGhost                 :  #B4AC9F;
+
+        /* Pigments - base */
+        --NaAudio_MillennialPink           :  #DFA9A1;
+        --NaAudio_ClayOrange               :  #D98F5C;
+        --NaAudio_Terracotta               :  #BC6540;
+        --NaAudio_Ochre                    :  #D3AC5C;
+        --NaAudio_SageGreen                :  #9BB28C;
+        --NaAudio_SlateBlue                :  #7F96AA;
+        --NaAudio_Plum                     :  #8E6577;
+        --NaAudio_Bone                     :  #DED3BE;
+
+        /* Pigments - deep */
+        --NaAudio_MillennialPinkDeep       :  #C0827A;
+        --NaAudio_ClayOrangeDeep           :  #B96C40;
+        --NaAudio_TerracottaDeep           :  #984D31;
+        --NaAudio_OchreDeep                :  #B08B43;
+        --NaAudio_SageGreenDeep            :  #6E8763;
+        --NaAudio_SlateBlueDeep            :  #546A7D;
+        --NaAudio_PlumDeep                 :  #6C475B;
+        --NaAudio_BoneDeep                 :  #C4B69C;
+
+        /* Type */
+        --NaAudio_FontStack                :  'Open Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        --NaAudio_FontStackMono            :  'SF Mono', 'Consolas', 'Roboto Mono', ui-monospace, monospace;
+
+        --NaAudio_FontSizeBase             :  calc(0.875rem * var(--NaAudio_UiScale));
+        --NaAudio_FontSizeSmall            :  calc(0.780rem * var(--NaAudio_UiScale));
+        --NaAudio_FontSizeTiny             :  calc(0.700rem * var(--NaAudio_UiScale));
+        --NaAudio_FontSizeHeading          :  calc(1.050rem * var(--NaAudio_UiScale));
+        --NaAudio_FontSizeTitle            :  calc(1.700rem * var(--NaAudio_UiScale));
+
+        --NaAudio_LetterSpacingLabel       :  0.06em;                      /* <-- Small caps labels only */
+
+        /* Layout */
+        --NaAudio_TransportHeight          :  calc(52px * var(--NaAudio_UiScale));
+        --NaAudio_PanelRadius              :  calc(10px * var(--NaAudio_UiScale));
+        --NaAudio_PanelPadding             :  calc(14px * var(--NaAudio_UiScale));
+        --NaAudio_ControlRadius            :  calc(7px * var(--NaAudio_UiScale));
+        --NaAudio_HudInset                 :  calc(16px * var(--NaAudio_UiScale));
+        --NaAudio_BorderWidth              :  1px;
+
+        /* Surfaces - flat, matte, no gradients. The anti-gloss rule applies to the */
+        /* interface as much as to the 3D: nothing in AudioSPACE is shiny.          */
+        --NaAudio_PanelBackground          :  rgba(247, 242, 231, 0.93);
+        --NaAudio_PanelBorder              :  rgba(43, 42, 40, 0.14);
+        --NaAudio_PanelShadow              :  0 2px 14px rgba(43, 42, 40, 0.10);
+
+        --NaAudio_ControlBackground        :  rgba(222, 211, 190, 0.72);
+        --NaAudio_ControlHover             :  rgba(210, 199, 180, 0.92);
+        --NaAudio_ControlActive            :  var(--NaAudio_Terracotta);
+
+        /* Motion */
+        --NaAudio_TransitionQuick          :  140ms ease;
+        --NaAudio_TransitionPanel          :  220ms ease;
+        --NaAudio_TransitionGate           :  520ms ease;                  /* <-- Must match FADE_OUT_MS in the boot gate */
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

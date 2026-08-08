@@ -1,0 +1,152 @@
+{
+    "NaAudio__ImpulseResponseIndex__Meta": {
+        "GeneratedBy": "60__Dev__WebBuildUtils/NaAudio__BuildUtil__AudioLibraryIndex__.py",
+        "GeneratedDate": "08-Aug-2026 at 11:49",
+        "SchemaVersion": "1.0.0",
+        "LibraryRoot": "08__Data__ImpulseResponseLibrary/",
+        "CategoryCount": 2,
+        "ResponseCount": 10,
+        "DoNotEditByHand": true,
+        "Warnings": []
+    },
+    "NaAudio__ImpulseResponseIndex__Sources": {
+        "Berklee__OlpcSoundLibrary": {
+            "Attribution": "Berklee College of Music / OLPC Sound Library",
+            "Licence": "CC BY 3.0",
+            "LicenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+            "SourcedVia": "https://github.com/Tonejs/audio"
+        },
+        "Holm__SalamanderGrandPiano": {
+            "Attribution": "Salamander Grand Piano by Alexander Holm",
+            "Licence": "CC BY 3.0",
+            "LicenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+            "SourcedVia": "https://github.com/Tonejs/audio"
+        },
+        "GoogleChromeLabs__WebAudioSamples": {
+            "Attribution": "GoogleChromeLabs / web-audio-samples",
+            "Licence": "Apache-2.0",
+            "LicenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+            "SourcedVia": "https://github.com/Tonejs/audio"
+        }
+    },
+    "NaAudio__ImpulseResponseIndex__Categories": [
+        {
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "FolderName": "10__Ir__Rooms",
+            "SortOrder": 10,
+            "Description": "Plausible room responses. The SpatialReverb module maps its cage volume onto this set.",
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "CategoryId": "20__Ir__Unnatural",
+            "CategoryName": "Unnatural Spaces",
+            "FolderName": "20__Ir__Unnatural",
+            "SortOrder": 20,
+            "Description": "Combs, springs, reversals and metallic blooms. Spaces that could not exist.",
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        }
+    ],
+    "NaAudio__ImpulseResponseIndex__Responses": [
+        {
+            "AssetId": "IRS_ROM0101",
+            "Name": "Matrix Room Small",
+            "ShortName": "MatrixRoomSmall",
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "AudioUrl": "10__Ir__Rooms/NaAudio__Ir__IRS_ROM0101__MatrixRoomSmall__.mp3",
+            "ByteSize": 33697,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_ROM0102",
+            "Name": "Matrix Room Medium",
+            "ShortName": "MatrixRoomMedium",
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "AudioUrl": "10__Ir__Rooms/NaAudio__Ir__IRS_ROM0102__MatrixRoomMedium__.mp3",
+            "ByteSize": 33131,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_ROM0103",
+            "Name": "Matrix Room Large",
+            "ShortName": "MatrixRoomLarge",
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "AudioUrl": "10__Ir__Rooms/NaAudio__Ir__IRS_ROM0103__MatrixRoomLarge__.mp3",
+            "ByteSize": 37136,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_ROM0111",
+            "Name": "Spatialised Near",
+            "ShortName": "SpatialisedNear",
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "AudioUrl": "10__Ir__Rooms/NaAudio__Ir__IRS_ROM0111__SpatialisedNear__.mp3",
+            "ByteSize": 9433,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_ROM0112",
+            "Name": "Spatialised Far",
+            "ShortName": "SpatialisedFar",
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "AudioUrl": "10__Ir__Rooms/NaAudio__Ir__IRS_ROM0112__SpatialisedFar__.mp3",
+            "ByteSize": 28280,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_ROM0121",
+            "Name": "Diffusor Soft",
+            "ShortName": "DiffusorSoft",
+            "CategoryId": "10__Ir__Rooms",
+            "CategoryName": "Rooms",
+            "AudioUrl": "10__Ir__Rooms/NaAudio__Ir__IRS_ROM0121__DiffusorSoft__.mp3",
+            "ByteSize": 23627,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_UNN0201",
+            "Name": "Cosmic Ping",
+            "ShortName": "CosmicPing",
+            "CategoryId": "20__Ir__Unnatural",
+            "CategoryName": "Unnatural Spaces",
+            "AudioUrl": "20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0201__CosmicPing__.mp3",
+            "ByteSize": 25770,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_UNN0202",
+            "Name": "Backwards",
+            "ShortName": "Backwards",
+            "CategoryId": "20__Ir__Unnatural",
+            "CategoryName": "Unnatural Spaces",
+            "AudioUrl": "20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0202__Backwards__.mp3",
+            "ByteSize": 31647,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_UNN0203",
+            "Name": "Comb Saw",
+            "ShortName": "CombSaw",
+            "CategoryId": "20__Ir__Unnatural",
+            "CategoryName": "Unnatural Spaces",
+            "AudioUrl": "20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0203__CombSaw__.mp3",
+            "ByteSize": 35152,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "IRS_UNN0204",
+            "Name": "Feedback Spring",
+            "ShortName": "FeedbackSpring",
+            "CategoryId": "20__Ir__Unnatural",
+            "CategoryName": "Unnatural Spaces",
+            "AudioUrl": "20__Ir__Unnatural/NaAudio__Ir__IRS_UNN0204__FeedbackSpring__.mp3",
+            "ByteSize": 38204,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        }
+    ]
+}

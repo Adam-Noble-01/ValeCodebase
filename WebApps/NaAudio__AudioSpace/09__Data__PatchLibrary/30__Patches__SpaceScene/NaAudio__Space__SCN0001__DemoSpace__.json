@@ -1,0 +1,93 @@
+{
+    "NaAudio__Space__Meta": {
+        "SpaceId"          : "SCN0001",
+        "Name"             : "First Space",
+        "Description"      : "The demonstration arrangement AudioSPACE opens with. A circular sequencer on a CR-78 kit, a CubeMod playing a pentatonic figure through its own synth voice, and a DelayCloud processing both. Authored as data rather than as a bootstrap function, so a new arrangement is a JSON edit.",
+        "SchemaVersion"    : "1.0.0",
+        "Author"           : "Adam Noble - Noble Architecture",
+        "Created"          : "08-Aug-2026",
+        "Bpm"              : 96,
+        "MusicalKey"       : "Am",
+        "LayoutNote"       : "Positions are in metres on the ground plane, with the listener at the origin. The three modules sit on a ring facing the centre, roughly 4.5 metres out - close enough to read a step from the middle of the space, far enough apart that no two cages overlap."
+    },
+
+    "NaAudio__Space__Modules": [
+        {
+            "ModuleId"    : "SEQ_01",
+            "TypeName"    : "CircularSequencer",
+            "DisplayName" : "Pulse",
+            "Position"    : { "x": -4.2, "z": 1.8 },
+            "IsLocked"    : false,
+            "Settings": {
+                "KitId"     : "KIT_Cr78",
+                "Divisions" : 16,
+                "LaneCount" : 4,
+                "Gain"      : 0.82,
+                "Swing"     : 0.0,
+                "PatternNote": "One character per division, read left to right from twelve o'clock clockwise. 'x' is a hit and '.' is a rest. Written this way so the pattern is legible at a glance in an editor - an array of sixteen booleans is not.",
+                "Patterns": [
+                    "x...x...x...x...",
+                    "....x.......x...",
+                    "..x...x...x...x.",
+                    "..............x."
+                ]
+            }
+        },
+        {
+            "ModuleId"    : "CUBE_01",
+            "TypeName"    : "CubeMod",
+            "DisplayName" : "Drift",
+            "Position"    : { "x": 4.4, "z": 1.4 },
+            "IsLocked"    : false,
+            "Settings": {
+                "RootNote"  : "C2",
+                "Scale"     : "pentatonicMinor",
+                "SelfPlay"  : true,
+                "SelfPlayNote": "A CubeMod is a controller, so on its own it is silent and impossible to evaluate. Set false to stop it playing its own walking figure and drive it from a sequencer instead.",
+                "FaceValues": {
+                    "front"  : { "x": 0.46, "y": 0.22 },
+                    "right"  : { "x": 0.30, "y": 0.14 },
+                    "back"   : { "x": 0.22, "y": 0.50 },
+                    "left"   : { "x": 0.18, "y": 0.38 },
+                    "top"    : { "x": 0.34, "y": 0.30 },
+                    "bottom" : { "x": 0.16, "y": 0.68 }
+                }
+            }
+        },
+        {
+            "ModuleId"    : "CLOUD_01",
+            "TypeName"    : "DelayCloud",
+            "DisplayName" : "The Room",
+            "Position"    : { "x": 0.0, "z": -4.6 },
+            "IsLocked"    : false,
+            "Settings": {
+                "Seed"          : 4471,
+                "SeedNote"      : "Seeds the sphere start positions and velocities, so this space reopens looking as it was left rather than rescattered.",
+                "BounceAssetIds": [
+                    "SMP_FXH0612",
+                    "SMP_FXH0613",
+                    "SMP_FXH0611",
+                    "SMP_FXH0614",
+                    "SMP_FXH0632"
+                ]
+            }
+        }
+    ],
+
+    "NaAudio__Space__Cables": [
+        {
+            "CableId"      : "CBL_0001",
+            "FromModuleId" : "SEQ_01",
+            "ToModuleId"   : "CLOUD_01",
+            "SignalType"   : "audio",
+            "Note"         : "The sequencer's drums into the enclosure, so resizing the box audibly changes the space the kit sits in."
+        },
+        {
+            "CableId"      : "CBL_0002",
+            "FromModuleId" : "CUBE_01",
+            "ToModuleId"   : "CLOUD_01",
+            "SignalType"   : "audio",
+            "Note"         : "Two sources into one effect, which is what the design manifest asks the routing to support."
+        }
+    ]
+}

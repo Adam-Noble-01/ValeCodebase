@@ -1,0 +1,178 @@
+{
+    "NaAudio__LoopLibraryIndex__Meta": {
+        "GeneratedBy": "60__Dev__WebBuildUtils/NaAudio__BuildUtil__AudioLibraryIndex__.py",
+        "GeneratedDate": "08-Aug-2026 at 11:49",
+        "SchemaVersion": "1.0.0",
+        "LibraryRoot": "06__Data__AudioLoopLibrary/",
+        "CategoryCount": 3,
+        "LoopCount": 9,
+        "DoNotEditByHand": true,
+        "TempoNote": "SuggestedBpm and BarCount are hand-declared hints held in the generator, not measured from the audio. A loop with a null SuggestedBpm is played at its recorded rate and is not tempo-synced.",
+        "Warnings": []
+    },
+    "NaAudio__LoopLibraryIndex__Sources": {
+        "Berklee__OlpcSoundLibrary": {
+            "Attribution": "Berklee College of Music / OLPC Sound Library",
+            "Licence": "CC BY 3.0",
+            "LicenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+            "SourcedVia": "https://github.com/Tonejs/audio"
+        },
+        "Holm__SalamanderGrandPiano": {
+            "Attribution": "Salamander Grand Piano by Alexander Holm",
+            "Licence": "CC BY 3.0",
+            "LicenceUrl": "https://creativecommons.org/licenses/by/3.0/",
+            "SourcedVia": "https://github.com/Tonejs/audio"
+        },
+        "GoogleChromeLabs__WebAudioSamples": {
+            "Attribution": "GoogleChromeLabs / web-audio-samples",
+            "Licence": "Apache-2.0",
+            "LicenceUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+            "SourcedVia": "https://github.com/Tonejs/audio"
+        }
+    },
+    "NaAudio__LoopLibraryIndex__Categories": [
+        {
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "FolderName": "10__Loops__Breakbeat",
+            "SortOrder": 10,
+            "Description": "Sampled drum breaks. Tempo-synced by the transport when a loop is bound to a space.",
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "CategoryId": "20__Loops__Atmospheric",
+            "CategoryName": "Atmospheric Beds",
+            "FolderName": "20__Loops__Atmospheric",
+            "SortOrder": 20,
+            "Description": "Long unpitched textures. Intended as the bed a space is built on top of.",
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "CategoryId": "30__Loops__Tonal",
+            "CategoryName": "Tonal Loops",
+            "FolderName": "30__Loops__Tonal",
+            "SortOrder": 30,
+            "Description": "Pitched chord and organ loops. Key-tagged so the harmony modules can follow them.",
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        }
+    ],
+    "NaAudio__LoopLibraryIndex__Loops": [
+        {
+            "AssetId": "LOP_BRK1001",
+            "Name": "Break Twelve",
+            "ShortName": "BreakTwelve",
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "AudioUrl": "10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1001__BreakTwelve__.mp3",
+            "SuggestedBpm": 110,
+            "BarCount": 2,
+            "MusicalKey": null,
+            "ByteSize": 117519,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_BRK1002",
+            "Name": "Break Twenty Eight",
+            "ShortName": "BreakTwentyEight",
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "AudioUrl": "10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1002__BreakTwentyEight__.mp3",
+            "SuggestedBpm": 105,
+            "BarCount": 2,
+            "MusicalKey": null,
+            "ByteSize": 131487,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_BRK1003",
+            "Name": "Break Twenty Nine",
+            "ShortName": "BreakTwentyNine",
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "AudioUrl": "10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1003__BreakTwentyNine__.mp3",
+            "SuggestedBpm": 100,
+            "BarCount": 2,
+            "MusicalKey": null,
+            "ByteSize": 126058,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_BRK1004",
+            "Name": "Cool Loop Seven",
+            "ShortName": "CoolLoopSeven",
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "AudioUrl": "10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1004__CoolLoopSeven__.mp3",
+            "SuggestedBpm": 95,
+            "BarCount": 1,
+            "MusicalKey": null,
+            "ByteSize": 65510,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_BRK1005",
+            "Name": "Breakbeat Classic",
+            "ShortName": "BreakbeatClassic",
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "AudioUrl": "10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1005__BreakbeatClassic__.mp3",
+            "SuggestedBpm": 120,
+            "BarCount": 2,
+            "MusicalKey": null,
+            "ByteSize": 60182,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_BRK1006",
+            "Name": "Hand Drum Loop",
+            "ShortName": "HandDrumLoop",
+            "CategoryId": "10__Loops__Breakbeat",
+            "CategoryName": "Breakbeats",
+            "AudioUrl": "10__Loops__Breakbeat/NaAudio__Loop__LOP_BRK1006__HandDrumLoop__.mp3",
+            "SuggestedBpm": 100,
+            "BarCount": 2,
+            "MusicalKey": null,
+            "ByteSize": 22036,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_ATM2001",
+            "Name": "Ominous",
+            "ShortName": "Ominous",
+            "CategoryId": "20__Loops__Atmospheric",
+            "CategoryName": "Atmospheric Beds",
+            "AudioUrl": "20__Loops__Atmospheric/NaAudio__Loop__LOP_ATM2001__Ominous__.mp3",
+            "SuggestedBpm": 90,
+            "BarCount": 4,
+            "MusicalKey": "Cm",
+            "ByteSize": 231568,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_ATM2002",
+            "Name": "Blue Yellow",
+            "ShortName": "BlueYellow",
+            "CategoryId": "20__Loops__Atmospheric",
+            "CategoryName": "Atmospheric Beds",
+            "AudioUrl": "20__Loops__Atmospheric/NaAudio__Loop__LOP_ATM2002__BlueYellow__.mp3",
+            "SuggestedBpm": 90,
+            "BarCount": 4,
+            "MusicalKey": "Am",
+            "ByteSize": 534130,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        },
+        {
+            "AssetId": "LOP_TON3001",
+            "Name": "Organ Echo Chords",
+            "ShortName": "OrganEchoChords",
+            "CategoryId": "30__Loops__Tonal",
+            "CategoryName": "Tonal Loops",
+            "AudioUrl": "30__Loops__Tonal/NaAudio__Loop__LOP_TON3001__OrganEchoChords__.mp3",
+            "SuggestedBpm": 90,
+            "BarCount": 4,
+            "MusicalKey": "Am",
+            "ByteSize": 296932,
+            "SourceKey": "GoogleChromeLabs__WebAudioSamples"
+        }
+    ]
+}

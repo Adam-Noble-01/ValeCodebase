@@ -1,0 +1,85 @@
+{
+    "NaAudio__AppConfig__Main": {
+        "NaAudio__AppConfig__Main__Meta": {
+            "AppName"                         : "AudioSPACE",
+            "AppLongName"                     : "AudioSPACE - Spatial Music Production Environment",
+            "AppVersion"                      : "0.1.0",
+            "AppStage"                        : "Environment Prototype",
+            "AppStageNote"                    : "This build proves the environment, not the DAW. The 3D space, the transport, the sample engine and three demonstration spatial modules are real and working. The wider instrument and effect set described in the AudioSPACE Concept Manifest 1.0.0 is deliberately not stubbed out.",
+            "Author"                          : "Adam Noble - Noble Architecture",
+            "Created"                         : "08-Aug-2026",
+            "Namespace"                       : "NaAudio",
+            "LocalhostPort"                   : 8010,
+            "LocalhostPortNote"               : "Port 8010 is reserved for AudioSPACE. Ports 8001 to 8006 are taken by the sibling Vale web apps.",
+            "SourceManifest"                  : "AudioSPACE Concept Manifest 1.0.0 - Concept Outline for a 3D Music Production Environment"
+        },
+
+        "NaAudio__AppConfig__Main__ConfigRegistry": {
+            "ConfigRegistryNote"              : "Every config file the boot sequence loads, in load order, keyed by the name modules ask for. NaAudio__AppCore__ConfigLoader resolves these paths relative to the application root and refuses to boot if any required file is missing - a half-configured 3D environment fails in ways that are very hard to read.",
+            "palette": {
+                "Path"                        : "02__Src__AppModules/02__AppData/Na__Palette__Config.json",
+                "RootKey"                     : "NaAudio__Palette__Config",
+                "Required"                    : true
+            },
+            "env3d": {
+                "Path"                        : "02__Src__AppModules/05__Env3d__ThreeRenderPipeline/Na__Env3d__Config.json",
+                "RootKey"                     : "NaAudio__Env3d__Config",
+                "Required"                    : true
+            },
+            "audioEngine": {
+                "Path"                        : "02__Src__AppModules/10__Audio__WebAudioEngine/Na__AudioEngine__Config.json",
+                "RootKey"                     : "NaAudio__AudioEngine__Config",
+                "Required"                    : true
+            },
+            "spatialModules": {
+                "Path"                        : "02__Src__AppModules/20__System__SpatialModuleFramework/Na__SpatialModules__Config.json",
+                "RootKey"                     : "NaAudio__SpatialModules__Config",
+                "Required"                    : true
+            }
+        },
+
+        "NaAudio__AppConfig__Main__LibraryRegistry": {
+            "LibraryRegistryNote"             : "The generated catalogue indexes. A static host has no directory listing, so these indexes ARE the libraries as far as the browser is concerned - nothing plays that is not catalogued. Regenerate with 60__Dev__WebBuildUtils/NaAudio__BuildUtil__AudioLibraryIndex__.py after adding any file.",
+            "samples": {
+                "IndexPath"                   : "05__Data__AudioSampleLibrary/NaAudio__SampleLibraryIndex__.json",
+                "LibraryRoot"                 : "05__Data__AudioSampleLibrary/",
+                "RootKey"                     : "NaAudio__SampleLibraryIndex__Samples",
+                "Required"                    : true
+            },
+            "loops": {
+                "IndexPath"                   : "06__Data__AudioLoopLibrary/NaAudio__LoopLibraryIndex__.json",
+                "LibraryRoot"                 : "06__Data__AudioLoopLibrary/",
+                "RootKey"                     : "NaAudio__LoopLibraryIndex__Loops",
+                "Required"                    : false
+            },
+            "impulseResponses": {
+                "IndexPath"                   : "08__Data__ImpulseResponseLibrary/NaAudio__ImpulseResponseIndex__.json",
+                "LibraryRoot"                 : "08__Data__ImpulseResponseLibrary/",
+                "RootKey"                     : "NaAudio__ImpulseResponseIndex__Responses",
+                "Required"                    : false
+            }
+        },
+
+        "NaAudio__AppConfig__Main__UserDataRegistry": {
+            "UserDataRegistryNote"            : "Where a user's own material will live once there is a server behind this. The folders exist now and are empty on purpose, so the shape of the eventual sync is already fixed and visible. In the static build these are read-only paths that resolve to nothing, and every writer checks NaAudio__AppConfig__Main__Runtime.PersistenceMode before attempting anything.",
+            "userSamples"                     : "20__Generated__UserAudioSamples/",
+            "userLoops"                       : "21__Generated__UserAudioLoops/",
+            "userMidiPatterns"                : "22__Generated__UserMidiPatterns/",
+            "userPatches"                     : "23__Generated__UserPatches/",
+            "userSpaceProjects"               : "24__Generated__UserSpaceProjects/",
+            "renderedBounces"                 : "25__Generated__RenderedBounces/"
+        },
+
+        "NaAudio__AppConfig__Main__Runtime": {
+            "PersistenceMode"                 : "sessionOnly",
+            "PersistenceModeNote"             : "sessionOnly | localStorage | server. The static build keeps a space in memory and in localStorage only. Nothing is written to the Generated folders from the browser - it cannot be - so any save UI must say so rather than silently doing nothing.",
+            "BootSpacePath"                   : "09__Data__PatchLibrary/30__Patches__SpaceScene/NaAudio__Space__SCN0001__DemoSpace__.json",
+            "BootSpacePathNote"               : "The demo space is data, not code. Three modules, their positions, their bindings and their patch cables are all declared in that file, so a new arrangement is authored by editing JSON rather than by editing a bootstrap function.",
+            "ShowDiagnostics"                 : true,
+            "ShowDiagnosticsNote"             : "Frame time, voice count and audio clock drift in the corner. On while the environment is being built; the readout is the first thing that tells you a spatial module is leaking voices.",
+            "ShowHelpOnFirstBoot"             : true,
+            "AutoStartTransport"              : false,
+            "AutoStartTransportNote"          : "Off deliberately. An application that starts making noise the moment it loads is hostile, and the browser would suspend the context anyway."
+        }
+    }
+}

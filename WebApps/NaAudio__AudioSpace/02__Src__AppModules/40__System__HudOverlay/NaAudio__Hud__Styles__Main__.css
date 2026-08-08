@@ -1,0 +1,612 @@
+/* =============================================================================
+ * NAAUDIO - HUD OVERLAY STYLES
+ * =============================================================================
+ *
+ * FILE       : NaAudio__Hud__Styles__Main__.css
+ * NAMESPACE  : NaAudio
+ * MODULE     : Hud - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The boot gate, transport bar, inspector, help card and diagnostics
+ * CREATED    : 08-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Everything here follows the same anti-gloss rule as the 3D: flat fills, no
+ *   gradients, no glassy blur stacks, no drop shadows beyond a single soft lift.
+ *   The interface is paper laid over the space, not chrome bolted onto it.
+ * - Panels are translucent so the space stays visible behind them. That is not a
+ *   style choice: it is what stops a floating panel reading as a modal and breaking
+ *   the sense of being inside a place.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * HUD | Boot Gate
+ * ----------------------------------------------------------------------------- */
+
+    /* BOOT GATE | Full Viewport Cover */
+    /* ------------------------------------------------------------ */
+    #NaAudio__Hud__BootGate {
+        position                           :  absolute;
+        inset                              :  0;
+        z-index                            :  100;
+        display                            :  flex;
+        align-items                        :  center;
+        justify-content                    :  center;
+        background-color                   :  var(--NaAudio_Paper);
+        opacity                            :  1;
+        transition                         :  opacity var(--NaAudio_TransitionGate);
+    }
+
+    #NaAudio__Hud__BootGate.NaAudio__BootGate--dismissed {
+        opacity                            :  0;
+        pointer-events                     :  none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BOOT GATE | Card */
+    /* ------------------------------------------------------------ */
+    .NaAudio__BootGate__Card {
+        display                            :  flex;
+        flex-direction                     :  column;
+        align-items                        :  center;
+        text-align                         :  center;
+        max-width                          :  460px;
+        padding                            :  calc(var(--NaAudio_PanelPadding) * 2);
+    }
+
+    .NaAudio__BootGate__Mark {
+        margin-bottom                      :  22px;
+        line-height                        :  0;
+    }
+
+    .NaAudio__BootGate__Title {
+        margin                             :  0 0 6px 0;
+        font-size                          :  var(--NaAudio_FontSizeTitle);
+        font-weight                        :  600;
+        letter-spacing                     :  0.02em;
+        color                              :  var(--NaAudio_Ink);
+    }
+
+    .NaAudio__BootGate__Subtitle {
+        margin                             :  0 0 26px 0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__BootGate__Status {
+        margin                             :  0 0 18px 0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        color                              :  var(--NaAudio_InkSoft);
+        min-height                         :  1.2em;                       /* <-- Reserved, so the card does not jump as the text changes */
+    }
+
+    .NaAudio__BootGate__Button {
+        padding                            :  11px 30px;
+        border                             :  none;
+        border-radius                      :  var(--NaAudio_ControlRadius);
+        background-color                   :  var(--NaAudio_Terracotta);
+        color                              :  var(--NaAudio_Cream);
+        font-size                          :  var(--NaAudio_FontSizeBase);
+        font-weight                        :  600;
+        cursor                             :  pointer;
+        transition                         :  background-color var(--NaAudio_TransitionQuick), opacity var(--NaAudio_TransitionQuick);
+    }
+
+    .NaAudio__BootGate__Button:hover:not(:disabled) {
+        background-color                   :  var(--NaAudio_TerracottaDeep);
+    }
+
+    .NaAudio__BootGate__Button:disabled {
+        background-color                   :  var(--NaAudio_BoneDeep);
+        color                              :  var(--NaAudio_InkFaint);
+        cursor                             :  default;
+    }
+
+    .NaAudio__BootGate__Detail {
+        margin                             :  16px 0 0 0;
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        color                              :  var(--NaAudio_InkFaint);
+        max-width                          :  340px;
+    }
+
+    .NaAudio__BootGate__Version {
+        margin                             :  28px 0 0 0;
+        font-family                        :  var(--NaAudio_FontStackMono);
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        color                              :  var(--NaAudio_InkGhost);
+    }
+
+    .NaAudio__BootGate--failed .NaAudio__BootGate__Status {
+        color                              :  var(--NaAudio_TerracottaDeep);
+        font-weight                        :  600;
+    }
+
+    .NaAudio__BootGate--failed .NaAudio__BootGate__Detail {
+        color                              :  var(--NaAudio_InkSoft);
+        font-family                        :  var(--NaAudio_FontStackMono);
+        max-width                          :  420px;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * HUD | Transport Bar
+ * ----------------------------------------------------------------------------- */
+
+    /* TRANSPORT | Bar */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Transport {
+        position                           :  absolute;
+        left                               :  var(--NaAudio_HudInset);
+        right                              :  var(--NaAudio_HudInset);
+        bottom                             :  var(--NaAudio_HudInset);
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  20px;
+        height                             :  var(--NaAudio_TransportHeight);
+        padding                            :  0 16px;
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-radius                      :  var(--NaAudio_PanelRadius);
+        background-color                   :  var(--NaAudio_PanelBackground);
+        box-shadow                         :  var(--NaAudio_PanelShadow);
+    }
+
+    .NaAudio__Transport__Group {
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  9px;
+    }
+
+    .NaAudio__Transport__Group--right {
+        margin-left                        :  auto;                        /* <-- Camera presets sit at the far end */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TRANSPORT | Buttons */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Transport__Button {
+        padding                            :  7px 15px;
+        border                             :  none;
+        border-radius                      :  var(--NaAudio_ControlRadius);
+        background-color                   :  var(--NaAudio_ControlBackground);
+        color                              :  var(--NaAudio_Ink);
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        cursor                             :  pointer;
+        white-space                        :  nowrap;
+        transition                         :  background-color var(--NaAudio_TransitionQuick);
+    }
+
+    .NaAudio__Transport__Button:hover {
+        background-color                   :  var(--NaAudio_ControlHover);
+    }
+
+    .NaAudio__Transport__Button--primary {
+        min-width                          :  74px;
+        background-color                   :  var(--NaAudio_SageGreen);
+        font-weight                        :  600;
+    }
+
+    .NaAudio__Transport__Button--primary:hover {
+        background-color                   :  var(--NaAudio_SageGreenDeep);
+        color                              :  var(--NaAudio_Cream);
+    }
+
+    .NaAudio__Transport__Button--active {
+        background-color                   :  var(--NaAudio_Terracotta);
+        color                              :  var(--NaAudio_Cream);
+    }
+
+    .NaAudio__Transport__Button--quiet {
+        background-color                   :  transparent;
+        color                              :  var(--NaAudio_InkSoft);
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+    }
+
+    .NaAudio__Transport__Button--quiet:hover {
+        background-color                   :  var(--NaAudio_ControlBackground);
+        color                              :  var(--NaAudio_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TRANSPORT | Readouts and Slider */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Transport__Readout {
+        display                            :  flex;
+        flex-direction                     :  column;
+        gap                                :  1px;
+        min-width                          :  62px;
+    }
+
+    .NaAudio__Transport__ReadoutLabel {
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        letter-spacing                     :  var(--NaAudio_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Transport__ReadoutValue {
+        font-family                        :  var(--NaAudio_FontStackMono);
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        color                              :  var(--NaAudio_Ink);
+        font-variant-numeric               :  tabular-nums;                /* <-- Or the readout jitters as digits change width */
+    }
+
+    .NaAudio__Transport__Slider {
+        width                              :  118px;
+        accent-color                       :  var(--NaAudio_Terracotta);
+        cursor                             :  pointer;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* TRANSPORT | Master Meter */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Transport__Meter {
+        position                           :  relative;
+        width                              :  92px;
+        height                             :  7px;
+        border-radius                      :  4px;
+        background-color                   :  var(--NaAudio_PaperShade);
+        overflow                           :  hidden;
+    }
+
+    .NaAudio__Transport__MeterFill {
+        position                           :  absolute;
+        left                               :  0;
+        top                                :  0;
+        bottom                             :  0;
+        width                              :  0%;
+        background-color                   :  var(--NaAudio_SageGreenDeep);
+        transition                         :  width 60ms linear, background-color var(--NaAudio_TransitionQuick);
+    }
+
+    /* Turns terracotta whenever the limiter is actually working, so limiting is never */
+    /* silent. A mix quietly squashed for a whole session is a real cost.              */
+    .NaAudio__Transport__MeterFill--limiting {
+        background-color                   :  var(--NaAudio_Terracotta);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * HUD | Module Inspector
+ * ----------------------------------------------------------------------------- */
+
+    /* INSPECTOR | Card */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Inspector {
+        position                           :  absolute;
+        right                              :  var(--NaAudio_HudInset);
+        top                                :  var(--NaAudio_HudInset);
+        width                              :  292px;
+        padding                            :  var(--NaAudio_PanelPadding);
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-left                        :  3px solid var(--NaAudio_SageGreen);
+        border-radius                      :  var(--NaAudio_PanelRadius);
+        background-color                   :  var(--NaAudio_PanelBackground);
+        box-shadow                         :  var(--NaAudio_PanelShadow);
+        opacity                            :  0;
+        transform                          :  translateX(10px);
+        pointer-events                     :  none;
+        transition                         :  opacity var(--NaAudio_TransitionPanel), transform var(--NaAudio_TransitionPanel);
+    }
+
+    .NaAudio__Inspector--visible {
+        opacity                            :  1;
+        transform                          :  translateX(0);
+        pointer-events                     :  auto;
+    }
+
+    .NaAudio__Inspector--locked {
+        border-left-color                  :  var(--NaAudio_SlateBlue);
+    }
+
+    .NaAudio__Inspector__Title {
+        margin                             :  0 0 2px 0;
+        font-size                          :  var(--NaAudio_FontSizeHeading);
+        font-weight                        :  600;
+    }
+
+    .NaAudio__Inspector__Type {
+        margin                             :  0 0 12px 0;
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        letter-spacing                     :  var(--NaAudio_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Inspector__Note {
+        margin                             :  0 0 12px 0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        line-height                        :  1.5;
+        color                              :  var(--NaAudio_InkSoft);
+    }
+
+    .NaAudio__Inspector__Route {
+        margin                             :  0 0 14px 0;
+        padding-top                        :  10px;
+        border-top                         :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        line-height                        :  1.5;
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Inspector__LockButton {
+        width                              :  100%;
+        padding                            :  8px 12px;
+        border                             :  none;
+        border-radius                      :  var(--NaAudio_ControlRadius);
+        background-color                   :  var(--NaAudio_ControlBackground);
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        cursor                             :  pointer;
+        transition                         :  background-color var(--NaAudio_TransitionQuick);
+    }
+
+    .NaAudio__Inspector__LockButton:hover {
+        background-color                   :  var(--NaAudio_ControlHover);
+    }
+
+    .NaAudio__Inspector__LockButton--locked {
+        background-color                   :  var(--NaAudio_SlateBlue);
+        color                              :  var(--NaAudio_Cream);
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * HUD | Diagnostics
+ * ----------------------------------------------------------------------------- */
+
+    /* DIAGNOSTICS | Corner Readout */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Diagnostics {
+        position                           :  absolute;
+        left                               :  var(--NaAudio_HudInset);
+        top                                :  var(--NaAudio_HudInset);
+        min-width                          :  186px;
+        padding                            :  10px 12px;
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-radius                      :  var(--NaAudio_PanelRadius);
+        background-color                   :  var(--NaAudio_PanelBackground);
+        font-family                        :  var(--NaAudio_FontStackMono);
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+    }
+
+    .NaAudio__Diagnostics__Heading {
+        margin-bottom                      :  7px;
+        padding-bottom                     :  6px;
+        border-bottom                      :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        font-family                        :  var(--NaAudio_FontStack);
+        letter-spacing                     :  var(--NaAudio_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Diagnostics__Row {
+        display                            :  flex;
+        justify-content                    :  space-between;
+        gap                                :  14px;
+        line-height                        :  1.7;
+    }
+
+    .NaAudio__Diagnostics__Label {
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Diagnostics__Value {
+        color                              :  var(--NaAudio_InkSoft);
+        font-variant-numeric               :  tabular-nums;
+    }
+
+    .NaAudio__Diagnostics__Value--warn {
+        color                              :  var(--NaAudio_TerracottaDeep);
+        font-weight                        :  600;
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * HUD | Help Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* HELP | Toggle Button */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Help__Toggle {
+        position                           :  absolute;
+        right                              :  var(--NaAudio_HudInset);
+        bottom                             :  calc(var(--NaAudio_HudInset) + var(--NaAudio_TransportHeight) + 12px);
+        width                              :  32px;
+        height                             :  32px;
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-radius                      :  50%;
+        background-color                   :  var(--NaAudio_PanelBackground);
+        color                              :  var(--NaAudio_InkSoft);
+        font-size                          :  var(--NaAudio_FontSizeBase);
+        cursor                             :  pointer;
+        transition                         :  background-color var(--NaAudio_TransitionQuick);
+    }
+
+    .NaAudio__Help__Toggle:hover {
+        background-color                   :  var(--NaAudio_ControlHover);
+        color                              :  var(--NaAudio_Ink);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HELP | Overlay and Card */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Help {
+        position                           :  absolute;
+        inset                              :  0;
+        display                            :  flex;
+        align-items                        :  center;
+        justify-content                    :  center;
+        padding                            :  32px;
+        background-color                   :  rgba(237, 230, 218, 0.80);
+        opacity                            :  0;
+        pointer-events                     :  none;
+        transition                         :  opacity var(--NaAudio_TransitionPanel);
+    }
+
+    .NaAudio__Help--visible {
+        opacity                            :  1;
+        pointer-events                     :  auto;
+    }
+
+    .NaAudio__Help__Card {
+        width                              :  100%;
+        max-width                          :  860px;
+        max-height                         :  100%;
+        overflow-y                         :  auto;                        /* <-- The one scrolling surface in the application */
+        padding                            :  calc(var(--NaAudio_PanelPadding) * 1.6);
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-radius                      :  var(--NaAudio_PanelRadius);
+        background-color                   :  var(--NaAudio_Cream);
+        box-shadow                         :  var(--NaAudio_PanelShadow);
+    }
+
+    .NaAudio__Help__Header {
+        display                            :  flex;
+        align-items                        :  baseline;
+        justify-content                    :  space-between;
+        gap                                :  16px;
+        margin-bottom                      :  10px;
+    }
+
+    .NaAudio__Help__Title {
+        margin                             :  0;
+        font-size                          :  var(--NaAudio_FontSizeHeading);
+        font-weight                        :  600;
+    }
+
+    .NaAudio__Help__Close {
+        padding                            :  6px 14px;
+        border                             :  none;
+        border-radius                      :  var(--NaAudio_ControlRadius);
+        background-color                   :  var(--NaAudio_ControlBackground);
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        cursor                             :  pointer;
+    }
+
+    .NaAudio__Help__Close:hover {
+        background-color                   :  var(--NaAudio_ControlHover);
+    }
+
+    .NaAudio__Help__Intro {
+        margin                             :  0 0 20px 0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        line-height                        :  1.6;
+        color                              :  var(--NaAudio_InkSoft);
+        max-width                          :  62ch;
+    }
+
+    .NaAudio__Help__Columns {
+        display                            :  grid;
+        grid-template-columns              :  1fr 1fr;
+        gap                                :  28px;
+    }
+
+    .NaAudio__Help__Columns--scope {
+        margin-top                         :  22px;
+        padding-top                        :  20px;
+        border-top                         :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+    }
+
+    .NaAudio__Help__Section {
+        margin-bottom                      :  20px;
+    }
+
+    .NaAudio__Help__Heading {
+        margin                             :  0 0 10px 0;
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        letter-spacing                     :  var(--NaAudio_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Help__List {
+        display                            :  grid;
+        grid-template-columns              :  auto 1fr;
+        gap                                :  6px 14px;
+        margin                             :  0;
+    }
+
+    .NaAudio__Help__Term {
+        margin                             :  0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        font-weight                        :  600;
+        color                              :  var(--NaAudio_Ink);
+        white-space                        :  nowrap;
+    }
+
+    .NaAudio__Help__Term--key {
+        font-family                        :  var(--NaAudio_FontStackMono);
+        padding                            :  1px 7px;
+        border-radius                      :  4px;
+        background-color                   :  var(--NaAudio_PaperShade);
+        justify-self                       :  start;
+    }
+
+    .NaAudio__Help__Detail {
+        margin                             :  0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        line-height                        :  1.5;
+        color                              :  var(--NaAudio_InkSoft);
+    }
+
+    .NaAudio__Help__Bullets {
+        margin                             :  0;
+        padding-left                       :  18px;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        line-height                        :  1.65;
+        color                              :  var(--NaAudio_InkSoft);
+    }
+
+    .NaAudio__Help__Bullets li {
+        margin-bottom                      :  5px;
+    }
+
+    /* The two scope columns are colour-coded because the distinction between what is */
+    /* built and what is only designed is the most important thing on the card.       */
+    .NaAudio__Help__Section--built .NaAudio__Help__Heading {
+        color                              :  var(--NaAudio_SageGreenDeep);
+    }
+
+    .NaAudio__Help__Section--pending .NaAudio__Help__Heading {
+        color                              :  var(--NaAudio_TerracottaDeep);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HELP | Narrow Viewports */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 720px) {
+        .NaAudio__Help__Columns {
+            grid-template-columns          :  1fr;
+        }
+
+        .NaAudio__Transport {
+            flex-wrap                      :  wrap;
+            height                         :  auto;
+            padding                        :  10px 12px;
+            gap                            :  12px;
+        }
+
+        .NaAudio__Inspector {
+            width                          :  calc(100% - var(--NaAudio_HudInset) * 2);
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

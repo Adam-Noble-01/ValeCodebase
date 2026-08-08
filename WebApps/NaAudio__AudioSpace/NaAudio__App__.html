@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Head - Meta, Title, Styles                      -->
+<!-- ----------------------------------------------------------------- -->
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#EDE6DA">
+    <title>AudioSPACE | Spatial Music Production Environment</title>
+
+    <!-- PWA - Apple Standalone Behaviour (iOS ignores the manifest for these) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="AudioSPACE">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="AudioSPACE">
+
+    <!-- Single Stylesheet (hub @imports every other sheet, including module-local ones) -->
+    <link rel="stylesheet" href="03__Style__AppStylesheets/NaAudio__CoreUi__Styles__Index__.css">
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Version-Locked Vendor Import Map                         -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- Bare specifiers resolve to the locked vendor drop in                     -->
+    <!-- 04__Src__Dependencies__VersionLocked. A browser cannot read an import map -->
+    <!-- from JSON, so this block must mirror the importMap section of             -->
+    <!-- NaAudio__Dependencies__ImportMap__Index__.json, which is the SSOT.        -->
+    <!-- Declare it before any module script: the Three.js addons themselves       -->
+    <!-- import from the bare 'three' specifier.                                   -->
+    <!-- @delegate: 04__Src__Dependencies__VersionLocked/NaAudio__Dependencies__ImportMap__Index__.json -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three"          : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+            "three/addons/"  : "./04__Src__Dependencies__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/"
+        }
+    }
+    </script>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+</head>
+<!-- endregion ----------------------------------------------------------------- -->
+
+
+<!-- ----------------------------------------------------------------- -->
+<!-- REGION | Document Body - Application Shell                        -->
+<!-- ----------------------------------------------------------------- -->
+<!-- Deliberately almost empty. AudioSPACE has no page, no header and no          -->
+<!-- navigation: it is one full-viewport 3D canvas with a floating overlay on top. -->
+<!-- Everything inside these two elements is built in JavaScript, because every    -->
+<!-- panel's content depends on config that has not loaded when this file parses.  -->
+<body>
+
+    <div id="NaAudio__App__Root">
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEWPORT | The 3D Space                                           -->
+        <!-- ----------------------------------------------------------------- -->
+        <!-- NaAudio__Env3d__SceneManager appends its WebGL canvas here.        -->
+        <div id="NaAudio__App__Viewport"></div>
+        <!-- ----------------------------------------------------------------- -->
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- HUD | Overlay Layer                                               -->
+        <!-- ----------------------------------------------------------------- -->
+        <!-- Covers the viewport so its children can sit anywhere, but is        -->
+        <!-- transparent to the pointer - see the pointer-events rules in        -->
+        <!-- NaAudio__CoreUi__Styles__BaseLayout__.css. Without that the 3D      -->
+        <!-- space would be entirely unclickable.                                -->
+        <div id="NaAudio__App__Hud">
+
+            <!-- The boot gate mounts into this element, then removes itself.    -->
+            <!-- It is declared here rather than created in JavaScript so it can  -->
+            <!-- paint before any module has finished loading.                    -->
+            <div id="NaAudio__Hud__BootGate"></div>
+
+        </div>
+        <!-- ----------------------------------------------------------------- -->
+
+    </div>
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Application Entry Point                                  -->
+    <!-- ----------------------------------------------------------------- -->
+    <!-- One module script. NaAudio__AppCore__Init imports the whole application -->
+    <!-- graph and boots itself on DOM ready. There is deliberately no second     -->
+    <!-- entry point and no inline script: a single boot path is what makes the   -->
+    <!-- ordering in that file the actual ordering.                                -->
+    <script type="module" src="02__Src__AppModules/01__AppCore/NaAudio__AppCore__Init__.mjs"></script>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+</body>
+<!-- endregion ----------------------------------------------------------------- -->
+
+</html>

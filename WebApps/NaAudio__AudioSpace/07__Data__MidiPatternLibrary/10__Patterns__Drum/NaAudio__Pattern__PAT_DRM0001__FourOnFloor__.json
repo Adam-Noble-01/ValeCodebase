@@ -1,0 +1,19 @@
+{
+    "NaAudio__Pattern__Meta": {
+        "PatternId"     : "PAT_DRM0001",
+        "Name"          : "Four On The Floor",
+        "Category"      : "10__Patterns__Drum",
+        "SchemaVersion" : "1.0.0",
+        "Author"        : "Adam Noble - Noble Architecture",
+        "Divisions"     : 16,
+        "BeatsPerBar"   : 4,
+        "SuggestedBpm"  : 124,
+        "Description"   : "The straightest possible starting point. Kick on every beat, snare on two and four, closed hat on every eighth."
+    },
+    "NaAudio__Pattern__Lanes": [
+        { "VoiceRole": "kick",   "Steps": "x...x...x...x...", "Velocity": 1.00 },
+        { "VoiceRole": "snare",  "Steps": "....x.......x...", "Velocity": 0.90 },
+        { "VoiceRole": "hihat",  "Steps": "x.x.x.x.x.x.x.x.", "Velocity": 0.55 },
+        { "VoiceRole": "tomLow", "Steps": "................", "Velocity": 0.70 }
+    ]
+}

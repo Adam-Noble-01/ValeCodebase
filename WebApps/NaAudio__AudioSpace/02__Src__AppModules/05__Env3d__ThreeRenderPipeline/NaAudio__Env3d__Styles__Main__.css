@@ -1,0 +1,69 @@
+/* =============================================================================
+ * NAAUDIO - 3D ENVIRONMENT STYLES
+ * =============================================================================
+ *
+ * FILE       : NaAudio__Env3d__Styles__Main__.css
+ * NAMESPACE  : NaAudio
+ * MODULE     : Env3d - Styles
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The canvas host, and the cursor states the pointer layer sets
+ * CREATED    : 08-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Almost nothing lives here, and that is correct: the 3D environment is drawn by
+ *   WebGL, not styled by CSS. What CSS owns is the host element, the canvas sizing
+ *   and the cursor.
+ * - The cursor rules matter more than they look. In a 3D space with no visible
+ *   affordances - no button bevels, no drop shadows on controls - the cursor is the
+ *   main signal that something under the pointer can be grabbed.
+ *
+ * ============================================================================= */
+
+/* #region ----------------------------------------------------------------------
+ * ENV3D | Canvas Host
+ * ----------------------------------------------------------------------------- */
+
+    /* ENV3D | Host Element */
+    /* ------------------------------------------------------------ */
+    .NaAudio__Env3d__Host--active {
+        position                           :  relative;
+        overflow                           :  hidden;
+        background-color                   :  var(--NaAudio_Paper);         /* <-- Painted before the first frame, so boot has no white flash */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ENV3D | Cursor States */
+    /* ------------------------------------------------------------ */
+    /* The interaction layer writes cursor directly onto the canvas from each */
+    /* handle's Cursor property. These classes exist for the states it cannot  */
+    /* express per-handle - a whole-canvas mode change.                        */
+    .NaAudio__Env3d__Canvas {
+        cursor                             :  default;
+    }
+
+    .NaAudio__Env3d__Canvas--dragging {
+        cursor                             :  grabbing !important;          /* <-- Overrides whatever the hovered handle asked for */
+    }
+
+    .NaAudio__Env3d__Canvas--orbiting {
+        cursor                             :  move;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ENV3D | Reduced Motion */
+    /* ------------------------------------------------------------ */
+    /* An honest note rather than a silent no-op: the camera tween and the module     */
+    /* lock fade are driven in JavaScript from the render loop, so a CSS media query  */
+    /* cannot reach them. This rule covers the DOM-side transitions only. Wiring the  */
+    /* preference through to the 3D animation timings is outstanding work and belongs */
+    /* in Na__Env3d__Config.json rather than here.                                     */
+    @media (prefers-reduced-motion: reduce) {
+        .NaAudio__Env3d__Host--active * {
+            transition-duration            :  0.01ms !important;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */

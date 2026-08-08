@@ -96,6 +96,7 @@ import * as ModuleInspector from '../40__System__HudOverlay/NaAudio__Hud__Module
 import * as HelpOverlay     from '../40__System__HudOverlay/NaAudio__Hud__HelpOverlay__.mjs';
 import * as Diagnostics     from '../40__System__HudOverlay/NaAudio__Hud__Diagnostics__.mjs';
 import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIndicator__.mjs';
+import * as ModulePalette   from '../40__System__HudOverlay/NaAudio__Hud__ModulePalette__.mjs';
 
 // =============================================================================
 // REGION | Application Boot
@@ -327,6 +328,12 @@ import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIn
                 NaAudio__Init__PublishDevHandle();
             }
 
+            // AFTER the diagnostics readout, deliberately. Both live down the left edge,
+            // and the palette drops itself below the readout with a CSS sibling rule -
+            // which only matches a PRECEDING sibling, so the order here is what makes the
+            // two stack instead of overlapping.
+            ModulePalette.NaAudio__ModulePalette__Build(hudMount, surface);
+
             BootGate.NaAudio__BootGate__OnEnter(function () {
                 return NaAudio__Init__StartAudio().then(function () {
                     HelpOverlay.NaAudio__HelpOverlay__ShowIfFirstVisit(runtime ? runtime.ShowHelpOnFirstBoot : false);
@@ -403,6 +410,7 @@ import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIn
             Connect        : PatchGraph.NaAudio__PatchGraph__Connect,
             Disconnect     : PatchGraph.NaAudio__PatchGraph__Disconnect,
             Wiring         : WiringController,
+            Palette        : ModulePalette,
             Transport      : Transport,
             SampleBank     : SampleBank,
             MasterLevel    : AudioHost.NaAudio__AudioHost__MasterLevel,       // <-- Lets a check prove a patch is audible, not merely drawn

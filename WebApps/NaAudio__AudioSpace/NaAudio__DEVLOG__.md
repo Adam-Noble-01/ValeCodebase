@@ -1,6 +1,142 @@
 # AudioSPACE Development Log
 # =========================================================
 
+# ---------------------------------------------------------
+## NaAudio__AudioSpace v0.4.0 - 08-Aug-2026
+### A palette you drag modules out of
+
+The space booted with three modules and there was no way to make a fourth. Build mode
+could move what was already there and nothing else. So there is now a palette down the
+left in build mode, one plate per module type, and you drag a plate onto the ground to
+place one.
+
+Everything the palette places is an ordinary module. Same registry, same save format,
+same everything - a placed sequencer and a booted sequencer differ only in their id.
+
+---
+
+### Pointer events, not HTML5 drag-and-drop
+
+The native drag-and-drop API looks like the obvious fit and is the wrong tool here. It
+suppresses pointermove over the drop target, hands you a drag image you cannot replace
+with a 3D preview, and fires dragover at the browser's cadence rather than the frame's.
+All three matter when the thing you are dragging has to be shown standing on the ground
+under the cursor, at the correct footprint, updating every frame.
+
+Pointer capture on the plate gives an unbroken stream of positions from press to
+release, which is all this needed.
+
+---
+
+### The ghost shows the real footprint, and refuses before the drop
+
+While a drag is live a flat pad and a wireframe cage follow the cursor across the
+ground, sized from that type's declared `CageSize` - so a DelayCloud reads as the large
+thing it is before you commit to it rather than after.
+
+It turns terracotta and refuses when the position is blocked. Blocked means within
+`MinimumSeparation` of an existing module's footprint, which is a question the registry
+answers, not the palette - `NaAudio__ModuleRegistry__IsPositionClear` is the same test a
+future load or an undo would want.
+
+Refusing during the drag rather than at the drop is the whole point. A drop that
+silently does nothing is indistinguishable from a bug.
+
+---
+
+### The thumbnails are photographs of the real module
+
+Each plate's picture is a render of an actual instance of that type, taken once, the
+first time the palette opens: build the module into an offscreen scene, render it into
+a `WebGLRenderTarget` through the main renderer, read the pixels back, throw the
+instance away.
+
+A hand-drawn icon is faster to make and wrong within a month, because nothing ever fails
+to make somebody go and redraw it. A photograph cannot drift - it is the same `Build`
+the space runs.
+
+It is done through the main renderer rather than a second one, because a second
+`WebGLRenderer` is a second GL context and a second copy of every shader it compiles, in
+a tab that already has the space in it. `readRenderTargetPixels` stalls the GPU, which is
+why this is once per type and on demand: three stalls the first time somebody opens the
+palette is imperceptible, three stalls during boot would land in the one place the
+application is already busiest.
+
+---
+
+### Why building a module for a photograph is safe
+
+Because of the output post. A module bus connects to nothing until a lead is patched
+into it, so a module built outside the space has no route to the speakers and there is
+nothing to remember to mute. It is never added to the registry either, so nothing calls
+its Update or its Schedule.
+
+That is the v0.3.0 rule paying for itself somewhere it was not designed for.
+
+---
+
+### A blank sequencer was the wrong default
+
+The first module placed from the palette was silent, and correctly so - it arrived with
+`Settings: {}`, which for a sequencer means four empty lanes. Technically right, useless
+in practice: you drag in a drum machine to hear a drum machine.
+
+Every type now declares `DefaultSettings` in its config, deep-copied and merged UNDER
+anything the caller passes, so a load from a save file still wins over the default. The
+sequencer's is a plain four-on-the-floor with a backbeat and a hat line.
+
+---
+
+### Auto-patch, and why it does not weaken the output post
+
+A placed module is patched to the nearest master output on arrival. That sounds like it
+undoes v0.3.0's rule that nothing reaches the speakers without a visible cable, and it
+does not: the cable is real, it is drawn, it routes around the instruments like every
+other lead, and you can pull it out in wiring mode. It is the same patch you would have
+made by hand, made for you.
+
+The rule was never "make the user do the work". It was "the signal path is on screen".
+
+---
+
+### Four things that went wrong
+
+**The panel never received the pointer.** `.NaAudio__Palette` sets `pointer-events: none`
+in the HUD stylesheet, which is imported after the base layout, so it out-ordered the
+base layout's `--visible` allowlist rule at equal specificity. The panel drew perfectly
+and was not there as far as the mouse was concerned. Fixed the way the inspector and the
+help overlay already did it - pair the `auto` onto the `--visible` rule in the same file.
+The base layout keeps the allowlist; the HUD sheet is what actually wins.
+
+**The drop placed nothing.** `pointerup` re-derived the ground position from the up
+event, and an up event does not reliably carry a usable one. The ghost already knew
+exactly where it was standing, so the drop now uses that and nothing else.
+
+**The diagnostics panel sat on top of the palette.** Both anchor to the same corner.
+Resolved with a sibling selector rather than a hard offset, which meant building the
+palette after diagnostics in Init so the selector matches.
+
+**A refusal that was correct.** One drop test failed and the code was right - the target
+was 5 cm inside another module's separation ring. The test was wrong, not the check.
+
+---
+
+### Verified
+
+Placed a second sequencer from the palette into a live space:
+
+    modules            4 -> 5, SEQ_02 arrives
+    cable              SEQ_02 -> OUT_01, routed
+    master peak        0.288 with only the placed module patched
+    master peak        0.000 after unplugging it
+    independence       editing SEQ_02's pattern leaves SEQ_01 untouched
+    blocked drop       refused, ghost terracotta
+    console errors     none
+
+It makes sound, it is its own module, and it goes away cleanly.
+
+
+
 
 # ---------------------------------------------------------
 ## NaAudio__AudioSpace v0.3.2 - 08-Aug-2026

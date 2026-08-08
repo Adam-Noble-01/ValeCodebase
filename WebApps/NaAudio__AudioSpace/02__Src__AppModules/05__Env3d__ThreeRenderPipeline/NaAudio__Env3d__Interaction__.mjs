@@ -302,6 +302,34 @@ import {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Ground Point From an Event That Did Not Come From the Canvas
+    // ------------------------------------------------------------
+    // The palette's drag starts on an HTML panel, so the canvas never sees the
+    // pointerdown and its own move handler may not have run for the current position.
+    // This updates the pointer from the event first and then raycasts, so a caller
+    // listening on the window gets the same answer the canvas would have given.
+    export function NaAudio__Env3d__Interaction__GroundPointFromEvent(event, out) {
+        if (!attachedSurface) return null;
+
+        NaAudio__Env3d__Interaction__UpdatePointer(event);
+        return NaAudio__Env3d__Interaction__GroundPoint(out);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether a Point Is Over the Viewport Canvas
+    // ------------------------------------------------------------
+    // A drop is only a placement if it landed on the space. Released back over the
+    // palette, or off the window entirely, it is a cancel.
+    export function NaAudio__Env3d__Interaction__IsOverViewport(clientX, clientY) {
+        if (!attachedSurface) return false;
+
+        const rect  =  attachedSurface.Renderer.domElement.getBoundingClientRect();
+        return clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Raycast the Pointer Onto the Ground Plane
     // ------------------------------------------------------------
     // Exposed because the HUD's add-module flow needs a ground point without going

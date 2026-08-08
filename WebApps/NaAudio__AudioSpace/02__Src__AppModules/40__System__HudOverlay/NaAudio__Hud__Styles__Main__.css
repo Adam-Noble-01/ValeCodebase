@@ -129,6 +129,123 @@
     }
     /* ------------------------------------------------------------ */
 
+
+    /* PALETTE | The Build-Mode Side Menu */
+    /* ------------------------------------------------------------ */
+    /* Slides out of the left edge in Build mode and is gone in the other two. It is    */
+    /* translated rather than display:none'd so the previews inside it keep their       */
+    /* layout - an image sized inside a hidden panel has no size to be sized against.   */
+    .NaAudio__Palette {
+        position                           :  absolute;
+        left                               :  var(--NaAudio_HudInset);
+        top                                :  calc(var(--NaAudio_HudInset) + 96px);
+        width                              :  188px;
+        max-height                         :  calc(100% - 210px);
+        display                            :  flex;
+        flex-direction                     :  column;
+        gap                                :  8px;
+        padding                            :  14px 12px;
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-radius                      :  var(--NaAudio_PanelRadius);
+        background-color                   :  var(--NaAudio_PanelBackground);
+        box-shadow                         :  var(--NaAudio_PanelShadow);
+        opacity                            :  0;
+        transform                          :  translateX(-14px);
+        transition                         :  opacity var(--NaAudio_TransitionPanel), transform var(--NaAudio_TransitionPanel);
+        pointer-events                     :  none;
+    }
+
+    /* pointer-events lives HERE and not only in the base layout's allowlist. This      */
+    /* stylesheet is imported after that one, so the .NaAudio__Palette base rule below   */
+    /* out-orders an equal-specificity rule over there and the panel silently never took */
+    /* the pointer - the entries looked right and nothing happened on pointerdown. The   */
+    /* inspector and the help overlay both pair theirs the same way, in the same file.   */
+    /* The diagnostics readout occupies the same corner. When it is present the palette */
+    /* drops below it; when diagnostics are off the palette takes the corner itself. The */
+    /* sibling selector only matches a PRECEDING element, which is why the palette is    */
+    /* built after the readout in the boot sequence.                                     */
+    .NaAudio__Diagnostics ~ .NaAudio__Palette {
+        top                                :  calc(var(--NaAudio_HudInset) + 214px);
+        max-height                         :  calc(100% - 330px);
+    }
+
+    .NaAudio__Palette--visible {
+        opacity                            :  1;
+        transform                          :  translateX(0);
+        pointer-events                     :  auto;
+    }
+
+    .NaAudio__Palette__Heading {
+        margin                             :  0;
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        font-weight                        :  600;
+        letter-spacing                     :  var(--NaAudio_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+        color                              :  var(--NaAudio_InkSoft);
+    }
+
+    .NaAudio__Palette__Hint {
+        margin                             :  -4px 0 2px 0;
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        color                              :  var(--NaAudio_InkFaint);
+    }
+
+    .NaAudio__Palette__List {
+        display                            :  flex;
+        flex-direction                     :  column;
+        gap                                :  8px;
+        overflow-y                         :  auto;
+        min-height                         :  0;
+    }
+
+    .NaAudio__Palette__Entry {
+        display                            :  flex;
+        flex-direction                     :  column;
+        gap                                :  4px;
+        padding                            :  6px;
+        border                             :  var(--NaAudio_BorderWidth) solid transparent;
+        border-radius                      :  var(--NaAudio_ControlRadius);
+        background-color                   :  var(--NaAudio_ControlBackground);
+        cursor                             :  grab;
+        transition                         :  border-color var(--NaAudio_TransitionQuick), background-color var(--NaAudio_TransitionQuick);
+        touch-action                       :  none;                        /* <-- Or a touch drag scrolls the list instead of placing */
+    }
+
+    .NaAudio__Palette__Entry:hover {
+        border-color                       :  var(--NaAudio_SlateBlue);
+    }
+
+    .NaAudio__Palette--dragging .NaAudio__Palette__Entry {
+        cursor                             :  grabbing;
+    }
+
+    /* The thumbnail. Sized before it has an image, so the panel does not reflow when   */
+    /* the previews arrive - they are captured lazily and land a frame or two late.     */
+    .NaAudio__Palette__Preview {
+        display                            :  block;
+        width                              :  100%;
+        aspect-ratio                       :  1 / 1;
+        border-radius                      :  calc(var(--NaAudio_ControlRadius) - 1px);
+        background-color                   :  var(--NaAudio_Paper);
+        background-size                    :  cover;
+        background-position                :  center;
+    }
+
+    .NaAudio__Palette__Caption {
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        font-weight                        :  600;
+        text-align                         :  center;
+        color                              :  var(--NaAudio_Ink);
+    }
+
+    @media (max-height: 720px) {
+        .NaAudio__Palette {
+            top                            :  calc(var(--NaAudio_HudInset) + 76px);
+            width                          :  150px;
+        }
+    }
+    /* ------------------------------------------------------------ */
+
 /* #endregion ------------------------------------------------------------------- */
 
 

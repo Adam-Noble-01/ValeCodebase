@@ -44,7 +44,7 @@
 
     const MODE_ROWS  =  [
         ['Play',        'Work the controls. Steps, faces, knobs and sliders are all live, and modules are pinned where they stand so a control drag can never move one.'],
-        ['Build',       'Arrange the space. Drag any module pad to reposition it, and every control and cable is frozen - a stray click cannot alter a pattern you have already programmed.'],
+        ['Build',       'Arrange the space. Drag any module pad to reposition it, add new ones from the palette on the left, and every control and cable is frozen - a stray click cannot alter a pattern you have already programmed.'],
         ['Wiring',      'Patch the signal. Modules are pinned and every control is frozen; the sockets and the leads are the only live things in the scene.'],
         ['Which is on', 'The coloured rule across the top edge, the switch beneath it, and the pointer cursor. Blue is Build, green is Play, ochre is Wiring.']
     ];
@@ -65,6 +65,7 @@
         ['Select a module',  'Click its pad, in either mode'],
         ['Move a module',    'Drag its pad, in Build mode only'],
         ['Clear selection',  'Click the floor'],
+        ['Add a module',     'Drag one out of the palette, in Build mode only'],
         ['Patch two modules','Drag socket to socket, in Wiring mode only'],
         ['Unplug a lead',    'Click the lead, in Wiring mode only']
     ];
@@ -93,9 +94,18 @@
         ['Bank',          'Four kit positions. A placeholder for a larger kit browser, but the kits behind it are real.']
     ];
 
+    const PLACEMENT_ROWS  =  [
+        ['The palette',   'Down the left edge in Build mode. Each entry is a real render of the module, taken from the module itself rather than drawn - so it cannot go out of date.'],
+        ['Placing one',   'Drag an entry onto the floor. A ghost of the module\'s own footprint follows the pointer, snapped to the same grid a dragged module uses, so what you see before you let go is what you get.'],
+        ['Refusals',      'The ghost turns terracotta over a spot that is taken and the drop does nothing. Dropping a module inside another is never what was meant and is a nuisance to undo.'],
+        ['What arrives',  'A new instrument comes with a starting pattern rather than empty, is patched straight into the nearest output post, and is selected so the inspector names it.'],
+        ['Escape',        'Abandons a drag in progress.']
+    ];
+
     const BUILT_ROWS  =  [
         'The 3D environment, lighting, camera and pointer interaction',
         'Build, Play and Wiring modes, gating every handle in the scene',
+        'A module palette - drag a new instrument out of it and onto the floor',
         'A ground field that forms soft islands under clusters of modules',
         'Hand patching - sockets on every module, leads you drag, and one output post',
         'A lookahead audio scheduler with sample playback and voice management',
@@ -239,6 +249,7 @@
         right.appendChild(NaAudio__HelpOverlay__Section('The three modules',           MODULE_ROWS,    false));
         right.appendChild(NaAudio__HelpOverlay__Section('The sequencer control bank',  SEQUENCER_ROWS, false));
         right.appendChild(NaAudio__HelpOverlay__Section('Signal and wiring',            WIRING_ROWS,    false));
+        right.appendChild(NaAudio__HelpOverlay__Section('Adding modules',               PLACEMENT_ROWS, false));
 
         columns.appendChild(left);
         columns.appendChild(right);

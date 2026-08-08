@@ -94,6 +94,7 @@
         },
         "NaAudio__SpatialModules__Config__TypeDefaults": {
             "OutputPost": {
+                "IdPrefix": "OUT",
                 "TypeLabel": "Output Post",
                 "TypeNote": "The single exit from the space. Its audio input IS the master bus, so anything patched into it - in series, in parallel, in any arrangement - is what reaches the speakers, and anything with no path to it is silent. That one rule is what makes the signal flow in this space readable by eye.",
                 "CageSize": {
@@ -115,7 +116,22 @@
                 "ColumnHeightNote": "The master level column standing on the post, scaled on Y by the master meter. Full height is a signal at the limiter."
             },
             "CircularSequencer": {
+                "IdPrefix": "SEQ",
                 "TypeLabel": "Circular Sequencer",
+                "DefaultSettings": {
+                    "DefaultSettingsNote": "What a sequencer placed from the palette arrives with. A blank one is silent AND looks exactly like a working one, so dragging in a second drum machine gives you no way to tell whether it is empty or broken - a starting groove answers that in one bar. It is deliberately not the demonstration space's pattern; two identical sequencers side by side is its own kind of confusing.",
+                    "KitId": "KIT_Cr78",
+                    "Divisions": 16,
+                    "LaneCount": 4,
+                    "Gain": 0.82,
+                    "Patterns": [
+                        "x.......x.......",
+                        "....x.......x...",
+                        "x.x.x.x.x.x.x.x.",
+                        "................"
+                    ]
+                },
+
                 "HasInput": false,
                 "HasInputNote": "A sequencer is a source. It has no audio input, so it gets no input socket - a socket you can plug into that carries nothing is worse than no socket, because the lead draws and the connection looks made. When the manifest's trigger cables land this becomes a trigger input rather than an audio one.",
                 "TypeNote": "The manifest's radical departure from the linear step sequencer. Steps sit on a circle, a marker sweeps like a clock hand at the project tempo, and the division count is free rather than locked to sixteen.",
@@ -239,7 +255,14 @@
                 "KitDefaultIndex": 0
             },
             "CubeMod": {
+                "IdPrefix": "CUBE",
                 "TypeLabel": "CubeMod",
+                "DefaultSettings": {
+                    "RootNote": "C2",
+                    "Scale": "pentatonicMinor",
+                    "SelfPlay": true
+                },
+
                 "HasInput": false,
                 "HasInputNote": "A CubeMod drives its own voice and takes no audio in. Same reasoning as the sequencer - it will gain a modulation input, not an audio one.",
                 "TypeNote": "An XY pad mapped to each of the six faces of a rotatable cube, so one controller carries twelve dimensions instead of two. Rotating the cube brings a different pair of parameters to hand.",
@@ -297,7 +320,19 @@
                 ]
             },
             "DelayCloud": {
+                "IdPrefix": "CLOUD",
                 "TypeLabel": "DelayCloud",
+                "DefaultSettings": {
+                    "Seed": 8815,
+                    "BounceAssetIds": [
+                        "SMP_FXH0612",
+                        "SMP_FXH0613",
+                        "SMP_FXH0611",
+                        "SMP_FXH0614",
+                        "SMP_FXH0632"
+                    ]
+                },
+
                 "TailDrainSeconds": 0.35,
                 "TailDrainSecondsNote": "How long the feedback path takes to ramp to silence when the transport stops. Not a hard cut - the tail then dies over its own couple of repeats, which is a musical stop rather than a guillotine. Zero would click.",
                 "TypeNote": "An enclosure the user resizes by hand, with sample spheres bouncing inside it. The box dimensions ARE the parameters - length sets reverb decay, width sets delay time, height sets the damping filter - so the shape of the space you can see is the shape of the space you can hear.",
@@ -355,6 +390,20 @@
                     }
                 ]
             }
+        },
+        "NaAudio__SpatialModules__Config__Placement": {
+            "PlacementNote": "Dragging a module out of the Build-mode palette and onto the floor. The ghost shows the footprint the module will actually occupy, snapped to the same grid a dragged module uses, so what you see before you let go is where it lands.",
+            "GhostHeight": 0.9,
+            "GhostOpacity": 0.42,
+            "GhostBlockedOpacity": 0.3,
+            "GhostPigment": "SlateBlue",
+            "GhostBlockedPigment": "Terracotta",
+            "MinimumSeparation": 0.55,
+            "MinimumSeparationNote": "Metres of clear floor required between the new module's footprint and every existing one. Below this the ghost turns terracotta and the drop is refused - dropping a module inside another is never what was meant, and undoing it means finding and dragging the thing back out from inside its neighbour.",
+            "AutoPatchOnAdd": true,
+            "AutoPatchOnAddNote": "A newly placed module is patched straight into the nearest Output Post. This does NOT weaken the rule that nothing reaches the speakers except through a cable - a real cable is created, visible and unpluggable like any other. It only writes the first one for you, because dropping an instrument and hearing silence until you switch modes and patch it by hand is a poor welcome. Set false to place everything unpatched.",
+            "PreviewSizePx": 168,
+            "PreviewNote": "Palette thumbnails are REAL renders of each module type, captured once through the main renderer into an offscreen target the first time the palette opens. A drawn icon would drift from the module the day either changed."
         },
         "NaAudio__SpatialModules__Config__Modes": {
             "ModesNote": "Build, Play and Wiring, per NaAudio__AppCore__ModeManager. Build moves modules and freezes everything else; Play works the controls and pins the modules; Wiring patches the signal and freezes both. The split exists because a module's pad, its controls and its sockets all sit centimetres apart in a space the user orbits, so reaching for one and catching another is the common case - and catching a sequencer step means a silently rewritten pattern.",

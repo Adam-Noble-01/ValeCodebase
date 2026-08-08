@@ -46,7 +46,10 @@
 
 import * as THREE from 'three';
 
-import { SpatialSection, SpatialNumber, SpatialBool }  from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
+import {
+    SpatialSection, SpatialNumber, SpatialBool,
+    NaAudio__ConfigAccess__ModuleTypeDefaults
+} from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
 import { NaAudio__WiringController__Hooks }  from './NaAudio__Spatial__WiringController__.mjs';
 import * as ModuleBase                                  from './NaAudio__Spatial__ModuleBase__.mjs';
 import { NaAudio__Env3d__SceneManager__AddUpdateHook }   from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__SceneManager__.mjs';
@@ -209,6 +212,62 @@ import {
 // REGION | Instance Lifecycle
 // -----------------------------------------------------------------------------
 
+    // FUNCTION | The Implementation Registered Under a Type Name
+    // ------------------------------------------------------------
+    export function NaAudio__ModuleRegistry__Type(typeName) {
+        return TYPES.get(typeName) || null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Next Free Id for a Type
+    // ------------------------------------------------------------
+    // SEQ_01, SEQ_02 and so on, from the type's IdPrefix. It scans for the highest
+    // number already in use rather than counting instances, because counting gives the
+    // id of a module that was deleted back to the next one added - and a space file, a
+    // saved patch and an undo history would then all disagree about which SEQ_02 was
+    // meant.
+    export function NaAudio__ModuleRegistry__NextId(typeName) {
+        const defaults  =  SpatialSection('TypeDefaults')[typeName];
+        const prefix    =  (defaults && defaults.IdPrefix) ? defaults.IdPrefix : typeName.toUpperCase().slice(0, 4);
+
+        let highest  =  0;
+
+        for (const moduleId of INSTANCES.keys()) {
+            if (moduleId.indexOf(prefix + '_') !== 0) continue;
+
+            const suffix  =  parseInt(moduleId.slice(prefix.length + 1), 10);
+            if (!isNaN(suffix) && suffix > highest) highest = suffix;
+        }
+
+        return prefix + '_' + String(highest + 1).padStart(2, '0');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether a Footprint Would Fit at a Position
+    // ------------------------------------------------------------
+    // Used by the placement ghost to refuse a drop before it happens. Compared against
+    // the LIVE base width, so an expanded sequencer is as big as it looks.
+    export function NaAudio__ModuleRegistry__IsPositionClear(x, z, footprint, ignoreModuleId) {
+        const separation  =  SpatialNumber('Placement', 'MinimumSeparation');
+
+        for (const module of INSTANCES.values()) {
+            if (module.ModuleId === ignoreModuleId) continue;
+
+            const other  =  Math.max(module.BaseWidth || module.CageSize.x, module.CageSize.z) * 0.5;
+            const needed =  footprint * 0.5 + other + separation;
+
+            const dx  =  module.Position.x - x;
+            const dz  =  module.Position.z - z;
+
+            if (dx * dx + dz * dz < needed * needed) return false;
+        }
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Add a Module Instance From a Definition
     // ------------------------------------------------------------
     export function NaAudio__ModuleRegistry__Add(definition) {
@@ -225,6 +284,26 @@ import {
         }
 
         const resolved  =  Object.assign({}, definition);
+
+        // A TYPE'S OWN DEFAULTS, UNDER whatever the caller supplied.
+        //
+        // A space file names everything it wants and this changes nothing for it. A module
+        // placed from the palette supplies almost nothing, and without this a fresh
+        // sequencer arrived with every lane empty - silent, and visually identical to a
+        // working one, so there was no way to tell whether it was blank or broken.
+        //
+        // Deep-copied, because the merged object becomes module.Settings and a module type
+        // is free to write to that. A shallow copy would hand every future instance of the
+        // type a reference to the same array the config was parsed into, and the first
+        // module to edit its pattern would quietly rewrite the default for the next one.
+        const typeDefaults  =  NaAudio__ConfigAccess__ModuleTypeDefaults(definition.TypeName);
+
+        if (typeDefaults && typeDefaults.DefaultSettings) {
+            resolved.Settings  =  Object.assign(
+                JSON.parse(JSON.stringify(typeDefaults.DefaultSettings)),
+                definition.Settings || {}
+            );
+        }
 
         if (!resolved.Position) {
             resolved.Position  =  NaAudio__ModuleRegistry__PushClear(NaAudio__ModuleRegistry__RingPosition(INSTANCES.size));

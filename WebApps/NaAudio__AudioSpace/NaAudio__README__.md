@@ -1,6 +1,6 @@
 # AudioSPACE
 
-**Spatial Music Production Environment** — v0.3.2, Environment Prototype
+**Spatial Music Production Environment** — v0.4.0, Environment Prototype
 
 A 3D environment for building a piece of music as a *place* rather than as a list of
 tracks. Everything you can see is a control; everything that makes a sound is somewhere.
@@ -51,6 +51,32 @@ makes dragging a densely-covered module possible at all.
 Mode is not a HUD concern that modules consult. `NaAudio__AppCore__ModeManager` is the
 authority, it publishes `ModeChanged` on the bus, and the HUD indicator is just another
 subscriber.
+
+---
+
+## Adding modules
+
+Build mode carries a palette down the left edge. Drag an entry onto the floor and a ghost
+of that module's **own footprint** follows the pointer — the same rounded pad, the same
+wire cage, the same size, snapped to the same grid a dragged module uses. What you see
+before you let go is what you get. Spots that are taken turn the ghost terracotta and the
+drop does nothing.
+
+The thumbnails are **real renders**, not drawn icons. `NaAudio__Env3d__TypePreview` builds
+one instance of each type into an offscreen scene, renders it through the main renderer
+into a render target, reads the pixels back and throws the instance away. An icon would
+be wrong within a month of anybody touching a module's geometry; a photograph of the
+actual Build cannot drift.
+
+Instantiating a module for a photograph is safe *because of the output post* — a module
+bus connects to nothing until a cable is patched into it, so a module built outside the
+space is silent by construction. That rule paying for itself somewhere it wasn't designed
+for.
+
+A newly placed module arrives with a **starting pattern** from its type's `DefaultSettings`,
+is **patched into the nearest output post**, and is selected so the inspector names it. The
+auto-patch does not weaken the routing rule — it creates a real, visible, unpluggable
+cable; it just writes the first one for you. `AutoPatchOnAdd: false` turns it off.
 
 ---
 
@@ -377,6 +403,8 @@ The ones worth reading first:
 | `NaAudio__Env3d__CableFactory__.mjs` | Why a lead leaves along the socket normal, and why the frame is parallel-transported |
 | `NaAudio__Spatial__WiringController__.mjs` | Why one state machine serves both patching gestures, and why the drop target is resolved rather than passed in |
 | `NaAudio__Module__OutputPost__.mjs` | Why the master output is an object standing in the space |
+| `NaAudio__Hud__ModulePalette__.mjs` | Why the drag is pointer events rather than HTML5 drag and drop |
+| `NaAudio__Env3d__TypePreview__.mjs` | Why a palette thumbnail is a render and not an icon |
 | `NaAudio__Hud__ModuleInspector__.mjs` | Why the inspector exposes no parameters at all |
 
 ---

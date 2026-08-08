@@ -110,9 +110,13 @@
         pointer-events                     :  auto;
     }
 
-    /* These two are full-viewport or near it, so they take the pointer only while they */
-    /* are actually on screen - see their own visibility rules in the HUD stylesheet.    */
+    /* These are full-viewport, or hidden until asked for, so they take the pointer only */
+    /* while they are actually on screen. Each ALSO sets pointer-events on its own        */
+    /* --visible rule in the HUD stylesheet, which is imported after this file and would  */
+    /* otherwise out-order these at equal specificity. The rules here are the allowlist;  */
+    /* the ones over there are what actually wins.                                        */
     .NaAudio__Inspector--visible,
+    .NaAudio__Palette--visible,
     .NaAudio__Help--visible {
         pointer-events                     :  auto;
     }

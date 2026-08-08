@@ -395,6 +395,57 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Patch a New Module Straight Into the Nearest Output Post
+    // ------------------------------------------------------------
+    // Used when a module is placed from the palette. It creates a REAL cable - visible,
+    // followable and unpluggable like any other - so the rule that nothing reaches the
+    // speakers except through a cable is untouched. It only writes the first one.
+    //
+    // Nearest rather than first, because a space with an A and a B post has them in
+    // different places for a reason, and a module dropped beside one of them plainly
+    // means that one.
+    //
+    // A module with no output - another post - is left alone rather than reported. There
+    // is nothing wrong with placing one; it simply has nothing to patch.
+    export function NaAudio__PatchGraph__AutoPatchToOutput(moduleId) {
+        const module  =  NaAudio__ModuleRegistry__Module(moduleId);
+        if (!module) return null;
+        if (module.Defaults && module.Defaults.HasOutput === false) return null;
+
+        let nearest   =  null;
+        let nearestSq =  Infinity;
+
+        const modules  =  NaAudio__ModuleRegistry__Modules();
+
+        for (let i = 0; i < modules.length; i++) {
+            const candidate  =  modules[i];
+            if (candidate.ModuleId === moduleId) continue;
+            if (!candidate.Defaults || candidate.Defaults.IsMasterOutput !== true) continue;
+
+            const dx  =  candidate.Position.x - module.Position.x;
+            const dz  =  candidate.Position.z - module.Position.z;
+            const distanceSq  =  dx * dx + dz * dz;
+
+            if (distanceSq < nearestSq) {
+                nearestSq  =  distanceSq;
+                nearest    =  candidate;
+            }
+        }
+
+        if (!nearest) {
+            console.warn('[NaAudio PatchGraph] "' + moduleId + '" was placed but there is no Output Post in this space, so it has nowhere to be patched and will be silent. Add a post, or patch it into something that reaches one.');
+            return null;
+        }
+
+        return NaAudio__PatchGraph__Connect({
+            FromModuleId : moduleId,
+            ToModuleId   : nearest.ModuleId,
+            SignalType   : NaAudio__SignalType.Audio
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Disconnect a Cable
     // ------------------------------------------------------------
     export function NaAudio__PatchGraph__Disconnect(cableId) {

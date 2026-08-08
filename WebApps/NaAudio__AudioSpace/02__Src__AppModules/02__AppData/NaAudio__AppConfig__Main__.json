@@ -3,7 +3,7 @@
         "NaAudio__AppConfig__Main__Meta": {
             "AppName"                         : "AudioSPACE",
             "AppLongName"                     : "AudioSPACE - Spatial Music Production Environment",
-            "AppVersion"                      : "0.3.1",
+            "AppVersion"                      : "0.3.2",
             "AppStage"                        : "Environment Prototype",
             "AppStageNote"                    : "This build proves the environment, not the DAW. The 3D space, the transport, the sample engine and three demonstration spatial modules are real and working. The wider instrument and effect set described in the AudioSPACE Concept Manifest 1.0.0 is deliberately not stubbed out.",
             "Author"                          : "Adam Noble - Noble Architecture",

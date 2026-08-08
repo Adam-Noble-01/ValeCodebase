@@ -40,6 +40,13 @@
         "NaAudio__SpatialModules__Config__PatchGraph": {
             "PatchGraphNote": "The 3D noodles from the manifest. A cable is a swept tube along a cubic Bezier that leaves each socket along the socket's own axis before it droops, with a moulded plug at each end and a sprung slack so it swings when a module is dragged.",
             "CableGroundHeight": 0.06,
+            "CableObstacleClearance": 0.45,
+            "CableObstacleClearanceNote": "How far outside a module's own footprint a lead is pushed when routing around it, in metres. This is the whole feel of the patch bay: too small and leads graze the pads they are avoiding, too large and a modest cluster has no gaps left between its clearance circles and every lead takes an absurd detour. Measured from half the module's LIVE base width, so an expanded sequencer pushes leads clear of its workbench too.",
+            "CableRouteSmoothingMargin": 0.12,
+            "CableRouteSmoothingMarginNote": "Waypoints are placed this far PAST the clearance circle. The path is smoothed into a spline before it is drawn and a spline through points sitting exactly on a circle cuts the corner; this margin is what the smoothing is allowed to eat.",
+            "CableRouteMaxWaypoints": 8,
+            "CableRouteIterations": 14,
+            "CableRouteNote": "Both caps are real. A cluster whose clearance circles overlap into a ring encloses the space inside it and has no clear route at all, and without a bound the router would insert waypoints until the frame died. On hitting a cap the lead is drawn crossing something and says so once - a lead taking a bad line is a far smaller lie than a lead that vanishes.",
             "CableGroundHeightNote": "The height a lead runs at once it has left its socket. Leads lie on the ground and go AROUND the space rather than arcing over it - a patch bay you look down on rather than a cat's cradle strung between the instruments. This is the single number that decides that.",
             "CableLeadOut": 0.55,
             "CableLeadOutNote": "How far a lead runs straight out of a socket before it starts to bend, in metres, capped at a third of the span so a short hop does not overshoot. This one detail is what makes a cable read as plugged into something rather than drawn between two points.",

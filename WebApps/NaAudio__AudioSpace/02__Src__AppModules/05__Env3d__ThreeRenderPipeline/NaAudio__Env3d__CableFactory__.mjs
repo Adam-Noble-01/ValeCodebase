@@ -12,8 +12,8 @@
    DESCRIPTION:
    - A cable is a swept tube along a cubic Bezier, with a moulded plug at each end.
    - It leaves each socket along the socket's own axis and then drops to the floor, so
-     leads run ALONG THE GROUND between instruments rather than arcing over them.
-   - Its control points are sprung, so dragging a module whips its leads and they settle.
+     leads run ALONG THE GROUND between instruments and route AROUND them.
+   - Its lead-out points are sprung, so dragging a module whips its leads and they settle.
 
    ---------------------------------------------------------------------------
 
@@ -30,41 +30,23 @@
 
    ---------------------------------------------------------------------------
 
-   LEADS RUN ALONG THE GROUND
+   LEADS RUN ALONG THE GROUND, ON A PATH SOMEBODY ELSE CHOSE
 
-       p0  the output port, low on the rim of a module's pad
-       c0  p0 pushed out along the port's own normal, and DROPPED to ground height
-       c1  p1 pushed out along its port's normal, and dropped to ground height
-       p1  the input port
+   This file no longer decides where a lead goes. It is handed a polyline - socket,
+   lead-out, however many waypoints the route needed, lead-in, socket - and sweeps a tube
+   along a centripetal Catmull-Rom through it. NaAudio__Spatial__CableRouter does the
+   choosing, because avoiding the instruments means knowing where the instruments are, and
+   that is spatial knowledge rather than render knowledge.
 
-   Both control points sit at CableGroundHeight, so a lead leaves its socket, meets the
-   floor, and runs across it. It does not arc.
+   Centripetal rather than uniform Catmull-Rom, and that is not a detail. A uniform spline
+   through unevenly spaced points overshoots between them, and every waypoint on this path
+   exists precisely because something must not be overshot into. Centripetal
+   parameterisation is the variant with the guarantee against cusps and self-intersection,
+   which is the guarantee the router is relying on when it places a point just outside an
+   obstacle.
 
-   The first version sagged from the straight port-to-port line instead, which drew a
-   catenary through the AIR between two sockets. With the sockets up at chest height that
-   put every lead in a great swooping curve over the middle of the space - a cat's cradle
-   strung between the instruments rather than a patch bay you look down on. Worse, the
-   leads crossed the airspace above other modules, so a busy space became unreadable from
-   any angle that was not directly overhead.
-
-   Dropping to the floor fixes both. Leads go AROUND the space at ankle height, they read
-   as one continuous ground plan of the signal, and nothing is ever hidden behind one.
-
-   The lead-out along the socket normal is what still sells the connection. Without it a
-   cable emerges sideways from the socket face, which no physical lead does, and the plug
-   at that end has to point somewhere arbitrary. With it the plug points straight out of
-   the socket and the curve does the bending down to the floor.
-
-   ---------------------------------------------------------------------------
-
-   THE CONTROL POINTS ARE SPRUNG, AND IT IS NOT DECORATION
-
-   The two control points are not placed directly. Each chases its target through a damped
-   spring, so when a module is dragged its lead lags behind, overshoots and settles - a
-   whip along the floor rather than a curve simply redrawn each frame.
-
-   The settle is a half-second of motion after a drag ends that says the patch is still
-   connected and still yours, which a rigid curve snapping to its new shape does not.
+   The first and last points are the sockets themselves, so a lead always starts and ends
+   exactly where its plug is, whatever the route did in between.
 
    ---------------------------------------------------------------------------
 
@@ -79,8 +61,8 @@
    never touched. Nothing here allocates after construction.
 
    Parallel transport rather than a Frenet frame on purpose: a Frenet frame flips its
-   normal through an inflection point, and a lead that drops to the floor and rises again
-   has two of them - which shows up as the tube visibly twisting as it is dragged.
+   normal through an inflection point, and a routed lead has one at every waypoint - which
+   would show up as the tube visibly twisting each time it rounded an instrument.
 
    ============================================================================= */
 
@@ -112,6 +94,8 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
     const SCRATCH_AXIS     =  new THREE.Vector3();
     const SCRATCH_QUAT     =  new THREE.Quaternion();
 
+    const REST_EPSILON     =  0.000004;                                      // <-- Squared speed below which a lead-out spring has stopped
+
     const PLUG_FORWARD     =  new THREE.Vector3(0, 1, 0);                    // <-- A cylinder's own axis in three is +Y
     const FALLBACK_UP      =  new THREE.Vector3(0, 1, 0);
     const FALLBACK_SIDE    =  new THREE.Vector3(1, 0, 0);
@@ -124,51 +108,27 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
 // REGION | Curve Evaluation
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Evaluate a Cubic Bezier at t
+    // HELPER FUNCTION | Point the Cable Curve Through the Current Path
     // ------------------------------------------------------------
-    // By hand rather than through THREE.CubicBezierCurve3, which allocates a Vector3 per
-    // evaluation and is called thirty times per cable per frame.
-    function NaAudio__Env3d__CableFactory__Evaluate(p0, c0, c1, p1, t, out) {
-        const inverse  =  1 - t;
-        const a  =  inverse * inverse * inverse;
-        const b  =  3 * inverse * inverse * t;
-        const c  =  3 * inverse * t * t;
-        const d  =  t * t * t;
+    // The curve's points array is REPLACED with a slice of the cable's own path vectors
+    // rather than being rebuilt from copies. CatmullRomCurve3 only ever reads them, and a
+    // route can change length every frame while a module is dragged - copying would mean
+    // a fresh array and a fresh set of vectors per cable per frame.
+    function NaAudio__Env3d__CableFactory__PointCurve(state) {
+        state.CurvePoints.length  =  0;
+        for (let i = 0; i < state.PathCount; i++) state.CurvePoints.push(state.Path[i]);
 
-        return out.set(
-            a * p0.x + b * c0.x + c * c1.x + d * p1.x,
-            a * p0.y + b * c0.y + c * c1.y + d * p1.y,
-            a * p0.z + b * c0.z + c * c1.z + d * p1.z
-        );
+        state.Curve.points  =  state.CurvePoints;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Where the Two Control Points Want to Be
+    // HELPER FUNCTION | Advance One Lead-Out Point's Spring by a Frame
     // ------------------------------------------------------------
-    // Out along each socket's own normal, then down to the height leads run at. The
-    // lead-out is capped at a third of the span so a short hop between neighbouring
-    // modules does not overshoot and loop back on itself.
-    function NaAudio__Env3d__CableFactory__ControlTargets(state, fromPoint, toPoint) {
-        const distance  =  fromPoint.distanceTo(toPoint);
-        const lead      =  Math.min(distance * 0.34, SpatialNumber('PatchGraph', 'CableLeadOut'));
-        const ground    =  SpatialNumber('PatchGraph', 'CableGroundHeight');
-
-        state.C0Target.copy(state.FromNormal).multiplyScalar(lead).add(fromPoint);
-        state.C1Target.copy(state.ToNormal).multiplyScalar(lead).add(toPoint);
-
-        state.C0Target.y  =  ground;
-        state.C1Target.y  =  ground;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Advance One Control Point's Spring by a Frame
-    // ------------------------------------------------------------
-    // A damped spring per control point. delta is clamped before it reaches the
-    // integrator: a tab returning from the background delivers one enormous frame, and an
-    // unclamped spring integrated across it goes unstable and flings the lead off into
-    // the distance - permanently, because nothing pulls it back.
+    // A damped spring. delta is clamped before it reaches the integrator: a tab returning
+    // from the background delivers one enormous frame, and an unclamped spring integrated
+    // across it goes unstable and flings the lead off into the distance - permanently,
+    // because nothing pulls it back.
     function NaAudio__Env3d__CableFactory__AdvanceSpring(current, velocity, target, delta) {
         const stiffness  =  SpatialNumber('PatchGraph', 'CableSpringStiffness');
         const damping    =  SpatialNumber('PatchGraph', 'CableSpringDamping');
@@ -229,16 +189,18 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
     // The parallel-transport frame. The normal is carried forward from the previous
     // sample and re-orthogonalised against the new tangent rather than being recomputed
     // from scratch, which is what stops the tube twisting through the sag's inflection.
-    function NaAudio__Env3d__CableFactory__WriteTube(state, p0, c0, c1, p1) {
+    function NaAudio__Env3d__CableFactory__WriteTube(state) {
         const positions       =  state.PositionAttribute.array;
         const normals         =  state.NormalAttribute.array;
         const lengthSegments  =  state.LengthSegments;
         const radialSegments  =  state.RadialSegments;
         const radius          =  state.Radius;
 
+        const curve  =  state.Curve;
+
         // Seed the frame with any vector not parallel to the first tangent.
-        NaAudio__Env3d__CableFactory__Evaluate(p0, c0, c1, p1, 0, SCRATCH_PREVIOUS);
-        NaAudio__Env3d__CableFactory__Evaluate(p0, c0, c1, p1, 0.01, SCRATCH_TANGENT);
+        curve.getPoint(0,    SCRATCH_PREVIOUS);
+        curve.getPoint(0.01, SCRATCH_TANGENT);
         SCRATCH_TANGENT.sub(SCRATCH_PREVIOUS).normalize();
 
         SCRATCH_NORMAL.copy(Math.abs(SCRATCH_TANGENT.y) > 0.9 ? FALLBACK_SIDE : FALLBACK_UP);
@@ -250,16 +212,16 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
         for (let i = 0; i <= lengthSegments; i++) {
             const t  =  i / lengthSegments;
 
-            NaAudio__Env3d__CableFactory__Evaluate(p0, c0, c1, p1, t, SCRATCH_POINT);
+            curve.getPoint(t, SCRATCH_POINT);
 
             // The tangent is a forward difference, except at the last sample where it
             // has to be a backward one - there is nothing in front of the end of a curve.
             const step  =  1 / lengthSegments;
             if (i < lengthSegments) {
-                NaAudio__Env3d__CableFactory__Evaluate(p0, c0, c1, p1, t + step * 0.5, SCRATCH_TANGENT);
+                curve.getPoint(t + step * 0.5, SCRATCH_TANGENT);
                 SCRATCH_TANGENT.sub(SCRATCH_POINT);
             } else {
-                NaAudio__Env3d__CableFactory__Evaluate(p0, c0, c1, p1, t - step * 0.5, SCRATCH_TANGENT);
+                curve.getPoint(t - step * 0.5, SCRATCH_TANGENT);
                 SCRATCH_TANGENT.subVectors(SCRATCH_POINT, SCRATCH_TANGENT);
             }
             SCRATCH_TANGENT.normalize();
@@ -327,12 +289,13 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Build a Patch Cable Between Two Ports
+    // FUNCTION | Build a Patch Cable Along a Routed Path
     // ------------------------------------------------------------
-    // fromNormal and toNormal are the directions the two sockets face. They are copied,
-    // not held by reference: a port's facing never changes over the life of a cable, and
-    // holding a reference into module geometry from here would be a quiet lifetime bug.
-    export function NaAudio__Env3d__CableFactory__Build(fromPoint, toPoint, fromNormal, toNormal, signalType) {
+    // path is an array of Vector3 and pathCount says how many of them are live. The
+    // caller owns that array and reuses it for every cable it draws, so the points are
+    // COPIED in rather than referenced - a cable holding a reference into a shared
+    // scratch array would redraw itself as whichever lead was routed most recently.
+    export function NaAudio__Env3d__CableFactory__Build(path, pathCount, signalType, maxPathPoints) {
         const lengthSegments  =  Math.round(SpatialNumber('PatchGraph', 'CableSegments'));
         const radialSegments  =  Math.round(SpatialNumber('PatchGraph', 'CableRadialSegments'));
 
@@ -372,52 +335,79 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
             LengthSegments    : lengthSegments,
             RadialSegments    : radialSegments,
             Radius            : SpatialNumber('PatchGraph', 'CableRadius'),
-            FromNormal        : new THREE.Vector3().copy(fromNormal || FALLBACK_UP).normalize(),
-            ToNormal          : new THREE.Vector3().copy(toNormal   || FALLBACK_UP).normalize(),
-            C0                : new THREE.Vector3(),
-            C1                : new THREE.Vector3(),
-            C0Target          : new THREE.Vector3(),
-            C1Target          : new THREE.Vector3(),
-            C0Velocity        : new THREE.Vector3(),
-            C1Velocity        : new THREE.Vector3(),
+            Path              : [],                                           // <-- The live path the tube is swept along
+            PathCount         : 0,
+            CurvePoints       : [],
+            Curve             : new THREE.CatmullRomCurve3([], false, 'centripetal', 0.5),
+            LeadOutFrom       : new THREE.Vector3(),                          // <-- Sprung; lags the route while a module is dragged
+            LeadOutTo         : new THREE.Vector3(),
+            LeadOutFromVel    : new THREE.Vector3(),
+            LeadOutToVel      : new THREE.Vector3(),
+            HasSettled        : false,
+            IsAtRest          : false,                                        // <-- Read by the patch graph to skip an idle cable entirely
             StartTangent      : new THREE.Vector3(0, 1, 0),
             EndTangent        : new THREE.Vector3(0, 1, 0)
         };
+
+        for (let i = 0; i < maxPathPoints; i++) state.Path.push(new THREE.Vector3());
 
         group.userData.NaAudio__CableState  =  state;
 
         // Settled on construction rather than sprung into place. A space that loads with
         // every lead whipping across the floor looks like a physics demo, not like a
         // patch somebody left.
-        NaAudio__Env3d__CableFactory__ControlTargets(state, fromPoint, toPoint);
-        state.C0.copy(state.C0Target);
-        state.C1.copy(state.C1Target);
-        NaAudio__Env3d__CableFactory__Update(group, fromPoint, toPoint, 0);
+        NaAudio__Env3d__CableFactory__Update(group, path, pathCount, 0);
 
         return group;
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Rewrite a Cable's Geometry for New Endpoints
+    // FUNCTION | Rewrite a Cable's Geometry Along a Freshly Routed Path
     // ------------------------------------------------------------
-    // delta of 0 skips the spring and places the cable at its rest shape immediately,
-    // which is what construction and a mode change want.
-    export function NaAudio__Env3d__CableFactory__Update(cableGroup, fromPoint, toPoint, delta) {
+    // delta of 0 snaps the lead-outs to the route rather than springing them there, which
+    // is what construction wants.
+    //
+    // Only the two LEAD-OUT points are sprung. The waypoints in between come from the
+    // router and are taken exactly, because they exist to clear an obstacle by a measured
+    // margin and a sprung one would swing through the thing it was placed to avoid. The
+    // whip therefore lives at the ends, next to the module being dragged, which is where
+    // it was always visible anyway.
+    export function NaAudio__Env3d__CableFactory__Update(cableGroup, path, pathCount, delta) {
         const state  =  cableGroup && cableGroup.userData.NaAudio__CableState;
-        if (!state) return;
+        if (!state || pathCount < 2) return;
 
-        NaAudio__Env3d__CableFactory__ControlTargets(state, fromPoint, toPoint);
+        const limit  =  Math.min(pathCount, state.Path.length);
 
-        if (delta > 0) {
-            NaAudio__Env3d__CableFactory__AdvanceSpring(state.C0, state.C0Velocity, state.C0Target, delta);
-            NaAudio__Env3d__CableFactory__AdvanceSpring(state.C1, state.C1Velocity, state.C1Target, delta);
-        } else {
-            state.C0.copy(state.C0Target);
-            state.C1.copy(state.C1Target);
+        for (let i = 0; i < limit; i++) state.Path[i].copy(path[i]);
+        state.PathCount  =  limit;
+
+        // THE SPRING, on the lead-outs only.
+        if (limit >= 4) {
+            if (delta > 0 && state.HasSettled) {
+                NaAudio__Env3d__CableFactory__AdvanceSpring(state.LeadOutFrom, state.LeadOutFromVel, path[1], delta);
+                NaAudio__Env3d__CableFactory__AdvanceSpring(state.LeadOutTo,   state.LeadOutToVel,   path[limit - 2], delta);
+            } else {
+                state.LeadOutFrom.copy(path[1]);
+                state.LeadOutTo.copy(path[limit - 2]);
+                state.HasSettled  =  true;
+                state.LeadOutFromVel.set(0, 0, 0);
+                state.LeadOutToVel.set(0, 0, 0);
+            }
+
+            // AT REST once the springs have stopped meaning anything. The patch graph
+            // uses this to skip a cable whose layout has not changed, which is what keeps
+            // a space with thirty leads in it from re-routing thirty paths a frame to
+            // arrive at exactly the geometry it already had.
+            state.IsAtRest  =  state.LeadOutFromVel.lengthSq() < REST_EPSILON
+                            && state.LeadOutToVel.lengthSq()   < REST_EPSILON;
+
+            state.Path[1].copy(state.LeadOutFrom);
+            state.Path[limit - 2].copy(state.LeadOutTo);
         }
 
-        NaAudio__Env3d__CableFactory__WriteTube(state, fromPoint, state.C0, state.C1, toPoint);
+        NaAudio__Env3d__CableFactory__PointCurve(state);
+        NaAudio__Env3d__CableFactory__WriteTube(state);
 
         // THE PLUGS
         // Seated slightly INSIDE the socket rather than flush against it, so the barrel
@@ -425,8 +415,8 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
         // threaded onto the cable.
         const inset  =  SpatialNumber('PatchGraph', 'PlugLength') * 0.35;
 
-        NaAudio__Env3d__CableFactory__SeatPlug(state.FromPlug, fromPoint, state.StartTangent, -inset);
-        NaAudio__Env3d__CableFactory__SeatPlug(state.ToPlug,   toPoint,   state.EndTangent,    inset);
+        NaAudio__Env3d__CableFactory__SeatPlug(state.FromPlug, state.Path[0],         state.StartTangent, -inset);
+        NaAudio__Env3d__CableFactory__SeatPlug(state.ToPlug,   state.Path[limit - 1], state.EndTangent,    inset);
     }
     // ------------------------------------------------------------
 

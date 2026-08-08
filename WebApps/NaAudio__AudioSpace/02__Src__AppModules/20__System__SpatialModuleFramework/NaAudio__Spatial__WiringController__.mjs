@@ -66,6 +66,10 @@ import {
 } from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
 import { NaAudio__PortKind }  from './NaAudio__Spatial__PortFactory__.mjs';
 import {
+    NaAudio__CableRouter__Route,
+    NaAudio__CableRouter__MaxPoints
+} from './NaAudio__Spatial__CableRouter__.mjs';
+import {
     NaAudio__PatchGraph__Connect,
     NaAudio__PatchGraph__PortWorldPosition,
     NaAudio__SignalType
@@ -88,6 +92,10 @@ import { NaAudio__ModeManager__IsWiring }  from '../01__AppCore/NaAudio__AppCore
     // ------------------------------------------------------------
     const SCRATCH_FROM  =  new THREE.Vector3();
     const SCRATCH_TO    =  new THREE.Vector3();
+
+    const GHOST_UP     =  new THREE.Vector3(0, 0, 1);                        // <-- The loose end faces nowhere in particular
+    const GHOST_POINTS =  [];
+    for (let i = 0; i < NaAudio__CableRouter__MaxPoints(); i++) GHOST_POINTS.push(new THREE.Vector3());
 
     let attachedSurface  =  null;
     let heldPort         =  null;                                            // <-- The socket the lead is plugged into
@@ -149,8 +157,10 @@ import { NaAudio__ModeManager__IsWiring }  from '../01__AppCore/NaAudio__AppCore
         NaAudio__PatchGraph__PortWorldPosition(port, SCRATCH_FROM);
         ghostEnd.copy(SCRATCH_FROM);
 
+        const pathCount  =  NaAudio__WiringController__RouteGhost();
+
         ghostCable  =  CableFactory.NaAudio__Env3d__CableFactory__Build(
-            SCRATCH_FROM, ghostEnd, port.Normal, port.Normal, NaAudio__SignalType.Audio
+            GHOST_POINTS, pathCount, NaAudio__SignalType.Audio, NaAudio__CableRouter__MaxPoints()
         );
 
         NaAudio__WiringController__PaintGhost(ghostCable);
@@ -167,8 +177,30 @@ import { NaAudio__ModeManager__IsWiring }  from '../01__AppCore/NaAudio__AppCore
         ghostEnd.x  =  point.x;
         ghostEnd.z  =  point.z;
 
+        CableFactory.NaAudio__Env3d__CableFactory__Update(ghostCable, GHOST_POINTS, NaAudio__WiringController__RouteGhost(), 0);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Route the Lead In Hand Around the Instruments
+    // ------------------------------------------------------------
+    // The ghost is routed on exactly the same terms as a patched lead, so what the user
+    // sees while dragging is the line the finished cable will take. A ghost that flew
+    // straight and then snapped into a route on release would make every connection look
+    // like it had moved at the moment of committing to it.
+    //
+    // Only the held port's module is excluded. The loose end belongs to nothing yet, so
+    // whatever it is hovering over is an obstacle like anything else - which is what makes
+    // the lead visibly step around a module as the pointer passes over it.
+    function NaAudio__WiringController__RouteGhost() {
         NaAudio__PatchGraph__PortWorldPosition(heldPort, SCRATCH_FROM);
-        CableFactory.NaAudio__Env3d__CableFactory__Update(ghostCable, SCRATCH_FROM, ghostEnd, 0);
+
+        return NaAudio__CableRouter__Route(
+            SCRATCH_FROM, heldPort.Normal,
+            ghostEnd,     GHOST_UP,
+            heldPort.ModuleId, null,
+            GHOST_POINTS
+        );
     }
     // ------------------------------------------------------------
 

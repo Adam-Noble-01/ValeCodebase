@@ -79,7 +79,12 @@ import {
 import * as ModuleBase                 from './NaAudio__Spatial__ModuleBase__.mjs';
 import { NaAudio__PortKind }           from './NaAudio__Spatial__PortFactory__.mjs';
 import {
-    NaAudio__ModuleRegistry__Module
+    NaAudio__CableRouter__Route,
+    NaAudio__CableRouter__MaxPoints
+} from './NaAudio__Spatial__CableRouter__.mjs';
+import {
+    NaAudio__ModuleRegistry__Module,
+    NaAudio__ModuleRegistry__Modules
 } from './NaAudio__Spatial__ModuleRegistry__.mjs';
 import {
     NaAudio__Event,
@@ -112,10 +117,19 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
 
     const SCRATCH_FROM     =  new THREE.Vector3();
     const SCRATCH_TO       =  new THREE.Vector3();
+    const SCRATCH_N_FROM   =  new THREE.Vector3();
+    const SCRATCH_N_TO     =  new THREE.Vector3();
     const SCRATCH_FLASH    =  new THREE.Color();
+
+    // ONE routing scratch array, shared by every cable. Routing happens for one cable at
+    // a time and the result is copied straight into that cable, so a second array would
+    // only be a second thing to keep in step.
+    const ROUTE_POINTS  =  [];
+    for (let i = 0; i < NaAudio__CableRouter__MaxPoints(); i++) ROUTE_POINTS.push(new THREE.Vector3());
 
     let attachedSurface  =  null;
     let cableCounter     =  0;
+    let layoutSignature  =  -1;                                              // <-- Changes whenever any module moves
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -172,6 +186,27 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
             }
         }
         return out.set(0, 0, kind === NaAudio__PortKind.Output ? 1 : -1);
+    }
+    // ------------------------------------------------------------
+
+    // SUB FUNCTION | Route One Cable's Path Into the Shared Scratch Array
+    // ------------------------------------------------------------
+    // Returns how many points of ROUTE_POINTS are live. Called on every frame for every
+    // cable, which is what lets a lead re-route around a module as that module is being
+    // dragged rather than only once it is put down.
+    function NaAudio__PatchGraph__RoutePath(fromModule, toModule) {
+        ModuleBase.NaAudio__ModuleBase__OutputPortPosition(fromModule, SCRATCH_FROM);
+        ModuleBase.NaAudio__ModuleBase__InputPortPosition(toModule, SCRATCH_TO);
+
+        NaAudio__PatchGraph__PortNormal(fromModule, NaAudio__PortKind.Output, SCRATCH_N_FROM);
+        NaAudio__PatchGraph__PortNormal(toModule,   NaAudio__PortKind.Input,  SCRATCH_N_TO);
+
+        return NaAudio__CableRouter__Route(
+            SCRATCH_FROM, SCRATCH_N_FROM,
+            SCRATCH_TO,   SCRATCH_N_TO,
+            fromModule.ModuleId, toModule.ModuleId,
+            ROUTE_POINTS
+        );
     }
     // ------------------------------------------------------------
 
@@ -298,13 +333,10 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
         }
 
         // THE VISUAL HALF
-        ModuleBase.NaAudio__ModuleBase__OutputPortPosition(fromModule, SCRATCH_FROM);
-        ModuleBase.NaAudio__ModuleBase__InputPortPosition(toModule, SCRATCH_TO);
-
-        const fromNormal  =  NaAudio__PatchGraph__PortNormal(fromModule, NaAudio__PortKind.Output, new THREE.Vector3());
-        const toNormal    =  NaAudio__PatchGraph__PortNormal(toModule,   NaAudio__PortKind.Input,  new THREE.Vector3());
-
-        const line  =  CableFactory.NaAudio__Env3d__CableFactory__Build(SCRATCH_FROM, SCRATCH_TO, fromNormal, toNormal, signalType);
+        const pathCount  =  NaAudio__PatchGraph__RoutePath(fromModule, toModule);
+        const line       =  CableFactory.NaAudio__Env3d__CableFactory__Build(
+            ROUTE_POINTS, pathCount, signalType, NaAudio__CableRouter__MaxPoints()
+        );
         attachedSurface.Groups[NaAudio__Env3d__SceneGroup.PatchCables].add(line);
 
         const cable  =  {
@@ -425,6 +457,30 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
 // REGION | Per-Frame Following
 // -----------------------------------------------------------------------------
 
+    // SUB FUNCTION | A Cheap Number That Changes Whenever Anything Moves
+    // ------------------------------------------------------------
+    // Routing is only worth redoing when the layout it was computed from has changed.
+    // Position and live base width are what a route depends on, so those are what the
+    // signature covers - the multipliers are there to stop two modules swapping places
+    // from summing to the same number.
+    //
+    // Y is included because the hover lift moves a module a few centimetres and a lead
+    // has to stay in its socket while it rises. That makes hovering re-route, briefly,
+    // which is correct and costs nothing at rest.
+    function NaAudio__PatchGraph__LayoutSignature() {
+        const modules  =  NaAudio__ModuleRegistry__Modules();
+        let signature  =  modules.length * 7919;
+
+        for (let i = 0; i < modules.length; i++) {
+            const module  =  modules[i];
+            signature += module.Position.x * 31.7 + module.Position.y * 97.3 + module.Position.z * 53.1
+                       + (module.BaseWidth || 0) * 13.9;
+        }
+        return signature;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Follow Endpoints, Show Signal, and Apply Modulation
     // ------------------------------------------------------------
     function NaAudio__PatchGraph__UpdateAll(delta) {
@@ -433,17 +489,25 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
         const flowEnabled  =  SpatialBool('PatchGraph', 'CableFlowEnabled');
         SCRATCH_FLASH.copy(Palette.NaAudio__Palette__Ground('Cream'));
 
+        const signature      =  NaAudio__PatchGraph__LayoutSignature();
+        const layoutChanged  =  signature !== layoutSignature;
+        layoutSignature      =  signature;
+
         for (const cable of CABLES.values()) {
             const fromModule  =  NaAudio__ModuleRegistry__Module(cable.FromModuleId);
             const toModule    =  NaAudio__ModuleRegistry__Module(cable.ToModuleId);
             if (!fromModule || !toModule) continue;
 
-            ModuleBase.NaAudio__ModuleBase__OutputPortPosition(fromModule, SCRATCH_FROM);
-            ModuleBase.NaAudio__ModuleBase__InputPortPosition(toModule, SCRATCH_TO);
+            // Re-routed whenever the layout has changed, so a lead finds its way around
+            // a module WHILE that module is being dragged rather than snapping to a new
+            // path once it lands - and skipped entirely when nothing has moved and the
+            // springs have stopped, which is almost always.
+            const state  =  cable.Line.userData.NaAudio__CableState;
 
-            // delta rather than 0, so the slack spring runs and the lead swings behind a
-            // module being dragged instead of snapping to each new shape.
-            CableFactory.NaAudio__Env3d__CableFactory__Update(cable.Line, SCRATCH_FROM, SCRATCH_TO, delta);
+            if (layoutChanged || !state || !state.IsAtRest) {
+                const pathCount  =  NaAudio__PatchGraph__RoutePath(fromModule, toModule);
+                CableFactory.NaAudio__Env3d__CableFactory__Update(cable.Line, ROUTE_POINTS, pathCount, delta);
+            }
 
             // MeterLevel was read once this frame by the module's own update, so a
             // module feeding three cables costs one analyser read rather than three.

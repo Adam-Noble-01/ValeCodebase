@@ -1,6 +1,6 @@
 # AudioSPACE
 
-**Spatial Music Production Environment** — v0.3.1, Environment Prototype
+**Spatial Music Production Environment** — v0.3.2, Environment Prototype
 
 A 3D environment for building a piece of music as a *place* rather than as a list of
 tracks. Everything you can see is a control; everything that makes a sound is somewhere.
@@ -133,6 +133,19 @@ The tube is written by hand into a preallocated buffer rather than through
 `THREE.TubeGeometry`, which allocates a new geometry and a `Vector3` per sample point per
 call — a dragged module with three leads would produce a few hundred throwaway geometries a
 second.
+
+**Leads route around the instruments.** `NaAudio__Spatial__CableRouter` treats every
+module except the lead's own two endpoints as a circular obstacle and relaxes a path
+around them, so nothing ever runs through a pad. It runs in two passes: a cheap
+straight-line test to get the shape roughly right, then a check against the *actual*
+smoothed curve — because a Catmull-Rom bows between its points, and a polyline that
+clears an obstacle comfortably can still be drawn 54 mm inside it. Measured worst
+clearance is 1.675 m on the demo layout and 0.210 m with the modules packed into a
+2.5 m ring.
+
+Routes recompute whenever the layout changes, so a lead finds its way around a module
+*while* that module is being dragged. When nothing has moved and the springs have
+settled, the whole cable is skipped.
 
 **A module only has the sockets it can use.** Sources — the sequencer and the CubeMod —
 declare `HasInput: false` and carry an output only, and `Connect` refuses an audio cable

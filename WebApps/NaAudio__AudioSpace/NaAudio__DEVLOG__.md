@@ -3,6 +3,108 @@
 
 
 # ---------------------------------------------------------
+## NaAudio__AudioSpace v0.3.2 - 08-Aug-2026
+### Leads route around the instruments instead of straight through them
+
+Dropping the leads onto the floor in v0.3.1 made the patch legible from above and
+immediately made a second problem visible: a lead between two distant modules ran
+straight across whatever lay between, so it passed through the middle of other
+instruments. On the ground that reads worse than it did in the air, because a lead
+crossing a pad looks like it is plugged into that module too.
+
+`NaAudio__Spatial__CableRouter` now finds a path that goes around. Every module is an
+obstacle except the two a lead is plugged into.
+
+---
+
+### Push-out relaxation, not a visibility graph
+
+Start with the two-point line, find the segment penetrating an obstacle most deeply,
+insert one waypoint on that obstacle's boundary on the side the line already favours,
+repeat. One waypoint per pass with a re-scan from the start each time, so a waypoint
+added to clear one module is itself checked against the rest.
+
+It is not the shortest path. A visibility graph over tangent points would be, and would
+cost a graph build and a Dijkstra per cable per frame for a result nobody can tell apart
+at this scale - the paths differ by centimetres with four obstacles in play, and the
+relaxed one is smoother because it was never a sequence of tangent arcs.
+
+Modules are treated as circles around their LIVE base width, so an expanded sequencer
+pushes leads clear of its workbench and not merely of its ring.
+
+---
+
+### The polyline is not the thing that gets drawn
+
+Relaxing the straight line turned out to be only half the job, and it is the half that
+does not hold. What gets swept is a centripetal Catmull-Rom THROUGH those points, and a
+spline bows between its points - so a polyline clearing an obstacle comfortably can still
+be drawn curving well inside it.
+
+Measured, with a module moved into the middle of a run: the straight-line test passed
+with no waypoint inserted at all, and the tube that got drawn ended up **54mm inside the
+output post's footprint**.
+
+So there is a second pass that assembles the actual curve - same class, same centripetal
+parameterisation the cable factory uses, because checking a different curve to the one
+that gets drawn is not checking anything - samples it, and pushes out whatever it finds.
+The cheap straight-line pass is kept in front of it because it costs almost nothing and
+leaves the expensive pass with less to do.
+
+Measured after, worst clearance from any module a lead is not plugged into:
+
+    boot layout                    1.675 m
+    one module moved into a run    0.414 m
+    modules packed to a 2.5m ring  0.210 m
+
+All positive. Nothing crosses anything.
+
+---
+
+### Cost, and why the steady state is free
+
+Routing every cable every frame is what lets a lead find its way around a module WHILE
+that module is being dragged, rather than snapping to a new path once it lands. It is
+also pointless when nothing has moved.
+
+The patch graph now takes a one-number signature of the layout - every module's position
+and live base width - and skips a cable entirely when the signature is unchanged and its
+lead-out springs have stopped. Y is in the signature because the hover lift moves a
+module a few centimetres and a lead has to stay in its socket while it rises.
+
+Measured in the headless software renderer, which is noisy enough that the same
+comparison spread across 3.5, 5.4 and 10.5 ms on repeat runs - so the absolute numbers
+are not worth quoting. The useful signal is that idle and re-routing-every-frame are the
+same to within the noise: **117.4 ms against 118.5 ms** median frame interval. With the
+skip in, routing does not register.
+
+---
+
+### The caps are real and they are reported
+
+Both the waypoint count and the iteration count are bounded. A cluster whose clearance
+circles overlap into a ring encloses the space inside it and has no clear route at all -
+and without a bound the loop would insert waypoints until the frame died. Forced into
+exactly that, with three modules practically touching, the router hits its cap, draws the
+lead crossing something, and says so once.
+
+That is the honest outcome. A lead taking a bad line is a far smaller lie than a lead
+that vanishes.
+
+#### Added
+- `20__System__SpatialModuleFramework/NaAudio__Spatial__CableRouter__.mjs`
+
+#### Changed
+- `NaAudio__Env3d__CableFactory__.mjs` - sweeps a supplied path through a centripetal
+  Catmull-Rom rather than deciding its own two control points; springs the lead-outs only
+- `NaAudio__Spatial__PatchGraph__.mjs` - routes each cable, and skips idle ones
+- `NaAudio__Spatial__WiringController__.mjs` - the lead in hand routes on the same terms,
+  so what you see while dragging is the line the finished cable will take
+- `Na__SpatialModules__Config.json` - `CableObstacleClearance`, `CableRouteSmoothingMargin`,
+  `CableRouteMaxWaypoints`, `CableRouteIterations`
+
+
+# ---------------------------------------------------------
 ## NaAudio__AudioSpace v0.3.1 - 08-Aug-2026
 ### Stop means stop, leads lie on the floor, and every axis drag was lying about its distance
 

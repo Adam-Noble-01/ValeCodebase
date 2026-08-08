@@ -31,6 +31,26 @@
 
    ---------------------------------------------------------------------------
 
+   SLIDERS RUN HORIZONTALLY, AND THAT IS NOT A STYLE CHOICE
+
+   They were vertical first - a post standing off the deck with a knob riding up and
+   down it. Two things were wrong with that, one of them fatal.
+
+   The look: a bank of five vertical posts reads as a row of aerials, not as a control
+   surface. Flat tracks lying on the deck read as a mixing desk, which is what this is.
+
+   The fatal one: a vertical slider is dragged on a plane that CONTAINS the vertical
+   axis and faces the camera. Looking down at the deck - which is how anybody works a
+   control bank - that plane is nearly edge-on to the view, so the pointer ray meets it
+   at a glancing angle and, past the horizon of the plane, does not meet it at all. The
+   drag then travels in one direction and simply stops responding in the other, which is
+   exactly what it looked like: a slider you could push up and never pull back down.
+
+   A horizontal axis has no such degenerate case from any camera anybody would use to
+   look at a deck, because the plane containing it stays broadside to the view.
+
+   ---------------------------------------------------------------------------
+
    DETENTS SNAP, BUT THE KNOB FOLLOWS THE HAND FIRST
 
    A detented control tracks the pointer continuously WHILE dragging and settles onto
@@ -78,11 +98,14 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
     // ------------------------------------------------------------
     // Sized so a knob is comfortably clickable at working camera distance without the
     // control bank dominating the module it belongs to.
-    const TRACK_WIDTH        =  0.055;
-    const TRACK_DEPTH        =  0.030;
-    const KNOB_WIDTH         =  0.190;
-    const KNOB_HEIGHT        =  0.100;
-    const KNOB_DEPTH         =  0.150;
+    // The track lies FLAT and runs along X. The knob is a fader cap: short along the
+    // travel, wide across it, so there is plenty to grab without the cap covering the
+    // stretch of track that shows where it sits.
+    const TRACK_HEIGHT       =  0.030;                                       // <-- Off the deck
+    const TRACK_DEPTH        =  0.055;                                       // <-- Across the travel
+    const KNOB_LENGTH        =  0.120;                                       // <-- Along the travel
+    const KNOB_HEIGHT        =  0.090;
+    const KNOB_DEPTH         =  0.200;                                       // <-- Across the travel
     const DETENT_TICK_LENGTH =  0.070;
     const DETENT_TICK_INSET  =  0.055;
 
@@ -97,9 +120,9 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
     // stacked cards the moment anybody actually leans in to use the bank.
     const LABEL_SCALE        =  0.50;                                        // <-- Panel legends are far smaller than module name plates
     const LABEL_DECK_HEIGHT  =  0.012;                                       // <-- Just off the deck, so it never z-fights with the pad
-    const LABEL_DECK_OFFSET  =  0.34;                                        // <-- In front of the track, where a panel legend goes
+    const LABEL_DECK_GAP     =  0.10;                                        // <-- Between the legend and the start of the track
 
-    const SLIDE_AXIS         =  new THREE.Vector3(0, 1, 0);                  // <-- Sliders run vertically in module space
+    const SLIDE_AXIS         =  new THREE.Vector3(1, 0, 0);                  // <-- Sliders run HORIZONTALLY along the module's X
 
     const SCRATCH_COLOUR     =  new THREE.Color();
     // ------------------------------------------------------------
@@ -113,13 +136,14 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
 
     // SUB FUNCTION | Build a Slider Track
     // ------------------------------------------------------------
+    // The track runs from x = 0 to x = length, lying flat on the deck.
     function NaAudio__ControlFactory__BuildTrack(length) {
         const track  =  new THREE.Mesh(
             Shapes.NaAudio__Env3d__ShapeFactory__UnitBox(),
             Materials.NaAudio__Materials__Body('Bone', 'Deep')
         );
-        track.scale.set(TRACK_WIDTH, length, TRACK_DEPTH);
-        track.position.y   =  length / 2;
+        track.scale.set(length, TRACK_HEIGHT, TRACK_DEPTH);
+        track.position.set(length / 2, TRACK_HEIGHT / 2, 0);
         track.receiveShadow =  true;
         track.userData.NaAudio__Pickable  =  false;                          // <-- The knob is the target, never the track
 
@@ -138,9 +162,9 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
 
         const points  =  [];
         for (let i = 0; i < count; i++) {
-            const y  =  (i / (count - 1)) * length;
-            points.push(DETENT_TICK_INSET, y, 0);
-            points.push(DETENT_TICK_INSET + DETENT_TICK_LENGTH, y, 0);
+            const x  =  (i / (count - 1)) * length;
+            points.push(x, 0.004, DETENT_TICK_INSET);
+            points.push(x, 0.004, DETENT_TICK_INSET + DETENT_TICK_LENGTH);
         }
 
         const geometry  =  new THREE.BufferGeometry();
@@ -160,7 +184,8 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
             Shapes.NaAudio__Env3d__ShapeFactory__UnitBox(),
             Materials.NaAudio__Materials__OwnedBody(pigmentKey, 'Base')
         );
-        knob.scale.set(KNOB_WIDTH, KNOB_HEIGHT, KNOB_DEPTH);
+        knob.scale.set(KNOB_LENGTH, KNOB_HEIGHT, KNOB_DEPTH);
+        knob.position.y  =  KNOB_HEIGHT / 2;
         knob.castShadow  =  true;
 
         return knob;
@@ -168,19 +193,24 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Print a Panel Legend on the Deck In Front of a Control
+    // SUB FUNCTION | Print a Panel Legend on the Deck at the Head of a Track
     // ------------------------------------------------------------
     // Flat on the deck rather than floating above the knob. Floating plates were tried
     // first and do not work in a row: five camera-facing labels converge to a point as
     // the bank recedes and pile on top of each other, and staggering their heights only
     // moves the problem to a different camera angle. See the note in
     // NaAudio__Env3d__Labels3d__BuildFlat.
+    //
+    // At the HEAD of the track, not beside it. With horizontal tracks stacked in rows,
+    // each row now reads left to right the way a channel strip does - name, value, then
+    // the travel - and the legends occupy a column of their own instead of competing
+    // with the track they belong to.
     function NaAudio__ControlFactory__BuildLabel(control, labelText, valueText) {
         const label  =  Labels.NaAudio__Env3d__Labels3d__BuildFlat(labelText, valueText);
         if (!label) return null;
 
-        label.position.set(0, LABEL_DECK_HEIGHT, LABEL_DECK_OFFSET);
         label.scale.multiplyScalar(LABEL_SCALE);
+        label.position.set(-(LABEL_SCALE / 2 + LABEL_DECK_GAP), LABEL_DECK_HEIGHT, 0);
         control.add(label);
 
         return label;
@@ -255,7 +285,7 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
                 state.Value  =  state.Fraction;
             }
 
-            knob.position.y  =  state.Fraction * length;
+            knob.position.x  =  state.Fraction * length;
 
             if (state.Label) {
                 const valueText  =  detents
@@ -324,7 +354,7 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
             Kind       : NaAudio__Env3d__HandleKind.DragAxis,
             ModuleId   : options.ModuleId || null,
             Axis       : SLIDE_AXIS,
-            Cursor     : 'ns-resize',
+            Cursor     : 'ew-resize',
 
             // Controls are Play-mode only. In Build mode they vanish from the picker
             // entirely, so they cannot be knocked while a module is being positioned.
@@ -337,10 +367,10 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
             },
 
             OnDrag : function (context) {
-                // The drag arrives in world space along the module's up axis, which is
-                // the same as the slider's own axis - modules never tilt. Dividing by
-                // the track length turns metres of travel into a fraction directly.
-                const travel  =  context.Total.y / state.Length;
+                // The drag arrives in world space along the module's X, which is the
+                // slider's own axis - modules never rotate. Dividing by the track length
+                // turns metres of travel into a fraction directly.
+                const travel  =  context.Total.x / state.Length;
                 state.SetFraction(state.DragStart + travel, true);
             },
 

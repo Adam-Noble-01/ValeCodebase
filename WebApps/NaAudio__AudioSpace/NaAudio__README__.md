@@ -1,6 +1,6 @@
 # AudioSPACE
 
-**Spatial Music Production Environment** — v0.3.0, Environment Prototype
+**Spatial Music Production Environment** — v0.3.1, Environment Prototype
 
 A 3D environment for building a piece of music as a *place* rather than as a list of
 tracks. Everything you can see is a control; everything that makes a sound is somewhere.
@@ -114,14 +114,17 @@ Every module carries an input socket and an output socket, built by the framewor
 pad and the cage. Green in, terracotta out. They stay visible in every mode and come forward
 in Wiring.
 
-A lead is a swept tube along a cubic Bezier with a moulded plug at each end. Three details
-do the work:
+Sockets are small and sit on the **rim of each module's own pad**, low down. A lead is a
+swept tube along a cubic Bezier with a moulded plug at each end, and both its control
+points sit at ground height — so a lead leaves its socket, meets the floor, and **runs
+along the ground** rather than arcing over the space. Three details do the work:
 
-- **It leaves along the socket's own axis** before it droops. Without that a lead emerges
+- **It leaves along the socket's own axis** before it drops. Without that a lead emerges
   sideways from a socket, which nothing physical does, and the patch reads as a diagram no
   matter how round the tube is.
-- **Its slack is a spring**, so dragging a module swings the leads and they settle after.
-  That is the difference between a cable that moves and a cable that is redrawn.
+- **Its control points are sprung**, so dragging a module whips its leads along the floor
+  and they settle after. That is the difference between a cable that moves and one that is
+  redrawn.
 - **Parallel transport, not a Frenet frame.** A Frenet normal flips through an inflection
   point and a sagging lead has one in the middle, which shows up as the tube twisting once
   per drag.
@@ -155,6 +158,11 @@ reveals five sliders — real 3D knobs on real rails, grabbed and dragged, not s
 | **Wobble** | How far a step may drift from its slot |
 | **Chance** | How often that drift happens |
 | **Bank** | Four kit positions (a placeholder for a kit browser) |
+
+The tracks are **horizontal** and lie flat on the deck, each with its legend at the head,
+so a row reads like a channel strip. They were vertical posts first, which looked like a
+row of aerials and — worse — dragged on a plane that goes nearly edge-on to any camera
+actually looking down at a deck.
 
 Two things about this are worth knowing before changing it.
 

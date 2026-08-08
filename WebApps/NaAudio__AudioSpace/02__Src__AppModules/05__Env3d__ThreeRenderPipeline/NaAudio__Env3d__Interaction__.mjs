@@ -478,8 +478,25 @@ import {
 
         if (handle.Kind === NaAudio__Env3d__HandleKind.DragAxis && handle.Axis) {
             SCRATCH_AXIS.copy(handle.Axis).normalize();
-            delta.copy(SCRATCH_AXIS).multiplyScalar(delta.dot(SCRATCH_AXIS));  // <-- Constrained: only the axial component survives
-            total.copy(SCRATCH_AXIS).multiplyScalar(total.dot(SCRATCH_AXIS));
+
+            // The dot products are taken FIRST, into locals, and only then is each
+            // vector overwritten.
+            //
+            // Written as delta.copy(axis).multiplyScalar(delta.dot(axis)) this reads
+            // correctly and is silently wrong: JavaScript evaluates delta.copy(axis)
+            // before it evaluates the argument, so by the time delta.dot(axis) runs,
+            // delta IS axis and the dot product is axis·axis - which is 1, always.
+            //
+            // Every axis drag therefore reported exactly one metre of travel in the
+            // positive direction, no matter how far or which way the pointer actually
+            // moved. On a slider that is a control which jumps to one end and then
+            // refuses to come back; on the DelayCloud's resize handles it is a box that
+            // only ever grows.
+            const axialDelta  =  delta.dot(SCRATCH_AXIS);
+            const axialTotal  =  total.dot(SCRATCH_AXIS);
+
+            delta.copy(SCRATCH_AXIS).multiplyScalar(axialDelta);              // <-- Constrained: only the axial component survives
+            total.copy(SCRATCH_AXIS).multiplyScalar(axialTotal);
         }
 
         activeDrag.LastPoint.copy(point);

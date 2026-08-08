@@ -291,6 +291,37 @@ import * as AudioHost                          from './NaAudio__Engine__AudioHos
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Open or Drain a Delay Unit's Feedback Tail
+    // ------------------------------------------------------------
+    // Draining ramps the feedback path to silence; opening restores whatever the unit's
+    // own feedback parameter says. The stored parameter is never touched, so a module can
+    // drain and reopen without losing the setting the user dialled in.
+    //
+    // WHY THIS EXISTS
+    //
+    // A feedback delay does not stop when its source stops - it recirculates what is
+    // already inside it. At the ceiling of 0.82 that is a loop losing under a fifth of its
+    // energy per pass, which at a third of a second per pass is still plainly audible
+    // half a minute later.
+    //
+    // So a DelayCloud carried on making noise after the transport stopped, indefinitely
+    // and at a level that fluctuated rather than decaying, which reads exactly like a DAW
+    // that ignores the stop button. Draining the feedback lets the tail die over its own
+    // couple of repeats instead - a musical stop rather than a hard cut, and one that
+    // costs nothing while it is open.
+    export function NaAudio__EffectRack__SetDelayTailOpen(unit, isOpen, seconds) {
+        if (!unit || unit.Kind !== 'delay') return;
+
+        const config    =  AudioSection('EffectRack').Delay;
+        const feedback  =  isOpen
+            ? Math.min(NaAudio__MusicalMaths__MapNormalised(unit.Parameters.feedback, 0, config.MaxFeedback), config.MaxFeedback)
+            : 0;
+
+        NaAudio__EffectRack__RampParam(unit.Nodes.feedbackGain.gain, feedback, seconds);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Set a Delay Unit's Damping From a Normalised Value
     // ------------------------------------------------------------
     // Zero is heavily damped and one is open. Inverted relative to the name because

@@ -13,7 +13,8 @@
    - Every module carries an input socket on one side and an output socket on the other,
      built by the framework rather than by the module type - exactly like the pad and the
      cage, and for the same reason.
-   - A port is a recessed collar with a face plate. Green is in, terracotta is out.
+   - A port is a small recessed collar with a face plate, sitting on the rim of the
+     module's own pad. Green is in, terracotta is out.
    - Ports are pickable in wiring mode only, and visibly recede in the other two.
 
    ---------------------------------------------------------------------------
@@ -218,18 +219,30 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
     // endpoints come through here, so a socket can never end up drawn somewhere other
     // than where its lead plugs in.
     //
-    // Note that the offset is measured from the CAGE, not from the pad. A sequencer that
+    // ON THE EDGE OF THE PAD, AND LOW.
+    //
+    // The first version put sockets at nearly half the cage height and STOOD THEM OFF the
+    // cage, so they floated in the air beside each module and every lead left at chest
+    // height and arced across the space. Two consequences, both bad: the leads flew over
+    // the instruments instead of running between them, and a socket belonging to nothing
+    // in particular hung in the air where the module was not.
+    //
+    // Now the socket sits on the rim of the module's own pad at a fixed low height. It
+    // reads as part of the instrument, and a lead leaves it already at floor level.
+    //
+    // The offset is measured from the CAGE, not from the live pad width. A sequencer that
     // has opened its control bank is twice as wide, and a socket that slid outward with
     // the workbench would leave the instrument and hang off the end of a bench.
     export function NaAudio__PortFactory__Offset(module, kind, out) {
         const standoff  =  SpatialNumber('PatchGraph', 'PortStandoff');
-        const height    =  SpatialNumber('PatchGraph', 'PortHeightFactor') * module.CageSize.y;
+        const height    =  SpatialNumber('PatchGraph', 'PortHeight');
+        const padInset  =  SpatialNumber('Shell', 'PadInset');
         const facing    =  (kind === NaAudio__PortKind.Input) ? -1 : 1;
 
         return (out || new THREE.Vector3()).set(
             0,
             height,
-            facing * (module.CageSize.z * 0.5 + standoff)
+            facing * (module.CageSize.z * 0.5 - padInset + standoff)
         );
     }
     // ------------------------------------------------------------

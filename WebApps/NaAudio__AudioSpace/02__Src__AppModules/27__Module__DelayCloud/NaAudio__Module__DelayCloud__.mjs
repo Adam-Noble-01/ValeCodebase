@@ -75,6 +75,11 @@ import * as EffectRack       from '../10__Audio__WebAudioEngine/NaAudio__Engine_
 import * as SampleBank       from '../15__Audio__SampleLibraryLoader/NaAudio__Library__SampleBank__.mjs';
 import * as SamplePlayer     from '../10__Audio__WebAudioEngine/NaAudio__Engine__SamplePlayer__.mjs';
 import * as AudioHost        from '../10__Audio__WebAudioEngine/NaAudio__Engine__AudioHost__.mjs';
+import { NaAudio__Transport__IsRunning }   from '../10__Audio__WebAudioEngine/NaAudio__Engine__Transport__.mjs';
+import {
+    NaAudio__Event,
+    NaAudio__EventBus__Subscribe
+} from '../01__AppCore/NaAudio__AppCore__EventBus__.mjs';
 import { NaAudio__SeededRandom__Create }  from '../03__AppUtils/NaAudio__AppUtils__SeededRandom__.mjs';
 import { NaAudio__MusicalMaths__Clamp }   from '../03__AppUtils/NaAudio__AppUtils__MusicalMaths__.mjs';
 
@@ -412,6 +417,51 @@ import { NaAudio__MusicalMaths__Clamp }   from '../03__AppUtils/NaAudio__AppUtil
 // endregion -------------------------------------------------------------------
 
 
+    // SUB FUNCTION | Drain the Tail When the Transport Stops
+    // ------------------------------------------------------------
+    // STOP MEANS SILENCE, and an effect module has to be told that twice over.
+    //
+    // First the feedback path is drained, because a feedback delay recirculates whatever
+    // is already inside it and does not stop just because its source did.
+    //
+    // Then the output is gated, because draining the feedback is not enough on its own.
+    // The reverb behind it convolves against a room impulse, and this module's whole
+    // point is that the room can be made large: measured, the tail was still at -35 dBFS
+    // eleven seconds after the transport stopped. Decaying is not stopping, and a DAW
+    // that carries on for a quarter of a minute after Stop is the complaint.
+    //
+    // Both RAMP rather than cut. A gain step to zero on a ringing tail is an audible
+    // click, which is a worse artefact than the tail was.
+    //
+    // The unsubscribes go onto the module's own teardown list. A handler left on the bus
+    // after the module is removed keeps writing to audio nodes that no longer exist.
+    function NaAudio__DelayCloud__BindTransport(module, state) {
+        const seconds  =  module.Defaults.TailDrainSeconds;
+
+        const setOpen  =  function (isOpen, rampSeconds) {
+            if (state.Delay) EffectRack.NaAudio__EffectRack__SetDelayTailOpen(state.Delay, isOpen, rampSeconds);
+            if (!state.TailGate) return;
+
+            const now  =  AudioHost.NaAudio__AudioHost__Now();
+            state.TailGate.gain.cancelScheduledValues(now);
+            state.TailGate.gain.setValueAtTime(state.TailGate.gain.value, now);
+            state.TailGate.gain.linearRampToValueAtTime(isOpen ? 1 : 0.0001, now + rampSeconds);
+        };
+
+        module.Unregisters.push(NaAudio__EventBus__Subscribe(NaAudio__Event.TransportStopped, function () {
+            setOpen(false, seconds);
+        }));
+
+        module.Unregisters.push(NaAudio__EventBus__Subscribe(NaAudio__Event.TransportStarted, function () {
+            setOpen(true, seconds);
+        }));
+
+        // A space loads with the transport stopped, so the module starts closed.
+        setOpen(NaAudio__Transport__IsRunning(), 0.01);
+    }
+    // ------------------------------------------------------------
+
+
 // -----------------------------------------------------------------------------
 // REGION | Type Implementation
 // -----------------------------------------------------------------------------
@@ -443,6 +493,7 @@ import { NaAudio__MusicalMaths__Clamp }   from '../03__AppUtils/NaAudio__AppUtil
                 InputGain          : null,
                 Delay              : null,
                 Reverb             : null,
+                TailGate           : null,
                 ImpulseIds         : [],
                 CurrentImpulseIndex: -1
             };
@@ -463,26 +514,51 @@ import { NaAudio__MusicalMaths__Clamp }   from '../03__AppUtils/NaAudio__AppUtil
             state.Delay      =  EffectRack.NaAudio__EffectRack__CreateDelay();
             state.Reverb     =  EffectRack.NaAudio__EffectRack__CreateReverb(null);
 
+            // THE TAIL GATE
+            // Its own node between the effect chain and the module bus, rather than
+            // riding the bus gain directly. The bus is what the LOCK state silences, and
+            // two things ramping the same gain would fight: unlocking a module during a
+            // stop would open it back up, and stopping the transport would look like an
+            // unlock. One gain, one owner.
+            state.TailGate  =  AudioHost.NaAudio__AudioHost__CreateGain(1.0);
+
             state.InputGain.connect(state.Delay.Input);
             state.Delay.Output.connect(state.Reverb.Input);
-            state.Reverb.Output.connect(module.Bus.Output);
+            state.Reverb.Output.connect(state.TailGate);
+            state.TailGate.connect(module.Bus.Output);
 
             NaAudio__DelayCloud__LoadAssets(module, state);
             NaAudio__DelayCloud__SetBoxSize(module, state, state.BoxSize);
+            NaAudio__DelayCloud__BindTransport(module, state);
         },
         // ------------------------------------------------------------
 
 
         // UPDATE | Integrate the spheres and decay their pulses
         // ------------------------------------------------------------
+        // UPDATE
+        // The spheres are a physics simulation whose bounces TRIGGER SAMPLES, which makes
+        // this the one module type whose Update makes a sound. Every other module makes
+        // its sound from Schedule, which the transport drives and which therefore stops
+        // when the transport stops.
+        //
+        // This one is driven by the render loop instead, so it kept bouncing and kept
+        // playing while the transport was stopped - a DAW that carries on making noise
+        // after you press Stop. The spheres freeze with it: they represent taps of
+        // incoming audio, and there is no incoming audio when nothing is playing.
+        //
+        // The pulse decay is deliberately left running below the guard, so a sphere lit
+        // at the moment of stopping fades out rather than freezing mid-flash.
         Update : function (module, delta) {
             const state  =  module.TypeState;
             if (!state) return;
 
+            const isRunning  =  NaAudio__Transport__IsRunning();
+
             for (let i = 0; i < state.Spheres.length; i++) {
                 const sphere  =  state.Spheres[i];
 
-                if (NaAudio__DelayCloud__StepSphere(module, state, sphere, delta)) {
+                if (isRunning && NaAudio__DelayCloud__StepSphere(module, state, sphere, delta)) {
                     NaAudio__DelayCloud__Tap(module, state, sphere);
                 }
 

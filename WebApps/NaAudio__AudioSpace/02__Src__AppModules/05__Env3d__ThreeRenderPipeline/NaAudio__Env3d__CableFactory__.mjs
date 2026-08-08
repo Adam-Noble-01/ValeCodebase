@@ -11,10 +11,9 @@
 
    DESCRIPTION:
    - A cable is a swept tube along a cubic Bezier, with a moulded plug at each end.
-   - It leaves each socket along the socket's own axis before it droops, which is the
-     single detail that makes it read as a lead plugged into something rather than a
-     line drawn between two points.
-   - Its slack is a spring, so dragging a module swings the cable and it settles after.
+   - It leaves each socket along the socket's own axis and then drops to the floor, so
+     leads run ALONG THE GROUND between instruments rather than arcing over them.
+   - Its control points are sprung, so dragging a module whips its leads and they settle.
 
    ---------------------------------------------------------------------------
 
@@ -31,32 +30,41 @@
 
    ---------------------------------------------------------------------------
 
-   THE FOUR CONTROL POINTS
+   LEADS RUN ALONG THE GROUND
 
-       p0  the output port
-       c0  p0 pushed out along the port's own normal, then dropped by the sag
-       c1  p1 pushed out along its port's normal, then dropped by the sag
+       p0  the output port, low on the rim of a module's pad
+       c0  p0 pushed out along the port's own normal, and DROPPED to ground height
+       c1  p1 pushed out along its port's normal, and dropped to ground height
        p1  the input port
 
-   The lead-out along the normal is what sells it. Without it a cable emerges sideways
-   from the socket face, which no physical lead does, and the plug at that end has to
-   point somewhere arbitrary. With it the plug points straight out of the socket and the
-   curve does the bending, exactly like a real one.
+   Both control points sit at CableGroundHeight, so a lead leaves its socket, meets the
+   floor, and runs across it. It does not arc.
 
-   Sag is proportional to port-to-port distance, so a short hop between neighbours stays
-   taut and a run across the space droops.
+   The first version sagged from the straight port-to-port line instead, which drew a
+   catenary through the AIR between two sockets. With the sockets up at chest height that
+   put every lead in a great swooping curve over the middle of the space - a cat's cradle
+   strung between the instruments rather than a patch bay you look down on. Worse, the
+   leads crossed the airspace above other modules, so a busy space became unreadable from
+   any angle that was not directly overhead.
+
+   Dropping to the floor fixes both. Leads go AROUND the space at ankle height, they read
+   as one continuous ground plan of the signal, and nothing is ever hidden behind one.
+
+   The lead-out along the socket normal is what still sells the connection. Without it a
+   cable emerges sideways from the socket face, which no physical lead does, and the plug
+   at that end has to point somewhere arbitrary. With it the plug points straight out of
+   the socket and the curve does the bending down to the floor.
 
    ---------------------------------------------------------------------------
 
-   THE SWAY IS A SPRING, AND IT IS NOT DECORATION
+   THE CONTROL POINTS ARE SPRUNG, AND IT IS NOT DECORATION
 
-   The sag offset is not applied directly. It is a target that a damped spring chases, so
-   when a module is dragged the slack lags behind, overshoots and settles.
+   The two control points are not placed directly. Each chases its target through a damped
+   spring, so when a module is dragged its lead lags behind, overshoots and settles - a
+   whip along the floor rather than a curve simply redrawn each frame.
 
-   That is the difference between a cable that moves and a cable that is redrawn. It also
-   does real work: the settle is a half-second of motion after a drag ends that says the
-   patch is still connected and still yours, which a rigid curve snapping to its new
-   shape does not.
+   The settle is a half-second of motion after a drag ends that says the patch is still
+   connected and still yours, which a rigid curve snapping to its new shape does not.
 
    ---------------------------------------------------------------------------
 
@@ -71,8 +79,8 @@
    never touched. Nothing here allocates after construction.
 
    Parallel transport rather than a Frenet frame on purpose: a Frenet frame flips its
-   normal through an inflection point, and a cable that sags and then rises has one right
-   in the middle - which shows up as the tube visibly twisting once per drag.
+   normal through an inflection point, and a lead that drops to the floor and rises again
+   has two of them - which shows up as the tube visibly twisting as it is dragged.
 
    ============================================================================= */
 
@@ -96,15 +104,12 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
     const NAME_TUBE   =  'NaAudio__Env3d__CableTube';
     const NAME_PLUG   =  'NaAudio__Env3d__CablePlug';
 
-    const SCRATCH_C0       =  new THREE.Vector3();
-    const SCRATCH_C1       =  new THREE.Vector3();
     const SCRATCH_POINT    =  new THREE.Vector3();
     const SCRATCH_PREVIOUS =  new THREE.Vector3();
     const SCRATCH_TANGENT  =  new THREE.Vector3();
     const SCRATCH_NORMAL   =  new THREE.Vector3();
     const SCRATCH_BINORMAL =  new THREE.Vector3();
     const SCRATCH_AXIS     =  new THREE.Vector3();
-    const SCRATCH_TARGET   =  new THREE.Vector3();
     const SCRATCH_QUAT     =  new THREE.Quaternion();
 
     const PLUG_FORWARD     =  new THREE.Vector3(0, 1, 0);                    // <-- A cylinder's own axis in three is +Y
@@ -139,74 +144,42 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build the Two Control Points From the Ends and Their Normals
+    // HELPER FUNCTION | Where the Two Control Points Want to Be
     // ------------------------------------------------------------
-    // sway is the spring's current slack offset. It is added to both control points
-    // rather than to the curve midpoint, because a Bezier does not pass through its
-    // control points - pulling both of them down by s drops the middle of the curve by
-    // roughly three quarters of s and leaves the ends exactly where the sockets are,
-    // which is what a hanging lead does.
-    function NaAudio__Env3d__CableFactory__ControlPoints(state, fromPoint, toPoint, sway) {
+    // Out along each socket's own normal, then down to the height leads run at. The
+    // lead-out is capped at a third of the span so a short hop between neighbouring
+    // modules does not overshoot and loop back on itself.
+    function NaAudio__Env3d__CableFactory__ControlTargets(state, fromPoint, toPoint) {
         const distance  =  fromPoint.distanceTo(toPoint);
         const lead      =  Math.min(distance * 0.34, SpatialNumber('PatchGraph', 'CableLeadOut'));
+        const ground    =  SpatialNumber('PatchGraph', 'CableGroundHeight');
 
-        SCRATCH_C0.copy(state.FromNormal).multiplyScalar(lead).add(fromPoint).add(sway);
-        SCRATCH_C1.copy(state.ToNormal).multiplyScalar(lead).add(toPoint).add(sway);
+        state.C0Target.copy(state.FromNormal).multiplyScalar(lead).add(fromPoint);
+        state.C1Target.copy(state.ToNormal).multiplyScalar(lead).add(toPoint);
+
+        state.C0Target.y  =  ground;
+        state.C1Target.y  =  ground;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | How Far the Slack Should Hang at Rest
+    // HELPER FUNCTION | Advance One Control Point's Spring by a Frame
     // ------------------------------------------------------------
-    // Proportional to span, so a short hop between neighbours stays taut and a run across
-    // the space droops - and then CLAMPED so the belly of the curve stays above the
-    // floor.
-    //
-    // The clamp is not a nicety. Sockets sit under a metre up and the demonstration space
-    // has four-metre runs in it, so the unclamped sag put the middle of every long lead a
-    // clear half metre underground: the cable left its socket, vanished into the floor,
-    // and reappeared at the far end. It read as a rendering fault rather than as a cable,
-    // which is the exact impression the tube was built to fix.
-    //
-    // The 0.75 is the geometry of a cubic Bezier with both control points displaced by s:
-    // the curve itself reaches about three quarters of s at its midpoint, so that is what
-    // has to clear the floor rather than s itself.
-    function NaAudio__Env3d__CableFactory__RestSag(fromPoint, toPoint) {
-        const wanted  =  fromPoint.distanceTo(toPoint) * SpatialNumber('PatchGraph', 'CableSagFactor');
-
-        const lowestPort  =  Math.min(fromPoint.y, toPoint.y);
-        const headroom    =  lowestPort - SpatialNumber('PatchGraph', 'CableFloorClearance');
-
-        return Math.max(0, Math.min(wanted, headroom / 0.75));
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Advance the Slack Spring by One Frame
-    // ------------------------------------------------------------
-    // A critically-ish damped spring on a single vector. The rest position is straight
-    // down by the sag; the displacement is whatever the last frame's endpoint movement
-    // left behind.
-    //
-    // delta is clamped before it reaches the integrator. A tab returning from the
-    // background delivers one enormous frame, and an unclamped spring integrated across
-    // it goes unstable and flings the cable off into the distance - permanently, because
-    // there is nothing to pull it back.
-    function NaAudio__Env3d__CableFactory__AdvanceSpring(state, fromPoint, toPoint, delta) {
-        SCRATCH_TARGET.set(0, -NaAudio__Env3d__CableFactory__RestSag(fromPoint, toPoint), 0);
-
+    // A damped spring per control point. delta is clamped before it reaches the
+    // integrator: a tab returning from the background delivers one enormous frame, and an
+    // unclamped spring integrated across it goes unstable and flings the lead off into
+    // the distance - permanently, because nothing pulls it back.
+    function NaAudio__Env3d__CableFactory__AdvanceSpring(current, velocity, target, delta) {
         const stiffness  =  SpatialNumber('PatchGraph', 'CableSpringStiffness');
         const damping    =  SpatialNumber('PatchGraph', 'CableSpringDamping');
         const step       =  Math.min(delta, 0.05);
 
-        state.Velocity.x += (SCRATCH_TARGET.x - state.Sway.x) * stiffness * step;
-        state.Velocity.y += (SCRATCH_TARGET.y - state.Sway.y) * stiffness * step;
-        state.Velocity.z += (SCRATCH_TARGET.z - state.Sway.z) * stiffness * step;
+        velocity.x += (target.x - current.x) * stiffness * step;
+        velocity.y += (target.y - current.y) * stiffness * step;
+        velocity.z += (target.z - current.z) * stiffness * step;
 
-        state.Velocity.multiplyScalar(Math.max(0, 1 - damping * step));
-        state.Sway.addScaledVector(state.Velocity, step);
-
-        return state.Sway;
+        velocity.multiplyScalar(Math.max(0, 1 - damping * step));
+        current.addScaledVector(velocity, step);
     }
     // ------------------------------------------------------------
 
@@ -401,8 +374,12 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
             Radius            : SpatialNumber('PatchGraph', 'CableRadius'),
             FromNormal        : new THREE.Vector3().copy(fromNormal || FALLBACK_UP).normalize(),
             ToNormal          : new THREE.Vector3().copy(toNormal   || FALLBACK_UP).normalize(),
-            Sway              : new THREE.Vector3(),
-            Velocity          : new THREE.Vector3(),
+            C0                : new THREE.Vector3(),
+            C1                : new THREE.Vector3(),
+            C0Target          : new THREE.Vector3(),
+            C1Target          : new THREE.Vector3(),
+            C0Velocity        : new THREE.Vector3(),
+            C1Velocity        : new THREE.Vector3(),
             StartTangent      : new THREE.Vector3(0, 1, 0),
             EndTangent        : new THREE.Vector3(0, 1, 0)
         };
@@ -410,8 +387,11 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
         group.userData.NaAudio__CableState  =  state;
 
         // Settled on construction rather than sprung into place. A space that loads with
-        // every cable swinging looks like a physics demo, not like a patch somebody left.
-        state.Sway.set(0, -NaAudio__Env3d__CableFactory__RestSag(fromPoint, toPoint), 0);
+        // every lead whipping across the floor looks like a physics demo, not like a
+        // patch somebody left.
+        NaAudio__Env3d__CableFactory__ControlTargets(state, fromPoint, toPoint);
+        state.C0.copy(state.C0Target);
+        state.C1.copy(state.C1Target);
         NaAudio__Env3d__CableFactory__Update(group, fromPoint, toPoint, 0);
 
         return group;
@@ -427,12 +407,17 @@ import * as Materials                  from './NaAudio__Env3d__MaterialLibrary__
         const state  =  cableGroup && cableGroup.userData.NaAudio__CableState;
         if (!state) return;
 
-        const sway  =  (delta > 0)
-            ? NaAudio__Env3d__CableFactory__AdvanceSpring(state, fromPoint, toPoint, delta)
-            : state.Sway;
+        NaAudio__Env3d__CableFactory__ControlTargets(state, fromPoint, toPoint);
 
-        NaAudio__Env3d__CableFactory__ControlPoints(state, fromPoint, toPoint, sway);
-        NaAudio__Env3d__CableFactory__WriteTube(state, fromPoint, SCRATCH_C0, SCRATCH_C1, toPoint);
+        if (delta > 0) {
+            NaAudio__Env3d__CableFactory__AdvanceSpring(state.C0, state.C0Velocity, state.C0Target, delta);
+            NaAudio__Env3d__CableFactory__AdvanceSpring(state.C1, state.C1Velocity, state.C1Target, delta);
+        } else {
+            state.C0.copy(state.C0Target);
+            state.C1.copy(state.C1Target);
+        }
+
+        NaAudio__Env3d__CableFactory__WriteTube(state, fromPoint, state.C0, state.C1, toPoint);
 
         // THE PLUGS
         // Seated slightly INSIDE the socket rather than flush against it, so the barrel

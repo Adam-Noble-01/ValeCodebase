@@ -3,6 +3,116 @@
 
 
 # ---------------------------------------------------------
+## NaAudio__AudioSpace v0.3.1 - 08-Aug-2026
+### Stop means stop, leads lie on the floor, and every axis drag was lying about its distance
+
+Four fixes from actually using the thing. One of them had been silently breaking every
+axis drag in the application since the day they were written.
+
+---
+
+### Every DragAxis handle reported the same travel, forever
+
+    total.copy(SCRATCH_AXIS).multiplyScalar(total.dot(SCRATCH_AXIS));
+
+That line reads correctly and is wrong. JavaScript evaluates `total.copy(SCRATCH_AXIS)`
+BEFORE it evaluates the argument, so by the time `total.dot(SCRATCH_AXIS)` runs, `total`
+IS the axis and the dot product is axis-dot-axis - which is 1, always.
+
+So every axis-constrained drag reported exactly one metre of travel in the positive
+direction, no matter how far the pointer moved or which way. Measured before the fix, a
+slider dragged left and a slider dragged right both wrote the identical value ten frames
+running: `[1.163, 1.163, 1.163, ...]` for a rightward drag and `[2.163, 2.163, ...]` for
+the leftward one that followed - the same +1.163 of travel added to a start point that
+had already been clamped.
+
+It presented as 'the sliders only drag one way and will not come back', which is exactly
+what it was. It also silently broke the DelayCloud's resize handles, which are the same
+handle kind: the box could only ever grow.
+
+The dot products are now taken into locals first. Verified both directions from three
+camera angles, plus a detented slider stepping 2 -> 4 -> 2.
+
+---
+
+### The sliders were vertical, and should never have been
+
+Standing posts with knobs riding up and down them. Two things wrong, one cosmetic and one
+fatal.
+
+Cosmetic: a bank of five vertical posts reads as a row of aerials. Flat tracks lying on
+the deck read as a mixing desk, which is what a control bank is.
+
+Fatal: a vertical slider is dragged on a plane that CONTAINS the vertical axis and faces
+the camera. Looking down at a deck - which is the only way anybody looks at a control
+bank - that plane is nearly edge-on to the view, so the pointer ray meets it at a glancing
+angle and, past the plane's horizon, does not meet it at all. Even with the dot-product
+bug fixed, a vertical slider would have been unreliable from the one camera angle that
+matters.
+
+Tracks now run along X, the knob is a fader cap sliding left to right, and each row
+carries its legend at the HEAD of its track so the bank reads like a channel strip.
+
+---
+
+### Leads run along the ground
+
+Sockets used to sit at nearly half the cage height and stand off the cage, so every lead
+left at chest height and arced across the space - a cat's cradle strung between the
+instruments. Worse, the arcs crossed the airspace above other modules, so a busy space
+was unreadable from any angle that was not directly overhead.
+
+Sockets are now SMALL and sit on the rim of the module's own pad at a fixed low height,
+and both cable control points sit at CableGroundHeight. A lead leaves its socket, meets
+the floor and runs across it. The patch reads as one continuous ground plan of the signal
+and nothing is hidden behind a cable.
+
+The sag and its floor clamp are gone with the arc that needed them. The spring stayed but
+moved: it used to chase a sag depth and now each control point chases its own target, so
+dragging a module whips its leads along the floor rather than swinging them through the
+air.
+
+---
+
+### The DelayCloud carried on playing after Stop
+
+Two separate reasons, and fixing only the first was not enough.
+
+Its spheres are a physics simulation whose bounces TRIGGER SAMPLES, which makes it the
+one module type whose Update makes a sound. Every other module makes its sound from
+Schedule, which the transport drives and which therefore stops when the transport stops.
+This one is driven by the render loop, so it kept bouncing and kept playing. The spheres
+now freeze with the transport - they represent taps of incoming audio, and there is no
+incoming audio when nothing is playing.
+
+That alone left it ringing. A feedback delay recirculates what is already inside it, and
+at the ceiling of 0.82 that is a loop losing under a fifth of its energy per pass. Draining
+the feedback on stop fixed the sustain but not the duration: measured, the tail was still
+at **-35 dBFS eleven seconds after Stop**, decaying at about a decibel a second, because
+the reverb behind it convolves against a room this module exists to let you make large.
+
+So the module also gates its own output now, through a dedicated node rather than the
+module bus - the bus is what the LOCK state silences, and two things ramping one gain
+would fight. Both ramp rather than cut, because a gain step to zero on a ringing tail is
+a worse artefact than the tail was. Measured after: **linear 0.0, meter 0.0** three
+seconds after Stop and still silent at eleven.
+
+Space was already bound to play and stop, and was verified working with focus on the
+canvas and after clicking the Play button with the mouse - `preventDefault` on keydown
+stops the focused button re-activating, so the two do not cancel out.
+
+#### Changed
+- `NaAudio__Env3d__Interaction__.mjs` - the axis-constraint evaluation order
+- `NaAudio__Env3d__ControlFactory__.mjs` - horizontal tracks, fader caps, head legends
+- `NaAudio__Env3d__CableFactory__.mjs` - ground run replaces the sag; per-control-point springs
+- `NaAudio__Spatial__PortFactory__.mjs` - small sockets on the pad rim at a fixed low height
+- `NaAudio__Module__DelayCloud__.mjs` - transport gating, tail drain and an output gate
+- `NaAudio__Engine__EffectRack__.mjs` - `SetDelayTailOpen`
+- `Na__SpatialModules__Config.json` - `CableGroundHeight`, `PortHeight`, `TailDrainSeconds`,
+  smaller port sizes, wider control bank inset
+
+
+# ---------------------------------------------------------
 ## NaAudio__AudioSpace v0.3.0 - 08-Aug-2026
 ### The ground becomes islands, the signal becomes visible, and patching becomes a gesture
 

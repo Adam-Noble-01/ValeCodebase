@@ -133,6 +133,101 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * HUD | Mode Indicator
+ * ----------------------------------------------------------------------------- */
+
+    /* MODE | Top Edge Rule */
+    /* ------------------------------------------------------------ */
+    /* The mode's main signal. Carries no text and asks for no attention - it simply  */
+    /* changes the colour of the frame the whole space sits inside, so the mode is    */
+    /* known from peripheral vision without being read.                               */
+    .NaAudio__ModeRule {
+        position                           :  absolute;
+        left                               :  0;
+        right                              :  0;
+        top                                :  0;
+        height                             :  4px;
+        background-color                   :  var(--NaAudio_SageGreen);
+        transition                         :  background-color var(--NaAudio_TransitionPanel);
+        pointer-events                     :  none;                        /* <-- Purely a signal; never a target */
+    }
+
+    .NaAudio__ModeRule--build {
+        background-color                   :  var(--NaAudio_SlateBlue);
+    }
+
+    .NaAudio__ModeRule--play {
+        background-color                   :  var(--NaAudio_SageGreen);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* MODE | Switch */
+    /* ------------------------------------------------------------ */
+    .NaAudio__ModeSwitch {
+        position                           :  absolute;
+        top                                :  calc(var(--NaAudio_HudInset) + 4px);
+        left                               :  50%;
+        transform                          :  translateX(-50%);
+        display                            :  flex;
+        align-items                        :  center;
+        gap                                :  4px;
+        padding                            :  4px 4px 4px 6px;
+        border                             :  var(--NaAudio_BorderWidth) solid var(--NaAudio_PanelBorder);
+        border-radius                      :  var(--NaAudio_PanelRadius);
+        background-color                   :  var(--NaAudio_PanelBackground);
+        box-shadow                         :  var(--NaAudio_PanelShadow);
+    }
+
+    .NaAudio__ModeSwitch__Button {
+        padding                            :  6px 18px;
+        border                             :  none;
+        border-radius                      :  var(--NaAudio_ControlRadius);
+        background-color                   :  transparent;
+        color                              :  var(--NaAudio_InkFaint);
+        font-size                          :  var(--NaAudio_FontSizeSmall);
+        font-weight                        :  600;
+        letter-spacing                     :  var(--NaAudio_LetterSpacingLabel);
+        text-transform                     :  uppercase;
+        cursor                             :  pointer;
+        transition                         :  background-color var(--NaAudio_TransitionQuick), color var(--NaAudio_TransitionQuick);
+    }
+
+    .NaAudio__ModeSwitch__Button:hover {
+        background-color                   :  var(--NaAudio_ControlBackground);
+        color                              :  var(--NaAudio_Ink);
+    }
+
+    /* The active half is filled in its own mode colour, so the switch and the rule   */
+    /* agree without the switch needing to be read.                                    */
+    .NaAudio__ModeSwitch__Button--build.NaAudio__ModeSwitch__Button--active {
+        background-color                   :  var(--NaAudio_SlateBlue);
+        color                              :  var(--NaAudio_Cream);
+    }
+
+    .NaAudio__ModeSwitch__Button--play.NaAudio__ModeSwitch__Button--active {
+        background-color                   :  var(--NaAudio_SageGreenDeep);
+        color                              :  var(--NaAudio_Cream);
+    }
+
+    .NaAudio__ModeSwitch__Hint {
+        padding                            :  0 12px 0 8px;
+        font-size                          :  var(--NaAudio_FontSizeTiny);
+        color                              :  var(--NaAudio_InkFaint);
+        white-space                        :  nowrap;
+    }
+
+    @media (max-width: 900px) {
+        .NaAudio__ModeSwitch__Hint {
+            display                        :  none;                        /* <-- The switch itself still reads */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
  * HUD | Transport Bar
  * ----------------------------------------------------------------------------- */
 

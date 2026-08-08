@@ -105,6 +105,7 @@
     #NaAudio__Hud__BootGate,
     .NaAudio__Transport,
     .NaAudio__Diagnostics,
+    .NaAudio__ModeSwitch,
     .NaAudio__Help__Toggle {
         pointer-events                     :  auto;
     }

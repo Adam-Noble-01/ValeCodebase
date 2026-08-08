@@ -69,6 +69,7 @@ import {
     NaAudio__Env3d__Interaction__Register,
     NaAudio__Env3d__HandleKind
 } from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
+import { NaAudio__Mode }     from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
 import * as ModuleBase       from '../20__System__SpatialModuleFramework/NaAudio__Spatial__ModuleBase__.mjs';
 import * as EffectRack       from '../10__Audio__WebAudioEngine/NaAudio__Engine__EffectRack__.mjs';
 import * as SampleBank       from '../15__Audio__SampleLibraryLoader/NaAudio__Library__SampleBank__.mjs';
@@ -160,6 +161,11 @@ import { NaAudio__MusicalMaths__Clamp }   from '../03__AppUtils/NaAudio__AppUtil
                 Axis     : HANDLE_AXES[axis],
                 Cursor   : 'ew-resize',
                 Data     : { Axis: axis },
+
+                // Play-mode only, like every other control. Resizing the box IS setting
+                // the effect, so it is emphatically not a layout operation.
+                ClickModes : [NaAudio__Mode.Play],
+                DragModes  : [NaAudio__Mode.Play],
 
                 OnDragStart : function (context) {
                     state.DragStartSize  =  state.BoxSize.clone();

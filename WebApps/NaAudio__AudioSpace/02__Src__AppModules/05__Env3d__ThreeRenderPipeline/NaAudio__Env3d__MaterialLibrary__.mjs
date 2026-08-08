@@ -256,6 +256,32 @@ import * as Palette                      from './NaAudio__Env3d__PaletteLibrary_
     // ------------------------------------------------------------
 
 
+    // FUNCTION | A Flat Unlit Marker Material
+    // ------------------------------------------------------------
+    // For flat floor-plane marks that are LINEWORK drawn as a mesh - the sequencer's
+    // start-point triangle is the case this exists for.
+    //
+    // Unlit on purpose. A shaded triangle lying flat on the ground picks up the key
+    // light and reads as a small physical object standing there, when what is wanted is
+    // a mark printed on the floor.
+    //
+    // The colour is resolved through NaAudio__Palette__Resolve rather than the pigment
+    // table, so a marker may be named from either family. That matters: the natural
+    // choice for a mark like this is 'Ink', which is not a pigment at all - asking the
+    // pigment table for it throws, which is exactly what happened the first time.
+    export function NaAudio__Materials__FlatMarker(colourName, opacity) {
+        const alpha  =  (opacity === undefined) ? 1.0 : opacity;
+
+        return NaAudio__Materials__Shared('flatMarker:' + colourName + ':' + alpha, () => new THREE.MeshBasicMaterial({
+            color       : Palette.NaAudio__Palette__Resolve(colourName),
+            transparent : alpha < 1.0,
+            opacity     : alpha,
+            side        : THREE.DoubleSide                                    // <-- Flat marks are seen from both sides as the camera orbits
+        }));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | A Thin Linework Material
     // ------------------------------------------------------------
     export function NaAudio__Materials__Line(inkKey, opacity) {
@@ -315,6 +341,27 @@ import * as Palette                      from './NaAudio__Env3d__PaletteLibrary_
             transparent : true,
             depthWrite  : false,
             opacity     : 1.0
+        });
+        return NaAudio__Materials__EnforceMatte(material, false);
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | A Flat Label Material for a Mesh Rather Than a Sprite
+    // ------------------------------------------------------------
+    // For a legend printed flat on a deck. Owned, because it carries its own canvas
+    // texture.
+    //
+    // NOT a SpriteMaterial, and the distinction is not cosmetic. A SpriteMaterial's
+    // shader is fed sprite-only uniforms - centre and rotation among them - by the
+    // sprite render path. Put one on a Mesh and those uniforms are never supplied, and
+    // Three throws inside setValueV2f on the first frame the mesh is drawn. It looks
+    // like a renderer fault and is entirely self-inflicted.
+    export function NaAudio__Materials__OwnedFlatLabel(texture) {
+        const material  =  new THREE.MeshBasicMaterial({
+            map         : texture,
+            transparent : true,
+            depthWrite  : false,
+            side        : THREE.DoubleSide
         });
         return NaAudio__Materials__EnforceMatte(material, false);
     }

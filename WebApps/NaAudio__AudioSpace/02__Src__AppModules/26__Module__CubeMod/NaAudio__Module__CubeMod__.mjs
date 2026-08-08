@@ -60,6 +60,7 @@ import {
     NaAudio__Env3d__Interaction__Register,
     NaAudio__Env3d__HandleKind
 } from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
+import { NaAudio__Mode }     from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
 import * as ModuleBase       from '../20__System__SpatialModuleFramework/NaAudio__Spatial__ModuleBase__.mjs';
 import * as SynthVoice       from '../10__Audio__WebAudioEngine/NaAudio__Engine__SynthVoice__.mjs';
 import {
@@ -195,6 +196,11 @@ import {
             ModuleId : module.ModuleId,
             Cursor   : 'crosshair',
             Data     : faceState,
+
+            // Play-mode only. In Build the six face plates vanish from the picker, so
+            // the cube can be repositioned without a pad being dragged in passing.
+            ClickModes : [NaAudio__Mode.Play],
+            DragModes  : [NaAudio__Mode.Play],
 
             OnDragStart : function () {
                 state.ActiveFace       =  faceState;

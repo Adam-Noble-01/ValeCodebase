@@ -3,6 +3,158 @@
 
 
 # ---------------------------------------------------------
+## NaAudio__AudioSpace v0.2.0 - 08-Aug-2026
+### Build and Play modes, and a control bank for the circular sequencer
+
+The v0.1.0 build had a fault that only shows up once somebody actually uses it: a module
+and its controls occupy the same pixels, so reaching to *move* a sequencer reprograms it
+instead. One gesture, no undo, no symptom — the pattern is simply different afterwards and
+nothing says so. This release is mostly about making that impossible.
+
+---
+
+### Two modes
+
+**Play** is the default and is what v0.1.0 always was, minus the hazard: controls are live,
+modules are pinned. **Build** inverts it — pads drag, every control in the scene is frozen,
+and the floor grid comes up to say so.
+
+`NaAudio__AppCore__ModeManager__.mjs` is new and holds the mode. It is deliberately in
+AppCore rather than in the HUD: the mode governs the interaction layer, and a HUD panel
+owning state that the 3D pipeline must obey is the wrong direction of dependency. It
+publishes `ModeChanged`, and the indicator, the ground grid and anything else are all just
+subscribers.
+
+#### It is enforced in one place, not in twenty
+Every handle registered with `NaAudio__Env3d__Interaction` may now carry `ClickModes` and
+`DragModes`. Omitting them means "live in both", so nothing pre-existing had to change.
+`NaAudio__Env3d__Interaction__IsHandleLive` is checked inside the pick loop, and that
+placement is the whole trick:
+
+> A handle that is dead in the current mode is skipped by the raycast rather than picked
+> and ignored — **so it stops occluding.** In Build, a click passes *through* a sequencer
+> step and lands on the pad beneath it.
+
+Had the check sat at the callback instead, Build mode would have been unusable on exactly
+the modules that need it most: a densely-stepped sequencer is almost entirely covered by
+its own controls, and there would have been nowhere left to grab it.
+
+The cursor is part of the same mechanism — `grab` only where a drag is actually live, so
+the pointer answers "can I move this" before the user commits to finding out.
+
+#### The indicator is louder than anything else in this interface
+`NaAudio__Hud__ModeIndicator__.mjs` states the mode three times over: a switch naming both
+options, a full-width coloured rule along the top edge, and the cursor. That is more than
+this deliberately quiet interface would normally allow, and it is the right trade — a modal
+interface's one serious failure is acting in the mode you are not in, and here that failure
+is silent in both directions. The rule matters most of the three: it sits in peripheral
+vision permanently, so the mode is known without being read.
+
+**Tab** toggles, with `preventDefault` — otherwise the browser walks focus out of the
+canvas and the next keystroke goes somewhere else entirely.
+
+---
+
+### The circular sequencer grew controls
+
+A small square on the near corner of the pad doubles the base width and reveals a bank of
+five sliders. Folding it away again restores the original footprint.
+`NaAudio__ModuleBase__SetBaseWidthFactor` rebuilds the pad and cage at the new width and
+shifts the whole thing by half the growth, so the module's *contents* stay exactly where
+they were — the base opens outward rather than the sequencer jumping sideways.
+
+`NaAudio__Env3d__ControlFactory__.mjs` is new and builds both the sliders and the button.
+The knob is a real object on a real rail, dragged along a world axis, and where the slider
+is detented the knob still follows the hand continuously and settles onto the nearest
+position on release. Quantising the knob's *position* instead would make it feel like it
+were fighting the pointer.
+
+| Slider | Detents | Notes |
+|---|---|---|
+| **Cycle** | 4 / 2 / 1 / ½ / ¼ bars | Revolution length as musical time, not as a tempo number |
+| **Feel** | regular, on-beat, triplet, dotted | Where the steps sit on the circle |
+| **Wobble** | continuous | How far a step may drift from its slot |
+| **Chance** | continuous | How often that drift happens |
+| **Bank** | 4 kits | Placeholder for a kit browser; the kits behind it are real |
+
+#### One function owns where a step is
+Both the scheduler and the geometry call
+`NaAudio__CircularSequencer__StepFraction`. Feel and Wobble move the fraction, and the
+block and the trigger follow it together. Where a step *sits* is where it *plays* — with
+two copies of that arithmetic the picture and the ear would eventually disagree, and that
+class of bug is close to undebuggable because both halves look correct in isolation.
+
+#### Wobble draws its dice in a fixed order
+Per step, the chance roll is drawn from the seeded stream **before** the amount roll. So
+raising the depth changes how far the wobbling steps move without reshuffling *which* steps
+wobble — the groove deepens rather than becoming a different groove. Swapping those two
+draws would destroy that silently, and it would present as a bug in the ear rather than
+anywhere in the code.
+
+A late step also detunes flat in proportion to its lateness, because a record platter
+losing speed drops pitch as well as time. That is what makes it read as *wobble* rather
+than as timing jitter.
+
+#### Reading the pattern at a glance
+Lit steps are opaque, silent ones nearly transparent. Growth alone was not enough — at
+plan distance every step still read as active. A triangle outside the rings now points at
+the start of the cycle, which a circle otherwise has no way of telling you.
+
+Step blocks are already sized from a per-step velocity that is wired end to end and pinned
+at full; `StepVelocitySizeMin/Max` are in config and applied. Only the gesture to set it is
+missing.
+
+---
+
+### Six things that went wrong on the way
+
+- **The start marker threw `Unknown pigment "Ink"`.** It asked the body-material path for
+  an ink colour. Added `NaAudio__Materials__FlatMarker` — unlit `MeshBasicMaterial` via the
+  palette's `Resolve` helper, which is correct for a mark printed on the floor anyway,
+  since a floor mark should not shade.
+- **Step transparency did nothing.** `ApplyPresentation` was **assigning**
+  `material.opacity`, wiping every per-step value on the next pass. It now stores
+  `userData.NaAudio__BaseOpacity` and *multiplies* the module's body opacity into it.
+  `NaAudio__ModuleBase__SetMaterialOpacity` is the one sanctioned write path. Measured
+  after: active 1.0, inactive 0.22.
+- **A `SpriteMaterial` on a `Mesh`** threw `Cannot read properties of undefined (reading
+  'x')` from deep inside `setValueV2f`. The sprite shader's centre and rotation uniforms
+  are never supplied by the mesh render path. Added
+  `NaAudio__Materials__OwnedFlatLabel`, a `MeshBasicMaterial`.
+- **Five slider labels overlapped.** Camera-facing sprites in a receding row converge, and
+  staggering their heights only helps at some angles. Replaced with flat legends printed
+  on the deck like panel markings — they also stopped being labels for the distance-fade
+  sweep, which is why `BuildFlat` is deliberately not stamped `NaAudio__IsLabel`.
+- **A Build-mode drag test reported STUCK.** Not an app bug: in Play the pad drag correctly
+  falls through to OrbitControls, which orbits the camera and moves the module *on screen*.
+  The test was re-using stale screen coordinates across the mode switch. Re-projecting after
+  switching gave the correct MOVED.
+- **`SyntaxError: Unexpected token ')'`** from an over-greedy replacement while converting
+  the control builders to arrow functions. Mentioned only because it cost more time than a
+  stray paren has any right to.
+
+#### Added
+- `01__AppCore/NaAudio__AppCore__ModeManager__.mjs`
+- `05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__ControlFactory__.mjs`
+- `40__System__HudOverlay/NaAudio__Hud__ModeIndicator__.mjs`
+
+#### Changed
+- `NaAudio__Env3d__Interaction__.mjs` — `ClickModes` / `DragModes` on every handle, checked
+  inside the pick loop
+- `NaAudio__Spatial__ModuleBase__.mjs` — mode-gated pad drag, multiplied opacity,
+  `SetMaterialOpacity`, `SetBaseWidthFactor`
+- `NaAudio__Module__CircularSequencer__.mjs` — grid templates, wobble, kit switching, the
+  control bank, the start marker, step transparency
+- `NaAudio__Env3d__MaterialLibrary__.mjs` — `FlatMarker`, `OwnedFlatLabel`
+- `NaAudio__Env3d__Labels3d__.mjs` — `BuildFlat`
+- `NaAudio__Env3d__GroundStage__.mjs` — `SetGridEmphasis`
+- `NaAudio__AppCore__EventBus__.mjs` — `ModeChanged`
+- `Na__SpatialModules__Config.json` — the `Modes` block and the sequencer's new keys
+- `NaAudio__CoreUi__Styles__BaseLayout__.css` — the mode rule and switch
+- `NaAudio__Hud__HelpOverlay__.mjs`, `NaAudio__README__.md` — the modes and the control bank
+
+
+# ---------------------------------------------------------
 ## NaAudio__AudioSpace v0.1.0 - 08-Aug-2026
 ### First light: the space exists, it makes a sound, and three of the manifest's modules are real
 

@@ -40,7 +40,7 @@
 
 import * as THREE from 'three';
 
-import { Env3dNumber, Env3dBool }             from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
+import { Env3dNumber, Env3dBool, SpatialNumber }  from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
 import { NaAudio__SeededRandom__Create }      from '../03__AppUtils/NaAudio__AppUtils__SeededRandom__.mjs';
 import * as Palette                           from './NaAudio__Env3d__PaletteLibrary__.mjs';
 import * as Materials                         from './NaAudio__Env3d__MaterialLibrary__.mjs';
@@ -272,6 +272,38 @@ import { NaAudio__Env3d__SceneGroup }         from './NaAudio__Env3d__SceneManag
     export function NaAudio__Env3d__GroundStage__FloorMesh(surface) {
         if (!surface) return null;
         return surface.Groups[NaAudio__Env3d__SceneGroup.Environment].getObjectByName(NAME_FLOOR) || null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Raise or Lower the Ground Grid's Presence
+    // ------------------------------------------------------------
+    // Build mode boosts the grid; Play mode returns it to its quiet baseline. Driven by
+    // opacity rather than by visibility, so the change reads as the floor coming into
+    // focus rather than as a grid being switched on - which is the difference between a
+    // mode signal and a flicker.
+    //
+    // The boost is multiplied onto the configured opacity rather than replacing it, so
+    // the baseline in Na__Env3d__Config.json stays the one number that controls how
+    // present the grid is overall.
+    export function NaAudio__Env3d__GroundStage__SetGridEmphasis(surface, isEmphasised) {
+        if (!surface) return;
+
+        const grid  =  surface.Groups[NaAudio__Env3d__SceneGroup.Environment].getObjectByName(NAME_GRID);
+        if (!grid) return;
+
+        const base   =  Env3dNumber('GroundStage', 'GridOpacity');
+        const boost  =  isEmphasised ? SpatialNumber('Modes', 'BuildModeGridBoost') : 1.0;
+
+        for (let i = 0; i < grid.children.length; i++) {
+            const segments  =  grid.children[i];
+            if (!segments.material) continue;
+
+            // The major lines carry their own multiplier from the material library, so
+            // the ratio between major and minor is preserved rather than flattened.
+            const isMajor  =  i === 1;
+            segments.material.opacity  =  Math.min(base * boost * (isMajor ? 1.6 : 1.0), 1);
+        }
     }
     // ------------------------------------------------------------
 

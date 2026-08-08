@@ -179,6 +179,46 @@ import * as Materials                           from './NaAudio__Env3d__Material
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build a Flat Panel Legend Lying on the Deck
+    // ------------------------------------------------------------
+    // A Mesh in the ground plane rather than a camera-facing Sprite, for text that
+    // belongs to a control rather than to a whole module.
+    //
+    // WHY NOT A SPRITE HERE. A bank of five sliders stands in a row running away from
+    // the camera, so five camera-facing plates converge to the same point on screen and
+    // pile on top of each other. Staggering their heights helps and does not fix it,
+    // because the convergence changes with every orbit.
+    //
+    // Printed flat on the deck the problem disappears: the legends keep the spacing the
+    // controls have, at every angle, exactly as the screen-printed markings on a real
+    // panel do. They become unreadable edge-on, which is the honest trade and is also
+    // when the user is not looking at them.
+    export function NaAudio__Env3d__Labels3d__BuildFlat(text, subtitle) {
+        if (!Env3dBool('Labels', 'Enabled')) return null;
+
+        const rendered  =  NaAudio__Env3d__Labels3d__RenderTexture(text, subtitle);
+        const material  =  Materials.NaAudio__Materials__OwnedFlatLabel(rendered.Texture);
+
+        const geometry  =  new THREE.PlaneGeometry(1, rendered.Height / rendered.Width);
+        geometry.rotateX(-Math.PI / 2);                                       // <-- Authored in XY, laid flat
+
+        const plate  =  new THREE.Mesh(geometry, material);
+        plate.name   =  NAME_LABEL + '__Flat';
+
+        const pixelsPerUnit  =  Env3dNumber('Labels', 'PixelsPerWorldUnit');
+        plate.scale.setScalar(rendered.Width / pixelsPerUnit);
+
+        plate.userData.NaAudio__Pickable  =  false;
+        plate.renderOrder                 =  3;                               // <-- After the pad it sits on
+
+        // Deliberately NOT stamped as a label. The distance-fade sweep drives sprite
+        // opacity, and a flat plate faded by the same rule would vanish while its
+        // control was still plainly in reach.
+        return plate;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Replace the Text on an Existing Label
     // ------------------------------------------------------------
     // Disposes the old texture. Without that, renaming a module twenty times leaks

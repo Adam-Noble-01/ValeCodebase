@@ -2,7 +2,7 @@
     "NaAudio__Palette__Config": {
         "NaAudio__Palette__Config__Meta": {
             "ConfigLabel"           : "AudioSPACE Palette - Muted Geometric",
-            "ConfigVersion"          : "0.1.0",
+            "ConfigVersion"          : "0.2.0",
             "ConfigNote"             : "Single source of truth for every colour in AudioSPACE, 3D and 2D alike. The CSS custom properties in 03__Style__AppStylesheets/NaAudio__CoreUi__Styles__Variables__.css mirror this file by hand; a browser cannot read a stylesheet variable from JSON. If you change a hex here, change it there.",
             "DesignIntent"           : "Kandinsky Composition A dialled a long way back. Flat geometric primitives on a warm paper ground, thin dark linework, and a small palette of muted pigments used sparingly. Nothing glossy: every surface is matte, roughness stays high and metalness stays at zero, so a shape reads as painted card rather than plastic.",
             "AntiGlossRule"          : "No material in this application may have metalness above 0.0 or roughness below 0.60. Specular highlights read as a games engine and fight the flat-pigment look. Depth comes from hue and value separation, not from shine.",

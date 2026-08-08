@@ -10,8 +10,9 @@
    CREATED    : 08-Aug-2026
 
    DESCRIPTION:
-   - A dismissible card covering navigation, the shortcuts, the three demonstration
-     modules, and an honest statement of what is and is not built.
+   - A dismissible card covering the two modes, navigation, the shortcuts, the three
+     demonstration modules and the sequencer control bank, plus an honest statement of
+     what is and is not built.
    - Opens once on a first visit and thereafter only when asked, via the question mark
      button or the H key.
 
@@ -41,16 +42,23 @@
     // ------------------------------------------------------------
     const SEEN_STORAGE_KEY  =  'NaAudio__HelpOverlay__Seen';
 
+    const MODE_ROWS  =  [
+        ['Play',        'Work the controls. Steps, faces, knobs and sliders are all live, and modules are pinned where they stand so a control drag can never move one.'],
+        ['Build',       'Arrange the space. Drag any module pad to reposition it, and every control on every module is frozen - a stray click cannot alter a pattern you have already programmed.'],
+        ['Which is on', 'The coloured rule across the top edge, the switch beneath it, and the pointer cursor. Blue is Build, green is Play.']
+    ];
+
     const NAVIGATION_ROWS  =  [
         ['Orbit',            'Left mouse drag on empty space'],
         ['Pan',              'Right mouse drag, or two fingers'],
         ['Zoom',             'Scroll wheel'],
-        ['Select a module',  'Click its pad'],
-        ['Move a module',    'Drag its pad'],
+        ['Select a module',  'Click its pad, in either mode'],
+        ['Move a module',    'Drag its pad, in Build mode only'],
         ['Clear selection',  'Click the floor']
     ];
 
     const SHORTCUT_ROWS  =  [
+        ['Tab',     'Switch between Build and Play'],
         ['Space',   'Start and stop the transport'],
         ['1 to 4',  'Fly to overview, plan, eye level, wide stage'],
         ['F',       'Frame the selected module'],
@@ -59,15 +67,26 @@
     ];
 
     const MODULE_ROWS  =  [
-        ['Circular Sequencer', 'Steps on a circle rather than a grid, so the division count is free. Click a step to switch it on. Each ring is one drum voice, each with its own shape.'],
+        ['Circular Sequencer', 'Steps on a circle rather than a grid, so the division count is free. Click a step to switch it on - lit steps are solid, silent ones nearly transparent. A triangle outside the rings points at the start of the cycle. Each ring is one drum voice, each with its own shape.'],
         ['CubeMod',            'Six XY pads on the faces of one cube - twelve dimensions of control. Drag a face to move its pad, click a side face to turn it forward.'],
         ['DelayCloud',         'A box whose dimensions are the effect. Length is reverb decay, width is delay time, height is damping. The spheres bounce, and each bounce is a tap.']
     ];
 
+    const SEQUENCER_ROWS  =  [
+        ['Opening it up', 'The small square on the near corner of the pad doubles the base width and reveals the control bank. Press it again to fold it away.'],
+        ['Cycle',         'How long one revolution takes - four bars down to a quarter of a bar. The slider clicks into those positions rather than sweeping between them.'],
+        ['Feel',          'Where the steps sit on the circle. Regular is even; on-beat snaps to the beat grid; triplet and dotted push every other step late by a third or a quarter.'],
+        ['Wobble',        'How far a step can drift from its slot, like a record player losing a little speed. A drifting step also detunes slightly flat, because a slow platter is a flat one.'],
+        ['Chance',        'How often that drift happens. Wobble sets the size, Chance sets the odds - the pair together is what gives it its loose, unquantised feel.'],
+        ['Bank',          'Four kit positions. A placeholder for a larger kit browser, but the kits behind it are real.']
+    ];
+
     const BUILT_ROWS  =  [
         'The 3D environment, lighting, camera and pointer interaction',
+        'Build and Play modes, gating every handle in the scene',
         'A lookahead audio scheduler with sample playback and voice management',
         'Three spatial modules, working, from the design manifest',
+        'The sequencer control bank - cycle, feel, wobble, chance and kit',
         'Patch cables that are the routing rather than a picture of it',
         'The working and locked module states, with real CPU and audio consequences',
         'A catalogued starter sample bank, loops and impulse responses'
@@ -76,6 +95,7 @@
     const NOT_BUILT_ROWS  =  [
         'The four synthesis engines - ChaosEngine, ContemplationEngine, FluxEngine, HarmonyEngine. CubeMod currently drives a small stand-in voice.',
         'The wider effect and modulator set - WaveFold, FractalEcho, DimensionMatrix, GravityMix and the rest. Deliberately absent rather than stubbed out.',
+        'Per-step velocity on the sequencer. The step blocks are sized from a velocity value that is wired through and currently pinned at full for every step - there is no gesture to change it yet.',
         'Rendered bounce and looped animation capture on lock. A locked module currently falls silent and freezes rather than replaying itself.',
         'A timeline. Integrating linear arrangement into a spatial context is named in the manifest as an open question, and it is still open.',
         'Saving. Nothing is written to disk - this is a static build with no server behind it yet.'
@@ -195,11 +215,13 @@
         columns.className  =  'NaAudio__Help__Columns';
 
         const left  =  document.createElement('div');
+        left.appendChild(NaAudio__HelpOverlay__Section('Two modes',  MODE_ROWS,       false));
         left.appendChild(NaAudio__HelpOverlay__Section('Navigation', NAVIGATION_ROWS, false));
         left.appendChild(NaAudio__HelpOverlay__Section('Keyboard',   SHORTCUT_ROWS,   true));
 
         const right  =  document.createElement('div');
-        right.appendChild(NaAudio__HelpOverlay__Section('The three modules', MODULE_ROWS, false));
+        right.appendChild(NaAudio__HelpOverlay__Section('The three modules',           MODULE_ROWS,    false));
+        right.appendChild(NaAudio__HelpOverlay__Section('The sequencer control bank',  SEQUENCER_ROWS, false));
 
         columns.appendChild(left);
         columns.appendChild(right);

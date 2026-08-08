@@ -75,6 +75,10 @@ import {
     NaAudio__EventBus__Publish
 } from '../01__AppCore/NaAudio__AppCore__EventBus__.mjs';
 import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils__MusicalMaths__.mjs';
+import {
+    NaAudio__Mode,
+    NaAudio__Mode__Both
+} from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
 
 // =============================================================================
 // REGION | Module Base
@@ -186,6 +190,7 @@ import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils
             CageSize     : sizeVector,
             Position     : position,
 
+            BaseWidth    : sizeVector.x,                                      // <-- Live base width; a module type may widen it
             Pad          : null,
             Cage         : null,
             SelectionRing: null,
@@ -273,6 +278,12 @@ import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils
             ModuleId : module.ModuleId,
             Cursor   : 'grab',
 
+            // Selectable in either mode so the inspector is always reachable, but
+            // MOVABLE only in Build. This asymmetry is the reason the interaction layer
+            // keeps click modes and drag modes as separate lists.
+            ClickModes : NaAudio__Mode__Both,
+            DragModes  : [NaAudio__Mode.Build],
+
             OnHover  : function (isHovered) {
                 module.IsHovered  =  isHovered;
                 NaAudio__EventBus__Publish(NaAudio__Event.ModuleHovered, {
@@ -300,6 +311,64 @@ import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils
         });
 
         module.Unregisters.push(unregister);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Widen or Restore a Module's Base
+    // ------------------------------------------------------------
+    // A module type calls this to grow its own footprint - the circular sequencer uses
+    // it to open a workbench beside itself for its control bank.
+    //
+    // The pad and cage GEOMETRY are rebuilt rather than the meshes being scaled. That is
+    // not fussiness: the pad is a rounded plate, and a non-uniform scale would stretch
+    // its corner radii into ellipses while the cage's edge inset would stop being an
+    // inset at all. Both geometries are cached by size in the shape factory, so toggling
+    // between two widths costs two cache lookups and nothing else.
+    //
+    // The base grows to +X only, and the shell is shifted by half the growth so the
+    // module's CONTENTS stay where they are. Growing symmetrically would slide the
+    // sequencer ring sideways across its own pad every time the panel opened, which
+    // reads as the module jumping rather than as a panel appearing.
+    export function NaAudio__ModuleBase__SetBaseWidthFactor(module, factor) {
+        const targetWidth  =  module.CageSize.x * factor;
+        if (Math.abs(targetWidth - module.BaseWidth) < 0.0001) return;
+
+        module.BaseWidth  =  targetWidth;
+
+        const growth  =  targetWidth - module.CageSize.x;
+        const shiftX  =  growth / 2;
+
+        // THE PAD
+        if (module.Pad) {
+            const inset  =  SpatialNumber('Shell', 'PadInset');
+            const width  =  targetWidth      - inset * 2;
+            const depth  =  module.CageSize.z - inset * 2;
+
+            module.Pad.geometry  =  Shapes.NaAudio__Env3d__ShapeFactory__RoundedPad(
+                width, depth, Math.min(module.CageSize.z - inset * 2, width) * 0.18, SpatialNumber('Shell', 'PadCornerSegments')
+            );
+            module.Pad.position.x  =  shiftX;
+        }
+
+        // THE CAGE
+        if (module.Cage) {
+            const previous  =  module.Cage.geometry;
+
+            const sized  =  new THREE.Vector3(targetWidth, module.CageSize.y, module.CageSize.z);
+            const rebuilt  =  Lines.NaAudio__Env3d__LineFactory__BuildCage(sized, module.CageSize.y / 2);
+
+            module.Cage.geometry  =  rebuilt.geometry;
+            module.Cage.position.x  =  shiftX;
+
+            // The rebuilt cage was only a carrier for its geometry. Its own material is
+            // discarded rather than swapped in, because the live cage's material holds
+            // the module's current lock opacity and replacing it would reset the fade.
+            rebuilt.material.dispose();
+            if (previous && previous !== module.Cage.geometry) previous.dispose();
+        }
+
+        if (module.Label) module.Label.position.x  =  shiftX;
     }
     // ------------------------------------------------------------
 
@@ -365,7 +434,15 @@ import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils
             Palette.NaAudio__Palette__Desaturate(base, desaturation, SCRATCH_COLOUR);
             material.color.copy(SCRATCH_COLOUR);
 
-            if (material.transparent) material.opacity  =  bodyOpacity;
+            // MULTIPLIED, never assigned. A material may already carry an opacity that
+            // means something of its own - a sequencer ghosts its inactive steps that
+            // way - and assigning the lock's value here would erase it, which silently
+            // turned every step in a pattern fully opaque and made the pattern
+            // unreadable. The lock scales what is there rather than replacing it.
+            if (material.transparent) {
+                const ownOpacity  =  material.userData.NaAudio__BaseOpacity;
+                material.opacity  =  (ownOpacity === undefined ? 1 : ownOpacity) * bodyOpacity;
+            }
         }
     }
     // ------------------------------------------------------------
@@ -382,7 +459,29 @@ import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils
         if (!material.userData.NaAudio__BaseColour) {
             material.userData.NaAudio__BaseColour  =  material.color.clone();
         }
+        if (material.userData.NaAudio__BaseOpacity === undefined) {
+            material.userData.NaAudio__BaseOpacity  =  material.opacity;      // <-- The material's own meaning, which the lock fade scales
+        }
         module.OwnedMaterials.push(material);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set a Material's Own Opacity, Respecting the Lock Fade
+    // ------------------------------------------------------------
+    // The sanctioned way for a module type to make one of its materials more or less
+    // transparent. Writing material.opacity directly appears to work and then loses the
+    // value on the next lock transition, because the fade recomputes from this number.
+    export function NaAudio__ModuleBase__SetMaterialOpacity(module, material, opacity) {
+        if (!material) return;
+
+        material.userData.NaAudio__BaseOpacity  =  opacity;
+
+        const locked   =  Palette.NaAudio__Palette__ModuleState('locked');
+        const working  =  Palette.NaAudio__Palette__ModuleState('working');
+        const bodyOpacity  =  working.BodyOpacity + (locked.BodyOpacity - working.BodyOpacity) * module.LockBlend;
+
+        material.opacity  =  opacity * bodyOpacity;
     }
     // ------------------------------------------------------------
 

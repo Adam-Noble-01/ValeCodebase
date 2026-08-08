@@ -55,6 +55,9 @@ import {
     NaAudio__Env3d__SceneGroupSet__Pickable
 } from './NaAudio__Env3d__SceneManager__.mjs';
 import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__GroundStage__.mjs';
+import {
+    NaAudio__ModeManager__Allows
+} from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
 
 // =============================================================================
 // REGION | Interaction
@@ -116,6 +119,13 @@ import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__Ground
     //   Axis        THREE.Vector3, required for DragAxis
     //   Cursor      CSS cursor while hovered
     //   Data        anything the module wants handed back to it
+    //   ClickModes  array of NaAudio__Mode values the CLICK is live in. Omit for both.
+    //   DragModes   array of NaAudio__Mode values the DRAG is live in. Omit for both.
+    //
+    // The two mode lists are separate because a module pad genuinely needs them to
+    // differ: it can be SELECTED in either mode, but it may only be MOVED in Build.
+    // Collapsing them into one flag would mean either an unselectable module in Play
+    // or a movable one, and both are wrong.
     //
     // Returns an unregister function. A module shell MUST call it on teardown, or
     // the raycaster keeps a reference to a disposed mesh alive forever.
@@ -135,7 +145,9 @@ import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__Ground
             OnDragEnd   : options.OnDragEnd   || null,
             Axis        : options.Axis        || null,
             Cursor      : options.Cursor      || 'pointer',
-            Data        : options.Data        || null
+            Data        : options.Data        || null,
+            ClickModes  : options.ClickModes  || null,                        // <-- null means live in both modes
+            DragModes   : options.DragModes   || null
         };
 
         HANDLES.set(object3d.uuid, handle);
@@ -194,6 +206,21 @@ import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__Ground
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Whether a Handle Does Anything At All In the Current Mode
+    // ------------------------------------------------------------
+    // A handle with neither a live click nor a live drag is skipped by the picker
+    // rather than merely ignored on activation. That distinction matters: a skipped
+    // handle does not take the hover, does not set the cursor and - critically - does
+    // not occlude whatever sits behind it. In Build mode a sequencer's sixty-four steps
+    // therefore stop standing between the pointer and the pad it is reaching for.
+    function NaAudio__Env3d__Interaction__IsHandleLive(handle) {
+        const clickLive  =  handle.OnClick && NaAudio__ModeManager__Allows(handle.ClickModes);
+        const dragLive   =  (handle.OnDrag || handle.OnDragStart) && NaAudio__ModeManager__Allows(handle.DragModes);
+        return !!(clickLive || dragLive);
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Find the Nearest Registered Handle Under the Pointer
     // ------------------------------------------------------------
     function NaAudio__Env3d__Interaction__PickHandle() {
@@ -211,7 +238,10 @@ import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__Ground
 
         for (let i = 0; i < intersections.length; i++) {
             const handle  =  NaAudio__Env3d__Interaction__HandleForObject(intersections[i].object);
-            if (handle) return { Handle: handle, Intersection: intersections[i] };
+            if (!handle) continue;
+            if (!NaAudio__Env3d__Interaction__IsHandleLive(handle)) continue;   // <-- Dead in this mode; keep looking behind it
+
+            return { Handle: handle, Intersection: intersections[i] };
         }
         return null;
     }
@@ -313,7 +343,12 @@ import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__Ground
         hoveredHandle  =  handle;
         if (hoveredHandle && hoveredHandle.OnHover) hoveredHandle.OnHover(true, hoveredHandle);
 
-        attachedSurface.Renderer.domElement.style.cursor  =  handle ? handle.Cursor : 'default';
+        // The cursor reports what this handle will actually DO in the current mode, not
+        // what it can do in general. A pad shows 'grab' in Build and 'pointer' in Play,
+        // so the mode is legible from the pointer alone without reading the indicator.
+        attachedSurface.Renderer.domElement.style.cursor  =  handle
+            ? (NaAudio__ModeManager__Allows(handle.DragModes) ? handle.Cursor : 'pointer')
+            : 'default';
     }
     // ------------------------------------------------------------
 
@@ -335,6 +370,11 @@ import { NaAudio__Env3d__GroundStage__FloorMesh } from './NaAudio__Env3d__Ground
         pointerDownAt =  { X: event.clientX, Y: event.clientY, Handle: handle };
 
         if (handle.Kind === NaAudio__Env3d__HandleKind.Click) return;         // <-- Nothing to drag; the click fires on pointerup
+
+        // A handle can be pickable for its CLICK while its DRAG is dead in this mode -
+        // a module pad in Play mode is exactly that. Without this check the pad would
+        // still be draggable in Play, which is the whole thing modes exist to prevent.
+        if (!NaAudio__ModeManager__Allows(handle.DragModes)) return;
 
         // Grabbing a handle must take the camera out of the equation, or an orbit
         // and a drag happen simultaneously and neither does what was asked.

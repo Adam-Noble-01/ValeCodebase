@@ -80,6 +80,9 @@
         CableConnected        : 'patch:cableConnected',                       // <-- { CableId, FromModuleId, ToModuleId, SignalType }
         CableDisconnected     : 'patch:cableDisconnected',                    // <-- { CableId }
 
+        // APPLICATION MODE
+        ModeChanged           : 'mode:changed',                               // <-- { Mode, PreviousMode, Presentation }
+
         // CAMERA AND VIEW
         CameraPresetApplied   : 'camera:presetApplied',                       // <-- { PresetKey }
         CameraFocusedModule   : 'camera:focusedModule',                       // <-- { ModuleId }

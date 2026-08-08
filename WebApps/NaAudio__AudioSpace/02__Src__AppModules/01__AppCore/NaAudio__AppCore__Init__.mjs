@@ -53,8 +53,13 @@
 
 import {
     NaAudio__Event,
-    NaAudio__EventBus__Publish
+    NaAudio__EventBus__Publish,
+    NaAudio__EventBus__Subscribe
 } from './NaAudio__AppCore__EventBus__.mjs';
+import {
+    NaAudio__ModeManager__BindKeyboard,
+    NaAudio__ModeManager__IsBuild
+} from './NaAudio__AppCore__ModeManager__.mjs';
 import {
     NaAudio__ConfigLoader__LoadAll,
     NaAudio__ConfigLoader__ResolvePath,
@@ -87,6 +92,7 @@ import * as TransportBar    from '../40__System__HudOverlay/NaAudio__Hud__Transp
 import * as ModuleInspector from '../40__System__HudOverlay/NaAudio__Hud__ModuleInspector__.mjs';
 import * as HelpOverlay     from '../40__System__HudOverlay/NaAudio__Hud__HelpOverlay__.mjs';
 import * as Diagnostics     from '../40__System__HudOverlay/NaAudio__Hud__Diagnostics__.mjs';
+import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIndicator__.mjs';
 
 // =============================================================================
 // REGION | Application Boot
@@ -297,7 +303,11 @@ import * as Diagnostics     from '../40__System__HudOverlay/NaAudio__Hud__Diagno
             // surface behind them.
             TransportBar.NaAudio__TransportBar__Build(hudMount, surface);
             ModuleInspector.NaAudio__ModuleInspector__Build(hudMount);
+            ModeIndicator.NaAudio__ModeIndicator__Build(hudMount);
             HelpOverlay.NaAudio__HelpOverlay__Build(hudMount, appMeta);
+
+            NaAudio__ModeManager__BindKeyboard();
+            NaAudio__Init__BindModeToGround();
 
             if (runtime && runtime.ShowDiagnostics) {
                 Diagnostics.NaAudio__Diagnostics__Build(hudMount, surface);
@@ -321,6 +331,30 @@ import * as Diagnostics     from '../40__System__HudOverlay/NaAudio__Hud__Diagno
                 Error : error.message
             });
         }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Let the Ground Answer the Mode
+    // ------------------------------------------------------------
+    // Build mode lifts the ground grid; Play mode drops it back. A layout being
+    // rearranged wants a visible measure under it, and the same grid while playing is
+    // a distraction from the instruments.
+    //
+    // This is the third of the three mode signals - the rule across the top edge, the
+    // pointer cursor, and the floor itself. Together the mode is knowable without
+    // reading anything, which matters because acting in the wrong mode is the one
+    // failure a modal interface has to design against.
+    function NaAudio__Init__BindModeToGround() {
+        const applyGrid  =  function () {
+            GroundStage.NaAudio__Env3d__GroundStage__SetGridEmphasis(
+                surface,
+                NaAudio__ModeManager__IsBuild()
+            );
+        };
+
+        NaAudio__EventBus__Subscribe(NaAudio__Event.ModeChanged, applyGrid);
+        applyGrid();
     }
     // ------------------------------------------------------------
 

@@ -10,11 +10,13 @@
    CREATED    : 08-Aug-2026
 
    DESCRIPTION:
-   - The design manifest's first named interaction tool, built as specified: steps sit
-     on a circle, a marker sweeps round like a clock hand at the project tempo, and the
-     number of divisions is freely adjustable rather than locked to sixteen.
-   - Four concentric lanes, one per drum voice, each lane a different geometric SHAPE as
-     well as a different pigment.
+   - The design manifest's first named interaction tool: steps on a circle, a marker
+     sweeping round like a clock hand, and a division count that is free rather than
+     locked to sixteen.
+   - Four concentric lanes, one per drum voice, each lane a different geometric SHAPE
+     as well as a different pigment.
+   - Expands to reveal a bank of physical controls: cycle length, timing feel, two
+     wobble controls and a sound bank selector.
 
    ---------------------------------------------------------------------------
 
@@ -31,30 +33,34 @@
 
    ---------------------------------------------------------------------------
 
-   SHAPE CARRIES MEANING, NOT JUST COLOUR
+   WHERE A STEP SITS IS WHERE IT PLAYS
 
-   Each lane draws its steps as a different primitive - cylinder, box, cone,
-   octahedron - and the manifest asks for exactly this. Colour alone is not enough for
-   two reasons: it fails at distance in a space the user is orbiting around, and it
-   fails entirely for anyone with a colour vision deficiency. Shape survives both.
+   The timing feel and the wobble both move steps in TIME. Both therefore also move the
+   step's mesh around the ring, by exactly the same amount.
+
+   That is a hard rule for this module, not a nicety. The premise of the whole
+   application is that the picture is the instrument - so a sequencer whose visible
+   step positions did not match its audible ones would be actively lying, and worse,
+   would be teaching the user to distrust everything else in the space. If a timing
+   feature cannot be drawn, it does not go in.
 
    ---------------------------------------------------------------------------
 
-   HOW A STEP GETS ITS SOUND
+   TRANSPARENCY CARRIES THE PATTERN
 
-   Scheduling and animation are deliberately separated.
+   An inactive step is transparent; an active one is solid. Size alone was tried first
+   and is not enough - at working distance a ring of sixteen small solid shapes still
+   reads as sixteen active steps, and the pattern was only legible from directly
+   overhead. Opacity separates them at any angle.
 
-   The SCHEDULER is handed a beat window by the transport, works out which steps fall
-   inside it, and fires each sample at an absolute audio time - ahead of real time, so
-   the audio hardware places it exactly.
+   ---------------------------------------------------------------------------
 
-   The ANIMATION reads the transport's current playhead every frame and pulses whichever
-   step the marker has just passed. It never reads the scheduler.
+   SCHEDULING AND ANIMATION ARE SEPARATE, ON PURPOSE
 
-   Driving the animation from the scheduler would run the visuals a lookahead window
-   ahead of the sound - a tenth of a second of visible lead, which is easily enough to
-   see and feels badly wrong. Keeping them apart is what makes a step flash at the same
-   moment it is heard.
+   The SCHEDULER is handed a beat window by the transport and fires each sample at an
+   absolute audio time, ahead of real time. The ANIMATION reads the transport's current
+   playhead every frame. Driving the animation from the scheduler would run the visuals
+   a lookahead window ahead of the sound - easily enough to see, and deeply wrong.
 
    ============================================================================= */
 
@@ -64,10 +70,12 @@ import * as Palette          from '../05__Env3d__ThreeRenderPipeline/NaAudio__En
 import * as Materials        from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__MaterialLibrary__.mjs';
 import * as Shapes           from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__ShapeFactory__.mjs';
 import * as Lines            from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__LineFactory__.mjs';
+import * as Controls         from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__ControlFactory__.mjs';
 import {
     NaAudio__Env3d__Interaction__Register,
     NaAudio__Env3d__HandleKind
 } from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
+import { NaAudio__Mode }     from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
 import * as ModuleBase       from '../20__System__SpatialModuleFramework/NaAudio__Spatial__ModuleBase__.mjs';
 import * as SampleBank       from '../15__Audio__SampleLibraryLoader/NaAudio__Library__SampleBank__.mjs';
 import * as SamplePlayer     from '../10__Audio__WebAudioEngine/NaAudio__Engine__SamplePlayer__.mjs';
@@ -76,10 +84,8 @@ import {
     NaAudio__Transport__BeatsPerBar,
     NaAudio__Transport__IsRunning
 } from '../10__Audio__WebAudioEngine/NaAudio__Engine__Transport__.mjs';
-import {
-    NaAudio__MusicalMaths__Clamp,
-    NaAudio__MusicalMaths__SwingOffsetSeconds
-} from '../03__AppUtils/NaAudio__AppUtils__MusicalMaths__.mjs';
+import { NaAudio__SeededRandom__Create } from '../03__AppUtils/NaAudio__AppUtils__SeededRandom__.mjs';
+import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils__MusicalMaths__.mjs';
 
 // =============================================================================
 // REGION | Circular Sequencer
@@ -93,12 +99,127 @@ import {
     // ------------------------------------------------------------
     export const NaAudio__CircularSequencer__TypeName  =  'CircularSequencer';
 
-    const LANE_VOICE_ROLES  =  ['kick', 'snare', 'hihat', 'tomLow'];          // <-- Lane index to voice role; lane 0 is the outermost
+    const LANE_VOICE_ROLES  =  ['kick', 'snare', 'hihat', 'tomLow'];          // <-- Lane 0 is the outermost
     const STEP_HEIGHT       =  0.10;                                          // <-- How far a step stands off its lane ring
 
     const ANGLE_OFFSET      =  -Math.PI / 2;                                  // <-- Division zero sits at twelve o'clock
 
     const SCRATCH_COLOUR    =  new THREE.Color();
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Timing Feel Templates
+    // ------------------------------------------------------------
+    // Each returns a step's position within the cycle as a 0 to 1 fraction. Used for
+    // BOTH the scheduled time and the drawn angle, which is what keeps the two honest.
+    const GRID_TEMPLATES  =  {
+
+        // Even spacing. The reference.
+        regular : (stepIndex, divisions) => stepIndex / divisions,
+
+        // Every step pulled fully onto its nearest beat. Groups the pattern into
+        // machine-gun bursts on the pulse - crude, deliberate, and instantly audible
+        // as a different thing rather than as a subtle shuffle.
+        onBeat : (stepIndex, divisions, beatsPerCycle) => {
+            const raw   =  stepIndex / divisions;
+            const beat  =  Math.round(raw * beatsPerCycle);
+            return NaAudio__MusicalMaths__Clamp(beat / beatsPerCycle, 0, 0.9999);
+        },
+
+        // Classic triplet swing: the second of every pair lands two thirds of the way
+        // through, rather than halfway.
+        triplet : (stepIndex, divisions) => {
+            const pair    =  Math.floor(stepIndex / 2);
+            const isOff   =  (stepIndex % 2) === 1;
+            const base    =  (pair * 2) / divisions;
+            const span    =  2 / divisions;
+            return base + (isOff ? span * (2 / 3) : 0);
+        },
+
+        // Harder swing. The off-step is pushed to three quarters, which is the dotted
+        // feel - noticeably stiffer and more lurching than the triplet.
+        dotted : (stepIndex, divisions) => {
+            const pair    =  Math.floor(stepIndex / 2);
+            const isOff   =  (stepIndex % 2) === 1;
+            const base    =  (pair * 2) / divisions;
+            const span    =  2 / divisions;
+            return base + (isOff ? span * 0.75 : 0);
+        }
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Timing
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | A Step's Position Within the Cycle, 0 to 1
+    // ------------------------------------------------------------
+    // The single source of truth for where a step is in time. Both the scheduler and
+    // the geometry call it, which is what guarantees they agree.
+    function NaAudio__CircularSequencer__StepFraction(state, stepIndex, beatsPerCycle) {
+        const template  =  GRID_TEMPLATES[state.GridFeel] || GRID_TEMPLATES.regular;
+        const base      =  template(stepIndex, state.Divisions, beatsPerCycle);
+        return base + NaAudio__CircularSequencer__WobbleOffset(state, stepIndex);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Wobble Offset for One Step, as a Cycle Fraction
+    // ------------------------------------------------------------
+    // Wow and flutter. Seeded from the module seed and the step index, so a given step
+    // always wobbles the same way - a fresh random per playback would make the pattern
+    // impossible to learn, which is the opposite of groove.
+    //
+    // Cached per step because this is called from the scheduler AND from the geometry
+    // rebuild, and the two must agree exactly or the picture stops matching the sound.
+    function NaAudio__CircularSequencer__WobbleOffset(state, stepIndex) {
+        if (state.WobbleDepth <= 0) return 0;
+
+        const cached  =  state.WobbleCache[stepIndex];
+        if (cached !== undefined) return cached;
+
+        const random  =  NaAudio__SeededRandom__Create(state.Seed + stepIndex * 2654435761);
+
+        // Two draws, and the order matters: the chance draw comes first so that raising
+        // the depth does not change WHICH steps wobble, only how far. Otherwise every
+        // nudge of the depth control reshuffles the groove.
+        const fires   =  random.Next() < state.WobbleChance;
+        const amount  =  random.Spread(1.0);
+
+        const offset  =  fires
+            ? amount * state.WobbleDepth * state.WobbleMaxOffset / state.Divisions
+            : 0;
+
+        state.WobbleCache[stepIndex]  =  offset;
+        return offset;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Clear the Wobble Cache
+    // ------------------------------------------------------------
+    function NaAudio__CircularSequencer__ClearWobbleCache(state) {
+        state.WobbleCache  =  {};
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Playback Rate Detune a Wobbled Step Carries
+    // ------------------------------------------------------------
+    // A real platter that changes speed changes pitch. Without this the wobble reads as
+    // a timing bug rather than as a machine, which is exactly the wrong impression.
+    function NaAudio__CircularSequencer__WobbleDetune(state, stepIndex) {
+        if (state.WobbleDepth <= 0) return 0;
+
+        const offset  =  NaAudio__CircularSequencer__WobbleOffset(state, stepIndex);
+        if (offset === 0) return 0;
+
+        const normalised  =  offset * state.Divisions / Math.max(state.WobbleMaxOffset, 0.0001);
+        return -normalised * state.WobblePitchCents;                          // <-- Late means slow means flat
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -110,27 +231,39 @@ import {
 
     // HELPER FUNCTION | The Radius of a Lane
     // ------------------------------------------------------------
-    // Lane 0 is the outermost and works inward, so the first and most important voice
-    // is on the biggest circle with the most room between its steps.
     function NaAudio__CircularSequencer__LaneRadius(defaults, laneIndex) {
         return defaults.RingRadius - laneIndex * defaults.LaneSpacing;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | The Angle of a Division
+    // HELPER FUNCTION | Place a Step Mesh at Its Timing Position
     // ------------------------------------------------------------
-    function NaAudio__CircularSequencer__StepAngle(stepIndex, divisions) {
-        return (stepIndex / divisions) * Math.PI * 2 + ANGLE_OFFSET;
+    // Angle comes from the step's TIME fraction, never from its index. That is the rule
+    // the module header states, expressed in one line.
+    function NaAudio__CircularSequencer__PlaceStep(state, mesh, radius, stepIndex, beatsPerCycle) {
+        const fraction  =  NaAudio__CircularSequencer__StepFraction(state, stepIndex, beatsPerCycle);
+        const angle     =  fraction * Math.PI * 2 + ANGLE_OFFSET;
+        mesh.position.set(Math.cos(angle) * radius, STEP_HEIGHT, Math.sin(angle) * radius);
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Place a Step Mesh at Its Division
+    // SUB FUNCTION | Reposition Every Step After a Timing Change
     // ------------------------------------------------------------
-    function NaAudio__CircularSequencer__PlaceStep(mesh, radius, stepIndex, divisions) {
-        const angle  =  NaAudio__CircularSequencer__StepAngle(stepIndex, divisions);
-        mesh.position.set(Math.cos(angle) * radius, STEP_HEIGHT, Math.sin(angle) * radius);
+    function NaAudio__CircularSequencer__RepositionSteps(module) {
+        const state         =  module.TypeState;
+        const defaults      =  module.Defaults;
+        const beatsPerCycle =  state.CycleBars * NaAudio__Transport__BeatsPerBar();
+
+        for (let lane = 0; lane < state.LaneCount; lane++) {
+            const radius  =  NaAudio__CircularSequencer__LaneRadius(defaults, lane);
+            const meshes  =  state.Lanes[lane].Meshes;
+
+            for (let step = 0; step < meshes.length; step++) {
+                NaAudio__CircularSequencer__PlaceStep(state, meshes[step], radius, step, beatsPerCycle);
+            }
+        }
     }
     // ------------------------------------------------------------
 
@@ -141,21 +274,13 @@ import {
 // REGION | Pattern Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build an Empty Lane Pattern
-    // ------------------------------------------------------------
-    function NaAudio__CircularSequencer__EmptyPattern(divisions) {
-        return new Array(divisions).fill(false);
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | Read a Pattern Out of the Module Settings
     // ------------------------------------------------------------
-    // A pattern in a space file is a string of characters - 'x...x...x...x...' - rather
-    // than an array of booleans. It is legible at a glance when the file is opened in an
-    // editor, which an array of sixteen true and false values is not.
+    // A pattern in a space file is a string - 'x...x...x...x...' - rather than an array
+    // of booleans, because it is a picture of the rhythm when the file is opened in an
+    // editor and an array of sixteen true and false values is not.
     function NaAudio__CircularSequencer__PatternFromString(text, divisions) {
-        const pattern  =  NaAudio__CircularSequencer__EmptyPattern(divisions);
+        const pattern  =  new Array(divisions).fill(false);
         if (typeof text !== 'string') return pattern;
 
         for (let i = 0; i < divisions && i < text.length; i++) {
@@ -180,7 +305,7 @@ import {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Geometry Build
+// REGION | Ring Geometry
 // -----------------------------------------------------------------------------
 
     // SUB FUNCTION | Build the Lane Rings and Division Ticks
@@ -189,18 +314,16 @@ import {
         const defaults  =  module.Defaults;
 
         for (let lane = 0; lane < state.LaneCount; lane++) {
-            const radius  =  NaAudio__CircularSequencer__LaneRadius(defaults, lane);
-
             const ring  =  new THREE.Mesh(
-                Shapes.NaAudio__Env3d__ShapeFactory__FlatTorus(radius, 0.006),
+                Shapes.NaAudio__Env3d__ShapeFactory__FlatTorus(NaAudio__CircularSequencer__LaneRadius(defaults, lane), 0.006),
                 Materials.NaAudio__Materials__Line('InkGhost', 0.42)
             );
             ring.position.y  =  STEP_HEIGHT;
             module.BodyGroup.add(ring);
         }
 
-        // Ticks on the outermost lane only. One set of radial marks is enough to make
-        // the division count legible; four concentric sets is a moiré pattern.
+        // Ticks on the outermost lane only. One set of radial marks makes the division
+        // count legible; four concentric sets is a moire pattern.
         const outer  =  NaAudio__CircularSequencer__LaneRadius(defaults, 0);
         const ticks  =  Lines.NaAudio__Env3d__LineFactory__BuildRadialTicks(
             state.Divisions, outer + 0.05, outer + 0.15, 'InkFaint', 0.5
@@ -209,6 +332,37 @@ import {
         module.BodyGroup.add(ticks);
 
         state.Ticks  =  ticks;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Start Point Indicator
+    // ------------------------------------------------------------
+    // A triangle just outside the outer ring, pointing inward at division zero.
+    //
+    // A circle has no inherent beginning. While the marker sweeps you can infer one, but
+    // the moment the transport stops the pattern becomes an undifferentiated ring and
+    // there is no way to tell which step is the downbeat - which makes editing guesswork.
+    function NaAudio__CircularSequencer__BuildStartMarker(module, state) {
+        const defaults  =  module.Defaults;
+        if (!defaults.StartMarkerEnabled) return;
+
+        const marker  =  new THREE.Mesh(
+            Shapes.NaAudio__Env3d__ShapeFactory__UnitTriangle(),
+            Materials.NaAudio__Materials__FlatMarker('InkSoft', 0.85)
+        );
+
+        const radius  =  NaAudio__CircularSequencer__LaneRadius(defaults, 0) + defaults.StartMarkerStandoff;
+        marker.scale.setScalar(defaults.StartMarkerSize);
+        marker.position.set(0, STEP_HEIGHT + 0.004, -radius);                  // <-- Twelve o'clock, matching ANGLE_OFFSET
+
+        marker.rotation.x  =  -Math.PI / 2;                                    // <-- Authored in XY, laid flat on the floor
+        marker.rotation.z  =  Math.PI;                                         // <-- Apex turned to point inward, at the ring
+
+        marker.userData.NaAudio__Pickable  =  false;
+        module.BodyGroup.add(marker);
+
+        state.StartMarker  =  marker;
     }
     // ------------------------------------------------------------
 
@@ -236,21 +390,18 @@ import {
 
     // SUB FUNCTION | Build the Sweeping Playhead Marker
     // ------------------------------------------------------------
-    // A flat bar pivoted at the hub. Built as a child of a pivot group so the animation
-    // is one rotation write per frame rather than a position recompute.
     function NaAudio__CircularSequencer__BuildMarker(module, state) {
         const defaults  =  module.Defaults;
 
         const pivot  =  new THREE.Group();
-        pivot.position.y  =  STEP_HEIGHT + 0.012;                             // <-- Just above the lane rings so it reads as passing over them
+        pivot.position.y  =  STEP_HEIGHT + 0.012;                             // <-- Just above the rings, so it reads as passing over them
 
         const bar  =  new THREE.Mesh(
             Shapes.NaAudio__Env3d__ShapeFactory__Bar(defaults.MarkerWidth / defaults.MarkerLength),
             Materials.NaAudio__Materials__Line('Ink', 0.72)
         );
-        bar.geometry.computeBoundingBox();
         bar.scale.set(defaults.MarkerLength, defaults.MarkerLength, 1);
-        bar.rotation.x  =  -Math.PI / 2;                                      // <-- Authored in XY, laid flat
+        bar.rotation.x  =  -Math.PI / 2;
         bar.position.x  =  defaults.MarkerLength / 2;                         // <-- Pivot at one end, not the middle
 
         pivot.add(bar);
@@ -264,41 +415,43 @@ import {
     // SUB FUNCTION | Build One Lane's Step Meshes
     // ------------------------------------------------------------
     function NaAudio__CircularSequencer__BuildLaneSteps(module, state, laneIndex) {
-        const defaults   =  module.Defaults;
-        const radius     =  NaAudio__CircularSequencer__LaneRadius(defaults, laneIndex);
-        const voiceRole  =  LANE_VOICE_ROLES[laneIndex] || 'perc';
-        const shapeName  =  defaults.StepShapesByLane[laneIndex % defaults.StepShapesByLane.length];
+        const defaults      =  module.Defaults;
+        const radius        =  NaAudio__CircularSequencer__LaneRadius(defaults, laneIndex);
+        const voiceRole     =  LANE_VOICE_ROLES[laneIndex] || 'perc';
+        const shapeName     =  defaults.StepShapesByLane[laneIndex % defaults.StepShapesByLane.length];
+        const beatsPerCycle =  state.CycleBars * NaAudio__Transport__BeatsPerBar();
 
         const lane  =  state.Lanes[laneIndex];
 
         for (let step = 0; step < state.Divisions; step++) {
-            // Each step owns its material. It has to: a step pulses its own emissive
-            // and scale on trigger, and a shared material would flash all sixteen at
-            // once.
+            // Each step owns its material: it pulses its own colour and carries its own
+            // opacity, and a shared instance would flash all sixteen at once.
             const material  =  Materials.NaAudio__Materials__OwnedVoiceRoleBody(voiceRole, 'Base');
-            const mesh      =  new THREE.Mesh(Shapes.NaAudio__Env3d__ShapeFactory__UnitSolid(shapeName), material);
+            material.transparent  =  true;                                     // <-- Inactive steps are ghosted, so every step needs an alpha
+            material.depthWrite   =  true;
 
-            const baseSize  =  defaults.StepBaseSize;
-            mesh.scale.setScalar(baseSize);
-            NaAudio__CircularSequencer__PlaceStep(mesh, radius, step, state.Divisions);
+            const mesh  =  new THREE.Mesh(Shapes.NaAudio__Env3d__ShapeFactory__UnitSolid(shapeName), material);
             mesh.castShadow  =  true;
 
+            NaAudio__CircularSequencer__PlaceStep(state, mesh, radius, step, beatsPerCycle);
             ModuleBase.NaAudio__ModuleBase__RegisterFadeMaterial(module, material);
 
-            // A step is a click target. Registered as a Click handle rather than a drag
-            // so it can never be nudged - and because the pad underneath is the module's
-            // drag handle, a drag starting on a step would be ambiguous.
+            // A step is a click target, and a Click handle rather than a drag one so it
+            // can never be nudged. Play mode only - in Build mode the whole ring becomes
+            // invisible to the picker, which is the point of the modes.
             const unregister  =  NaAudio__Env3d__Interaction__Register(mesh, {
-                Kind     : NaAudio__Env3d__HandleKind.Click,
-                ModuleId : module.ModuleId,
-                Cursor   : 'pointer',
-                Data     : { Lane: laneIndex, Step: step },
-                OnClick  : function (handle) {
+                Kind       : NaAudio__Env3d__HandleKind.Click,
+                ModuleId   : module.ModuleId,
+                Cursor     : 'pointer',
+                ClickModes : [NaAudio__Mode.Play],
+                DragModes  : [NaAudio__Mode.Play],
+                Data       : { Lane: laneIndex, Step: step },
+
+                OnClick : function (handle) {
                     NaAudio__CircularSequencer__ToggleStep(module, handle.Data.Lane, handle.Data.Step);
                 },
-                OnHover  : function (isHovered, handle) {
-                    const target  =  state.Lanes[handle.Data.Lane].Meshes[handle.Data.Step];
-                    target.userData.NaAudio__Hovered  =  isHovered;
+                OnHover : function (isHovered, handle) {
+                    state.Lanes[handle.Data.Lane].Meshes[handle.Data.Step].userData.NaAudio__Hovered  =  isHovered;
                 }
             });
 
@@ -306,6 +459,7 @@ import {
 
             lane.Meshes.push(mesh);
             lane.PulseAmount.push(0);
+            lane.Velocity.push(1.0);                                           // <-- Reserved; see the velocity note below
             module.BodyGroup.add(mesh);
         }
     }
@@ -315,44 +469,47 @@ import {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Sample Binding
+// REGION | Step Appearance
 // -----------------------------------------------------------------------------
 
-    // SUB FUNCTION | Bind Each Lane to a Sample From the Chosen Kit
+    // SUB FUNCTION | Set a Step's Resting Size and Opacity
     // ------------------------------------------------------------
-    // A lane binds to a ROLE, and the kit answers with whatever sample fills it. That
-    // indirection is what lets the whole kit be swapped under a pattern without any lane
-    // losing its binding - which is exactly how a drum machine should behave.
-    function NaAudio__CircularSequencer__BindKit(module, state) {
-        const kitId  =  module.Settings.KitId || 'KIT_Cr78';
-        state.KitId  =  kitId;
+    // Two signals, because one is not enough. Size survives being seen at a shallow
+    // angle from across the space; opacity survives being seen from anywhere at all.
+    // Together an active step is unmistakable and an inactive one recedes.
+    //
+    // VELOCITY: the size already multiplies through lane.Velocity, and every step
+    // carries 1.0. The scaling path is therefore finished - what is missing is only the
+    // interaction that changes the number. A vertical drag on a step is the obvious
+    // candidate, and it needs the drag threshold tuned so it cannot be mistaken for the
+    // toggle click that shares the same object.
+    function NaAudio__CircularSequencer__ApplyStepAppearance(module, laneIndex, stepIndex) {
+        const state     =  module.TypeState;
+        const defaults  =  module.Defaults;
+        const lane      =  state.Lanes[laneIndex];
+        const mesh      =  lane.Meshes[stepIndex];
+        if (!mesh) return;
 
-        const assetIds  =  [];
+        const isActive  =  lane.Pattern[stepIndex];
+        const velocity  =  lane.Velocity[stepIndex];
 
-        for (let lane = 0; lane < state.LaneCount; lane++) {
-            const voiceRole  =  LANE_VOICE_ROLES[lane] || 'perc';
-            const entry      =  SampleBank.NaAudio__SampleBank__KitVoice(kitId, voiceRole);
+        const velocityScale  =  defaults.StepVelocitySizeMin
+                              + (defaults.StepVelocitySizeMax - defaults.StepVelocitySizeMin) * velocity;
 
-            state.Lanes[lane].VoiceRole  =  voiceRole;
-            state.Lanes[lane].AssetId    =  entry ? entry.AssetId : null;
+        const size  =  isActive
+            ? defaults.StepBaseSize * defaults.StepActiveSizeFactor * velocityScale
+            : defaults.StepBaseSize;
 
-            if (entry) assetIds.push(entry.AssetId);
-        }
+        mesh.userData.NaAudio__RestingScale  =  size;
+        mesh.scale.setScalar(size);
 
-        // Decoded ahead of the first play rather than on demand. The scheduler runs in a
-        // timing-critical path and cannot await anything, so a sample that has not
-        // decoded by the time its step comes round is simply silent - which presents as
-        // a pattern with holes in it for the first bar.
-        SampleBank.NaAudio__SampleBank__LoadMany(assetIds);
+        ModuleBase.NaAudio__ModuleBase__SetMaterialOpacity(
+            module, mesh.material,
+            isActive ? defaults.StepActiveOpacity : defaults.StepInactiveOpacity
+        );
     }
     // ------------------------------------------------------------
 
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Step Editing
-// -----------------------------------------------------------------------------
 
     // FUNCTION | Toggle One Step On or Off
     // ------------------------------------------------------------
@@ -369,23 +526,235 @@ import {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | Set a Step's Resting Size for Its On or Off State
+    // SUB FUNCTION | Reapply Every Step's Appearance
     // ------------------------------------------------------------
-    // An active step is nearly twice the size of an inactive one. Size rather than
-    // brightness, because size survives being seen from across the space at a shallow
-    // angle and a brightness difference does not.
-    function NaAudio__CircularSequencer__ApplyStepAppearance(module, laneIndex, stepIndex) {
+    function NaAudio__CircularSequencer__RefreshAllSteps(module) {
+        const state  =  module.TypeState;
+        for (let lane = 0; lane < state.LaneCount; lane++) {
+            for (let step = 0; step < state.Divisions; step++) {
+                NaAudio__CircularSequencer__ApplyStepAppearance(module, lane, step);
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Expansion and the Control Bank
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Build the Corner Expand Button
+    // ------------------------------------------------------------
+    function NaAudio__CircularSequencer__BuildExpandButton(module, state) {
+        const defaults  =  module.Defaults;
+        if (!defaults.ExpandButtonEnabled) return;
+
+        const button  =  Controls.NaAudio__Env3d__ControlFactory__BuildButton({
+            Label       : 'Expand',
+            Pigment     : 'Terracotta',
+            Width       : defaults.ExpandButtonSize,
+            Depth       : defaults.ExpandButtonSize,
+            ModuleId    : module.ModuleId,
+            Unregisters : module.Unregisters,
+            OnPress     : function () { NaAudio__CircularSequencer__ToggleExpanded(module); }
+        });
+
+        // Front-right corner of the collapsed base, inset so it reads as belonging to
+        // the plate rather than floating off its edge.
+        const halfWidth  =  module.CageSize.x / 2 - defaults.ExpandButtonInset;
+        const halfDepth  =  module.CageSize.z / 2 - defaults.ExpandButtonInset;
+        button.Group.position.set(halfWidth, 0.06, halfDepth);
+
+        module.BodyGroup.add(button.Group);
+        state.ExpandButton  =  button;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Toggle the Module Between Compact and Expanded
+    // ------------------------------------------------------------
+    // Widens the module's base along X and reveals the control bank in the new half.
+    // The controls are built once at construction and only shown or hidden here -
+    // rebuilding them would drop their values and re-register six interaction handles
+    // on every press.
+    export function NaAudio__CircularSequencer__ToggleExpanded(module) {
         const state     =  module.TypeState;
         const defaults  =  module.Defaults;
-        const lane      =  state.Lanes[laneIndex];
-        const mesh      =  lane.Meshes[stepIndex];
-        if (!mesh) return;
 
-        const isActive  =  lane.Pattern[stepIndex];
-        const size      =  defaults.StepBaseSize * (isActive ? defaults.StepActiveSizeFactor : 1.0);
+        state.IsExpanded  =  !state.IsExpanded;
+        module.Settings.IsExpanded  =  state.IsExpanded;
 
-        mesh.userData.NaAudio__RestingScale  =  size;
-        mesh.scale.setScalar(size);
+        const factor  =  state.IsExpanded ? defaults.ExpandedWidthFactor : 1.0;
+        ModuleBase.NaAudio__ModuleBase__SetBaseWidthFactor(module, factor);
+
+        if (state.ControlBank) state.ControlBank.visible  =  state.IsExpanded;
+
+        // The ring stays put and the base grows to one side, so the controls appear
+        // beside the sequencer rather than the sequencer jumping across its own pad.
+        NaAudio__CircularSequencer__PositionControlBank(module);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Place the Control Bank in the Expanded Half
+    // ------------------------------------------------------------
+    function NaAudio__CircularSequencer__PositionControlBank(module) {
+        const state     =  module.TypeState;
+        const defaults  =  module.Defaults;
+        if (!state.ControlBank) return;
+
+        const originalWidth  =  module.BaseWidth || module.CageSize.x;
+        state.ControlBank.position.set(originalWidth * 0.5 + defaults.ControlBankInset, 0.06, 0);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Build the Five Controls
+    // ------------------------------------------------------------
+    function NaAudio__CircularSequencer__BuildControlBank(module, state) {
+        const defaults  =  module.Defaults;
+        if (!defaults.ControlBankEnabled) return;
+
+        const bank  =  new THREE.Group();
+        bank.name   =  'NaAudio__Sequencer__ControlBank';
+        bank.visible =  state.IsExpanded;
+
+        const spacing  =  defaults.ControlSliderSpacing;
+        const length   =  defaults.ControlSliderLength;
+
+        // SUB HELPER | Add one control at the next slot along the bank
+        // ------------------------------------------------------------
+        let slot  =  0;
+        const place  =  function (build) {
+            const control  =  build(slot);
+            control.Group.position.set(0, 0, (slot - 2) * spacing);            // <-- Five slots centred on the bank
+            bank.add(control.Group);
+            slot += 1;
+            return control;
+        };
+        // ------------------------------------------------------------
+
+        state.CycleSlider  =  place((slotIndex) => Controls.NaAudio__Env3d__ControlFactory__BuildSlider({
+            SlotIndex    : slotIndex,
+            Label        : 'Cycle',
+            Length       : length,
+            Pigment      : 'SlateBlue',
+            Detents      : defaults.CycleDetents,
+            DetentIndex  : state.CycleIndex,
+            ModuleId     : module.ModuleId,
+            Unregisters  : module.Unregisters,
+            OnChange     : function (value, detent, index) {
+                state.CycleBars   =  value;
+                state.CycleIndex  =  index;
+                module.Settings.CycleIndex  =  index;
+                NaAudio__CircularSequencer__RepositionSteps(module);
+            }
+        }));
+
+        state.GridSlider  =  place((slotIndex) => Controls.NaAudio__Env3d__ControlFactory__BuildSlider({
+            SlotIndex    : slotIndex,
+            Label        : 'Feel',
+            Length       : length,
+            Pigment      : 'SageGreen',
+            Detents      : defaults.GridDetents,
+            DetentIndex  : state.GridIndex,
+            ModuleId     : module.ModuleId,
+            Unregisters  : module.Unregisters,
+            OnChange     : function (value, detent, index) {
+                state.GridFeel   =  value;
+                state.GridIndex  =  index;
+                module.Settings.GridIndex  =  index;
+                NaAudio__CircularSequencer__RepositionSteps(module);
+            }
+        }));
+
+        state.WobbleDepthSlider  =  place((slotIndex) => Controls.NaAudio__Env3d__ControlFactory__BuildSlider({
+            SlotIndex    : slotIndex,
+            Label        : 'Wobble',
+            Length       : length,
+            Pigment      : 'Plum',
+            Value        : state.WobbleDepth,
+            ModuleId     : module.ModuleId,
+            Unregisters  : module.Unregisters,
+            OnChange     : function (value) {
+                state.WobbleDepth  =  value;
+                NaAudio__CircularSequencer__ClearWobbleCache(state);
+                module.Settings.WobbleDepth  =  value;
+                NaAudio__CircularSequencer__RepositionSteps(module);
+            }
+        }));
+
+        state.WobbleChanceSlider  =  place((slotIndex) => Controls.NaAudio__Env3d__ControlFactory__BuildSlider({
+            SlotIndex    : slotIndex,
+            Label        : 'Chance',
+            Length       : length,
+            Pigment      : 'MillennialPink',
+            Value        : state.WobbleChance,
+            ModuleId     : module.ModuleId,
+            Unregisters  : module.Unregisters,
+            OnChange     : function (value) {
+                state.WobbleChance  =  value;
+                NaAudio__CircularSequencer__ClearWobbleCache(state);
+                module.Settings.WobbleChance  =  value;
+                NaAudio__CircularSequencer__RepositionSteps(module);
+            }
+        }));
+
+        state.KitSelector  =  place((slotIndex) => Controls.NaAudio__Env3d__ControlFactory__BuildSlider({
+            SlotIndex    : slotIndex,
+            Label        : 'Bank',
+            Length       : length,
+            Pigment      : 'Ochre',
+            Detents      : defaults.KitDetents,
+            DetentIndex  : state.KitIndex,
+            ModuleId     : module.ModuleId,
+            Unregisters  : module.Unregisters,
+            OnChange     : function (value, detent, index) {
+                state.KitIndex  =  index;
+                module.Settings.KitId  =  value;
+                NaAudio__CircularSequencer__BindKit(module, state, value);
+            }
+        }));
+
+        module.BodyGroup.add(bank);
+        state.ControlBank  =  bank;
+
+        NaAudio__CircularSequencer__PositionControlBank(module);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Sample Binding
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Bind Each Lane to a Sample From the Chosen Kit
+    // ------------------------------------------------------------
+    // A lane binds to a ROLE and the kit answers with whatever fills it, which is what
+    // lets the whole kit be swapped under a pattern without a lane losing its binding.
+    function NaAudio__CircularSequencer__BindKit(module, state, kitId) {
+        state.KitId  =  kitId || module.Settings.KitId || 'KIT_Cr78';
+
+        const assetIds  =  [];
+
+        for (let lane = 0; lane < state.LaneCount; lane++) {
+            const voiceRole  =  LANE_VOICE_ROLES[lane] || 'perc';
+            const entry      =  SampleBank.NaAudio__SampleBank__KitVoice(state.KitId, voiceRole);
+
+            state.Lanes[lane].VoiceRole  =  voiceRole;
+            state.Lanes[lane].AssetId    =  entry ? entry.AssetId : null;
+
+            if (entry) assetIds.push(entry.AssetId);
+        }
+
+        // Decoded ahead of the first play. The scheduler cannot await anything, so a
+        // sample that has not decoded by the time its step comes round is simply silent -
+        // which presents as a pattern with holes in it for the first bar.
+        SampleBank.NaAudio__SampleBank__LoadMany(assetIds);
     }
     // ------------------------------------------------------------
 
@@ -400,28 +769,51 @@ import {
     // ------------------------------------------------------------
     export const NaAudio__Module__CircularSequencer  =  {
 
-        // BUILD | Construct the sequencer's geometry and bind its kit
+        // BUILD | Construct the sequencer, its controls and its kit binding
         // ------------------------------------------------------------
         Build : function (module) {
             const defaults  =  module.Defaults;
 
-            const divisions  =  NaAudio__MusicalMaths__Clamp(
+            const divisions  =  Math.round(NaAudio__MusicalMaths__Clamp(
                 module.Settings.Divisions || defaults.Divisions,
                 defaults.DivisionsMin, defaults.DivisionsMax
-            );
+            ));
 
-            const laneCount  =  Math.min(module.Settings.LaneCount || defaults.LaneCount, LANE_VOICE_ROLES.length);
+            const laneCount   =  Math.min(module.Settings.LaneCount || defaults.LaneCount, LANE_VOICE_ROLES.length);
+            const cycleIndex  =  (module.Settings.CycleIndex === undefined) ? defaults.CycleDefaultIndex : module.Settings.CycleIndex;
+            const gridIndex   =  (module.Settings.GridIndex  === undefined) ? defaults.GridDefaultIndex  : module.Settings.GridIndex;
+            const kitIndex    =  (module.Settings.KitIndex   === undefined) ? defaults.KitDefaultIndex   : module.Settings.KitIndex;
 
             const state  =  {
-                Divisions    : Math.round(divisions),
-                LaneCount    : laneCount,
-                KitId        : null,
-                Lanes        : [],
-                MarkerPivot  : null,
-                Hub          : null,
-                Ticks        : null,
-                LastStepFired: -1,                                            // <-- Guards the animation against pulsing a step twice
-                Gain         : (module.Settings.Gain === undefined) ? 0.85 : module.Settings.Gain
+                Divisions     : divisions,
+                LaneCount     : laneCount,
+                Lanes         : [],
+
+                CycleIndex    : cycleIndex,
+                CycleBars     : defaults.CycleDetents[cycleIndex].Value,
+                GridIndex     : gridIndex,
+                GridFeel      : defaults.GridDetents[gridIndex].Value,
+                KitIndex      : kitIndex,
+                KitId         : null,
+
+                WobbleDepth     : (module.Settings.WobbleDepth  === undefined) ? defaults.WobbleDepthDefault  : module.Settings.WobbleDepth,
+                WobbleChance    : (module.Settings.WobbleChance === undefined) ? defaults.WobbleChanceDefault : module.Settings.WobbleChance,
+                WobbleMaxOffset : defaults.WobbleMaxOffsetFraction,
+                WobblePitchCents: defaults.WobblePitchCents,
+                WobbleCache     : {},
+                Seed            : module.Settings.Seed || 8821,
+
+                IsExpanded    : module.Settings.IsExpanded === true,
+                ControlBank   : null,
+                ExpandButton  : null,
+
+                MarkerPivot   : null,
+                Hub           : null,
+                Ticks         : null,
+                StartMarker   : null,
+
+                LastStepFired : -1,
+                Gain          : (module.Settings.Gain === undefined) ? 0.85 : module.Settings.Gain
             };
 
             const patternStrings  =  module.Settings.Patterns || [];
@@ -430,108 +822,119 @@ import {
                 state.Lanes.push({
                     VoiceRole   : LANE_VOICE_ROLES[lane] || 'perc',
                     AssetId     : null,
-                    Pattern     : NaAudio__CircularSequencer__PatternFromString(patternStrings[lane], state.Divisions),
+                    Pattern     : NaAudio__CircularSequencer__PatternFromString(patternStrings[lane], divisions),
                     Meshes      : [],
-                    PulseAmount : []
+                    PulseAmount : [],
+                    Velocity    : []
                 });
             }
 
             module.TypeState  =  state;
 
             NaAudio__CircularSequencer__BuildRings(module, state);
+            NaAudio__CircularSequencer__BuildStartMarker(module, state);
             NaAudio__CircularSequencer__BuildHub(module, state);
             NaAudio__CircularSequencer__BuildMarker(module, state);
 
             for (let lane = 0; lane < laneCount; lane++) {
                 NaAudio__CircularSequencer__BuildLaneSteps(module, state, lane);
-                for (let step = 0; step < state.Divisions; step++) {
-                    NaAudio__CircularSequencer__ApplyStepAppearance(module, lane, step);
-                }
             }
+            NaAudio__CircularSequencer__RefreshAllSteps(module);
 
-            NaAudio__CircularSequencer__BindKit(module, state);
+            NaAudio__CircularSequencer__BuildExpandButton(module, state);
+            NaAudio__CircularSequencer__BuildControlBank(module, state);
+
+            NaAudio__CircularSequencer__BindKit(module, state, defaults.KitDetents[kitIndex].Value);
+
+            if (state.IsExpanded) {
+                ModuleBase.NaAudio__ModuleBase__SetBaseWidthFactor(module, defaults.ExpandedWidthFactor);
+                NaAudio__CircularSequencer__PositionControlBank(module);
+            }
         },
         // ------------------------------------------------------------
 
 
         // SCHEDULE | Fire the steps falling inside one lookahead window
         // ------------------------------------------------------------
-        // The window is in BEATS and the pattern is in DIVISIONS OF A BAR, so the two
-        // have to be reconciled. Working in absolute step indices - step 37 of the
-        // sequence, not step 5 of bar 2 - is what makes that reconciliation a single
-        // floor operation and keeps it correct across a bar line.
+        // Worked in absolute cycle indices rather than in bars, so the arithmetic stays
+        // a single floor operation and stays correct across a cycle boundary whatever
+        // the cycle length happens to be.
         Schedule : function (module, window) {
             const state  =  module.TypeState;
             if (!state) return;
 
-            const stepsPerBeat   =  state.Divisions / window.BeatsPerBar;
-            const firstStep      =  Math.ceil(window.FromBeat * stepsPerBeat - 0.000001);
-            const lastStep       =  Math.floor(window.ToBeat * stepsPerBeat - 0.000001);
+            const beatsPerCycle  =  state.CycleBars * window.BeatsPerBar;
+            const firstCycle     =  Math.floor(window.FromBeat / beatsPerCycle);
+            const lastCycle      =  Math.floor(window.ToBeat   / beatsPerCycle);
 
-            const swing          =  module.Settings.Swing || 0;
-            const secondsPerStep =  window.SecondsPerBar / state.Divisions;
+            for (let cycle = firstCycle; cycle <= lastCycle; cycle++) {
+                if (cycle < 0) continue;
 
-            for (let absoluteStep = firstStep; absoluteStep <= lastStep; absoluteStep++) {
-                if (absoluteStep < 0) continue;
+                for (let step = 0; step < state.Divisions; step++) {
+                    // The SAME fraction the geometry used to place this step. One
+                    // function, two consumers - which is what makes the picture true.
+                    const fraction  =  NaAudio__CircularSequencer__StepFraction(state, step, beatsPerCycle);
+                    const beat      =  (cycle + fraction) * beatsPerCycle;
 
-                const stepIndex  =  ((absoluteStep % state.Divisions) + state.Divisions) % state.Divisions;
-                const beat       =  absoluteStep / stepsPerBeat;
-                const audioTime  =  window.AudioTimeAtBeat(beat)
-                                  + NaAudio__MusicalMaths__SwingOffsetSeconds(stepIndex, secondsPerStep, swing);
+                    if (beat < window.FromBeat || beat >= window.ToBeat) continue;
 
-                for (let lane = 0; lane < state.LaneCount; lane++) {
-                    const laneState  =  state.Lanes[lane];
-                    if (!laneState.Pattern[stepIndex]) continue;
-                    if (!laneState.AssetId) continue;
+                    const detune  =  NaAudio__CircularSequencer__WobbleDetune(state, step);
 
-                    const buffer  =  SampleBank.NaAudio__SampleBank__Buffer(laneState.AssetId);
-                    if (!buffer) continue;                                    // <-- Not decoded yet; silent for this pass, never blocking
+                    for (let lane = 0; lane < state.LaneCount; lane++) {
+                        const laneState  =  state.Lanes[lane];
+                        if (!laneState.Pattern[step] || !laneState.AssetId) continue;
 
-                    SamplePlayer.NaAudio__SamplePlayer__Play(buffer, {
-                        AtTime      : audioTime,
-                        Destination : module.Bus.Output,
-                        Gain        : state.Gain
-                    });
+                        const buffer  =  SampleBank.NaAudio__SampleBank__Buffer(laneState.AssetId);
+                        if (!buffer) continue;                                 // <-- Not decoded yet; silent this pass, never blocking
+
+                        SamplePlayer.NaAudio__SamplePlayer__Play(buffer, {
+                            AtTime      : window.AudioTimeAtBeat(beat),
+                            Destination : module.Bus.Output,
+                            Gain        : state.Gain * laneState.Velocity[step],
+                            DetuneCents : detune
+                        });
+                    }
                 }
             }
         },
         // ------------------------------------------------------------
 
 
-        // UPDATE | Sweep the marker and decay the step pulses
+        // UPDATE | Sweep the marker, decay the pulses, spring the button
         // ------------------------------------------------------------
         Update : function (module, delta) {
             const state     =  module.TypeState;
             const defaults  =  module.Defaults;
             if (!state) return;
 
-            // THE MARKER
-            // Driven from the transport's CURRENT playhead, never from the scheduler -
-            // see the note in the file header on why those must stay apart.
-            if (NaAudio__Transport__IsRunning()) {
-                const beats          =  NaAudio__Transport__PlayheadBeats();
-                const barPosition    =  (beats / NaAudio__Transport__BeatsPerBar()) % 1;   // <-- Fraction of the way round the circle
-                state.MarkerPivot.rotation.y  =  -barPosition * Math.PI * 2;
+            if (state.ExpandButton) state.ExpandButton.Update(delta);
 
-                // Pulse whichever step the marker has just crossed. Compared against the
-                // last fired index so a frame that spans no step boundary does nothing,
-                // and a frame that spans several still only pulses the newest.
-                const currentStep  =  Math.floor(barPosition * state.Divisions);
-                if (currentStep !== state.LastStepFired) {
-                    state.LastStepFired  =  currentStep;
+            // THE MARKER
+            // Driven from the transport's CURRENT playhead, never from the scheduler.
+            if (NaAudio__Transport__IsRunning()) {
+                const beatsPerCycle  =  state.CycleBars * NaAudio__Transport__BeatsPerBar();
+                const cyclePosition  =  (NaAudio__Transport__PlayheadBeats() / beatsPerCycle) % 1;
+                state.MarkerPivot.rotation.y  =  -cyclePosition * Math.PI * 2;
+
+                // Pulse whichever step the marker has just crossed. Compared against its
+                // TIMING fraction rather than its index, so a swung or wobbled step
+                // flashes when it actually sounds rather than when an even grid would
+                // have put it.
+                for (let step = 0; step < state.Divisions; step++) {
+                    const fraction  =  NaAudio__CircularSequencer__StepFraction(state, step, beatsPerCycle);
+                    const crossed   =  state.LastCyclePosition !== undefined
+                        && NaAudio__CircularSequencer__HasCrossed(state.LastCyclePosition, cyclePosition, fraction);
+
+                    if (!crossed) continue;
 
                     for (let lane = 0; lane < state.LaneCount; lane++) {
-                        if (state.Lanes[lane].Pattern[currentStep]) {
-                            state.Lanes[lane].PulseAmount[currentStep]  =  1.0;
-                        }
+                        if (state.Lanes[lane].Pattern[step]) state.Lanes[lane].PulseAmount[step]  =  1.0;
                     }
                 }
+                state.LastCyclePosition  =  cyclePosition;
             }
 
             // THE PULSE DECAY
-            // One pass over every step. Cheap because it is arithmetic on numbers already
-            // in cache, and it touches a material only for steps that are actually
-            // pulsing or hovered.
             const decayRate  =  delta / Math.max(defaults.StepPulseDecaySeconds, 0.0001);
             const pulseScale =  defaults.StepTriggerPulseFactor;
 
@@ -556,9 +959,16 @@ import {
                         mesh.material.color.copy(SCRATCH_COLOUR);
                     }
 
-                    if (pulse > 0) {
-                        laneState.PulseAmount[step]  =  Math.max(pulse - decayRate, 0);
+                    // A hovered inactive step lifts out of its ghost so the user can see
+                    // what they are about to switch on.
+                    if (!laneState.Pattern[step]) {
+                        ModuleBase.NaAudio__ModuleBase__SetMaterialOpacity(
+                            module, mesh.material,
+                            hover ? Math.min(defaults.StepInactiveOpacity + 0.35, 1) : defaults.StepInactiveOpacity
+                        );
                     }
+
+                    if (pulse > 0) laneState.PulseAmount[step]  =  Math.max(pulse - decayRate, 0);
                 }
             }
         },
@@ -567,23 +977,13 @@ import {
 
         // ON LOCK CHANGED | Nothing to silence beyond the framework's bus ramp
         // ------------------------------------------------------------
-        // A sequencer holds no sustained voices of its own - every hit is a one-shot that
-        // ends on its own. The framework has already ramped the bus and stopped calling
-        // Schedule, so there is nothing left to do. The marker freezes where it is, which
-        // is the honest representation of a stopped module until the manifest's looped
-        // animation capture is built.
         OnLockChanged : function (module, isLocked) {
             const state  =  module.TypeState;
-            if (state && isLocked) state.LastStepFired  =  -1;                 // <-- So unlocking does not skip the step it stopped on
+            if (state && isLocked) {
+                state.LastStepFired       =  -1;
+                state.LastCyclePosition   =  undefined;                        // <-- So unlocking does not pulse the whole ring at once
+            }
         },
-        // ------------------------------------------------------------
-
-
-        // AUDIO INPUT | A sequencer takes no audio in
-        // ------------------------------------------------------------
-        // Absent on purpose rather than returning null. NaAudio__PatchGraph__Connect
-        // warns when a cable arrives at a module with no AudioInput, which is the correct
-        // and visible outcome for patching audio into a source.
         // ------------------------------------------------------------
 
 
@@ -598,8 +998,18 @@ import {
                     state.Gain  =  NaAudio__MusicalMaths__Clamp(value, 0, 1);
                     break;
 
-                case 'swing':
-                    module.Settings.Swing  =  NaAudio__MusicalMaths__Clamp(value, 0, 1);
+                case 'wobbleDepth':
+                    state.WobbleDepth  =  NaAudio__MusicalMaths__Clamp(value, 0, 1);
+                    NaAudio__CircularSequencer__ClearWobbleCache(state);
+                    if (state.WobbleDepthSlider) state.WobbleDepthSlider.SetFraction(state.WobbleDepth, false);
+                    NaAudio__CircularSequencer__RepositionSteps(module);
+                    break;
+
+                case 'wobbleChance':
+                    state.WobbleChance  =  NaAudio__MusicalMaths__Clamp(value, 0, 1);
+                    NaAudio__CircularSequencer__ClearWobbleCache(state);
+                    if (state.WobbleChanceSlider) state.WobbleChanceSlider.SetFraction(state.WobbleChance, false);
+                    NaAudio__CircularSequencer__RepositionSteps(module);
                     break;
 
                 default:
@@ -611,14 +1021,22 @@ import {
 
         // DISPOSE | Nothing beyond what the framework owns
         // ------------------------------------------------------------
-        // Meshes, geometries and materials are all in module.BodyGroup and are disposed
-        // by the scene manager. The interaction handles were pushed onto
-        // module.Unregisters and are released by the shell.
         Dispose : function (module) {
             module.TypeState  =  null;
         }
         // ------------------------------------------------------------
     };
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether the Playhead Crossed a Fraction This Frame
+    // ------------------------------------------------------------
+    // Handles the wrap at the end of a cycle, where the position goes from 0.98 back to
+    // 0.01 and a naive comparison would miss every step near the top of the circle.
+    function NaAudio__CircularSequencer__HasCrossed(previous, current, target) {
+        if (current >= previous) return target > previous && target <= current;
+        return target > previous || target <= current;                         // <-- Wrapped past zero
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------

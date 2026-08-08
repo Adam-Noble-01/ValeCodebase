@@ -6,7 +6,7 @@
    NAMESPACE  : NaAudio
    MODULE     : Env3d - LineFactory
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Build the linework - module cages, radial ticks and patch cables
+   PURPOSE    : Build the linework - module cages, radial ticks and selection rings
    CREATED    : 08-Aug-2026
 
    DESCRIPTION:
@@ -16,7 +16,7 @@
        * The module cage - the six-sided bounding box that becomes visible when a
          module locks, straight from the design manifest.
        * Radial tick marks, for the circular sequencer's division ring.
-       * Patch cables - the 3D noodles - as sagging quadratic curves.
+       * The flat selection ring drawn on a module pad.
 
    ---------------------------------------------------------------------------
 
@@ -26,31 +26,25 @@
    drop includes. It is the right tool where line weight carries meaning, as it
    does on an issued drawing.
 
-   Here it does not. The cage and the cables want to be hairlines that recede with
-   distance, and a fat line at a fixed pixel width does the opposite - it stays
-   prominent as the camera pulls back until a distant locked module reads as a
-   solid block. Plain LineBasicMaterial is also a fraction of the cost, and a busy
-   space can hold several dozen cables.
+   Here it does not. A cage wants to be a hairline that recedes with distance, and a
+   fat line at a fixed pixel width does the opposite - it stays prominent as the
+   camera pulls back until a distant locked module reads as a solid block. Plain
+   LineBasicMaterial is also a fraction of the cost.
 
    ---------------------------------------------------------------------------
 
-   CABLE SAG
+   PATCH CABLES USED TO LIVE HERE
 
-   A cable is a quadratic Bezier from the source port to the destination port, with
-   its control point pulled down by a fraction of the port-to-port distance. That
-   fraction is CableSagFactor in config.
-
-   At zero the cable is a straight line and the whole thing reads as an engineering
-   schematic - which is precisely the 2D patch-bay diagram the manifest is trying to
-   escape. Too high and long cables drag through the floor. The sag is proportional
-   to distance rather than fixed, so a short hop between neighbours stays taut and a
-   run across the space droops.
+   They were quadratic Beziers drawn as THREE.Line, and they are now swept tubes with
+   moulded plugs and a sprung slack - see NaAudio__Env3d__CableFactory. The reasoning
+   for the move is in that file's header. Nothing about a cable is a line any more, so
+   nothing about a cable is in this file.
 
    ============================================================================= */
 
 import * as THREE from 'three';
 
-import { SpatialNumber, SpatialBool }              from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
+import { SpatialNumber }                            from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
 import * as Materials                               from './NaAudio__Env3d__MaterialLibrary__.mjs';
 
 // =============================================================================
@@ -61,14 +55,9 @@ import * as Materials                               from './NaAudio__Env3d__Mate
 // REGION | Module Constants
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Names and Scratch Vectors
+    // MODULE CONSTANTS | Object Names
     // ------------------------------------------------------------
     const NAME_CAGE   =  'NaAudio__Env3d__Cage';
-    const NAME_CABLE  =  'NaAudio__Env3d__Cable';
-
-    const SCRATCH_CONTROL  =  new THREE.Vector3();                           // <-- Cable rebuilds allocate nothing
-    const SCRATCH_MID      =  new THREE.Vector3();
-    const SCRATCH_POINT    =  new THREE.Vector3();
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -148,111 +137,6 @@ import * as Materials                               from './NaAudio__Env3d__Mate
         ticks.userData.NaAudio__Pickable  =  false;
 
         return ticks;
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Patch Cables
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Compute the Sagging Control Point Between Two Ports
-    // ------------------------------------------------------------
-    function NaAudio__Env3d__LineFactory__ControlPoint(fromPoint, toPoint, out) {
-        SCRATCH_MID.addVectors(fromPoint, toPoint).multiplyScalar(0.5);
-
-        const distance  =  fromPoint.distanceTo(toPoint);
-        const sag       =  distance * SpatialNumber('PatchGraph', 'CableSagFactor');
-
-        out.copy(SCRATCH_MID);
-        out.y -= sag;
-        return out;
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Write a Quadratic Bezier Into a Position Attribute
-    // ------------------------------------------------------------
-    // Evaluated by hand rather than through THREE.QuadraticBezierCurve3, which
-    // allocates a Vector3 per sample point. A cable is rebuilt whenever either
-    // module moves, and a drag rebuilds it every frame.
-    function NaAudio__Env3d__LineFactory__WriteCurve(positions, fromPoint, controlPoint, toPoint, segments) {
-        for (let i = 0; i <= segments; i++) {
-            const t   =  i / segments;
-            const inv =  1 - t;
-
-            SCRATCH_POINT.set(
-                inv * inv * fromPoint.x + 2 * inv * t * controlPoint.x + t * t * toPoint.x,
-                inv * inv * fromPoint.y + 2 * inv * t * controlPoint.y + t * t * toPoint.y,
-                inv * inv * fromPoint.z + 2 * inv * t * controlPoint.z + t * t * toPoint.z
-            );
-
-            positions[i * 3 + 0]  =  SCRATCH_POINT.x;
-            positions[i * 3 + 1]  =  SCRATCH_POINT.y;
-            positions[i * 3 + 2]  =  SCRATCH_POINT.z;
-        }
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Build a Patch Cable Between Two World Points
-    // ------------------------------------------------------------
-    export function NaAudio__Env3d__LineFactory__BuildCable(fromPoint, toPoint, signalType) {
-        const segments  =  Math.round(SpatialNumber('PatchGraph', 'CableSegments'));
-
-        const positions  =  new Float32Array((segments + 1) * 3);
-        NaAudio__Env3d__LineFactory__ControlPoint(fromPoint, toPoint, SCRATCH_CONTROL);
-        NaAudio__Env3d__LineFactory__WriteCurve(positions, fromPoint, SCRATCH_CONTROL, toPoint, segments);
-
-        const geometry  =  new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-        const cable  =  new THREE.Line(geometry, Materials.NaAudio__Materials__OwnedCable(signalType));
-        cable.name   =  NAME_CABLE;
-        cable.frustumCulled  =  false;                                        // <-- A long cable's bounding sphere leaves frame before the cable does
-        cable.userData.NaAudio__Pickable  =  false;
-        cable.userData.NaAudio__Segments  =  segments;
-
-        return cable;
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Rewrite an Existing Cable's Curve In Place
-    // ------------------------------------------------------------
-    // Called whenever either end moves. Rewrites the existing buffer rather than
-    // building a new geometry, so dragging a module across the space does not
-    // allocate and discard a geometry per frame per cable.
-    export function NaAudio__Env3d__LineFactory__UpdateCable(cable, fromPoint, toPoint) {
-        if (!cable || !cable.geometry) return;
-
-        const attribute  =  cable.geometry.getAttribute('position');
-        const segments   =  cable.userData.NaAudio__Segments;
-
-        NaAudio__Env3d__LineFactory__ControlPoint(fromPoint, toPoint, SCRATCH_CONTROL);
-        NaAudio__Env3d__LineFactory__WriteCurve(attribute.array, fromPoint, SCRATCH_CONTROL, toPoint, segments);
-
-        attribute.needsUpdate  =  true;
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Set a Cable's Signal Brightness
-    // ------------------------------------------------------------
-    // level is a normalised 0 to 1 meter reading from the source module. A silent
-    // cable sits at its base colour and is visibly still, which is how a user finds
-    // a dead patch without opening anything.
-    export function NaAudio__Env3d__LineFactory__SetCableLevel(cable, level, flashColour) {
-        if (!cable || !cable.material) return;
-        if (!SpatialBool('PatchGraph', 'CableFlowEnabled')) return;
-
-        const base  =  cable.material.userData.NaAudio__BaseColour;
-        if (!base) return;
-
-        cable.material.color.copy(base).lerp(flashColour, Math.min(level, 1) * 0.65);
-        cable.material.opacity  =  0.72 + Math.min(level, 1) * 0.28;
     }
     // ------------------------------------------------------------
 

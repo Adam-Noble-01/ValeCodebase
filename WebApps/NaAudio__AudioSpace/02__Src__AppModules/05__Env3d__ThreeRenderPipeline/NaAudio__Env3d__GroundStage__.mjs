@@ -45,6 +45,7 @@ import { NaAudio__SeededRandom__Create }      from '../03__AppUtils/NaAudio__App
 import * as Palette                           from './NaAudio__Env3d__PaletteLibrary__.mjs';
 import * as Materials                         from './NaAudio__Env3d__MaterialLibrary__.mjs';
 import * as Shapes                            from './NaAudio__Env3d__ShapeFactory__.mjs';
+import * as GroundField                       from './NaAudio__Env3d__GroundField__.mjs';
 import { NaAudio__Env3d__SceneGroup }         from './NaAudio__Env3d__SceneManager__.mjs';
 
 // =============================================================================
@@ -260,7 +261,35 @@ import { NaAudio__Env3d__SceneGroup }         from './NaAudio__Env3d__SceneManag
         environment.add(datum);
         if (backdrop) environment.add(backdrop);
 
+        NaAudio__Env3d__GroundStage__BindGroundField(surface, floor, grid);
+
         return { Floor: floor, Grid: grid, Datum: datum, Backdrop: backdrop };
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Hand the Floor and Grid Over to the Ground Field
+    // ------------------------------------------------------------
+    // The void colour is taken from the scene background rather than from config, for
+    // exactly the reason the fog colour is - the two have to agree to the last digit or
+    // the edge of the ground becomes a visible line across the space. Reading it from
+    // the one authority makes agreeing automatic instead of a thing to remember.
+    //
+    // The datum ring is deliberately NOT bound. It marks the listener position and the
+    // output post stands on it, so it is the one piece of ground that must exist whether
+    // or not anything is near it.
+    function NaAudio__Env3d__GroundStage__BindGroundField(surface, floor, grid) {
+        if (!GroundField.NaAudio__Env3d__GroundField__IsEnabled()) return;
+
+        const voidColour  =  surface.Scene.background || Palette.NaAudio__Palette__Ground('Paper');
+
+        GroundField.NaAudio__Env3d__GroundField__ApplyToMaterial(floor.material, voidColour);
+
+        if (grid) {
+            for (let i = 0; i < grid.children.length; i++) {
+                GroundField.NaAudio__Env3d__GroundField__ApplyToMaterial(grid.children[i].material, voidColour);
+            }
+        }
     }
     // ------------------------------------------------------------
 

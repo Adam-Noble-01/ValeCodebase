@@ -3,6 +3,193 @@
 
 
 # ---------------------------------------------------------
+## NaAudio__AudioSpace v0.3.0 - 08-Aug-2026
+### The ground becomes islands, the signal becomes visible, and patching becomes a gesture
+
+Three changes that turn out to be one change. The ground now exists only where the music
+does; the master output is an object standing in the space; and there is a third mode whose
+whole job is patching. Each of them makes the space more of a PLACE and less of a diagram,
+which is the only claim the manifest's spatial premise actually rests on.
+
+---
+
+### The ground is a field
+
+A uniform dark slab from horizon to horizon says nothing. Now every module contributes a
+soft circular influence to a scalar field, the influences SUM, and ground appears where the
+sum clears a threshold. Everything outside fades to the background paper.
+
+The summing is the whole design. Three modules in a triangle produce ONE triangular island
+with soft blurred edges, because the sum in the middle clears the threshold even though no
+single module reaches that far. Three separate discs would leave a hole in the centre and
+read as three objects rather than one group. Zoomed out, a space now reads as clusters of
+activity separated by empty paper - and the shape of each island describes the arrangement
+that made it.
+
+It reshapes continuously while a module is dragged, because the field is per fragment per
+frame and there is no geometry to rebuild. That fluidity was the point of doing it this way
+rather than with decals.
+
+#### Injected into the stock materials, after the fog chunk
+`NaAudio__Env3d__GroundField` uses `onBeforeCompile` on the floor and both grid materials
+rather than supplying a `ShaderMaterial`. The floor receives the one shadow the rig casts,
+and a hand-written material would have to reimplement shadow receiving, fog and tone mapping
+to keep it - three things three.js already does correctly and none of them interesting to
+own.
+
+The splice sits immediately AFTER `#include <fog_fragment>`, and that position is
+load-bearing. By then the fragment has been lit, tone mapped, converted to output colour
+space and fogged, so the void colour is in the same space as the fog colour and the scene
+background. Mixing any earlier tone-maps the void, it stops matching the background it is
+pretending to be, and every island grows a faint visible rim.
+
+#### The one place NaAudio__ is not the convention
+GLSL ES reserves any identifier containing two consecutive underscores. `vNaAudio__FieldWorld`
+is rejected outright by the compiler, along with every uniform beside it, and the whole scene
+renders as an unlit black silhouette with the reason buried in a shader log. The in-shader
+symbols are therefore `vNaAudioFieldWorld`, `uNaAudioFieldCount` and so on. It is documented
+at the top of the constants block, because it looks like a mistake.
+
+---
+
+### Nothing reaches the speakers except through a cable
+
+`CreateModuleBus` no longer connects the bus to the master. The only route out of the space
+is a lead into an **Output Post** - a tapered post at the centre whose `AudioInput` returns
+the master bus itself, and whose column is the master meter.
+
+Before this, every module wired itself to the master on creation. That is the sane
+prototype default and it made the signal flow a lie: the cables described part of the
+routing and an invisible rule described the rest, so following a lead with your eye taught
+you nothing about what you were hearing.
+
+Now 'audible' is a property you can see. Series and parallel stop being concepts and become
+what the leads happen to do - two instruments into the post are heard dry side by side, one
+into an effect and the effect into the post is heard only processed, and nothing enforces
+either arrangement.
+
+Measured rather than assumed. Master peak with the demonstration patch intact **0.885**;
+with the post's leads pulled **0.000**; repatched **0.751**.
+
+The cost is that a newly added module is silent until it is patched. Unfamiliar for about
+ten seconds, and then obviously right - it is how every piece of hardware on a desk behaves.
+`LoadFromSpace` warns when a space has no route to any post, because that is the one broken
+patch that looks completely normal and is completely silent.
+
+---
+
+### Leads that behave like leads
+
+Cables were quadratic Beziers drawn as `THREE.Line`. Cheap, correct, and at any real orbit
+distance they read as annotation over the space rather than objects in it - a hairline that
+thins with distance and has no ends. The manifest's argument for spatial routing is that a
+cable is a THING you can follow with your eye and reach for, and a hairline is not a thing.
+
+`NaAudio__Env3d__CableFactory` now sweeps a tube along a cubic Bezier with a moulded plug at
+each end. Three details do the work:
+
+- **It leaves along the socket's own axis** before it droops. Without that the lead emerges
+  sideways from the socket, which nothing physical does, and the plug at that end has to
+  point somewhere arbitrary. This is the single detail that sells the whole thing.
+- **The slack is a damped spring**, not a computed sag. Dragging a module makes the leads
+  lag, overshoot and settle. That is the difference between a cable that moves and a cable
+  that is redrawn.
+- **Parallel transport, not a Frenet frame.** A Frenet normal flips through an inflection
+  point and a sagging lead has one exactly in the middle, which shows up as the tube
+  visibly twisting once per drag.
+
+The tube is written by hand into a preallocated buffer with a static index buffer.
+`THREE.TubeGeometry` builds a fresh geometry and allocates a `Vector3` per sample point per
+call, and a dragged module with three leads would produce several hundred throwaway
+geometries a second.
+
+---
+
+### Sockets, and a third mode to use them in
+
+Every module now carries a visible input and output socket, built by the framework beside
+the pad and the cage. Ports used to be positions and nothing else, on the reasoning that a
+cable arriving somewhere already shows where it arrived. That was right while cables came
+from a file; it stops being right the moment the user has to CREATE one, because then the
+port is the target of a gesture and a target you cannot see is a target you cannot hit.
+
+**Wiring** is the third mode. Modules pinned, every control frozen, sockets and leads the
+only live things in the scene - so they can stay small and quiet rather than having to shout
+over the controls beside them. Tab steps forward through Build, Play and Wiring; Shift+Tab
+steps back, which stops mattering only if you never want the mode you just left.
+
+`NaAudio__Spatial__WiringController` runs both patching gestures from ONE piece of state:
+
+    drag start      hold the port
+    drag release    on a socket, land. on nothing, keep holding.
+    click           hold if nothing is held, land if something is.
+
+'Release on nothing keeps holding' is what makes drag-to-patch and click-click-to-patch the
+same machine rather than two half-implementations with two ways to be half-patched.
+Direction is resolved rather than demanded - patch output-first or input-first and the
+controller sorts it out.
+
+Unplugging is a click on the LEAD, anywhere along its length, because a socket with three
+leads in it cannot say which one a click meant.
+
+---
+
+### Three bugs, one of them serious
+
+- **A hand-made cable silently destroyed one from the space file.** `cableCounter` starts at
+  zero and knows nothing about ids supplied by a space document. The demonstration space
+  names its cables CBL_0001 upward, so the first cable patched by hand was generated as
+  CBL_0001 and `CABLES.set` overwrote the file's cable of that name - leaving its lead in
+  the scene owned by nothing, its interaction handle registered, and its audio connection
+  live with no record of it. The patch you could see and the patch you could hear parted
+  company on the first connection anybody made. The generator now skips ids already in use,
+  and an explicit duplicate is refused rather than allowed to replace what is there.
+  Found by driving the UI; nothing about reading the code suggested it.
+
+- **Every lead vanished into the floor at its midpoint.** Sag proportional to span, sockets
+  under a metre up, and four-metre runs in the demonstration space. The rest sag is now
+  clamped so the belly of the curve clears a configured floor clearance - against three
+  quarters of the control-point displacement, which is what a cubic Bezier actually reaches
+  at its midpoint.
+
+- **The output post's collar wrote opacity onto a SHARED material.** `FlatMarker` is library
+  owned and handed to every flat mark on the floor, so selecting the post would have
+  brightened all of them. Added `OwnedFlatMarker`. Cloning the shared one is not the fix -
+  `Material.copy` deep-copies userData, so the clone arrives carrying the shared stamp and
+  the scene manager then refuses to dispose it for the rest of the session.
+
+A fourth thing looked like a bug twice and was not: a drag test reported the ports
+unreachable, because the preceding Play-mode drag correctly fell through to OrbitControls,
+which orbited the camera and left the test projecting into a view that no longer existed.
+The same class of test artefact as the Build-mode drag in v0.2.0.
+
+#### Added
+- `01__AppCore/NaAudio__AppCore__ModeManager__.mjs` - Wiring joins Build and Play
+- `05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__GroundField__.mjs`
+- `05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__CableFactory__.mjs`
+- `20__System__SpatialModuleFramework/NaAudio__Spatial__PortFactory__.mjs`
+- `20__System__SpatialModuleFramework/NaAudio__Spatial__WiringController__.mjs`
+- `28__Module__OutputPost/NaAudio__Module__OutputPost__.mjs`
+
+#### Changed
+- `NaAudio__Engine__AudioHost__.mjs` - a module bus no longer connects itself to the master
+- `NaAudio__Spatial__PatchGraph__.mjs` - tube cables, cable click-to-unplug, port normals,
+  unique-id minting, the no-route-to-output warning
+- `NaAudio__Spatial__ModuleBase__.mjs` - ports, ground influence, port offsets as the single
+  authority for where a socket is
+- `NaAudio__Env3d__Interaction__.mjs` - `HandleUnderPointer`, pointer-move hooks,
+  `PointerAtHeight`
+- `NaAudio__Env3d__LineFactory__.mjs` - cables moved out entirely
+- `NaAudio__Env3d__MaterialLibrary__.mjs` - `OwnedCable` is now lit, plus `OwnedPlug`,
+  `OwnedPort`, `OwnedFlatMarker`
+- `NaAudio__Env3d__SceneManager__.mjs` - patch cables joined the pickable set
+- `NaAudio__Env3d__GroundStage__.mjs` - binds the floor and grid to the field
+- `NaAudio__Hud__ModeIndicator__.mjs` - the switch is driven off the published mode order
+- `Na__Env3d__Config.json`, `Na__SpatialModules__Config.json`, the demonstration space,
+  the help overlay, the stylesheet and the README
+
+
+# ---------------------------------------------------------
 ## NaAudio__AudioSpace v0.2.0 - 08-Aug-2026
 ### Build and Play modes, and a control bank for the circular sequencer
 

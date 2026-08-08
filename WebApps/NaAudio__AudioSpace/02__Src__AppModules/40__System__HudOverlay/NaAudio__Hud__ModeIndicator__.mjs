@@ -6,13 +6,13 @@
    NAMESPACE  : NaAudio
    MODULE     : Hud - ModeIndicator
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Say, unmissably, whether the space is in Build or Play
+   PURPOSE    : Say, unmissably, whether the space is in Build, Play or Wiring
    CREATED    : 08-Aug-2026
 
    DESCRIPTION:
-   - A two-position switch at the top centre of the viewport, plus a coloured rule
+   - A three-position switch at the top centre of the viewport, plus a coloured rule
      across the whole top edge.
-   - Clicking either half switches. Tab toggles.
+   - Clicking a position switches. Tab steps forward, Shift+Tab steps back.
 
    ---------------------------------------------------------------------------
 
@@ -24,10 +24,11 @@
 
    Here that failure is expensive and silent. In Build the user clicks a step expecting
    to toggle it and nothing happens, which is merely confusing. In Play they reach to
-   move a module and edit its pattern instead, which is data loss with no undo. Neither
-   announces itself.
+   move a module and edit its pattern instead, which is data loss with no undo. In Wiring
+   a click meant for a control lands on the lead behind it and unplugs an instrument.
+   None of the three announces itself.
 
-   So the mode is stated in three places at once - a switch that names both options, a
+   So the mode is stated in three places at once - a switch that names every option, a
    full-width coloured rule, and the pointer cursor itself. That is more than a quiet
    interface would normally allow, and it is the right trade against a mistake the user
    cannot see themselves making.
@@ -39,7 +40,7 @@
    ============================================================================= */
 
 import {
-    NaAudio__Mode,
+    NaAudio__Mode__Order,
     NaAudio__Mode__Presentation,
     NaAudio__ModeManager__Current,
     NaAudio__ModeManager__Set
@@ -80,7 +81,7 @@ import {
         const button  =  document.createElement('button');
         button.className    =  'NaAudio__ModeSwitch__Button NaAudio__ModeSwitch__Button--' + mode;
         button.textContent  =  presentation.Label;
-        button.title        =  presentation.Hint + '   (Tab)';
+        button.title        =  presentation.Hint + '   (Tab / Shift+Tab)';
         button.addEventListener('click', function () { NaAudio__ModeManager__Set(mode); });
 
         buttons[mode]  =  button;
@@ -104,8 +105,12 @@ import {
         switchElement  =  document.createElement('div');
         switchElement.className  =  'NaAudio__ModeSwitch';
 
-        switchElement.appendChild(NaAudio__ModeIndicator__BuildButton(NaAudio__Mode.Build));
-        switchElement.appendChild(NaAudio__ModeIndicator__BuildButton(NaAudio__Mode.Play));
+        // Driven off the published order rather than listed here, so a fourth mode is a
+        // one-line change in the mode manager and not a hunt for every place that
+        // enumerated three.
+        for (let i = 0; i < NaAudio__Mode__Order.length; i++) {
+            switchElement.appendChild(NaAudio__ModeIndicator__BuildButton(NaAudio__Mode__Order[i]));
+        }
 
         hintElement  =  document.createElement('span');
         hintElement.className  =  'NaAudio__ModeSwitch__Hint';

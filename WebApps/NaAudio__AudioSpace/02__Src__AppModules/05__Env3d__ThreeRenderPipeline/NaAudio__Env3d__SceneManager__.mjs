@@ -101,7 +101,8 @@ import { NaAudio__Materials__IsShared }         from './NaAudio__Env3d__Material
     export const NaAudio__Env3d__SceneGroupSet__Pickable  =  Object.freeze([       // <-- Raycast roots, nearest first
         NaAudio__Env3d__SceneGroup.Overlay,
         NaAudio__Env3d__SceneGroup.ModuleBodies,
-        NaAudio__Env3d__SceneGroup.ModuleShells
+        NaAudio__Env3d__SceneGroup.ModuleShells,
+        NaAudio__Env3d__SceneGroup.PatchCables                                // <-- Cables are click targets in wiring mode only
     ]);
     // ------------------------------------------------------------
 

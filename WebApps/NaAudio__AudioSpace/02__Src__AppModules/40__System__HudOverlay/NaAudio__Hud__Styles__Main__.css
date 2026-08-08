@@ -159,6 +159,10 @@
     .NaAudio__ModeRule--play {
         background-color                   :  var(--NaAudio_SageGreen);
     }
+
+    .NaAudio__ModeRule--wiring {
+        background-color                   :  var(--NaAudio_Ochre);
+    }
     /* ------------------------------------------------------------ */
 
 
@@ -180,7 +184,7 @@
     }
 
     .NaAudio__ModeSwitch__Button {
-        padding                            :  6px 18px;
+        padding                            :  6px 15px;                    /* <-- 18px, until a third position joined */
         border                             :  none;
         border-radius                      :  var(--NaAudio_ControlRadius);
         background-color                   :  transparent;
@@ -207,6 +211,11 @@
 
     .NaAudio__ModeSwitch__Button--play.NaAudio__ModeSwitch__Button--active {
         background-color                   :  var(--NaAudio_SageGreenDeep);
+        color                              :  var(--NaAudio_Cream);
+    }
+
+    .NaAudio__ModeSwitch__Button--wiring.NaAudio__ModeSwitch__Button--active {
+        background-color                   :  var(--NaAudio_OchreDeep);
         color                              :  var(--NaAudio_Cream);
     }
 

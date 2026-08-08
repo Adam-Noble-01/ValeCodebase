@@ -47,6 +47,7 @@
 import * as THREE from 'three';
 
 import { SpatialSection, SpatialNumber, SpatialBool }  from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
+import { NaAudio__WiringController__Hooks }  from './NaAudio__Spatial__WiringController__.mjs';
 import * as ModuleBase                                  from './NaAudio__Spatial__ModuleBase__.mjs';
 import { NaAudio__Env3d__SceneManager__AddUpdateHook }   from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__SceneManager__.mjs';
 import { NaAudio__Env3d__Interaction__SetEmptyClickHandler } from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
@@ -232,7 +233,11 @@ import {
         const module  =  ModuleBase.NaAudio__ModuleBase__Create(attachedSurface, resolved, implementation);
         INSTANCES.set(module.ModuleId, module);
 
-        ModuleBase.NaAudio__ModuleBase__Attach(module, NaAudio__ModuleRegistry__Select);
+        ModuleBase.NaAudio__ModuleBase__Attach(
+            module,
+            NaAudio__ModuleRegistry__Select,
+            NaAudio__WiringController__Hooks                                  // <-- What grabbing one of this module's ports means
+        );
 
         return module;
     }

@@ -2,7 +2,7 @@
     "NaAudio__Env3d__Config": {
         "NaAudio__Env3d__Config__Meta": {
             "ConfigLabel"                     : "3D Environment - Three.js Render Pipeline",
-            "ConfigVersion"                   : "0.1.0",
+            "ConfigVersion"                   : "0.3.0",
             "ConfigNote"                      : "Structural and numeric values only. Colour lives in Na__Palette__Config.json and nowhere else. World units are metres and one spatial module occupies roughly a two metre cube, so the space reads at human scale when the camera drops to eye height.",
             "ThreeRevision"                   : "184",
             "WorldUnitsPerMetre"              : 1.0
@@ -98,6 +98,19 @@
             "BackdropSeedNote"                : "The backdrop is randomly arranged but seeded, so the composition is identical on every load. A composition that reshuffles on refresh stops being a place the user can learn."
         },
 
+        "NaAudio__Env3d__Config__GroundField": {
+            "GroundFieldNote"                 : "The ground exists only where the music does. Every module contributes a soft circular influence, the influences SUM so neighbouring modules merge into one island, and everything outside fades to the background colour. Zoomed out, a space reads as clusters of activity separated by empty paper rather than as objects on a uniform slab.",
+            "FieldEnabled"                    : true,
+            "FieldMaxSources"                 : 32,
+            "FieldMaxSourcesNote"             : "Compiled into the shader as a GLSL array length, so raising it needs a reload rather than taking effect live. Modules past the cap stand on bare ground, and the field says so once rather than letting it look like a rendering bug.",
+            "FieldThreshold"                  : 0.62,
+            "FieldThresholdNote"              : "How much summed influence is needed before ground appears. Below about 0.5 two modules two cages apart merge into one island, which reads as one instrument; above about 0.8 even a deliberate tight pair stays as two discs. 0.62 keeps a cluster together and a scattered layout apart.",
+            "FieldSoftness"                   : 0.34,
+            "FieldSoftnessNote"               : "Half-width of the blur at an island edge, in field units. This is the whole aesthetic of the thing - at 0.05 the islands have a hard cut edge like a die-line, and at 0.34 they read as an area of effect that a module is standing in the middle of.",
+            "FieldCoreFraction"               : 0.30,
+            "FieldCoreFractionNote"           : "Fraction of a source's radius that contributes at full strength before the falloff begins. Zero makes every island a soft blob with no solid middle; too high leaves the falloff no room to work and the edges harden."
+        },
+
         "NaAudio__Env3d__Config__Materials": {
             "MaterialNote"                    : "Every value here exists to keep surfaces matte. See the AntiGlossRule in Na__Palette__Config.json - it is a hard constraint, not a preference.",
             "BodyRoughness"                   : 0.88,
@@ -109,7 +122,9 @@
             "GlassRoughness"                  : 0.72,
             "CageLineWidth"                   : 1.6,
             "OutlineLineWidth"                : 1.4,
-            "CableLineWidth"                  : 2.6,
+            "CableRoughness"                  : 0.72,
+            "CableRoughnessNote"              : "A patch lead is rubber, not plastic. Below about 0.5 the tube picks up a highlight along its top edge and immediately stops belonging in a matte space.",
+            "PlugRoughness"                   : 0.66,
             "EmissivePulseStrength"           : 0.55,
             "EmissivePulseStrengthNote"       : "How brightly a step or node flashes when it triggers. This is the only place light is allowed to leave a surface, and it decays inside a few frames."
         },

@@ -10,12 +10,13 @@
    CREATED    : 08-Aug-2026
 
    DESCRIPTION:
-   - A cable is two things at once: a Web Audio connection and a sagging curve in the
+   - A cable is two things at once: a Web Audio connection and a hanging lead in the
      scene. This module owns both halves and keeps them in step.
-   - Cable geometry follows its endpoints every frame, so dragging a module across the
-     space drags its leads with it.
-   - Cable brightness follows the source module's meter, so a live patch visibly
-     carries signal and a dead one visibly does not.
+   - Cable geometry follows its endpoints every frame, so dragging a module drags its
+     leads with it and they swing.
+   - Cable brightness follows the source module's meter, so a live patch visibly carries
+     signal and a dead one visibly does not.
+   - In wiring mode a cable is a click target, and clicking it unplugs it.
 
    ---------------------------------------------------------------------------
 
@@ -32,6 +33,24 @@
 
    ---------------------------------------------------------------------------
 
+   NOTHING REACHES THE SPEAKERS EXCEPT THROUGH A CABLE
+
+   This is the change that gives the whole graph its meaning. A module bus no longer
+   connects itself to the master - see NaAudio__Engine__AudioHost__CreateModuleBus - so
+   an unpatched module makes its sound into nothing at all.
+
+   The only path out is the Output Post, whose audio input IS the master bus. Anything
+   reaching it, by any route and in any arrangement, is heard; anything not reaching it
+   is not. That single rule is what makes the signal flow in this space READABLE: you can
+   answer 'why can I hear that' by following a lead with your eye, and 'why can I not
+   hear that' by finding the end that goes nowhere.
+
+   The cost is that a newly added module is silent until it is patched, which is
+   unfamiliar for about ten seconds and then obviously right - it is how every piece of
+   hardware on a desk behaves.
+
+   ---------------------------------------------------------------------------
+
    MODULATION CABLES ARE POLLED, NOT CONNECTED
 
    An audio cable is a real node-to-node connection and costs nothing per frame.
@@ -41,23 +60,24 @@
    there is no path from an analyser reading to an arbitrary application-level
    parameter - so modulation cables are polled once per frame in Update.
 
-   That is why the two kinds are distinguished in the cable record rather than being
-   treated uniformly, and why a space with many modulation cables costs more per frame
-   than one with many audio cables.
-
    ============================================================================= */
 
 import * as THREE from 'three';
 
 import { SpatialNumber, SpatialBool }  from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
 import * as Palette                    from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__PaletteLibrary__.mjs';
-import * as Lines                      from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__LineFactory__.mjs';
+import * as CableFactory               from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__CableFactory__.mjs';
 import {
     NaAudio__Env3d__SceneGroup,
     NaAudio__Env3d__SceneManager__AddUpdateHook,
     NaAudio__Env3d__SceneManager__DisposeSubtree
 } from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__SceneManager__.mjs';
+import {
+    NaAudio__Env3d__Interaction__Register,
+    NaAudio__Env3d__HandleKind
+} from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
 import * as ModuleBase                 from './NaAudio__Spatial__ModuleBase__.mjs';
+import { NaAudio__PortKind }           from './NaAudio__Spatial__PortFactory__.mjs';
 import {
     NaAudio__ModuleRegistry__Module
 } from './NaAudio__Spatial__ModuleRegistry__.mjs';
@@ -65,6 +85,7 @@ import {
     NaAudio__Event,
     NaAudio__EventBus__Publish
 } from '../01__AppCore/NaAudio__AppCore__EventBus__.mjs';
+import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
 
 // =============================================================================
 // REGION | Patch Graph
@@ -89,9 +110,9 @@ import {
     // ------------------------------------------------------------
     const CABLES  =  new Map();                                              // <-- CableId -> cable record
 
-    const SCRATCH_FROM   =  new THREE.Vector3();
-    const SCRATCH_TO     =  new THREE.Vector3();
-    const SCRATCH_FLASH  =  new THREE.Color();
+    const SCRATCH_FROM     =  new THREE.Vector3();
+    const SCRATCH_TO       =  new THREE.Vector3();
+    const SCRATCH_FLASH    =  new THREE.Color();
 
     let attachedSurface  =  null;
     let cableCounter     =  0;
@@ -109,9 +130,48 @@ import {
     export function NaAudio__PatchGraph__Attach(surface) {
         attachedSurface  =  surface;
 
-        NaAudio__Env3d__SceneManager__AddUpdateHook(surface, function () {
-            NaAudio__PatchGraph__UpdateAll();
+        NaAudio__Env3d__SceneManager__AddUpdateHook(surface, function (delta) {
+            NaAudio__PatchGraph__UpdateAll(delta);
         });
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Port Geometry
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The World Position of a Port Record
+    // ------------------------------------------------------------
+    // Resolved through the module rather than read off the socket mesh, because a
+    // module's hover lift moves the shell every frame and reading a stale world matrix
+    // would leave the leads a few centimetres behind the sockets they are plugged into.
+    export function NaAudio__PatchGraph__PortWorldPosition(port, out) {
+        const module  =  NaAudio__ModuleRegistry__Module(port.ModuleId);
+        if (!module) return (out || new THREE.Vector3()).set(0, 0, 0);
+
+        return (port.Kind === NaAudio__PortKind.Output)
+            ? ModuleBase.NaAudio__ModuleBase__OutputPortPosition(module, out)
+            : ModuleBase.NaAudio__ModuleBase__InputPortPosition(module, out);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Direction a Module's Port Faces
+    // ------------------------------------------------------------
+    // Falls back to the port's declared normal from the module's built ports, and to a
+    // sensible default for a module whose ports were never built - which happens if
+    // PortsVisible is turned off in config. A cable with no lead-out still draws; it just
+    // leaves the socket without the little straight run first.
+    function NaAudio__PatchGraph__PortNormal(module, kind, out) {
+        if (module.Ports) {
+            for (let i = 0; i < module.Ports.length; i++) {
+                if (module.Ports[i].Kind === kind) return out.copy(module.Ports[i].Normal);
+            }
+        }
+        return out.set(0, 0, kind === NaAudio__PortKind.Output ? 1 : -1);
     }
     // ------------------------------------------------------------
 
@@ -134,6 +194,45 @@ import {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Whether These Two Are Already Patched Together
+    // ------------------------------------------------------------
+    // Web Audio silently ignores a second connect() between the same pair of nodes, so a
+    // duplicate cable would draw, be listed, be disconnectable - and unplugging it would
+    // kill the audio for the original too. Refusing it up front is the only version that
+    // stays honest.
+    function NaAudio__PatchGraph__AlreadyPatched(fromModuleId, toModuleId) {
+        for (const cable of CABLES.values()) {
+            if (cable.FromModuleId === fromModuleId && cable.ToModuleId === toModuleId) return true;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Mint a Cable Id That Is Not Already In Use
+    // ------------------------------------------------------------
+    // The loop is the point. Ids come from two places - a space file supplies its own,
+    // and a hand-made patch gets a generated one - and the counter knows nothing about
+    // the file's.
+    //
+    // A space that names its cables CBL_0001 upward, which the demonstration space does,
+    // leaves the counter at zero. The first cable the user patches by hand is then
+    // generated as CBL_0001, and CABLES.set OVERWRITES the file's cable of that name:
+    // its lead stays in the scene with nothing owning it, its interaction handle stays
+    // registered, and its audio connection stays live with no record that it exists. The
+    // patch you can see and the patch you can hear part company, silently, on the first
+    // connection anybody makes.
+    function NaAudio__PatchGraph__NextCableId() {
+        let candidate;
+        do {
+            candidate  =  'CBL_' + String(++cableCounter).padStart(4, '0');
+        } while (CABLES.has(candidate));
+
+        return candidate;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Connect Two Modules With a Cable
     // ------------------------------------------------------------
     // definition:
@@ -151,6 +250,11 @@ import {
             return null;
         }
 
+        if (NaAudio__PatchGraph__AlreadyPatched(definition.FromModuleId, definition.ToModuleId)) {
+            console.warn('[NaAudio PatchGraph] "' + definition.FromModuleId + '" is already patched into "' + definition.ToModuleId + '". A second lead between the same pair would draw but carry nothing, because Web Audio ignores a repeated connection.');
+            return null;
+        }
+
         const signalType  =  definition.SignalType || NaAudio__SignalType.Audio;
         const maximum     =  SpatialNumber('PatchGraph', 'MaxCablesPerInput');
 
@@ -159,7 +263,15 @@ import {
             return null;
         }
 
-        const cableId  =  definition.CableId || ('CBL_' + String(++cableCounter).padStart(4, '0'));
+        // An explicit id that is already taken is refused rather than allowed to replace
+        // what is there, for the same reason the generator loops - a silently overwritten
+        // cable leaves its audio connected and its geometry orphaned.
+        if (definition.CableId && CABLES.has(definition.CableId)) {
+            console.error('[NaAudio PatchGraph] Cable id "' + definition.CableId + '" is already in this space. Ids must be unique within a space file.');
+            return null;
+        }
+
+        const cableId  =  definition.CableId || NaAudio__PatchGraph__NextCableId();
 
         // THE AUDIO HALF
         // Audio and sidechain cables are real connections. Modulation and trigger
@@ -183,7 +295,10 @@ import {
         ModuleBase.NaAudio__ModuleBase__OutputPortPosition(fromModule, SCRATCH_FROM);
         ModuleBase.NaAudio__ModuleBase__InputPortPosition(toModule, SCRATCH_TO);
 
-        const line  =  Lines.NaAudio__Env3d__LineFactory__BuildCable(SCRATCH_FROM, SCRATCH_TO, signalType);
+        const fromNormal  =  NaAudio__PatchGraph__PortNormal(fromModule, NaAudio__PortKind.Output, new THREE.Vector3());
+        const toNormal    =  NaAudio__PatchGraph__PortNormal(toModule,   NaAudio__PortKind.Input,  new THREE.Vector3());
+
+        const line  =  CableFactory.NaAudio__Env3d__CableFactory__Build(SCRATCH_FROM, SCRATCH_TO, fromNormal, toNormal, signalType);
         attachedSurface.Groups[NaAudio__Env3d__SceneGroup.PatchCables].add(line);
 
         const cable  =  {
@@ -194,9 +309,11 @@ import {
             TargetParameter : definition.TargetParameter || null,
             Depth           : (definition.Depth === undefined) ? 1.0 : definition.Depth,
             Line            : line,
+            Unregister      : null,
             IsAudioConnected: isConnected
         };
 
+        cable.Unregister  =  NaAudio__PatchGraph__RegisterCableHandle(cable);
         CABLES.set(cableId, cable);
 
         NaAudio__EventBus__Publish(NaAudio__Event.CableConnected, {
@@ -211,11 +328,42 @@ import {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Make a Cable Clickable in Wiring Mode
+    // ------------------------------------------------------------
+    // Unplugging is a click on the lead itself rather than a click on a socket, because
+    // a socket with three leads in it cannot say WHICH of them a click meant. The lead
+    // can, everywhere along its length.
+    function NaAudio__PatchGraph__RegisterCableHandle(cable) {
+        const tube  =  CableFactory.NaAudio__Env3d__CableFactory__TubeMesh(cable.Line);
+        if (!tube) return null;
+
+        return NaAudio__Env3d__Interaction__Register(tube, {
+            Kind     : NaAudio__Env3d__HandleKind.Click,
+            Cursor   : 'not-allowed',                                         // <-- Says 'this click removes something' before it is made
+            Data     : cable,
+
+            ClickModes : [NaAudio__Mode.Wiring],
+            DragModes  : [NaAudio__Mode.Wiring],
+
+            OnHover  : function (isHovered) {
+                CableFactory.NaAudio__Env3d__CableFactory__SetHovered(cable.Line, isHovered);
+            },
+
+            OnClick  : function () {
+                NaAudio__PatchGraph__Disconnect(cable.CableId);
+            }
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Disconnect a Cable
     // ------------------------------------------------------------
     export function NaAudio__PatchGraph__Disconnect(cableId) {
         const cable  =  CABLES.get(cableId);
         if (!cable) return;
+
+        if (cable.Unregister) cable.Unregister();
 
         if (cable.IsAudioConnected) {
             const fromModule  =  NaAudio__ModuleRegistry__Module(cable.FromModuleId);
@@ -226,8 +374,7 @@ import {
 
                 // Disconnecting one specific destination rather than calling
                 // disconnect() bare. The bare form drops EVERY connection from that
-                // output, which would silently unplug the module's master feed and
-                // every other cable leaving it.
+                // output, which would silently unplug every other cable leaving it.
                 try { if (input) fromModule.Bus.Output.disconnect(input); } catch (error) { /* already gone */ }
             }
         }
@@ -274,7 +421,7 @@ import {
 
     // SUB FUNCTION | Follow Endpoints, Show Signal, and Apply Modulation
     // ------------------------------------------------------------
-    function NaAudio__PatchGraph__UpdateAll() {
+    function NaAudio__PatchGraph__UpdateAll(delta) {
         if (CABLES.size === 0) return;
 
         const flowEnabled  =  SpatialBool('PatchGraph', 'CableFlowEnabled');
@@ -287,14 +434,17 @@ import {
 
             ModuleBase.NaAudio__ModuleBase__OutputPortPosition(fromModule, SCRATCH_FROM);
             ModuleBase.NaAudio__ModuleBase__InputPortPosition(toModule, SCRATCH_TO);
-            Lines.NaAudio__Env3d__LineFactory__UpdateCable(cable.Line, SCRATCH_FROM, SCRATCH_TO);
+
+            // delta rather than 0, so the slack spring runs and the lead swings behind a
+            // module being dragged instead of snapping to each new shape.
+            CableFactory.NaAudio__Env3d__CableFactory__Update(cable.Line, SCRATCH_FROM, SCRATCH_TO, delta);
 
             // MeterLevel was read once this frame by the module's own update, so a
             // module feeding three cables costs one analyser read rather than three.
             const level  =  fromModule.MeterLevel;
 
             if (flowEnabled) {
-                Lines.NaAudio__Env3d__LineFactory__SetCableLevel(cable.Line, level, SCRATCH_FLASH);
+                CableFactory.NaAudio__Env3d__CableFactory__SetLevel(cable.Line, level, SCRATCH_FLASH);
             }
 
             if (cable.SignalType === NaAudio__SignalType.Modulation && cable.TargetParameter) {
@@ -347,7 +497,27 @@ import {
             if (cable) connected.push(cable);
         }
 
+        // The one check that catches a space file nobody can hear. Everything else about
+        // a broken patch is visible - a lead going nowhere is a lead going nowhere - but
+        // a space with no route to the output post at all looks completely normal and is
+        // completely silent, which is the single worst failure this format can have.
+        if (connected.length > 0 && !NaAudio__PatchGraph__HasRouteToOutput()) {
+            console.warn('[NaAudio PatchGraph] No cable in this space reaches an OutputPost, so nothing will be audible. A module bus does not connect itself to the master any more - the post is the only way out.');
+        }
+
         return connected;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether Anything Is Patched Into an Output Post
+    // ------------------------------------------------------------
+    function NaAudio__PatchGraph__HasRouteToOutput() {
+        for (const cable of CABLES.values()) {
+            const toModule  =  NaAudio__ModuleRegistry__Module(cable.ToModuleId);
+            if (toModule && toModule.Defaults && toModule.Defaults.IsMasterOutput === true) return true;
+        }
+        return false;
     }
     // ------------------------------------------------------------
 

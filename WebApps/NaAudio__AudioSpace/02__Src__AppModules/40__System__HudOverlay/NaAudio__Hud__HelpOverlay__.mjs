@@ -10,9 +10,9 @@
    CREATED    : 08-Aug-2026
 
    DESCRIPTION:
-   - A dismissible card covering the two modes, navigation, the shortcuts, the three
-     demonstration modules and the sequencer control bank, plus an honest statement of
-     what is and is not built.
+   - A dismissible card covering the three modes, navigation, the shortcuts, the three
+     demonstration modules, the sequencer control bank and the wiring system, plus an
+     honest statement of what is and is not built.
    - Opens once on a first visit and thereafter only when asked, via the question mark
      button or the H key.
 
@@ -44,8 +44,18 @@
 
     const MODE_ROWS  =  [
         ['Play',        'Work the controls. Steps, faces, knobs and sliders are all live, and modules are pinned where they stand so a control drag can never move one.'],
-        ['Build',       'Arrange the space. Drag any module pad to reposition it, and every control on every module is frozen - a stray click cannot alter a pattern you have already programmed.'],
-        ['Which is on', 'The coloured rule across the top edge, the switch beneath it, and the pointer cursor. Blue is Build, green is Play.']
+        ['Build',       'Arrange the space. Drag any module pad to reposition it, and every control and cable is frozen - a stray click cannot alter a pattern you have already programmed.'],
+        ['Wiring',      'Patch the signal. Modules are pinned and every control is frozen; the sockets and the leads are the only live things in the scene.'],
+        ['Which is on', 'The coloured rule across the top edge, the switch beneath it, and the pointer cursor. Blue is Build, green is Play, ochre is Wiring.']
+    ];
+
+    const WIRING_ROWS  =  [
+        ['The output post', 'The tapered post at the centre is the way out of the space. Anything with a path of leads into it is audible; anything without one is silent, however loud it is. The column on top is the master meter.'],
+        ['Sockets',         'Green is an input, terracotta is an output. Every instrument has one of each. They are always visible and come forward in Wiring mode.'],
+        ['Patching',        'Drag from a socket to a socket. Either direction - the lead sorts out which way the signal runs. Or click one socket, move, and click the second, which is easier across a long span.'],
+        ['Unplugging',      'Click the lead itself, anywhere along its length. A socket with three leads in it cannot say which one a click meant; the lead can.'],
+        ['Series, parallel','Two instruments straight into the post are heard dry, side by side. One into an effect and the effect into the post is heard only processed. Nothing enforces either - they are just what the leads do.'],
+        ['Escape',          'Drops a lead you are holding.']
     ];
 
     const NAVIGATION_ROWS  =  [
@@ -54,11 +64,13 @@
         ['Zoom',             'Scroll wheel'],
         ['Select a module',  'Click its pad, in either mode'],
         ['Move a module',    'Drag its pad, in Build mode only'],
-        ['Clear selection',  'Click the floor']
+        ['Clear selection',  'Click the floor'],
+        ['Patch two modules','Drag socket to socket, in Wiring mode only'],
+        ['Unplug a lead',    'Click the lead, in Wiring mode only']
     ];
 
     const SHORTCUT_ROWS  =  [
-        ['Tab',     'Switch between Build and Play'],
+        ['Tab',     'Step through Build, Play and Wiring. Shift+Tab steps back'],
         ['Space',   'Start and stop the transport'],
         ['1 to 4',  'Fly to overview, plan, eye level, wide stage'],
         ['F',       'Frame the selected module'],
@@ -83,16 +95,20 @@
 
     const BUILT_ROWS  =  [
         'The 3D environment, lighting, camera and pointer interaction',
-        'Build and Play modes, gating every handle in the scene',
+        'Build, Play and Wiring modes, gating every handle in the scene',
+        'A ground field that forms soft islands under clusters of modules',
+        'Hand patching - sockets on every module, leads you drag, and one output post',
         'A lookahead audio scheduler with sample playback and voice management',
         'Three spatial modules, working, from the design manifest',
         'The sequencer control bank - cycle, feel, wobble, chance and kit',
-        'Patch cables that are the routing rather than a picture of it',
+        'Patch cables that are the routing rather than a picture of it, as leads with plugs and sprung slack',
         'The working and locked module states, with real CPU and audio consequences',
         'A catalogued starter sample bank, loops and impulse responses'
     ];
 
     const NOT_BUILT_ROWS  =  [
+        'Wiring utilities - splitters, mergers, switchboards, sends and returns. The socket and lead system was built with them in mind, and none of them exist yet.',
+        'Grouping. The ground field already carries a colour per source that nothing reads, so a group tinting its own island is close - but there is no way to make a group.',
         'The four synthesis engines - ChaosEngine, ContemplationEngine, FluxEngine, HarmonyEngine. CubeMod currently drives a small stand-in voice.',
         'The wider effect and modulator set - WaveFold, FractalEcho, DimensionMatrix, GravityMix and the rest. Deliberately absent rather than stubbed out.',
         'Per-step velocity on the sequencer. The step blocks are sized from a velocity value that is wired through and currently pinned at full for every step - there is no gesture to change it yet.',
@@ -208,20 +224,21 @@
 
         const intro  =  document.createElement('p');
         intro.className    =  'NaAudio__Help__Intro';
-        intro.textContent  =  'A spatial environment for building a piece of music as a place rather than as a list of tracks. Everything you can see is a control, and everything that makes a sound is somewhere.';
+        intro.textContent  =  'A spatial environment for building a piece of music as a place rather than as a list of tracks. Everything you can see is a control, everything that makes a sound is somewhere, and the ground only exists where the music does.';
         card.appendChild(intro);
 
         const columns  =  document.createElement('div');
         columns.className  =  'NaAudio__Help__Columns';
 
         const left  =  document.createElement('div');
-        left.appendChild(NaAudio__HelpOverlay__Section('Two modes',  MODE_ROWS,       false));
+        left.appendChild(NaAudio__HelpOverlay__Section('Three modes', MODE_ROWS,       false));
         left.appendChild(NaAudio__HelpOverlay__Section('Navigation', NAVIGATION_ROWS, false));
         left.appendChild(NaAudio__HelpOverlay__Section('Keyboard',   SHORTCUT_ROWS,   true));
 
         const right  =  document.createElement('div');
         right.appendChild(NaAudio__HelpOverlay__Section('The three modules',           MODULE_ROWS,    false));
         right.appendChild(NaAudio__HelpOverlay__Section('The sequencer control bank',  SEQUENCER_ROWS, false));
+        right.appendChild(NaAudio__HelpOverlay__Section('Signal and wiring',            WIRING_ROWS,    false));
 
         columns.appendChild(left);
         columns.appendChild(right);

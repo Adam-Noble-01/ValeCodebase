@@ -82,11 +82,14 @@ import {
 
     // MODULE VARIABLES | Registry and Pointer State
     // ------------------------------------------------------------
-    const HANDLES  =  new Map();                                             // <-- Object3D uuid -> handle record
+    const HANDLES             =  new Map();                                  // <-- Object3D uuid -> handle record
+    const POINTER_MOVE_HOOKS  =  [];                                         // <-- Called on every move, drag or not
 
     const RAYCASTER      =  new THREE.Raycaster();
     const POINTER_NDC    =  new THREE.Vector2();
     const DRAG_PLANE     =  new THREE.Plane();
+    const HEIGHT_PLANE   =  new THREE.Plane();
+    const HEIGHT_PLANE_NORMAL  =  new THREE.Vector3(0, 1, 0);
     const SCRATCH_HIT    =  new THREE.Vector3();
     const SCRATCH_START   = new THREE.Vector3();
     const SCRATCH_NORMAL  = new THREE.Vector3();
@@ -248,6 +251,57 @@ import {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The Live Handle Under the Pointer Right Now
+    // ------------------------------------------------------------
+    // Exposed for one specific job: resolving what a drag was DROPPED on. The pointer
+    // handlers cannot answer that themselves, because a drag ends with a pointerup whose
+    // whole purpose is that the pointer is no longer over the thing it grabbed.
+    //
+    // The wiring controller uses it to decide whether a lead landed in a socket. Mode
+    // filtering applies exactly as it does to any other pick, so a drop onto something
+    // inert in the current mode reads as a drop onto nothing - which is correct.
+    export function NaAudio__Env3d__Interaction__HandleUnderPointer() {
+        const picked  =  NaAudio__Env3d__Interaction__PickHandle();
+        return picked ? picked.Handle : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Add a Hook Called on Every Pointer Move
+    // ------------------------------------------------------------
+    // Fires on every move, INCLUDING during a drag and including moves the hover
+    // throttle skips. That is the point: a hook here is for something that has to track
+    // the pointer continuously - the ghost cable stretching from a socket to the hand -
+    // and a throttled or drag-suppressed version of that visibly stutters.
+    //
+    // Hooks are handed the ground-plane point at a height they choose, not the raw
+    // event, so nothing outside this file has to know how a screen position becomes a
+    // world one.
+    export function NaAudio__Env3d__Interaction__AddPointerMoveHook(hook) {
+        POINTER_MOVE_HOOKS.push(hook);
+
+        return function NaAudio__Env3d__Interaction__RemovePointerMoveHook() {
+            const index  =  POINTER_MOVE_HOOKS.indexOf(hook);
+            if (index >= 0) POINTER_MOVE_HOOKS.splice(index, 1);
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Raycast the Pointer Onto a Horizontal Plane at a Given Height
+    // ------------------------------------------------------------
+    // Used by the wiring controller to place the loose end of a lead at socket height
+    // rather than on the floor. A lead that drops to the ground between clicks reads as
+    // dropped rather than as held.
+    export function NaAudio__Env3d__Interaction__PointerAtHeight(height, out) {
+        HEIGHT_PLANE.set(HEIGHT_PLANE_NORMAL, -height);
+
+        RAYCASTER.setFromCamera(POINTER_NDC, attachedSurface.Camera);
+        return RAYCASTER.ray.intersectPlane(HEIGHT_PLANE, out || new THREE.Vector3());
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Raycast the Pointer Onto the Ground Plane
     // ------------------------------------------------------------
     // Exposed because the HUD's add-module flow needs a ground point without going
@@ -324,6 +378,12 @@ import {
     // ------------------------------------------------------------
     function NaAudio__Env3d__Interaction__OnPointerMove(event) {
         NaAudio__Env3d__Interaction__UpdatePointer(event);
+
+        // Run before the drag branch returns, so a hook tracking the pointer keeps
+        // tracking it while something is being dragged.
+        for (let i = 0; i < POINTER_MOVE_HOOKS.length; i++) {
+            POINTER_MOVE_HOOKS[i]();
+        }
 
         if (activeDrag) {
             NaAudio__Env3d__Interaction__AdvanceDrag();

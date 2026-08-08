@@ -1,6 +1,6 @@
 # AudioSPACE
 
-**Spatial Music Production Environment** — v0.2.0, Environment Prototype
+**Spatial Music Production Environment** — v0.3.0, Environment Prototype
 
 A 3D environment for building a piece of music as a *place* rather than as a list of
 tracks. Everything you can see is a control; everything that makes a sound is somewhere.
@@ -25,21 +25,22 @@ Port **8010** is reserved for AudioSPACE. 8001–8006 belong to the sibling Vale
 
 ---
 
-## Build and Play
+## Build, Play and Wiring
 
-The space has two modes and is never in neither. **Tab** switches; the coloured rule across
-the top edge and the switch beneath it say which is on.
+The space has three modes and is never in none of them. **Tab** steps forward, **Shift+Tab**
+steps back; the coloured rule across the top edge and the switch beneath it say which is on.
 
-| | **Play** *(default)* | **Build** |
-|---|---|---|
-| Module controls | live | frozen |
-| Module pads | pinned | draggable |
-| Floor grid | quiet | emphasised |
+| | **Play** *(default)* | **Build** | **Wiring** |
+|---|---|---|---|
+| Module controls | live | frozen | frozen |
+| Module pads | pinned | draggable | pinned |
+| Sockets and leads | inert | inert | live |
+| Floor grid | quiet | emphasised | quiet |
 
-The reason is a failure mode rather than a feature: a control and a module occupy the same
-pixels, so reaching to move a sequencer and reprogramming its pattern instead is a single
-gesture — one with no undo and no visible symptom. Separating the two makes that
-impossible in either direction.
+The reason is a failure mode rather than a feature: a control, a pad and a socket occupy
+the same few centimetres, so reaching to move a sequencer and reprogramming its pattern
+instead is a single gesture — one with no undo and no visible symptom. Separating them
+makes that impossible in every direction.
 
 It is enforced in one place. Every interaction handle carries `ClickModes` and `DragModes`,
 and `NaAudio__Env3d__Interaction` refuses to pick a handle whose modes exclude the current
@@ -50,6 +51,90 @@ makes dragging a densely-covered module possible at all.
 Mode is not a HUD concern that modules consult. `NaAudio__AppCore__ModeManager` is the
 authority, it publishes `ModeChanged` on the bus, and the HUD indicator is just another
 subscriber.
+
+---
+
+## The ground is a field, not a floor
+
+The floor only exists where the music does. Every module contributes a soft circular
+influence to a scalar field, the influences **sum**, and ground appears where the sum
+clears a threshold. Everything else fades to the background paper.
+
+Because they sum, neighbouring modules **merge**. Three modules in a triangle produce one
+triangular island with soft edges rather than three discs — the middle fills in even though
+no single module reaches that far. Zoomed out, a space reads as clusters of activity
+separated by empty paper, and the shape of each island says something about the
+arrangement that made it.
+
+It reshapes continuously while a module is dragged, because the field is evaluated per
+fragment per frame and there is no geometry to rebuild.
+
+`NaAudio__Env3d__GroundField` injects this into the **stock** floor and grid materials with
+`onBeforeCompile`, immediately after the fog chunk. Two things about that are load-bearing:
+
+- **Stock materials, not a `ShaderMaterial`.** The floor receives the one shadow the rig
+  casts, and a hand-written material would have to reimplement shadow receiving, fog and
+  tone mapping to keep it.
+- **After the fog chunk.** By then the fragment is in output colour space, which is where
+  the fog colour and the scene background already live — so the void is indistinguishable
+  from empty scene. Mixing earlier tone-maps the void and every island grows a visible rim.
+
+The GLSL identifiers use **single** underscores. It is the one place the `NaAudio__`
+convention is broken, because GLSL ES reserves `__` and the compiler rejects it outright.
+
+Sources already carry a pigment that nothing reads. That is where group tinting will go.
+
+---
+
+## Nothing reaches the speakers except through a cable
+
+A module bus no longer connects itself to the master. The only way out of the space is a
+lead into the **Output Post** — the tapered post at the centre, whose audio input *is* the
+master bus, and whose column is the master meter.
+
+So an unpatched module makes its sound into nothing, exactly like a synth on a desk with no
+lead in it, and "audible" becomes a property you can see. Series and parallel stop being
+concepts and become what the leads happen to do: two instruments into the post are heard
+dry side by side; one into an effect and the effect into the post is heard only processed.
+
+Measured, not assumed — master peak with the demo patch intact **0.885**, with the post's
+leads pulled **0.000**, repatched **0.751**.
+
+The cost is that a newly added module is silent until it is patched. That is unfamiliar for
+about ten seconds and then obviously right.
+
+`NaAudio__PatchGraph__LoadFromSpace` warns if a space file has no route to any post at all —
+the one broken patch that looks completely normal and is completely silent.
+
+---
+
+## Sockets and leads
+
+Every module carries an input socket and an output socket, built by the framework beside the
+pad and the cage. Green in, terracotta out. They stay visible in every mode and come forward
+in Wiring.
+
+A lead is a swept tube along a cubic Bezier with a moulded plug at each end. Three details
+do the work:
+
+- **It leaves along the socket's own axis** before it droops. Without that a lead emerges
+  sideways from a socket, which nothing physical does, and the patch reads as a diagram no
+  matter how round the tube is.
+- **Its slack is a spring**, so dragging a module swings the leads and they settle after.
+  That is the difference between a cable that moves and a cable that is redrawn.
+- **Parallel transport, not a Frenet frame.** A Frenet normal flips through an inflection
+  point and a sagging lead has one in the middle, which shows up as the tube twisting once
+  per drag.
+
+The tube is written by hand into a preallocated buffer rather than through
+`THREE.TubeGeometry`, which allocates a new geometry and a `Vector3` per sample point per
+call — a dragged module with three leads would produce a few hundred throwaway geometries a
+second.
+
+**Patching**: drag socket to socket in either direction; the controller resolves which way
+the signal runs. Or click one socket and click the second — the same state machine, so
+there is only ever one way to be half-patched. **Unplugging** is a click on the lead itself,
+because a socket with three leads in it cannot say which one a click meant.
 
 ---
 
@@ -97,8 +182,11 @@ because the thing renders convincingly enough to be mistaken for more than it is
 - The 3D space — renderer, camera rig with preset views and fly-to focus, lighting,
   ground stage, backdrop composition, pointer interaction with hover, click and three
   kinds of drag
-- **Build and Play modes**, gating every handle in the scene rather than every module
-  checking for itself
+- **Build, Play and Wiring modes**, gating every handle in the scene rather than every
+  module checking for itself
+- **A ground field** that forms soft merging islands under clusters of modules
+- **Hand patching** — visible sockets, leads you drag between them, and one Output Post
+  that decides what is audible
 - A **lookahead audio scheduler** on the audio clock, with sample playback, a hard voice
   cap and voice stealing
 - **Three spatial modules from the manifest**, real and audible:
@@ -108,7 +196,8 @@ because the thing renders convincingly enough to be mistaken for more than it is
     small synth voice
   - **DelayCloud** — an enclosure whose dimensions *are* the delay and reverb parameters,
     with bouncing spheres that trigger taps
-- **Patch cables** that are the routing, not a picture of it
+- **Patch cables** that are the routing, not a picture of it — swept tubes with plugs and
+  sprung slack
 - The **working / locked dual state**, with real CPU and audio consequences
 - A catalogued starter bank — 86 samples across 7 kits, 9 loops, 10 impulse responses
 
@@ -121,6 +210,13 @@ everyone including its author six months later.
   CubeMod drives a stand-in voice whose *parameter names* are chosen to survive the swap.
 - The wider effect and modulator set: WaveFold, FractalEcho, DimensionMatrix, GravityMix,
   PulseField, HarmonicCloud, SoundFabric and the rest.
+- **Wiring utilities** — splitters, mergers, switchboards, sends and returns. The socket and
+  lead system was built to carry them; none of them exist yet.
+- **Grouping.** The ground field already carries a pigment per source that nothing reads, so
+  a group tinting its own island is a short step — but there is no way to make a group.
+- **Pass-through ports.** The port record already carries its own kind, normal and offset,
+  so a third kind is a table entry rather than a rewrite. Adding it now, unused, would mean
+  guessing its semantics from nothing.
 - **Per-step velocity.** The sequencer sizes its step blocks from a velocity value that is
   wired end to end and pinned at full — `StepVelocitySizeMin/Max` are already in the config
   and already applied. What is missing is the gesture that sets it.
@@ -149,14 +245,17 @@ NaAudio__AudioSpace/
 │   ├── 03__AppUtils/                          ConfigAccess, MusicalMaths, SeededRandom
 │   ├── 05__Env3d__ThreeRenderPipeline/        scene, camera, lighting, materials, shapes,
 │   │                                          lines, labels, interaction, palette,
-│   │                                          ControlFactory (3D sliders and buttons)
+│   │                                          ControlFactory (3D sliders and buttons),
+│   │                                          GroundField, CableFactory
 │   ├── 10__Audio__WebAudioEngine/             AudioHost, Transport, SamplePlayer,
 │   │                                          SynthVoice, EffectRack
 │   ├── 15__Audio__SampleLibraryLoader/        catalogue queries and the decode cache
-│   ├── 20__System__SpatialModuleFramework/    ModuleBase, ModuleRegistry, LockState, PatchGraph
+│   ├── 20__System__SpatialModuleFramework/    ModuleBase, ModuleRegistry, LockState,
+│   │                                          PatchGraph, PortFactory, WiringController
 │   ├── 25__Module__CircularSequencer/
 │   ├── 26__Module__CubeMod/
 │   ├── 27__Module__DelayCloud/
+│   ├── 28__Module__OutputPost/                the one way out of the space
 │   └── 40__System__HudOverlay/                BootGate, TransportBar, ModeIndicator,
 │                                              Inspector, Help, Diagnostics
 ├── 03__Style__AppStylesheets/                 one index, @importing module-local sheets
@@ -244,6 +343,10 @@ The ones worth reading first:
 | `NaAudio__AppCore__ModeManager__.mjs` | Why the mode is core rather than HUD state, and why Play is the default |
 | `NaAudio__Hud__ModeIndicator__.mjs` | Why the mode is stated three times over in an otherwise deliberately quiet interface |
 | `NaAudio__Module__CircularSequencer__.mjs` | The grid templates, and the draw order that keeps wobble stable as depth rises |
+| `NaAudio__Env3d__GroundField__.mjs` | Why islands sum rather than being drawn, and why the injection sits after the fog chunk |
+| `NaAudio__Env3d__CableFactory__.mjs` | Why a lead leaves along the socket normal, and why the frame is parallel-transported |
+| `NaAudio__Spatial__WiringController__.mjs` | Why one state machine serves both patching gestures, and why the drop target is resolved rather than passed in |
+| `NaAudio__Module__OutputPost__.mjs` | Why the master output is an object standing in the space |
 | `NaAudio__Hud__ModuleInspector__.mjs` | Why the inspector exposes no parameters at all |
 
 ---

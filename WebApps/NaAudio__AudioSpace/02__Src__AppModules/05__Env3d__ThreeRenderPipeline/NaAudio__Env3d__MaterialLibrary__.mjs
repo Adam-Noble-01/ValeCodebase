@@ -282,6 +282,30 @@ import * as Palette                      from './NaAudio__Env3d__PaletteLibrary_
     // ------------------------------------------------------------
 
 
+    // FUNCTION | An Owned Flat Floor Marker Material
+    // ------------------------------------------------------------
+    // The same thing, for a mark that changes its own opacity - the output post's collar
+    // brightens when the post is selected.
+    //
+    // Not a clone of the shared one. Material.copy deep-copies userData, so a clone
+    // arrives carrying the NaAudio__Shared stamp and the scene manager then refuses to
+    // dispose it for the rest of the session. Building it fresh is one line and leaks
+    // nothing.
+    export function NaAudio__Materials__OwnedFlatMarker(colourName, opacity) {
+        const alpha  =  (opacity === undefined) ? 1.0 : opacity;
+
+        const material  =  new THREE.MeshBasicMaterial({
+            color       : Palette.NaAudio__Palette__Resolve(colourName).clone(),
+            transparent : true,
+            opacity     : alpha,
+            side        : THREE.DoubleSide
+        });
+
+        return NaAudio__Materials__EnforceMatte(material, false);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | A Thin Linework Material
     // ------------------------------------------------------------
     export function NaAudio__Materials__Line(inkKey, opacity) {
@@ -315,14 +339,67 @@ import * as Palette                      from './NaAudio__Env3d__PaletteLibrary_
 
     // FUNCTION | A Patch Cable Material
     // ------------------------------------------------------------
-    // Owned: each cable brightens independently as signal flows down it.
+    // Owned: each cable brightens independently as signal flows down it, and lights its
+    // own emissive when hovered in wiring mode.
+    //
+    // A lit MeshStandardMaterial rather than the LineBasicMaterial this used to be. A
+    // cable is now a swept tube, and an unlit tube is a flat coloured worm - it is the
+    // shading across the barrel that makes it read as round, which is the entire reason
+    // for having built a tube instead of a line. Opaque for the same reason: a
+    // transparent cable shows the module behind it through its own body and immediately
+    // stops looking like an object.
     export function NaAudio__Materials__OwnedCable(signalType) {
         const colour  =  Palette.NaAudio__Palette__SignalTypeColour(signalType, 'Base');
 
-        const material  =  new THREE.LineBasicMaterial({
+        const material  =  new THREE.MeshStandardMaterial({
+            color     : colour.clone(),
+            emissive  : new THREE.Color(0, 0, 0),
+            roughness : Env3dNumber('Materials', 'CableRoughness'),
+            metalness : 0.0
+        });
+
+        material.userData.NaAudio__BaseColour  =  colour.clone();
+        return NaAudio__Materials__EnforceMatte(material, false);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Cable Plug Material
+    // ------------------------------------------------------------
+    // Owned rather than shared, only so it can be disposed alongside its cable without
+    // the scene manager needing to know that plugs are a special case. Two plugs share
+    // one instance within a cable, which is the granularity that actually matters.
+    export function NaAudio__Materials__OwnedPlug() {
+        const material  =  new THREE.MeshStandardMaterial({
+            color     : Palette.NaAudio__Palette__Ink('Ink').clone(),
+            roughness : Env3dNumber('Materials', 'PlugRoughness'),
+            metalness : 0.0
+        });
+
+        return NaAudio__Materials__EnforceMatte(material, false);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Module Port Material
+    // ------------------------------------------------------------
+    // Owned, because a port brightens on hover and dims out of wiring mode - the two
+    // things a shared material cannot do per instance.
+    //
+    // The pigments are the palette's own muted green and terracotta rather than a signal
+    // green and red. A saturated pair of indicator colours would be the only thing in the
+    // space shouting, and the ports are already the only pickable objects in wiring mode
+    // so they have nothing to compete with.
+    export function NaAudio__Materials__OwnedPort(pigmentKey) {
+        const colour  =  Palette.NaAudio__Palette__Pigment(pigmentKey, 'Deep');
+
+        const material  =  new THREE.MeshStandardMaterial({
             color       : colour.clone(),
+            emissive    : new THREE.Color(0, 0, 0),
+            roughness   : Env3dNumber('Materials', 'BodyRoughness'),
+            metalness   : 0.0,
             transparent : true,
-            opacity     : 0.86
+            opacity     : 1.0
         });
 
         material.userData.NaAudio__BaseColour  =  colour.clone();

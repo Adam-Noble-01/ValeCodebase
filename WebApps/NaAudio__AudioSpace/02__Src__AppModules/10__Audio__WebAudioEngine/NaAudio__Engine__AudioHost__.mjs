@@ -35,7 +35,11 @@
 
    THE MASTER CHAIN, AND WHY THE LIMITER IS NOT OPTIONAL
 
-       module outputs -> MasterGain -> Limiter -> AnalyserTap -> destination
+       OutputPost input -> MasterGain -> Limiter -> AnalyserTap -> destination
+
+   Note the first link. Module buses do NOT connect here on creation - they reach the
+   master only through a patch cable into an Output Post, whose AudioInput returns
+   MasterGain itself. See CreateModuleBus for why that trade is worth making.
 
    MasterGain sits well below unity. This is headroom, not loudness: a dozen sample
    voices and three synth voices summing at unity clips instantly, and clipping in a
@@ -249,6 +253,21 @@ import {
     // Every spatial module gets one of these. It is what the lock state silences and
     // what a patch cable's meter reads, so a module never has to expose its internal
     // graph to have either of those things work.
+    //
+    // IT IS NOT CONNECTED TO ANYTHING.
+    //
+    // It used to connect straight to the master, which made every module audible the
+    // instant it existed. Convenient, and it made the signal flow a lie: the cables
+    // described part of the routing and an invisible rule described the rest, so a lead
+    // followed by eye explained nothing about what you were hearing.
+    //
+    // Now the only route out is a cable into an Output Post, whose audio input IS the
+    // master. An unpatched module makes its sound into nothing - exactly like a synth on
+    // a desk with no lead in it - and 'audible' becomes a property you can see.
+    //
+    // The analyser tap is still wired, because a module's meter has to work whether or
+    // not anybody has patched it yet. Watching an unconnected module's own level rise is
+    // often how the user works out that the sound is fine and the patch is not.
     export function NaAudio__AudioHost__CreateModuleBus(level) {
         const context  =  NaAudio__AudioHost__RequireContext('CreateModuleBus()');
 
@@ -260,7 +279,6 @@ import {
         analyser.smoothingTimeConstant  =  AudioNumber('Metering', 'AnalyserSmoothing');
 
         output.connect(analyser);                                             // <-- Tap in parallel; the analyser is not in the audio path
-        output.connect(masterGain);
 
         return {
             Output       : output,

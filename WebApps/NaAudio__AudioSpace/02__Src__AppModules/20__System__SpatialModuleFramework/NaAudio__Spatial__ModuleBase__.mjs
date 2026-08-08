@@ -72,13 +72,17 @@ import {
 import * as AudioHost                  from '../10__Audio__WebAudioEngine/NaAudio__Engine__AudioHost__.mjs';
 import {
     NaAudio__Event,
-    NaAudio__EventBus__Publish
+    NaAudio__EventBus__Publish,
+    NaAudio__EventBus__Subscribe
 } from '../01__AppCore/NaAudio__AppCore__EventBus__.mjs';
 import { NaAudio__MusicalMaths__Clamp }  from '../03__AppUtils/NaAudio__AppUtils__MusicalMaths__.mjs';
 import {
     NaAudio__Mode,
-    NaAudio__Mode__Both
+    NaAudio__Mode__All,
+    NaAudio__ModeManager__IsWiring
 } from '../01__AppCore/NaAudio__AppCore__ModeManager__.mjs';
+import * as GroundField  from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__GroundField__.mjs';
+import * as PortFactory  from './NaAudio__Spatial__PortFactory__.mjs';
 
 // =============================================================================
 // REGION | Module Base
@@ -196,6 +200,8 @@ import {
             SelectionRing: null,
             Label        : null,
 
+            Ports        : null,                                              // <-- Input and output sockets, built on Attach
+
             Bus          : null,                                              // <-- Audio output bus, built on Attach
             MeterLevel   : 0,
 
@@ -245,7 +251,7 @@ import {
     // Separate from Create because the shell can be built before the audio context is
     // unlocked - the space is visible behind the boot gate - but no audio node can be
     // constructed until the user has supplied the gesture.
-    export function NaAudio__ModuleBase__Attach(module, onSelect) {
+    export function NaAudio__ModuleBase__Attach(module, onSelect, portHooks) {
         module.Bus  =  AudioHost.NaAudio__AudioHost__CreateModuleBus(1.0);
 
         if (module.Type && typeof module.Type.Build === 'function') {
@@ -253,6 +259,18 @@ import {
         }
 
         NaAudio__ModuleBase__RegisterPlacementHandle(module, onSelect);
+        PortFactory.NaAudio__PortFactory__Build(module, portHooks);
+        NaAudio__ModuleBase__RegisterGroundInfluence(module);
+
+        // Ports follow the mode for the life of the module, so the subscription is torn
+        // down with it. A module removed from the space while its handler is still on the
+        // bus keeps being told about mode changes forever, and answers by writing to
+        // materials that have already been disposed.
+        module.Unregisters.push(NaAudio__EventBus__Subscribe(NaAudio__Event.ModeChanged, function () {
+            PortFactory.NaAudio__PortFactory__ApplyModePresence(module, NaAudio__ModeManager__IsWiring());
+        }));
+        PortFactory.NaAudio__PortFactory__ApplyModePresence(module, NaAudio__ModeManager__IsWiring());
+
         NaAudio__ModuleBase__ApplyPresentation(module, 1.0);                   // <-- Snap to the declared initial state rather than animating into it
 
         NaAudio__EventBus__Publish(NaAudio__Event.ModuleAdded, {
@@ -261,6 +279,32 @@ import {
         });
 
         return module;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Give the Module an Island of Ground Under It
+    // ------------------------------------------------------------
+    // The live position vector is handed over by reference, so the island follows the
+    // module for the rest of its life without a single push from the drag code. That is
+    // the whole reason the field takes a reference rather than a copy - a module being
+    // dragged has enough to do.
+    //
+    // Radius scales with the module's own footprint and with an optional per-type factor,
+    // so a DelayCloud that spreads across three metres is not standing on the same patch
+    // of ground as a control the size of a plate.
+    function NaAudio__ModuleBase__RegisterGroundInfluence(module) {
+        if (!GroundField.NaAudio__Env3d__GroundField__IsEnabled()) return;
+
+        const factor   =  (module.Defaults && typeof module.Defaults.FieldRadiusFactor === 'number')
+            ? module.Defaults.FieldRadiusFactor
+            : 1.0;
+
+        const footprint  =  Math.max(module.CageSize.x, module.CageSize.z);
+        const radius     =  footprint * SpatialNumber('GroundField', 'RadiusFromFootprint') * factor
+                          + SpatialNumber('GroundField', 'RadiusPadding');
+
+        GroundField.NaAudio__Env3d__GroundField__SetSource(module.ModuleId, module.Position, radius, null);
     }
     // ------------------------------------------------------------
 
@@ -278,10 +322,10 @@ import {
             ModuleId : module.ModuleId,
             Cursor   : 'grab',
 
-            // Selectable in either mode so the inspector is always reachable, but
-            // MOVABLE only in Build. This asymmetry is the reason the interaction layer
-            // keeps click modes and drag modes as separate lists.
-            ClickModes : NaAudio__Mode__Both,
+            // Selectable in every mode so the inspector is always reachable, but MOVABLE
+            // only in Build. This asymmetry is the reason the interaction layer keeps
+            // click modes and drag modes as separate lists.
+            ClickModes : NaAudio__Mode__All,
             DragModes  : [NaAudio__Mode.Build],
 
             OnHover  : function (isHovered) {
@@ -588,17 +632,18 @@ import {
 
     // FUNCTION | The World Position of a Module's Output Port
     // ------------------------------------------------------------
-    // Ports are not modelled as objects, only as positions. A visible socket on the
-    // side of every module is a lot of geometry for something a cable already makes
-    // obvious by arriving there, and the manifest's routing is meant to read as flexible
-    // leads between devices rather than as a patch bay.
+    // Both of these compose the SAME local offset the port factory used to place the
+    // socket mesh with the module's live position. That is the whole trick: a lead can
+    // never be drawn to a point the socket is not at, because there is one function that
+    // decides where a socket goes and both callers go through it.
+    //
+    // Position rather than the socket's world matrix, because the hover lift moves the
+    // shell every frame and a matrix read here would be one frame stale - which shows up
+    // as the leads detaching slightly whenever the pointer crosses a module.
     export function NaAudio__ModuleBase__OutputPortPosition(module, out) {
-        const standoff  =  SpatialNumber('PatchGraph', 'PortStandoff');
-        return (out || new THREE.Vector3()).set(
-            module.Position.x,
-            module.Position.y + module.CageSize.y * 0.5,
-            module.Position.z + module.CageSize.z * 0.5 + standoff
-        );
+        const target  =  out || new THREE.Vector3();
+        PortFactory.NaAudio__PortFactory__Offset(module, 'output', target);
+        return target.add(module.Position);
     }
     // ------------------------------------------------------------
 
@@ -606,12 +651,9 @@ import {
     // FUNCTION | The World Position of a Module's Input Port
     // ------------------------------------------------------------
     export function NaAudio__ModuleBase__InputPortPosition(module, out) {
-        const standoff  =  SpatialNumber('PatchGraph', 'PortStandoff');
-        return (out || new THREE.Vector3()).set(
-            module.Position.x,
-            module.Position.y + module.CageSize.y * 0.5,
-            module.Position.z - module.CageSize.z * 0.5 - standoff
-        );
+        const target  =  out || new THREE.Vector3();
+        PortFactory.NaAudio__PortFactory__Offset(module, 'input', target);
+        return target.add(module.Position);
     }
     // ------------------------------------------------------------
 
@@ -625,6 +667,8 @@ import {
     // FUNCTION | Dispose a Module and Everything It Owns
     // ------------------------------------------------------------
     export function NaAudio__ModuleBase__Dispose(module) {
+        GroundField.NaAudio__Env3d__GroundField__RemoveSource(module.ModuleId);
+
         for (let i = 0; i < module.Unregisters.length; i++) {
             try { module.Unregisters[i](); } catch (error) { /* already gone */ }
         }

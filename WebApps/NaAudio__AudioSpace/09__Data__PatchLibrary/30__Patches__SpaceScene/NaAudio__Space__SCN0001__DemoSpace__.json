@@ -8,10 +8,21 @@
         "Created"          : "08-Aug-2026",
         "Bpm"              : 96,
         "MusicalKey"       : "Am",
-        "LayoutNote"       : "Positions are in metres on the ground plane, with the listener at the origin. The three modules sit on a ring facing the centre, roughly 4.5 metres out - close enough to read a step from the middle of the space, far enough apart that no two cages overlap."
+        "LayoutNote"       : "Positions are in metres on the ground plane, with the listener at the origin. The three instruments sit on a ring facing the centre, roughly 4.5 metres out - close enough to read a step from the middle of the space, far enough apart that no two cages overlap. The output post stands at the origin, so every lead runs inward and the middle of the space is where the signal collects.",
+        "RoutingNote"      : "A module bus reaches the speakers ONLY through a cable into an OutputPost. Nothing connects itself to the master any more, so a space file with no path to a post loads correctly and is completely silent. This arrangement is deliberately the same signal flow the first build had by default: the sequencer and the cube are heard dry AND through the cloud, which is why each of them has two leads."
     },
 
     "NaAudio__Space__Modules": [
+        {
+            "ModuleId"    : "OUT_01",
+            "TypeName"    : "OutputPost",
+            "DisplayName" : "Out",
+            "Position"    : { "x": 0.0, "z": 0.0 },
+            "IsLocked"    : false,
+            "Settings": {
+                "PostNote": "The way out of the space. Its audio input is the master bus itself, so a lead into this post is the difference between a module being audible and being silent. Standing it at the origin puts it on the listener datum, which is the one place in the space that already meant 'where the sound arrives'."
+            }
+        },
         {
             "ModuleId"    : "SEQ_01",
             "TypeName"    : "CircularSequencer",
@@ -88,6 +99,27 @@
             "ToModuleId"   : "CLOUD_01",
             "SignalType"   : "audio",
             "Note"         : "Two sources into one effect, which is what the design manifest asks the routing to support."
+        },
+        {
+            "CableId"      : "CBL_0003",
+            "FromModuleId" : "SEQ_01",
+            "ToModuleId"   : "OUT_01",
+            "SignalType"   : "audio",
+            "Note"         : "The dry drums. Unplug this and the kit is only heard through the cloud, which is the quickest demonstration in the space of what the post actually decides."
+        },
+        {
+            "CableId"      : "CBL_0004",
+            "FromModuleId" : "CUBE_01",
+            "ToModuleId"   : "OUT_01",
+            "SignalType"   : "audio",
+            "Note"         : "The dry cube."
+        },
+        {
+            "CableId"      : "CBL_0005",
+            "FromModuleId" : "CLOUD_01",
+            "ToModuleId"   : "OUT_01",
+            "SignalType"   : "audio",
+            "Note"         : "The wet return. Everything that goes into the enclosure leaves the space through here, so this is the one lead that must never be pulled by accident - which is exactly why unplugging needs wiring mode."
         }
     ]
 }

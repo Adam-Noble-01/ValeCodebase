@@ -71,6 +71,7 @@ import * as SceneManager  from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d
 import * as CameraRig     from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__CameraRig__.mjs';
 import * as LightingRig   from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__LightingRig__.mjs';
 import * as GroundStage   from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__GroundStage__.mjs';
+import * as GroundField   from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__GroundField__.mjs';
 import * as Palette       from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__PaletteLibrary__.mjs';
 import * as Labels        from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Labels3d__.mjs';
 import { NaAudio__Env3d__Interaction__Attach }  from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__Interaction__.mjs';
@@ -82,10 +83,12 @@ import * as SampleBank    from '../15__Audio__SampleLibraryLoader/NaAudio__Libra
 
 import * as ModuleRegistry from '../20__System__SpatialModuleFramework/NaAudio__Spatial__ModuleRegistry__.mjs';
 import * as PatchGraph     from '../20__System__SpatialModuleFramework/NaAudio__Spatial__PatchGraph__.mjs';
+import * as WiringController from '../20__System__SpatialModuleFramework/NaAudio__Spatial__WiringController__.mjs';
 
 import { NaAudio__Module__CircularSequencer, NaAudio__CircularSequencer__TypeName } from '../25__Module__CircularSequencer/NaAudio__Module__CircularSequencer__.mjs';
 import { NaAudio__Module__CubeMod,           NaAudio__CubeMod__TypeName }           from '../26__Module__CubeMod/NaAudio__Module__CubeMod__.mjs';
 import { NaAudio__Module__DelayCloud,        NaAudio__DelayCloud__TypeName }        from '../27__Module__DelayCloud/NaAudio__Module__DelayCloud__.mjs';
+import { NaAudio__Module__OutputPost,        NaAudio__OutputPost__TypeName }        from '../28__Module__OutputPost/NaAudio__Module__OutputPost__.mjs';
 
 import * as BootGate        from '../40__System__HudOverlay/NaAudio__Hud__BootGate__.mjs';
 import * as TransportBar    from '../40__System__HudOverlay/NaAudio__Hud__TransportBar__.mjs';
@@ -132,15 +135,23 @@ import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIn
         });
 
         Palette.NaAudio__Palette__Prime();                                    // <-- Fail loudly here on a bad hex, not silently later
+        GroundField.NaAudio__Env3d__GroundField__Prime();                     // <-- Allocates the source buffer the ground materials will point at
 
         const viewport  =  document.getElementById(VIEWPORT_ID);
         surface         =  SceneManager.NaAudio__Env3d__SceneManager__Create(viewport);
 
         CameraRig.NaAudio__Env3d__CameraRig__Attach(surface);
         LightingRig.NaAudio__Env3d__LightingRig__Build(surface);
-        GroundStage.NaAudio__Env3d__GroundStage__Build(surface);
+        GroundStage.NaAudio__Env3d__GroundStage__Build(surface);               // <-- Binds the floor and grid to the field
 
         NaAudio__Env3d__Interaction__Attach(surface);
+
+        // The ground field, repacked once per frame. It runs before the label sweep for
+        // no reason other than that the islands are the thing most obviously wrong if the
+        // hook order ever stops being what somebody expected.
+        SceneManager.NaAudio__Env3d__SceneManager__AddUpdateHook(surface, function () {
+            GroundField.NaAudio__Env3d__GroundField__Update();
+        });
 
         // The label fade sweep. One hook over the shell group per frame, rather than each
         // module registering its own - see the note in NaAudio__Env3d__Labels3d.
@@ -166,9 +177,11 @@ import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIn
         ModuleRegistry.NaAudio__ModuleRegistry__RegisterType(NaAudio__CircularSequencer__TypeName, NaAudio__Module__CircularSequencer);
         ModuleRegistry.NaAudio__ModuleRegistry__RegisterType(NaAudio__CubeMod__TypeName,           NaAudio__Module__CubeMod);
         ModuleRegistry.NaAudio__ModuleRegistry__RegisterType(NaAudio__DelayCloud__TypeName,        NaAudio__Module__DelayCloud);
+        ModuleRegistry.NaAudio__ModuleRegistry__RegisterType(NaAudio__OutputPost__TypeName,        NaAudio__Module__OutputPost);
 
         ModuleRegistry.NaAudio__ModuleRegistry__Attach(surface);
         PatchGraph.NaAudio__PatchGraph__Attach(surface);
+        WiringController.NaAudio__WiringController__Attach(surface);
     }
     // ------------------------------------------------------------
 
@@ -387,8 +400,12 @@ import * as ModeIndicator   from '../40__System__HudOverlay/NaAudio__Hud__ModeIn
             Module         : ModuleRegistry.NaAudio__ModuleRegistry__Module,
             Select         : ModuleRegistry.NaAudio__ModuleRegistry__Select,
             Cables         : PatchGraph.NaAudio__PatchGraph__Cables,
+            Connect        : PatchGraph.NaAudio__PatchGraph__Connect,
+            Disconnect     : PatchGraph.NaAudio__PatchGraph__Disconnect,
+            Wiring         : WiringController,
             Transport      : Transport,
             SampleBank     : SampleBank,
+            MasterLevel    : AudioHost.NaAudio__AudioHost__MasterLevel,       // <-- Lets a check prove a patch is audible, not merely drawn
             Note           : 'Development handle. Published only while ShowDiagnostics is true. Nothing inside AudioSPACE reads this.'
         });
     }

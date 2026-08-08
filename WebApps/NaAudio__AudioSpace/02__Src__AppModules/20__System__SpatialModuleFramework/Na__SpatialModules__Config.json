@@ -2,7 +2,7 @@
     "NaAudio__SpatialModules__Config": {
         "NaAudio__SpatialModules__Config__Meta": {
             "ConfigLabel": "Spatial Module Framework - Cages, Pads and Type Defaults",
-            "ConfigVersion": "0.2.0",
+            "ConfigVersion": "0.3.0",
             "ConfigNote": "Shared geometry and behaviour for every spatial module, then per-type defaults. A module type registers itself in NaAudio__Spatial__ModuleRegistry and reads its defaults from the TypeDefaults block here, so a new module never hard-codes its own footprint."
         },
         "NaAudio__SpatialModules__Config__Shell": {
@@ -38,17 +38,45 @@
             "CentreKeptClearNote": "The middle of the ring is the listener position and the master bus. Nothing is ever placed there."
         },
         "NaAudio__SpatialModules__Config__PatchGraph": {
-            "PatchGraphNote": "The 3D noodles from the manifest. A cable is a quadratic curve from an output port to an input port, sagging under a fake gravity so it reads as a physical lead rather than a routing diagram line.",
-            "CableSagFactor": 0.22,
-            "CableSagFactorNote": "Fraction of the port-to-port distance the midpoint drops. Zero gives an engineering schematic; too high and long cables drag through the floor.",
-            "CableSegments": 34,
+            "PatchGraphNote": "The 3D noodles from the manifest. A cable is a swept tube along a cubic Bezier that leaves each socket along the socket's own axis before it droops, with a moulded plug at each end and a sprung slack so it swings when a module is dragged.",
+            "CableSagFactor": 0.26,
+            "CableSagFactorNote": "Fraction of the port-to-port distance the slack drops. Zero gives an engineering schematic; too high and long leads drag through the floor. Applied to both control points, so the curve sags by roughly three quarters of this while the ends stay in their sockets.",
+            "CableFloorClearance": 0.22,
+            "CableFloorClearanceNote": "How far above the floor the belly of a lead is allowed to hang, in metres. Sockets sit under a metre up and this space has four-metre runs in it, so without the clamp every long lead vanished into the ground at its midpoint and reappeared at the far end - which reads as a rendering fault, not as a cable.",
+            "CableLeadOut": 0.55,
+            "CableLeadOutNote": "How far a lead runs straight out of a socket before it starts to bend, in metres, capped at a third of the span so a short hop does not overshoot. This one detail is what makes a cable read as plugged into something rather than drawn between two points.",
+            "CableSegments": 26,
+            "CableRadialSegments": 6,
+            "CableRadialSegmentsNote": "Six is a hexagonal barrel. At this radius nothing above eight is distinguishable, and the count multiplies through every length segment of every cable in the space.",
+            "CableRadius": 0.032,
+            "CableSpringStiffness": 46.0,
+            "CableSpringDamping": 7.5,
+            "CableSpringNote": "A damped spring chasing the rest sag, which is what makes a dragged module swing its leads instead of redrawing them. Raising stiffness without raising damping gives a cable that oscillates for several seconds and reads as broken.",
+            "CableHoverEmissive": 0.3,
             "CableFlowSpeed": 0.9,
             "CableFlowEnabled": true,
-            "CableFlowNote": "Signal presence is shown by a travelling brightness along the cable, driven by the source module's meter. A silent cable is visibly still, which is how the user finds a broken patch without opening anything.",
-            "PortRadius": 0.085,
-            "PortStandoff": 0.12,
+            "CableFlowNote": "Signal presence is shown by the lead brightening with the source module's meter. A silent cable is visibly still, which is how the user finds a broken patch without opening anything.",
+            "PlugRadius": 0.062,
+            "PlugLength": 0.16,
+            "PortsVisible": true,
+            "PortRadius": 0.105,
+            "PortDepth": 0.09,
+            "PortStandoff": 0.1,
+            "PortHeightFactor": 0.46,
+            "PortHeightFactorNote": "Socket height as a fraction of the module's cage height. Just under halfway, so a lead leaves at chest height on the module rather than at its shoulder - which keeps the cable clear of the pad without arcing over the controls.",
+            "PortRestOpacity": 0.42,
+            "PortRestOpacityNote": "How present a socket is outside wiring mode. Visible, so a module still reads as a device with sockets, but plainly not the thing being worked on. Hiding them entirely was the first attempt, and it made switching into wiring mode pop three dozen objects into existence at once.",
+            "PortHoverEmissive": 0.42,
+            "GhostCableEmissive": 0.34,
+            "GhostCableEmissiveNote": "The lead in hand while patching. Tinted to the wiring pigment and lit, rather than made transparent - an opaque cable in the wrong colour reads as 'not connected yet', where a see-through one reads as a rendering fault.",
             "MaxCablesPerInput": 8,
             "MaxCablesPerInputNote": "The manifest wants many inputs feeding one effect. Eight is the point past which the cable bundle stops being legible in 3D, not an engine limit."
+        },
+        "NaAudio__SpatialModules__Config__GroundField": {
+            "GroundFieldNote": "How large an island of ground a module puts under itself. The shape and softness of the field live in Na__Env3d__Config; only the per-module sizing is here, because it is a property of being a module.",
+            "RadiusFromFootprint": 1.15,
+            "RadiusPadding": 1.3,
+            "RadiusNote": "radius = max(cage x, cage z) * RadiusFromFootprint * the type's FieldRadiusFactor + RadiusPadding. The padding is what lets two modules a couple of metres apart merge at all - without it an island stops at the edge of its own pad and nothing ever joins up."
         },
         "NaAudio__SpatialModules__Config__LockState": {
             "LockStateNote": "Working and locked, per the manifest. Locked silences and disconnects the module's generators; the eventual behaviour also plays back a rendered bounce and loops a captured animation, and the hooks for both are already in NaAudio__Spatial__LockState__.mjs.",
@@ -59,6 +87,27 @@
             "AnimationFreezeOnLockNote": "A locked module keeps its last animation pose and stops advancing. When the bounce-and-replay path lands this becomes a looped capture instead, which is what the manifest asks for."
         },
         "NaAudio__SpatialModules__Config__TypeDefaults": {
+            "OutputPost": {
+                "TypeLabel": "Output Post",
+                "TypeNote": "The single exit from the space. Its audio input IS the master bus, so anything patched into it - in series, in parallel, in any arrangement - is what reaches the speakers, and anything with no path to it is silent. That one rule is what makes the signal flow in this space readable by eye.",
+                "CageSize": {
+                    "x": 1.6,
+                    "y": 2.6,
+                    "z": 1.6
+                },
+                "HasInput": true,
+                "HasOutput": false,
+                "HasOutputNote": "A post has nowhere to send anything. An output socket here would invite a lead out of the speakers and back into the space, which is a feedback loop with a friendly face on it.",
+                "IsMasterOutput": true,
+                "IsMasterOutputNote": "Read by the patch graph to warn about a space with no route to the speakers - the one broken patch that is completely invisible and completely silent.",
+                "FieldRadiusFactor": 2.1,
+                "FieldRadiusFactorNote": "The post stands at the centre and holds the middle of the space open, so its island is deliberately larger than its footprint would give it.",
+                "PostHeight": 2.1,
+                "PostBaseRadius": 0.3,
+                "PostTopRadius": 0.17,
+                "ColumnHeight": 0.85,
+                "ColumnHeightNote": "The master level column standing on the post, scaled on Y by the master meter. Full height is a signal at the limiter."
+            },
             "CircularSequencer": {
                 "TypeLabel": "Circular Sequencer",
                 "TypeNote": "The manifest's radical departure from the linear step sequencer. Steps sit on a circle, a marker sweeps like a clock hand at the project tempo, and the division count is free rather than locked to sixteen.",
@@ -295,9 +344,9 @@
             }
         },
         "NaAudio__SpatialModules__Config__Modes": {
-            "ModesNote": "Build and Play, per NaAudio__AppCore__ModeManager. Build moves modules and freezes every control; Play works the controls and pins the modules. The split exists because a module's pad and its controls sit centimetres apart in a space the user orbits, so reaching for one and catching the other is the common case - and catching a sequencer step means a silently rewritten pattern.",
+            "ModesNote": "Build, Play and Wiring, per NaAudio__AppCore__ModeManager. Build moves modules and freezes everything else; Play works the controls and pins the modules; Wiring patches the signal and freezes both. The split exists because a module's pad, its controls and its sockets all sit centimetres apart in a space the user orbits, so reaching for one and catching another is the common case - and catching a sequencer step means a silently rewritten pattern.",
             "DefaultMode": "play",
-            "DefaultModeNote": "Play. The space arrives already arranged and the first thing anybody wants is to hear it, not move it.",
+            "DefaultModeNote": "Play. The space arrives already arranged and already patched, and the first thing anybody wants is to hear it.",
             "BuildModeGridBoost": 2.4,
             "BuildModeGridBoostNote": "The ground grid is multiplied by this in Build mode. A layout being rearranged wants a visible measure under it; the same grid during Play is a distraction from the instruments.",
             "ControlFadeInBuild": 0.22,

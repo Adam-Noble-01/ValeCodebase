@@ -53,7 +53,6 @@
             "CableSpringDamping": 7.5,
             "CableSpringNote": "A damped spring chasing the rest sag, which is what makes a dragged module swing its leads instead of redrawing them. Raising stiffness without raising damping gives a cable that oscillates for several seconds and reads as broken.",
             "CableHoverEmissive": 0.3,
-            "CableFlowSpeed": 0.9,
             "CableFlowEnabled": true,
             "CableFlowNote": "Signal presence is shown by the lead brightening with the source module's meter. A silent cable is visibly still, which is how the user finds a broken patch without opening anything.",
             "PlugRadius": 0.062,
@@ -110,6 +109,8 @@
             },
             "CircularSequencer": {
                 "TypeLabel": "Circular Sequencer",
+                "HasInput": false,
+                "HasInputNote": "A sequencer is a source. It has no audio input, so it gets no input socket - a socket you can plug into that carries nothing is worse than no socket, because the lead draws and the connection looks made. When the manifest's trigger cables land this becomes a trigger input rather than an audio one.",
                 "TypeNote": "The manifest's radical departure from the linear step sequencer. Steps sit on a circle, a marker sweeps like a clock hand at the project tempo, and the division count is free rather than locked to sixteen.",
                 "CageSize": {
                     "x": 3.4,
@@ -231,6 +232,8 @@
             },
             "CubeMod": {
                 "TypeLabel": "CubeMod",
+                "HasInput": false,
+                "HasInputNote": "A CubeMod drives its own voice and takes no audio in. Same reasoning as the sequencer - it will gain a modulation input, not an audio one.",
                 "TypeNote": "An XY pad mapped to each of the six faces of a rotatable cube, so one controller carries twelve dimensions instead of two. Rotating the cube brings a different pair of parameters to hand.",
                 "CageSize": {
                     "x": 2.4,

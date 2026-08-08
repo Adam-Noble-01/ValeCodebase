@@ -65,7 +65,6 @@
 import * as THREE from 'three';
 
 import { NaAudio__ConfigAccess__ModuleTypeDefaults }  from '../03__AppUtils/NaAudio__AppUtils__ConfigAccess__.mjs';
-import * as Palette      from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__PaletteLibrary__.mjs';
 import * as Materials    from '../05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__MaterialLibrary__.mjs';
 import * as ModuleBase   from '../20__System__SpatialModuleFramework/NaAudio__Spatial__ModuleBase__.mjs';
 import * as AudioHost    from '../10__Audio__WebAudioEngine/NaAudio__Engine__AudioHost__.mjs';

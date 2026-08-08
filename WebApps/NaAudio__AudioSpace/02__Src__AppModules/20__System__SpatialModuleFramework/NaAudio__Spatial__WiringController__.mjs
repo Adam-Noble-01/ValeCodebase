@@ -280,12 +280,19 @@ import { NaAudio__ModeManager__IsWiring }  from '../01__AppCore/NaAudio__AppCore
     // one of the patched leads around it. Tint rather than transparency: an opaque cable
     // that is the wrong colour reads as 'not connected yet', where a semi-transparent one
     // reads as a rendering artefact.
+    //
+    // The glow is the pigment's OWN colour, not cream. Adding cream emissive to an ochre
+    // barrel drives every channel toward white and the lead in hand comes out pale grey -
+    // which is a lead that has lost its colour rather than a lead that is lit. Emitting
+    // the pigment deepens it instead, so it reads as ochre glowing.
     function NaAudio__WiringController__PaintGhost(cableGroup) {
         const state  =  cableGroup.userData.NaAudio__CableState;
         if (!state) return;
 
-        state.Material.color.copy(Palette.NaAudio__Palette__Pigment('Ochre', 'Base'));
-        state.Material.emissive.copy(Palette.NaAudio__Palette__Ground('Cream'))
+        const pigment  =  Palette.NaAudio__Palette__Pigment('Ochre', 'Base');
+
+        state.Material.color.copy(pigment);
+        state.Material.emissive.copy(pigment)
                                .multiplyScalar(SpatialNumber('PatchGraph', 'GhostCableEmissive'));
 
         state.Tube.userData.NaAudio__Pickable  =  false;                      // <-- Never a drop target for itself

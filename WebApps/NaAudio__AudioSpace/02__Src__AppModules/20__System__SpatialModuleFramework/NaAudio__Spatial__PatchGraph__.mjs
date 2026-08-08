@@ -276,19 +276,25 @@ import { NaAudio__Mode }               from '../01__AppCore/NaAudio__AppCore__Mo
         // THE AUDIO HALF
         // Audio and sidechain cables are real connections. Modulation and trigger
         // cables are polled in Update - see the note in the file header.
+        //
+        // A destination with no audio input REFUSES the cable outright rather than
+        // taking it and warning. Drawing a lead that carries nothing is the precise
+        // failure this file's header argues against: the picture says connected, the
+        // graph says silence, and the user's only way of understanding their own patch
+        // has started lying to them. Better no lead than a lead that is not true.
         let isConnected  =  false;
         if (signalType === NaAudio__SignalType.Audio || signalType === NaAudio__SignalType.Sidechain) {
-            if (toModule.Type && typeof toModule.Type.AudioInput === 'function') {
-                const input  =  toModule.Type.AudioInput(toModule);
-                if (input) {
-                    fromModule.Bus.Output.connect(input);
-                    isConnected  =  true;
-                }
+            const input  =  (toModule.Type && typeof toModule.Type.AudioInput === 'function')
+                ? toModule.Type.AudioInput(toModule)
+                : null;
+
+            if (!input) {
+                console.warn('[NaAudio PatchGraph] "' + definition.ToModuleId + '" (' + toModule.TypeName + ') takes no audio in, so there is nothing to patch into. A module type that should accept audio implements AudioInput(module) and drops HasInput:false from its type defaults.');
+                return null;
             }
 
-            if (!isConnected) {
-                console.warn('[NaAudio PatchGraph] Module "' + definition.ToModuleId + '" (' + toModule.TypeName + ') exposes no audio input, so cable ' + cableId + ' carries nothing. A module type that should accept audio must implement AudioInput(module).');
-            }
+            fromModule.Bus.Output.connect(input);
+            isConnected  =  true;
         }
 
         // THE VISUAL HALF

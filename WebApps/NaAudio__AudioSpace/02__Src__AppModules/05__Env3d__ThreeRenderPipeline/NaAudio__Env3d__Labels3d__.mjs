@@ -259,6 +259,9 @@ import * as Materials                           from './NaAudio__Env3d__Material
         const fadeStart     =  maxDistance * FADE_START_FACTOR;
         const fadeRange     =  Math.max(maxDistance - fadeStart, 0.001);
 
+        const minDistance   =  Env3dNumber('Labels', 'MinRenderDistance');
+        const nearRange     =  Math.max(Env3dNumber('Labels', 'NearFadeRange'), 0.001);
+
         camera.getWorldPosition(SCRATCH_CAMERA_POS);
 
         group.traverse(function (object3d) {
@@ -267,20 +270,28 @@ import * as Materials                           from './NaAudio__Env3d__Material
             object3d.getWorldPosition(SCRATCH_LABEL_POS);
             const distance  =  SCRATCH_CAMERA_POS.distanceTo(SCRATCH_LABEL_POS);
 
-            if (distance >= maxDistance) {
+            if (distance >= maxDistance || distance <= minDistance) {
                 object3d.visible  =  false;
                 return;
             }
 
             object3d.visible  =  true;
 
-            if (distance <= fadeStart) {
-                object3d.material.opacity  =  1.0;
-                return;
-            }
+            // TWO fades, and the near one is the one that matters in practice.
+            //
+            // A name plate is world-scaled, so closing on a module makes it fill the
+            // screen - and it hangs directly over the thing it names. Once a module grew
+            // a control bank the plate stopped being a label and became a lid: leaning in
+            // to work the sliders put a giant word 'Pulse' across them.
+            //
+            // Near the module the plate has also stopped earning its place. You can see
+            // what the thing is; you are holding it. So it gets out of the way, and the
+            // far fade goes on doing its own job of stopping twenty plates stacking up
+            // across the horizon.
+            const nearFade  =  Math.min((distance - minDistance) / nearRange, 1);
+            const farFade   =  (distance <= fadeStart) ? 1 : 1 - (distance - fadeStart) / fadeRange;
 
-            const fade  =  1 - (distance - fadeStart) / fadeRange;
-            object3d.material.opacity  =  Math.max(fade, MIN_OPACITY);
+            object3d.material.opacity  =  Math.max(Math.min(nearFade, farFade), MIN_OPACITY);
         });
     }
     // ------------------------------------------------------------

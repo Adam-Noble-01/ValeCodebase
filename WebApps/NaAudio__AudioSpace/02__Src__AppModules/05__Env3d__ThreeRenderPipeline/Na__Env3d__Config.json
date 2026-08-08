@@ -147,6 +147,10 @@
             "FontSizePx"                      : 34,
             "PaddingPx"                       : 18,
             "HeightAboveModule"               : 0.34,
+            "MinRenderDistance"               : 5.0,
+            "MinRenderDistanceNote"           : "Labels inside this are hidden entirely. A name plate is world-scaled, so closing on a module makes it fill the screen while hanging directly over the thing it names - once the sequencer grew a control bank, leaning in to use the sliders put a giant word across them. Working the sliders on a module puts the camera three to six metres out; scanning the space for a module by name happens from ten and beyond. Hidden below five and full by nine separates the two cleanly.",
+            "NearFadeRange"                   : 4.0,
+            "NearFadeRangeNote"               : "How far past MinRenderDistance the plate takes to reach full opacity. Long enough that it dissolves rather than blinking out as the camera drifts across the threshold.",
             "MaxRenderDistance"               : 48,
             "MaxRenderDistanceNote"           : "Labels beyond this fade out entirely. Twenty legible name plates stacked across the horizon is visual noise, and the whole premise is that the user navigates by spatial memory rather than by reading."
         }

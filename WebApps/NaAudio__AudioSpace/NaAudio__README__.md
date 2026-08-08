@@ -131,6 +131,11 @@ The tube is written by hand into a preallocated buffer rather than through
 call — a dragged module with three leads would produce a few hundred throwaway geometries a
 second.
 
+**A module only has the sockets it can use.** Sources — the sequencer and the CubeMod —
+declare `HasInput: false` and carry an output only, and `Connect` refuses an audio cable
+into anything with no `AudioInput`. A socket you can plug into that carries nothing is
+worse than no socket, because the lead draws and the connection looks made.
+
 **Patching**: drag socket to socket in either direction; the controller resolves which way
 the signal runs. Or click one socket and click the second — the same state machine, so
 there is only ever one way to be half-patched. **Unplugging** is a click on the lead itself,
@@ -320,6 +325,10 @@ on the next presentation pass, silently and only sometimes.
 `SpriteMaterial`. The sprite shader's centre and rotation uniforms are never supplied by
 the mesh render path, and the failure surfaces far away as a null read inside
 `setValueV2f`.
+
+**Module name plates fade at both ends.** Hidden below five metres, full by nine. A plate is
+world-scaled, so without a near fade it fills the screen exactly when you have leaned in to
+use the module underneath it — which is the moment it has least to say.
 
 **The boot gate cannot be deleted.** Every browser suspends a fresh `AudioContext` until a
 real user gesture. Without it the app is silent with no error anywhere. It can be *moved*

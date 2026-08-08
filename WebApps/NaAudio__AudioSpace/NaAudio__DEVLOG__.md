@@ -163,6 +163,42 @@ unreachable, because the preceding Play-mode drag correctly fell through to Orbi
 which orbited the camera and left the test projecting into a view that no longer existed.
 The same class of test artefact as the Build-mode drag in v0.2.0.
 
+### A second pass, once there was something to look at
+
+Four more, all found by rendering the space and looking at it rather than by reading the
+code. None of them would have surfaced in a unit test.
+
+- **Every module had an input socket; only two modules take audio.** The port factory gave
+  each module both sockets by default, so a sequencer and a CubeMod carried a green input
+  you could drag a lead into - the connection was made, the lead was drawn, and it carried
+  nothing. That is precisely the divergence between the picture and the routing that this
+  file's header spends a paragraph arguing against. Sources now declare `HasInput: false`
+  and get no input socket, and `Connect` REFUSES an audio cable into a module with no
+  `AudioInput` rather than taking it and warning. Better no lead than a lead that is not
+  true.
+
+- **The name plate had become a lid.** A module label is world-scaled, and the fade only
+  ever handled the far end - so closing on a module made its plate fill the screen while
+  hanging directly over the thing it names. Harmless until the sequencer grew a control
+  bank, at which point leaning in to work the sliders put a giant word 'Pulse' across
+  them. Labels now fade at BOTH ends: hidden below five metres, full by nine. Working a
+  module puts the camera three to six metres out; scanning the space for one by name
+  happens from ten and beyond, so the two uses separate cleanly.
+
+- **The lead in hand came out pale grey.** `PaintGhost` added cream emissive to an ochre
+  barrel, which drives every channel toward white - a lead that has lost its colour rather
+  than a lead that is lit. It now emits its own pigment, so it deepens into a glowing ochre
+  and stays plainly distinct from the terracotta of a patched lead.
+
+- **Slider deck legends overlapped.** The flat legends were 0.62 wide against a slider
+  spacing of 0.60. Because they lie flat on the deck the overlap only appears once the
+  camera drops to an oblique angle - fine in plan, a pile of stacked cards the moment
+  anybody leans in to use the bank. The legend is now narrower than the gap it sits in.
+
+Plugs also moved from `Ink` to `InkSoft`: at full ink a plug was the darkest thing in the
+space by a wide margin, and two per lead turned a quiet patch into a scatter of black
+lozenges that pulled the eye off the instruments.
+
 #### Added
 - `01__AppCore/NaAudio__AppCore__ModeManager__.mjs` - Wiring joins Build and Play
 - `05__Env3d__ThreeRenderPipeline/NaAudio__Env3d__GroundField__.mjs`

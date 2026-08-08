@@ -90,7 +90,12 @@ import { NaAudio__MusicalMaths__Clamp } from '../03__AppUtils/NaAudio__AppUtils_
     const BUTTON_PRESS_DROP  =  0.028;                                       // <-- How far the plate sinks while held
     const BUTTON_RETURN_RATE =  8.0;                                         // <-- Per second; how quickly it springs back
 
-    const LABEL_SCALE        =  0.62;                                        // <-- Panel legends are far smaller than module name plates
+    // Deliberately NARROWER than the slider spacing in Na__SpatialModules__Config
+    // (0.60). A legend wider than the gap between two sliders overlaps its neighbour,
+    // and because these lie flat on the deck the overlap only appears once the camera
+    // drops to an oblique angle - so it looks fine in plan and turns into a pile of
+    // stacked cards the moment anybody actually leans in to use the bank.
+    const LABEL_SCALE        =  0.50;                                        // <-- Panel legends are far smaller than module name plates
     const LABEL_DECK_HEIGHT  =  0.012;                                       // <-- Just off the deck, so it never z-fights with the pad
     const LABEL_DECK_OFFSET  =  0.34;                                        // <-- In front of the track, where a panel legend goes
 

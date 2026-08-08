@@ -369,9 +369,12 @@ import * as Palette                      from './NaAudio__Env3d__PaletteLibrary_
     // Owned rather than shared, only so it can be disposed alongside its cable without
     // the scene manager needing to know that plugs are a special case. Two plugs share
     // one instance within a cable, which is the granularity that actually matters.
+    // InkSoft rather than Ink. At full ink a plug is the darkest thing in the entire
+    // space by a wide margin, and two of them per lead turns a quiet patch into a scatter
+    // of black lozenges - the eye goes to the connectors instead of to the instruments.
     export function NaAudio__Materials__OwnedPlug() {
         const material  =  new THREE.MeshStandardMaterial({
-            color     : Palette.NaAudio__Palette__Ink('Ink').clone(),
+            color     : Palette.NaAudio__Palette__Ink('InkSoft').clone(),
             roughness : Env3dNumber('Materials', 'PlugRoughness'),
             metalness : 0.0
         });

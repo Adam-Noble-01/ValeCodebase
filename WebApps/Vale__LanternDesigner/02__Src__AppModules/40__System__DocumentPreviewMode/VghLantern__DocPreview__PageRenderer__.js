@@ -165,7 +165,8 @@ const VghLantern__DocPreview__PageRenderer = (function() {
         var keys  =  DocumentState.LETTER_KEYS
             .concat(DocumentState.SUMMARY_KEYS, DocumentState.DRAWING_VIEW_KEYS,
                     DocumentState.DRAWING_NOTE_KEYS, DocumentState.DOCUMENT_KEYS,
-                    DocumentState.DRAWING_TERMS_KEYS, DocumentState.TERMS_KEYS);
+                    DocumentState.CUTLIST_KEYS, DocumentState.DRAWING_TERMS_KEYS,
+                    DocumentState.TERMS_KEYS);
 
         var html  =  '<div class="' + CSS_TOOLBAR_GROUP + '">' +
                      '<span class="' + CSS_TOOLBAR_LABEL + '">' +
@@ -488,6 +489,12 @@ const VghLantern__DocPreview__PageRenderer = (function() {
             );
         }
 
+        if (entry.Kind === DocumentState.KIND_LANTERN_CUTLIST) {
+            return PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml(
+                viewState, entry.LanternIndex
+            );
+        }
+
         return PrintDocument.VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml(viewState);
     }
     // ------------------------------------------------------------
@@ -501,13 +508,16 @@ const VghLantern__DocPreview__PageRenderer = (function() {
 
     // FUNCTION | Render the Whole Preview Mode
     // ------------------------------------------------------------
+    // Returns whether a drawing bake is still running when this returns. Mode entry
+    // needs that answer: it opened the overlay before any of this started, and if no
+    // bake follows there is nothing left to close it.
     function VghLantern__DocPreview__PageRenderer__Render() {
         var container  =  document.getElementById(DOM_CONTAINER);
-        if (!container) return;
+        if (!container) return false;
 
         var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
         var IssueHandler   =  window.VghLantern__DocPreview__DocIssueHandler;
-        if (!DocumentState) return;
+        if (!DocumentState) return false;
 
         var bannerHtml  =  IssueHandler
             ? IssueHandler.VghLantern__DocPreview__DocIssueHandler__BuildBanner(
@@ -577,7 +587,7 @@ const VghLantern__DocPreview__PageRenderer = (function() {
                                 bannerHtml +
                                 '<div class="' + CSS_STAGE + '">' + pagesHtml + '</div>';
 
-        VghLantern__PageRenderer__QueueSheetBake();
+        return VghLantern__PageRenderer__QueueSheetBake();
     }
     // ------------------------------------------------------------
 
@@ -613,25 +623,54 @@ const VghLantern__DocPreview__PageRenderer = (function() {
     // than a missing drawing. Attempting once per state of the schedule means an
     // unbakeable lantern is reported by the issue banner and left alone until
     // something about it actually changes.
+    // Returns whether a bake is now running, which is also the answer to "is anything
+    // still going to close the overlay".
     function VghLantern__PageRenderer__QueueSheetBake() {
         var SheetBaker  =  window.VghLantern__DrawingEditor__SheetBaker;
-        if (!SheetBaker) return;
-        if (VghLantern__PageRenderer__IsBaking) return;
-        if (SheetBaker.VghLantern__DrawingEditor__SheetBaker__IsComplete()) return;
+        var Overlay     =  window.VghLantern__DocPreview__ProgressOverlay;
+        if (!SheetBaker) return false;
+        if (VghLantern__PageRenderer__IsBaking) return true;                    // <-- One already running will close it
+        if (SheetBaker.VghLantern__DrawingEditor__SheetBaker__IsComplete()) return false;
 
         var key  =  VghLantern__PageRenderer__BakeKey();
-        if (key !== null && key === VghLantern__PageRenderer__LastBakeKey) return;
+        if (key !== null && key === VghLantern__PageRenderer__LastBakeKey) return false;
 
         VghLantern__PageRenderer__IsBaking     =  true;
         VghLantern__PageRenderer__LastBakeKey  =  key;
 
-        void SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll().then(function() {
+        // Usually already open: mode entry raises it before any of this mode's work
+        // starts, which is the only way it gets painted before the main thread seizes
+        // up. This covers the other routes in - a geometry solve, a toolbar toggle -
+        // where a bake becomes necessary with nothing on screen to say so.
+        if (Overlay) Overlay.VghLantern__DocPreview__ProgressOverlay__Open();
+
+        var onProgress  =  Overlay
+            ? Overlay.VghLantern__DocPreview__ProgressOverlay__Update
+            : null;
+
+        // HELPER | Repaint the finished pack, then lift the overlay off it
+        //
+        // Repaint FIRST. Closing starts a hold and then a fade, and the pack has to be
+        // on screen before that fade uncovers it - otherwise the overlay lifts on the
+        // pending pages it was raised to hide, and the finished ones appear a second
+        // later with nothing to explain them.
+        function finish(isError) {
             VghLantern__PageRenderer__IsBaking  =  false;
-            if (VghLantern__PageRenderer__IsModeVisible()) VghLantern__DocPreview__PageRenderer__Render();
+
+            if (!isError && VghLantern__PageRenderer__IsModeVisible()) {
+                VghLantern__DocPreview__PageRenderer__Render();
+            }
+            if (Overlay) Overlay.VghLantern__DocPreview__ProgressOverlay__Close({ IsError : isError });
+        }
+
+        void SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll(onProgress).then(function() {
+            finish(false);
         }, function(bakeError) {
-            VghLantern__PageRenderer__IsBaking  =  false;
             console.error('[VghLantern__DocPreview__PageRenderer] Drawing bake failed:', bakeError);
+            finish(true);
         });
+
+        return true;
     }
     // ------------------------------------------------------------
 

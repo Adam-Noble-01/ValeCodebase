@@ -334,6 +334,23 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             return InteriorJoinery.VghLantern__InteriorJoinerySystemLoader__ListCorniceOptions();
         }
 
+        // Ridge and hip TYPES rather than profiles. What the user picks is which
+        // assembly is built - a capped ridge or a leaded one, a hip beam or a
+        // glaze bar hip - and the sections inside that assembly follow from the
+        // choice rather than being chosen. Sourced from the two system indexes so
+        // a type added there reaches the editor with no edit here.
+        if (sourceName === 'ridgeTypes') {
+            var RidgeSystem  =  window.VghLantern__AppData__RidgeSystemLoader;
+            if (!RidgeSystem) return [];
+            return RidgeSystem.VghLantern__RidgeSystemLoader__ListTypeOptions();
+        }
+
+        if (sourceName === 'hipTypes') {
+            var HipSystem  =  window.VghLantern__AppData__HipSystemLoader;
+            if (!HipSystem) return [];
+            return HipSystem.VghLantern__HipSystemLoader__ListTypeOptions();
+        }
+
         return [];
     }
     // ------------------------------------------------------------

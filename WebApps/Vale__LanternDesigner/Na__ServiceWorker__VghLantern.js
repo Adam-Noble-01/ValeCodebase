@@ -54,7 +54,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN          = '2026-08-07-165344';                                                          // <-- Bump to invalidate every cache bucket
+    const PWA_SW_VERSION_TOKEN          = '2026-08-12-201500';                                                          // <-- Bump to invalidate every cache bucket
     const PWA_SW_CACHE_NAME_SHELL       = `vghlantern-shell-${PWA_SW_VERSION_TOKEN}`;                              // <-- App shell cache id
     const PWA_SW_CACHE_NAME_DATA        = `vghlantern-data-${PWA_SW_VERSION_TOKEN}`;                               // <-- Application data cache id
     const PWA_SW_CACHE_PREFIXES_OWNED   = ['vghlantern-shell-', 'vghlantern-data-', 'na-vghlantern-cache-'];       // <-- Owned prefixes, including the superseded stub prefix
@@ -100,7 +100,10 @@
         '05__Data__LanternComponentLibrary/VghLantern__ComponentDataIndex__.json',
         '06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json',
         '06__Data__LanternProfileLibrary/45_1000__GlazeBars/VghLantern__GlazeBarSystem__Index__.json',   // <-- Boot-critical: the takeoff reads it synchronously
-        '06__Data__LanternProfileLibrary/46_1000__BaseFrame/VghLantern__BaseFrameSystem__Index__.json'   // <-- Boot-critical: the solver reads the eaves datum numbers synchronously
+        '06__Data__LanternProfileLibrary/46_1000__BaseFrame/VghLantern__BaseFrameSystem__Index__.json', // <-- Boot-critical: the solver reads the eaves datum numbers synchronously
+        '06__Data__LanternProfileLibrary/VghLantern__RidgeHipSystem__TimberDepthTable__.json',          // <-- Boot-critical: no depth table means every beam falls back to the 22.5 degree standard
+        '06__Data__LanternProfileLibrary/47_2000__RidgeElements__Profiles/VghLantern__RidgeSystem__Index__.json',
+        '06__Data__LanternProfileLibrary/48_2000__HipElements__Profiles/VghLantern__HipSystem__Index__.json'
     ];
     // ------------------------------------------------------------
 

@@ -352,6 +352,15 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
         mesh.name       =  'VghLantern__Env3d__Glazing';
         mesh.renderOrder =  1;                                                // <-- Transparent geometry draws after the frame
 
+        // The element type is stamped on the MESH rather than left to the scene
+        // group's default. In the live viewport the glass always lands in the
+        // glazing group and the default is enough, but the projected edges stage
+        // flattens every builder into one group, and a consumer there has no group
+        // to read. Stating it here makes the mesh self-describing wherever it is
+        // put - which is what lets the projection know this one pane of geometry
+        // draws its own edges without hiding what is behind it.
+        mesh.userData.VghLantern__ElementType  =  'Glazing';
+
         VghLantern__Env3d__PickIndex__Register(mesh, 'glazing', FACE_ROLE_GLAZING, spans, VghLantern__Env3d__PickIndex__ModeTriangle);
         targetGroup.add(mesh);
     }

@@ -491,28 +491,62 @@
         var PageRenderer   =  window.VghLantern__DocPreview__PageRenderer;
         var SheetManager   =  window.VghLantern__DrawingEditor__SheetManager;
         var ViewPlacement  =  window.VghLantern__DrawingEditor__ViewPlacement;
+        var Overlay        =  window.VghLantern__DocPreview__ProgressOverlay;
 
-        // Projected linework first, before anything composes a sheet from it. The
-        // realtime loop normally has this in hand already, in which case this costs
-        // nothing; what it covers is arriving here before that loop has caught up,
-        // which is exactly the moment somebody is about to issue a drawing.
-        var ProjectedEdges  =  window.VghLantern__ProjectedEdges;
-        if (ProjectedEdges && ProjectedEdges.VghLantern__ProjectedEdges__ForceRender) {
-            try {
-                await ProjectedEdges.VghLantern__ProjectedEdges__ForceRender();
-            } catch (lineworkError) {
-                console.error('[VghLantern__Init] Projected linework render failed before preview:', lineworkError);
+        // The overlay goes up FIRST, before a single one of the three waits below, and
+        // the mode does not start working until it has actually been painted.
+        //
+        // That await is not politeness. Everything after it - the linework render, the
+        // headless sheet compose, the page build, the drawing bake - runs on the main
+        // thread, and a browser cannot paint while the main thread is busy. An overlay
+        // raised at the point the work starts therefore reaches the screen only once
+        // the work has finished, which is where this originally went wrong: it appeared
+        // for a moment at the end of the wait it was supposed to be explaining.
+        //
+        // Raised on every entry, not only when a drawing has to be composed. Cached
+        // sheets shorten the wait but do not remove it: the linework guarantee and the
+        // page build still run, and on a modest machine that alone is long enough to
+        // read as a stall. Whether this entry happens to be quick is not knowable from
+        // here, and guessing wrong costs more than the overlay does.
+        var isOverlayUp  =  !!(Overlay && Overlay.VghLantern__DocPreview__ProgressOverlay__Open());
+        if (isOverlayUp) await Overlay.VghLantern__DocPreview__ProgressOverlay__WaitUntilVisible();
+
+        var previewFailed  =  false;
+
+        try {
+            // Projected linework first, before anything composes a sheet from it. The
+            // realtime loop normally has this in hand already, in which case this costs
+            // nothing; what it covers is arriving here before that loop has caught up,
+            // which is exactly the moment somebody is about to issue a drawing.
+            var ProjectedEdges  =  window.VghLantern__ProjectedEdges;
+            if (ProjectedEdges && ProjectedEdges.VghLantern__ProjectedEdges__ForceRender) {
+                try {
+                    await ProjectedEdges.VghLantern__ProjectedEdges__ForceRender();
+                } catch (lineworkError) {
+                    console.error('[VghLantern__Init] Projected linework render failed before preview:', lineworkError);
+                }
             }
-        }
 
-        if (SheetManager && ViewPlacement &&
-            !ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput()) {
-            await SheetManager.VghLantern__DrawingEditor__SheetManager__Render();
-            SheetManager.VghLantern__DrawingEditor__SheetManager__OnModeExit();   // <-- Caches are captured; release the hidden surfaces straight away
-        }
+            if (SheetManager && ViewPlacement &&
+                !ViewPlacement.VghLantern__DrawingEditor__ViewPlacement__HasComposedOutput()) {
+                await SheetManager.VghLantern__DrawingEditor__SheetManager__Render();
+                SheetManager.VghLantern__DrawingEditor__SheetManager__OnModeExit();   // <-- Caches are captured; release the hidden surfaces straight away
+            }
 
-        if (PageRenderer && PageRenderer.VghLantern__DocPreview__PageRenderer__Render) {
-            PageRenderer.VghLantern__DocPreview__PageRenderer__Render();
+            if (!PageRenderer || !PageRenderer.VghLantern__DocPreview__PageRenderer__Render) return;
+
+            // The render hands back whether it left a bake running. If it did, that bake
+            // owns the rest of the wait and closes the overlay when the finished pack is
+            // painted. If it did not, this was the whole wait and it ends here.
+            var isBaking  =  PageRenderer.VghLantern__DocPreview__PageRenderer__Render();
+            if (isBaking) isOverlayUp  =  false;                               // <-- Handed over; the bake closes it
+        } catch (previewError) {
+            previewFailed  =  true;
+            throw previewError;
+        } finally {
+            // A curtain left up is worse than any error underneath it: the mode would be
+            // unusable rather than merely wrong.
+            if (isOverlayUp) Overlay.VghLantern__DocPreview__ProgressOverlay__Close({ IsError : previewFailed });
         }
     }
     // ------------------------------------------------------------

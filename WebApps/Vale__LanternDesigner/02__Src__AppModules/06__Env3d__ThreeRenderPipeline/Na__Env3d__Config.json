@@ -36,7 +36,9 @@
             "DampingFactor"                   : 0.08,
             "EnablePan"                       : true,
             "MaxPolarAngleDegrees"            : 88,
-            "MaxPolarAngleNote"               : "Clamped just above the horizon so the model is never viewed from underneath."
+            "MaxPolarAngleNote"               : "Clamped just above the horizon so the model is never viewed from underneath. Applies to every surface that has not opted into below-ground orbit: the Lantern Editor panel and the drawing sheet viewports.",
+            "BelowGroundMaxPolarAngleDegrees" : 178,
+            "BelowGroundMaxPolarAngleNote"    : "The clamp used instead when a surface is mounted with AllowBelowGroundOrbit, which only the full-screen 3D View is. Held two degrees short of straight-up-from-below because at exactly 180 the orbit azimuth is undefined and the view spins on itself. Never allowed to be tighter than MaxPolarAngleDegrees."
         },
 
         "VghLantern__Env3d__Config__PresetViews": {
@@ -127,7 +129,9 @@
             "GridSpacingMm"                   : 500,
             "GridExtentMm"                    : 12000,
             "GridColour"                      : "#dde1e4",
-            "ShowShadowCatcher"               : false
+            "ShowShadowCatcher"               : false,
+            "HideGridWhenCameraBelow"         : true,
+            "HideGridWhenCameraBelowNote"     : "Switches the grid off while the eye is under the ground plane and back on when it climbs above it. From below, the grid is drawn straight across the underside of the lantern and hides the soffits the view was moved to see. Only surfaces mounted with AllowBelowGroundOrbit can ever get there."
         },
 
         "VghLantern__Env3d__Config__SetOut": {
@@ -232,6 +236,8 @@
             "ShowSkeletonModeLabel"           : true,
             "ShowSkeletonModeLabelNote"       : "Read-only readout of the active MeshBuilders.SkeletonMode, so a reviewer can see whether they are looking at swept sections or bare centrelines.",
             "ShowLanternSelector"             : true,
+            "AllowBelowGroundOrbit"           : true,
+            "AllowBelowGroundOrbitNote"       : "Lets the 3D View orbit under the ground plane so the underside of the lantern can be inspected, and drops the ground grid while the camera is down there. Deliberately granted to this mode alone: the Lantern Editor panel and the drawing sheet viewports stay clamped above the horizon by Camera.MaxPolarAngleDegrees, because a sheet view photographed from underneath is never what the sheet wants. Angle limit is Camera.BelowGroundMaxPolarAngleDegrees.",
             "DisposeOnModeExit"               : false,
             "DisposeOnModeExitNote"           : "Keeping the context alive between visits costs one GL context but makes returning to the 3D View instant; set true on machines short of GPU memory.",
             "ModeNote"                        : "Settings for the full-screen 3D View nav mode. Kept in the Env3d config rather than a mode config of its own because every value here is a property of the 3D environment, and the mode is only a full-bleed host for it."

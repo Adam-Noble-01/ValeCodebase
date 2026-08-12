@@ -209,12 +209,17 @@ const VghLantern__LanternEditor__ViewportHost__3d = (function() {
 
         VghLantern__ViewportHost3d__CanvasElement  =  hostElement.querySelector('.' + CSS_CANVAS);
 
+        var viewportCfg  =  VghLantern__ViewportHost3d__ViewportConfig();
+
+        // Below-ground orbit is granted here as well as to the full-screen 3D View:
+        // configuring a lantern is exactly when the underside matters, and the
+        // ground grid drops away on its own once the camera is under it.
         VghLantern__ViewportHost3d__Surface  =  pipeline.VghLantern__Env3d__RenderPipeline__Mount(
-            VghLantern__ViewportHost3d__CanvasElement
+            VghLantern__ViewportHost3d__CanvasElement,
+            { AllowBelowGroundOrbit : viewportCfg.AllowBelowGroundOrbit === true }
         );
         if (!VghLantern__ViewportHost3d__Surface) return;
 
-        var viewportCfg  =  VghLantern__ViewportHost3d__ViewportConfig();
         if (viewportCfg.DefaultPreset && pipeline.VghLantern__Env3d__RenderPipeline__ApplyPreset) {
             pipeline.VghLantern__Env3d__RenderPipeline__ApplyPreset(VghLantern__ViewportHost3d__Surface, viewportCfg.DefaultPreset);
         }

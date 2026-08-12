@@ -3,6 +3,745 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.0 - 12-Aug-2026
+### RELEASE | The Vale ridge and hip, end to end
+
+A release entry rather than a change entry. The ridge and the hips were a single
+placeholder profile swept along a centreline in one render environment; they are now
+the real Vale assemblies in the 3D viewport, the drawing views, the specification
+takeoff and the SketchUp round trip, adapted from one 22.5 degree standard library to
+any pitch the app allows. Point releases 0.2.9, 0.3.0 and 0.3.3 carry the detail; this
+records what was built, what was decided and why, and what is left.
+
+Twelve new modules and two new hand authored system indexes, about 4,800 lines.
+Eleven exported assets renamed and their metadata filled in. Versions 0.3.1 and 0.3.2
+landed alongside this work and are unrelated to it.
+
+---
+
+#### THE SHAPE OF IT
+
+| | |
+|---|---|
+| **Ridge** | six sections: aluminium core, Sapele beam, timber flashing block, lead flashing, capping block, aluminium capping. Two types - Aluminium Capped and Leaded Only, the second dropping the last two parts and with them finials and cresting. |
+| **Hip** | four sections: aluminium core, Sapele beam, timber fillet, lead flashing. Two types - Hip Beam, and Glaze Bar Hip which is offered and recorded but not yet drawn. |
+| **Block** | the octagonal turned block at each ridge end, which all five beams die into. |
+
+One mesh per part in 3D, one prism per part in the export, one row per part on the
+takeoff. Twenty-four selectable objects on a hipped lantern where the placeholder gave
+five. The granularity is the point: a cutting list needs the lead lengths apart from
+the timber lengths and they are not the same number.
+
+---
+
+#### THE DECISIONS THAT MATTER
+
+**One library, transformed - not a library per pitch.** Every asset is authored for a
+22.5 degree roof, which is the approach the eaves abutment already took. Beam depths
+come from a standards table snapped to the nearest tabulated pitch, because these are
+stock joinery sections and a 21 degree roof does not make a 232mm beam orderable.
+
+**Nothing is scaled.** `Geometry__StretchTools` moves vertices and never scales, which
+is the whole reason it exists. A ridge beam goes from 230mm to 250mm by translating
+everything below its 24mm moulded bottom and letting the flanks lengthen. Scaling the
+section by 1.087 would flatten an ogee, a bead and a half round nose - the only part of
+that beam anybody in the room can see. Topology never changes, so a stretched section
+extrudes into the same manifold solid the authored one does.
+
+**Pitch adaptation is applied as a DELTA from the authored standard, never as an
+absolute.** The hip fillet is drawn at 15.709 degrees where pure geometry says 15.045,
+because the workshop cuts it slightly flatter so the lead dresses without stretching.
+Overwriting a drawing office standard with a textbook would have been the easy mistake.
+So the applied angle is `authored + (formula(pitch) - formula(22.5))`: at the authored
+pitch nothing moves at all, and anywhere else the section moves by the correct
+geometric increment. Same reference-and-delta discipline the head beam re-slope uses.
+
+**Lead is folded, not stretched.** A flashing wing changes its fold ANGLE with the
+pitch and keeps its length exactly. Each wing tip rotates about its own root, holding
+the 51.7mm run and the 2mm sheet thickness to four decimal places.
+
+**The two beam depths are one decision.** They are paired so the undersides of the two
+plumb cuts finish level on the block facet - if they were picked apart they would step
+past one another at the one junction in the roof where four moulded beams meet in plain
+sight. One shared table, read by both systems, which is why `RidgeHipDepthTable` is its
+own module rather than living inside either.
+
+**The ridge and hip systems are otherwise independent.** A gable has a ridge and no
+hips; a pyramid has hips and no ridge. Neither loader, geometry module or mesh builder
+knows about the other, and they share exactly the depth table.
+
+---
+
+#### THE NUMBERS, ALL VERIFIED OUTSIDE THE BROWSER
+
+Every figure below was checked numerically against the shipped modules rather than
+read off a screen.
+
+| | |
+|---|---|
+| Beam depths | match the standards table exactly at all ten tabulated pitches |
+| Ridge seating faces and flashing wings | follow the roof pitch to 0.003 degrees |
+| Hip fillet and flashing | follow the delta-form section angle to 0.001 degrees |
+| Lead wing lengths | preserved to 4 decimal places through a re-fold |
+| Hip covering oversail | lands on the glass corner to 1e-13 mm, agreeing with BOTH adjoining panes so no gap can open |
+| Oversail distance | 238.6mm at 10 degrees, 231.4 at 22.5, 208.2 at 45 - it LENGTHENS as the pitch flattens |
+| Block clearance | the authored 6mm above the beam undersides held at every pitch |
+| 2D member frame | identical to the 3D extruder's basis to 1e-16 |
+| Exported prisms | all 22 wound outward by their own signed volume |
+
+**The ridge and hip undersides balance to between 0.3mm and 3.5mm across 17.5 to 40
+degrees**, which is the agreement the depth pairing exists for. The 45 degree row is
+17mm out and is listed under what is outstanding.
+
+---
+
+#### THE BUG THIS WORK SURFACED
+
+`Geometry__SectionLoopBuilder` welded section endpoints on a lattice of ONE MICRON,
+matching the three decimal places a SketchUp export carries. Setting the lattice AT the
+export's own precision was the mistake: any two coordinates that should be identical
+but differ in their last digit are then guaranteed to fall apart.
+
+The hip blocking section exports one segment whose endpoints sit at x = -20.001 and
+-6.001 while the segments meeting them sit at -20.000 and -6.000. Same points - the
+mirrored side of the identical section comes out exactly 20.000 and 6.000 - but they
+landed in adjacent cells, four vertices ended up with one edge each, five open chains
+were discarded, and **the part produced no faces and no solid at all**. Silently.
+
+Lattice is now ten microns, still an order of magnitude finer than the finest real
+feature in the library. Every section in the profile library was re-stitched to confirm
+no regression: the glaze bar, base frame and interior trim areas come out identical to
+the figures their own indexes record.
+
+---
+
+#### THE DRAWINGS, AND A FALSE START WORTH RECORDING
+
+The first attempt drew the ridge and hip as section silhouettes into the SVG layers.
+It was written, reviewed on screen and removed the same day. It was a second
+interpretation of the lantern sitting beside the projected one, which is the thing this
+application deliberately does not do - and on screen the two did not agree.
+
+The real fault was one file: `ProjectedEdges__ModelStage` stages the actual Env3d model
+and projects it, and its own header says the build order mirrors the render pipeline
+exactly. It had stopped doing so the moment three builders were added to the pipeline
+and not to the stage. Three lines of import and two calls.
+
+**Glass then had to stop hiding things.** Every staged mesh was both an edge source and
+an occluder, and glazing is double sided so it is never backface culled - it behaved as
+a solid wall. At 25 degrees the near slope of glass runs 214mm in front of the ridge
+beam at its own mid height, so strict hidden line removal deletes every beam, the
+interior joinery and every far side bar. `Model.GlazingOccludes` now defaults false and
+`StageSampler` returns an EDGE set and an OCCLUDER set. That is the one place those two
+deliberately differ, so both counts are reported and the divergence is a number
+somebody can read rather than an assumption. It is what a drawing office does anyway:
+glass goes on a layer the hidden line calculation ignores while still being plotted.
+
+---
+
+#### THE SKETCHUP ROUND TRIP
+
+The exporter carries all twenty-four parts plus the block as a placed instance, and
+computes nothing: every millimetre is asked of the same two geometry modules the
+viewport asks, so a hip beam in SketchUp is cut where the hip beam on screen is cut.
+Tags went from 14 to 24, one per real part family, matching what the glaze bar's three
+already did.
+
+**The importer needed no code change, and that is the design paying out rather than a
+corner cut.** Verified rather than assumed: it carries no part vocabulary. Tags come
+from the payload by key, materials from the material table, groups from the assembly
+list, and the only part kinds are `prism`, `instance` and `linework` - all three already
+handled. `Model.Definitions` is prepared once at the top level and instances resolve by
+key, so the block's definition works from the roof frame assembly even though the
+finials' come from components, and `Geom::Transformation.axes` takes the block's plan
+rotation directly. Schema 1.1.0 is a MINOR, so `NA_SUPPORTED_MAJOR` stays at 1 and an
+older plugin would still open the file.
+
+---
+
+#### WHAT IS OUTSTANDING
+
+| | |
+|---|---|
+| **Glaze bar hip** | in the UI, recorded on the project, drawn as hip beams with the substitution visible in the warnings panel. Profiles and build logic still to author. |
+| **The 45 degree depth row** | 250 ridge against 180 hip puts the two undersides 17mm apart where every other row holds within 3.5mm. A 166mm hip would balance it. Built as tabulated, because the standards table is the authority - but worth a word with the technical department. |
+| **Ridge capping overhang** | the capping cantilevers past the block centre on the workshop drawings and that projection is not dimensioned in the 22.5 degree standard set. Carried as `OverhangPastBlockCentreMm: 0` in the ridge index, ready for a real number. |
+| **Non-occluding glass is broad** | with the flag off you now see everything inside the roof, not only the beams. If the elevations read too busy the fix is a drawing decision rather than an engine one. |
+
+---
+
+#### THE CHECKS THIS LEAVES BEHIND
+
+Five exporter dev checks pass, `RidgeAndHips` being new: real geometry brain, real
+system loaders with `fetch` backed by the filesystem so the loaders run their own code
+path rather than being stubbed into agreement with the thing under test, and the real
+encoder. `EavesExtension` was rewritten for the four part hip - its old assertion was
+true of one swept placeholder and is now true of the covering only, so it asserts that
+and asserts the beam and core deliberately do not.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.3.3 - 12-Aug-2026
+### The SketchUp export carries the real ridge and hip; the importer needed nothing
+
+#### Added - `80__System__SketchUpExport/…Encoders__RidgeAndHips__.js`
+- The six part ridge, the four part hip on every hip, and the octagonal block they die
+  into. 24 selectable objects on a hipped lantern where the placeholder gave five. A
+  cutting list needs the lead lengths apart from the timber lengths and they are not the
+  same number.
+- The encoder computes nothing. Every millimetre comes from `Geometry__RidgeAssembly` and
+  `Geometry__HipAssembly` - the same two modules the 3D viewport asks - so the pitch
+  adaptation, the depth stretch, the plumb cut planes and the hip covering's oversail are
+  all applied before this module sees them. Asking rather than repeating is why a hip beam
+  in SketchUp is cut where the hip beam on screen is cut.
+- End treatments per part, and the differences ARE the detail: ridge beam plumb cut 67.5mm
+  short of each block centre; the rest of the ridge running the full datum length over the
+  block; hip beam plumb cut on the facet at its head and 18mm inboard of the eaves corner
+  at its foot; hip core 42.5mm past the datum onto the extrusion it welds to; hip covering
+  oversailing to the outer edge of the glass.
+- Each beam carries `BeamDepthMm`, `StandardDepthMm` and `DepthStandardPitchDeg`, so a file
+  found in six months says which standards row it was built to. A clamped depth override is
+  pushed into the payload warnings rather than absorbed.
+- The block is stretched before it is encoded, by the ridge beam's own depth delta, and
+  travels as ONE definition however many placements - both blocks are the same component at
+  the same depth.
+
+#### Changed - the tag vocabulary was renumbered
+- One ridge tag and one hip tag became six and four, matching the real assemblies the way
+  the glaze bar's three already did. 14 tags became 24 and everything after them shifted up.
+- A model carrying an import made before today keeps its old `VGH__05__RoofFrame__Ridge`
+  alongside the new ones. The importer creates tags by name and has no way to know the old
+  one was the same thing, so this is called out in the config note rather than papered over.
+
+#### Changed - the ridge capping carries a third finish key
+- It follows the exterior finish exactly as the glaze bar cap does, and a lantern may diverge
+  it, so it gets its own material KEY while sharing the frame finish's NAMING. Where the two
+  agree both keys resolve to one SketchUp material name and the importer reuses a single
+  swatch; where they diverge the names differ and two are created. That falls out of naming a
+  material after its finish, so no caller tests whether they match.
+
+#### Changed - `Encoders__BaseAndRoof__.js` keeps the verge and loses the rest
+- `ROOF_FRAME_ROLES` is down to `verge`. A gable's vergeboard genuinely IS one swept section
+  and the roof form that needs it is disabled rather than deleted, so the role keeps working
+  the day somebody enables it. The hip extension helper stays because the glazing encoder
+  still runs its pane feet down to the cap ends with the same construction.
+
+#### Changed - `Encoders__JoineryAndComponents__.js` splits fetch from encode
+- `MeshDefinition` is now public and takes a mesh block rather than a component id. The
+  finial path fetches then calls it; the ridge block stretches then calls it. One encoder,
+  because the block's mesh never comes straight off an asset the component loader can fetch.
+
+#### Added / Changed - the dev checks
+- New `VghLantern__DevCheck__SketchUpExport__RidgeAndHips__.cjs`: real geometry brain, real
+  loaders, real encoder. Asserts every part exported once per member, every tag and material
+  key resolves, no NaN coordinate, **every prism wound outward by its own signed volume**,
+  both beams reporting the same standards row, and a Leaded Only Ridge dropping exactly the
+  capping and its block.
+- `…EavesExtension__.cjs` rewritten for the four part hip. The old assertion - every hip nose
+  reaches the cap end level - was true of one swept placeholder and is now true of the
+  COVERING only, so it asserts that, and asserts the beam and core deliberately do NOT: the
+  beam's foot sits 18mm inboard on the corner bisector and the core runs 42.5mm past. It also
+  measures the beam's DATUM foot rather than its lowest vertex, which was the wrong number to
+  compare against a cap end level 200mm out at the roof edge.
+- Both checks now back `fetch` with the filesystem, so the ridge and hip system loaders run
+  their own code path - index, asset, stitch, cache - rather than being stubbed into
+  agreement with the thing under test.
+
+#### The importer needed no change, and that is the design paying out
+- Verified rather than assumed. It carries no part vocabulary: tags come from the payload's
+  `Tags` table by key, materials from `Materials`, groups from `Assemblies`, and the only
+  part kinds are `prism`, `instance` and `linework` - all three already handled.
+- `Model.Definitions` is prepared once at the top level and instances resolve by key, so the
+  block's definition works from the roof frame assembly even though the finials' come from
+  components. `Geom::Transformation.axes` takes the block's plan rotation directly.
+- Schema went to 1.1.0. That is a MINOR - eleven new tags, a third swatch, twenty-four new
+  parts and a second definition are all new data rather than changed meaning - so
+  `NA_SUPPORTED_MAJOR` stays at 1 and an older plugin would still open the file.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.3.2 - 12-Aug-2026
+### Removed - the Finial Base dropdown and the Place at Ridge Ends toggle
+
+Two controls sat under Fit Finials that no longer described a decision anybody makes. The
+finial base was a moulded collar chosen from a list; since 0.2.9 the collar under a finial is
+the octagonal ridge block `RidgeAssembly` builds at every ridge end and pyramid apex, sized off
+the beam depth for the pitch, so choosing one would have seated a second base inside the first.
+Place at Ridge Ends was a toggle that only ever said yes: it defaulted true, every project on
+disk stored it true, and Fit Finials one row above it already asked the same question.
+
+Tracing the base out turned up that it had never been drawn anywhere. The solver publishes
+`ridgeEnd` and `apex` anchors and nothing else, and both map to the `finial` component role, so
+the `finialBase` entry in the two anchor-to-role tables matched no anchor that has ever
+existed. The 2D renderer, the 3D loader and the SketchUp encoder all resolve a component the
+same way, so none of them ever placed one. It reached exactly one output in the whole
+application: a row in the specification's Components table.
+
+#### Removed - editor controls
+- The `finialBaseComponentId` and `placeAtRidgeEnds` descriptors from
+  `LanternEditor__Section__Finials`, with the `HasRidgeEnds` visibility predicate they were the
+  only caller of.
+- Seed defaults for both fields from `VghLantern__AppConfig__Main__.json`.
+- The ridge-end write in `CreationWizard__Steps__ApplyFinial`. Choosing a finial on a PYRAMID
+  still switches the apex placement on, because that toggle defaults off and the finial would
+  otherwise be stored and never drawn. A ridged roof needs no equivalent now.
+
+#### Removed - the finialBase role and the one asset that filled it
+- `05__Data__LanternComponentLibrary/45__Roof__RidgeCaps/` and the `VGH_FIN0101` Finial Base
+  Moulded 130mm asset in it, plus the folder's `CATEGORY_RULES` entry in the index build
+  utility so a regeneration cannot bring the role back.
+- `ComponentDataIndex` regenerated: 4 assets across 3 categories down to 3 across 2.
+- The `finialBase` mapping from both anchor-to-role tables, the base id read in each
+  `ComponentIdForRole`, the takeoff's Finial Base row, the InspectStats label, and the
+  `FinialBase` SketchUp naming template. That template was dead too: the encoder names every
+  placed component from the hardcoded `Finial` one.
+
+#### Changed - anchor filtering in the three places that do it
+`Env2d__FinialRenderer`, `Env3d__ComponentLoader__Glb` and the SketchUp components encoder each
+lost the ridge-end branch of `AnchorWanted`. A ridge end takes a finial as soon as finials are
+fitted. The 3D loader keeps its `ANCHOR_ROLE_RIDGE_END` constant, because the Leaded Only Ridge
+veto added in 0.3.0 still reads it.
+
+#### Schema
+- Both fields added to `SCHEMA__RETIRED_FINIAL_FIELDS` and stripped on load, the same pattern as
+  the already-retired pitch and upstand fields. Any project file that turns up later cleans
+  itself on normalise.
+- 52 stale keys removed from 17 saved projects in `07__LocalProjectData` as well, so the files
+  on disk match now rather than whenever each is next opened.
+
+#### Retained deliberately - Place at Apex
+It reads as the same kind of toggle and is not. It defaults FALSE, so it is the only thing that
+puts a finial on a pyramid, and dropping it would have silently added one to every pyramid ever
+saved. Place at Ridge Ends could go precisely because it defaulted true and no project on disk
+disagreed.
+
+#### Known - two component library folders are still uncatalogued
+`47_1000__Roof__RidgeElement__Components` and `48_1000__Roof__HipElement__Components` have no
+`CATEGORY_RULES` entry, so the index builder warns and skips them. Unchanged by this pass and
+unrelated to it, but the warning is now two lines of a much shorter build log and worth a
+decision either way.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.3.1 - 12-Aug-2026
+### The 3D view can be read from underneath, and its controls become a real menu
+
+#### Added - the camera may go below the ground plane, on the two surfaces that review a model
+- `Env3d__CameraRig` took a second argument. `AllowBelowGroundOrbit` swaps the polar clamp from
+  `Camera.MaxPolarAngleDegrees` (88, just above the horizon) to
+  `Camera.BelowGroundMaxPolarAngleDegrees` (178), so the underside of a lantern - glaze bar
+  soffits, the ridge block, the builders upstand reveal - can actually be looked at.
+- 178 rather than 180 because at exactly straight-up-from-below the orbit azimuth is undefined
+  and the view spins on itself. The two clamps are resolved through `Math.max`, so a config edit
+  that put them the wrong way round can only ever open the orbit further, never tighten it.
+- Granted to the full-screen 3D View and, at Adam's request in the same session, to the Lantern
+  Editor's 3D panel: configuring is exactly when the soffits matter. The drawing sheet
+  viewports are deliberately NOT granted it - a sheet view photographed from underneath is
+  never what the sheet wants - so they keep the clamp by mounting with no option at all.
+- Both are config, not code: `DedicatedViewportMode.AllowBelowGroundOrbit` and the Lantern
+  Editor's `Viewport3d.AllowBelowGroundOrbit`.
+
+#### Added - the ground grid drops away while the eye is under it
+- From below, a grid at y=0 draws straight across the underside of the lantern and hides the
+  thing the view was moved to see. `GroundPlane.HideGridWhenCameraBelow` switches it off while
+  the camera is under the plane and back on when it climbs above.
+- Evaluated in the draw loop rather than on the orbit events, so it holds for orbit, pan, dolly,
+  preset and zoom-extents alike instead of only for the paths that remember to ask. It returns
+  without invalidating when nothing moved, so a per-frame check cannot hold the on-demand loop
+  awake, and the flag is resolved once at mount rather than read every frame.
+- `SetGroundGridVisible` became `SetGroundGridSuppressed(surface, reason, isSuppressed)`. Two
+  systems now want that grid gone - the cross section while a cut is live, the camera while it
+  is underneath - and a single visible flag let whichever spoke last win: clearing a cut while
+  orbiting under the model put the grid back as a lid across the underside. Each reason is held
+  separately and the grid returns only when both release.
+
+#### Added - an Aluminium Structure element view
+- A fourth element view after Structure Only, narrowing it to the metal. The ridge beam, the hip
+  beams and the head beam are all Sapele and all drop out, leaving the ridge and hip cores, the
+  eaves extrusion and the glaze bar cores. It is the extrusion order read as a picture.
+- Filtered on the part's `SpecMaterial` from the profile library - the same string the
+  specification tables and the takeoff quote - and NOT on the render material, which is a finish
+  rather than a substance and would call a powder coated section and a painted timber the same
+  thing. Matched as the lowercase substring `alumin`, so mill finish, powder coated and any
+  anodised or American-spelled variant authored later all pass with no edit.
+- A part that declares NO material is kept, which is the deliberate opposite of the type rule
+  beside it. The unstamped meshes in this app are swept skeleton members carrying the lantern's
+  frame finish, which is metal, so a strict keep-list would have emptied the view of real
+  aluminium. Any timber authored into the library arrives declaring its Sapele and drops out on
+  its own.
+- Known and left alone: the builders upstand box stamps no element type, so it defaults to
+  Structural and appears in this view and in Structure Only. The filter's own header says the
+  kerb is By Others. One line in the upstand builder fixes it, and it changes Structure Only
+  too, so it is a decision rather than a tidy-up.
+
+#### Changed - the 3D View controls are a menu now, not a stack
+- Six labelled clusters pinned to the top left had grown past the point a flat stack works:
+  every control in the mode on screen at once, at equal weight, whether or not the reviewer was
+  using it. Rebuilt on the ValeSpec document preview side menu - same card, same header, same
+  rotating caret, same section panel - so the two applications read as one product.
+- Four collapsible sections: Model Display (display mode and elements), Camera (presets and zoom
+  to fit), Cross Section, Lantern (selector and the members readout). A section with an empty
+  body is not rendered at all, so a config switch or a single-lantern project removes a heading
+  rather than leaving one that opens onto nothing.
+- Docked RIGHT: the camera presets frame the model centre-left and the reviewer's cursor lives
+  over it. The setting-out key moved to the left as its counterweight.
+- Draggable by the grip in the header, clamped inside the viewport, double click to dock it
+  back. Position is held against the VIEWPORT CONTAINER rather than the window, so the menu
+  lands in the same place on the canvas whatever the app chrome around it is doing.
+- Section icons, the caret and the grip are inline SVG rather than image files: they take the
+  brand colour from CSS, stay crisp at any UI scale, and there is no asset to keep in step with
+  the markup. `01__AppAssets__VghLantern/UiIcons__MenuIcons__ToolsMenu` stays empty.
+- Menu position and which sections are open persist per user through a new
+  `Viewport3d__MenuDataHandler`, on the same debounced `/api/user-menu-config/{slug}` path the
+  Preview and Send menu uses. Which sections a FIRST run opens with is read from the merged
+  config rather than restated in the menu module, so it is a JSON edit. The web demo build has
+  no server behind that endpoint and falls back to session-only state with a warning.
+- The public API is unchanged, so `Viewport3d__Layout` needed no edit. The old `Overlay*` CSS
+  classes are gone; nothing outside the module referenced them.
+
+#### Fixed - two menus writing to one user file could wipe each other
+- One file holds the preferences for every mode and the Flask endpoint REPLACES it with whatever
+  is posted. Each mode was posting the copy it took at load time, so the moment the 3D menu
+  started writing, the next Preview and Send save would have silently undone the 3D menu's
+  position and section state, and vice versa.
+- Both handlers now re-read the file, merge only their own block onto it, and post that. A mode
+  can only ever overwrite its own keys. Found while wiring the new menu, not in the field.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.3.0 - 12-Aug-2026
+### The ridge and hip reach the projected 3D linework, and two loose ends close
+
+#### Fixed - `27__System__ProjectedEdges2d/…ModelStage__.mjs` was three builders behind
+- That module stages the real Env3d solid model into a detached group and projects it, which
+  is what makes the drawing linework the actual model measured rather than a second opinion
+  about it. Its header says the build order mirrors Env3d RenderPipeline exactly - and since
+  0.2.9 it had not, because the ridge assembly, the hip assembly and the ridge block were
+  added to the pipeline and not to the stage.
+- All three are now staged: ridge and hip under `IncludeFrame`, the block under
+  `IncludeComponents`, in the pipeline's own order. Two `IncludeFrame` blocks rather than one,
+  so the flag still matches the scene group each builder lands in AND the sequence still reads
+  the same against the pipeline. Order has no bearing on the projection itself - every visible
+  mesh is collected and given a BVH - it is purely about the two files staying readable
+  against each other, which is exactly what stopped these three being noticed as missing.
+
+#### Reverted - the hand drawn 2D ridge and hip linework from earlier in this session
+- An `Env2d__RidgeHipRenderer` drawing section silhouettes into the SVG layers was written,
+  reviewed on screen and removed the same day. It was a second interpretation of the lantern
+  sitting beside the projected one, which is the thing this application deliberately does not
+  do, and the two did not agree on screen.
+- Removed with it: the renderer, its wiring into both view composers, its config section, its
+  CSS, the `Draw2d` declarations added to the two system indexes, and the member section frame
+  helper added to CoordHelpers. The profile trace renderer keeps its `ridge` and `hip` skip -
+  those roles still point at retired placeholder profiles, and banding one over real projected
+  geometry would be wrong however the geometry got there.
+
+#### Fixed - finials are no longer placed on a Leaded Only Ridge
+- `AllowsFinials` was declared on the ridge type and exposed by the loader in 0.2.9, then read
+  by nothing, so a leaded only ridge placed finials with no capping to weld them to.
+- The 3D component loader now vetoes the ridge-end anchors and the Finials editor section hides
+  entirely. Both answer from the ridge system index rather than a type name test, so a third
+  ridge type needs no edit in either. A stale reference to the retired `PlaceAtRidgeEnds` field
+  went at the same time.
+- A pyramid is unaffected by design: its apex is a four hip junction with no ridge and no
+  capping in it, so what the ridge type allows has no bearing there.
+
+#### Fixed - ridge and hip notes reach the warnings panel
+- Three now surface in the editor: a glaze bar hip drawn as hip beams, a depth override that
+  was clamped, and a depth table that failed to load and silently reverted both beams to the
+  22.5 degree standard. They were reaching the console only.
+- DERIVED in the WarningSystem from the lantern and its skeleton rather than read off a render
+  surface. They are facts about the configuration, equally true on a lantern nobody has opened
+  in 3D, and two surfaces can be alive at once with no reason to agree about which one the
+  panel speaks for. Deriving them keeps that module a pure function of the configuration.
+- The pitch snap is deliberately not surfaced: it is documented intended behaviour that would
+  fire on most real pitches, and it belongs on the specification, which quotes the standard
+  built to.
+
+#### Added - glass draws its own edges without hiding what is behind it
+- Staging the ridge and hip was necessary and not sufficient. The projection treated every
+  staged mesh as both an edge source and an occluder, and glass is double sided so it is never
+  backface culled - meaning it behaved as a solid wall. The ridge capping and hip flashing
+  would have appeared, sitting above the roof plane, and the BEAMS would not: at 25 degrees the
+  near slope of glass runs 214mm in front of the ridge beam at its own mid height. Textbook
+  hidden line removal, and useless on a glazed roof.
+- `Model.GlazingOccludes`, default false. StageSampler now returns an EDGE set and an OCCLUDER
+  set: glass stays in the first and leaves the second. This is the one place those two sets
+  deliberately differ - everywhere else they are the same list chosen by the same rules,
+  precisely so the passes cannot quietly disagree - so both counts are reported and the
+  divergence is a number somebody can read rather than an assumption.
+- Glass is identified by the element type on the mesh, not by its name or material. The
+  glazing builder now stamps `VghLantern__ElementType` explicitly rather than relying on the
+  scene group default, because the projection stage flattens every builder into one group and
+  a consumer there has no group to read.
+- It is what a drawing office does anyway: glass goes on a layer the hidden line calculation
+  ignores while still being plotted. Set the flag true to restore strict hidden line removal.
+- The raster preview renders the occluder soup and so loses glass with it. That is correct
+  rather than a side effect - the preview is defined as the same occluders seen from the same
+  direction.
+- Checked numerically against the shipped sampler: glass present in the edge set and absent
+  from the occluder set, triangle counts and the exactly sized buffers correct in both modes,
+  no unwritten slot.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.9 - 12-Aug-2026
+### The real Vale ridge and hip replace the placeholder swept sections
+
+The ridge and the hips were a single placeholder profile swept along a centreline. They are
+now the assemblies they are on the shop floor: a ridge of up to six sections, a hip of four,
+and the octagonal block all five members die into. Built on exactly the pattern the glaze bar
+composite established, and dynamically adapted from ONE 22.5 degree standard library rather
+than a library per pitch, the same way the eaves abutment already works.
+
+#### Added - assets, renamed to the specification numbering
+- The ridge profiles exported as `47_1001 / 47_1021 / 47_1101 / 47_1121 / 47_1201 / 47_1202`
+  are renamed `47_2001 / 47_2021 / 47_2101 / 47_2121 / 47_2201 / 47_2202`. The old `47_1001`
+  collided with the octagonal block component, which carries that id in the COMPONENT library.
+- The hip lead flashing exported as `47_2121` is renamed `48_2121`, joining its three siblings
+  in the `48_2xxx` range.
+- All eleven assets (ten profiles plus the block) had empty metadata blocks. Descriptions,
+  materials, finishes, element types and product names are now filled, plus a standards note
+  on every one recording that it came from the 22.5 degree CAD standards library held by the
+  technical department, captured 12-Aug-2026.
+- `Na__Asset__ValeSpec__ElementType` stays inside the five word vocabulary the 3D element
+  isolation and the specification tables filter on. The finer wording from the brief -
+  Timber Substructure, Timber Packer, Decoration, Decorative Trim - is carried alongside it as
+  `ElementRole`, which is descriptive and never filtered on. Inventing new filter types would
+  have made every timber packer read as structure in the Structure Only view.
+
+#### Added - `06__Data__LanternProfileLibrary/VghLantern__RidgeHipSystem__TimberDepthTable__.json`
+- The pitch to beam depth standard, both columns in one file because the two depths are one
+  decision. The hip depth is chosen so the undersides of the ridge and hip plumb cuts finish
+  at the same height on the block facet; picked apart they stop agreeing at the one junction
+  in the roof where four moulded beams meet in plain sight.
+- Rows are SNAPPED, not interpolated. These are stock joinery sections and a 21 degree roof
+  does not make a 232mm beam orderable. The snapped row travels with the answer so a
+  specification can quote the standard it was built to.
+- Pitches below 17.5 clamp to the shallowest row. The pitch slider goes down to 10 and the
+  standards library does not.
+
+#### Added - two hand authored system indexes
+`06__Data__LanternProfileLibrary/47_2000__RidgeElements__Profiles/VghLantern__RidgeSystem__Index__.json`
+`06__Data__LanternProfileLibrary/48_2000__HipElements__Profiles/VghLantern__HipSystem__Index__.json`
+- Hand authored, like the glaze bar and base frame indexes and for the same reason: a folder
+  scan cannot know which asset is the capping and which is the block it seats on, which two
+  parts drop out on a leaded only ridge, or where the hinge sits on a section that re-slopes.
+- Each declares its types, its parts in stack order, its end treatments, and per part the
+  exact vertices a pitch adaptation moves.
+
+#### Added - `04__MathUtils__LanternGeometry/VghLantern__Geometry__StretchTools__.js`
+- The reusable 2D and 3D stretch. Nothing in it scales, which is the entire point.
+- A ridge beam is 230 deep at 22.5 degrees and 250 at 40. Scaling the section by 250/230
+  flattens the 24mm moulding at its bottom - an ogee, a bead and a half round nose - which is
+  the only part of the beam anybody in the room can see. A stretch instead picks a split line,
+  translates everything past it, and lets the segments crossing it lengthen. Topology never
+  changes, so a stretched section extrudes into the same manifold solid the authored one does.
+- `StretchFaces2d` for sections, `StretchMesh3d` for mesh components, plus
+  `RotateSelection2d`, `ApplyMoveMap2d`, `MirrorMoves` and `BuildPitchMoveMap` for the
+  re-slope work. `ApplyMoveMap2d` is the pattern `BaseFrameAssembly` already re-slopes the
+  head beam with, lifted out so it stops being private to one module.
+
+#### Added - two geometry brains
+`04__MathUtils__LanternGeometry/VghLantern__Geometry__RidgeAssembly__.js`
+`04__MathUtils__LanternGeometry/VghLantern__Geometry__HipAssembly__.js`
+- Separate modules because a ridge and a hip are separate operations - a gable has one without
+  the other - and they share exactly one thing, the depth table, which lives in its own module
+  for that reason.
+- Ridge: block placements, the plumb cut planes the beam dies into, the block prism stretch.
+- Hip: the section angle solve, the plumb cut planes at both ends, the core's eaves extension.
+- The hip section angle is applied as a DELTA, never as an absolute. In the plane normal to a
+  hip, a roof plane of pitch p appears at `atan(t / sqrt((1+t*t)^2 + 1))` where `t = tan(p)`.
+  At 22.5 degrees that returns 15.045 while the CAD standard is drawn at 15.709: the workshop
+  cuts the fillet slightly flatter than pure geometry so the lead dresses without stretching.
+  So the applied angle is `15.709 + (formula(pitch) - formula(22.5))`. At the authored pitch
+  nothing moves and the drawing office number survives untouched; anywhere else the section
+  moves by the correct geometric increment. Same reference-and-delta discipline the base frame
+  head beam re-slope already works to.
+
+#### Added - three data loaders
+`02__AppData/VghLantern__AppData__RidgeSystemLoader__.js`
+`02__AppData/VghLantern__AppData__HipSystemLoader__.js`
+`02__AppData/VghLantern__AppData__RidgeHipDepthTable__.js`
+- Fetch, stitch and memoise, in the shape the glaze bar loader already answers in. The capping
+  is 1.1 MB and the block is 9.5 MB, so neither the fetch nor the stitch happens twice.
+- A hip type declared `IsBuilt: false` - currently the glaze bar hip - is drawn as a hip beam
+  and the substitution is REPORTED. Offering the type before its geometry exists is what lets
+  a specification carry the intent; substituting silently would be the worst option available.
+
+#### Added - `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__SectionSolid__.mjs`
+- The manifold extruder, lifted out of the glaze bar composite because the ridge and hip need
+  the identical construction and a second copy would have been the start of three. Same
+  reasoning as before: assembled by hand rather than through `ExtrudeGeometry`, because these
+  solids get cut and a boolean against an unwelded shell either fails or silently returns the
+  wrong volume.
+- `BuildRunSetMesh` is new - one section, many runs, one merged buffer, one span per run so a
+  raycast can still name the member it hit.
+
+#### Changed - the hip covering oversails to the outer edge of the glass
+- First build showed the hip's timber fillet and lead stopping dead on the eaves datum
+  corner while the glass and the glaze bar caps carried on past it. Weathering that stops
+  short of the roof edge does not see water off the roof, it delivers it into the corner of
+  the frame, which is the one place on a lantern water must never be put.
+- `HipAssembly.OversailFoot` slides the foot of the BLOCKING and the FLASHING down the hip's
+  own axis until its level drops by the cap extension times sin(pitch) - until it reaches the
+  level the glaze bar cap ends sit at. The core and the beam are untouched: the core still
+  stops on the eaves extrusion it welds to at 42.5mm, the beam still takes its 18mm plumb cut.
+- The distance is not authored. It falls out of the roof and LENGTHENS as the pitch flattens,
+  because the same vertical drop takes longer to reach along a shallower hip: 238.6mm at 10
+  degrees, 231.4 at 22.5, 208.2 at 45.
+- It lands exactly on the glass rather than near it. The glazing builder already extends each
+  pane's eaves corner along that corner's own upslope boundary edge - which at a hip corner IS
+  the hip - scaled so the slide's down-slope component equals the same cap extension. Sliding
+  to the cap-end level and sliding until the down-slope component equals the extension are one
+  construction written two ways. Checked against the glazing arithmetic on both adjoining
+  panes at nine pitches: agreement to 1e-13 mm, so no gap can open at the corner.
+- The takeoff measures the oversail off a real hip rather than recomputing it, so the length
+  ordered is the length built.
+
+#### Added - three mesh builders
+`06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__RidgeAssembly__.mjs`
+`06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__HipAssembly__.mjs`
+`06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__RidgeBlock__.mjs`
+- One merged mesh per part, so each is separately pickable, separately isolatable by element
+  type, and separately countable. Four hips times four parts would otherwise be sixteen draw
+  calls for geometry sharing four materials.
+- Ridge beam plumb cut 67.5mm short of each block centre. Hip beam plumb cut on the block
+  facet at its head and 18mm inboard of the eaves datum corner at its foot - the same 18mm the
+  glaze bar trim takes, on the corner bisector. Hip core extended 42.5mm along its own pitch to
+  the eaves extrusion it welds to, read from the base frame index so the two cannot drift.
+- The block's straight prism stretches by the ridge beam's own depth delta, holding the
+  authored 6mm between the beam underside and the top of the turning at every pitch. The
+  turning travels rigid: it is a lathe profile, and one 9 percent taller reads as a different
+  block.
+
+#### Fixed - `04__MathUtils__LanternGeometry/VghLantern__Geometry__SectionLoopBuilder__.js`
+- The endpoint weld lattice was one micron, matching the three decimal places a SketchUp export
+  carries. Setting it AT the export's own precision was the mistake: any two coordinates that
+  should be identical but differ in their last digit are then guaranteed to fall apart.
+- The hip blocking section (48_2101) exports one segment whose endpoints sit at x = -20.001 and
+  -6.001 while the segments meeting them sit at -20.000 and -6.000. Same points - the mirrored
+  side of the identical section comes out exactly 20.000 and 6.000 - but at a one micron lattice
+  they landed in adjacent cells, four vertices ended up with one edge each, five open chains
+  were discarded, and the part produced no faces and no solid at all.
+- Lattice is now ten microns, still an order of magnitude finer than the finest real feature in
+  the library. Every section in the profile library was re-stitched to confirm no change: the
+  glaze bar, base frame and interior trim areas come out identical to the figures their own
+  indexes record.
+
+#### Changed - `06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__Skeleton__.mjs`
+- `ridge` and `hip` join the roles this module does not build, alongside the glaze bars. The
+  members stay in the solved skeleton because the ridge datum and the hip construction triangles
+  are what the whole roof is set out from; they are simply never given a section here.
+- The hip nose extension helper is retired with the placeholder it existed for. It slid each
+  hip's foot down to the level of the glaze bar cap ends so the swept placeholder did not float
+  short of the roof edge; the real hip takes real end cuts instead.
+
+#### Changed - `20__System__LanternAssembly__EditorMode/VghLantern__LanternEditor__Section__RidgeAndHips__.js`
+- The Ridge Section and Hip Section dropdowns are gone. There is no section to choose: a Vale
+  ridge is a fixed stack and a hip is a fixed stack, so offering a profile was offering a choice
+  that does not exist.
+- In their place: Ridge Type (Aluminium Capped or Leaded Only), Hip Type (Hip Beam or Glaze Bar
+  Hip), a capping finish that follows the exterior finish when left empty, and a depth override
+  slider for each beam at plus or minus 100mm against the standard for the pitch.
+- Cresting hides entirely on a leaded only ridge, because cresting is welded to the aluminium
+  capping that type does not have. Answered from the index rather than a type name test.
+
+#### Changed - `04__MathUtils__LanternGeometry/VghLantern__Geometry__QuantityTakeoff__.js`
+- Two generic rows quoting a placeholder profile id become one row per part, read from the two
+  system indexes the same way the base frame rows already are.
+- Lengths are the CUT lengths. No long point correction is needed on either beam even though
+  both ends are plumb cut: the two planes on a member are parallel, so the bottom arris is
+  displaced equally at both ends and the piece is a parallelogram in elevation. That is NOT
+  true of the glaze bar trim, where one end is plumb cut and the correction is real.
+
+#### Retained deliberately
+- `RidgeProfileId` and `HipProfileId` stay on every saved project. Nothing in the web app
+  sweeps them now, but the SketchUp exporter still reads them, and dropping the fields would
+  rewrite every project on disk to remove data another tool is using.
+- The 2D SVG pipeline still traces those placeholder profiles for the ridge and hip bands in
+  plan and elevation. The 3D model and the takeoff are the deliverable of this pass; bringing
+  the drawing views onto the new assemblies is the next one.
+
+#### Known - the 45 degree row does not balance
+- Across 17.5 to 40 degrees the tabulated depths hold the ridge and hip undersides within
+  0.3mm to 3.5mm of each other at the block facet, which is the agreement the pairing exists
+  for. At 45 degrees the table's 250 ridge and 180 hip put them 17mm apart; a 166mm hip would
+  balance. Built as tabulated rather than corrected in code - the standards table is the
+  authority - but worth a word with the technical department.
+
+
+# ---------------------------------------------------------
+## Vale__LanternDesigner v0.2.8 - 12-Aug-2026
+### Authored edge and face state carried through to the SketchUp round trip
+
+Component Editor Tools 0.6.2 (asset schema 1.2.0) now captures the soften, smooth, hide
+and edge-colour state an author sets in SketchUp. This picks that up at the two places the
+web application was silently discarding it. **The 3D render engine is untouched** - no
+material, lighting or shading change, and no new linework drawn in the viewport.
+
+#### Changed - `06__Env3d__ThreeRenderPipeline/…ComponentLoader__MeshJson__.mjs`
+- Schema 1.2.0 stopped culling hidden geometry during capture, because a flag that says
+  "hidden" is worthless if the thing it describes was dropped before the flag could be
+  written. The consequence for this loader is that `Na__Geometry__Faces` now contains faces
+  the author hid, which would render solid.
+- `FaceIsHidden` filters them: `Na__Face__IsDisplayed === false` preferred (it already folds
+  in tag visibility), `Na__Face__IsHidden === true` as fallback. Assets carrying neither key
+  predate 1.2.0 and draw every face exactly as before. Count reported to the console.
+- Header now records why edges are still not consumed here: the exporter already averaged
+  vertex normals across smoothed edges via `face.mesh(7)`, so smooth shading is baked into
+  `Normal_X/Y/Z` and this shaded mesh needs nothing from the edge list.
+
+#### Changed - `80__System__SketchUpExport/…Encoders__JoineryAndComponents__.js`
+- `BuildDefinition` read only `Vertices` and `Faces`, so every authored edge style was lost
+  before the payload was written and the importer had nothing to work from. It now emits a
+  `Definitions[].Edges` array of `{ A, B, Soft, Smooth }` index pairs.
+- `Hidden`, `CastsShadows` and the colour triple are written **only when they differ from
+  what `add_face` already produces**, so a 5,000 edge finial does not triple the payload for
+  fields the importer would read as defaults anyway.
+- `Soft`, `Smooth` and `Hidden` are kept as three separate flags rather than one "soften"
+  boolean: soft hides the edge and merges its faces into a Surface, smooth blends shading
+  and **leaves the edge visible on its own**, hidden hides it with no surface merge.
+- `EdgeFlag` accepts both the `Na__Edge__` prefixed spelling and the flat 1.1.0 keys, so
+  older library assets still export.
+- Hidden faces carry `Hidden: true` rather than being dropped - a hidden face is still part
+  of the solid, and dropping it would leave the rebuilt component with a hole.
+
+#### Changed - `27__System__ProjectedEdges2d/…EdgeExtractor__.mjs`
+2D drawing linework was derived solely by `dot <= thresholdDot` - the dihedral angle between
+two faces. That is a guess at what an author meant, and it cannot represent three things they
+can actually do: leave a shallow edge deliberately hard, deliberately soften a steep one, or
+hide an edge outright. **Where the asset carries an authored classification, the author now
+wins; the threshold remains the fallback.**
+
+- The component loader attaches the authored list to `geometry.userData.VghLantern__AuthoredEdges`
+  as `{ Coords: Float64Array, Modes: Uint8Array }` - raw stage-space coordinate pairs, not
+  hashes, so the definition of "the same corner" stays inside the extractor next to the rule
+  that produced the linework already on screen.
+- Mapping, decided once in `MeshJson__EdgeDrawMode`: **hidden** drops the edge from every view
+  including the silhouette pass and the boundary flush; **soft** demotes it to silhouette only,
+  so a softened lathe keeps its profile without drawing its tessellation; anything still
+  visible is a crease. **Smooth alone does not demote it** - a smooth edge stays visible in
+  SketchUp, and is only mistaken for a hidden one because Soften/Smooth sets both flags at once.
+- `AuthoredMap` hashes both directions of each edge, since a shared edge is walked one way by
+  one triangle and the other way by its partner. Cached per geometry in a `WeakMap` alongside
+  the candidate cache, so eight identical finials hash once.
+- **`Math.fround` on the attached coordinates is load-bearing.** The position attribute is
+  Float32 and the extractor hashes what it reads back out; the loader holds Float64. Measured
+  over 2M lantern-scale coordinates, 0.0044% land in a different `1e-4` hash bucket between the
+  two - roughly one silently unmatched edge per finial, which would have looked like the
+  feature working while quietly doing nothing. Rounding to Float32 before hashing removes it.
+  Parity verified end to end across the loader, buffer and extractor path.
+- Geometry with no authored data falls back to the threshold untouched: every swept section and
+  prism in a lantern, and every library asset older than schema 1.2.0.
+
+#### Not changed - the 3D render engine
+No material, lighting, shading or viewport linework change anywhere in `06__Env3d__ThreeRenderPipeline`
+beyond skipping hidden faces and attaching the edge list to userData. The shaded 3D preview
+looks exactly as it did.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.2.7 - 07-Aug-2026
 ### Lantern Editor default 3D preview share widened by 20%
 

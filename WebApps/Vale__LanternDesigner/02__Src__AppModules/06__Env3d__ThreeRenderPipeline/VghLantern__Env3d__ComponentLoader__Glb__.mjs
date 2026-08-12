@@ -10,9 +10,9 @@
    CREATED    : 30-Jul-2026
 
    DESCRIPTION:
-   - Places discrete components - finials, finial bases, cresting - at the anchor
-     points published by the SkeletonSolver: the two ridge ends on a hipped or
-     gabled roof, or the single apex on a pyramid.
+   - Places discrete components - finials and cresting - at the anchor points
+     published by the SkeletonSolver: the two ridge ends on a hipped or gabled
+     roof, or the single apex on a pyramid.
    - The 3D counterpart of Env2d's FinialRenderer. Both read the same component
      library entry, and both place a component by putting its LOCAL ORIGIN on the
      anchor, because every asset is authored about its origin point group.
@@ -30,10 +30,10 @@
 
    ANCHOR ROLE VERSUS COMPONENT ROLE:
    The solver names an anchor by WHERE it is on the roof - 'ridgeEnd', 'apex'.
-   The lantern names a component by WHAT goes there - 'finial', 'finialBase',
-   'cresting'. Those two vocabularies are joined by ANCHOR_ROLE_TO_COMPONENT_ROLE
-   below. They were previously compared directly, which silently matched nothing
-   and left every ridge end empty in the 3D view.
+   The lantern names a component by WHAT goes there - 'finial', 'cresting'.
+   Those two vocabularies are joined by ANCHOR_ROLE_TO_COMPONENT_ROLE below.
+   They were previously compared directly, which silently matched nothing and
+   left every ridge end empty in the 3D view.
 
    SCALE CONVENTION:
    Both sources are authored in millimetres. Inline meshes are converted as they
@@ -75,7 +75,6 @@ import {
     // MODULE CONSTANTS | Anchor Roles and Asset Field Names
     // ------------------------------------------------------------
     const COMPONENT_ROLE_FINIAL       =  'finial';                           // <-- Ridge end and apex finials
-    const COMPONENT_ROLE_FINIAL_BASE  =  'finialBase';                       // <-- Base block under a finial
     const COMPONENT_ROLE_CRESTING     =  'cresting';                         // <-- Ridge cresting runs
 
     // The solver's anchor vocabulary mapped onto the lantern's component
@@ -84,11 +83,10 @@ import {
         'ridgeEnd'   : COMPONENT_ROLE_FINIAL,
         'apex'       : COMPONENT_ROLE_FINIAL,
         'finial'     : COMPONENT_ROLE_FINIAL,
-        'finialBase' : COMPONENT_ROLE_FINIAL_BASE,
         'cresting'   : COMPONENT_ROLE_CRESTING
     };
 
-    const ANCHOR_ROLE_RIDGE_END    =  'ridgeEnd';
+    const ANCHOR_ROLE_RIDGE_END    =  'ridgeEnd';                            // <-- Still read: the leaded-only ridge veto
     const ANCHOR_ROLE_APEX         =  'apex';
 
     const ASSET_FIELD_GLB          =  'Na__Asset__Glb3D__Url';               // <-- Heavier meshes live as GLB files
@@ -97,7 +95,6 @@ import {
     const ASSET_FIELD_HAS_3D       =  'Na__Asset__Has3d';                    // <-- Gate flag from the component index
 
     const FINIALS_BLOCK            =  'Lantern__Finials__Config';
-    const FIELD_AT_RIDGE_ENDS      =  'Lantern__Finials__Config__PlaceAtRidgeEnds';
     const FIELD_AT_APEX            =  'Lantern__Finials__Config__PlaceAtApex';
 
     const FINISH_BLOCK             =  'Lantern__FinishAndGlazing__Config';   // <-- Frame finish tints every component
@@ -264,23 +261,21 @@ import {
     // HELPER FUNCTION | Resolve the Component Id Assigned to an Anchor
     // ------------------------------------------------------------
     // Translates the solver's anchor role into the lantern's component role
-    // first, then reads whichever config block owns that role. Finials and their
-    // bases are configured in the Finials block; cresting sits with the ridge
-    // because it is a ridge-mounted run rather than a point item.
+    // first, then reads whichever config block owns that role. Finials are
+    // configured in the Finials block; cresting sits with the ridge because it
+    // is a ridge-mounted run rather than a point item.
     function VghLantern__Env3d__ComponentLoader__ComponentIdForRole(lantern, anchorRole) {
         if (!lantern) return '';
 
         const componentRole  =  ANCHOR_ROLE_TO_COMPONENT_ROLE[anchorRole];
         if (!componentRole) return '';
 
-        if (componentRole === COMPONENT_ROLE_FINIAL || componentRole === COMPONENT_ROLE_FINIAL_BASE) {
+        if (componentRole === COMPONENT_ROLE_FINIAL) {
             const finialBlock  =  lantern[FINIALS_BLOCK];
             if (!finialBlock) return '';
             if (finialBlock['Lantern__Finials__Config__Enabled'] !== true) return '';
 
-            return componentRole === COMPONENT_ROLE_FINIAL
-                ? (finialBlock['Lantern__Finials__Config__FinialComponentId']     || '')
-                : (finialBlock['Lantern__Finials__Config__FinialBaseComponentId'] || '');
+            return finialBlock['Lantern__Finials__Config__FinialComponentId'] || '';
         }
 
         if (componentRole === COMPONENT_ROLE_CRESTING) {
@@ -298,16 +293,48 @@ import {
 
     // HELPER FUNCTION | Whether the User Wants a Component at This Anchor
     // ------------------------------------------------------------
-    // Place at Ridge Ends and Place at Apex are user choices, so an anchor the
-    // solver published is not automatically an anchor that gets a component.
+    // An anchor the solver published is not automatically an anchor that gets a
+    // component. Two things can veto one:
+    //
+    //   THE USER          Place at Apex is a choice on a pyramid. A ridged roof
+    //                     has no equivalent toggle - once finials are fitted, both
+    //                     ridge ends take one.
+    //
+    //   THE RIDGE TYPE    A finial is WELDED TO THE ALUMINIUM RIDGE CAPPING, so a
+    //                     Leaded Only Ridge has nothing to fix one to. Placing it
+    //                     anyway leaves a finial standing on air, which is not a
+    //                     lantern anybody can build. The ridge system index says
+    //                     which types allow them, so a third ridge type would need
+    //                     no edit here.
+    //
+    // The veto applies to the ridge ends only. A pyramid apex is a hip junction
+    // with no ridge and no capping in it at all, so a ridge type has no bearing on
+    // what sits there.
     function VghLantern__Env3d__ComponentLoader__AnchorWanted(lantern, anchor) {
+        if (anchor.Role === ANCHOR_ROLE_RIDGE_END
+            && !VghLantern__Env3d__ComponentLoader__RidgeAllowsFinials(lantern)) return false;
+
         const finialBlock  =  lantern ? lantern[FINIALS_BLOCK] : null;
         if (!finialBlock) return true;
 
-        if (anchor.Role === ANCHOR_ROLE_RIDGE_END) return finialBlock[FIELD_AT_RIDGE_ENDS] !== false;
-        if (anchor.Role === ANCHOR_ROLE_APEX)      return finialBlock[FIELD_AT_APEX]       !== false;
+        if (anchor.Role === ANCHOR_ROLE_APEX) return finialBlock[FIELD_AT_APEX] !== false;
 
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether This Lantern's Ridge Can Carry a Finial
+    // ------------------------------------------------------------
+    // True when the ridge system is not loaded, deliberately. The default ridge
+    // type carries a capping, so assuming yes draws the common case correctly
+    // while the index is still in flight; assuming no would drop finials off every
+    // lantern for the first frame of every page load.
+    function VghLantern__Env3d__ComponentLoader__RidgeAllowsFinials(lantern) {
+        const RidgeSystem  =  window.VghLantern__AppData__RidgeSystemLoader;
+        if (!RidgeSystem) return true;
+
+        return RidgeSystem.VghLantern__RidgeSystemLoader__AllowsFinials(lantern) !== false;
     }
     // ------------------------------------------------------------
 

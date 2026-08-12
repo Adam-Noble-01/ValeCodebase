@@ -47,6 +47,9 @@
             "UpstandThicknessMm"       : { "Min": 90,  "Max": 150,  "Step": 5  },
             "FrameHeightMm"         : { "Min": 30,  "Max": 100,  "Step": 5  },
             "TargetSpacingMm"       : { "Min": 200, "Max": 900,  "Step": 10 },
+            "RidgeDepthAdjustmentMm": { "Min": -100, "Max": 100, "Step": 5  },
+            "HipDepthAdjustmentMm"  : { "Min": -100, "Max": 100, "Step": 5  },
+            "CorniceHeightOffsetMm" : { "Min": -100, "Max": 100, "Step": 5  },
             "VentCount"             : { "Min": 0,   "Max": 12,   "Step": 1  },
             "Quantity"              : { "Min": 1,   "Max": 99,   "Step": 1  }
         },
@@ -91,7 +94,9 @@
             "DefaultPreset"        : "isometric",
             "ShowPresetButtons"    : true,
             "ShowZoomExtents"      : true,
-            "EnabledByDefaultNote" : "The 3D panel is opt-in so the editor stays light on first open; the 3D stack is not even fetched until the user asks for it."
+            "AllowBelowGroundOrbit": true,
+            "EnabledByDefaultNote" : "The 3D panel is opt-in so the editor stays light on first open; the 3D stack is not even fetched until the user asks for it.",
+            "AllowBelowGroundOrbitNote" : "Lets this panel orbit under the ground plane to check the underside of the lantern while configuring it, and drops the ground grid while the camera is down there. Granted here as well as to the full-screen 3D View because configuring is exactly when the soffits matter; the drawing sheet viewports stay clamped above the horizon. Angle limit is Env3d Camera.BelowGroundMaxPolarAngleDegrees."
         }
     }
 }

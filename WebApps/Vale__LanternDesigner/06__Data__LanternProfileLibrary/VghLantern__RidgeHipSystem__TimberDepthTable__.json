@@ -1,0 +1,41 @@
+{
+  "VghLantern__RidgeHipTimberDepth__Meta": {
+    "SchemaVersion": "1.0.0",
+    "CreatedDate": "12-Aug-2026",
+    "Description": "The Vale standard ridge beam and hip beam timber depths, tabulated against roof pitch. One table, read independently by the ridge system and the hip system, because the two depths are chosen together and cannot be reasoned about apart.",
+    "StandardsNote": "Taken from the 22.5 Degree CAD Standards library held by the Vale Garden Houses technical department, captured 12-Aug-2026. The 22.5 degree row is the pitch the section assets themselves are authored at: the exported ridge beam measures 230mm deep and the exported hip beam 205mm, which is what this table says they should be.",
+    "WhyThePairIsOneTable": "The hip depth is not free. Where a hip meets the octagonal ridge block it is plumb cut against a facet, and so is the ridge. The depths are chosen so the undersides of those two cuts finish at roughly the same height on the block face - if they did not, the moulded bottom edges would step past one another at the one junction in the roof where four beams meet and everybody looks. Measured on the 22.5 degree standard the ridge underside lands 241.0mm below the ridge datum at its cut and the hip underside 241.7mm, which is the balance this table exists to hold.",
+    "InterpolationNote": "Rows are NOT interpolated. These are stock joinery sections, and a pitch of 21 degrees does not make a 232mm beam orderable. A lantern pitch is snapped to the nearest tabulated pitch and that row's depths are used; the snapped row is reported so a specification can quote the standard it was built to.",
+    "BelowTableNote": "The app permits pitches down to 10 degrees, below the shallowest tabulated row. Those clamp to the 17.5 degree row rather than extrapolating, because nothing in the standards library covers them.",
+    "OverrideNote": "Both depths carry a user override of plus or minus 100mm, applied to the tabulated depth. The override is a deliberate departure from the standard and is reported as such rather than folded silently into the figure."
+  },
+
+  "VghLantern__RidgeHipTimberDepth__AuthoredStandard": {
+    "AuthoredRoofPitchDegrees": 22.5,
+    "AuthoredRidgeDepthMm": 230,
+    "AuthoredHipDepthMm": 205,
+    "AuthoredNote": "The depth of the exported sections as they stand, before any transform. A build at 22.5 degrees with no override moves no vertices at all."
+  },
+
+  "VghLantern__RidgeHipTimberDepth__Rows": [
+    { "PitchDegrees": 17.5, "RidgeDepthMm": 230, "HipDepthMm": 210 },
+    { "PitchDegrees": 20.0, "RidgeDepthMm": 235, "HipDepthMm": 210 },
+    { "PitchDegrees": 22.5, "RidgeDepthMm": 230, "HipDepthMm": 205 },
+    { "PitchDegrees": 25.0, "RidgeDepthMm": 230, "HipDepthMm": 200 },
+    { "PitchDegrees": 27.5, "RidgeDepthMm": 235, "HipDepthMm": 200 },
+    { "PitchDegrees": 30.0, "RidgeDepthMm": 235, "HipDepthMm": 195 },
+    { "PitchDegrees": 35.0, "RidgeDepthMm": 235, "HipDepthMm": 185 },
+    { "PitchDegrees": 37.5, "RidgeDepthMm": 240, "HipDepthMm": 185 },
+    { "PitchDegrees": 40.0, "RidgeDepthMm": 250, "HipDepthMm": 185 },
+    { "PitchDegrees": 45.0, "RidgeDepthMm": 250, "HipDepthMm": 180 }
+  ],
+
+  "VghLantern__RidgeHipTimberDepth__Override": {
+    "MinAdjustmentMm": -100,
+    "MaxAdjustmentMm": 100,
+    "StepMm": 5,
+    "DefaultAdjustmentMm": 0,
+    "MinResultingDepthMm": 120,
+    "MinResultingDepthNote": "A beam shallower than this has no parallel flank left above its 24mm moulded bottom, so the stretch would start eating the moulding. The override is clamped rather than refused."
+  }
+}

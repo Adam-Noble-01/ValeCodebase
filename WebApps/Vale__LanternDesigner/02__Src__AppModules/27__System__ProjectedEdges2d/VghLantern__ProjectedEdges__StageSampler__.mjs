@@ -49,8 +49,32 @@
 
    ---------------------------------------------------------------------------
 
+   TWO SETS, NOT ONE - AND ONLY BECAUSE OF GLASS
+
+   Everything collected DRAWS its edges. Not everything collected HIDES what is
+   behind it. Those two sets are identical for every part of a lantern except the
+   glazing, which is the one thing on the roof you can see through, and which the
+   projection would otherwise treat as a solid wall: double sided, so never
+   backface culled, and sitting directly in front of the ridge and hip beams, the
+   internal joinery and every far side bar.
+
+   Model.GlazingOccludes decides. False - the default - keeps glass drawing its own
+   pane edges while leaving its triangles out of the clip pass, which is what a
+   drawing office does by putting glass on a layer the hidden line calculation
+   ignores. True restores strict hidden line removal.
+
+   The raster preview renders the occluder soup and so loses glass along with it.
+   That is correct rather than a side effect: the preview is defined as the same
+   occluders seen from the same direction.
+
+   ---------------------------------------------------------------------------
+
    PUBLIC API:
-       Sample(stage)  -> { Count, Vertices, Sides, Inverted, Meshes, MeshCount }
+       Sample(stage)  -> { Count, Vertices, Sides, Inverted,
+                           Meshes, MeshCount, OccluderMeshCount }
+
+       Meshes is the EDGE set. Vertices/Sides/Inverted are the OCCLUDER set.
+       MeshCount above OccluderMeshCount means glass is being seen through.
 
    ============================================================================= */
 
@@ -61,6 +85,16 @@ import {
     VGHLANTERN__PROJECTED_EDGES__SIDE_BACK,
     VGHLANTERN__PROJECTED_EDGES__SIDE_DOUBLE
 } from './VghLantern__ProjectedEdges__SoupBuilder__.mjs';
+
+import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern__ProjectedEdges__ConfigAccess__.mjs';
+
+// MODULE CONSTANTS | Element Classification
+// ------------------------------------------------------------
+// The key every Env3d mesh builder stamps and the ElementFilter reads. Used here
+// for one purpose only: telling glass apart from everything else.
+const USERDATA_ELEMENT_TYPE  =  'VghLantern__ElementType';
+const ELEMENT_TYPE_GLAZING   =  'Glazing';
+// ------------------------------------------------------------
 
 // =============================================================================
 // REGION | Projected Edges Stage Sampler Module
@@ -107,6 +141,47 @@ import {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Which Collected Meshes Actually Hide What Is Behind Them
+    // ------------------------------------------------------------
+    // Returns one flag per mesh, in the order Collect gathered them.
+    //
+    // THE ONE PLACE THE EDGE SET AND THE OCCLUDER SET DIFFER, and it is deliberate.
+    // Everywhere else in this module the two are the same set chosen by the same
+    // rules, precisely so the passes cannot quietly disagree about what is in the
+    // drawing. Glass is the exception, because glass is the one thing on a lantern
+    // that you can see through.
+    //
+    // With glazing occluding, the projection is textbook hidden line removal and
+    // the drawing loses everything inside the roof: the ridge and hip beams, the
+    // internal joinery, every far side bar. It is not marginal - at 25 degrees the
+    // near slope of glass runs 214mm in front of the ridge beam at its own mid
+    // height. A drawing office solves this by putting glass on a layer the hidden
+    // line calculation ignores while still plotting it, and Model.GlazingOccludes
+    // false is that layer.
+    //
+    // Identified by the element type the mesh carries rather than by its name or
+    // its material, because the stage flattens every builder into one group and the
+    // element type is the vocabulary the whole application already classifies on.
+    function VghLantern__ProjectedEdges__StageSampler__OccluderFlags(meshes) {
+        const model  =  VghLantern__ProjectedEdges__ConfigAccess__Section('Model');
+        const flags  =  new Array(meshes.length);
+
+        if (model.GlazingOccludes !== false) {
+            flags.fill(true);
+            return flags;
+        }
+
+        for (let m = 0; m < meshes.length; m++) {
+            const data  =  meshes[m].userData;
+            const type  =  data ? data[USERDATA_ELEMENT_TYPE] : null;
+            flags[m]    =  type !== ELEMENT_TYPE_GLAZING;
+        }
+
+        return flags;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Reduce a Mesh's Material to a Side Code
     // ------------------------------------------------------------
     // A multi material mesh is read from its first slot. No Env3d builder emits
@@ -146,11 +221,18 @@ import {
     // matrix leaves at one, but it avoids three object writes per corner across
     // something like a hundred and twenty thousand corners.
     export function VghLantern__ProjectedEdges__StageSampler__Sample(stage) {
-        const meshes  =  VghLantern__ProjectedEdges__StageSampler__Collect(stage);
+        const meshes    =  VghLantern__ProjectedEdges__StageSampler__Collect(stage);
+        const occludes  =  VghLantern__ProjectedEdges__StageSampler__OccluderFlags(meshes);
 
-        let total  =  0;
+        // Counted and filled over the OCCLUDERS only. The two passes must agree on
+        // which meshes are skipped or the exactly sized buffer stops being exactly
+        // sized, so both read the one flag array rather than re-deciding.
+        let total       =  0;
+        let occluderCount  =  0;
         for (let m = 0; m < meshes.length; m++) {
+            if (!occludes[m]) continue;
             total  +=  VghLantern__ProjectedEdges__StageSampler__TriangleCount(meshes[m]);
+            occluderCount++;
         }
 
         const vertices  =  new Float64Array(total * 9);
@@ -160,6 +242,8 @@ import {
         let written  =  0;
 
         for (let m = 0; m < meshes.length; m++) {
+            if (!occludes[m]) continue;                                       // <-- Draws its own edges, hides nothing: see OccluderFlags
+
             const mesh      =  meshes[m];
             const geometry  =  mesh.geometry;
             const position  =  geometry.attributes.position;
@@ -197,16 +281,24 @@ import {
             }
         }
 
-        // Meshes travels with the result because the edge extractor needs the same
-        // set, chosen by the same rules. Deriving it twice would risk the two
-        // passes quietly disagreeing about what is in the drawing.
+        // Meshes travels with the result because the edge extractor needs it,
+        // derived here rather than gathered again so the two passes cannot quietly
+        // disagree about what is in the drawing.
+        //
+        // It is the EDGE set, and the triangle arrays beside it are the OCCLUDER
+        // set. Those are the same list except for glass, which draws its own pane
+        // edges without hiding what is behind it - see OccluderFlags. Both counts
+        // are reported so that difference is a number somebody can read rather than
+        // an assumption: MeshCount above OccluderMeshCount means glass is being
+        // seen through, and the two being equal means it is not.
         return {
-            Count     : written,
-            Vertices  : vertices,
-            Sides     : sides,
-            Inverted  : inverted,
-            Meshes    : meshes,
-            MeshCount : meshes.length
+            Count             : written,
+            Vertices          : vertices,
+            Sides             : sides,
+            Inverted          : inverted,
+            Meshes            : meshes,
+            MeshCount         : meshes.length,
+            OccluderMeshCount : occluderCount
         };
     }
     // ------------------------------------------------------------

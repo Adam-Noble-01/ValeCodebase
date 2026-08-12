@@ -1,0 +1,176 @@
+{
+    "VghLantern__SketchUpExport__Config__Description": "System configuration overlay for the SketchUp export. Merged over VghLantern__AppConfig__Main__.json by the ConfigLoader, so read every value through StateManager.VghLantern__StateManager__GetAppConfig() rather than fetching this file directly. This block is the SSOT for the payload schema stamp, the SketchUp tag and material vocabulary and the group naming - the Ruby importer reads all three out of the payload rather than carrying its own copies, so a tag renamed here is renamed in SketchUp on the next export with no plugin edit.",
+
+    "VghLantern__SketchUpExport__Config__Payload": {
+        "SchemaName"         : "VghLantern__SketchUpExport__Payload",
+        "SchemaVersion"      : "1.1.0",
+        "SchemaVersionNote"  : "Bump the minor when a new part Kind or a new optional field is added; bump the major when an existing field changes meaning. The importer refuses a major it was not written against rather than building a wrong model quietly.",
+        "Units"              : "mm",
+        "CoordinateSpace"    : "Lantern model millimetres. Origin is the centre of the lantern footprint at builders upstand BASE level. +X is the width axis, +Y is the depth axis, +Z is vertically up. This is the SkeletonSolver convention unchanged, and it maps straight onto SketchUp's own Z-up axes with no swap.",
+        "CoordinateDecimals" : 3,
+        "FilenameTemplate"   : "{ProjectCode}__{LanternTitle}__SketchUpBuild__.json",
+        "FilenameNote"       : "Tokens: {ProjectCode} {ProjectName} {LanternTitle} {LanternReference} {DateStamp}. Anything outside [A-Za-z0-9-_] in a substituted value is replaced with an underscore."
+    },
+
+    "VghLantern__SketchUpExport__Config__Build": {
+        "RootGroupNameTemplate"   : "ValeLantern__{ProjectCode}__{LanternTitle}",
+        "RootGroupNameNote"       : "Name of the single top level group everything lands inside, so an imported lantern can be moved, copied or deleted as one object in a model that already has a building in it.",
+        "IncludeBuildersUpstand"  : true,
+        "IncludeBaseFrame"        : true,
+        "IncludeRoofFrame"        : true,
+        "IncludeGlazeBars"        : true,
+        "IncludeGlazing"          : true,
+        "IncludeInteriorJoinery"  : true,
+        "IncludeComponents"       : true,
+        "IncludeNote"             : "Each switch drops one assembly out of the payload entirely. They exist so a structural-only export can be produced without a second code path; the default is the full lantern, which is what the 3D viewport shows.",
+        "SetModelUnitsToMillimetres" : false,
+        "SetModelUnitsNote"          : "Left false because changing model options edits the user's own template. Turn it on only if every import is into a scratch model.",
+        "PurgeUnusedBeforeImport"    : false,
+        "OrientSolidsOutward"        : true,
+        "OrientSolidsOutwardNote"    : "After a prism is built the importer sums the signed volume of its triangulation and reverses every face if it came out inside-in. Costs one pass per part and means a concave section - a cornice, a lead flashing - can never import with its normals flipped.",
+        "MergeCoplanarFaces"         : true,
+        "MergeCoplanarFacesNote"     : "Erases the edge between any two coplanar faces of a built prism, merging them. An extruded aluminium section has long flat faces crossed by a vertex every few millimetres, and without this pass every one of those leaves a line down the middle of a flat surface. Turn it off only when diagnosing a prism that built wrong, where seeing every original face matters more than the model reading cleanly."
+    },
+
+    "VghLantern__SketchUpExport__Config__Assemblies": [
+        { "Key": "baseAssembly",   "Name": "01__BaseAssembly",   "SortOrder": 10, "Description": "Builders upstand and the three part Vale base frame." },
+        { "Key": "roofFrame",      "Name": "02__RoofFrame",      "SortOrder": 20, "Description": "Ridge, hips and verges swept from the profile library." },
+        { "Key": "glazeBars",      "Name": "03__GlazeBars",      "SortOrder": 30, "Description": "Three part glaze bars: cap, core and internal trim." },
+        { "Key": "glazing",        "Name": "04__Glazing",        "SortOrder": 40, "Description": "Sealed unit slabs seated on the glaze bar bedding face." },
+        { "Key": "interiorJoinery", "Name": "05__InteriorJoinery", "SortOrder": 50, "Description": "Cornice, plywood packer and eaves trim swept around the eaves datum ring." },
+        { "Key": "components",     "Name": "06__Components",     "SortOrder": 60, "Description": "Finials and finial bases placed as component instances." },
+        { "Key": "settingOut",     "Name": "07__SettingOut",     "SortOrder": 70, "Role": "settingOut", "Description": "Datum levels, derivation triangles and member centrelines. Carries Role settingOut, which is what lets the importer offer it as a separate choice rather than always building it." }
+    ],
+    "VghLantern__SketchUpExport__Config__AssembliesNote": "An assembly carrying Role 'settingOut' is construction linework rather than manufactured metal. The importer builds the two classes independently, so a lantern can come in as solids alone, as linework alone to check an existing model against, or as both.",
+
+    "VghLantern__SketchUpExport__Config__Tags": [
+        { "Key": "buildersUpstand",    "Name": "VGH__01__BuildersUpstand",                   "ColorRgb": [176, 168, 156], "Visible": true, "ElementType": "By Others" },
+        { "Key": "headBeam",           "Name": "VGH__02__BaseFrame__HeadBeam",               "ColorRgb": [150,  94,  60], "Visible": true, "ElementType": "Structural" },
+        { "Key": "eavesExtrusion",     "Name": "VGH__03__BaseFrame__EavesExtrusion",         "ColorRgb": [199, 204, 209], "Visible": true, "ElementType": "Structural" },
+        { "Key": "leadFlashing",       "Name": "VGH__04__BaseFrame__LeadFlashing",           "ColorRgb": [ 92,  96, 102], "Visible": true, "ElementType": "Flashing" },
+        { "Key": "ridgeCore",          "Name": "VGH__05__Ridge__Core",                       "ColorRgb": [199, 204, 209], "Visible": true, "ElementType": "Structural" },
+        { "Key": "ridgeBeam",          "Name": "VGH__06__Ridge__Beam",                       "ColorRgb": [150,  94,  60], "Visible": true, "ElementType": "Structural" },
+        { "Key": "ridgeBlocking",      "Name": "VGH__07__Ridge__Blocking",                   "ColorRgb": [210, 194, 160], "Visible": true, "ElementType": "Trim" },
+        { "Key": "ridgeFlashing",      "Name": "VGH__08__Ridge__LeadFlashing",               "ColorRgb": [ 92,  96, 102], "Visible": true, "ElementType": "Flashing" },
+        { "Key": "ridgeCappingBlock",  "Name": "VGH__09__Ridge__CappingBlock",               "ColorRgb": [210, 194, 160], "Visible": true, "ElementType": "Trim" },
+        { "Key": "ridgeCapping",       "Name": "VGH__10__Ridge__Capping",                    "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" },
+        { "Key": "ridgeBlock",         "Name": "VGH__11__Ridge__OctagonalBlock",             "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
+        { "Key": "hipCore",            "Name": "VGH__12__Hip__Core",                         "ColorRgb": [199, 204, 209], "Visible": true, "ElementType": "Structural" },
+        { "Key": "hipBeam",            "Name": "VGH__13__Hip__Beam",                         "ColorRgb": [150,  94,  60], "Visible": true, "ElementType": "Structural" },
+        { "Key": "hipBlocking",        "Name": "VGH__14__Hip__Blocking",                     "ColorRgb": [210, 194, 160], "Visible": true, "ElementType": "Trim" },
+        { "Key": "hipFlashing",        "Name": "VGH__15__Hip__LeadFlashing",                 "ColorRgb": [ 92,  96, 102], "Visible": true, "ElementType": "Flashing" },
+        { "Key": "verge",              "Name": "VGH__16__RoofFrame__Verge",                  "ColorRgb": [ 76,  84,  90], "Visible": true, "ElementType": "Structural" },
+        { "Key": "glazeBarCap",        "Name": "VGH__17__GlazeBar__Cap",                     "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" },
+        { "Key": "glazeBarCore",       "Name": "VGH__18__GlazeBar__Core",                    "ColorRgb": [199, 204, 209], "Visible": true, "ElementType": "Structural" },
+        { "Key": "glazeBarTrim",       "Name": "VGH__19__GlazeBar__Trim",                    "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
+        { "Key": "glazing",            "Name": "VGH__20__Glazing",                           "ColorRgb": [230, 240, 255], "Visible": true, "ElementType": "Glazing" },
+        { "Key": "cornice",            "Name": "VGH__21__InteriorJoinery__Cornice",          "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
+        { "Key": "cornicePacker",      "Name": "VGH__22__InteriorJoinery__Packer",           "ColorRgb": [210, 194, 160], "Visible": true, "ElementType": "Trim" },
+        { "Key": "eavesTrim",          "Name": "VGH__23__InteriorJoinery__EavesTrim",        "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
+        { "Key": "components",         "Name": "VGH__24__Components__Finials",               "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" }
+    ],
+    "VghLantern__SketchUpExport__Config__TagsNote": "One tag per physical part family, numbered so SketchUp's alphabetical tag list reads in build order. ElementType mirrors Na__Asset__ValeSpec__ElementType and is stamped onto every group as an attribute, so a downstream report can filter on it without re-deriving anything from the tag name. RENUMBERED 12-Aug-2026: the single ridge and hip tags became six and four, matching the real assemblies the way the glaze bar's three already did, and everything after them shifted up. A model carrying an import made before that date keeps its old tags alongside the new ones - they are not renamed in place, because the importer creates tags by name and has no way to know the old ones were the same thing.",
+
+    "VghLantern__SketchUpExport__Config__Materials": [
+        { "Key": "buildersUpstand", "Name": "VGH__BuildersUpstand", "PbrRole": "BuildersUpstand", "FallbackHex": "#B0A89C", "Alpha": 1.0, "SsotMaterialId": null },
+        { "Key": "sapele",          "Name": "VGH__SapeleHardwood",  "PbrRole": "SapeleHardwood",  "FallbackHex": "#965E3C", "Alpha": 1.0, "SsotMaterialId": "MAT541__Timber__Sapele" },
+        { "Key": "millAluminium",   "Name": "VGH__MillAluminium",   "PbrRole": "MillAluminium",   "FallbackHex": "#C7CCD1", "Alpha": 1.0, "SsotMaterialId": null },
+        { "Key": "leadFlashing",    "Name": "VGH__LeadFlashing",    "PbrRole": "LeadFlashing",    "FallbackHex": "#5C6066", "Alpha": 1.0, "SsotMaterialId": null },
+        { "Key": "plywood",         "Name": "VGH__Plywood",         "PbrRole": "Plywood",         "FallbackHex": "#D2C2A0", "Alpha": 1.0, "SsotMaterialId": null },
+        { "Key": "timber",          "Name": "VGH__Timber",          "PbrRole": "Timber",          "FallbackHex": "#C9A876", "Alpha": 1.0, "SsotMaterialId": "MAT120__GenericWood" },
+        { "Key": "glazing",         "Name": "VGH__Glazing",         "PbrRole": "Glazing",         "FallbackHex": "#E6F0FF", "Alpha": 0.3, "SsotMaterialId": "MAT101__GenericGlass" }
+    ],
+    "VghLantern__SketchUpExport__Config__MaterialsNote": "Static role materials. Their colour is resolved from VghLantern__PbrMaterials__Config__RoleMaterials at export time so the SketchUp model opens in the same colours the 3D viewport shows; FallbackHex covers the roles whose 3D appearance comes from a texture rather than a flat colour and therefore carries no HexColor.",
+
+    "VghLantern__SketchUpExport__Config__MaterialsSsotNote": "SsotMaterialId names an entry in Na__DataLib__CoreIndex__Materials__.json. Where one is given, the importer creates the material under the SSOT's own SketchUpName instead of the Name above, so the lantern shares a swatch with everything Element Assembly Studio Pro builds. THIS IS NOT COSMETIC: Na__TrueVision__GlbBuilder only enriches a material whose name matches /^MAT\\d{3}__/ AND appears in that index. A material called VGH__Glazing fails both tests, so it reaches ValeVision3D with no alphaMode, no opacity and no double-sided flag, and a roof full of glass renders as opaque white beside conservatory glazing that renders correctly.",
+
+    "VghLantern__SketchUpExport__Config__MaterialsSsotGapsNote": "Four roles are deliberately left with no SsotMaterialId because the materials index carries no honest equivalent: builders upstand (site blockwork, by others), mill aluminium (MAT616 is ironmongery brushed steel, which is a different product), lead flashing, and plywood. They import under their VGH names and will not be enriched by the GLB builder. Add MAT entries for them and fill in the ids here if they need to read correctly in ValeVision3D. The powder coat frame finishes and most joinery paints are in the same position: MAT300__PaintSeries__ carries four Farrow and Ball colours against the seven the lantern offers, and a partial mapping would be worse than none because two finishes would render enriched and five would not.",
+
+    "VghLantern__SketchUpExport__Config__FinishMaterials": {
+        "FrameFinishKey"      : "frameFinish",
+        "FrameFinishPrefix"   : "VGH__Finish__",
+        "JoineryFinishKey"    : "joineryFinish",
+        "JoineryFinishPrefix" : "VGH__Joinery__",
+        "RidgeCappingFinishKey" : "ridgeCappingFinish",
+        "RidgeCappingFinishNote" : "The aluminium ridge capping follows the exterior finish by default, exactly as the glaze bar cap does, and a lantern may diverge it. It therefore gets its own material KEY while sharing the frame finish's naming: where the two agree both keys resolve to the same SketchUp material name and the importer reuses one swatch, and where they diverge the names differ and two swatches are created. Neither case needs the encoder to test whether they match.",
+        "FallbackHex"         : "#B7B7B2",
+        "Note"                : "Two materials whose colour is per lantern rather than fixed: the powder coated cap finish and the joinery paint finish. The name carries the finish through to SketchUp (VGH__Finish__Anthracite_Grey), so two lanterns exported into one model do not silently share a swatch."
+    },
+
+    "VghLantern__SketchUpExport__Config__SettingOut": {
+        "AssemblyKey"         : "settingOut",
+        "TagKeyPrefix"        : "setOut__",
+        "TagNamePrefix"       : "VGH__SO__",
+        "TagNameNote"         : "Setting out tags sort together under one prefix and away from the fourteen part tags, because a modeller switching the construction linework on and off wants one contiguous run in the tag list rather than fourteen entries interleaved with the metal.",
+        "StyleSourceNote"     : "Colour, dash pattern and label are read from VghLantern__Env3d__Config__SetOut -> LineStyles at export time, keyed by the entity's own Class__Family. That block is the SSOT the 3D setting out view already draws from, so a datum recoloured there is recoloured in SketchUp on the next export and the legend and the model can never disagree.",
+        "PatternToLineStyle"  : {
+            "solid"   : "Solid Basic",
+            "dotted"  : "Dot",
+            "dashed"  : "Dash",
+            "dashDot" : "Dash dot"
+        },
+        "PatternToLineStyleNote" : "SketchUp tag line styles, applied with Layer#line_style= (SketchUp 2019 and later). CASE SENSITIVE and drawn from a fixed set built into the running SketchUp: the authoritative list is Na__DataLib__CoreIndex__Tags__.json -> LineStyleReference.AvailableLineStyles. 'Dash dot' is legal; 'Dash Dot' is not, and fails by silently leaving the tag solid rather than by raising.",
+        "PatternToLineStyleFallbackNote" : "This mapping is the FALLBACK. When Na__DataLib is installed the importer takes the tag name, swatch colour and line style from Na__DataLib__CoreIndex__EdgeMaterials__.json -> Na__DataLib__CoreIndex__ConstructionLinework instead, so three lantern exports made months apart land on the same tags in the same colours. These values are used only for a setting out class the standard has never heard of.",
+        "IncludeDatums"       : true,
+        "IncludeTriangles"    : true,
+        "IncludeCentrelines"  : true,
+        "IncludeChecks"       : true,
+        "IncludeChecksNote"   : "Writes the solver's own datum checks into the setting out group's attributes - measured against reported, with the delta and the pass or fail. Sixteen numbers that say whether the model on screen agreed with itself at the moment it was exported.",
+        "GroupPerEntity"      : true,
+        "GroupPerEntityNote"  : "Each datum, triangle and centreline set becomes its own named group inside its style group, so one hip triangle can be selected and its run, rise and hypotenuse read off its attributes. Set false to collapse every entity of a style into one group when the outliner matters more than the numbers."
+    },
+
+    "VghLantern__SketchUpExport__Config__PartNaming": {
+        "BuildersUpstand"    : "BuildersUpstand",
+        "HeadBeam"           : "HeadBeam__{Side}",
+        "EavesExtrusion"     : "EavesExtrusion__{Side}",
+        "LeadFlashing"       : "LeadFlashing__{Side}",
+        "RidgeCore"          : "RidgeCore__{Index}",
+        "RidgeBeam"          : "RidgeBeam__{Index}",
+        "RidgeBlocking"      : "RidgeBlocking__{Index}",
+        "RidgeFlashing"      : "RidgeFlashing__{Index}",
+        "RidgeCappingBlock"  : "RidgeCappingBlock__{Index}",
+        "RidgeCapping"       : "RidgeCapping__{Index}",
+        "RidgeBlock"         : "RidgeBlock__{Index}",
+        "HipCore"            : "HipCore__{Index}",
+        "HipBeam"            : "HipBeam__{Index}",
+        "HipBlocking"        : "HipBlocking__{Index}",
+        "HipFlashing"        : "HipFlashing__{Index}",
+        "Verge"              : "Verge__{Index}",
+        "GlazeBarCap"        : "GlazeBarCap__{SlopeKey}__{Index}",
+        "GlazeBarCore"       : "GlazeBarCore__{SlopeKey}__{Index}",
+        "GlazeBarTrim"       : "GlazeBarTrim__{SlopeKey}__{Index}",
+        "Glazing"            : "GlazingUnit__{SlopeKey}",
+        "Cornice"            : "Cornice__{Side}",
+        "CornicePacker"      : "CornicePacker__{Side}",
+        "EavesTrim"          : "EavesTrim__{Side}",
+        "Finial"             : "Finial__{Role}__{Index}",
+        "SideNames"          : ["Front", "Right", "Back", "Left"],
+        "SideNamesNote"      : "Datum ring side order as DatumRing returns it, winding counter clockwise viewed from above from the -X -Y corner. Front is the side running along +X at the -Y face."
+    },
+
+    "VghLantern__SketchUpExport__Config__Geometry": {
+        "MinMemberLengthMm"      : 0.5,
+        "MinOutlinePoints"       : 3,
+        "MinRingSideLengthMm"    : 1.0,
+        "MinPrismThicknessMm"    : 0.25,
+        "VerticalDotLimit"       : 0.999,
+        "VerticalDotLimitNote"   : "Above this a member is treated as vertical and its up reference falls back to model +Y, matching the ProfileSweep and GlazeBarComposite convention exactly so an exported bar lands in the same orientation the viewport draws it.",
+        "SectionDatumOffsetMm"   : 0.0,
+        "SectionDatumOffsetNote" : "Mirrors SECTION_DATUM_OFFSET_MM in the glaze bar composite. Section y=0 sits on the skeleton polyline.",
+        "FallbackBarWidthMm"     : 40,
+        "FallbackBarDepthMm"     : 55,
+        "GlazingInnerFaceOffsetMm" : 8,
+        "GlazingThicknessMm"       : 28,
+        "GlazingNumbersNote"       : "Read from VghLantern__Env3d__Config__MeshBuilders when that block carries them, so the exported pane is the pane the viewport shows. These two are the documented mirror of the Env3d ConfigAccess fallbacks and are used only when the live block is silent on them, which today it is."
+    },
+
+    "VghLantern__SketchUpExport__Config__Menu": {
+        "MenuLabelNote"          : "The Developer Tools labels and the role gate live in Na__UserLogin__Config.json alongside the rest of the account menu, because they are decisions about the menu rather than about the export. What is left here is what the export itself has to say when it finishes or fails.",
+        "SuccessMessage"         : "SketchUp build file downloaded. Load it with the Vale Lantern Importer in SketchUp.",
+        "NoLanternMessage"       : "Open a lantern before exporting a SketchUp file.",
+        "NotSolvedMessage"       : "The lantern has not solved yet. Wait for the drawing to appear, then export again.",
+        "FailureMessage"         : "The SketchUp build file could not be written. See the console for detail.",
+        "CadPendingMessage"      : "The CAD export is not built yet."
+    }
+}

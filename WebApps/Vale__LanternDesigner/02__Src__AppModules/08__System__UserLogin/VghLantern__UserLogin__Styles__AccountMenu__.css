@@ -211,6 +211,37 @@
     /* ------------------------------------------------------------ */
 
 
+    /* ACCOUNT MENU | Developer Tools Section Heading */
+    /* ------------------------------------------------------------ */
+    /* A heading rather than a clickable parent: the section holds two */
+    /* items and a fly-out submenu for two things is a hover target    */
+    /* nobody thanks you for. Reads as a quieter label than the items  */
+    /* under it so the eye passes over it on the way to them.          */
+    .VghLantern__AccountMenu__SectionLabel {
+        padding                            : calc(4px * var(--Vale_UIScale)) var(--Vale_Spacing_Small);
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        letter-spacing                     : 0.04em;
+        text-transform                     : uppercase;
+        color                              : var(--Vale_TextSecondary);
+        white-space                        : nowrap;
+        cursor                             : default;
+        user-select                        : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ACCOUNT MENU | Nested Item Under a Section Heading */
+    /* ------------------------------------------------------------ */
+    /* Indented so the two exports read as belonging to the heading    */
+    /* above them rather than as two more items in the main list.      */
+    .VghLantern__AccountMenu__Item--nested {
+        padding-left                       : calc(var(--Vale_Spacing_Small) + (10px * var(--Vale_UIScale)));
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* ACCOUNT MENU | Sign Out Item */
     /* ------------------------------------------------------------ */
     /* Sign out ends the session, so it carries the same red the app  */

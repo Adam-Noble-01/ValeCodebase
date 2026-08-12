@@ -48,15 +48,20 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // drawings under one Drawing Sheets switch, because a toolbar with a switch per
     // page would be a table of contents with checkboxes, and nobody wants to issue a
     // pack with lantern three's drawing missing.
+    // The cutting list is its own switch rather than a fourth DOCUMENT_KEY, because
+    // those three decide what the specification page CONTAINS while this decides
+    // whether a separate page exists at all. It is also the one page in the pack a
+    // client-facing issue would routinely drop: it is the workshop's sheet.
     const LETTER_KEYS        =  ['ShowWelcomeLetter'];
     const SUMMARY_KEYS       =  ['ShowProjectSummary'];
     const DRAWING_VIEW_KEYS  =  ['ShowDrawingSheet'];
     const DRAWING_NOTE_KEYS  =  ['ShowDrawingNotes'];
     const DOCUMENT_KEYS      =  ['ShowTakeoffSchedule', 'ShowComponentSchedule', 'ShowJobNotes'];
+    const CUTLIST_KEYS       =  ['ShowCuttingList'];
     const DRAWING_TERMS_KEYS =  ['ShowDrawingTermsPages'];
     const TERMS_KEYS         =  ['ShowTermsPages'];
     const ALL_TOGGLE_KEYS    =  LETTER_KEYS.concat(SUMMARY_KEYS, DRAWING_VIEW_KEYS, DRAWING_NOTE_KEYS,
-                                                   DOCUMENT_KEYS, DRAWING_TERMS_KEYS, TERMS_KEYS);
+                                                   DOCUMENT_KEYS, CUTLIST_KEYS, DRAWING_TERMS_KEYS, TERMS_KEYS);
     // ------------------------------------------------------------
 
 
@@ -71,6 +76,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
     const KIND_LANTERN_DRAWING  =  'lanternDrawing';
     const KIND_LANTERN_NOTES    =  'lanternDrawingTerms';
     const KIND_LANTERN_SPEC     =  'lanternSpecification';
+    const KIND_LANTERN_CUTLIST  =  'lanternCuttingList';
     const KIND_DRAWING_TERMS    =  'generalDrawingTerms';
     const KIND_TERMS            =  'terms';
     // ------------------------------------------------------------
@@ -338,6 +344,14 @@ const VghLantern__DocPreview__DocumentState = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Report Whether the Per-Lantern Cutting List Pages Should Be Included
+    // ------------------------------------------------------------
+    function VghLantern__DocPreview__DocumentState__IncludesCuttingList() {
+        return !!VghLantern__DocPreview__DocumentState__GetViewState().ShowCuttingList;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Report Whether Any Specification Content Is Included
     // ------------------------------------------------------------
     function VghLantern__DocPreview__DocumentState__IncludesSpecificationPage() {
@@ -451,6 +465,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
         includes[KIND_LANTERN_SPEC]     =  function() {
             return VghLantern__DocPreview__DocumentState__IncludesSpecificationPage();
         };
+        includes[KIND_LANTERN_CUTLIST]  =  function() { return !!viewState.ShowCuttingList; };
 
         var i, kind;
 
@@ -554,6 +569,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
         DRAWING_VIEW_KEYS                                            : DRAWING_VIEW_KEYS,
         DRAWING_NOTE_KEYS                                            : DRAWING_NOTE_KEYS,
         DOCUMENT_KEYS                                                : DOCUMENT_KEYS,
+        CUTLIST_KEYS                                                 : CUTLIST_KEYS,
         DRAWING_TERMS_KEYS                                           : DRAWING_TERMS_KEYS,
         TERMS_KEYS                                                   : TERMS_KEYS,
         ALL_TOGGLE_KEYS                                              : ALL_TOGGLE_KEYS,
@@ -563,6 +579,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
         KIND_LANTERN_DRAWING                                         : KIND_LANTERN_DRAWING,
         KIND_LANTERN_NOTES                                           : KIND_LANTERN_NOTES,
         KIND_LANTERN_SPEC                                            : KIND_LANTERN_SPEC,
+        KIND_LANTERN_CUTLIST                                         : KIND_LANTERN_CUTLIST,
         KIND_DRAWING_TERMS                                           : KIND_DRAWING_TERMS,
         KIND_TERMS                                                   : KIND_TERMS,
 
@@ -572,6 +589,7 @@ const VghLantern__DocPreview__DocumentState = (function() {
         VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter  : VghLantern__DocPreview__DocumentState__IncludesWelcomeLetter,
         VghLantern__DocPreview__DocumentState__IncludesProjectSummary : VghLantern__DocPreview__DocumentState__IncludesProjectSummary,
         VghLantern__DocPreview__DocumentState__IncludesDrawingNotes   : VghLantern__DocPreview__DocumentState__IncludesDrawingNotes,
+        VghLantern__DocPreview__DocumentState__IncludesCuttingList    : VghLantern__DocPreview__DocumentState__IncludesCuttingList,
         VghLantern__DocPreview__DocumentState__IncludesDrawingTermsPages : VghLantern__DocPreview__DocumentState__IncludesDrawingTermsPages,
         VghLantern__DocPreview__DocumentState__IncludesTermsPages     : VghLantern__DocPreview__DocumentState__IncludesTermsPages,
         VghLantern__DocPreview__DocumentState__IncludesSpecificationPage : VghLantern__DocPreview__DocumentState__IncludesSpecificationPage,

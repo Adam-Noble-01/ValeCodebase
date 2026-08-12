@@ -25,14 +25,21 @@
         "VghLantern__Specification__Config__SectionsNote": "Renderer keys map to a builder in DocumentModel. Adding a section requires a matching builder; an unknown Renderer is skipped with a console warning rather than breaking the document.",
 
         "VghLantern__Specification__Config__Tables": {
+            "LinearColumnsNote": "The purchasing table for one lantern. Section width and height were dropped because the profile reference already fixes the section - two numbers off a swept profile describe its bounding box and nothing a buyer acts on. Material carries the specification decision the reference alone does not read out: timber, aluminium or lead.",
             "LinearColumns": [
                 { "Key": "Label",            "Label": "Section",             "Align": "left"  },
                 { "Key": "ProfileId",        "Label": "Profile Ref",         "Align": "left"  },
+                { "Key": "SpecMaterial",     "Label": "Material",            "Align": "left"  },
                 { "Key": "MemberCount",      "Label": "Members",             "Align": "right" },
-                { "Key": "SectionWidthMm",   "Label": "Width mm",            "Align": "right" },
-                { "Key": "SectionHeightMm",  "Label": "Height mm",           "Align": "right" },
-                { "Key": "LengthMEach",      "Label": "Run m (per lantern)", "Align": "right" },
-                { "Key": "LengthMTotal",     "Label": "Run m (all)",         "Align": "right" }
+                { "Key": "LengthMEach",      "Label": "Lantern Total",       "Align": "right" }
+            ],
+
+            "AggregateLinearColumnsNote": "The project roll-up printed under Project Total - All Lanterns. Stated rather than derived from LinearColumns by filtering, because it reports a different quantity: every lantern combined, not one lantern, so it carries LengthMTotal and drops the per-lantern member count.",
+            "AggregateLinearColumns": [
+                { "Key": "Label",            "Label": "Section",             "Align": "left"  },
+                { "Key": "ProfileId",        "Label": "Profile Ref",         "Align": "left"  },
+                { "Key": "SpecMaterial",     "Label": "Material",            "Align": "left"  },
+                { "Key": "LengthMTotal",     "Label": "Project Total",       "Align": "right" }
             ],
 
             "CuttingListColumnsNote": "The workshop table. Section Lengths answers how much stock to buy; this answers what to cut it into, so cut length and number off lead rather than a run total.",

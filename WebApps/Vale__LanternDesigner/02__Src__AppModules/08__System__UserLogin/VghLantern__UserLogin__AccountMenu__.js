@@ -36,6 +36,18 @@
    mental model the user arrived with. Two labels over one routine is honest
    about that, and cheaper than two code paths that must never drift apart.
 
+   -----------------------------------------------------------------------------
+
+   THE DEVELOPER TOOLS SECTION:
+   An account whose Role is listed in DeveloperMenuRoles gets an extra section
+   carrying the SketchUp and CAD exports. The gate is on rendering, not just on
+   visibility: an account outside the list never has the section built and never
+   has its actions bound, so there is no hidden item to reach by other means.
+
+   The exports live in 80__System__SketchUpExport and 81__System__CadDxfExport
+   and are called through window, exactly as the PDF export is. This menu knows
+   which module to ask and nothing about what either one writes.
+
    ============================================================================= */
 
 // =============================================================================
@@ -63,6 +75,17 @@ const VghLantern__UserLogin__AccountMenu = (function() {
     const ACTION_HOME_SCREEN  =  'home-screen';                               // <-- Back to the landing card, project untouched
     const ACTION_SWITCH_USER  =  'switch-user';                               // <-- End the session, re-arm the gate
     const ACTION_SIGN_OUT     =  'sign-out';                                  // <-- Same routine, different wording
+    const ACTION_DEV_SKETCHUP =  'dev-sketchup-export';                       // <-- Developer only: write the SketchUp build payload
+    const ACTION_DEV_CAD      =  'dev-cad-export';                            // <-- Developer only: write the layered DXF
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Export Config Section Key
+    // ------------------------------------------------------------
+    // The exports own their own messages; this menu reads them so a failure the
+    // exporter cannot raise itself - because it never loaded - still reads in
+    // the exporter's own words rather than in a second set invented here.
+    const EXPORT_MENU_CONFIG_KEY  =  'VghLantern__SketchUpExport__Config__Menu';
     // ------------------------------------------------------------
 
 
@@ -116,6 +139,27 @@ const VghLantern__UserLogin__AccountMenu = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(
             VghLantern__AccountMenu__Config(), key, MENU_CONFIG_LABEL);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read One Menu Array via the Strict Config Reader
+    // ------------------------------------------------------------
+    function VghLantern__AccountMenu__ConfigArray(key) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        return ConfigLoader.VghLantern__ConfigLoader__RequireArray(
+            VghLantern__AccountMenu__Config(), key, MENU_CONFIG_LABEL);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read One String From the Export Config Block
+    // ------------------------------------------------------------
+    function VghLantern__AccountMenu__ExportMessage(key, fallbackText) {
+        var StateManager  =  window.VghLantern__AppCore__StateManager;
+        var appConfig     =  StateManager ? StateManager.VghLantern__StateManager__GetAppConfig() : null;
+        var block         =  (appConfig && appConfig[EXPORT_MENU_CONFIG_KEY]) || {};
+        return block[key] || fallbackText;
     }
     // ------------------------------------------------------------
 
@@ -225,12 +269,56 @@ const VghLantern__UserLogin__AccountMenu = (function() {
         menuHtml     +=      '<div class="VghLantern__AccountMenu__Rule"></div>';
         menuHtml     +=      '<button type="button" role="menuitem" class="VghLantern__AccountMenu__Item" ' + MENU_ACTION_ATTR + '="' + ACTION_HOME_SCREEN + '">' + esc(homeLabel) + '</button>';
         menuHtml     +=      '<button type="button" role="menuitem" class="VghLantern__AccountMenu__Item" ' + MENU_ACTION_ATTR + '="' + ACTION_SWITCH_USER + '">' + esc(switchLabel) + '</button>';
+        menuHtml     +=      VghLantern__AccountMenu__DeveloperSectionHtml(currentUser);
         menuHtml     +=      '<div class="VghLantern__AccountMenu__Rule"></div>';
         menuHtml     +=      '<button type="button" role="menuitem" class="VghLantern__AccountMenu__Item VghLantern__AccountMenu__Item--danger" ' + MENU_ACTION_ATTR + '="' + ACTION_SIGN_OUT + '">' + esc(signOutLabel) + '</button>';
         menuHtml     +=  '</div>';
 
         mount.innerHTML  =  menuHtml;
         VghLantern__AccountMenu__BindMountActions();
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | The Developer Tools Section, or Nothing
+    // ------------------------------------------------------------
+    // Returns an empty string for every account outside the configured roles,
+    // which is what makes the gate real rather than cosmetic: an account that
+    // does not qualify has no markup for the section at all, so there is no
+    // hidden button and no action key sitting in the DOM to be found.
+    function VghLantern__AccountMenu__DeveloperSectionHtml(currentUser) {
+        if (!VghLantern__AccountMenu__IsDeveloper(currentUser)) return '';
+
+        var esc             =  VghLantern__AccountMenu__Escape;
+        var sectionLabel    =  VghLantern__AccountMenu__ConfigString('DeveloperMenuLabel');
+        var sketchUpLabel   =  VghLantern__AccountMenu__ConfigString('DeveloperSketchUpLabel');
+        var cadLabel        =  VghLantern__AccountMenu__ConfigString('DeveloperCadLabel');
+
+        var html  =  '';
+        html     +=  '<div class="VghLantern__AccountMenu__Rule"></div>';
+        html     +=  '<div class="VghLantern__AccountMenu__SectionLabel">' + esc(sectionLabel) + '</div>';
+        html     +=  '<button type="button" role="menuitem" class="VghLantern__AccountMenu__Item VghLantern__AccountMenu__Item--nested" '
+                  +      MENU_ACTION_ATTR + '="' + ACTION_DEV_SKETCHUP + '">' + esc(sketchUpLabel) + '</button>';
+        html     +=  '<button type="button" role="menuitem" class="VghLantern__AccountMenu__Item VghLantern__AccountMenu__Item--nested" '
+                  +      MENU_ACTION_ATTR + '="' + ACTION_DEV_CAD + '">' + esc(cadLabel) + '</button>';
+
+        return html;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether This Account's Role Admits the Developer Section
+    // ------------------------------------------------------------
+    function VghLantern__AccountMenu__IsDeveloper(currentUser) {
+        if (!currentUser || !currentUser.Role) return false;
+
+        var allowedRoles  =  VghLantern__AccountMenu__ConfigArray('DeveloperMenuRoles');
+        var i;
+
+        for (i = 0; i < allowedRoles.length; i++) {
+            if (allowedRoles[i] === currentUser.Role) return true;
+        }
+        return false;
     }
     // ------------------------------------------------------------
 
@@ -348,7 +436,50 @@ const VghLantern__UserLogin__AccountMenu = (function() {
             return;
         }
 
+        if (actionKey === ACTION_DEV_SKETCHUP || actionKey === ACTION_DEV_CAD) {
+            VghLantern__AccountMenu__RunDeveloperAction(actionKey);
+            return;
+        }
+
         console.warn('[VghLantern AccountMenu] Unknown menu action:', actionKey);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Run One Developer Tools Export
+    // ------------------------------------------------------------
+    // The role is re-checked here rather than trusted from the render. The
+    // markup gate already means a non-developer has no button, but this routine
+    // is reachable from the public API and a second check costs one array walk.
+    //
+    // Both exports are fire and forget: they own their own toasts, so nothing
+    // here waits on the promise or reports on its behalf beyond the case where
+    // the module is absent entirely and can say nothing at all.
+    function VghLantern__AccountMenu__RunDeveloperAction(actionKey) {
+        if (!VghLantern__AccountMenu__IsDeveloper(VghLantern__AccountMenu__CurrentUser())) return;
+
+        var Toast  =  window.VghLantern__AppNotifications__Toast;
+
+        if (actionKey === ACTION_DEV_SKETCHUP) {
+            var SketchUpWriter  =  window.VghLantern__SketchUpExport__FileWriter;
+            if (!SketchUpWriter) {
+                if (Toast) Toast.VghLantern__Toast__Show(
+                    VghLantern__AccountMenu__ExportMessage('FailureMessage',
+                        'The SketchUp exporter is not loaded.'), 'error');
+                return;
+            }
+            SketchUpWriter.VghLantern__SketchUpExport__FileWriter__ExportCurrentLantern();
+            return;
+        }
+
+        var CadWriter  =  window.VghLantern__CadDxfExport__FileWriter;
+        if (!CadWriter) {
+            if (Toast) Toast.VghLantern__Toast__Show(
+                VghLantern__AccountMenu__ExportMessage('CadPendingMessage',
+                    'The CAD export is not built yet.'), 'info');
+            return;
+        }
+        CadWriter.VghLantern__CadDxfExport__FileWriter__ExportCurrentLantern();
     }
     // ------------------------------------------------------------
 

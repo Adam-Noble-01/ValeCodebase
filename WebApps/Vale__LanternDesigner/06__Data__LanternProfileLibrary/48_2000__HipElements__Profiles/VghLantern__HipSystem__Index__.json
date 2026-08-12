@@ -1,0 +1,243 @@
+{
+  "VghLantern__HipSystem__Meta": {
+    "SchemaVersion": "1.0.0",
+    "CreatedDate": "12-Aug-2026",
+    "LibraryRoot": "06__Data__LanternProfileLibrary/48_2000__HipElements__Profiles/",
+    "TimberDepthTableUrl": "06__Data__LanternProfileLibrary/VghLantern__RidgeHipSystem__TimberDepthTable__.json",
+    "Description": "The Vale hip as built: an aluminium core spine welded between the eaves extrusion and the ridge core, a Sapele hip beam hung beneath it, a timber flashing fillet, and lead flashing over that. Four parts sharing one section frame.",
+    "SectionFrameNote": "All parts are authored in one shared section frame taken from Na__Asset__Plan2D__Top, in the plane NORMAL to the hip line. Section 0,0 is the HIP DATUM - the hip construction triangle line running from the eaves datum corner up to the ridge end point. Section +x runs across the hip, section +y runs up out through the roof: the beam hangs below the datum, the core straddles it, and the blocking and flashing stack above it.",
+    "ElementTypeVocabulary": [
+      "Structural",
+      "Trim",
+      "By Others",
+      "Flashing",
+      "Glazing"
+    ],
+    "ElementRoleNote": "ElementType is the five word vocabulary the 3D element isolation and the specification tables filter on. ElementRole carries the finer wording the technical department uses on a drawing, which is descriptive rather than functional and is never filtered on.",
+    "StandardsNote": "Taken from the 22.5 Degree CAD Standards library held by the Vale Garden Houses technical department, captured 12-Aug-2026. Every section here is authored for a 22.5 degree roof. Other pitches are reached by transforming these assets, not by holding a library per pitch.",
+    "HandAuthored": true,
+    "HandAuthoredNote": "Written by hand rather than generated. A build utility scanning a folder could not know which asset fills which slot, nor where a section's pitch hinge sits."
+  },
+  "VghLantern__HipSystem__Types": [
+    {
+      "TypeKey": "hipBeam",
+      "TypeName": "Hip Beam",
+      "IsDefault": true,
+      "PartKeys": [
+        "core",
+        "beam",
+        "blocking",
+        "flashing"
+      ],
+      "IsBuilt": true,
+      "Note": "The standard hip. The assembly of the four parts in this folder, authored from the 22.5 degree CAD standard."
+    },
+    {
+      "TypeKey": "glazeBarHip",
+      "TypeName": "Glaze Bar Hip",
+      "IsDefault": false,
+      "PartKeys": [],
+      "IsBuilt": false,
+      "NotBuiltMessage": "Glaze bar hips are not built yet. The lantern will be drawn with hip beams until the glaze bar hip profiles and their build logic are authored.",
+      "Note": "Small lanterns with no jack rafters may transition to a glaze bar hip instead of a full hip beam. The option is offered so a specification can record the intent; the geometry follows later."
+    }
+  ],
+  "VghLantern__HipSystem__SectionAngle": {
+    "AuthoredRoofPitchDegrees": 22.5,
+    "AuthoredSectionAngleDegrees": 15.709,
+    "GeometricFormulaNote": "In the plane normal to the hip, a roof plane of pitch p appears at atan( t / sqrt( (1 + t*t)^2 + 1 ) ) where t = tan(p), for the 45 degree plan hip an equal-pitch hipped roof always produces. At 22.5 degrees that formula returns 15.045 degrees while the CAD standard is drawn at 15.709.",
+    "DeltaNote": "The 0.66 degree difference is a drafting standard, not an error to correct: the workshop cuts the fillet slightly flatter than pure geometry so the lead dresses over it without stretching. So the angle is applied as a DELTA from the authored value - applied = 15.709 + ( formula(pitch) - formula(22.5) ). At 22.5 degrees nothing moves and the CAD standard survives untouched; at any other pitch the section moves by the correct geometric increment. This is the same reference-and-delta approach the base frame head beam re-slope already uses.",
+    "PlanBisectorDegrees": 45,
+    "PlanBisectorNote": "A hipped roof with equal pitches on all four sides puts its hips at 45 degrees in plan whatever the rectangle's proportions, so this is a constant rather than something to solve per lantern."
+  },
+  "VghLantern__HipSystem__EndTreatments": {
+    "RidgeEnd": {
+      "Mode": "blockFacetPlumbCut",
+      "BlockFacetInsetMm": 67.5,
+      "AppliesToParts": [
+        "beam"
+      ],
+      "Note": "The hip beam's high end is plumb cut flush against the octagonal ridge block facet, 67.5mm from the block centre measured along the hip's plan direction. Cut plane is vertical with a horizontal normal, exactly like the glaze bar trim's eaves plumb cut - a plumb cut is a plumb cut whichever end of a member it is on."
+    },
+    "EavesEnd": {
+      "Mode": "cornerBisectorPlumbCut",
+      "PlumbCutInsetMm": 18,
+      "AppliesToParts": [
+        "beam"
+      ],
+      "Note": "The hip beam's lower end stops short of the eaves datum corner with a vertical plumb cut whose plane sits 18mm horizontally inboard of the corner point, measured along the hip's plan direction - the 45 degree corner bisector. Same 18mm the glaze bar trim takes at its own eaves end, and the same reason: it is the real joinery cut, so the cutting list length is honest."
+    },
+    "CoreExtension": {
+      "ExtensionAlongPitchMm": 42.5,
+      "AppliesToParts": [
+        "core"
+      ],
+      "Note": "The hip core extends past the eaves datum and is welded to the eaves extrusion, the same 42.5mm along the pitch the glaze bar core takes. Read from the base frame system index at build time rather than restated here, so the two cannot drift apart."
+    },
+    "CoveringOversail": {
+      "Mode": "slideToCapEndLevel",
+      "AppliesToParts": [
+        "blocking",
+        "flashing"
+      ],
+      "Note": "The timber fillet and the lead over it do not stop on the eaves datum. They carry on past it and die at the OUTER EDGE OF THE GLASS, level with the glaze bar cap ends, because the weathering has to see the water off the roof rather than deliver it into the corner of the frame. The core and the beam below them are unaffected: the core still stops on the eaves extrusion it welds to and the beam still takes its 18mm plumb cut.",
+      "ConstructionNote": "Slide the foot down the hip's OWN axis until its level drops by the glaze bar cap extension times sin(roof pitch) - that is, until it reaches the level the cap ends sit at. Nothing about it is authored: the distance falls out of the roof, and it lengthens as the pitch flattens because a shallower roof pushes the same vertical drop further along a shallower hip.",
+      "WhyThisMatchesTheGlass": "The glazing builder extends each pane's eaves corner along its own upslope boundary edge - which at a hip corner IS the hip - scaled so the slide's down-slope component equals the same cap extension. Sliding to the cap-end LEVEL and sliding until the down-slope component equals the extension are the same construction written two ways; they agree to the last decimal at every pitch. The covering therefore lands exactly on the glass corner rather than near it.",
+      "AtTheAuthoredPitchMm": 231.45,
+      "AtTheAuthoredPitchNote": "The oversail at the 22.5 degree standard, recorded so a reader can sanity check a build without running the arithmetic. It runs from about 238.6mm at 10 degrees down to about 208.2mm at 45."
+    }
+  },
+  "VghLantern__HipSystem__Parts": [
+    {
+      "PartKey": "core",
+      "PartName": "Hip Core",
+      "AssetId": "48_2001",
+      "JsonUrl": "48_2001__ValeGlazedRoof__HipCore__StandardAliExtrusion__.json",
+      "Selectable": false,
+      "ElementType": "Structural",
+      "ElementRole": "Structural",
+      "SpecMaterial": "Mill Finish Aluminium",
+      "SpecFinishNote": "No finishes available - the raw bare extrusion, same as the glaze bar core.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -20.0,
+      "SectionMaxXMm": 20.0,
+      "SectionMinYMm": -55.5,
+      "SectionMaxYMm": 61.0,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": false,
+      "Note": "The structural spine. Welded to the eaves extrusion at its foot, to the ridge core at its head, and to every jack rafter core along its length."
+    },
+    {
+      "PartKey": "beam",
+      "PartName": "Hip Beam",
+      "AssetId": "48_2021",
+      "JsonUrl": "48_2021__ValeGlazedRoof__HipBeam__RidgeTimber__.json",
+      "Selectable": false,
+      "ElementType": "Structural",
+      "ElementRole": "Timber Substructure",
+      "SpecMaterial": "Sapele Hardwood",
+      "SpecFinishNote": "Painted joinery. Follows the lantern master joinery finish unless overridden.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "VghLantern__PbrMaterials__Config__JoineryFinishes",
+      "FinishSource": "masterJoinery",
+      "SectionMinXMm": -28.0,
+      "SectionMaxXMm": 28.0,
+      "SectionMinYMm": -213.0,
+      "SectionMaxYMm": -8.0,
+      "StretchesWithTimberDepth": true,
+      "ReslopesWithRoofPitch": false,
+      "DepthStretch": {
+        "AuthoredDepthMm": 205.0,
+        "SectionTopYMm": -8.0,
+        "SectionBaseYMm": -213.0,
+        "MouldingHeightMm": 24.0,
+        "SplitYMm": -189.0,
+        "SplitNote": "The same 24mm moulded bottom the ridge beam carries, vertex for vertex - the two beams are the same moulding on different depths of flank. Everything at or below y = -189 translates and the moulding rides down rigid.",
+        "StretchAxis": "y",
+        "StretchSide": "below"
+      },
+      "Note": "The decorative internal beam seen from inside the room. Plumb cut against the block facet at its head and 18mm inboard of the eaves corner at its foot."
+    },
+    {
+      "PartKey": "blocking",
+      "PartName": "Hip Blocking",
+      "AssetId": "48_2101",
+      "JsonUrl": "48_2101__ValeGlazedRoof__HipBlocking__FlashingBlock__.json",
+      "Selectable": false,
+      "ElementType": "Trim",
+      "ElementRole": "Timber Packer",
+      "SpecMaterial": "Sapele Hardwood",
+      "SpecFinishNote": "Bare timber. Concealed under the leadwork.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -25.328,
+      "SectionMaxXMm": 25.328,
+      "SectionMinYMm": 32.0,
+      "SectionMaxYMm": 70.758,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": true,
+      "OversailsPastEavesDatum": true,
+      "PitchAdaptation": {
+        "Mode": "seatingCut",
+        "AngleSource": "hipSectionAngle",
+        "AuthoredAngleDegrees": 15.709,
+        "Hinge": {
+          "X": 6.0,
+          "Y": 37.436
+        },
+        "PrimaryVertex": {
+          "X": 25.328,
+          "Y": 32.0
+        },
+        "CarriedVertices": [
+          {
+            "X": 24.887,
+            "Y": 32.673
+          },
+          {
+            "X": 24.287,
+            "Y": 34.197
+          },
+          {
+            "X": 24.015,
+            "Y": 35.776
+          }
+        ],
+        "MirrorInX": true,
+        "Note": "The underside faces seat on the roof planes as they appear in the hip's normal section. The inner end is pinned on the core's shoulder at x = 6; the outer corner slides vertically until the face takes the new angle, and the three vertices of the small rounded return above it travel the same distance so the nose stays rigid and the face above it stretches."
+      },
+      "Note": "The timber fillet the hip leadwork is dressed over. Seats on the shoulders of the aluminium core."
+    },
+    {
+      "PartKey": "flashing",
+      "PartName": "Hip Lead Flashing",
+      "AssetId": "48_2121",
+      "JsonUrl": "48_2121__ValeGlazedRoof__HipFlashing__LeadFlashing__.json",
+      "Selectable": false,
+      "ElementType": "Flashing",
+      "ElementRole": "Flashing",
+      "SpecMaterial": "Lead",
+      "SpecFinishNote": "Patination oiled leadwork.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -54.779,
+      "SectionMaxXMm": 54.779,
+      "SectionMinYMm": 21.791,
+      "SectionMaxYMm": 72.759,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": true,
+      "OversailsPastEavesDatum": true,
+      "PitchAdaptation": {
+        "Mode": "foldedWing",
+        "AngleSource": "hipSectionAngle",
+        "AuthoredAngleDegrees": 15.709,
+        "Wings": [
+          {
+            "Root": {
+              "X": 30.376,
+              "Y": 30.58
+            },
+            "Tip": {
+              "X": 54.779,
+              "Y": 23.717
+            }
+          },
+          {
+            "Root": {
+              "X": 29.736,
+              "Y": 28.682
+            },
+            "Tip": {
+              "X": 54.237,
+              "Y": 21.791
+            }
+          }
+        ],
+        "MirrorInX": true,
+        "Note": "Same folded sheet reasoning as the ridge flashing: each wing tip rotates about its own root by the angle delta, holding the 25.4mm wing run and the 2mm sheet thickness exactly rather than stretching the lead."
+      },
+      "Note": "The weathering projection to the hip. Always fitted."
+    }
+  ]
+}

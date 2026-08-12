@@ -215,7 +215,7 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
 
     // FUNCTION | List Component Index Entries Suitable for a Placement Role
     // ------------------------------------------------------------
-    // Role is one of: finial | finialBase | cresting | vent.
+    // Role is one of: finial | cresting | vent.
     // Entries declare their applicable roles the same way profiles do, so the
     // editor filters option lists without hardcoding a category-to-role table.
     function VghLantern__ComponentIndexLoader__ListEntriesForRole(roleKey) {

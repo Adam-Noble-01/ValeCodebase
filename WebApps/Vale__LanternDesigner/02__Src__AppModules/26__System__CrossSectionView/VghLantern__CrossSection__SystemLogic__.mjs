@@ -59,7 +59,8 @@ import {
     VghLantern__Env3d__SceneManager__Invalidate,
     VghLantern__Env3d__SceneManager__ClearGroup,
     VghLantern__Env3d__SceneManager__GetGroup,
-    VghLantern__Env3d__SceneManager__SetGroundGridVisible,
+    VghLantern__Env3d__SceneManager__SetGroundGridSuppressed,
+    VghLantern__Env3d__GroundGridSuppressReason,
     VghLantern__Env3d__SceneGroup,
     VghLantern__Env3d__SceneGroupSet__Solid3d
 } from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__SceneManager__.mjs';
@@ -163,7 +164,9 @@ import {
         VghLantern__Env3d__SceneManager__ClearGroup(surface, VghLantern__Env3d__SceneGroup.Overlay__Section);
 
         if (surface.Renderer) surface.Renderer.clippingPlanes  =  [];        // <-- Empty list is the zero-cost no-clipping path
-        VghLantern__Env3d__SceneManager__SetGroundGridVisible(surface, true);
+        VghLantern__Env3d__SceneManager__SetGroundGridSuppressed(            // <-- Releases only the section's hold; a camera below ground keeps its own
+            surface, VghLantern__Env3d__GroundGridSuppressReason.Section, false
+        );
 
         VghLantern__CrossSection__State(surface).Plane  =  null;
     }
@@ -200,7 +203,9 @@ import {
 
         surface.Renderer.clippingPlanes  =  [plane];
         if (VghLantern__CrossSection__ConfigAccess__RequireBoolean('Feature', 'HideGroundGridWhenCut')) {
-            VghLantern__Env3d__SceneManager__SetGroundGridVisible(surface, false);
+            VghLantern__Env3d__SceneManager__SetGroundGridSuppressed(
+                surface, VghLantern__Env3d__GroundGridSuppressReason.Section, true
+            );
         }
 
         // World matrices are refreshed explicitly because the cut is computed from

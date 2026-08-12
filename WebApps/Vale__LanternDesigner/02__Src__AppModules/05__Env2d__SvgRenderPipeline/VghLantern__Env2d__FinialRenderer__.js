@@ -6,7 +6,7 @@
    NAMESPACE  : VghLantern
    MODULE     : Env2d - FinialRenderer
    AUTHOR     : Adam Noble - Noble Architecture
-   PURPOSE    : Draw finials, bases and cresting at their solved anchor points
+   PURPOSE    : Draw finials at their solved anchor points
    CREATED    : 30-Jul-2026
    UPDATED    : 05-Aug-2026 - unified component schema, real linework in all views
 
@@ -59,13 +59,11 @@ const VghLantern__Env2d__FinialRenderer = (function() {
     // ------------------------------------------------------------
     // The solver names anchors by WHERE they are on the roof; the lantern names
     // components by WHAT goes there. This is the join between the two.
-    const ANCHOR_ROLE_RIDGE_END  =  'ridgeEnd';
     const ANCHOR_ROLE_APEX       =  'apex';
 
     const FINIALS_BLOCK          =  'Lantern__Finials__Config';
     const FIELD_ENABLED          =  'Lantern__Finials__Config__Enabled';
     const FIELD_COMPONENT_ID     =  'Lantern__Finials__Config__FinialComponentId';
-    const FIELD_AT_RIDGE_ENDS    =  'Lantern__Finials__Config__PlaceAtRidgeEnds';
     const FIELD_AT_APEX          =  'Lantern__Finials__Config__PlaceAtApex';
     // ------------------------------------------------------------
 
@@ -111,15 +109,16 @@ const VghLantern__Env2d__FinialRenderer = (function() {
 
     // HELPER FUNCTION | Whether a Finial Belongs at This Anchor
     // ------------------------------------------------------------
-    // Place at Ridge Ends and Place at Apex are user choices, so an anchor the
-    // solver published is not automatically an anchor that gets a finial.
+    // Place at Apex is a user choice and defaults off, so a pyramid takes a
+    // finial only when it has been asked for. Every other anchor - the two ridge
+    // ends - takes one as soon as finials are fitted at all, which is what Fit
+    // Finials already said.
     function VghLantern__Env2d__FinialRenderer__AnchorWanted(anchor, finialsCfg) {
         if (!anchor) return false;
 
-        if (anchor.Role === ANCHOR_ROLE_RIDGE_END) return finialsCfg[FIELD_AT_RIDGE_ENDS] !== false;
-        if (anchor.Role === ANCHOR_ROLE_APEX)      return finialsCfg[FIELD_AT_APEX]       !== false;
+        if (anchor.Role === ANCHOR_ROLE_APEX) return finialsCfg[FIELD_AT_APEX] !== false;
 
-        return true;                                                         // <-- An unfamiliar anchor role still gets drawn
+        return true;                                                         // <-- Ridge ends, and any unfamiliar role, still get drawn
     }
     // ------------------------------------------------------------
 

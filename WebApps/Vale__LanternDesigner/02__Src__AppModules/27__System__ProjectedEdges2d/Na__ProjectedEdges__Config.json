@@ -26,7 +26,9 @@
             "IncludeFrame"                : true,
             "IncludeGlazeBars"            : true,
             "IncludeGlazing"              : true,
-            "IncludeComponents"           : true
+            "IncludeComponents"           : true,
+            "GlazingOccludes"             : false,
+            "GlazingOccludesNote"         : "Whether staged glazing HIDES what is behind it. Every other staged mesh is both an edge source and an occluder, and glass being double sided is never backface culled, so with this true the glass behaves as a solid wall: correct hidden line removal, and it deletes the ridge and hip beams, the internal joinery and every far side bar from the drawing. At 25 degrees the near slope of glass runs 214mm in front of the ridge beam at its own mid height, so there is nothing marginal about it. False keeps the glass drawing its own pane edges while excluding its triangles from the clip pass, which is what a drawing office does by putting glass on a layer the hidden line calculation ignores. This is the ONE case where the edge set and the occluder set deliberately differ; StageSampler reports both counts so the divergence is visible rather than assumed."
         },
 
         "VghLantern__ProjectedEdges__Config__Projection": {

@@ -377,10 +377,16 @@ const VghLantern__Viewport3d__Layout = (function() {
 
         canvasHost.innerHTML  =  '';                                          // <-- Clear the pending message before the canvas lands
 
-        VghLantern__Viewport3dLayout__Surface  =  pipeline.VghLantern__Env3d__RenderPipeline__Mount(canvasHost);
+        var modeConfig  =  VghLantern__Viewport3dLayout__ModeConfig();
+
+        // This mode is the review surface, so it is the one surface allowed under the
+        // ground plane - the editor's 3D panel and the drawing sheet viewports mount
+        // with no options at all and keep the clamp above the horizon.
+        VghLantern__Viewport3dLayout__Surface  =  pipeline.VghLantern__Env3d__RenderPipeline__Mount(canvasHost, {
+            AllowBelowGroundOrbit : modeConfig.AllowBelowGroundOrbit === true
+        });
         if (!VghLantern__Viewport3dLayout__Surface) return;
 
-        var modeConfig  =  VghLantern__Viewport3dLayout__ModeConfig();
         if (modeConfig.DefaultPreset) {
             pipeline.VghLantern__Env3d__RenderPipeline__ApplyPreset(
                 VghLantern__Viewport3dLayout__Surface, modeConfig.DefaultPreset

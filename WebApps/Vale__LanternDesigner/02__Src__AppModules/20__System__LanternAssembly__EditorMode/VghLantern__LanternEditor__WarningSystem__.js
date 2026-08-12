@@ -16,6 +16,13 @@
      manufacturing limit change never means a code change.
    - Also republishes the warnings the SkeletonSolver and GlazeBarLayout produced,
      so the user sees one list rather than hunting the console.
+   - The ridge and hip systems contribute too, but by DERIVATION rather than
+     republication. Their builders raise the same notes during a 3D build, and
+     reading them from a render surface would be wrong twice over: the notes are
+     just as true on a lantern nobody has opened in 3D, and two surfaces can be
+     alive at once with no reason to agree about which one this panel speaks for.
+     So they are re-derived here from the lantern and its skeleton, which is what
+     keeps this module a pure function of the configuration.
    - Renders that list into the editor and answers one question the downstream
      modes need: is this configuration safe to issue.
 
@@ -341,6 +348,92 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Collect the Ridge and Hip Notes Worth Surfacing
+    // ------------------------------------------------------------
+    // The ridge and hip builders raise these during a 3D build, but they are not
+    // facts about a BUILD - they are facts about the configuration, and they are
+    // just as true on a lantern nobody has opened in 3D yet. So they are derived
+    // here from the lantern and its skeleton rather than plumbed out of a render
+    // surface, which keeps this module a pure function of the configuration and
+    // keeps it right when two surfaces are alive at once.
+    //
+    // Three things qualify, and one pointedly does not:
+    //
+    //   HIP TYPE SUBSTITUTED   A lantern specified with a glaze bar hip is DRAWN
+    //                          with hip beams, because those profiles do not exist
+    //                          yet. What is on screen is not what is specified,
+    //                          and nobody should have to remember that.
+    //
+    //   OVERRIDE CLAMPED       The user asked for a beam depth and did not get it.
+    //
+    //   DEPTH TABLE MISSING    Without it every beam silently falls back to the
+    //                          22.5 degree standard, which looks entirely correct
+    //                          and is wrong at every other pitch.
+    //
+    //   PITCH SNAPPED          NOT surfaced. Snapping to the nearest tabulated row
+    //                          is the documented, intended behaviour and would fire
+    //                          on most real pitches. It belongs on the
+    //                          specification, which quotes the standard built to,
+    //                          rather than in a panel whose value depends on being
+    //                          worth reading.
+    function VghLantern__WarningSystem__CollectRidgeAndHipNotes(lantern, skeleton) {
+        var entries  =  [];
+
+        var HipLoader      =  window.VghLantern__AppData__HipSystemLoader;
+        var RidgeGeometry  =  window.VghLantern__Geometry__RidgeAssembly;
+
+        if (HipLoader) {
+            var build  =  HipLoader.VghLantern__HipSystemLoader__BuildType(lantern);
+            if (build && build.WasSubstituted) {
+                entries.push({
+                    Key      : 'ridgeHip:hipTypeSubstituted',
+                    Severity : SEVERITY_WARNING,
+                    Message  : build.Message,
+                    Origin   : 'ridgeHip'
+                });
+            }
+        }
+
+        if (!RidgeGeometry || !skeleton) return entries;
+
+        var depths  =  RidgeGeometry.VghLantern__RidgeAssembly__DepthResolution(lantern, skeleton);
+
+        if (depths.TableLoaded === false) {
+            entries.push({
+                Key      : 'ridgeHip:depthTableMissing',
+                Severity : SEVERITY_WARNING,
+                Message  : 'The ridge and hip timber depth standard could not be read, so both beams are '
+                         + 'drawn at the 22.5 degree standard depth whatever the roof pitch.',
+                Origin   : 'ridgeHip'
+            });
+            return entries;
+        }
+
+        var clamped  =  [
+            { Key : 'ridge', Label : 'Ridge beam', Resolved : depths.Ridge },
+            { Key : 'hip',   Label : 'Hip beam',   Resolved : depths.Hip }
+        ];
+        var i, entry;
+
+        for (i = 0; i < clamped.length; i++) {
+            entry  =  clamped[i];
+            if (!entry.Resolved || !entry.Resolved.WasClamped) continue;
+
+            entries.push({
+                Key      : 'ridgeHip:' + entry.Key + 'DepthClamped',
+                Severity : SEVERITY_WARNING,
+                Message  : entry.Label + ' depth adjustment of ' + entry.Resolved.RequestedAdjustmentMm
+                         + 'mm was limited to ' + entry.Resolved.AdjustmentMm + 'mm, giving a '
+                         + entry.Resolved.DepthMm + 'mm beam.',
+                Origin   : 'ridgeHip'
+            });
+        }
+
+        return entries;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Collect the User-Authored Document Warning, If Any
     // ------------------------------------------------------------
     // Lets staff flag something the rule table cannot know about (e.g. a site
@@ -432,6 +525,7 @@ const VghLantern__LanternEditor__WarningSystem = (function() {
         }
 
         entries  =  entries.concat(VghLantern__WarningSystem__CollectGeometryNotes(skeleton, barSet));
+        entries  =  entries.concat(VghLantern__WarningSystem__CollectRidgeAndHipNotes(lantern, skeleton));
         entries  =  entries.concat(VghLantern__WarningSystem__CollectUserWarning(lantern));
         entries  =  entries.concat(VghLantern__WarningSystem__CollectMixedJoineryFinishes(lantern));
         entries  =  entries.concat(VghLantern__WarningSystem__CollectMixedExteriorFinishes(lantern));

@@ -30,11 +30,19 @@
     },
 
     "VghLantern__UserMenu__ModeViewport3d__Config": {
-        "VghLantern__UserMenu__ModeViewport3d__Config__Description"        : "Persisted user preferences for the dedicated full-screen 3D view.",
+        "VghLantern__UserMenu__ModeViewport3d__Config__Description"        : "Persisted user preferences for the dedicated full-screen 3D view, including the floating tools menu. MenuPositionX and MenuPositionY are pixels from the top left of the VIEWPORT CONTAINER rather than of the window, so the menu lands in the same place on the canvas whatever the browser chrome around it is doing.",
         "VghLantern__UserMenu__ModeViewport3d__Config__OverrideEnabled"    : true,
         "VghLantern__UserMenu__ModeViewport3d__Config__CameraPreset"       : "threeQuarter",
         "VghLantern__UserMenu__ModeViewport3d__Config__ShowGroundPlane"    : true,
         "VghLantern__UserMenu__ModeViewport3d__Config__ShowProfileLines"   : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuPositionX"                : null,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuPositionY"                : null,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionDisplayOpen"       : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionCameraOpen"        : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionCrossSectionOpen"  : false,
+        "VghLantern__UserMenu__ModeViewport3d__Config__MenuSectionLanternOpen"       : false,
+        "VghLantern__UserMenu__ModeViewport3d__Config__PersistMenuPosition"          : true,
+        "VghLantern__UserMenu__ModeViewport3d__Config__PersistMenuSectionState"      : true,
         "VghLantern__UserMenu__ModeViewport3d__Config__PersistViewState"   : true
     },
 
@@ -59,6 +67,7 @@
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowDrawingSheet"           : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowTakeoffSchedule"        : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowComponentSchedule"      : true,
+        "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowCuttingList"            : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__ShowJobNotes"               : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistMenuPosition"        : true,
         "VghLantern__UserMenu__ModeDocumentPreview__Config__PersistMenuSectionState"    : true,

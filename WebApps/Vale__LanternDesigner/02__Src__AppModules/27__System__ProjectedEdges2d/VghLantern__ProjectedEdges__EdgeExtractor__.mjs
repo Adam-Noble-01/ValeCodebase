@@ -23,6 +23,27 @@
                      the model alone: true from every direction. Found once per
                      geometry and reused for every view and every instance.
 
+                     WHERE THE AUTHOR SAID OTHERWISE, THE AUTHOR WINS. A library
+                     component carries the soften, smooth and hide state set on it
+                     in SketchUp, and the component loader attaches that to
+                     geometry.userData. The threshold is a guess at what somebody
+                     meant; the authored flag is what they actually did, and it
+                     can express things an angle never can - a shallow edge
+                     deliberately left hard, a steep one deliberately softened,
+                     and a hidden edge, which no threshold can represent at all.
+
+                     Mapping: hidden drops the edge from every view; soft demotes
+                     it to silhouette only, so a softened lathe keeps its profile
+                     without drawing its tessellation; anything still visible is a
+                     crease. Smooth alone does NOT demote it, because a smooth
+                     edge stays visible in SketchUp - it is only mistaken for a
+                     hidden one because the Soften/Smooth slider sets both flags
+                     at once.
+
+                     Geometry with no authored data - every swept section and
+                     prism, and any asset older than schema 1.2.0 - falls back to
+                     the threshold untouched.
+
      SILHOUETTE      Two faces meet gently, but one turns towards the viewer and the
                      other away, so the model's outline breaks there. This is the
                      only part that depends on which view is being drawn, and it is
@@ -103,12 +124,33 @@ import { generateIntersectionEdges }
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Authored Edge Classification
+    // ------------------------------------------------------------
+    // Written by the component loader onto geometry.userData. Values must match
+    // VghLantern__Env3d__MeshJson__EDGE_*; they are restated rather than
+    // imported so this module keeps no dependency on the 3D pipeline.
+    const AUTHORED_USERDATA_KEY  =  'VghLantern__AuthoredEdges';
+    const AUTHORED_ALWAYS        =  0;
+    const AUTHORED_SILHOUETTE    =  1;
+    const AUTHORED_NEVER         =  2;
+    // ------------------------------------------------------------
+
+
     // MODULE VARIABLES | Per Geometry Candidate Cache
     // ------------------------------------------------------------
     // Keyed by geometry so that repeated instances share one analysis, and held
     // weakly so a geometry dropped by the component cache takes its candidates with
     // it rather than pinning them for the life of the session.
     const VghLantern__ProjectedEdges__EdgeExtractor__Candidates  =  new WeakMap();
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Per Geometry Authored Edge Hash Cache
+    // ------------------------------------------------------------
+    // Hashing the authored list is the same string work as hashing the mesh, so
+    // it is held for the life of the geometry alongside the candidates. Weak
+    // for the same reason: a dropped geometry takes its map with it.
+    const VghLantern__ProjectedEdges__EdgeExtractor__AuthoredCache  =  new WeakMap();
     // ------------------------------------------------------------
 
 
@@ -138,6 +180,52 @@ import { generateIntersectionEdges }
 // REGION | Per Geometry Candidate Analysis
 // -----------------------------------------------------------------------------
 
+    // SUB FUNCTION | Hash the Authored Edge List Under This Module's Own Rule
+    // ------------------------------------------------------------
+    // The component loader attaches the author's soft / hidden decisions as raw
+    // stage-space coordinate pairs rather than as hashes, so the definition of
+    // "the same corner" stays in this file next to the rule that produced the
+    // linework already on screen. Both directions are stored, because a shared
+    // edge is walked one way by one triangle and the other way by its partner.
+    //
+    // Returns null when the geometry carries no authored data, which is the
+    // signal to fall back to the angle threshold. That covers every swept
+    // section and prism in a lantern, and every library asset exported before
+    // schema 1.2.0.
+    function VghLantern__ProjectedEdges__EdgeExtractor__AuthoredMap(geometry) {
+        const attached  =  geometry.userData ? geometry.userData[AUTHORED_USERDATA_KEY] : null;
+        if (!attached || !attached.Coords || !attached.Modes) return null;
+
+        const cached  =  VghLantern__ProjectedEdges__EdgeExtractor__AuthoredCache.get(geometry);
+        if (cached) return cached;
+
+        const coords  =  attached.Coords;
+        const modes   =  attached.Modes;
+        const map     =  new Map();
+
+        for (let i = 0, m = 0; i + 5 < coords.length; i += 6, m++) {
+            const startHash  =
+                Math.round(coords[i]     * HASH_PRECISION) + ',' +
+                Math.round(coords[i + 1] * HASH_PRECISION) + ',' +
+                Math.round(coords[i + 2] * HASH_PRECISION);
+
+            const endHash  =
+                Math.round(coords[i + 3] * HASH_PRECISION) + ',' +
+                Math.round(coords[i + 4] * HASH_PRECISION) + ',' +
+                Math.round(coords[i + 5] * HASH_PRECISION);
+
+            if (startHash === endHash) continue;
+
+            map.set(startHash + '_' + endHash, modes[m]);
+            map.set(endHash + '_' + startHash, modes[m]);
+        }
+
+        VghLantern__ProjectedEdges__EdgeExtractor__AuthoredCache.set(geometry, map);
+        return map;
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Analyse One Geometry Into Always and Conditional Edges
     // ------------------------------------------------------------
     // Splitting the result in two is what makes the per view pass cheap. An edge
@@ -156,6 +244,7 @@ import { generateIntersectionEdges }
         const indexAttr     =  geometry.index;
         const indexCount    =  indexAttr ? indexAttr.count : positionAttr.count;
         const thresholdDot  =  Math.cos(THREE.MathUtils.DEG2RAD * thresholdAngle);
+        const authored      =  VghLantern__ProjectedEdges__EdgeExtractor__AuthoredMap(geometry);
 
         const always       =  [];
         const conditional  =  [];
@@ -211,7 +300,26 @@ import { generateIntersectionEdges }
                 if (partner) {
                     const dot  =  (nx * partner.Nx) + (ny * partner.Ny) + (nz * partner.Nz);
 
-                    if (dot <= thresholdDot) {
+                    // The author's own classification wins where the asset
+                    // carries one. The angle threshold is a guess at what they
+                    // meant; this is what they actually did.
+                    const authoredMode  =  authored ? authored.get(hash) : undefined;
+
+                    if (authoredMode === AUTHORED_NEVER) {
+                        // Hidden by hand. Draws in no view, silhouette included.
+                    } else if (authoredMode === AUTHORED_ALWAYS) {
+                        always.push(
+                            ax[j], ay[j], az[j],
+                            ax[jNext], ay[jNext], az[jNext]
+                        );
+                    } else if (authoredMode === AUTHORED_SILHOUETTE) {
+                        conditional.push(
+                            ax[j], ay[j], az[j],
+                            ax[jNext], ay[jNext], az[jNext],
+                            nx, ny, nz,
+                            partner.Nx, partner.Ny, partner.Nz
+                        );
+                    } else if (dot <= thresholdDot) {
                         always.push(
                             ax[j], ay[j], az[j],
                             ax[jNext], ay[jNext], az[jNext]
@@ -236,10 +344,13 @@ import { generateIntersectionEdges }
             }
         }
 
-        // Anything still unmatched is a boundary edge and is always drawn.
+        // Anything still unmatched is a boundary edge and is always drawn -
+        // unless the author hid it by hand, which is an instruction rather than
+        // a hint and outranks the fact that it happens to bound a face.
         for (const key in edgeData) {
             const entry  =  edgeData[key];
             if (!entry) continue;
+            if (authored && authored.get(key) === AUTHORED_NEVER) continue;
 
             always.push(
                 positionAttr.getX(entry.Slot0), positionAttr.getY(entry.Slot0), positionAttr.getZ(entry.Slot0),

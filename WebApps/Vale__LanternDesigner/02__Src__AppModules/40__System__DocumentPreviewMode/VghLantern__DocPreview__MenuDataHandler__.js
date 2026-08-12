@@ -64,6 +64,7 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
         'ShowDrawingNotes',
         'ShowTakeoffSchedule',
         'ShowComponentSchedule',
+        'ShowCuttingList',
         'ShowJobNotes',
         'ShowDrawingTermsPages',
         'ShowTermsPages'
@@ -227,16 +228,36 @@ const VghLantern__DocPreview__MenuDataHandler = (function() {
     // ------------------------------------------------------------
 
 
-    // SUB FUNCTION | POST the Cached User Config to the Server
+    // SUB FUNCTION | Re-read the File, Merge This Block Into It, Write It Back
     // ------------------------------------------------------------
+    // One file holds the preferences for every mode and the endpoint REPLACES it
+    // with whatever is posted, so posting the copy taken at load time would undo
+    // anything another mode saved since - the 3D View menu writes its position and
+    // section state into the same file. Only this mode's block is carried over onto
+    // the file as it currently stands, so a mode can only overwrite its own keys.
     async function VghLantern__MenuData__WriteToServer() {
         var slug  =  VghLantern__MenuData__ResolveUserSlug();
 
         try {
+            var currentFile  =  {};
+
+            try {
+                var readResponse  =  await fetch(API_BASE + encodeURIComponent(slug));
+                if (readResponse.ok) {
+                    var readPayload  =  await readResponse.json();
+                    if (readPayload && readPayload.data) currentFile  =  readPayload.data;
+                }
+            } catch (readError) {
+                currentFile  =  {};                                            // <-- No file yet, or no server: post a fresh one
+            }
+
+            currentFile[PREVIEW_BLOCK_KEY]  =  (VghLantern__MenuData__UserConfig || {})[PREVIEW_BLOCK_KEY] || {};
+            VghLantern__MenuData__UserConfig  =  currentFile;                  // <-- Cache follows what was actually written
+
             var response  =  await fetch(API_BASE + encodeURIComponent(slug), {
                 method  : 'POST',
                 headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify(VghLantern__MenuData__UserConfig)
+                body    : JSON.stringify(currentFile)
             });
             if (!response.ok) throw new Error('HTTP ' + response.status);
 

@@ -11,8 +11,10 @@
 
    DESCRIPTION:
    - Interior joinery shares the eaves datum ring and mitred side sweep used by
-     the base frame. Pitch handling for the eaves trim top edge is done upstream
-     in VghLantern__Geometry__InteriorJoineryAssembly; this module only places
+     the base frame. Pitch handling for the eaves trim top edge, and the cornice
+     height offset that slides the moulding and its packer up or down the
+     upstand, are both done upstream in
+     VghLantern__Geometry__InteriorJoineryAssembly; this module only places
      and sweeps.
    - Cornice and eaves trim take the job's joinery paint finish (per-element
      advanced fields when set). The plywood packer is bare plywood.
@@ -339,7 +341,9 @@ import {
             return summary;
         }
 
-        const sections  =  Assembly.VghLantern__InteriorJoineryAssembly__SectionsForPitch(parts, ring.PitchDegrees);
+        const heightOffsetMm  =  Loader.VghLantern__InteriorJoinerySystemLoader__CorniceHeightOffsetMm(lantern);
+
+        const sections  =  Assembly.VghLantern__InteriorJoineryAssembly__SectionsForPitch(parts, ring.PitchDegrees, heightOffsetMm);
         const finishes  =  VghLantern__Env3d__InteriorJoinery__FinishNames(lantern);
 
         let p, key, section, material, mesh, i, finishName;

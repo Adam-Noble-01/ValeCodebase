@@ -1,0 +1,271 @@
+{
+  "VghLantern__RidgeSystem__Meta": {
+    "SchemaVersion": "1.0.0",
+    "CreatedDate": "12-Aug-2026",
+    "LibraryRoot": "06__Data__LanternProfileLibrary/47_2000__RidgeElements__Profiles/",
+    "TimberDepthTableUrl": "06__Data__LanternProfileLibrary/VghLantern__RidgeHipSystem__TimberDepthTable__.json",
+    "RidgeBlockRoot": "05__Data__LanternComponentLibrary/47_1000__Roof__RidgeElement__Components/",
+    "Description": "The Vale ridge as built: an aluminium core spine, a Sapele ridge beam hung beneath it, a timber flashing block, lead flashing over that, and on the capped type a second timber block carrying the decorative aluminium capping. Six parts sharing one section frame.",
+    "SectionFrameNote": "All parts are authored in one shared section frame taken from Na__Asset__Plan2D__Top. Section 0,0 is the RIDGE DATUM - the ridge centreline the skeleton solver publishes as RidgeLevelMm. Section +x runs across the ridge, section +y runs up out through the roof: the beam hangs below the datum, the core straddles it, and the blocking, flashing and capping stack above it. The parts assemble with no fitting.",
+    "ElementTypeVocabulary": [
+      "Structural",
+      "Trim",
+      "By Others",
+      "Flashing",
+      "Glazing"
+    ],
+    "ElementRoleNote": "ElementType is the five word vocabulary the 3D element isolation and the specification tables filter on. ElementRole carries the finer wording the technical department uses on a drawing - Timber Substructure, Timber Packer, Decoration - which is descriptive rather than functional and is never filtered on.",
+    "StandardsNote": "Taken from the 22.5 Degree CAD Standards library held by the Vale Garden Houses technical department, captured 12-Aug-2026. Every section here is authored for a 22.5 degree roof. Other pitches are reached by transforming these assets, not by holding a library per pitch - the same approach the eaves abutment already takes on the base frame.",
+    "HandAuthored": true,
+    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed assembly with two type variants, not a catalogue: a build utility scanning a folder could not know which asset fills which slot, which slots drop out on a leaded only ridge, or where a section's pitch hinge sits."
+  },
+  "VghLantern__RidgeSystem__Types": [
+    {
+      "TypeKey": "aluminiumCapped",
+      "TypeName": "Aluminium Capped Ridge",
+      "IsDefault": true,
+      "PartKeys": [
+        "core",
+        "beam",
+        "blocking",
+        "flashing",
+        "cappingBlock",
+        "capping"
+      ],
+      "AllowsFinials": true,
+      "AllowsCresting": true,
+      "Note": "The standard ridge. The decorative aluminium capping closes the top over the lead flashing, and finials and cresting are welded to it."
+    },
+    {
+      "TypeKey": "leadedOnly",
+      "TypeName": "Leaded Only Ridge",
+      "IsDefault": false,
+      "PartKeys": [
+        "core",
+        "beam",
+        "blocking",
+        "flashing"
+      ],
+      "AllowsFinials": false,
+      "AllowsCresting": false,
+      "Note": "No decorative aluminium profile. The capping and the timber block that carries it both drop out - with no capping above it the block has nothing to carry. Finials and cresting are not available on this type because they are welded to the aluminium ridge cap."
+    }
+  ],
+  "VghLantern__RidgeSystem__BlockRelationship": {
+    "BlockAssetId": "47_1001",
+    "BlockJsonUrl": "47_1001__ValeRoofSystem__RidgeBlock__StandardOctagonalBlock__.json",
+    "AcrossFlatsMm": 135,
+    "FacetInsetMm": 67.5,
+    "FacetInsetNote": "Half the across-flats dimension. The octagon's flats face along the ridge and on both hip diagonals, so a plumb cut plane at this distance from the block centre, normal along the member's plan direction, lands exactly on the facet the member abuts.",
+    "OriginNote": "The block mesh is centred in plan but hangs from Z = -27 down to Z = -407 in its own frame, so its origin sits 27mm above its top face. It is placed with its origin directly on the ridge end point, which is where the ridge datum and the tops of the two hip construction triangles converge.",
+    "PrismTopZMm": -27.0,
+    "PrismBaseZMm": -247.0,
+    "TurningBaseZMm": -407.0,
+    "StretchSplitZMm": -247.0,
+    "StretchNote": "The straight octagonal prism runs from -27 to -247 and the decorative turning below it. A ridge beam deeper than the 230mm standard would push its moulded underside through that turning, so every vertex at or below -247 is translated down by the ridge beam depth delta and the prism walls stretch to suit. The turning itself is rigid: it is a lathe profile and scaling it would read as a different block.",
+    "AuthoredClearanceToBeamUndersideMm": 6.0,
+    "AuthoredClearanceNote": "On the 22.5 degree standard the ridge beam underside sits at -241 and the block turning begins at -247. Matching the stretch to the beam depth delta is what holds that clearance at every pitch."
+  },
+  "VghLantern__RidgeSystem__EndTreatments": {
+    "Beam": {
+      "Mode": "blockFacetPlumbCut",
+      "BlockFacetInsetMm": 67.5,
+      "AppliesToParts": [
+        "beam"
+      ],
+      "Note": "The ridge beam dies into the octagonal block at each end, plumb cut flush against the facet 67.5mm from the block centre. A ridge runs level so this cut is also square across the member, but it is expressed as a plane because the hip beam takes the identical treatment and that one is not square."
+    },
+    "SpineAndCovering": {
+      "Mode": "runToRidgeEndPoint",
+      "OverhangPastBlockCentreMm": 0,
+      "AppliesToParts": [
+        "core",
+        "blocking",
+        "flashing",
+        "cappingBlock",
+        "capping"
+      ],
+      "Note": "The aluminium spine and the weathering above it run the full ridge datum length, from one ridge end point to the other, and pass over the block rather than dying into it. The overhang past the block centre is declared here as zero: the capping does cantilever a little beyond the block on the workshop drawings, but that projection is not dimensioned in the 22.5 degree standard set, so it is carried as a number to fill in rather than a figure invented in code."
+    }
+  },
+  "VghLantern__RidgeSystem__Parts": [
+    {
+      "PartKey": "core",
+      "PartName": "Ridge Core",
+      "AssetId": "47_2001",
+      "JsonUrl": "47_2001__ValeGlazedRoof__RidgeCore__StandardAliExtrusion__.json",
+      "Selectable": false,
+      "ElementType": "Structural",
+      "ElementRole": "Structural",
+      "SpecMaterial": "Mill Finish Aluminium",
+      "SpecFinishNote": "No finishes available - the raw bare extrusion, same as the glaze bar core.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -20.0,
+      "SectionMaxXMm": 20.0,
+      "SectionMinYMm": -53.5,
+      "SectionMaxYMm": 63.0,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": false,
+      "Note": "The structural spine. Welded to the hip cores and to every glaze bar core, so it is the one member in the ridge that cannot be omitted or resized."
+    },
+    {
+      "PartKey": "beam",
+      "PartName": "Ridge Beam",
+      "AssetId": "47_2021",
+      "JsonUrl": "47_2021__ValeGlazedRoof__RidgeBeam__RidgeTimber__.json",
+      "Selectable": false,
+      "ElementType": "Structural",
+      "ElementRole": "Timber Substructure",
+      "SpecMaterial": "Sapele Hardwood",
+      "SpecFinishNote": "Painted joinery. Follows the lantern master joinery finish unless overridden.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "VghLantern__PbrMaterials__Config__JoineryFinishes",
+      "FinishSource": "masterJoinery",
+      "SectionMinXMm": -28.0,
+      "SectionMaxXMm": 28.0,
+      "SectionMinYMm": -241.0,
+      "SectionMaxYMm": -11.0,
+      "StretchesWithTimberDepth": true,
+      "ReslopesWithRoofPitch": false,
+      "DepthStretch": {
+        "AuthoredDepthMm": 230.0,
+        "SectionTopYMm": -11.0,
+        "SectionBaseYMm": -241.0,
+        "MouldingHeightMm": 24.0,
+        "SplitYMm": -217.0,
+        "SplitNote": "Everything at or below y = -217 is the 24mm moulded bottom edge - an ogee, a bead and a half round nose. Above it the section is plain 56mm parallel flanks. A depth change translates every vertex at or below the split line and leaves the moulding untouched, so the flanks lengthen and the moulding rides down rigid. Scaling the section would flatten the moulding, which is the one part of this beam anybody sees.",
+        "StretchAxis": "y",
+        "StretchSide": "below"
+      },
+      "Note": "The decorative internal beam seen from inside the room. Plumb cut against the octagonal block facet at each end."
+    },
+    {
+      "PartKey": "blocking",
+      "PartName": "Ridge Blocking",
+      "AssetId": "47_2101",
+      "JsonUrl": "47_2101__ValeGlazedRoof__RidgeBlocking__FlashingBlock__.json",
+      "Selectable": false,
+      "ElementType": "Trim",
+      "ElementRole": "Timber Packer",
+      "SpecMaterial": "Sapele Hardwood",
+      "SpecFinishNote": "Bare timber. Concealed under the leadwork.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -39.0,
+      "SectionMaxXMm": 39.0,
+      "SectionMinYMm": 23.894,
+      "SectionMaxYMm": 75.0,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": true,
+      "PitchAdaptation": {
+        "Mode": "seatingCut",
+        "AngleSource": "roofPitch",
+        "AuthoredAngleDegrees": 22.5,
+        "Hinge": {
+          "X": 6.0,
+          "Y": 37.565
+        },
+        "PrimaryVertex": {
+          "X": 39.0,
+          "Y": 23.894
+        },
+        "CarriedVertices": [],
+        "MirrorInX": true,
+        "Note": "The two underside faces seat on the roof planes, so they are cut to the roof pitch. The inner end of each face is pinned on the core's shoulder at x = 6; the outer corner at x = 39 slides vertically until the face takes the new pitch. The block's plumb outer faces and its 75mm top do not move, so the block simply gets deeper or shallower at its outer edge."
+      },
+      "Note": "The substrate the primary ridge lead flashing is dressed over. Seats on the shoulders of the aluminium core."
+    },
+    {
+      "PartKey": "flashing",
+      "PartName": "Ridge Lead Flashing",
+      "AssetId": "47_2121",
+      "JsonUrl": "47_2121__ValeGlazedRoof__RidgeFlashing__LeadFlashing__.json",
+      "Selectable": false,
+      "ElementType": "Flashing",
+      "ElementRole": "Flashing",
+      "SpecMaterial": "Lead",
+      "SpecFinishNote": "Patination oiled leadwork.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -90.578,
+      "SectionMaxXMm": 90.578,
+      "SectionMinYMm": 2.845,
+      "SectionMaxYMm": 77.0,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": true,
+      "PitchAdaptation": {
+        "Mode": "foldedWing",
+        "AngleSource": "roofPitch",
+        "AuthoredAngleDegrees": 22.5,
+        "Wings": [
+          {
+            "Root": {
+              "X": 42.848,
+              "Y": 24.465
+            },
+            "Tip": {
+              "X": 90.578,
+              "Y": 4.692
+            }
+          },
+          {
+            "Root": {
+              "X": 42.007,
+              "Y": 22.648
+            },
+            "Tip": {
+              "X": 89.813,
+              "Y": 2.845
+            }
+          }
+        ],
+        "MirrorInX": true,
+        "Note": "Lead is a folded sheet, not a stretched one: when the pitch changes the fold angle changes and the metal keeps its length. So each wing tip rotates about its own root by the pitch delta, which holds both the 51.7mm wing run and the 2mm sheet thickness exactly. The 2mm roll at the fold is left as authored - re-rolling a fillet that size would move vertices by less than a tenth of a millimetre."
+      },
+      "Note": "The weathering projection to the ridge. Fitted on both ridge types."
+    },
+    {
+      "PartKey": "cappingBlock",
+      "PartName": "Ridge Capping Block",
+      "AssetId": "47_2202",
+      "JsonUrl": "47_2202__ValeGlazedRoof__RidgeCapping__TimberBlock__.json",
+      "Selectable": false,
+      "ElementType": "Trim",
+      "ElementRole": "Timber Packer",
+      "SpecMaterial": "Sapele Hardwood",
+      "SpecFinishNote": "Bare timber. Concealed under the aluminium capping.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "",
+      "SectionMinXMm": -35.004,
+      "SectionMaxXMm": 34.996,
+      "SectionMinYMm": 77.0,
+      "SectionMaxYMm": 97.0,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": false,
+      "Note": "The second blocking, creating the upstand the aluminium capping seats on to. Present on the capped ridge only."
+    },
+    {
+      "PartKey": "capping",
+      "PartName": "Ridge Capping",
+      "AssetId": "47_2201",
+      "JsonUrl": "47_2201__ValeGlazedRoof__RidgeCapping__AluminiumCapping__.json",
+      "Selectable": false,
+      "ElementType": "Trim",
+      "ElementRole": "Decoration",
+      "SpecMaterial": "Powder Coated Aluminium",
+      "SpecFinishNote": "Powder coated. Follows the lantern exterior finish by default and may be diverged to White Painted or Lead.",
+      "InheritsFrameFinish": false,
+      "FinishPalette": "VghLantern__PbrMaterials__Config__CapFinishes",
+      "FinishSource": "exterior",
+      "SectionMinXMm": -64.0,
+      "SectionMaxXMm": 64.0,
+      "SectionMinYMm": 56.0,
+      "SectionMaxYMm": 100.0,
+      "StretchesWithTimberDepth": false,
+      "ReslopesWithRoofPitch": false,
+      "ReslopeNote": "Deliberately not pitch adapted. The capping is a clip-on extrusion that engages the flashing block's shoulders and closes over the top; nothing about its section reads the roof plane, and its longest runs are the ogee crown and the vertical clip legs rather than a seating face.",
+      "Note": "The decorative capping. Finials and cresting weld to it, so it is what makes those two options available."
+    }
+  ]
+}

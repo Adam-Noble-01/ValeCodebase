@@ -71,6 +71,9 @@ import { VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build }  from '../06
 import { VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__Build } from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build }            from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
 import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build }  from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs';
+import { VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build }      from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__RidgeAssembly__.mjs';
+import { VghLantern__Env3d__MeshBuilder__HipAssembly__Build }        from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__HipAssembly__.mjs';
+import { VghLantern__Env3d__MeshBuilder__RidgeBlock__Build }         from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__RidgeBlock__.mjs';
 import { VghLantern__Env3d__ComponentLoader__Glb__Build }            from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__ComponentLoader__Glb__.mjs';
 
 import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern__ProjectedEdges__ConfigAccess__.mjs';
@@ -110,7 +113,24 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
             await VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build(stage, barSet, lantern);
         }
 
+        // THE RIDGE AND THE HIPS | Under IncludeFrame because that is the scene
+        // group they land in on the live viewport, but AFTER the glaze bars because
+        // that is the order the pipeline builds them in and this file's whole
+        // contract is that a reader comparing the two sees the same sequence. Two
+        // IncludeFrame blocks rather than one, to keep both of those true.
+        //
+        // Order has no bearing on the projection itself - the projector collects
+        // every visible mesh and builds a BVH per geometry, so nothing here is
+        // painter-ordered. It is purely about the two files staying readable
+        // against each other, which is what stopped these three being noticed as
+        // missing.
+        if (model.IncludeFrame === true) {
+            await VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build(stage, skeleton, lantern);
+            await VghLantern__Env3d__MeshBuilder__HipAssembly__Build(stage, skeleton, lantern);
+        }
+
         if (model.IncludeComponents === true) {
+            await VghLantern__Env3d__MeshBuilder__RidgeBlock__Build(stage, skeleton, lantern);
             await VghLantern__Env3d__ComponentLoader__Glb__Build(stage, skeleton, lantern);
         }
 

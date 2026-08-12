@@ -2,7 +2,7 @@
     "VghLantern__Application__Config": {
         "VghLantern__Application__Config__Description": "Core application identity, version, and global paths for the VghLantern Roof Lantern Designer. This file is the single source of truth for app-wide settings; system specific settings live in each system folder and are merged over this file by AppCore ConfigLoader.",
         "VghLantern__Application__Config__AppName": "VghLantern Roof Lantern Designer",
-        "VghLantern__Application__Config__AppVersion": "0.5.0",
+        "VghLantern__Application__Config__AppVersion": "0.5.1",
         "VghLantern__Application__Config__ServerPort": 8006,
         "VghLantern__Application__Config__ProjectDataFolder": "07__LocalProjectData",
         "VghLantern__Application__Config__UserDataFolder": "08__LocalUserData",
@@ -64,6 +64,11 @@
                 "Lantern__GlazingBars__Config__TrimFinish": "Farrow and Ball Ammonite"
             },
             "Lantern__RidgeAndHips__Config": {
+                "Lantern__RidgeAndHips__Config__RidgeTypeKey": "aluminiumCapped",
+                "Lantern__RidgeAndHips__Config__HipTypeKey": "hipBeam",
+                "Lantern__RidgeAndHips__Config__RidgeDepthAdjustmentMm": 0,
+                "Lantern__RidgeAndHips__Config__HipDepthAdjustmentMm": 0,
+                "Lantern__RidgeAndHips__Config__CappingFinish": "",
                 "Lantern__RidgeAndHips__Config__RidgeProfileId": "PRF_RDG0001",
                 "Lantern__RidgeAndHips__Config__HipProfileId": "PRF_HIP0001",
                 "Lantern__RidgeAndHips__Config__CrestingComponentId": "",
@@ -72,8 +77,6 @@
             "Lantern__Finials__Config": {
                 "Lantern__Finials__Config__Enabled": true,
                 "Lantern__Finials__Config__FinialComponentId": "50_1001",
-                "Lantern__Finials__Config__FinialBaseComponentId": "VGH_FIN0101",
-                "Lantern__Finials__Config__PlaceAtRidgeEnds": true,
                 "Lantern__Finials__Config__PlaceAtApex": false
             },
             "Lantern__BuildersUpstandAndBase__Config": {
@@ -83,6 +86,7 @@
             },
             "Lantern__InteriorJoinery__Config": {
                 "Lantern__InteriorJoinery__Config__CorniceOptionId": "49_1001",
+                "Lantern__InteriorJoinery__Config__CorniceHeightOffsetMm": 0,
                 "Lantern__InteriorJoinery__Config__EavesTrimEnabled": true,
                 "Lantern__InteriorJoinery__Config__CornicePackerEnabled": true,
                 "Lantern__InteriorJoinery__Config__CorniceFinish": "Farrow and Ball Ammonite",
@@ -140,7 +144,6 @@
         "VghLantern__Glazing__Options__Config__DefaultGlazingSpec": ""
     },
     "VghLantern__Finish__Options__Config__MigrationNote": "MIGRATED. The finish palette now lives in 02__Src__AppModules/02__AppData/Na__PbrMaterials__Config.json, where each finish carries its full PBR surface response instead of only a hex colour. AppCore__ConfigLoader derives the FinishOptions section from that file at load time, so every existing consumer is unchanged.",
-
     "VghLantern__Validation__Config": {
         "VghLantern__Validation__Config__Description": "Constraint envelope enforced by the ConstraintResolver and surfaced by the editor WarningSystem. Values outside these bounds are rejected on dimension entry.",
         "VghLantern__Validation__Config__MinWidthMm": 600,
@@ -178,6 +181,7 @@
         "VghLantern__UserMenu__AppDefaults__Config__Show3dView": true,
         "VghLantern__UserMenu__AppDefaults__Config__ShowTakeoffSchedule": true,
         "VghLantern__UserMenu__AppDefaults__Config__ShowComponentSchedule": true,
+        "VghLantern__UserMenu__AppDefaults__Config__ShowCuttingList": true,
         "VghLantern__UserMenu__AppDefaults__Config__ShowJobNotes": true,
         "VghLantern__UserMenu__AppDefaults__Config__PersistMenuPosition": true,
         "VghLantern__UserMenu__AppDefaults__Config__PersistMenuSectionState": true,

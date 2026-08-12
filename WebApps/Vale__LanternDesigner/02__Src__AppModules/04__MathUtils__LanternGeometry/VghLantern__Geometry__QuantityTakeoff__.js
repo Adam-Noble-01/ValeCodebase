@@ -215,6 +215,115 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Push One Row per Ridge Part and per Hip Part
+    // ------------------------------------------------------------
+    // Read from the two system indexes so the names, product codes, element types
+    // and specification materials come from data rather than being restated here,
+    // and so a leaded only ridge simply produces four rows instead of six without
+    // this function knowing what a ridge type is.
+    //
+    // Falls back to nothing when a system index has not loaded, which drops the
+    // rows rather than inventing them. A takeoff that is silently short is
+    // recoverable; one carrying a guessed section is not.
+    function VghLantern__QuantityTakeoff__PushRidgeAndHipRows(rows, lantern, skeleton, quantity,
+                                                              ridgeTotalMm, ridgeCount, ridgeMembers,
+                                                              hipTotalMm,   hipCount,   hipMembers) {
+
+        var RidgeLoader    =  window.VghLantern__AppData__RidgeSystemLoader;
+        var HipLoader      =  window.VghLantern__AppData__HipSystemLoader;
+        var HipGeometry    =  window.VghLantern__Geometry__HipAssembly;
+        var RidgeGeometry  =  window.VghLantern__Geometry__RidgeAssembly;
+
+        // THE RIDGE
+        if (RidgeLoader && RidgeGeometry && ridgeTotalMm > 0) {
+            var facetInset  =  Number(RidgeGeometry.VghLantern__RidgeAssembly__BlockGeometry().FacetInsetMm) || 0;
+            var ridgeParts  =  RidgeLoader.VghLantern__RidgeSystemLoader__DescribeParts(lantern) || [];
+            var r, ridgePart, ridgeRunMm;
+
+            for (r = 0; r < ridgeParts.length; r++) {
+                ridgePart   =  ridgeParts[r];
+                ridgeRunMm  =  ridgePart.PartKey === 'beam'
+                    ? Math.max(0, ridgeTotalMm - (facetInset * 2))
+                    : ridgeTotalMm;
+
+                VghLantern__QuantityTakeoff__PushLinear(rows, 'ridge__' + ridgePart.PartKey, ridgePart.PartName,
+                    ridgePart.AssetId, ridgeRunMm, ridgeCount, quantity, {
+                        SectionWidthMm  : Math.abs((Number(ridgePart.SectionMaxXMm) || 0) - (Number(ridgePart.SectionMinXMm) || 0)),
+                        SectionHeightMm : Math.abs((Number(ridgePart.SectionMaxYMm) || 0) - (Number(ridgePart.SectionMinYMm) || 0)),
+                        ElementType     : ridgePart.ElementType,
+                        SpecMaterial    : ridgePart.SpecMaterial,
+                        MemberList      : ridgeMembers
+                    });
+            }
+        }
+
+        // THE HIPS
+        if (HipLoader && HipGeometry && hipTotalMm > 0 && hipCount > 0) {
+            var ends      =  HipGeometry.VghLantern__HipAssembly__EndTreatments();
+            var beamLoss  =  (Number(ends.BlockFacetInsetMm) || 0) + (Number(ends.EavesPlumbCutInsetMm) || 0);
+            var coreGain  =  Number(ends.CoreExtensionAlongPitchMm) || 0;
+            var hipParts  =  HipLoader.VghLantern__HipSystemLoader__DescribeParts(lantern) || [];
+
+            // The covering oversail is measured off a real hip rather than
+            // recomputed here, so the length ordered is the length built. Zero
+            // when there is no hip to measure, which the guard above already
+            // rules out for a roof that has any.
+            var pitchDeg   =  RidgeGeometry ? RidgeGeometry.VghLantern__RidgeAssembly__PitchDegrees(skeleton) : 0;
+            var coverGain  =  (Array.isArray(hipMembers) && hipMembers.length > 0)
+                ? HipGeometry.VghLantern__HipAssembly__OversailLengthMm(hipMembers[0], pitchDeg)
+                : 0;
+
+            var h, hipPart, hipRunMm;
+
+            for (h = 0; h < hipParts.length; h++) {
+                hipPart  =  hipParts[h];
+
+                // Per-hip adjustment times the hip count, because the total is the
+                // sum over four members and each one takes the treatment once.
+                if (hipPart.PartKey === 'beam') {
+                    hipRunMm  =  Math.max(0, hipTotalMm - (beamLoss * hipCount));
+                } else if (hipPart.PartKey === 'core') {
+                    hipRunMm  =  hipTotalMm + (coreGain * hipCount);
+                } else {
+                    hipRunMm  =  hipTotalMm + (coverGain * hipCount);          // <-- Blocking and flashing oversail to the glass edge
+                }
+
+                VghLantern__QuantityTakeoff__PushLinear(rows, 'hip__' + hipPart.PartKey, hipPart.PartName,
+                    hipPart.AssetId, hipRunMm, hipCount, quantity, {
+                        SectionWidthMm  : Math.abs((Number(hipPart.SectionMaxXMm) || 0) - (Number(hipPart.SectionMinXMm) || 0)),
+                        SectionHeightMm : Math.abs((Number(hipPart.SectionMaxYMm) || 0) - (Number(hipPart.SectionMinYMm) || 0)),
+                        ElementType     : hipPart.ElementType,
+                        SpecMaterial    : hipPart.SpecMaterial,
+                        MemberList      : hipMembers
+                    });
+            }
+        }
+
+        // THE OCTAGONAL BLOCK - a counted item rather than a linear one, so it
+        // rides the same row shape with its overall height as the run. One per
+        // ridge end, or one at the apex of a pyramid.
+        if (RidgeLoader && RidgeGeometry && skeleton) {
+            var placements  =  RidgeGeometry.VghLantern__RidgeAssembly__BlockPlacements(skeleton);
+            var block       =  RidgeLoader.VghLantern__RidgeSystemLoader__BlockRelationship();
+
+            if (placements.length > 0 && block) {
+                var depths     =  RidgeGeometry.VghLantern__RidgeAssembly__DepthResolution(lantern, skeleton);
+                var authored   =  Math.abs(Number(block.TurningBaseZMm) - Number(block.PrismTopZMm)) || 0;
+                var heightMm   =  authored + Math.abs(Number(depths.Ridge.DeltaFromAuthoredMm) || 0);
+
+                VghLantern__QuantityTakeoff__PushLinear(rows, 'ridge__block', 'Ridge Block',
+                    block.BlockAssetId, heightMm * placements.length, placements.length, quantity, {
+                        SectionWidthMm  : Number(block.AcrossFlatsMm) || 0,
+                        SectionHeightMm : Number(block.AcrossFlatsMm) || 0,
+                        ElementType     : 'Trim',
+                        SpecMaterial    : 'Sapele Hardwood'
+                    });
+            }
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Describe the Three Parts of This Lantern's Glaze Bar
     // ------------------------------------------------------------
     // Falls back to an empty list when the glaze bar system has not loaded, which
@@ -348,15 +457,30 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             return membersFor(roleKey).length;
         }
 
-        VghLantern__QuantityTakeoff__PushLinear(rows, 'ridge', 'Ridge Section',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_RIDGE_HIPS, 'Lantern__RidgeAndHips__Config__RidgeProfileId', ''),
-            totalFor('ridge'), countFor('ridge'), quantity,
-            { MemberList : membersFor('ridge') });
-
-        VghLantern__QuantityTakeoff__PushLinear(rows, 'hip', 'Hip Section',
-            VghLantern__QuantityTakeoff__Read(lantern, BLOCK_RIDGE_HIPS, 'Lantern__RidgeAndHips__Config__HipProfileId', ''),
-            totalFor('hip'), countFor('hip'), quantity,
-            { MemberList : membersFor('hip') });
+        // THE RIDGE AND THE HIPS - one row per PART, not one row each. A Vale
+        // ridge is a stack of up to six sections and a hip is four, every one of
+        // them a separate item with its own material and its own length, and the
+        // two generic rows this replaces quoted a single placeholder profile id
+        // against the datum length for both.
+        //
+        // The lengths are the CUT lengths, not the datum lengths:
+        //
+        //   ridge beam   loses the block facet inset at each end, 67.5mm twice
+        //   hip beam     loses the block facet inset at its head and the 18mm
+        //                plumb cut inset at its foot
+        //   hip core     gains the 42.5mm it runs past the eaves datum to the
+        //                extrusion it welds to
+        //
+        // No long point correction is needed on either beam even though both ends
+        // are plumb cut. The two cut planes on a member are PARALLEL - same
+        // horizontal normal, one at each end - so the bottom arris is displaced by
+        // the same distance along the member at both ends and the piece comes out
+        // a parallelogram in elevation. Long point to long point equals datum to
+        // datum less the two insets, which is not true of the glaze bar trim,
+        // where only one end is plumb cut and the correction is real.
+        VghLantern__QuantityTakeoff__PushRidgeAndHipRows(rows, lantern, skeleton, quantity,
+            totalFor('ridge'), countFor('ridge'), membersFor('ridge'),
+            totalFor('hip'),   countFor('hip'),   membersFor('hip'));
 
         // THE BASE FRAME SYSTEM - three continuous rings around the lantern,
         // read from the base frame system index so the names, product codes and
@@ -564,11 +688,6 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
             VghLantern__QuantityTakeoff__PushComponent(rows, 'finial', 'Finial',
                 VghLantern__QuantityTakeoff__Read(lantern, BLOCK_FINIALS, 'Lantern__Finials__Config__FinialComponentId', ''),
                 anchorCount, quantity);
-
-            var baseId  =  VghLantern__QuantityTakeoff__Read(lantern, BLOCK_FINIALS, 'Lantern__Finials__Config__FinialBaseComponentId', '');
-            if (baseId) {
-                VghLantern__QuantityTakeoff__PushComponent(rows, 'finialBase', 'Finial Base', baseId, anchorCount, quantity);
-            }
         }
 
         var ventEnabled  =  VghLantern__QuantityTakeoff__Read(lantern, BLOCK_VENTILATION, 'Lantern__Ventilation__Config__Enabled', false) === true;
@@ -666,7 +785,14 @@ const VghLantern__Geometry__QuantityTakeoff = (function() {
                 row     =  takeoffList[i].Linear[j];
                 mapKey  =  row.Key + '::' + row.ProfileId;
                 if (!linearMap[mapKey]) {
-                    linearMap[mapKey]  =  { Key: row.Key, Label: row.Label, ProfileId: row.ProfileId, LengthMTotal: 0 };
+                    linearMap[mapKey]  =  {
+                        Key          : row.Key,
+                        Label        : row.Label,
+                        ProfileId    : row.ProfileId,
+                        ElementType  : row.ElementType,
+                        SpecMaterial : row.SpecMaterial,
+                        LengthMTotal : 0
+                    };
                 }
                 linearMap[mapKey].LengthMTotal  +=  row.LengthMTotal;
             }

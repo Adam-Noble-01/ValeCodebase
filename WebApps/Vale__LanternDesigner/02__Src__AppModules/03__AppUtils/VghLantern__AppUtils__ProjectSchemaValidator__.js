@@ -147,6 +147,26 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Retired Finials Fields
+    // ------------------------------------------------------------
+    // FinialBaseComponentId named a moulded collar sitting between the ridge and
+    // the finial. That collar is now the octagonal ridge block RidgeAssembly
+    // builds at every ridge end and pyramid apex, sized off the beam depth for
+    // the pitch, so choosing one as a loose component would place a second base
+    // inside the first. The one asset that filled the role is retired with it.
+    //
+    // PlaceAtRidgeEnds was a toggle that only ever said yes. It defaulted true,
+    // every project on disk stores it true, and Fit Finials already answers the
+    // same question one row above it. A ridged roof now takes a finial at each
+    // end whenever finials are fitted. PlaceAtApex stays: it defaults FALSE, so
+    // it is the only thing that puts a finial on a pyramid.
+    const SCHEMA__RETIRED_FINIAL_FIELDS   =  [
+        'Lantern__Finials__Config__FinialBaseComponentId',
+        'Lantern__Finials__Config__PlaceAtRidgeEnds'
+    ];
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Retired Roof Pitch Fields
     // ------------------------------------------------------------
     // Roof height used to be drivable either by pitch angle or by a stored ridge
@@ -510,10 +530,28 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
     // SUB HELPER FUNCTION | Normalise Lantern Ridge and Hips Block
     // ------------------------------------------------------------
+    // The two type keys default to the Vale standard assembly rather than to
+    // empty, because a project saved before 12-Aug-2026 has neither field and
+    // every one of those lanterns was drawn as a capped ridge with hip beams.
+    // Defaulting to empty would leave the loader warning about an unknown type on
+    // every historical project on the way to the same answer.
+    //
+    // The two depth adjustments are stored as the OVERRIDE, not the depth. Zero
+    // means the standard for the pitch, so a project that predates the sliders
+    // reads as one built to the standard, which is exactly what it is.
+    //
+    // The profile ids are retained. Nothing in the web app sweeps them any more,
+    // but the SketchUp exporter still reads them and dropping the fields would
+    // rewrite every saved project to remove data another tool is using.
     function VghLantern__SchemaValidator__NormaliseRidgeAndHips(lantern) {
         var didMutate  =  false;
         var ridgeCfg   =  lantern['Lantern__RidgeAndHips__Config'];
 
+        if (VghLantern__SchemaValidator__ApplyStringField(ridgeCfg, 'Lantern__RidgeAndHips__Config__RidgeTypeKey', 'aluminiumCapped')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(ridgeCfg, 'Lantern__RidgeAndHips__Config__HipTypeKey', 'hipBeam')) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyFloatField(ridgeCfg, 'Lantern__RidgeAndHips__Config__RidgeDepthAdjustmentMm', 0, -100, 100)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyFloatField(ridgeCfg, 'Lantern__RidgeAndHips__Config__HipDepthAdjustmentMm', 0, -100, 100)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyStringField(ridgeCfg, 'Lantern__RidgeAndHips__Config__CappingFinish', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(ridgeCfg, 'Lantern__RidgeAndHips__Config__RidgeProfileId', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(ridgeCfg, 'Lantern__RidgeAndHips__Config__HipProfileId', '')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(ridgeCfg, 'Lantern__RidgeAndHips__Config__CrestingComponentId', '')) didMutate  =  true;
@@ -526,15 +564,23 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
 
     // SUB HELPER FUNCTION | Normalise Lantern Finials Block
     // ------------------------------------------------------------
+    // The two retired fields are stripped rather than left in place. Nothing
+    // reads them any more, and a stale key that still looks like a setting is
+    // what sends the next person looking for the control that writes it.
     function VghLantern__SchemaValidator__NormaliseFinials(lantern) {
         var didMutate   =  false;
         var finialsCfg  =  lantern['Lantern__Finials__Config'];
 
         if (VghLantern__SchemaValidator__ApplyBoolField(finialsCfg, 'Lantern__Finials__Config__Enabled', true)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(finialsCfg, 'Lantern__Finials__Config__FinialComponentId', '')) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyStringField(finialsCfg, 'Lantern__Finials__Config__FinialBaseComponentId', '')) didMutate  =  true;
-        if (VghLantern__SchemaValidator__ApplyBoolField(finialsCfg, 'Lantern__Finials__Config__PlaceAtRidgeEnds', true)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyBoolField(finialsCfg, 'Lantern__Finials__Config__PlaceAtApex', false)) didMutate  =  true;
+
+        for (var i = 0; i < SCHEMA__RETIRED_FINIAL_FIELDS.length; i++) {
+            if (SCHEMA__RETIRED_FINIAL_FIELDS[i] in finialsCfg) {
+                delete finialsCfg[SCHEMA__RETIRED_FINIAL_FIELDS[i]];
+                didMutate  =  true;
+            }
+        }
 
         return didMutate;
     }
@@ -667,6 +713,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         var macro       =  finishCfg['Lantern__FinishAndGlazing__Config__JoineryPaintFinish'] || SCHEMA__DEFAULT_TRIM_FINISH;
 
         if (VghLantern__SchemaValidator__ApplyStringField(joineryCfg, 'Lantern__InteriorJoinery__Config__CorniceOptionId', SCHEMA__DEFAULT_CORNICE_ID)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__ApplyFloatField(joineryCfg, 'Lantern__InteriorJoinery__Config__CorniceHeightOffsetMm', 0, -100, 100)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyBoolField(joineryCfg, 'Lantern__InteriorJoinery__Config__EavesTrimEnabled', true)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyBoolField(joineryCfg, 'Lantern__InteriorJoinery__Config__CornicePackerEnabled', true)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(joineryCfg, 'Lantern__InteriorJoinery__Config__CorniceFinish', macro)) didMutate  =  true;

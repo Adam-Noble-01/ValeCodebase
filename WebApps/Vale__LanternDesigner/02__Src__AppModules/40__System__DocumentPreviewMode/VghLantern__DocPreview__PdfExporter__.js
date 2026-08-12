@@ -126,6 +126,23 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     // ------------------------------------------------------------
 
 
+    // SUB FUNCTION | Build One Lantern's Cutting List Page Descriptor
+    // ------------------------------------------------------------
+    // Returns null for a lantern with nothing to cut, which drops the page. Unlike a
+    // missing drawing that is not a blocking problem: a lantern whose sections are all
+    // continuous perimeter runs genuinely has no cutting list.
+    function VghLantern__PdfExporter__BuildLanternCuttingListPage(specModel, lanternIndex) {
+        var SpecPainter  =  window.VghLantern__DocPreview__SpecificationPdfPainter;
+        var page         =  VghLantern__PdfExporter__Page();
+        if (!SpecPainter || !specModel || !page) return null;
+
+        return SpecPainter.VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage(
+            page, specModel, lanternIndex
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Build One Lantern's Drawing Sheet Page Descriptor
     // ------------------------------------------------------------
     // The sheet comes from the baker, which composes it exactly as the Drawing Editor
@@ -266,7 +283,6 @@ const VghLantern__DocPreview__PdfExporter = (function() {
     async function VghLantern__DocPreview__PdfExporter__Export() {
         var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
         var IssueHandler   =  window.VghLantern__DocPreview__DocIssueHandler;
-        var StateManager   =  window.VghLantern__AppCore__StateManager;
         var Writer         =  window.VghLantern__PdfWriter__Document;
         var Metadata       =  window.VghLantern__PdfWriter__Metadata;
         if (!DocumentState || !Writer || !Metadata) return false;
@@ -285,27 +301,68 @@ const VghLantern__DocPreview__PdfExporter = (function() {
             return false;
         }
 
-        // Nothing is issued showing less than the model says.
-        var lineworkChanged  =  await VghLantern__PdfExporter__EnsureLineworkRendered();
+        // Export is the longest wait in the mode: the linework render, then a sheet
+        // composed per lantern, then the file written. On a multi-lantern job that is
+        // long enough that a user presses the button twice, so the overlay covers the
+        // whole of it rather than just the bake.
+        // Opened unconditionally rather than only when sheets are missing: the export
+        // guarantees the linework first, and a render that produces anything new throws
+        // every cached sheet away, so "all sheets cached" is no promise of a short wait
+        // here the way it is on entering the mode.
+        var Overlay        =  window.VghLantern__DocPreview__ProgressOverlay;
+        var ownsOverlay    =  !!(Overlay && Overlay.VghLantern__DocPreview__ProgressOverlay__Open());
+        var exportFailed   =  false;
 
-        // Every drawing in the pack is composed before a single page is written.
-        // Awaited here rather than per page because the bake borrows the Drawing
-        // Editor's session sheet setup, and interleaving that with painting would mean
-        // handing it back and taking it again for every sheet.
-        var SheetBaker   =  window.VghLantern__DrawingEditor__SheetBaker;
+        // Waited on for the same reason mode entry waits: everything below runs on the
+        // main thread, and an overlay that has not been painted before that starts is
+        // not on screen for any of it.
+        if (ownsOverlay) await Overlay.VghLantern__DocPreview__ProgressOverlay__WaitUntilVisible();
 
-        // Baked sheets are cached against the lantern's signature, and that signature
-        // does not change when linework is added to a lantern that already had a
-        // sheet. So a render that produced something new has to discard them, or the
-        // pack is written from sheets composed before the linework existed - which
-        // would look exactly like the render having silently done nothing.
-        if (lineworkChanged && SheetBaker && SheetBaker.VghLantern__DrawingEditor__SheetBaker__Clear) {
-            SheetBaker.VghLantern__DrawingEditor__SheetBaker__Clear();
+        try {
+            // Nothing is issued showing less than the model says.
+            var lineworkChanged  =  await VghLantern__PdfExporter__EnsureLineworkRendered();
+
+            // Every drawing in the pack is composed before a single page is written.
+            // Awaited here rather than per page because the bake borrows the Drawing
+            // Editor's session sheet setup, and interleaving that with painting would
+            // mean handing it back and taking it again for every sheet.
+            var SheetBaker   =  window.VghLantern__DrawingEditor__SheetBaker;
+
+            // Baked sheets are cached against the lantern's signature, and that
+            // signature does not change when linework is added to a lantern that
+            // already had a sheet. So a render that produced something new has to
+            // discard them, or the pack is written from sheets composed before the
+            // linework existed - which would look exactly like the render having
+            // silently done nothing.
+            if (lineworkChanged && SheetBaker && SheetBaker.VghLantern__DrawingEditor__SheetBaker__Clear) {
+                SheetBaker.VghLantern__DrawingEditor__SheetBaker__Clear();
+            }
+
+            var bakedSheets  =  SheetBaker
+                ? await SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll(
+                      ownsOverlay ? Overlay.VghLantern__DocPreview__ProgressOverlay__Update : null)
+                : [];
+
+            return await VghLantern__PdfExporter__WritePack(viewState, plan, bakedSheets);
+        } catch (exportError) {
+            exportFailed  =  true;
+            throw exportError;
+        } finally {
+            if (ownsOverlay) Overlay.VghLantern__DocPreview__ProgressOverlay__Close({ IsError : exportFailed });
         }
+    }
+    // ------------------------------------------------------------
 
-        var bakedSheets  =  SheetBaker
-            ? await SheetBaker.VghLantern__DrawingEditor__SheetBaker__BakeAll()
-            : [];
+
+    // SUB FUNCTION | Assemble and Write the Pack Once Every Drawing Is Composed
+    // ------------------------------------------------------------
+    // Split from Export above so the overlay's lifetime is one plain try/finally around
+    // the whole wait rather than a close call repeated down every early return.
+    async function VghLantern__PdfExporter__WritePack(viewState, plan, bakedSheets) {
+        var DocumentState  =  window.VghLantern__DocPreview__DocumentState;
+        var StateManager   =  window.VghLantern__AppCore__StateManager;
+        var Writer         =  window.VghLantern__PdfWriter__Document;
+        var Metadata       =  window.VghLantern__PdfWriter__Metadata;
 
         // Built once and shared by every specification page. Solving the takeoff for
         // the whole project per lantern page would repeat the same arithmetic once per
@@ -323,6 +380,7 @@ const VghLantern__DocPreview__PdfExporter = (function() {
         builders[DocumentState.KIND_LANTERN_DRAWING]  =  function(entry) { return VghLantern__PdfExporter__BuildDrawingPage(bakedSheets, entry.LanternIndex); };
         builders[DocumentState.KIND_LANTERN_NOTES]    =  function(entry) { return VghLantern__PdfExporter__BuildLanternNotesPage(entry.LanternIndex); };
         builders[DocumentState.KIND_LANTERN_SPEC]     =  function(entry) { return VghLantern__PdfExporter__BuildLanternSpecPage(viewState, specModel, entry.LanternIndex); };
+        builders[DocumentState.KIND_LANTERN_CUTLIST]  =  function(entry) { return VghLantern__PdfExporter__BuildLanternCuttingListPage(specModel, entry.LanternIndex); };
         builders[DocumentState.KIND_DRAWING_TERMS]    =  function()      { return VghLantern__PdfExporter__BuildDrawingTermsPage(); };
         builders[DocumentState.KIND_TERMS]            =  function()      { return VghLantern__PdfExporter__BuildTermsPage(); };
 

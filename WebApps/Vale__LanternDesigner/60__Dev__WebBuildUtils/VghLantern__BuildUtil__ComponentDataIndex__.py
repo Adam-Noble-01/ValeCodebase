@@ -53,14 +53,11 @@ SCHEMA_VERSION = "2.0.0"
 # ------------------------------------------------------------
 # Keyed by the exact folder name. TypeToken is the singular word the asset file
 # names use, so the display label builder can lift it out and read naturally.
+# 45__Roof__RidgeCaps and its finialBase role were retired 12-Aug-2026. The base
+# block seating a finial onto the ridge is the octagonal block RidgeAssembly now
+# builds from the ridge system index, sized off the beam depth for the pitch, so
+# it is no longer a component anybody picks from a list.
 CATEGORY_RULES = {
-    "45__Roof__RidgeCaps": {
-        "CategoryName" : "Ridge Caps",
-        "Role"         : "finialBase",
-        "TypeToken"    : "RidgeCap",
-        "SortOrder"    : 10,
-        "Description"  : "Ridge cap sections and the base blocks seating a finial onto the ridge."
-    },
     "50__Roof__Finials": {
         "CategoryName" : "Finials",
         "Role"         : "finial",

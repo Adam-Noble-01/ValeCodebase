@@ -21,8 +21,8 @@
     "ValeSpec__UserMenu__ModeDocumentPreview__Config": {
         "ValeSpec__UserMenu__ModeDocumentPreview__Config__Description": "Persisted user preferences for Document Preview floating menu and view state.",
         "ValeSpec__UserMenu__ModeDocumentPreview__Config__OverrideEnabled": true,
-        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionX": 1873,
-        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionY": 207,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionX": 1910,
+        "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuPositionY": 147,
         "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionDiagramsOpen": true,
         "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionDocumentOpen": true,
         "ValeSpec__UserMenu__ModeDocumentPreview__Config__MenuSectionActionsOpen": true,

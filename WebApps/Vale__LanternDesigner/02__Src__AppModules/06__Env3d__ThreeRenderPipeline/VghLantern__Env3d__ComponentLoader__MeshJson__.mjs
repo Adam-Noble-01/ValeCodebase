@@ -22,8 +22,25 @@
    THE MESH FORMAT:
        Na__Geometry__Vertices  [ { VertexId, PosX_mm, PosY_mm, PosZ_mm,
                                    Normal_X, Normal_Y, Normal_Z } ]
-       Na__Geometry__Faces     [ { OuterLoop_VertexIds, InnerLoops, Normal } ]
-       Na__Geometry__Edges     [ { StartVertex, EndVertex, IsSoft, IsSmooth } ]
+       Na__Geometry__Faces     [ { OuterLoop_VertexIds, InnerLoops, Normal,
+                                   Na__Face__IsDisplayed } ]
+       Na__Geometry__Edges     [ { StartVertex, EndVertex, Na__Edge__IsSoft,
+                                   Na__Edge__IsSmooth, Na__Edge__IsDisplayed } ]
+
+   HIDDEN FACES ARE PRESENT AND MUST BE FILTERED:
+   Schema 1.2.0 stopped dropping hidden geometry during capture, because a flag
+   that says "hidden" is worthless if the thing it describes was culled before
+   the flag could be written - which is what made a round trip back into
+   SketchUp impossible. The consequence here is that Na__Geometry__Faces now
+   contains faces the author hid, and this loader has to skip them or they
+   render solid. Na__Face__IsDisplayed is the resolved answer; pre-1.2.0 assets
+   carry neither key and every face is drawn, exactly as before.
+
+   Edges do not affect this shaded mesh - the exporter already averaged vertex
+   normals across smoothed edges via face.mesh(7), so smooth shading is baked
+   into Normal_X/Y/Z. They are attached to geometry.userData all the same,
+   because the 2D drawing pipeline reads them from there. See
+   AttachAuthoredEdges below.
 
    Faces are arbitrary convex-ish polygons rather than triangles, so each outer
    loop is fanned. A fan is correct for the convex loops a lathe or extrusion
@@ -65,7 +82,28 @@ import {
     // ------------------------------------------------------------
     const FIELD_VERTICES  =  'Na__Geometry__Vertices';
     const FIELD_FACES     =  'Na__Geometry__Faces';
+    const FIELD_EDGES     =  'Na__Geometry__Edges';
     const FIELD_BBOX      =  'Na__Geometry__BoundingBox';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Authored Edge Draw Modes
+    // ------------------------------------------------------------
+    // Read by the ProjectedEdges extractor. Kept here because this is where an
+    // asset's edge flags are translated into a drawing decision exactly once.
+    //
+    //   ALWAYS      the author left this edge hard and visible, so it is a
+    //               crease and draws from every direction.
+    //   SILHOUETTE  the author softened it. It is not an interior line, but the
+    //               outline may still break there, so it stays eligible as a
+    //               silhouette - which is what gives a softened lathe its
+    //               profile instead of a bald patch.
+    //   NEVER       the author hid it with Edit > Hide. It draws in no view.
+    export const VghLantern__Env3d__MeshJson__EDGE_ALWAYS      =  0;
+    export const VghLantern__Env3d__MeshJson__EDGE_SILHOUETTE  =  1;
+    export const VghLantern__Env3d__MeshJson__EDGE_NEVER       =  2;
+
+    export const VghLantern__Env3d__MeshJson__USERDATA_EDGES   =  'VghLantern__AuthoredEdges';
     // ------------------------------------------------------------
 
 
@@ -113,6 +151,18 @@ import {
 // REGION | Geometry Construction
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Did the Author Hide This Face in SketchUp?
+    // ------------------------------------------------------------
+    // Na__Face__IsDisplayed already folds in the tag visibility, so it is
+    // preferred; Na__Face__IsHidden is the raw Edit > Hide flag and is the
+    // fallback. A face carrying neither key predates schema 1.2.0 and is drawn.
+    function VghLantern__Env3d__MeshJson__FaceIsHidden(face) {
+        if (face['Na__Face__IsDisplayed'] === false) return true;
+        return face['Na__Face__IsHidden'] === true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build a BufferGeometry from a Mesh3D Block
     // ------------------------------------------------------------
     // Returns null when the block carries nothing drawable, which is the signal
@@ -132,10 +182,13 @@ import {
         const normals    =  [];
         let   skippedFaces  =  0;
         let   holedFaces    =  0;
+        let   hiddenFaces   =  0;
 
         for (let f = 0; f < faceList.length; f++) {
             const face  =  faceList[f];
             if (!face) continue;
+
+            if (VghLantern__Env3d__MeshJson__FaceIsHidden(face)) { hiddenFaces++; continue; }
 
             const loop  =  face['OuterLoop_VertexIds'];
             if (!Array.isArray(loop) || loop.length < 3) { skippedFaces++; continue; }
@@ -169,6 +222,8 @@ import {
         geometry.computeBoundingSphere();
         geometry.name  =  'VghLantern__Env3d__ComponentGeometry__' + (assetLabel || 'Unnamed');
 
+        VghLantern__Env3d__MeshJson__AttachAuthoredEdges(geometry, meshBlock, vertexTable);
+
         if (skippedFaces > 0) {
             console.warn('[VghLantern Env3d] Component "' + assetLabel + '": '
                 + skippedFaces + ' face(s) skipped - a loop referenced a vertex id that is not in the vertex table.');
@@ -178,8 +233,101 @@ import {
                 + holedFaces + ' face(s) carry inner loops, which are not triangulated. '
                 + 'The outer boundary renders solid where a hole was modelled.');
         }
+        if (hiddenFaces > 0) {
+            console.info('[VghLantern Env3d] Component "' + assetLabel + '": '
+                + hiddenFaces + ' face(s) hidden by the author in SketchUp and not rendered.');
+        }
 
         return geometry;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Attach the Authored Edge Classification to a Geometry
+    // ------------------------------------------------------------
+    // The drawing pipeline used to decide which lines a component deserves by
+    // measuring the angle between its faces. That works on a box and fails on
+    // everything an author actually cares about: it cannot tell a deliberately
+    // hidden edge from a shallow one, and it will happily draw the tessellation
+    // of a lathe it thinks is creased. The asset already carries the author's
+    // real answer, so it is carried through to where the decision is made.
+    //
+    // Coordinates are stage-space (the same values written into the position
+    // attribute), stored as pairs so the extractor can hash them under its own
+    // rule rather than this module guessing at it. Math.fround is applied
+    // because the position attribute is Float32: without it a coordinate here
+    // would be the Float64 original and could round to a different hash bucket
+    // than the same corner read back out of the buffer.
+    //
+    // Nothing is attached when the asset carries no edge list, and the
+    // extractor then falls back to the angle threshold exactly as before - so
+    // pre-1.2.0 library assets, swept sections and prisms are all untouched.
+    function VghLantern__Env3d__MeshJson__AttachAuthoredEdges(geometry, meshBlock, vertexTable) {
+        const edgeList  =  meshBlock[FIELD_EDGES];
+        if (!Array.isArray(edgeList) || edgeList.length === 0) return;
+
+        const coords  =  [];
+        const modes   =  [];
+
+        for (let i = 0; i < edgeList.length; i++) {
+            const edge  =  edgeList[i];
+            if (!edge) continue;
+
+            const start  =  vertexTable.get(edge.StartVertex);
+            const end    =  vertexTable.get(edge.EndVertex);
+            if (!start || !end) continue;
+
+            coords.push(Math.fround(start.Px), Math.fround(start.Py), Math.fround(start.Pz),
+                        Math.fround(end.Px),   Math.fround(end.Py),   Math.fround(end.Pz));
+            modes.push(VghLantern__Env3d__MeshJson__EdgeDrawMode(edge));
+        }
+
+        if (modes.length === 0) return;
+
+        geometry.userData[VghLantern__Env3d__MeshJson__USERDATA_EDGES]  =  {
+            Coords : new Float64Array(coords),
+            Modes  : new Uint8Array(modes)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Translate One Edge's Authored Flags into a Draw Mode
+    // ------------------------------------------------------------
+    // Hidden beats everything: Edit > Hide is an explicit instruction and the
+    // edge draws in no view. Soft demotes the edge to silhouette only, because
+    // a soft edge is not an interior line but the outline can still break
+    // there. Smooth on its own does NOT demote it - per SketchUp's own
+    // definition a smooth edge stays visible, and it is only ever mistaken for
+    // a hidden one because the Soften/Smooth slider sets both flags together.
+    //
+    // Reads the Na__Edge__ spelling first and falls back to the flat 1.1.0
+    // keys, so a library asset exported before schema 1.2.0 still classifies.
+    function VghLantern__Env3d__MeshJson__EdgeDrawMode(edge) {
+        if (VghLantern__Env3d__MeshJson__EdgeFlag(edge, 'IsHidden')) {
+            return VghLantern__Env3d__MeshJson__EDGE_NEVER;
+        }
+
+        // IsDisplayed already folds in soft, hidden and tag visibility.
+        if (edge['Na__Edge__IsDisplayed'] === false) {
+            return VghLantern__Env3d__MeshJson__EDGE_SILHOUETTE;
+        }
+
+        if (VghLantern__Env3d__MeshJson__EdgeFlag(edge, 'IsSoft')) {
+            return VghLantern__Env3d__MeshJson__EDGE_SILHOUETTE;
+        }
+
+        return VghLantern__Env3d__MeshJson__EDGE_ALWAYS;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read One Edge Flag Across Both Schema Spellings
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__MeshJson__EdgeFlag(edge, shortName) {
+        const prefixed  =  edge['Na__Edge__' + shortName];
+        if (typeof prefixed === 'boolean') return prefixed;
+        return edge[shortName] === true;
     }
     // ------------------------------------------------------------
 

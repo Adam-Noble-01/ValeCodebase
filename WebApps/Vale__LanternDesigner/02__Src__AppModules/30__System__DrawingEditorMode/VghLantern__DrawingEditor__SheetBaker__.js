@@ -111,6 +111,40 @@ const VghLantern__DrawingEditor__SheetBaker = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Name One Lantern for a Progress Report
+    // ------------------------------------------------------------
+    // Its own title where it has one, its schedule position otherwise. Only ever shown
+    // to a person watching a bake, so a lantern with a blank title reads as "Lantern 3"
+    // rather than as a gap.
+    function VghLantern__SheetBaker__LanternLabel(lantern, lanternIndex) {
+        var identity  =  (lantern && lantern['Lantern__Identity__Config']) || {};
+        return identity['Lantern__Identity__Config__Title'] || ('Lantern ' + (lanternIndex + 1));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Report Bake Progress to an Optional Listener
+    // ------------------------------------------------------------
+    // Optional because the baker is useful without anyone watching, and a listener that
+    // throws must not take a pack down with it - the drawings matter, the commentary
+    // does not.
+    function VghLantern__SheetBaker__ReportProgress(onProgress, lantern, lanternIndex, total) {
+        if (typeof onProgress !== 'function') return;
+
+        try {
+            onProgress({
+                Index   : lanternIndex + 1,
+                Total   : total,
+                Label   : VghLantern__SheetBaker__LanternLabel(lantern, lanternIndex),
+                Lantern : lantern
+            });
+        } catch (listenerError) {
+            console.warn('[VghLantern__DrawingEditor__SheetBaker] Progress listener threw:', listenerError);
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Fingerprint Everything One Lantern's Sheet Depends On
     // ------------------------------------------------------------
     // The lantern config and its recorded sheet setup are the whole input, and both
@@ -258,7 +292,7 @@ const VghLantern__DrawingEditor__SheetBaker = (function() {
 
     // SUB FUNCTION | Walk the Schedule and Compose Every Stale Sheet
     // ------------------------------------------------------------
-    async function VghLantern__SheetBaker__RunBake() {
+    async function VghLantern__SheetBaker__RunBake(onProgress) {
         var SheetManager  =  window.VghLantern__DrawingEditor__SheetManager;
         var SheetChrome   =  window.VghLantern__DrawingEditor__SheetChrome;
         var read          =  VghLantern__SheetBaker__ReadProject();
@@ -283,6 +317,11 @@ const VghLantern__DrawingEditor__SheetBaker = (function() {
                 lantern    =  read.Lanterns[i];
                 signature  =  VghLantern__SheetBaker__Signature(lantern);
                 cached     =  VghLantern__SheetBaker__Cache[i];
+
+                // Reported before the cache is consulted, so a pass that reuses three
+                // sheets and composes one still counts through all four. The count is
+                // how far through the SCHEDULE the pass is, not how much work it did.
+                VghLantern__SheetBaker__ReportProgress(onProgress, lantern, i, read.Lanterns.length);
 
                 if (cached && signature !== null && cached.Signature === signature) {
                     results.push(cached.Sheet);                                // <-- Nothing about this lantern has moved since it was last composed
@@ -355,12 +394,16 @@ const VghLantern__DrawingEditor__SheetBaker = (function() {
     // Concurrent callers share one pass. Preview and Send renders on several signals -
     // entering the mode, a geometry solve, a toggle - and two overlapping bakes would
     // fight over the session sheet setup they both borrow.
-    async function VghLantern__DrawingEditor__SheetBaker__BakeAll() {
+    //
+    // onProgress belongs to whichever caller STARTS the pass. A caller that joins one
+    // already running is watching work it did not commission, and re-pointing the
+    // listener mid-pass would report the same schedule to two different overlays.
+    async function VghLantern__DrawingEditor__SheetBaker__BakeAll(onProgress) {
         if (VghLantern__SheetBaker__InFlight) return VghLantern__SheetBaker__InFlight;
 
         VghLantern__SheetBaker__InFlight  =  (async function() {
             try {
-                return await VghLantern__SheetBaker__RunBake();
+                return await VghLantern__SheetBaker__RunBake(onProgress);
             } catch (bakeError) {
                 console.error('[VghLantern__DrawingEditor__SheetBaker] Bake failed:', bakeError);
                 return [];

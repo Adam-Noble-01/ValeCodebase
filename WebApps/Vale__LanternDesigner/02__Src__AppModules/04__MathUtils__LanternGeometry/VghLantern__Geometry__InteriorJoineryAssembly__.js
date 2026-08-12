@@ -12,7 +12,10 @@
    DESCRIPTION:
    - Interior joinery sweeps around the SAME eaves datum ring as the base frame.
      Section 0,0 is the eaves datum; +x runs inboard into the room.
-   - Cornice and packer sections pass through as exported.
+   - Cornice and packer sections pass through as exported, save for the height
+     offset the job has set. The offset slides both parts together along section
+     +y (up the upstand) so a moulding that fouls the frame or a plaster reveal
+     can be dropped or lifted clear without editing the asset. Positive is up.
    - Eaves trim top edge is authored to the reference pitch plane
      y = x * tan(ReferencePitchDegrees). At any other roof pitch, top-edge
      vertices (those lying on that plane within tolerance) are remapped onto
@@ -37,6 +40,15 @@ const VghLantern__Geometry__InteriorJoineryAssembly = (function() {
     const DEG_TO_RAD              =  Math.PI / 180;
     const TOP_PLANE_TOLERANCE_MM  =  0.75;                                   // <-- mm - export coords carry three decimals
     const FALLBACK_REF_PITCH_DEG  =  19.88;
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Parts the Cornice Height Offset Moves
+    // ------------------------------------------------------------
+    // The packer is what the cornice is fixed through, so it travels with the
+    // moulding rather than staying behind on the upstand. The eaves trim is a
+    // fixed piece of the eaves detail and never moves.
+    const HEIGHT_OFFSET_PART_KEYS  =  { cornice: true, cornicePacker: true };
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -117,10 +129,27 @@ const VghLantern__Geometry__InteriorJoineryAssembly = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Slide a Section Up or Down the Upstand
+    // ------------------------------------------------------------
+    // A rigid move along section +y only. The profile is untouched, so the
+    // moulding that gets fitted is the moulding that was drawn - it simply sits
+    // at a different height on the upstand.
+    function VghLantern__InteriorJoineryAssembly__OffsetSectionHeight(faces, offsetMm) {
+        return VghLantern__InteriorJoineryAssembly__MapFaces(faces, function(pt) {
+            return { x: pt.x, y: pt.y + offsetMm };
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Transform Every Resolved Part's Section for a Roof Pitch
     // ------------------------------------------------------------
-    function VghLantern__InteriorJoineryAssembly__SectionsForPitch(parts, pitchDegrees) {
-        var out  =  [];
+    // @param parts               Resolved part records from the joinery loader
+    // @param pitchDegrees        Roof pitch the eaves trim top is remapped onto
+    // @param corniceOffsetMm     Cornice and packer height offset, positive up
+    function VghLantern__InteriorJoineryAssembly__SectionsForPitch(parts, pitchDegrees, corniceOffsetMm) {
+        var out     =  [];
+        var offset  =  Number(corniceOffsetMm) || 0;                          // <-- Absent, blank or NaN all mean the standard height
         var i, part, faces;
 
         for (i = 0; i < parts.length; i++) {
@@ -129,6 +158,10 @@ const VghLantern__Geometry__InteriorJoineryAssembly = (function() {
 
             if (part.ReslopesTopWithRoofPitch) {
                 faces  =  VghLantern__InteriorJoineryAssembly__ReslopeEavesTrimTop(faces, pitchDegrees);
+            }
+
+            if (offset !== 0 && HEIGHT_OFFSET_PART_KEYS[part.PartKey] === true) {
+                faces  =  VghLantern__InteriorJoineryAssembly__OffsetSectionHeight(faces, offset);
             }
 
             out.push({
@@ -158,6 +191,7 @@ const VghLantern__Geometry__InteriorJoineryAssembly = (function() {
     return {
         VghLantern__InteriorJoineryAssembly__ReferencePitchDegrees  : VghLantern__InteriorJoineryAssembly__ReferencePitchDegrees,
         VghLantern__InteriorJoineryAssembly__ReslopeEavesTrimTop    : VghLantern__InteriorJoineryAssembly__ReslopeEavesTrimTop,
+        VghLantern__InteriorJoineryAssembly__OffsetSectionHeight    : VghLantern__InteriorJoineryAssembly__OffsetSectionHeight,
         VghLantern__InteriorJoineryAssembly__SectionsForPitch       : VghLantern__InteriorJoineryAssembly__SectionsForPitch
     };
 

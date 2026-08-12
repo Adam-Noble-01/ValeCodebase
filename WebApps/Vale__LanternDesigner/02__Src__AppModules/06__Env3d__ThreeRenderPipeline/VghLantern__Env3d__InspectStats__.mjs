@@ -83,7 +83,6 @@ import { VghLantern__Env3d__PickIndex__TableOf } from './VghLantern__Env3d__Pick
         ridgeEnd   : 'Ridge End Component',
         apex       : 'Apex Component',
         finial     : 'Finial',
-        finialBase : 'Finial Base',
         cresting   : 'Ridge Cresting'
     };
     // ------------------------------------------------------------

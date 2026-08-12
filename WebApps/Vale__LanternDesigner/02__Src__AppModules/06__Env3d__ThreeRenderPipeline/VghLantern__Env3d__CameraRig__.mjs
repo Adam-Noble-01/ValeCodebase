@@ -26,6 +26,18 @@
    bounding sphere radius and the camera field of view, multiplied by the config
    FitPaddingFactor. That gives a consistent visual margin at any lantern size.
 
+   ---------------------------------------------------------------------------
+
+   BELOW GROUND ORBIT:
+   Every surface is clamped just above the horizon by default, because a drawing
+   sheet viewport or the editor's working panel photographed from underneath is
+   never what was wanted. The full-screen 3D View opts out by mounting with
+   AllowBelowGroundOrbit, which is the one surface whose job is inspection: the
+   underside of a lantern is where the glazing bar soffits, the ridge block and
+   the builders upstand reveal actually read. That surface also drops the ground
+   grid while the eye is under it, since from below the grid draws straight
+   across the thing the view was moved to see.
+
    ============================================================================= */
 
 import * as THREE from 'three';
@@ -39,7 +51,11 @@ import {
     VghLantern__Env3d__ConfigAccess__RequireBoolean
 } from './VghLantern__Env3d__ConfigAccess__.mjs';
 
-import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d__SceneManager__.mjs';
+import {
+    VghLantern__Env3d__SceneManager__Invalidate,
+    VghLantern__Env3d__SceneManager__SetGroundGridSuppressed,
+    VghLantern__Env3d__GroundGridSuppressReason
+} from './VghLantern__Env3d__SceneManager__.mjs';
 
 // =============================================================================
 // REGION | 3D Camera Rig Module
@@ -54,6 +70,7 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
     const DEG_TO_RAD          =  Math.PI / 180;                              // <-- Config states angles in degrees
     const MIN_FRAME_RADIUS_MM =  200;                                        // <-- Stops a degenerate model collapsing the camera
     const DEFAULT_TARGET_MM   =  { x: 0, y: 0, z: 600 };                     // <-- Sensible aim point with no model loaded
+    const GROUND_WORLD_Y      =  0;                                          // <-- The grid helper sits at the scene origin and model +Z up maps to world +Y, so the ground plane is y = 0
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -128,10 +145,51 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
 // REGION | Rig Construction
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Resolve the Orbit Clamp This Surface Is Allowed
+    // ------------------------------------------------------------
+    // The below-ground clamp is taken through Math.max so it can only ever open the
+    // orbit further than the standard one, never tighten it. A config edit that put
+    // the two the wrong way round would otherwise lock the opted-in surface into a
+    // narrower arc than the surfaces it is meant to be freer than.
+    function VghLantern__Env3d__CameraRig__MaxPolarAngleRad(allowBelowGround) {
+        const standardDegrees  =  VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MaxPolarAngleDegrees');
+        if (!allowBelowGround) return standardDegrees * DEG_TO_RAD;
+
+        const belowDegrees  =  VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'BelowGroundMaxPolarAngleDegrees');
+        return Math.max(standardDegrees, belowDegrees) * DEG_TO_RAD;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Drop the Ground Grid While the Eye Is Under It
+    // ------------------------------------------------------------
+    // Called from the draw loop rather than from the orbit events, so it holds for
+    // every way the camera can move - orbit, pan, dolly, preset and reframe alike -
+    // instead of only for the paths that remember to ask. The suppression call is a
+    // no-op once the state has settled, so an idle surface still draws nothing.
+    function VghLantern__Env3d__CameraRig__SyncGroundGridToEye(surface) {
+        if (!surface.HideGroundGridBelowEye || !surface.Camera) return;      // <-- Not an opted-in surface: the clamp already keeps it above ground
+
+        VghLantern__Env3d__SceneManager__SetGroundGridSuppressed(
+            surface,
+            VghLantern__Env3d__GroundGridSuppressReason.BelowGround,
+            surface.Camera.position.y < GROUND_WORLD_Y
+        );
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Attach Camera and Orbit Controls to a Surface
     // ------------------------------------------------------------
-    export function VghLantern__Env3d__CameraRig__Attach(surface) {
+    // options.AllowBelowGroundOrbit lets this surface orbit under the ground plane
+    // to inspect the underside of the lantern. Omitted everywhere except the
+    // full-screen 3D View, so the editor panel and the sheet viewports keep the
+    // above-the-horizon clamp they are drawn with.
+    export function VghLantern__Env3d__CameraRig__Attach(surface, options) {
         if (!surface) return null;
+
+        const rigOptions        =  options || {};
+        const allowBelowGround  =  rigOptions.AllowBelowGroundOrbit === true;
 
         const widthPx   =  Math.max(1, surface.HostElement.clientWidth);
         const heightPx  =  Math.max(1, surface.HostElement.clientHeight);
@@ -150,16 +208,23 @@ import { VghLantern__Env3d__SceneManager__Invalidate } from './VghLantern__Env3d
         controls.enablePan       =  VghLantern__Env3d__ConfigAccess__RequireBoolean('Camera', 'EnablePan');
         controls.minDistance     =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MinDistanceMm'));
         controls.maxDistance     =  VghLantern__Env3d__ConfigAccess__MmToWorld(VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MaxDistanceMm'));
-        controls.maxPolarAngle   =  VghLantern__Env3d__ConfigAccess__RequireNumber('Camera', 'MaxPolarAngleDegrees') * DEG_TO_RAD;
+        controls.maxPolarAngle   =  VghLantern__Env3d__CameraRig__MaxPolarAngleRad(allowBelowGround);
 
-        surface.Camera    =  camera;
-        surface.Controls  =  controls;
+        surface.Camera                 =  camera;
+        surface.Controls               =  controls;
+        surface.AllowBelowGroundOrbit  =  allowBelowGround;
+
+        // Resolved once here rather than read per frame: config is in hand by mount
+        // time, and this runs on every tick of every surface's draw loop.
+        surface.HideGroundGridBelowEye  =  allowBelowGround &&
+            VghLantern__Env3d__ConfigAccess__RequireBoolean('GroundPlane', 'HideGridWhenCameraBelow');
 
         // Damped controls need a frame after the last input, so the draw loop asks
         // the controls each frame whether they are still settling.
         surface.OnBeforeDraw  =  function(activeSurface) {
             const changed  =  activeSurface.Controls ? activeSurface.Controls.update() : false;
             if (changed) VghLantern__Env3d__SceneManager__Invalidate(activeSurface);
+            VghLantern__Env3d__CameraRig__SyncGroundGridToEye(activeSurface);
         };
 
         controls.addEventListener('change', function() {

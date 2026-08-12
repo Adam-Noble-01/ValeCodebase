@@ -55,6 +55,7 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
     // ------------------------------------------------------------
     const JOINERY_BLOCK       =  'Lantern__InteriorJoinery__Config';
     const FIELD_CORNICE_ID    =  'Lantern__InteriorJoinery__Config__CorniceOptionId';
+    const FIELD_HEIGHT_OFFSET =  'Lantern__InteriorJoinery__Config__CorniceHeightOffsetMm';
     const PART_CORNICE        =  'cornice';
     const PART_PACKER         =  'cornicePacker';
     const DEFAULT_CORNICE_ID  =  '49_1001';
@@ -200,6 +201,19 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
                 + stored + '" - using the default.');
         }
         return VghLantern__InteriorJoinerySystemLoader__DefaultCorniceOptionId();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Height Offset a Lantern Has Moved Its Cornice By
+    // ------------------------------------------------------------
+    // Positive is up the upstand, negative is down, zero is the standard fixing
+    // height the asset was drawn at. The packer travels with the moulding, so
+    // this one number moves both. Bounds are enforced by the schema validator
+    // and the slider, so anything arriving here is read as authored.
+    function VghLantern__InteriorJoinerySystemLoader__CorniceHeightOffsetMm(lantern) {
+        var block  =  lantern ? lantern[JOINERY_BLOCK] : null;
+        return block ? (Number(block[FIELD_HEIGHT_OFFSET]) || 0) : 0;
     }
     // ------------------------------------------------------------
 
@@ -441,6 +455,7 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
         VghLantern__InteriorJoinerySystemLoader__ListCorniceOptions      : VghLantern__InteriorJoinerySystemLoader__ListCorniceOptions,
         VghLantern__InteriorJoinerySystemLoader__DefaultCorniceOptionId  : VghLantern__InteriorJoinerySystemLoader__DefaultCorniceOptionId,
         VghLantern__InteriorJoinerySystemLoader__CorniceOptionId         : VghLantern__InteriorJoinerySystemLoader__CorniceOptionId,
+        VghLantern__InteriorJoinerySystemLoader__CorniceHeightOffsetMm   : VghLantern__InteriorJoinerySystemLoader__CorniceHeightOffsetMm,
         VghLantern__InteriorJoinerySystemLoader__DescribeParts           : VghLantern__InteriorJoinerySystemLoader__DescribeParts,
         VghLantern__InteriorJoinerySystemLoader__ResolveParts            : VghLantern__InteriorJoinerySystemLoader__ResolveParts
     };

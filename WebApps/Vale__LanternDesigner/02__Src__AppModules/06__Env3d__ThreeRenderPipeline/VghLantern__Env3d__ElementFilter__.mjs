@@ -17,7 +17,7 @@
 
    ---------------------------------------------------------------------------
 
-   THE THREE VIEWS
+   THE FOUR VIEWS
 
        full         The finished lantern. Everything visible: cap, core, trim,
                     glass, finials, kerb. This is the default, and the view a
@@ -32,6 +32,32 @@
                     the glaze bar cores and the frame. The decorative capping,
                     the internal timber trim, the glass and the finials all
                     disappear, leaving what actually carries the roof.
+
+       aluminium    The structural view narrowed to the metal. Everything the
+                    structural view keeps, less the parts specified in timber:
+                    the ridge beam, the hip beams and the head beam are all
+                    Sapele and all drop out, leaving the ridge and hip cores,
+                    the eaves extrusion and the glaze bar cores. This is the
+                    extrusion order read as a picture - what the aluminium
+                    supplier is asked for, with the joinery taken away.
+
+   ---------------------------------------------------------------------------
+
+   HOW THE ALUMINIUM VIEW DECIDES
+
+   By the SpecMaterial each part carries from the profile library - the same
+   string the specification tables and the takeoff quote - and not by the render
+   material, which is a finish rather than a substance and would call a powder
+   coated section and a painted timber the same thing.
+
+   A mesh that declares a material must declare an aluminium one to survive. A
+   mesh that declares NOTHING is left standing, which is the deliberate opposite
+   of the type rule below. The reason is where the two blind spots are: an
+   unstamped mesh in this app is a swept skeleton member built from the frame
+   finish, which is aluminium, so deleting it would empty the view of real metal.
+   As those builders start declaring SpecMaterial they simply start being judged
+   on it, and any timber part authored into the library arrives already declaring
+   its Sapele and drops out on its own.
 
    ---------------------------------------------------------------------------
 
@@ -88,22 +114,27 @@ import {
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | The Three Views and What Each Admits
+    // MODULE CONSTANTS | The Four Views and What Each Admits
     // ------------------------------------------------------------
     export const VghLantern__Env3d__ElementFilter__Full        =  'full';
     export const VghLantern__Env3d__ElementFilter__NoGlazing   =  'noGlazing';
     export const VghLantern__Env3d__ElementFilter__Structural  =  'structural';
+    export const VghLantern__Env3d__ElementFilter__Aluminium   =  'aluminium';
 
+    // Ordered as a reviewer strips the model down: the finished lantern, the glass
+    // out, the carcass, then the metal within the carcass.
     export const VghLantern__Env3d__ElementFilter__Order  =  [
         VghLantern__Env3d__ElementFilter__Full,
         VghLantern__Env3d__ElementFilter__NoGlazing,
-        VghLantern__Env3d__ElementFilter__Structural
+        VghLantern__Env3d__ElementFilter__Structural,
+        VghLantern__Env3d__ElementFilter__Aluminium
     ];
 
     const VIEW_LABELS  =  {
         full       : 'Full Lantern',
         noGlazing  : 'No Glazing',
-        structural : 'Structure Only'
+        structural : 'Structure Only',
+        aluminium  : 'Aluminium Structure'
     };
 
     // A null admitted set means everything. Listing the types each view keeps,
@@ -119,8 +150,23 @@ import {
             VghLantern__Env3d__ElementFilter__Type.ByOthers,
             VghLantern__Env3d__ElementFilter__Type.Flashing
         ],
-        structural : [VghLantern__Env3d__ElementFilter__Type.Structural]
+        structural : [VghLantern__Env3d__ElementFilter__Type.Structural],
+        aluminium  : [VghLantern__Env3d__ElementFilter__Type.Structural]     // <-- Same type gate as structural, then narrowed again by material below
     };
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | The Material Gate the Aluminium View Adds
+    // ------------------------------------------------------------
+    // Matched as a lowercase substring rather than against a list of exact strings,
+    // so "Mill Finish Aluminium", "Powder Coated Aluminium" and any anodised or
+    // alloy variant authored later all pass without an edit here. Truncated before
+    // the ending so the American spelling passes too, which costs nothing and
+    // avoids a part vanishing over a vowel.
+    const ALUMINIUM_TOKEN  =  'alumin';
+
+    const VIEW_REQUIRES_ALUMINIUM  =  {};
+    VIEW_REQUIRES_ALUMINIUM[VghLantern__Env3d__ElementFilter__Aluminium]  =  true;
     // ------------------------------------------------------------
 
 
@@ -135,7 +181,8 @@ import {
     GROUP_DEFAULT_TYPE[VghLantern__Env3d__SceneGroup.Solid3d__Glazing]     =  VghLantern__Env3d__ElementFilter__Type.Glazing;
     GROUP_DEFAULT_TYPE[VghLantern__Env3d__SceneGroup.Solid3d__Components]  =  VghLantern__Env3d__ElementFilter__Type.Trim;
 
-    const USERDATA_ELEMENT_TYPE  =  'VghLantern__ElementType';
+    const USERDATA_ELEMENT_TYPE   =  'VghLantern__ElementType';
+    const USERDATA_SPEC_MATERIAL  =  'VghLantern__SpecMaterial';             // <-- Stamped from the profile library by every assembly builder
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -167,12 +214,46 @@ import {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Whether a View Admits an Element Type
+    // HELPER FUNCTION | The Specification Material an Object Should Be Judged By
     // ------------------------------------------------------------
-    function VghLantern__Env3d__ElementFilter__Admits(viewKey, elementType) {
+    // Walks ancestors for the same reason the element type does: a loaded GLB
+    // carries its specification on the node the loader placed, not on the meshes
+    // inside it. An empty string means the part declares no material at all.
+    function VghLantern__Env3d__ElementFilter__SpecMaterialOf(node) {
+        let current  =  node;
+
+        while (current) {
+            if (current.userData && current.userData[USERDATA_SPEC_MATERIAL]) {
+                return current.userData[USERDATA_SPEC_MATERIAL];
+            }
+            current  =  current.parent;
+        }
+
+        return '';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether a Declared Material Is an Aluminium One
+    // ------------------------------------------------------------
+    // An undeclared material passes. See HOW THE ALUMINIUM VIEW DECIDES in the
+    // header: the unstamped meshes in this app are swept frame members carrying
+    // the lantern's frame finish, which is metal.
+    function VghLantern__Env3d__ElementFilter__IsAluminium(specMaterial) {
+        if (!specMaterial) return true;
+        return String(specMaterial).toLowerCase().indexOf(ALUMINIUM_TOKEN) !== -1;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether a View Admits an Element Type and Material
+    // ------------------------------------------------------------
+    function VghLantern__Env3d__ElementFilter__Admits(viewKey, elementType, specMaterial) {
         const admitted  =  VIEW_ADMITS[viewKey];
-        if (!admitted) return true;                                           // <-- Full view admits everything
-        return admitted.indexOf(elementType) !== -1;
+        if (admitted && admitted.indexOf(elementType) === -1) return false;   // <-- A null admitted set is the full view, which admits every type
+
+        if (!VIEW_REQUIRES_ALUMINIUM[viewKey]) return true;
+        return VghLantern__Env3d__ElementFilter__IsAluminium(specMaterial);
     }
     // ------------------------------------------------------------
 
@@ -201,7 +282,7 @@ import {
             ? viewKey
             : VghLantern__Env3d__ElementFilter__Full;
 
-        let g, groupName, group, i, child, elementType;
+        let g, groupName, group, i, child, elementType, specMaterial;
 
         for (g = 0; g < VghLantern__Env3d__SceneGroupSet__Solid3d.length; g++) {
             groupName  =  VghLantern__Env3d__SceneGroupSet__Solid3d[g];
@@ -209,10 +290,11 @@ import {
             if (!group) continue;
 
             for (i = 0; i < group.children.length; i++) {
-                child        =  group.children[i];
-                elementType  =  VghLantern__Env3d__ElementFilter__TypeOf(child, groupName);
+                child         =  group.children[i];
+                elementType   =  VghLantern__Env3d__ElementFilter__TypeOf(child, groupName);
+                specMaterial  =  VghLantern__Env3d__ElementFilter__SpecMaterialOf(child);
 
-                child.visible  =  VghLantern__Env3d__ElementFilter__Admits(view, elementType);
+                child.visible  =  VghLantern__Env3d__ElementFilter__Admits(view, elementType, specMaterial);
             }
         }
 

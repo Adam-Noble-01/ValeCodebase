@@ -71,6 +71,9 @@ import { VghLantern__Env3d__MeshBuilder__BaseFrameAssembly__Build } from './VghL
 import { VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__Build } from './VghLantern__Env3d__MeshBuilder__InteriorJoineryAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__Glazing__Build } from './VghLantern__Env3d__MeshBuilder__Glazing__.mjs';
 import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build } from './VghLantern__Env3d__MeshBuilder__GlazeBarComposite__.mjs';
+import { VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build } from './VghLantern__Env3d__MeshBuilder__RidgeAssembly__.mjs';
+import { VghLantern__Env3d__MeshBuilder__HipAssembly__Build } from './VghLantern__Env3d__MeshBuilder__HipAssembly__.mjs';
+import { VghLantern__Env3d__MeshBuilder__RidgeBlock__Build, VghLantern__Env3d__MeshBuilder__RidgeBlock__ClearCache } from './VghLantern__Env3d__MeshBuilder__RidgeBlock__.mjs';
 import {
     VghLantern__Env3d__ElementFilter__Apply,
     VghLantern__Env3d__ElementFilter__Current,
@@ -174,15 +177,17 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
 
     // FUNCTION | Mount a 3D Surface Inside a Host Element
     // ------------------------------------------------------------
-    // options are passed straight to the scene builder. Drawing sheet viewports pass
-    // { ShowGroundPlane : false } so the sheet's 3D view is built without the grid.
+    // options are passed straight to the scene builder and the camera rig. Drawing
+    // sheet viewports pass { ShowGroundPlane : false } so the sheet's 3D view is
+    // built without the grid; the full-screen 3D View passes
+    // { AllowBelowGroundOrbit : true } so it can be orbited under the lantern.
     export function VghLantern__Env3d__RenderPipeline__Mount(hostElement, options) {
         if (!hostElement) return null;
 
         const surface  =  VghLantern__Env3d__SceneManager__Create(hostElement, options);
         if (!surface) return null;
 
-        VghLantern__Env3d__CameraRig__Attach(surface);
+        VghLantern__Env3d__CameraRig__Attach(surface, options);
         VghLantern__Env3d__LightingRig__Attach(surface);
 
         surface.HasFramedOnce  =  false;                                      // <-- First render fits, later renders keep the user's view
@@ -219,6 +224,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         VghLantern__Env3d__SetOut__LineFactory__DisposeMaterials();
         VghLantern__CrossSection__CapFactory__DisposeMaterials();
         VghLantern__Env3d__ComponentLoader__Glb__ClearCache();
+        VghLantern__Env3d__MeshBuilder__RidgeBlock__ClearCache();
     }
     // ------------------------------------------------------------
 
@@ -304,6 +310,28 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // they are not one swept section but three, and the summary they return
         // is what the takeoff totals a cutting list from.
         surface.LastGlazeBarSummary  =  await VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build(solidGlazeBarGroup, barSet, lantern);
+
+        // The ridge and the hips, for the same reason: a ridge is a stack of up
+        // to six sections and a hip is four. The two are built by separate
+        // modules because they are separate operations - a gable form will want
+        // one without the other - and both land in the frame group alongside the
+        // rest of the carcass.
+        surface.LastRidgeSummary  =  await VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build(solidFrameGroup, skeleton, lantern);
+        surface.LastHipSummary    =  await VghLantern__Env3d__MeshBuilder__HipAssembly__Build(solidFrameGroup, skeleton, lantern);
+
+        // The octagonal block the ridge and both hips die into. A placed mesh
+        // component rather than a swept section, so it goes in the components
+        // group with the finials it sits between.
+        surface.LastRidgeBlockSummary  =  await VghLantern__Env3d__MeshBuilder__RidgeBlock__Build(solidComponentsGroup, skeleton, lantern);
+
+        // A ridge or hip that could not be built the way it was specified says so
+        // here rather than only in a summary object nobody has to read. The
+        // loudest case is a lantern specified with a glaze bar hip, which is drawn
+        // with hip beams until those profiles exist: silently substituting one
+        // hip for another would be the worst of the three options available.
+        VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge', surface.LastRidgeSummary);
+        VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Hip', surface.LastHipSummary);
+        VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge block', surface.LastRidgeBlockSummary);
 
         await VghLantern__Env3d__ComponentLoader__Glb__Build(solidComponentsGroup, skeleton, lantern);
 
@@ -469,8 +497,9 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
 
     // FUNCTION | Set the Element View on a Surface
     // ------------------------------------------------------------
-    // 'full' the finished lantern, 'structural' the carcass alone. Orthogonal to
-    // the display mode: a reviewer can put the setting out over the structure.
+    // 'full' the finished lantern, 'structural' the carcass alone, 'aluminium' the
+    // carcass with the timber beams taken out. Orthogonal to the display mode: a
+    // reviewer can put the setting out over the structure.
     export function VghLantern__Env3d__RenderPipeline__SetElementView(surface, viewKey) {
         VghLantern__Env3d__ElementFilter__Apply(surface, viewKey);
         VghLantern__Env3d__HoverInspector__RevalidateTarget(surface);
@@ -509,6 +538,47 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
     // this rather than re-deriving what the builder already measured.
     export function VghLantern__Env3d__RenderPipeline__GetGlazeBarSummary(surface) {
         return (surface && surface.LastGlazeBarSummary) ? surface.LastGlazeBarSummary : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Ridge, Hip and Ridge Block Build Summaries
+    // ------------------------------------------------------------
+    // The same shape the glaze bar summary answers in, and for the same reason:
+    // one record per part actually built, each carrying its section area, element
+    // type and specification material, so a takeoff totals what was measured
+    // rather than re-deriving it.
+    //
+    // The ridge and hip summaries also carry the resolved depth pair and any
+    // warnings the build raised - a clamped depth override, or a hip type that was
+    // substituted because its geometry does not exist yet.
+    export function VghLantern__Env3d__RenderPipeline__GetRidgeSummary(surface) {
+        return (surface && surface.LastRidgeSummary) ? surface.LastRidgeSummary : null;
+    }
+
+    export function VghLantern__Env3d__RenderPipeline__GetHipSummary(surface) {
+        return (surface && surface.LastHipSummary) ? surface.LastHipSummary : null;
+    }
+
+    export function VghLantern__Env3d__RenderPipeline__GetRidgeBlockSummary(surface) {
+        return (surface && surface.LastRidgeBlockSummary) ? surface.LastRidgeBlockSummary : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Log Any Warnings a Sub Builder Raised
+    // ------------------------------------------------------------
+    // Console rather than the warning panel. The WarningSystem evaluates against
+    // the lantern record on its own cadence and these are facts about a BUILD, so
+    // routing them there would mean holding build state for it to read. Surfacing
+    // them in the panel is worth doing and is a separate piece of work; leaving
+    // them entirely unspoken while that waits is not.
+    function VghLantern__Env3d__RenderPipeline__ReportBuildWarnings(label, summary) {
+        if (!summary || !Array.isArray(summary.Warnings) || summary.Warnings.length === 0) return;
+
+        for (let i = 0; i < summary.Warnings.length; i++) {
+            console.warn('[VghLantern__Env3d__RenderPipeline] ' + label + ': ' + summary.Warnings[i]);
+        }
     }
     // ------------------------------------------------------------
 

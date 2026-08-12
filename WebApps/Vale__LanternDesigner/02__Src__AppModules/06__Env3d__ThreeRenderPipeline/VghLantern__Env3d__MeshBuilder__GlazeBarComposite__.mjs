@@ -32,24 +32,15 @@
 
    ---------------------------------------------------------------------------
 
-   WHY THIS DOES NOT USE THREE.ExtrudeGeometry
+   WHERE THE EXTRUDER LIVES
 
-   The module this replaces swept a single outline with ExtrudeGeometry, which is
-   the right tool for a shape that only has to be looked at. It is the wrong tool
-   here. ExtrudeGeometry emits unwelded triangles with the cap vertices separate
-   from the wall vertices, so the result is a shell that renders correctly and is
-   not a solid: no edge is shared, so nothing downstream can tell inside from
-   outside.
-
-   That matters because these solids are going to be cut. The cutting list this
-   tool exists to produce comes from booleans against the hip and ridge, and a
-   boolean against a shell either fails outright or silently returns the wrong
-   volume - which would surface as a specification table quietly under-reporting
-   a bar length nobody re-measures.
-
-   So the geometry is assembled by hand instead: one vertex per section point per
-   end, walls raised ring by ring, both ends capped over those same vertices.
-   Every edge is shared by exactly two triangles and every normal points out.
+   The manifold solid construction this module was built around now lives in
+   MeshBuilder__SectionSolid, because the ridge and the hip need the identical
+   thing and a second copy of it would have been the start of three of them.
+   What moved is the arithmetic and none of the reasoning: it still assembles a
+   closed solid by hand rather than reaching for ExtrudeGeometry, still for the
+   reason that these solids get cut and a boolean against an unwelded shell
+   either fails outright or silently returns the wrong volume.
 
    ---------------------------------------------------------------------------
 
@@ -91,9 +82,11 @@
    KNOWN LIMITATION - RIDGE AND HIP END CUTS
 
    The UPPER end of a bar is still extruded square across its own axis. Where a
-   bar meets a hip or the ridge the true cut is a compound mitre; BuildSolid now
-   takes an arbitrary end plane per end, so adding those mitres is a matter of
-   telling it which plane to use, not of rebuilding.
+   bar meets a hip or the ridge the true cut is a compound mitre; the shared
+   extruder takes an arbitrary end plane per end, so adding those mitres is a
+   matter of telling it which plane to use, not of rebuilding. The hip and ridge
+   assemblies now publish exactly those planes for their own end cuts, which is
+   half the answer already sitting there.
 
    ============================================================================= */
 
@@ -109,6 +102,11 @@ import {
     VghLantern__Env3d__MaterialLibrary__GlazeBarCap,
     VghLantern__Env3d__MaterialLibrary__GlazeBarTrim
 } from './VghLantern__Env3d__MaterialLibrary__.mjs';
+
+import {
+    VghLantern__Env3d__SectionSolid__Build,
+    VghLantern__Env3d__SectionSolid__PlaneToWorld
+} from './VghLantern__Env3d__MeshBuilder__SectionSolid__.mjs';
 
 import {
     VghLantern__Env3d__PickIndex__Register,
@@ -127,7 +125,6 @@ import {
     // ------------------------------------------------------------
     const SECTION_DATUM_OFFSET_MM  =  0;                                     // <-- Section y=0 sits on the skeleton polyline
     const MIN_MEMBER_LENGTH_MM     =  0.5;                                   // <-- Below this a bar is degenerate
-    const VERTICAL_DOT_LIMIT       =  0.999;                                 // <-- Above this a member is effectively vertical
     // ------------------------------------------------------------
 
 
@@ -161,226 +158,21 @@ import {
 
 
 // -----------------------------------------------------------------------------
-// REGION | Member Orientation
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Build the Orientation Basis for a Bar
-    // ------------------------------------------------------------
-    // Local Z runs along the bar, local Y is the bar's up direction and local X
-    // is across it. World up projected perpendicular to the bar is what makes a
-    // common rafter and a hip-end bar both read correctly without either being a
-    // special case: on any sloping member that projection is the slope normal,
-    // which is exactly where the cap has to point.
-    //
-    // Kept identical to the convention the retired ProfileSweep used, so the new
-    // composite lands in the same orientation the old single section did and no
-    // other module has to be re-reasoned about.
-    function VghLantern__Env3d__GlazeBarComposite__MemberBasis(startVec, endVec) {
-        const along    =  new THREE.Vector3().subVectors(endVec, startVec).normalize();
-        const worldUp  =  new THREE.Vector3(0, 1, 0);
-
-        const upReference  =  Math.abs(along.dot(worldUp)) > VERTICAL_DOT_LIMIT
-            ? new THREE.Vector3(0, 0, -1)
-            : worldUp;
-
-        const across  =  new THREE.Vector3().crossVectors(upReference, along).normalize();
-        const up      =  new THREE.Vector3().crossVectors(along, across).normalize();
-
-        return { Along : along, Across : across, Up : up };
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
 // REGION | Manifold Solid Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Cumulative Perimeter Distance at Every Section Vertex
+    // NOTE | The Extruder Moved to MeshBuilder__SectionSolid
     // ------------------------------------------------------------
-    // Returns one distance per vertex of the flat ring array, in world units,
-    // restarting at zero for each ring. This is the texture U coordinate: walking
-    // it round the section lays the map across the bar rather than along it.
+    // MemberBasis, PerimeterDistances, BuildSolid and PlaneToWorld used to live
+    // here. They are the same construction the ridge and the hip need, so they
+    // now live in one shared module and this one imports them. The section frame
+    // convention they rely on - +x across the member, +y out through the roof,
+    // 0,0 on the datum polyline - is documented there and is shared by every
+    // Vale section, which is exactly why one extruder can serve all of them.
     //
-    // The seam where a ring closes does not line up with a whole texture repeat,
-    // so a fine grain shows one discontinuity somewhere on the perimeter. It
-    // lands on an arris, where an extrusion's die lines genuinely do break.
-    function VghLantern__Env3d__GlazeBarComposite__PerimeterDistances(face) {
-        const points    =  face.Points;
-        const distances =  new Array(points.length).fill(0);
-        let r, ring, k, index, previous, running, dx, dy;
-
-        for (r = 0; r < face.Rings.length; r++) {
-            ring     =  face.Rings[r];
-            running  =  0;
-
-            for (k = 0; k < ring.Count; k++) {
-                index  =  ring.Start + k;
-
-                if (k > 0) {
-                    previous  =  ring.Start + k - 1;
-                    dx  =  points[index].x - points[previous].x;
-                    dy  =  points[index].y - points[previous].y;
-                    running  +=  VghLantern__Env3d__ConfigAccess__MmToWorld(Math.sqrt((dx * dx) + (dy * dy)));
-                }
-                distances[index]  =  running;
-            }
-        }
-
-        return distances;
-    }
+    // SECTION_DATUM_OFFSET_MM is passed through to that extruder unchanged, so
+    // moving the glaze bar datum convention is still a one line edit here.
     // ------------------------------------------------------------
-
-
-    // FUNCTION | Extrude One Section Face Into a Closed Manifold Solid
-    // ------------------------------------------------------------
-    // face is a SectionLoopBuilder face: a flat vertex array, ring spans into it,
-    // and a counter-clockwise triangulation addressing those same vertices.
-    //
-    // Vertex layout is two rings of the section, the near end first:
-    //     index i          section point i at the start of the bar
-    //     index i + count  the same point at the end of the bar
-    // Walls are raised between them ring by ring, so every section edge appears
-    // exactly once and produces exactly one quad. Both ends are then capped over
-    // those same vertices, the near end wound backwards so it faces outwards.
-    //
-    // Returns positions in WORLD units already placed on the member, and an index
-    // buffer in which every edge is shared by exactly two triangles.
-    // endPlanes is optional: { Start, End }, each null or a world-space plane
-    // { Point: Vector3, Normal: Vector3 }. Where a plane is given, every vertex
-    // of that end ring is slid along the bar axis onto the plane instead of
-    // sitting square across it - which is exactly what a plumb cut is.
-    function VghLantern__Env3d__GlazeBarComposite__BuildSolid(face, startVec, endVec, targetPositions, targetIndices, targetUvs, endPlanes) {
-        const points  =  face.Points;
-        const count   =  points.length;
-        if (count < 3) return 0;
-
-        const basis   =  VghLantern__Env3d__GlazeBarComposite__MemberBasis(startVec, endVec);
-        const baseIx  =  targetPositions.length / 3;
-        const lengthWorld  =  startVec.distanceTo(endVec);
-        const planes  =  [
-            endPlanes && endPlanes.Start ? endPlanes.Start : null,
-            endPlanes && endPlanes.End   ? endPlanes.End   : null
-        ];
-
-        // PERIMETER DISTANCE ROUND THE SECTION
-        // Used as the U coordinate below, measured in world units so a texture
-        // repeat is tiles per world unit and the grain holds its real size on a
-        // bar of any length. Measured per ring, because each ring is a closed
-        // loop in its own right.
-        const perimeter  =  VghLantern__Env3d__GlazeBarComposite__PerimeterDistances(face);
-
-        // BOTH RINGS OF VERTICES
-        // Section x runs along the member's across axis, section y along its up
-        // axis, and the ring is placed at whichever end it belongs to.
-        //
-        // UVs put U across the section and V along the bar. A texture that varies
-        // in U and holds steady in V therefore lands as lines running the length
-        // of the bar - which is what an extrusion's die lines are, and why the
-        // brushed grain needs no special mapping to sit the right way round.
-        const ends  =  [startVec, endVec];
-        let e, i, sx, sy, origin, px, py, pz, plane, denominator, slide;
-
-        for (e = 0; e < ends.length; e++) {
-            origin  =  ends[e];
-            plane   =  planes[e];
-
-            for (i = 0; i < count; i++) {
-                sx  =  VghLantern__Env3d__ConfigAccess__MmToWorld(points[i].x);
-                sy  =  VghLantern__Env3d__ConfigAccess__MmToWorld(points[i].y + SECTION_DATUM_OFFSET_MM);
-
-                px  =  origin.x + (basis.Across.x * sx) + (basis.Up.x * sy);
-                py  =  origin.y + (basis.Across.y * sx) + (basis.Up.y * sy);
-                pz  =  origin.z + (basis.Across.z * sx) + (basis.Up.z * sy);
-
-                // PLANE-CUT END - slide the vertex along the bar axis onto the
-                // cut plane. Vertices at different section depths land at
-                // different stations, which is what makes the cut face read
-                // plumb rather than square.
-                if (plane) {
-                    denominator  =  (basis.Along.x * plane.Normal.x)
-                                 +  (basis.Along.y * plane.Normal.y)
-                                 +  (basis.Along.z * plane.Normal.z);
-                    if (Math.abs(denominator) > 1e-6) {
-                        slide  =  (((plane.Point.x - px) * plane.Normal.x)
-                                +  ((plane.Point.y - py) * plane.Normal.y)
-                                +  ((plane.Point.z - pz) * plane.Normal.z)) / denominator;
-                        px  +=  basis.Along.x * slide;
-                        py  +=  basis.Along.y * slide;
-                        pz  +=  basis.Along.z * slide;
-                    }
-                }
-
-                targetPositions.push(px, py, pz);
-                targetUvs.push(perimeter[i], e === 0 ? 0 : lengthWorld);
-            }
-        }
-
-        // WALLS, ONE RING AT A TIME
-        // Winding follows from the section winding, which SectionLoopBuilder has
-        // already normalised: outer rings counter-clockwise, holes clockwise. The
-        // same quad order therefore faces outwards on a boundary and inwards on a
-        // hole, which is outwards from the solid in both cases.
-        let r, ring, k, currentIx, nextIx, near0, near1, far0, far1;
-
-        for (r = 0; r < face.Rings.length; r++) {
-            ring  =  face.Rings[r];
-
-            for (k = 0; k < ring.Count; k++) {
-                currentIx  =  ring.Start + k;
-                nextIx     =  ring.Start + ((k + 1) % ring.Count);
-
-                near0  =  baseIx + currentIx;
-                near1  =  baseIx + nextIx;
-                far0   =  near0  + count;
-                far1   =  near1  + count;
-
-                targetIndices.push(near0, near1, far1);
-                targetIndices.push(near0, far1,  far0);
-            }
-        }
-
-        // END CAPS OVER THE SAME VERTICES
-        // The far end takes the triangulation as authored. The near end takes it
-        // reversed, so its normal points back down the bar rather than into it.
-        const triangles  =  face.Triangles;
-        let t;
-
-        for (t = 0; t < triangles.length; t += 3) {
-            targetIndices.push(
-                baseIx + triangles[t + 2],
-                baseIx + triangles[t + 1],
-                baseIx + triangles[t]
-            );
-            targetIndices.push(
-                baseIx + count + triangles[t],
-                baseIx + count + triangles[t + 1],
-                baseIx + count + triangles[t + 2]
-            );
-        }
-
-        // Triangle count contributed, which the pick index needs as a span.
-        return ((face.Rings.reduce(function(sum, span) { return sum + span.Count; }, 0)) * 2)
-             + ((triangles.length / 3) * 2);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Convert a Model-Space Plumb Plane to World Space
-    // ------------------------------------------------------------
-    // Point takes the standard mm-to-world axis swap. The normal takes the swap
-    // without scaling: a model normal (x, y, 0) lands as world (x, 0, -y) and
-    // stays unit length.
-    function VghLantern__Env3d__GlazeBarComposite__PlaneToWorld(planeMm) {
-        const pointWorld  =  VghLantern__Env3d__ConfigAccess__PointToWorld(planeMm.Point);
-        return {
-            Point  : new THREE.Vector3(pointWorld.x, pointWorld.y, pointWorld.z),
-            Normal : new THREE.Vector3(planeMm.Normal.x, planeMm.Normal.z, -planeMm.Normal.y)
-        };
-    }
-    // ------------------------------------------------------------
-
 
     // HELPER FUNCTION | The Eaves End Treatment for One Bar of One Part
     // ------------------------------------------------------------
@@ -416,7 +208,7 @@ import {
             const planeMm  =  Assembly.VghLantern__BaseFrameAssembly__TrimPlumbPlane(bar, undefined);
             if (!planeMm) return untouched;
 
-            const planeWorld  =  VghLantern__Env3d__GlazeBarComposite__PlaneToWorld(planeMm);
+            const planeWorld  =  VghLantern__Env3d__SectionSolid__PlaneToWorld(planeMm);
             return {
                 StartMm : bar.Start,
                 EndMm   : bar.End,
@@ -464,7 +256,7 @@ import {
 
             spanCount  =  0;
             for (f = 0; f < faces.length; f++) {
-                spanCount  +=  VghLantern__Env3d__GlazeBarComposite__BuildSolid(faces[f], startVec, endVec, positions, indices, uvs, treatment.Planes);
+                spanCount  +=  VghLantern__Env3d__SectionSolid__Build(faces[f], startVec, endVec, positions, indices, uvs, treatment.Planes, SECTION_DATUM_OFFSET_MM);
             }
             if (spanCount === 0) continue;
 

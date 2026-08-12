@@ -251,10 +251,7 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var columns  =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(
             VghLantern__TakeoffTable__TablesConfig(), 'LinearColumns', TABLES_CONFIG_LABEL);
-        var totals   =  {
-            LengthMEach  : takeoff.Totals.LinearMEach,
-            LengthMTotal : takeoff.Totals.LinearMTotal
-        };
+        var totals   =  { LengthMEach : takeoff.Totals.LinearMEach };
 
         return VghLantern__Specification__TakeoffTableRenderer__BuildTable(
             columns, takeoff.Linear, totals, 'Total linear'
@@ -329,14 +326,17 @@ const VghLantern__Specification__TakeoffTableRenderer = (function() {
     // ------------------------------------------------------------
     // Multi-lantern projects only. Aggregate rows carry totals but no per-lantern
     // figures, so the "each" columns are filtered out rather than printed blank.
+    //
+    // The linear columns are stated in config rather than filtered down from the
+    // per-lantern set: this table answers a different question - the whole project
+    // rather than one lantern - so it prints LengthMTotal, which the per-lantern
+    // table no longer carries at all.
     function VghLantern__Specification__TakeoffTableRenderer__BuildAggregateTable(aggregate) {
         if (!aggregate) return '';
 
         var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
         var tablesCfg     =  VghLantern__TakeoffTable__TablesConfig();
-        var linearCols    =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(tablesCfg, 'LinearColumns', TABLES_CONFIG_LABEL).filter(function(column) {
-            return column.Key !== 'LengthMEach' && column.Key !== 'MemberCount';
-        });
+        var linearCols    =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(tablesCfg, 'AggregateLinearColumns', TABLES_CONFIG_LABEL);
         var componentCols =  ConfigLoader.VghLantern__ConfigLoader__RequireArray(tablesCfg, 'ComponentColumns', TABLES_CONFIG_LABEL).filter(function(column) {
             return column.Key !== 'CountEach';
         });

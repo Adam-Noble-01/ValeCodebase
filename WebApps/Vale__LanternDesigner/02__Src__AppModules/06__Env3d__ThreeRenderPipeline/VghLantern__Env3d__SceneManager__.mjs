@@ -140,6 +140,20 @@ import {
     const GROUND_GRID_NAME =  'VghLantern__Env3d__GroundGrid';               // <-- The helpers group also holds the light rig, so the grid is addressed by name
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Ground Grid Suppression Reasons
+    // ------------------------------------------------------------
+    // Two independent systems need the grid gone and neither of them owns it: the
+    // cross section hides it while a cut is live, and the camera hides it while the
+    // eye is below the ground plane. A single visible flag let whichever spoke last
+    // win - clearing a cut while orbiting underneath the lantern put the grid back
+    // as a lid across the underside. Each reason is held separately instead.
+    export const VghLantern__Env3d__GroundGridSuppressReason  =  {
+        Section     : 'section',                                             // <-- A cross section cut is applied to this surface
+        BelowGround : 'belowGround'                                          // <-- The camera has dropped under the ground plane
+    };
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -291,7 +305,8 @@ import {
             IsDestroyed  : false,
             FrameHandle  : 0,
             ResizeObs    : null,
-            OnBeforeDraw : null                                               // <-- Optional hook, used by CameraRig damping
+            OnBeforeDraw : null,                                              // <-- Optional hook, used by CameraRig damping
+            GroundGridSuppressedBy : {}                                       // <-- Reason set, see SetGroundGridSuppressed
         };
 
         if (surfaceOptions.ShowGroundPlane !== false) {
@@ -315,16 +330,23 @@ import {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Show or Hide the Ground Grid on a Surface
+    // FUNCTION | Hold or Release One Reason for Hiding the Ground Grid
     // ------------------------------------------------------------
     // The grid is addressed by name rather than by group because the helpers group
     // also holds the light rig, and hiding that group would render the lantern as
     // an unlit black silhouette.
     //
-    // Exposed for the cross section system: the cut is applied at the renderer, so
-    // it takes the grid with it and leaves a grid that stops dead along the section
-    // line, which reads as a rendering fault rather than as a section.
-    export function VghLantern__Env3d__SceneManager__SetGroundGridVisible(surface, isVisible) {
+    // Callers declare their own need rather than set visibility outright, and the
+    // grid comes back only once every reason has been released. Two systems use it:
+    //   Section     - the cut is applied at the renderer, so it takes the grid with
+    //                 it and leaves a grid that stops dead along the section line,
+    //                 which reads as a rendering fault rather than as a section.
+    //   BelowGround - from underneath, the grid is drawn across the underside of the
+    //                 lantern and hides the very thing the view was moved to see.
+    //
+    // Returns without invalidating when the resolved visibility has not moved, so
+    // the per-frame camera caller cannot hold the on-demand draw loop awake.
+    export function VghLantern__Env3d__SceneManager__SetGroundGridSuppressed(surface, reasonKey, isSuppressed) {
         if (!surface || surface.IsDestroyed || !surface.Groups) return;
 
         const helpers  =  surface.Groups[VghLantern__Env3d__SceneGroup.Helpers];
@@ -333,7 +355,15 @@ import {
         const grid  =  helpers.getObjectByName(GROUND_GRID_NAME);
         if (!grid) return;                                                    // <-- Surface was mounted without a grid at all
 
-        grid.visible  =  isVisible === true;
+        if (!surface.GroundGridSuppressedBy) surface.GroundGridSuppressedBy  =  {};
+
+        if (isSuppressed === true) surface.GroundGridSuppressedBy[reasonKey]  =  true;
+        else                       delete surface.GroundGridSuppressedBy[reasonKey];
+
+        const shouldBeVisible  =  Object.keys(surface.GroundGridSuppressedBy).length === 0;
+        if (grid.visible === shouldBeVisible) return;                         // <-- Nothing moved: no redraw
+
+        grid.visible  =  shouldBeVisible;
         VghLantern__Env3d__SceneManager__Invalidate(surface);
     }
     // ------------------------------------------------------------

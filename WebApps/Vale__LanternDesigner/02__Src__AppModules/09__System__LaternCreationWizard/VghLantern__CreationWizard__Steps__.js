@@ -54,7 +54,6 @@ const VghLantern__CreationWizard__Steps = (function() {
     const FINIALS_BLOCK        =  'Lantern__Finials__Config';
     const FIELD_FIN_ENABLED    =  'Lantern__Finials__Config__Enabled';
     const FIELD_FIN_COMPONENT  =  'Lantern__Finials__Config__FinialComponentId';
-    const FIELD_FIN_RIDGE_ENDS =  'Lantern__Finials__Config__PlaceAtRidgeEnds';
     const FIELD_FIN_APEX       =  'Lantern__Finials__Config__PlaceAtApex';
     const FORM_BLOCK           =  'Lantern__Form__Config';
     const FIELD_ROOF_FORM      =  'Lantern__Form__Config__RoofForm';
@@ -286,9 +285,10 @@ const VghLantern__CreationWizard__Steps = (function() {
     // ------------------------------------------------------------
     // Choosing No Finials only flips Enabled off - the previously stored
     // component id is left in place, exactly as the editor's expandable toggle
-    // behaves. Choosing a finial also guarantees a visible placement: a finial
-    // with both placement toggles off would be stored but never drawn, so the
-    // placement matching the roof form is switched on.
+    // behaves. Choosing a finial on a PYRAMID also switches the apex placement
+    // on: that toggle defaults off, so a finial chosen here would otherwise be
+    // stored and never drawn. A ridged roof needs no equivalent - both ridge
+    // ends take a finial as soon as finials are fitted.
     function VghLantern__CreationWizard__Steps__ApplyFinial(lantern, chosenId) {
         var finialsCfg  =  lantern[FINIALS_BLOCK];
         var formCfg     =  lantern[FORM_BLOCK];
@@ -302,9 +302,7 @@ const VghLantern__CreationWizard__Steps = (function() {
         finialsCfg[FIELD_FIN_ENABLED]    =  true;
         finialsCfg[FIELD_FIN_COMPONENT]  =  String(chosenId);
 
-        var isPyramid  =  formCfg && formCfg[FIELD_ROOF_FORM] === FORM_PYRAMID;
-        if (isPyramid)  finialsCfg[FIELD_FIN_APEX]        =  true;
-        else            finialsCfg[FIELD_FIN_RIDGE_ENDS]  =  true;
+        if (formCfg && formCfg[FIELD_ROOF_FORM] === FORM_PYRAMID) finialsCfg[FIELD_FIN_APEX]  =  true;
     }
     // ------------------------------------------------------------
 

@@ -280,6 +280,43 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the Cutting List Body for One Lantern
+    // ------------------------------------------------------------
+    // The workshop's own page, closing that lantern's set. It is a page rather than a
+    // table appended to the specification because the two are read by different people
+    // for different reasons: the specification says what to buy and the cutting list
+    // says what to cut it into, and the second is what goes to the saw.
+    //
+    // A lantern whose sections are all continuous perimeter runs has no cuts to list -
+    // the table renderer returns nothing for it - so the page says so rather than
+    // printing a masthead over an empty space.
+    function VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml(viewState, lanternIndex) {
+        var DocumentModel  =  window.VghLantern__Specification__DocumentModel;
+        var Tables         =  window.VghLantern__Specification__TakeoffTableRenderer;
+        if (!DocumentModel || !Tables) {
+            return '<p class="' + CSS_EMPTY + '">Specification modules are not available.</p>';
+        }
+
+        var model  =  DocumentModel.VghLantern__Specification__DocumentModel__BuildFromState();
+        if (!model) {
+            return '<p class="' + CSS_EMPTY + '">No specification content available.</p>';
+        }
+
+        var entry  =  VghLantern__PrintDocument__FindLantern(model, lanternIndex);
+        if (!entry || !entry.Takeoff) {
+            return '<p class="' + CSS_EMPTY + '">This lantern has no cutting list.</p>';
+        }
+
+        var table  =  Tables.VghLantern__Specification__TakeoffTableRenderer__BuildCuttingListTable(entry.Takeoff);
+
+        return '<div class="' + CSS_ROOT + '">' +
+               VghLantern__PrintDocument__BuildMasthead(model, entry.Title + '  -  Cutting List') +
+               (table || ('<p class="' + CSS_EMPTY + '">This lantern has no cut pieces to schedule.</p>')) +
+               '</div>';
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build the Full Print-Faithful Specification Body
     // ------------------------------------------------------------
     // The whole specification as one continuous document: the project summary followed
@@ -318,7 +355,9 @@ const VghLantern__DocPreview__PrintDocumentRenderer = (function() {
         VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml :
             VghLantern__DocPreview__PrintDocumentRenderer__BuildProjectSummaryHtml,
         VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml :
-            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternSpecificationHtml,
+        VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml :
+            VghLantern__DocPreview__PrintDocumentRenderer__BuildLanternCuttingListHtml
     };
 
 // endregion -------------------------------------------------------------------

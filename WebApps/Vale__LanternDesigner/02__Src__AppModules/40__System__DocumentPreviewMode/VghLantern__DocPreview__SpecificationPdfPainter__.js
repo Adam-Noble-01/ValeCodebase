@@ -66,6 +66,15 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     const TABLE_LABEL  =  'Na__Specification__Config.json -> VghLantern__Specification__Config__Tables';
     // ------------------------------------------------------------
 
+
+    // MODULE CONSTANTS | Empty Cutting List Wording
+    // ------------------------------------------------------------
+    // Stated here rather than in config because the screen renderer states its own
+    // copy of the same sentence inline, and two config keys for one line of text on one
+    // page would be more machinery than the line is worth.
+    const EMPTY_CUTTING_LIST_TEXT  =  'This lantern has no cut pieces to schedule.';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -125,10 +134,12 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
             UserWarningColour  : ConfigLoader.VghLantern__ConfigLoader__RequireString(pdfCfg, 'UserWarningColour',     PDF_LABEL),
 
             Columns : {
-                Schedule  : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ScheduleColumns',  TABLE_LABEL),
-                Component : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ComponentColumns', TABLE_LABEL),
-                Linear    : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'LinearColumns',    TABLE_LABEL),
-                Area      : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'AreaColumns',      TABLE_LABEL)
+                Schedule        : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ScheduleColumns',        TABLE_LABEL),
+                Component       : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'ComponentColumns',       TABLE_LABEL),
+                Linear          : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'LinearColumns',          TABLE_LABEL),
+                AggregateLinear : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'AggregateLinearColumns', TABLE_LABEL),
+                CuttingList     : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'CuttingListColumns',     TABLE_LABEL),
+                Area            : ConfigLoader.VghLantern__ConfigLoader__RequireArray(tableCfg, 'AreaColumns',            TABLE_LABEL)
             }
         };
     }
@@ -406,9 +417,12 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
         VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Schedule, model.ScheduleRows);
 
         if (model.Aggregate && viewState.ShowTakeoffSchedule) {
+            // Aggregate rows carry project totals, not per-lantern figures, so they
+            // print through their own column set. Borrowing the per-lantern columns
+            // here would head a column "Lantern Total" and leave it blank down the page.
             VghLantern__SpecPainter__WriteHeading(cursor, 'Project Totals', style.HeadingPt);
-            VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Linear,    model.Aggregate.Linear);
-            VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Component, model.Aggregate.Components);
+            VghLantern__SpecPainter__WriteTable(cursor, style.Columns.AggregateLinear, model.Aggregate.Linear);
+            VghLantern__SpecPainter__WriteTable(cursor, style.Columns.Component,       model.Aggregate.Components);
         }
 
         if (viewState.ShowJobNotes && model.JobNotes) {
@@ -434,6 +448,36 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
 
         VghLantern__SpecPainter__WriteMasthead(cursor, model, entry.Title);
         VghLantern__SpecPainter__WriteLanternTakeoff(cursor, entry, viewState, true);
+
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Paint One Lantern's Cutting List Onto an Already-Opened PDF Page
+    // ------------------------------------------------------------
+    // Its own page, closing that lantern's set, because it is the sheet a workshop sets
+    // a saw from rather than a schedule the client reads.
+    function VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternCuttingList(doc, pageContext, page, model, lanternIndex) {
+        if (!doc || !page || !model) return false;
+
+        var entry  =  VghLantern__SpecPainter__FindLantern(model, lanternIndex);
+        if (!entry || !entry.Takeoff) return false;
+
+        var style   =  VghLantern__SpecPainter__ResolveStyle();
+        var cursor  =  VghLantern__SpecPainter__CreateCursor(doc, pageContext, page, style);
+
+        VghLantern__SpecPainter__WriteMasthead(cursor, model, entry.Title + '  -  Cutting List');
+
+        // A lantern with nothing to cut still gets its page, saying so. The preview
+        // emits one page per plan entry and stamps "Page 2 of 7" from that count, so a
+        // page dropped here and not there would renumber the whole pack against the
+        // preview the user just approved.
+        if (Array.isArray(entry.Takeoff.CuttingList) && entry.Takeoff.CuttingList.length) {
+            VghLantern__SpecPainter__WriteTable(cursor, style.Columns.CuttingList, entry.Takeoff.CuttingList);
+        } else {
+            VghLantern__SpecPainter__WriteParagraph(cursor, EMPTY_CUTTING_LIST_TEXT, style.BodyPt);
+        }
 
         return true;
     }
@@ -480,14 +524,41 @@ const VghLantern__DocPreview__SpecificationPdfPainter = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the Page Descriptor for One Lantern's Cutting List
+    // ------------------------------------------------------------
+    // Returns null only for a lantern the model does not hold - one the solver rejected,
+    // already reported by the issue banner. A lantern that HAS no cuts still gets its
+    // page: see PaintLanternCuttingList for why an empty one is printed rather than
+    // dropped.
+    function VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage(page, model, lanternIndex) {
+        if (!page || !model) return null;
+
+        var entry  =  VghLantern__SpecPainter__FindLantern(model, lanternIndex);
+        if (!entry || !entry.Takeoff) return null;
+
+        return {
+            Kind     : PAGE_KIND,
+            WidthMm  : page.WidthMm,
+            HeightMm : page.HeightMm,
+            Paint    : function(doc, pageContext) {
+                return VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternCuttingList(doc, pageContext, page, model, lanternIndex);
+            }
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // PUBLIC API
     // ------------------------------------------------------------
     return {
         VghLantern__DocPreview__SpecificationPdfPainter__PageKind               : PAGE_KIND,
         VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary    : VghLantern__DocPreview__SpecificationPdfPainter__PaintProjectSummary,
         VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern           : VghLantern__DocPreview__SpecificationPdfPainter__PaintLantern,
+        VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternCuttingList: VghLantern__DocPreview__SpecificationPdfPainter__PaintLanternCuttingList,
         VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage: VghLantern__DocPreview__SpecificationPdfPainter__BuildProjectSummaryPage,
-        VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage       : VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage
+        VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage       : VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternPage,
+        VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage :
+            VghLantern__DocPreview__SpecificationPdfPainter__BuildLanternCuttingListPage
     };
 
 // endregion -------------------------------------------------------------------

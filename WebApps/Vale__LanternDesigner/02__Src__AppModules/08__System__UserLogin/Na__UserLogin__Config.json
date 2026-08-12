@@ -23,7 +23,16 @@
         "HomeScreenNote"        : "Returns to the landing card from any mode. The loaded project is left untouched, so leaving the landing screen again lands back on the same drawing.",
         "SwitchUserLabel"       : "Switch User",
         "SignOutLabel"          : "Sign Out",
-        "SignOutNote"           : "Switch User and Sign Out run the same routine: clear the session cookie and re-open the login gate over the landing screen. Two labels, because the two mental models arrive at the same place."
+        "SignOutNote"           : "Switch User and Sign Out run the same routine: clear the session cookie and re-open the login gate over the landing screen. Two labels, because the two mental models arrive at the same place.",
+
+        "DeveloperMenuLabel"       : "Developer Tools",
+        "DeveloperMenuRoles"       : ["Developer"],
+        "DeveloperMenuRolesNote"   : "Account roles the Developer Tools section is rendered for, matched against the Role on the signed in account record. An account outside this list never sees the section and never has its actions wired up, so a sales user cannot reach an export by guessing at an action key.",
+        "DeveloperSketchUpLabel"   : "Download SketchUp File",
+        "DeveloperSketchUpNote"    : "Writes the current lantern as a millimetre build payload for the Vale Lantern Importer in SketchUp. The lantern exported is always the one on screen.",
+        "DeveloperCadLabel"        : "Download CAD Files",
+        "DeveloperCadNote"         : "Writes the current lantern's plan and elevations as one layered DXF. Not yet built - the menu item reports that rather than failing silently.",
+        "DeveloperSectionNote"     : "A nested section rather than two more top level items: the account menu is a place a signed in user looks for their own identity and session, and two developer exports sitting between Home Screen and Sign Out would read as ordinary features of the application to everybody who is not a developer."
     },
 
     "VghLantern__UserLogin__Config__Copy": {

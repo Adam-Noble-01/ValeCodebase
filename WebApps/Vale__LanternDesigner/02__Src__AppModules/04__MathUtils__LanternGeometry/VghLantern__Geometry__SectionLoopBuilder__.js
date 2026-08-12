@@ -41,12 +41,27 @@
 
    TOLERANCE
 
-   Endpoints are matched on a quantised lattice rather than by distance search.
-   A SketchUp export carries coordinates to three decimal places of a millimetre,
-   so a lattice at STITCH_TOLERANCE_MM welds the shared endpoint of two segments
-   that were always the same point, without welding two genuinely distinct points
-   on a tight moulding return - the finest real feature across the glaze bar set
-   is a little over a tenth of a millimetre.
+   Endpoints are matched on a quantised lattice rather than by distance search,
+   which is what keeps stitching linear in the segment count rather than
+   quadratic in a nearest-point search.
+
+   The lattice was originally set at one micron, matching the three decimal
+   places a SketchUp export carries. That was too fine, and the failure mode is
+   worth recording because it is invisible until a whole part vanishes.
+
+   The hip blocking section (48_2101) exports one segment whose two endpoints sit
+   at x = -20.001 and -6.001 while the segments meeting them sit at -20.000 and
+   -6.000. Those are the same points - the mirrored side of the identical section
+   comes out exactly 20.000 and 6.000 - and the difference is the last digit of a
+   float that went through a rotation somewhere upstream. At a one micron lattice
+   they land in ADJACENT CELLS, four vertices end up with one edge each, five open
+   chains get discarded, and the part silently produces no faces and no solid.
+
+   Ten microns welds that and is still an order of magnitude finer than the
+   finest real feature anywhere in the library - a little over a tenth of a
+   millimetre, on a tight moulding return. Setting the lattice AT the export's own
+   precision was the mistake: any two coordinates that should be identical but
+   differ in their last digit are then guaranteed to fall apart.
 
    ============================================================================= */
 
@@ -62,7 +77,7 @@ const VghLantern__Geometry__SectionLoopBuilder = (function() {
 
     // MODULE CONSTANTS | Stitching and Classification Tolerances
     // ------------------------------------------------------------
-    const STITCH_TOLERANCE_MM   =  0.001;                                    // <-- Endpoint weld lattice, one micron
+    const STITCH_TOLERANCE_MM   =  0.01;                                     // <-- Endpoint weld lattice, ten microns
     const MIN_LOOP_VERTICES     =  3;                                        // <-- A loop needs at least a triangle
     const MIN_LOOP_AREA_SQMM    =  0.0001;                                   // <-- Below this a loop is a degenerate sliver
     const MIN_EAR_AREA          =  1e-12;                                    // <-- Collinearity guard inside ear clipping

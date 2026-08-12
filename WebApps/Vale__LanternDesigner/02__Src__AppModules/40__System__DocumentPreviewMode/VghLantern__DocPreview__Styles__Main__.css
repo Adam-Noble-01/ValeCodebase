@@ -336,6 +336,104 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * REGION | Pack Preparation Overlay
+ * ----------------------------------------------------------------------------- */
+
+    /* The same pattern as the ProjectedEdges overlay, which is itself the ValeVision3D
+       layout export overlay: a semi-transparent white sheet with a light blur, a Vale
+       blue ring on a pale track, and a status line under it. Staff already read that
+       shape as "something is rendering", so a document pack composing its drawings says
+       so in the words the rest of the estate uses.
+
+       It covers the window rather than the stage on purpose. The bake has the Drawing
+       Editor's session sheet setup on loan; a toggle flicked underneath would queue a
+       second pass against a setup that is currently out. */
+
+    .VghLantern__DocPreview__Overlay {
+        position                : fixed;
+        top                     : 0;
+        left                    : 0;
+        width                   : 100vw;
+        height                  : 100vh;
+        background-color        : rgba(255, 255, 255, 0.92);
+        display                 : none;
+        flex-direction          : column;
+        justify-content         : center;
+        align-items             : center;
+        z-index                 : var(--Vale_ZIndex_Modal);
+        opacity                 : 0;
+        transition              : opacity 0.16s ease-out;                      /* <-- Duration is overwritten inline from Config__Progress.FadeInMs when it opens; this matches it so the two read alike */
+        backdrop-filter         : blur(4px);
+    }
+
+    .VghLantern__DocPreview__Overlay--visible {
+        display                 : flex;
+        opacity                 : 1;
+    }
+
+    /* Geometry and timing are lifted from the ProjectedEdges overlay unchanged, so the
+       two rings turn at the same rate and read as one application rather than two. */
+    .VghLantern__DocPreview__Overlay__Spinner {
+        width                   : 80px;
+        height                  : 80px;
+        border-radius           : 50%;
+        border                  : 6px solid #e0e0e0;
+        border-top-color        : var(--Vale_PrimaryBrand);
+        animation               : VghLantern__DocPreview__Spin 1s linear infinite;
+        margin-bottom           : var(--Vale_Spacing_Large);
+    }
+
+    @keyframes VghLantern__DocPreview__Spin {
+        0%   { transform: rotate(0deg);   }
+        100% { transform: rotate(360deg); }
+    }
+
+    .VghLantern__DocPreview__Overlay__Title {
+        margin                  : 0 0 var(--Vale_Spacing_Small) 0;
+        font-family             : var(--Vale_FontFamily);
+        font-size               : var(--Vale_FontSize_SubHeading);
+        font-weight             : var(--Vale_FontWeight_SemiBold);
+        color                   : var(--Vale_TextPrimary);
+        letter-spacing          : 0.5px;
+        text-align              : center;
+    }
+
+    .VghLantern__DocPreview__Overlay__Status {
+        margin                  : 0;
+        min-height              : 1.4em;                                       /* <-- Reserved, so the count below does not jump as the lantern name changes */
+        font-family             : var(--Vale_FontFamily);
+        font-size               : var(--Vale_FontSize_Standard);
+        font-weight             : var(--Vale_FontWeight_Regular);
+        color                   : var(--Vale_TextSecondary);
+        letter-spacing          : 0.5px;
+        text-align              : center;
+        transition              : color 0.3s ease;
+    }
+
+    .VghLantern__DocPreview__Overlay__Status--success {
+        color                   : #2a7d4f;
+        font-weight             : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__DocPreview__Overlay__Status--error {
+        color                   : var(--VghLantern_ErrorRed);
+        font-weight             : var(--Vale_FontWeight_SemiBold);
+    }
+
+    .VghLantern__DocPreview__Overlay__Count {
+        margin                  : var(--Vale_Spacing_Small) 0 0 0;
+        min-height              : 1.4em;                                       /* <-- Reserved for the same reason, so the block does not resize on the last lantern */
+        font-family             : var(--Vale_FontFamily);
+        font-size               : var(--Vale_FontSize_Small);
+        color                   : var(--Vale_TextSubtle);
+        letter-spacing          : 0.5px;
+        text-align              : center;
+    }
+
+/* #endregion ------------------------------------------------------------------ */
+
+
+/* #region ----------------------------------------------------------------------
  * REGION | Print Rules
  * ----------------------------------------------------------------------------- */
 

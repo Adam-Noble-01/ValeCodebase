@@ -37,6 +37,13 @@
    it cannot be expressed as one outline swept along a role. MeshBuilder
    GlazeBarComposite owns those two roles entirely.
 
+   The ridge and hips are skipped for that same reason. A ridge is a stack of up
+   to six sections and a hip is four, and MeshBuilder RidgeAssembly and
+   MeshBuilder HipAssembly own them. Until 12-Aug-2026 both were swept here from
+   a single placeholder profile, which is what the ridgeProfileId and hipProfileId
+   fields on a saved project were for; those fields are still read by the SketchUp
+   exporter and are left in place, but nothing in this environment sweeps them.
+
    The eaves ring is skipped because it is not a part. It is the line where the
    roof plane meets the upstand, and the metal there belongs to the upstand and
    frame below it. It remains in the solved skeleton as the datum everything else
@@ -85,6 +92,17 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     // screen while doubling every bar in a takeoff.
     const ROLE_GLAZE_BAR_SET    =  ['glazingBar', 'transom'];
 
+    // The ridge and the hips are not one swept section either, for exactly the
+    // same reason and with exactly the same consequence. A Vale ridge is a stack
+    // of up to six parts and a hip is four, each with its own material, its own
+    // end cuts and its own line on a cutting list, and MeshBuilder RidgeAssembly
+    // and MeshBuilder HipAssembly own them.
+    //
+    // The members stay in the SOLVED SKELETON, because the ridge datum and the
+    // hip construction triangles are what the whole roof is set out from and the
+    // setting out view draws them. They are simply never given a section here.
+    const ROLE_RIDGE_HIP_SET    =  ['ridge', 'hip'];
+
     // The eaves ring is not a Vale part. It is where the roof plane meets the
     // upstand, and the metal along that line belongs to the upstand and the
     // frame below it rather than to a section of its own. It was being swept as
@@ -114,6 +132,7 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     function VghLantern__Env3d__SkeletonBuilder__IsExcludedRole(roleKey, buildsBaseAsSolid) {
         if (ROLE_ANNOTATION_SET.indexOf(roleKey) !== -1) return true;
         if (ROLE_GLAZE_BAR_SET.indexOf(roleKey) !== -1) return true;
+        if (ROLE_RIDGE_HIP_SET.indexOf(roleKey) !== -1) return true;
         if (ROLE_NOT_BUILT_SET.indexOf(roleKey) !== -1) return true;
         return buildsBaseAsSolid && ROLE_BASE_SOLID_SET.indexOf(roleKey) !== -1;
     }
@@ -262,53 +281,19 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Extend Hip Members Down to the Glaze Bar Cap Ends
+    // NOTE | The Hip Nose Extension Retired With the Placeholder Hip
     // ------------------------------------------------------------
-    // The solved hip stops on the eaves datum corner, but the glaze bar caps
-    // beside it run the cap extension along the pitch past the datum - so an
-    // unextended hip nose floats short of the roof edge. Each hip's lower end
-    // is slid down its own axis until it reaches the LEVEL of the cap ends
-    // (datum minus extension x sin(pitch)), which by the roof plane geometry
-    // also lands it on the extended eaves line. Solved members are not
-    // mutated; extended copies are swept. Set-out and takeoff keep the datum
-    // hip lengths.
-    function VghLantern__Env3d__SkeletonBuilder__ExtendHips(members, skeleton) {
-        const Assembly  =  window.VghLantern__Geometry__BaseFrameAssembly;
-        const meta      =  skeleton.Meta || {};
-        const pitchDeg  =  Number(meta.PitchDegrees);
-        if (!Assembly || !isFinite(pitchDeg)) return members;
-
-        const extensionMm  =  Number(Assembly.VghLantern__BaseFrameAssembly__EavesInterface().GlazeBarCapExtensionAlongPitchMm) || 0;
-        if (extensionMm <= 0) return members;
-
-        const targetDropMm  =  extensionMm * Math.sin(pitchDeg * (Math.PI / 180));
-
-        return members.map(function(member) {
-            if (!member || member.Role !== 'hip') return member;
-
-            const lowKey  =  member.Start.z <= member.End.z ? 'Start' : 'End';
-            const low     =  member[lowKey];
-            const high    =  lowKey === 'Start' ? member.End : member.Start;
-            const dropMm  =  Math.abs(high.z - low.z);
-            const length  =  Number(member.LengthMm) || 0;
-            if (dropMm <= 0 || length <= 0) return member;
-
-            const scale     =  (targetDropMm * (length / dropMm)) / length;   // <-- Along-hip extension as a fraction of the member
-            const extended  =  {
-                Id       : member.Id,
-                Role     : member.Role,
-                LengthMm : length * (1 + scale),
-                Start    : member.Start,
-                End      : member.End
-            };
-            extended[lowKey]  =  {
-                x : low.x + ((low.x - high.x) * scale),
-                y : low.y + ((low.y - high.y) * scale),
-                z : low.z + ((low.z - high.z) * scale)
-            };
-            return extended;
-        });
-    }
+    // A helper here used to slide each solved hip's lower end down its own axis
+    // until it reached the level of the glaze bar cap ends, so the swept
+    // placeholder hip did not float short of the roof edge.
+    //
+    // Nothing sweeps a hip here any more. MeshBuilder HipAssembly builds the real
+    // four part hip and takes its own end treatments from
+    // VghLantern__Geometry__HipAssembly, where the foot is a plumb cut 18mm
+    // inboard of the eaves datum corner and the core alone carries on past it to
+    // the eaves extrusion it welds to. Those are the real cuts rather than a
+    // visual reach for the roof edge, so the helper is gone rather than left
+    // running over members nobody reads.
     // ------------------------------------------------------------
 
 
@@ -317,7 +302,7 @@ import { VghLantern__Env3d__PickIndex__Register, VghLantern__Env3d__PickIndex__M
     export async function VghLantern__Env3d__MeshBuilder__Skeleton__Build(targetGroup, skeleton, barSet, lantern) {
         if (!targetGroup || !skeleton) return;
 
-        const members  =  VghLantern__Env3d__SkeletonBuilder__ExtendHips((skeleton.Members || []).slice(), skeleton);
+        const members  =  (skeleton.Members || []).slice();
 
         // Glazing bars and transoms are members for meshing purposes, even though
         // the geometry brain solves them in a separate pass.

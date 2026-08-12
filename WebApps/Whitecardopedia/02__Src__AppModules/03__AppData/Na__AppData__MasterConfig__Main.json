@@ -596,6 +596,10 @@
         {
             "folderId": "2026/64078__Londos",
             "enabled": true
+        },
+        {
+            "folderId": "2026/3047__Doous",
+            "enabled": true
         }
     ]
 }

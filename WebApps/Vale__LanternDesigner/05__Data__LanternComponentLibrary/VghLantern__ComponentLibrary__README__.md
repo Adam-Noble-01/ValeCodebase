@@ -1,8 +1,8 @@
 # VghLantern Component Library
 
-Discrete objects placed at a point on the lantern — finials, ridge caps and
-cresting. Cross-sections swept along skeleton lines (glazing bars, ridge caps,
-builders upstands) live in `06__Data__LanternProfileLibrary` instead.
+Discrete objects placed at a point on the lantern — finials and cresting.
+Cross-sections swept along skeleton lines (glazing bars, ridge caps, builders
+upstands) live in `06__Data__LanternProfileLibrary` instead.
 
 ---
 
@@ -12,7 +12,6 @@ builders upstands) live in `06__Data__LanternProfileLibrary` instead.
 05__Data__LanternComponentLibrary/
 ├── VghLantern__ComponentDataIndex__.json   ← GENERATED — never hand-edit
 ├── VghLantern__ComponentLibrary__README__.md
-├── 45__Roof__RidgeCaps/
 ├── 50__Roof__Finials/
 └── 55__Roof__Crestings/
 ```
@@ -137,9 +136,13 @@ these declarations, so no module hardcodes a category-to-role table.
 | Role key | Assigned by |
 |---|---|
 | `finial` | `Lantern__Finials__Config__FinialComponentId` |
-| `finialBase` | `Lantern__Finials__Config__FinialBaseComponentId` |
 | `cresting` | `Lantern__RidgeAndHips__Config__CrestingComponentId` |
 | `vent` | `Lantern__Ventilation__Config__VentComponentId` |
+
+The `finialBase` role was retired 12-Aug-2026 with the `45__Roof__RidgeCaps`
+folder. The block seating a finial onto the ridge is now the octagonal block
+`RidgeAssembly` builds from the ridge system index, sized off the beam depth for
+the pitch, rather than a component picked from a list.
 
 Note that the solver names an anchor by **where** it is (`ridgeEnd`, `apex`)
 while the lantern names a component by **what** goes there (`finial`). The two

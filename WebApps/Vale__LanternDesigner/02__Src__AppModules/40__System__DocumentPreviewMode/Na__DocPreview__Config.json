@@ -16,8 +16,8 @@
             "PageOrder"                 : ["welcomeLetter", "projectSummary", "perLantern", "generalDrawingTerms", "terms"],
             "PageOrderNote"             : "Enabled pages are emitted in this order. 'perLantern' is not a page: it is the point in the pack where the schedule is walked, emitting PerLanternOrder once for every lantern on the project. Everything before it describes the job as a whole, everything after it applies to the whole pack. The terms are last because they are read last and referred back to; they are one flowing page descriptor however many sheets they run to, because they are one continuously numbered document.",
 
-            "PerLanternOrder"           : ["lanternDrawing", "lanternDrawingTerms", "lanternSpecification"],
-            "PerLanternOrderNote"       : "Repeated once per lantern, in schedule order. The drawing leads because it is what the client looks at; its own drawing notes follow it so a caveat about that drawing is read against it; the specification comes last because its T codes are marked on the plan view two pages earlier. A lantern with no drawing notes of its own simply omits that page - the page exists because it has content, so there is no switch for it to fall out of step with.",
+            "PerLanternOrder"           : ["lanternDrawing", "lanternDrawingTerms", "lanternSpecification", "lanternCuttingList"],
+            "PerLanternOrderNote"       : "Repeated once per lantern, in schedule order, so a four-lantern pack reads as four complete sets rather than four drawings followed by four schedules. The drawing leads because it is what the client looks at; its own drawing notes follow it so a caveat about that drawing is read against it; the specification comes next because its T codes are marked on the plan view two pages earlier; the cutting list closes the set because it is the workshop's own sheet and is read off the specification above it. A lantern with no drawing notes of its own simply omits that page - the page exists because it has content, so there is no switch for it to fall out of step with.",
 
             "PageKindLabels": {
                 "welcomeLetter"        : "Welcome Letter",
@@ -25,6 +25,7 @@
                 "lanternDrawing"       : "Drawing",
                 "lanternDrawingTerms"  : "Drawing Notes",
                 "lanternSpecification" : "Specification",
+                "lanternCuttingList"   : "Cutting List",
                 "generalDrawingTerms"  : "General Drawing Terms",
                 "terms"                : "Terms and Conditions"
             },
@@ -38,6 +39,7 @@
             "DefaultShowDrawingNotes"     : true,
             "DefaultShowTakeoffSchedule"  : true,
             "DefaultShowComponentSchedule": true,
+            "DefaultShowCuttingList"      : true,
             "DefaultShowJobNotes"         : true,
             "DefaultShowDrawingTermsPages": true,
             "DefaultShowTermsPages"       : true,
@@ -46,12 +48,13 @@
             "DrawingSheetToggleNote"      : "One switch, because the drawing page is the composed Drawing Editor sheet baked in whole. Which views appear on that sheet, and how the grid is balanced, is decided in the Drawing Editor. Dropping a single view here would leave a hole in the sheet's grid rather than reflowing it.",
             "TermsToggleNote"             : "ShowTermsPages is the page-level switch and is a per-user preference like every other key in this block. Which SECTIONS the terms document contains is NOT here - that is document content, so it lives on the project file and is edited by both the Client Doc tab and the Terms group in this mode's toolbar. One value, two surfaces, nothing to drift.",
             "DrawingNotesToggleNote"      : "ShowDrawingNotes governs the per-lantern Drawing Notes pages as a set. Switching it off drops all of them; it does not decide whether any given lantern has one, which is answered by whether that lantern has notes written against it.",
+            "CuttingListToggleNote"       : "ShowCuttingList is a page-level switch of its own rather than a member of DocumentSections, because the cutting list is a workshop sheet rather than a schedule the client reads. A pack going out to a customer is the specification without it; a pack going to the joinery shop is both. It gets its own switch precisely so that decision can be made per pack.",
             "ToggleGrouping": {
-                "Document"              : ["ShowWelcomeLetter", "ShowProjectSummary", "ShowDrawingSheet", "ShowDrawingNotes", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes", "ShowDrawingTermsPages", "ShowTermsPages"],
+                "Document"              : ["ShowWelcomeLetter", "ShowProjectSummary", "ShowDrawingSheet", "ShowDrawingNotes", "ShowTakeoffSchedule", "ShowComponentSchedule", "ShowCuttingList", "ShowJobNotes", "ShowDrawingTermsPages", "ShowTermsPages"],
                 "DrawingViews"          : ["ShowDrawingSheet"],
                 "DocumentSections"      : ["ShowTakeoffSchedule", "ShowComponentSchedule", "ShowJobNotes"]
             },
-            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the project summary when ShowProjectSummary is on, a lantern's drawing when ShowDrawingSheet is on, its drawing notes when ShowDrawingNotes is on AND that lantern has notes, the general drawing terms when ShowDrawingTermsPages is on, the business terms when ShowTermsPages is on, and a lantern's specification when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
+            "ToggleGroupingNote"        : "The letter page appears when ShowWelcomeLetter is on, the project summary when ShowProjectSummary is on, a lantern's drawing when ShowDrawingSheet is on, its drawing notes when ShowDrawingNotes is on AND that lantern has notes, its cutting list when ShowCuttingList is on, the general drawing terms when ShowDrawingTermsPages is on, the business terms when ShowTermsPages is on, and a lantern's specification when any DocumentSections toggle is on. There is no separate page-level switch for the specification to fall out of step with its content toggles."
         },
 
         "VghLantern__DocPreview__Config__Toolbar": {
@@ -74,10 +77,31 @@
                 "ShowDrawingNotes"      : "Drawing Notes",
                 "ShowTakeoffSchedule"   : "Takeoff Schedule",
                 "ShowComponentSchedule" : "Component Schedule",
+                "ShowCuttingList"       : "Cutting List",
                 "ShowJobNotes"          : "Job Notes",
                 "ShowDrawingTermsPages" : "General Drawing Terms",
                 "ShowTermsPages"        : "Terms Pages"
             }
+        },
+
+        "VghLantern__DocPreview__Config__Progress": {
+            "ProgressNote"              : "The overlay shown while a document pack is being prepared. Composing a sheet rasterises a 3D view, so the wait runs to seconds during which the preview shows pending pages and looks, to anyone who did not know better, like an application that has stopped.",
+
+            "ShowOverlay"               : true,
+            "ShowOverlayNote"           : "Shown for every pack regardless of how many lanterns are on it. It was briefly gated on a lantern count, on the theory that one lantern composes too fast to be worth explaining - which held on the machine it was written on and nowhere else. How long the work takes is a property of the hardware, not of the schedule, so the only honest answer is to say what is happening every time. A project with no lanterns is still excluded, because it has no pack to prepare.",
+
+            "TitleText"                 : "Preparing the document pack",
+            "StatusPattern"             : "Composing the drawing for {lantern}",
+            "StatusFallbackLabel"       : "this lantern",
+            "CountPattern"              : "Drawing {index} of {total}",
+            "SuccessText"               : "Pack ready",
+            "ErrorText"                 : "Some drawings could not be composed - see the notice on the document",
+
+            "FadeInMs"                  : 160,
+            "FadeInMsNote"              : "Applied to the overlay as an inline transition duration AND used as the time the mode waits before it starts work, so the two cannot drift. Short on purpose: this is a curtain dropped immediately before the main thread blocks, not a decorative entrance, and every millisecond of it is a millisecond the user is waiting with nothing on screen.",
+
+            "SuccessHoldMs"             : 700,
+            "SuccessHoldMsNote"         : "The finished message is held briefly so a bake that turns out to be quick still reads as having completed rather than as the overlay having flickered."
         },
 
         "VghLantern__DocPreview__Config__Pdf": {

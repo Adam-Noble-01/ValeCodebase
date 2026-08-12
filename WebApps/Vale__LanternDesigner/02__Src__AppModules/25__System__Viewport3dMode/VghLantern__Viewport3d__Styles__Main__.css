@@ -65,29 +65,36 @@
 
 
 /* #region ----------------------------------------------------------------------
- * COMPONENT | Floating Control Overlay
+ * COMPONENT | Floating Tools Menu
+ * -----------------------------------------------------------------------------
+ * Built on the ValeSpec document preview side menu: a titled card of collapsible
+ * sections, same header, same rotating caret, same panel treatment, so the two
+ * apps read as one product. Docked RIGHT because the camera presets frame the
+ * model centre-left and the reviewer's cursor lives over it; the setting-out key
+ * moved to the left as its counterweight.
  * ----------------------------------------------------------------------------- */
 
-    /* OVERLAY | Control Panel Floating Over the Canvas */
+    /* MENU | Column Docked Over the Canvas */
     /* ------------------------------------------------------------ */
+    /* Position is the docked corner until the user drags it, at which point the
+       Controls module writes left and top inline and this corner is released. It
+       is the only definition of where the menu starts, which is why docking the
+       menu again clears the inline pair rather than writing these numbers back. */
     #VghLantern__Viewport3d__ControlsOverlay {
         position                           : absolute;
         top                                : var(--Vale_Spacing_Medium);
-        left                               : var(--Vale_Spacing_Medium);
+        right                              : var(--Vale_Spacing_Medium);
         z-index                            : var(--VghLantern_ViewportOverlayZIndex);
         display                            : flex;
-        flex-direction                     : column;
-        gap                                : var(--Vale_Spacing_Small);
-        padding                            : var(--Vale_Spacing_Small);
-        background-color                   : var(--VghLantern_ThreeOverlayPanel);
-        border                             : 1px solid var(--Vale_BorderLight);
-        border-radius                      : var(--Vale_BorderRadius);
-        box-shadow                         : var(--VghLantern_ViewportOverlayShadow);
+        width                              : calc(280px * var(--Vale_UIScale));
+        max-width                          : 34vw;
+        max-height                         : calc(100% - (2 * var(--Vale_Spacing_Medium)));
+        font-family                        : var(--Vale_FontFamily);
     }
     /* ------------------------------------------------------------ */
 
 
-    /* OVERLAY | Hide the Overlay Shell While It Has No Content */
+    /* MENU | Hide the Shell While It Has No Content */
     /* ------------------------------------------------------------ */
     /* Prevents an empty floating box appearing before the pipeline resolves. */
     #VghLantern__Viewport3d__ControlsOverlay:empty {
@@ -96,71 +103,226 @@
     /* ------------------------------------------------------------ */
 
 
-    /* GROUP | Labelled Control Cluster */
+    /* CARD | White Panel Holding the Sections */
     /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlayGroup {
+    .VghLantern__Viewport3d__MenuCard {
         display                            : flex;
         flex-direction                     : column;
-        gap                                : calc(var(--Vale_Spacing_Small) / 2);
+        width                              : 100%;
+        min-height                         : 0;
+        background                         : rgba(255, 255, 255, 0.95);
+        border                             : 1px solid rgba(0, 0, 0, 0.12);
+        border-radius                      : 6px;
+        box-shadow                         : 0 6px 18px rgba(0, 0, 0, 0.15);
+        overflow                           : hidden;
     }
     /* ------------------------------------------------------------ */
 
 
-    /* GROUP | Cluster Caption */
+    /* CARD | Header and Drag Handle */
     /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlayGroupLabel {
-        font-size                          : var(--Vale_FontSize_Small);
+    .VghLantern__Viewport3d__MenuHeader {
+        position                           : relative;
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        padding-top                        : 10px;
+        padding-right                      : 38px;
+        padding-bottom                     : 10px;
+        padding-left                       : 10px;
+        border-bottom                      : 1px solid rgba(0, 0, 0, 0.08);
+        color                              : var(--Vale_PrimaryBrand);
         font-weight                        : var(--Vale_FontWeight_SemiBold);
-        color                              : var(--Vale_TextSubtle);
-        text-transform                     : uppercase;
-        letter-spacing                     : 0.04em;
+        font-size                          : var(--Vale_FontSize_Standard);
+    }
+
+    .VghLantern__Viewport3d__MenuHeaderLabel {
+        flex                               : 1;
+    }
+
+    .VghLantern__Viewport3d__MenuDragHandle {
+        position                           : absolute;
+        top                                : 8px;
+        right                              : 8px;
+        width                              : 22px;
+        height                             : 22px;
+        padding                            : 0;
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        border                             : 1px solid rgba(0, 0, 0, 0.12);
+        border-radius                      : 4px;
+        background                         : rgba(255, 255, 255, 0.9);
+        color                              : var(--Vale_PrimaryBrand);
+        cursor                             : move;
+    }
+
+    .VghLantern__Viewport3d__MenuDragHandle:hover {
+        background                         : rgba(23, 43, 58, 0.08);
     }
     /* ------------------------------------------------------------ */
 
 
-    /* BUTTON | Overlay Button */
+    /* CARD | Section Stack */
     /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlayBtn {
-        padding                            : calc(var(--Vale_Spacing_Small) / 2) var(--Vale_Spacing_Small);
+    /* Scrolls inside the card rather than growing past the viewport when every
+       section is open at once, which is the state a reviewer working through a
+       model actually ends up in. */
+    .VghLantern__Viewport3d__MenuSections {
+        min-height                         : 0;
+        overflow-y                         : auto;
+        padding-top                        : 6px;
+        padding-bottom                     : 10px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* SECTION | Collapsible Block */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__MenuSection {
+        padding-top                        : 8px;
+        padding-right                      : 12px;
+        padding-bottom                     : 8px;
+        padding-left                       : 12px;
+    }
+
+    .VghLantern__Viewport3d__MenuSection:hover {
+        background                         : rgba(23, 43, 58, 0.06);
+    }
+
+    .VghLantern__Viewport3d__MenuSectionToggle {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 10px;
+        width                              : 100%;
+        margin                             : 0;
+        padding                            : 0;
+        border                             : none;
+        background                         : transparent;
+        text-align                         : left;
+        color                              : var(--Vale_PrimaryBrand);
         font-family                        : var(--Vale_FontFamily);
         font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        cursor                             : pointer;
+    }
+
+    .VghLantern__Viewport3d__MenuSectionLabel {
+        flex                               : 1;
+    }
+
+    .VghLantern__Viewport3d__MenuSectionArrow {
+        display                            : inline-flex;
+        color                              : var(--Vale_PrimaryBrand);
+        transition                         : transform var(--Vale_Transition_Fast);
+    }
+
+    .VghLantern__Viewport3d__MenuSectionToggle.is-open .VghLantern__Viewport3d__MenuSectionArrow {
+        transform                          : rotate(180deg);
+    }
+
+    .VghLantern__Viewport3d__MenuSectionPanel {
+        display                            : none;
+        margin-top                         : 8px;
+        padding                            : 10px 12px;
+        background                         : rgba(23, 43, 58, 0.05);
+        border-radius                      : 6px;
+    }
+
+    .VghLantern__Viewport3d__MenuSectionPanel.is-open {
+        display                            : block;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* ICON | Inline Section Glyphs */
+    /* ------------------------------------------------------------ */
+    /* Drawn inline by the Controls module so they take the brand colour from here
+       and stay crisp at any UI scale, with no image asset to keep in step. */
+    .VghLantern__Viewport3d__MenuIcon {
+        width                              : 18px;
+        height                             : 18px;
+        flex-shrink                        : 0;
+        opacity                            : 0.75;
+    }
+
+    .VghLantern__Viewport3d__MenuIcon--header {
+        width                              : 20px;
+        height                             : 20px;
+        opacity                            : 1;
+    }
+
+    .VghLantern__Viewport3d__MenuSectionArrow .VghLantern__Viewport3d__MenuIcon,
+    .VghLantern__Viewport3d__MenuDragHandle .VghLantern__Viewport3d__MenuIcon {
+        width                              : 14px;
+        height                             : 14px;
+        opacity                            : 0.9;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* GROUP | Labelled Control Cluster Within a Panel */
+    /* ------------------------------------------------------------ */
+    /* A panel holds one or two clusters - the display section holds both the
+       display mode and the element view - so each keeps its own caption. */
+    .VghLantern__Viewport3d__MenuGroup {
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 4px;
+    }
+
+    .VghLantern__Viewport3d__MenuGroup + .VghLantern__Viewport3d__MenuGroup {
+        margin-top                         : 10px;
+    }
+
+    .VghLantern__Viewport3d__MenuGroupLabel {
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
+        color                              : var(--Vale_TextSecondary);
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* BUTTON | Choice Button */
+    /* ------------------------------------------------------------ */
+    .VghLantern__Viewport3d__MenuBtn {
+        width                              : 100%;
+        padding                            : 7px 10px;
+        font-family                        : var(--Vale_FontFamily);
+        font-size                          : var(--Vale_FontSize_Small);
+        font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_PrimaryBrand);
         text-align                         : left;
         background-color                   : var(--Vale_BackgroundWhite);
         border                             : 1px solid var(--Vale_BorderLight);
         border-radius                      : var(--Vale_BorderRadius);
         cursor                             : pointer;
-        white-space                        : nowrap;
         transition                         : background-color var(--Vale_Transition_Fast),
+                                             border-color var(--Vale_Transition_Fast),
                                              color var(--Vale_Transition_Fast);
     }
-    /* ------------------------------------------------------------ */
 
+    .VghLantern__Viewport3d__MenuBtn:hover {
+        background-color                   : rgba(23, 43, 58, 0.06);
+    }
 
-    /* BUTTON | Overlay Button Hover */
-    /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlayBtn:hover {
+    .VghLantern__Viewport3d__MenuBtn--active {
         color                              : var(--Vale_TextLight);
         background-color                   : var(--Vale_PrimaryBrand);
         border-color                       : var(--Vale_PrimaryBrand);
     }
-    /* ------------------------------------------------------------ */
 
-
-    /* BUTTON | Active Preset Button */
-    /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlayBtn--active {
-        color                              : var(--Vale_TextLight);
-        background-color                   : var(--VghLantern_AccentBlue);
-        border-color                       : var(--VghLantern_AccentBlue);
+    .VghLantern__Viewport3d__MenuBtn--active:hover {
+        background-color                   : var(--Vale_PrimaryBrand_Dark);
     }
     /* ------------------------------------------------------------ */
 
 
     /* SELECT | Lantern Selector */
     /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlaySelect {
-        padding                            : calc(var(--Vale_Spacing_Small) / 2);
+    .VghLantern__Viewport3d__MenuSelect {
+        width                              : 100%;
+        padding                            : 7px 8px;
         font-family                        : var(--Vale_FontFamily);
         font-size                          : var(--Vale_FontSize_Small);
         color                              : var(--Vale_TextPrimary);
@@ -174,11 +336,19 @@
 
     /* READOUT | Skeleton Mode Label */
     /* ------------------------------------------------------------ */
-    .VghLantern__Viewport3d__OverlayReadout {
-        padding-top                        : calc(var(--Vale_Spacing_Small) / 2);
+    .VghLantern__Viewport3d__MenuReadout {
+        display                            : block;
+        margin-top                         : 10px;
+        padding-top                        : 8px;
         font-size                          : var(--Vale_FontSize_Small);
         color                              : var(--Vale_TextSubtle);
         border-top                         : 1px solid var(--Vale_BorderLight);
+    }
+
+    .VghLantern__Viewport3d__MenuReadout:first-child {
+        margin-top                         : 0;
+        padding-top                        : 0;
+        border-top                         : none;
     }
     /* ------------------------------------------------------------ */
 
@@ -189,16 +359,16 @@
  * COMPONENT | Setting Out Key and Datum Checks
  * ----------------------------------------------------------------------------- */
 
-    /* PANEL | Top Right Key for the Construction and Datum Linework */
+    /* PANEL | Top Left Key for the Construction and Datum Linework */
     /* ------------------------------------------------------------ */
-    /* Sits diagonally opposite the control overlay so the two never collide, and
-       clear of the cursor readout which follows the pointer over the model. It
-       scrolls internally rather than growing past the viewport when every line
-       class is enabled at once. */
+    /* Sits opposite the tools menu so the two never collide, and clear of the
+       cursor readout which follows the pointer over the model. It moved to the
+       left when the menu took the right. It scrolls internally rather than growing
+       past the viewport when every line class is enabled at once. */
     .VghLantern__Viewport3d__SetOutLegend {
         position                           : absolute;
         top                                : var(--Vale_Spacing_Medium);
-        right                              : var(--Vale_Spacing_Medium);
+        left                               : var(--Vale_Spacing_Medium);
         z-index                            : var(--VghLantern_ViewportOverlayZIndex);
         width                              : calc(400px * var(--Vale_UIScale));
         max-width                          : 34vw;

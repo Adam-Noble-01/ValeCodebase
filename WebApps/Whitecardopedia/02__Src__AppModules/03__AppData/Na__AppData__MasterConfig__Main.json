@@ -600,6 +600,10 @@
         {
             "folderId": "2026/3047__Doous",
             "enabled": true
+        },
+        {
+            "folderId": "2026/63986__Hawley",
+            "enabled": true
         }
     ]
 }

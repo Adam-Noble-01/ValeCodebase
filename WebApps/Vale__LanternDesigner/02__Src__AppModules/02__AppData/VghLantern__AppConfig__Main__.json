@@ -181,7 +181,6 @@
         "VghLantern__UserMenu__AppDefaults__Config__Show3dView": true,
         "VghLantern__UserMenu__AppDefaults__Config__ShowTakeoffSchedule": true,
         "VghLantern__UserMenu__AppDefaults__Config__ShowComponentSchedule": true,
-        "VghLantern__UserMenu__AppDefaults__Config__ShowCuttingList": true,
         "VghLantern__UserMenu__AppDefaults__Config__ShowJobNotes": true,
         "VghLantern__UserMenu__AppDefaults__Config__PersistMenuPosition": true,
         "VghLantern__UserMenu__AppDefaults__Config__PersistMenuSectionState": true,

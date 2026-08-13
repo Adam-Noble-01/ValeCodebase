@@ -13,6 +13,13 @@
      DESCRIPTION:
      - Linked from the footer of app-notification emails
        ("Need Help Installing The ValeVision App?").
+     - Opens with a full-width "Open the ValeVision 3D App" button so a
+       recipient can click straight through to the live app without
+       choosing a device first, and without ever seeing or typing the
+       raw GitHub Pages web address.
+     - Every app link on this page points at the PWA start URL,
+       /WebApps/Whitecardopedia/app.html, which is the page the installed
+       "ValeVision 3D" app launches (see Whitecardopedia__Pwa__Manifest__).
      - Asks the visitor which device they need help with first, then shows
        only the steps for that device.
      - Loads the shared PWA installability stack so the page itself is
@@ -331,6 +338,14 @@
             background                     : #213d52;
         }
 
+        .na-install-guide__action-btn--large {
+            display                        : block;
+            width                          : 100%;
+            padding                        : 16px 22px;
+            font-size                      : 1.05rem;
+            text-align                     : center;
+        }
+
         .na-install-guide__one-click {
             display                        : none;
             text-align                     : center;
@@ -349,6 +364,32 @@
             margin                         : 8px 0 0;
             font-size                      : 0.78rem;
             color                          : var(--Vale_TextSecondary);
+        }
+        /* ------------------------------------------------------------ */
+
+
+        /* LAUNCH CARD | Direct "Open The App" Panel */
+        /* ------------------------------------------------------------ */
+        .na-install-guide__launch-card {
+            background                     : #eef4f8;
+        }
+
+        .na-install-guide__launch-note {
+            margin                         : 12px 0 0;
+            font-size                      : 0.78rem;
+            color                          : var(--Vale_TextSecondary);
+            text-align                     : center;
+        }
+
+        .na-install-guide__figure-link {
+            display                        : inline-block;
+            text-decoration                : none;
+            border-radius                  : 6px;
+        }
+
+        .na-install-guide__figure-link:hover {
+            outline                        : 2px solid var(--Vale_PrimaryBrand);
+            outline-offset                 : 3px;
         }
         /* ------------------------------------------------------------ */
 
@@ -403,6 +444,20 @@
 
 
     <main class="na-install-guide__main">
+
+        <!-- ------------------------------------------------------------- -->
+        <!-- REGION  |  Open The App Card (Direct Launch Button)           -->
+        <!-- ------------------------------------------------------------- -->
+
+        <section class="na-install-guide__card na-install-guide__launch-card">
+            <h2 class="na-install-guide__card-title">Open the ValeVision 3D App</h2>
+            <p class="na-install-guide__card-hint">Press the button below to open the app right now. Then follow the steps further down to install it on your device so it opens like a normal app.</p>
+            <a class="na-install-guide__action-btn na-install-guide__action-btn--large" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open the ValeVision 3D App</a>
+            <p class="na-install-guide__launch-note">There is no web address to type or copy, this button takes you straight to the app.</p>
+        </section>
+
+        <!-- endregion ----------------------------------------------------- -->
+
 
         <!-- ------------------------------------------------------------- -->
         <!-- REGION  |  Device Chooser Card                                -->
@@ -463,8 +518,8 @@
                 <div class="na-install-guide__step-number">1</div>
                 <div class="na-install-guide__step-body">
                     <h3 class="na-install-guide__step-title">Open ValeVision 3D in Edge or Chrome</h3>
-                    <p class="na-install-guide__step-text">You are probably already there if you are reading this page. If not, press the button below to open the app gallery.</p>
-                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                    <p class="na-install-guide__step-text">You are probably already there if you are reading this page. If not, press the button below to open the app.</p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open the ValeVision 3D App</a></p>
                 </div>
             </div>
 
@@ -474,17 +529,19 @@
                     <h3 class="na-install-guide__step-title">Click the install icon in the address bar</h3>
                     <p class="na-install-guide__step-text">Look at the <strong>right-hand end of the address bar</strong> at the top of your browser. You will see a small icon of a screen with a down-arrow. Click it and choose <strong>Install</strong>.</p>
                     <figure class="na-install-guide__step-figure" style="margin-left: 0; margin-right: 0;">
-                        <svg width="480" height="72" viewBox="0 0 480 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Browser address bar with the install icon highlighted on the right">
-                            <rect x="4" y="14" width="472" height="44" rx="22" fill="#ffffff" stroke="#c3ccd3" stroke-width="2"/>
-                            <circle cx="34" cy="36" r="9" fill="none" stroke="#8a99a5" stroke-width="2"/>
-                            <text x="58" y="42" font-family="Arial, sans-serif" font-size="15" fill="#5a6d7a">adam-noble-01.github.io/…/ValeVision3D</text>
-                            <rect x="398" y="18" width="52" height="36" rx="8" fill="#eef4f8" stroke="#172b3a" stroke-width="2.5"/>
-                            <rect x="410" y="26" width="28" height="15" rx="2" fill="none" stroke="#172b3a" stroke-width="2"/>
-                            <line x1="424" y1="30" x2="424" y2="38" stroke="#172b3a" stroke-width="2"/>
-                            <path d="M420 35 L424 39 L428 35" fill="none" stroke="#172b3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M424 62 L424 56" stroke="#172b3a" stroke-width="2.5"/>
-                            <path d="M419 60 L424 55 L429 60" fill="none" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
-                        </svg>
+                        <a class="na-install-guide__figure-link" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html" aria-label="Open the ValeVision 3D App">
+                            <svg width="480" height="72" viewBox="0 0 480 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Browser address bar with the install icon highlighted on the right">
+                                <rect x="4" y="14" width="472" height="44" rx="22" fill="#ffffff" stroke="#c3ccd3" stroke-width="2"/>
+                                <circle cx="34" cy="36" r="9" fill="none" stroke="#8a99a5" stroke-width="2"/>
+                                <text x="58" y="42" font-family="Arial, sans-serif" font-size="15" fill="#5a6d7a">ValeVision 3D App</text>
+                                <rect x="398" y="18" width="52" height="36" rx="8" fill="#eef4f8" stroke="#172b3a" stroke-width="2.5"/>
+                                <rect x="410" y="26" width="28" height="15" rx="2" fill="none" stroke="#172b3a" stroke-width="2"/>
+                                <line x1="424" y1="30" x2="424" y2="38" stroke="#172b3a" stroke-width="2"/>
+                                <path d="M420 35 L424 39 L428 35" fill="none" stroke="#172b3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M424 62 L424 56" stroke="#172b3a" stroke-width="2.5"/>
+                                <path d="M419 60 L424 55 L429 60" fill="none" stroke="#172b3a" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </a>
                     </figure>
                 </div>
             </div>
@@ -526,8 +583,8 @@
                 <div class="na-install-guide__step-number">1</div>
                 <div class="na-install-guide__step-body">
                     <h3 class="na-install-guide__step-title">Open ValeVision 3D in Safari</h3>
-                    <p class="na-install-guide__step-text">Press the button below to open the app gallery in this browser tab.</p>
-                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                    <p class="na-install-guide__step-text">Press the button below to open the app in this browser tab.</p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open the ValeVision 3D App</a></p>
                 </div>
             </div>
 
@@ -601,8 +658,8 @@
                 <div class="na-install-guide__step-number">1</div>
                 <div class="na-install-guide__step-body">
                     <h3 class="na-install-guide__step-title">Open ValeVision 3D in Chrome</h3>
-                    <p class="na-install-guide__step-text">Press the button below to open the app gallery.</p>
-                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open ValeVision 3D Gallery</a></p>
+                    <p class="na-install-guide__step-text">Press the button below to open the app.</p>
+                    <p style="margin: 10px 0 0;"><a class="na-install-guide__action-btn" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/app.html">Open the ValeVision 3D App</a></p>
                 </div>
             </div>
 

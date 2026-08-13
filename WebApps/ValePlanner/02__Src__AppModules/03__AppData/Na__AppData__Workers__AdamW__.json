@@ -2968,14 +2968,6 @@
           "color": "na-shift-color-purple"
         },
         {
-          "id": "new-1786519128001",
-          "date": "2026-08-12",
-          "startTime": "10:00",
-          "endTime": "15:30",
-          "title": "Doous |  Max Model",
-          "color": "na-shift-color-purple"
-        },
-        {
           "id": "new-1786519164093",
           "date": "2026-08-12",
           "startTime": "08:00",
@@ -2990,6 +2982,46 @@
           "endTime": "10:00",
           "title": "Standards |  Roof Standards",
           "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1786617098440",
+          "date": "2026-08-13",
+          "startTime": "08:00",
+          "endTime": "11:30",
+          "title": "Doous |  Max Model",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1786519128001",
+          "date": "2026-08-12",
+          "startTime": "14:15",
+          "endTime": "18:30",
+          "title": "Doous |  Max Model",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1786617122501",
+          "date": "2026-08-12",
+          "startTime": "10:00",
+          "endTime": "14:15",
+          "title": "Dev |  Lantern Editor",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1786617135493",
+          "date": "2026-08-14",
+          "startTime": "08:00",
+          "endTime": "10:00",
+          "title": "Dev |  Video Creator",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1786619838228",
+          "date": "2026-08-14",
+          "startTime": "12:15",
+          "endTime": "15:00",
+          "title": "Whitecard |  Hawley",
+          "color": "na-shift-color-rose"
         }
       ]
     }

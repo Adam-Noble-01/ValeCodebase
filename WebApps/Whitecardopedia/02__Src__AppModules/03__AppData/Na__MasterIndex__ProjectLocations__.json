@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "13-Aug-2026 at 11:22",
+    "generatedAt": "13-Aug-2026 at 14:36",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1977,6 +1977,20 @@
             "hasGlb_R2": true,
             "imageCount": 6,
             "lastSynced": "13-Aug-2026 at 11:22"
+        },
+        {
+            "folderId": "2026/63986__Hawley",
+            "year": "2026",
+            "projectCode": "63986",
+            "name": "Hawley",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "13-Aug-2026 at 14:36"
         }
     ]
 }

@@ -2,6 +2,118 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.13.0 - 13-Aug-2026 - Video Studio
+
+### Overview
+New localhost-only Video Studio in the Dev Tools menu, sitting directly after
+Visual Settings. Fly or walk the model, stamp waypoints as you go, and render
+the interpolated camera path out as an MP4. Waypoints can be dragged in the
+viewport, re-aimed, and given their own lens. Doors open as the camera passes
+through them. Everything is stored per project under a new VideoStudio__Config
+block and saved through the existing R2-first two-phase save.
+
+Nothing here touches the WebGL render pipeline. Encoding runs on the platform's
+H.264 hardware encoder through WebCodecs, which is the GPU path for video in a
+browser, so the exported frames carry profile lines, SSAO, fog planes and the
+cross section overlay exactly as the viewport shows them.
+
+### Added
+- **Video Studio system** (`31__System__VideoStudio`, 10 modules): data layer
+  owning the VideoStudio__Config JSON block, camera path sampler, viewport path
+  overlay, waypoint dragger, real-time preview player, deterministic frame
+  renderer, self-contained MP4 muxer, WebCodecs encoder, scene animation
+  session, and the Dev menu panel. Stylesheet @imported into
+  Na__CoreUi__Styles__Index__.css.
+- **Camera path authoring**: Create New Video Path, then Capture Keyframe (K or
+  Shift+K) records the live camera wherever you are, in Orbit, Walk or Fly.
+  Per-keyframe travel time, hold time and lens; per-video travel speed, easing,
+  closed loop and animation settings.
+- **Viewport path overlay**: fat extruded Line2 through the same centripetal
+  CatmullRom curve the exporter samples, with a start-to-end colour gradient,
+  direction cones along the route, and a numbered camera frustum marker per
+  waypoint showing where each shot aims. Toggled from the panel.
+- **Waypoint dragging**: grab a numbered marker to slide it across the
+  horizontal plane it sits on. Shift moves it vertically, Ctrl locks it to a
+  single world axis with a coloured guide line, Ctrl+Shift turns it about world
+  up to re-aim the shot. Escape cancels. Picking is screen-space rather than by
+  raycast, because the markers are non-attenuated sprites whose raycast hit area
+  would otherwise shrink with distance.
+- **Preview playback**: Play flies the live camera along the path at wall-clock
+  speed with a scrub bar. Spacebar toggles play and pause (Orbit only; Fly binds
+  Space to Ascend). Preview takes ownership of the camera the same way Walk and
+  Fly do, via a new branch in the render loop.
+- **MP4 export**: deterministic frame-by-frame render at the export resolution
+  through the live effect chain, hardware H.264 via WebCodecs, wrapped by a
+  dependency-free ISO-BMFF muxer written for the purpose. Downloads as
+  ValeVision3D__{VideoName}__{DD-Mmm-YYYY}__.mp4. Progress, cancel, and a clear
+  failure message when a machine cannot encode the requested format.
+- **Aspect ratio and resolution**: 3:2 (default), 4:3, 16:9 and 1:1, against
+  height standards of 720p through 4320p. Height and aspect are the source of
+  truth and the width is derived from them, so the pair can never drift in the
+  saved file. Because a Three.js camera's fov is the vertical field of view and
+  it is left untouched, every ratio renders the same vertical extent and simply
+  shows more or less to the sides. Nothing is stretched to fit.
+- **Safe frame and rule of thirds**, both on by default, reusing the Image
+  Export viewport overlay rather than drawing a second one. The overlay follows
+  the video's aspect and updates as it changes.
+- **Advanced Animation Settings**: collapsible sub-section holding the two door
+  controls. **Door time** is the seconds a single-leaf door takes to swing,
+  defaulting to 1.2s against the 0.6s the app authors for clicking one open by
+  hand; double and bifold doors scale proportionally. **Detection** is how close
+  the camera comes before a door starts opening, defaulting to whatever
+  DoorProximityThresholdMm the app config gives Walk and Fly, so a project that
+  never touches it follows the app.
+- **Door animation speed scale** (`Na__DoorAnimation__SetSpeedScale`): scales
+  the animation clock rather than any individual duration, so every door slows
+  together and a bifold keeps its three-to-one relationship with a single leaf.
+  A requested swing time converts to a scale against
+  `Na__DoorAnimation__GetBaseDurationMs`, the live config value, rather than the
+  shipped 600ms, so changing the config carries through. Video Studio sets both
+  the scale and the detection threshold for the length of a preview or export
+  and restores both afterwards; interactive Walk and Fly are unaffected.
+
+### Changed
+- `Na__AppFlow__LoadingSequence.js`: render loop gained a Video Studio preview
+  branch ahead of the Walk and Fly branches, so the timeline owns the camera
+  while a preview runs and OrbitControls never overwrites the sampled
+  orientation with its own lookAt.
+- **Loading overlay extracted to `Na__AppUtils__LoadingOverlay__.js`**. It was a
+  private sub-function inside the image export controls; image export and Video
+  Studio now share one implementation. A video export runs behind it in a new
+  opaque mode, because the export resizes the live renderer and paints hundreds
+  of frames through a canvas whose CSS box is still viewport-sized, and the
+  default 92% white let that flicker through. The canvas is hidden outright for
+  the duration as well, and each step is reported under the spinner: preparing,
+  starting the encoder, frame N of M with encoded size and a measured estimate
+  of the time left, draining the encoder, writing the container.
+- Video Studio panel caps its own width. The Dev Tools shell is drag-resizable
+  to 640px inside a transform: scale(1.2), so a wide drag was making the panel
+  enormous on screen; it now stays a tidy column however wide the shell is
+  dragged, with the internal control metrics tightened to suit.
+- `Na__UiFeature__ImageExport__ViewportOverlays.js`: new
+  Na__UiFeature__SetViewportOverlayThirds so the safe frame can be shown with
+  the grid as a separate toggle. The modifier is cleared on every overlay
+  update, so a caller that hides the grid cannot leave it hidden for the next
+  one. Still export behaviour is unchanged.
+- Proximity doors are owned by the Walk and Fly controllers and their enabled
+  flag starts false, so a video rendered from Orbit left every door shut. A
+  reference-counted animation session now switches them on for the length of a
+  preview or export, reusing the same DoorProximityThresholdMm those modes use,
+  and guarantees they go off again afterwards.
+
+### Notes
+- MP4 export needs WebCodecs, so Chrome or Edge. Authoring and preview work
+  everywhere; the Export button disables itself with an explanation elsewhere.
+- Lens conversion reads cameraLens.sensorHeightMM from Na__AppConfig__Main.json
+  rather than carrying its own copy, so the focal lengths shown in Video Studio
+  and in the Tools menu lens slider can never disagree for one camera. Note that
+  Walk and Fly force camera.fov to their own HorizontalFovDeg, so a keyframe
+  captured while flying records that lens rather than the Orbit one; the
+  per-keyframe lens control is how you correct it after the fact.
+- Above 4K the composer's render targets get large and not every machine has an
+  H.264 encoder that goes beyond 4K. The export confirmation says so.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.12.9 - 30-Jul-2026 - Alt+Shift+F Fog + Forcefield Toggle
 
 ### Overview

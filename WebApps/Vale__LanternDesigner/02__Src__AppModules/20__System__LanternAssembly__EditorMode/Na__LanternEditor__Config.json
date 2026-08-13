@@ -39,7 +39,7 @@
 
         "VghLantern__LanternEditor__Config__ControlBounds": {
             "BoundsNote"            : "Min/Max mirror VghLantern__Validation__Config so a slider can never propose a value the ConstraintResolver would reject. Step values are the increments Vale technical staff work to on the shop floor.",
-            "WidthMm"               : { "Min": 600, "Max": 8000, "Step": 10 },
+            "WidthMm"               : { "Min": 600, "Max": 12000, "Step": 10 },
             "DepthMm"               : { "Min": 600, "Max": 6000, "Step": 10 },
             "EavesProjectionMm"     : { "Min": 0,   "Max": 300,  "Step": 5  },
             "PitchDegrees"          : { "Min": 10,  "Max": 45,   "Step": 0.5 },

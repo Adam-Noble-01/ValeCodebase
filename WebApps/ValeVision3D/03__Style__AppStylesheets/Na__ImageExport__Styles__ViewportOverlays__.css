@@ -129,4 +129,14 @@
     }
     /* ------------------------------------------------------------ */
 
+
+    /* RULE OF THIRDS GRID | Suppressed While the Safe Frame Stays On */
+    /* ------------------------------------------------------------ */
+    /* Video Studio shows the safe frame with the grid as a separate toggle;   */
+    /* the still export never sets this class so its behaviour is unchanged.   */
+    .na-export-overlay--hide-thirds .na-export-overlay__thirds-line {
+        display                             : none;                      /* <-- Frame stays, grid goes */
+    }
+    /* ------------------------------------------------------------ */
+
 /* endregion ------------------------------------------------------------------- */

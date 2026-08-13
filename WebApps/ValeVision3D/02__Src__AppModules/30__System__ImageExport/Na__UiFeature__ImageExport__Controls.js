@@ -42,6 +42,12 @@
     import { Na__UiFeature__CreateViewportOverlays, Na__UiFeature__UpdateViewportOverlays } from './Na__UiFeature__ImageExport__ViewportOverlays.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Shared Loading Overlay Controller
+    // @delegate: ../03__AppUtils/Na__AppUtils__LoadingOverlay__.js
+    // ------------------------------------------------------------
+    import { Na__AppUtils__LoadingOverlay__Create } from '../03__AppUtils/Na__AppUtils__LoadingOverlay__.js';
+    // ------------------------------------------------------------
+
 
     // -------------------------------------------------------------------------
     // REGION | Export Configuration and Defaults
@@ -423,44 +429,12 @@
         // ------------------------------------------------------------
         // SUB FUNCTION | Loading Overlay Controller (Shared by Both Handlers)
         // ------------------------------------------------------------
+        // Thin wrapper over the shared controller. The implementation moved to
+        // Na__AppUtils__LoadingOverlay__ so Video Studio renders behind the same
+        // spinner rather than carrying a second copy of it.
+        // ------------------------------------------------------------
         function Na__UiFeature__CreateOverlayController(actionButton) {
-            const loadingOverlay = document.getElementById('naLayoutLoadingOverlay'); // <-- Overlay container
-            const loadingStatus  = document.getElementById('naLayoutLoadingStatus');  // <-- Status text element
-
-            return {
-                show(text) {
-                    actionButton.classList.add('is-loading');                                       // <-- Dim the button
-                    if (loadingOverlay && loadingStatus) {
-                        loadingStatus.textContent = text;                                           // <-- Initial message
-                        loadingStatus.classList.remove('na-layout-loading-overlay__status--success'); // <-- Reset success state
-                        loadingStatus.classList.remove('na-layout-loading-overlay__status--error');   // <-- Reset error state
-                        loadingOverlay.classList.remove('na-layout-loading-overlay--fade-out');       // <-- Reset fade-out
-                        loadingOverlay.classList.add('na-layout-loading-overlay--visible');           // <-- Show overlay
-                    }
-                },
-                setStatus(text) {
-                    if (loadingStatus) loadingStatus.textContent = text;                            // <-- Live progress message
-                },
-                dismiss(text, isError, holdMs, onDone) {
-                    if (loadingStatus) {
-                        loadingStatus.textContent = text;                                           // <-- Final message
-                        loadingStatus.classList.add(isError
-                            ? 'na-layout-loading-overlay__status--error'                            // <-- Red text on failure
-                            : 'na-layout-loading-overlay__status--success');                        // <-- Green text on success
-                    }
-                    setTimeout(() => {
-                        if (loadingOverlay) {
-                            loadingOverlay.classList.add('na-layout-loading-overlay--fade-out');    // <-- Start fade-out
-                            setTimeout(() => {
-                                loadingOverlay.classList.remove('na-layout-loading-overlay--visible');  // <-- Hide completely
-                                loadingOverlay.classList.remove('na-layout-loading-overlay--fade-out'); // <-- Reset fade class
-                            }, 400);
-                        }
-                        actionButton.classList.remove('is-loading');                                // <-- Re-enable button
-                        if (typeof onDone === 'function') onDone();                                 // <-- Unlock caller state
-                    }, holdMs);
-                }
-            };
+            return Na__AppUtils__LoadingOverlay__Create({ actionButton });
         }
         // ------------------------------------------------------------
 

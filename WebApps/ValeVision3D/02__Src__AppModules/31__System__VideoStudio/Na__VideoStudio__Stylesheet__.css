@@ -1,0 +1,384 @@
+/* ================================================================= */
+/* VALEVISION3D - VIDEO STUDIO - DEV MENU PANEL STYLESHEET           */
+/* ================================================================= */
+/*
+ * FILE      : Na__VideoStudio__Stylesheet__.css
+ * NAMESPACE : na-vs-dev
+ * AUTHOR    : Adam Noble - Noble Architecture
+ * PURPOSE   : Styling for the localhost-only Video Studio Dev Tools panel
+ * CREATED   : 12-Aug-2026
+ *
+ * DESCRIPTION:
+ * - Scoped entirely to .na-vs-dev__* so nothing here can leak into the
+ *   user-facing Tools menu.
+ * - Follows the visual language already established by the Presentation Mode
+ *   dev editor (.na-pm-dev__*): light panel, thin borders, compact controls.
+ * - The panel nests three levels deep (panel, video block, keyframe row), so
+ *   each level is separated by a rule and a small indent rather than by
+ *   background colour, which stays readable at the panel's narrow width.
+ *
+ * DEVELOPMENT LOG:
+ * 12-Aug-2026 - Version 1.0.0
+ * - Initial implementation for the Video Studio system.
+ */
+/* ================================================================= */
+
+
+/* #Region ---
+ * REGION | Panel Shell
+ * ----- */
+
+    /* The Dev Tools shell is drag-resizable up to 640px and sits inside a      */
+    /* transform: scale(1.2), so a wide drag makes this panel enormous on       */
+    /* screen. Video Studio is a column of short controls and never needs that  */
+    /* width, so it caps itself and stays a tidy column however wide the shell  */
+    /* is dragged. Everything inside is sized to work comfortably at the cap.   */
+    .na-vs-dev__panel {
+        max-height                         : 70vh;
+        max-width                          : 310px;
+        overflow-y                         : auto;
+        overflow-x                         : hidden;
+    }
+
+    .na-vs-dev__empty {
+        font-size                          : 0.78rem;
+        color                              : #888;
+        text-align                         : center;
+        padding                            : 12px 4px;
+        line-height                        : 1.4;
+    }
+
+    .na-vs-dev__hint {
+        font-size                          : 0.72rem;
+        color                              : #667;
+        background                         : #f4f6f8;
+        border-left                        : 2px solid #2ec4b6;
+        border-radius                      : 3px;
+        padding                            : 6px 8px;
+        margin-bottom                      : 8px;
+        line-height                        : 1.45;
+    }
+
+    .na-vs-dev__warning {
+        font-size                          : 0.74rem;
+        color                              : #a35200;
+        background                         : #fff6e8;
+        border                             : 1px solid #f0d7b0;
+        border-radius                      : 4px;
+        padding                            : 6px 8px;
+        margin-top                         : 6px;
+        line-height                        : 1.4;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Generic Rows, Labels and Inputs
+ * ----- */
+
+    .na-vs-dev__row {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        margin-bottom                      : 6px;
+    }
+
+    .na-vs-dev__label {
+        font-size                          : 0.76rem;
+        color                              : #555;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__value {
+        font-size                          : 0.72rem;
+        color                              : #444;
+        min-width                          : 62px;
+        text-align                         : right;
+        flex-shrink                        : 0;
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .na-vs-dev__unit {
+        font-size                          : 0.72rem;
+        color                              : #888;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__lens {
+        font-size                          : 0.72rem;
+        color                              : #888;
+        margin-left                        : auto;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__input {
+        flex                               : 1;
+        min-width                          : 0;
+        padding                            : 3px 6px;
+        font-size                          : 0.78rem;
+        border                             : 1px solid #ccc;
+        border-radius                      : 4px;
+    }
+
+    .na-vs-dev__input--short {
+        max-width                          : 48px;
+        flex                               : none;
+    }
+
+    .na-vs-dev__select {
+        flex                               : 1;
+        min-width                          : 0;
+        font-size                          : 0.78rem;
+        padding                            : 2px 4px;
+        border                             : 1px solid #ccc;
+        border-radius                      : 4px;
+    }
+
+    .na-vs-dev__slider {
+        flex                               : 1;
+        min-width                          : 0;
+    }
+
+    .na-vs-dev__checkbox {
+        margin-left                        : auto;
+        flex-shrink                        : 0;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Buttons
+ * ----- */
+
+    .na-vs-dev__btn {
+        padding                            : 4px 10px;
+        font-size                          : 0.76rem;
+        border                             : 1px solid #ccc;
+        border-radius                      : 5px;
+        background                         : #f4f6f8;
+        cursor                             : pointer;
+        transition                         : background 0.14s;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__btn:hover:not(:disabled) {
+        background                         : #e8edf3;
+    }
+
+    .na-vs-dev__btn:disabled {
+        opacity                            : 0.45;
+        cursor                             : not-allowed;
+    }
+
+    .na-vs-dev__btn--primary {
+        border-color                       : #1a7fc4;
+        color                              : #1a7fc4;
+        background                         : #eef5fb;
+    }
+
+    .na-vs-dev__btn--primary:hover:not(:disabled) {
+        background                         : #daeaf6;
+    }
+
+    .na-vs-dev__btn--danger {
+        border-color                       : #cc3333;
+        color                              : #cc3333;
+        background                         : #fdf0f0;
+    }
+
+    .na-vs-dev__btn--danger:hover:not(:disabled) {
+        background                         : #fce0e0;
+    }
+
+    .na-vs-dev__expand {
+        min-width                          : 24px;
+        padding                            : 4px 6px;
+        font-size                          : 0.7rem;
+    }
+
+    .na-vs-dev__actions {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        margin                             : 8px 0;
+    }
+
+    .na-vs-dev__global-actions {
+        display                            : flex;
+        flex-wrap                          : wrap;
+        gap                                : 6px;
+        padding-top                        : 10px;
+        border-top                         : 1px solid #e8eaed;
+        margin-top                         : 10px;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Video Block
+ * ----- */
+
+    .na-vs-dev__video {
+        border-top                         : 1px solid #e8eaed;
+        padding                            : 10px 0;
+    }
+
+    .na-vs-dev__video.is-expanded {
+        border-left                        : 2px solid #2ec4b6;
+        padding-left                       : 8px;
+    }
+
+    .na-vs-dev__video-header {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        margin-bottom                      : 6px;
+    }
+
+    .na-vs-dev__summary {
+        font-size                          : 0.72rem;
+        color                              : #777;
+        margin                             : 0 0 8px 30px;
+        font-variant-numeric               : tabular-nums;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Preview Transport
+ * ----- */
+
+    .na-vs-dev__transport {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        flex-wrap                          : wrap;
+        padding                            : 6px 0;
+    }
+
+    .na-vs-dev__scrubber {
+        flex                               : 1 1 100%;
+        min-width                          : 0;
+        margin-top                         : 2px;
+    }
+
+    .na-vs-dev__transport .na-vs-dev__value {
+        min-width                          : 84px;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Keyframe List
+ * ----- */
+
+    .na-vs-dev__key-list {
+        border                             : 1px solid #e8eaed;
+        border-radius                      : 5px;
+        padding                            : 4px 6px;
+        margin-bottom                      : 8px;
+        max-height                         : 34vh;
+        overflow-y                         : auto;
+    }
+
+    .na-vs-dev__key-row {
+        padding                            : 6px 0;
+        border-bottom                      : 1px solid #f1f3f5;
+    }
+
+    .na-vs-dev__key-row:last-child {
+        border-bottom                      : none;
+    }
+
+    .na-vs-dev__key-header {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 5px;
+        margin-bottom                      : 5px;
+    }
+
+    .na-vs-dev__key-index {
+        display                            : inline-flex;
+        align-items                        : center;
+        justify-content                    : center;
+        width                              : 20px;
+        height                             : 20px;
+        border-radius                      : 50%;
+        background                         : #2ec4b6;
+        color                              : #ffffff;
+        font-size                          : 0.7rem;
+        font-weight                        : 600;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__key-mode {
+        font-size                          : 0.7rem;
+        color                              : #888;
+        margin-right                       : auto;
+    }
+
+    .na-vs-dev__key-row .na-vs-dev__btn {
+        padding                            : 2px 7px;
+        font-size                          : 0.7rem;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Sections and Export Progress
+ * ----- */
+
+    .na-vs-dev__section {
+        border-top                         : 1px solid #f1f3f5;
+        padding-top                        : 8px;
+        margin-top                         : 8px;
+    }
+
+    .na-vs-dev__section-title {
+        font-size                          : 0.74rem;
+        font-weight                        : 600;
+        color                              : #444;
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        margin-bottom                      : 6px;
+    }
+
+    .na-vs-dev__subsection-toggle {
+        width                              : 100%;
+        text-align                         : left;
+        margin                             : 4px 0 6px 0;
+        font-size                          : 0.72rem;
+        color                              : #444;
+    }
+
+    .na-vs-dev__subsection {
+        border-left                        : 2px solid #e8eaed;
+        padding-left                       : 8px;
+        margin-bottom                      : 6px;
+    }
+
+    .na-vs-dev__note {
+        font-size                          : 0.68rem;
+        color                              : #8a8f96;
+        line-height                        : 1.4;
+        margin                             : 2px 0 6px 0;
+    }
+
+    .na-vs-dev__progress {
+        font-size                          : 0.74rem;
+        color                              : #1a7fc4;
+        background                         : #f2f8fd;
+        border                             : 1px solid #cde2f2;
+        border-radius                      : 4px;
+        padding                            : 6px 8px;
+        line-height                        : 1.4;
+        font-variant-numeric               : tabular-nums;
+    }
+
+/* endregion ---- */

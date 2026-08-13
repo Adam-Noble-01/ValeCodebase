@@ -123,6 +123,7 @@
     let Na__DoorAnim__Config__InteriorRotationInverted  = true;                  // <-- Legacy interior sign adapter
     let Na__DoorAnim__Config__IndependentPanelsEnabled  = true;                  // <-- Independent-panel kill-switch
     let Na__DoorAnim__Config__IndependentPanelAdrNameTokens = ['ExteriorDoubleDoor'];
+    let Na__DoorAnim__SpeedScale                        = 1.0;                   // <-- Global time scale; 0.5 = half speed
     // ------------------------------------------------------------
 
 
@@ -1028,15 +1029,20 @@
         if (!Na__DoorAnim__Initialized) return;                                  // <-- Skip if not initialized
         if (Na__DoorAnim__DoorRegistry.size === 0) return;                       // <-- No doors to animate
 
+        // SPEED SCALE | Slowing the clock rather than the durations keeps every
+        // per-door relationship intact (a bifold stays three times a single
+        // leaf) and needs no change to the duration bookkeeping below.
+        const scaledDeltaMs = deltaMs * Na__DoorAnim__SpeedScale;
+
         Na__DoorAnim__DoorRegistry.forEach((doorRecord) => {
             if (doorRecord.isIndependentPanels === true) {
-                Na__DoorAnim__UpdateIndependentPanels(doorRecord, deltaMs);
+                Na__DoorAnim__UpdateIndependentPanels(doorRecord, scaledDeltaMs);
                 return;
             }
 
             if (!Na__DoorAnim__IsAnimatingState(doorRecord.state)) return;
 
-            const frame = Na__DoorAnim__AdvanceAnimationState(doorRecord, deltaMs);
+            const frame = Na__DoorAnim__AdvanceAnimationState(doorRecord, scaledDeltaMs);
             Na__DoorAnim__ApplyAllPanels(doorRecord, frame.progress);
 
             if (frame.rawT >= 1.0) {
@@ -1057,6 +1063,45 @@
 // -----------------------------------------------------------------------------
 // REGION | Initialization
 // -----------------------------------------------------------------------------
+
+    // FUNCTION | Set the Global Door Animation Speed Scale
+    // ------------------------------------------------------------
+    // 1.0 is the authored speed. Values below 1 slow every door down and values
+    // above speed them up, uniformly, because the scale is applied to the
+    // per-frame clock rather than to any individual door's duration.
+    //
+    // Video Studio sets this for the length of a preview or an export so a
+    // walkthrough can show doors opening at a cinematic pace, and restores it
+    // afterwards. Interactive Walk and Fly are unaffected at the default.
+    // ------------------------------------------------------------
+    function Na__DoorAnimation__SetSpeedScale(scale) {
+        Na__DoorAnim__SpeedScale = (Number.isFinite(scale) && scale > 0) ? scale : 1.0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Current Door Animation Speed Scale
+    // ------------------------------------------------------------
+    function Na__DoorAnimation__GetSpeedScale() {
+        return Na__DoorAnim__SpeedScale;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the Base Animation Duration in Milliseconds
+    // ------------------------------------------------------------
+    // The authored time a standard single-leaf door takes to swing, after the
+    // app config has been applied. Callers that want to express door timing in
+    // seconds convert against this rather than assuming the shipped default,
+    // so changing the config value carries through.
+    //
+    // A bifold takes this multiplied by the bifold multiplier.
+    // ------------------------------------------------------------
+    function Na__DoorAnimation__GetBaseDurationMs() {
+        return Na__DoorAnim__Config__AnimationDurationMs;
+    }
+    // ------------------------------------------------------------
+
 
     // FUNCTION | Initialize Door Animation System
     // ------------------------------------------------------------
@@ -1182,6 +1227,9 @@
         Na__DoorAnimation__Initialize,                                           // <-- Initialize system
         Na__DoorAnimation__RebindModelGroups,                                    // <-- Rebind groups after reload
         Na__DoorAnimation__Update,                                               // <-- Per-frame update
+        Na__DoorAnimation__SetSpeedScale,                                        // <-- Global time scale (Video Studio)
+        Na__DoorAnimation__GetSpeedScale,                                        // <-- Read current time scale
+        Na__DoorAnimation__GetBaseDurationMs,                                    // <-- Authored single-leaf swing time
         Na__DoorAnimation__HasActiveAnimations,                                  // <-- Query active animations (for render loop)
         Na__DoorAnimation__ScanForDoors,                                         // <-- Re-scan scene graph
         Na__DoorAnim__DoorRegistry,                                              // <-- Door registry Map (for proximity system)

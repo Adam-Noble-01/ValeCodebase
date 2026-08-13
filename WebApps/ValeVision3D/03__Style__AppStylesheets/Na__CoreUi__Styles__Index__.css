@@ -76,5 +76,9 @@
 /* ----------------------------------------------------------------- */
 @import url('Na__PresentationMode__Styles__SceneCarousel__.css');
 
+/* Video Studio - Dev Tools camera path authoring panel */
+/* ----------------------------------------------------------------- */
+@import url('../02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Stylesheet__.css');
+
 /* endregion -------------------------------------------------------- */
 

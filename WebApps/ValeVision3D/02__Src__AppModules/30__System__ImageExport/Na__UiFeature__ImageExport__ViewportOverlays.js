@@ -206,6 +206,24 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Toggle the Rule of Thirds Grid Independently
+    // ------------------------------------------------------------
+    // The still export shows the safe frame and the thirds grid together, but
+    // Video Studio wants the frame on with the grid optional, so the grid is
+    // hidden by a modifier class rather than by removing it. Callers that never
+    // touch this keep the original both-on behaviour.
+    // ------------------------------------------------------------
+    function Na__UiFeature__SetViewportOverlayThirds(visible) {
+        if (!overlayContainer) {
+            Na__UiFeature__CreateViewportOverlays(); // <-- Initialize if not already done
+        }
+        if (!overlayContainer) return; // <-- Exit if still doesn't exist
+
+        overlayContainer.classList.toggle('na-export-overlay--hide-thirds', !visible); // <-- Hide grid, keep frame
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Update Viewport Overlays
     // ------------------------------------------------------------
     function Na__UiFeature__UpdateViewportOverlays(aspectRatioString, visible) {
@@ -215,7 +233,13 @@
         if (!overlayContainer) return; // <-- Exit if still doesn't exist after initialization
         
         currentAspectRatio = aspectRatioString; // <-- Store current aspect ratio
-        
+
+        // Reset the thirds grid to visible on every update, so a caller that
+        // hid it cannot leave it hidden for the next caller. Video Studio
+        // re-applies its own preference immediately after this returns.
+        // ------------------------------------------------------------
+        overlayContainer.classList.remove('na-export-overlay--hide-thirds'); // <-- Opt-in, never sticky
+
         if (visible) { // <-- Show overlay if requested
             Na__UiFeature__ShowOverlay(); // <-- Show overlay
         } else { // <-- Hide overlay if not requested
@@ -237,7 +261,8 @@
     // ------------------------------------------------------------
     export {
         Na__UiFeature__CreateViewportOverlays,
-        Na__UiFeature__UpdateViewportOverlays
+        Na__UiFeature__UpdateViewportOverlays,
+        Na__UiFeature__SetViewportOverlayThirds
     };
     // ------------------------------------------------------------
 

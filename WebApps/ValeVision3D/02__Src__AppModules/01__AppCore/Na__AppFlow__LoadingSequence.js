@@ -270,6 +270,16 @@
     import { Na__DoorProximity__Update } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Video Studio Preview Playback
+    // @delegate: ../31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__Preview__IsPlaying,
+        Na__VideoStudio__Preview__AreAnimationsEnabled,
+        Na__VideoStudio__Preview__UpdateFrame
+    } from '../31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Navigation Modes State
     // ------------------------------------------------------------
     import { Na__NavigationModes__SetEnabledModes } from '../10__NavigationAndCameras/Na__NavigationModes__State.js';
@@ -1137,7 +1147,12 @@
         });
 
         function Na__RenderLoop__RenderFrame(deltaMs) {
-            if (Na__WalkMode__IsActive()) {
+            if (Na__VideoStudio__Preview__IsPlaying()) {
+                Na__VideoStudio__Preview__UpdateFrame(deltaMs);              // <-- Video Studio timeline owns the camera this frame
+                if (Na__VideoStudio__Preview__AreAnimationsEnabled()) {
+                    Na__DoorProximity__Update(Na__Camera__Main.position);    // <-- Proximity door triggers along the path
+                }
+            } else if (Na__WalkMode__IsActive()) {
                 Na__WalkMode__Update(deltaMs);                               // <-- Update walk mode physics and camera
                 Na__DoorProximity__Update(Na__WalkMode__GetCapsulePosition()); // <-- Proximity door triggers (walk capsule position)
             } else if (Na__FlyMode__IsActive()) {

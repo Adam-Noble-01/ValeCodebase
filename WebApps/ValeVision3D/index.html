@@ -838,6 +838,22 @@
                         </button>
                     </div>
                 </li>
+                <!-- -------------------------------------------------------- -->
+                <!-- VIDEO STUDIO (localhost dev only)                        -->
+                <!-- Camera path authoring, preview playback and MP4 export.  -->
+                <!-- Panel contents are injected by the controller module.    -->
+                <!-- -------------------------------------------------------- -->
+                <!-- @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__DevMenu__Controls.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naVideoStudioItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naVideoStudioToggle" aria-expanded="false">
+                        Video Studio
+                        <span class="na-dropdown-menu__subarrow">▾</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-vs-dev__panel" id="naVideoStudioPanel">
+                        <!-- Video blocks, keyframe rows and export controls are injected by Na__VideoStudio__DevMenu__Controls.js -->
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naSceneInspectorToggle" aria-expanded="false">
                         Scene Inspector
@@ -1190,6 +1206,17 @@
     import { Na__PresentationMode__DevMenu__InitializeSceneEditor } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js';
     import { Na__PresentationMode__DevTools__InitializeCameraPathVisualizer, Na__PresentationMode__DevTools__ToggleCameraPathVisualizer } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js';
     import { Na__PresentationMode__Thumbnail__SetRenderContext } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Video Studio System (localhost dev only)
+    // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__DevMenu__Controls.js
+    // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__PathVisualizer.js
+    // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__DevMenu__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__DevMenu__Controls.js';
+    import { Na__VideoStudio__PathVisualizer__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__PathVisualizer.js';
+    import { Na__VideoStudio__Preview__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js';
+    import { Na__VideoStudio__KeyframeDragger__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__KeyframeDragger.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -1893,6 +1920,30 @@
     );
 
     Na__PresentationMode__DevTools__InitializeCameraPathVisualizer(Na__Scene__Main); // <-- 3D path visualizer (localhost-only)
+
+    // VIDEO STUDIO | Initialize path overlay, preview playback and dev controls
+    // @delegate: ./02__Src__AppModules/31__System__VideoStudio/
+    // ------------------------------------------------------------
+    Na__VideoStudio__PathVisualizer__Initialize(Na__Scene__Main, Na__Renderer__Main); // <-- Fat-line path overlay
+    Na__VideoStudio__Preview__Initialize(Na__Camera__Main, Na__Controls__Orbit);      // <-- Real-time path playback
+
+    Na__VideoStudio__KeyframeDragger__Initialize({                              // <-- Grab and move waypoints in the viewport
+        renderer : Na__Renderer__Main,
+        camera   : Na__Camera__Main,
+        controls : Na__Controls__Orbit
+    });
+
+    Na__VideoStudio__DevMenu__Initialize({                                      // <-- Localhost-only Video Studio panel
+        renderer               : Na__Renderer__Main,
+        scene                  : Na__Scene__Main,
+        camera                 : Na__Camera__Main,
+        controls               : Na__Controls__Orbit,
+        getRenderPipelineState : () => Na__AppFlow__PipelineRef.current,        // <-- Read pipeline state from mutable ref
+        showToast              : Na__UiFeature__ShowToast,
+        cameraLensConfig       : Na__Config__CameraLens,                        // <-- Same sensor height as the Tools menu lens slider
+        navmodeSettings        : Na__AppConfig__Data.Navmode__Settings          // <-- Door proximity threshold for animations
+    });
+    // ------------------------------------------------------------
 
     // WIRE VIEWS BUTTON: dispatch toggle event when clicked
     const Na__PmViewsBtn = document.getElementById('naNavToolbarViewsBtn');

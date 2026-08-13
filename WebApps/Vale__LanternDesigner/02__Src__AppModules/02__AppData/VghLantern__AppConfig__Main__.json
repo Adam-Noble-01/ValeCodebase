@@ -147,7 +147,7 @@
     "VghLantern__Validation__Config": {
         "VghLantern__Validation__Config__Description": "Constraint envelope enforced by the ConstraintResolver and surfaced by the editor WarningSystem. Values outside these bounds are rejected on dimension entry.",
         "VghLantern__Validation__Config__MinWidthMm": 600,
-        "VghLantern__Validation__Config__MaxWidthMm": 8000,
+        "VghLantern__Validation__Config__MaxWidthMm": 12000,
         "VghLantern__Validation__Config__MinDepthMm": 600,
         "VghLantern__Validation__Config__MaxDepthMm": 6000,
         "VghLantern__Validation__Config__MinPitchDegrees": 10,

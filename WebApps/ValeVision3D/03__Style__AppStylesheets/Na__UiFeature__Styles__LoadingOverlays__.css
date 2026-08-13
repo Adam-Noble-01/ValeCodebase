@@ -210,6 +210,17 @@
     }
     /* ------------------------------------------------------------ */
 
+    /* LAYOUT LOADING OVERLAY OPAQUE STATE | Fully hide the working canvas */
+    /* ------------------------------------------------------------ */
+    /* A video export resizes the live renderer and paints hundreds of frames  */
+    /* through it. The default 92% white lets that flicker through, so video   */
+    /* renders opt into a solid backdrop with no blur.                         */
+    .na-layout-loading-overlay--opaque {
+        background-color                   : rgba(255, 255, 255, 1);       /* <-- Solid: nothing shows through */
+        backdrop-filter                    : none;                         /* <-- No need to blur what is hidden */
+    }
+    /* ------------------------------------------------------------ */
+
     /* LAYOUT LOADING OVERLAY FADE-OUT STATE | Dismissing overlay */
     /* ------------------------------------------------------------ */
     .na-layout-loading-overlay--fade-out {
@@ -229,6 +240,9 @@
         text-align                         : center;                       /* <-- Center text */
         margin-top                         : 0;                            /* <-- Remove default margin */
         transition                         : color 0.3s ease;              /* <-- Smooth color change on success */
+        white-space                        : pre-line;                     /* <-- A newline in the message becomes a second line */
+        line-height                        : 1.5;                          /* <-- Breathing room between step and detail */
+        max-width                          : 80vw;                         /* <-- Long filenames wrap rather than overflow */
     }
     /* ------------------------------------------------------------ */
 

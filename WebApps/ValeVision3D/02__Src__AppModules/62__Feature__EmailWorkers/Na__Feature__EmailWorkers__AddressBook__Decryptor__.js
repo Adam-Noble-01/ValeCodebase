@@ -55,11 +55,16 @@
             ['decrypt']
         );
 
-        const decryptedBuffer = await crypto.subtle.decrypt(
-            { name: 'AES-GCM', iv: ivBytes },
-            cryptoKey,
-            cipherBytes
-        );
+        let decryptedBuffer;
+        try {
+            decryptedBuffer = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: ivBytes },
+                cryptoKey,
+                cipherBytes
+            );
+        } catch (decryptError) {
+            throw new Error('Address book decrypt failed: decrypt key does not match the CDN payload (stale cached config?).');
+        }
 
         const decodedText = new TextDecoder().decode(new Uint8Array(decryptedBuffer));
         const parsedJson  = JSON.parse(decodedText);

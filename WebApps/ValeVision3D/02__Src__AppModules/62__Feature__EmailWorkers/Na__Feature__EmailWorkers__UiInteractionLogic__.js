@@ -36,7 +36,7 @@
     async function Na__Feature__EmailWorkers__LoadFeatureConfig() {
         try {
             const configUrl = new URL('./Na__Feature__EmailWorkers__Config.json', import.meta.url);
-            const response = await fetch(configUrl);
+            const response = await fetch(configUrl, { cache: 'no-cache' });     // <-- Must match the CDN ciphertext fetch; a stale key against fresh ciphertext fails AES-GCM auth
             if (!response.ok) {
                 throw new Error(`EmailWorkers config fetch failed: ${response.status}`);
             }

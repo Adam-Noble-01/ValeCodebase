@@ -387,6 +387,7 @@
 
         Na__FlyMode__Camera.fov = Na__FlyMode__Config__HorizontalFovDeg;
         Na__FlyMode__Camera.updateProjectionMatrix();
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));         // <-- Keep the lens readout honest
 
         const euler = new THREE.Euler().setFromQuaternion(Na__FlyMode__Camera.quaternion, 'YXZ');
         Na__FlyMode__CameraYaw   = euler.y;
@@ -421,6 +422,7 @@
         Na__FlyMode__Camera.position.copy(restorePos);
         Na__FlyMode__Camera.fov = Na__FlyMode__SavedOrbitState.cameraFov;
         Na__FlyMode__Camera.updateProjectionMatrix();
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));         // <-- Keep the lens readout honest
 
         if (orbitControls) {
             if (orbitControls.target) {

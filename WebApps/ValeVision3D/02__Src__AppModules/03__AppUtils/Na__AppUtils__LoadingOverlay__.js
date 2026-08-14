@@ -8,7 +8,7 @@
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Shared controller for the full-screen spinner overlay used while
 //              a long render runs
-// CREATED    : 13-Aug-2026
+// CREATED    : 14-Aug-2026
 //
 // DESCRIPTION:
 // - Drives #naLayoutLoadingOverlay: shows the spinner, updates the status line
@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Aug-2026 - Version 1.0.0
+// 14-Aug-2026 - Version 1.0.0
 // - Initial extraction so Video Studio can reuse the image export overlay.
 //
 // =============================================================================

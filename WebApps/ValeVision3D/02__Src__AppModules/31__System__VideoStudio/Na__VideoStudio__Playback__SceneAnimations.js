@@ -8,7 +8,7 @@
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Turn proximity door triggers on for the duration of a preview
 //              or an export, then put them back exactly as they were
-// CREATED    : 13-Aug-2026
+// CREATED    : 14-Aug-2026
 //
 // DESCRIPTION:
 // - Proximity doors are owned by the Walk and Fly mode controllers.  They call
@@ -41,7 +41,7 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Aug-2026 - Version 1.0.0
+// 14-Aug-2026 - Version 1.0.0
 // - Initial implementation. Doors now animate during preview and export.
 //
 // =============================================================================

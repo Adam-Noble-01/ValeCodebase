@@ -16,60 +16,188 @@
             "FogPlane__Config__PlaneB__PositionMm": -23762
         }
     },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
     "Navmode__OrbitMaxDistanceMm": 40000,
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "13-Aug-2026 at 14:36",
-        "model_name": "Hawley__WhiteCardModel__1.0.0__",
+        "captured_at": "14-Aug-2026 at 09:07",
         "coordinate_system": "SketchUp_Z_up",
-        "units": "mm",
+        "model_name": "Hawley__WhiteCardModel__1.1.0__",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
-                "scene_name": "IMG01__3dView__MainShot__",
-                "scene_description": "Full Context",
-                "include_in_animation": true,
                 "camera": {
-                    "eye": {
-                        "x": 38371.6174,
-                        "y": -7257.6676,
-                        "z": 3000.0
-                    },
-                    "target": {
-                        "x": 12121.9959,
-                        "y": 13411.6132,
-                        "z": 2981.1954
-                    },
-                    "up": {
-                        "x": -0.000442,
-                        "y": 0.000348,
-                        "z": 1.0
-                    },
+                    "aspect_ratio": 1.5,
                     "direction": {
                         "x": -0.78567,
                         "y": 0.618646,
                         "z": -0.000563
                     },
+                    "eye": {
+                        "x": 37971.1117,
+                        "y": -6768.972,
+                        "z": 3090.9924
+                    },
                     "fov_degrees": 36.2437,
                     "fov_is_height": false,
+                    "image_width": 0,
                     "is_perspective": true,
-                    "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "target": {
+                        "x": 11721.4902,
+                        "y": 13900.3088,
+                        "z": 3072.1878
+                    },
+                    "up": {
+                        "x": -0.000442,
+                        "y": 0.000348,
+                        "z": 1
+                    }
                 },
+                "include_in_animation": true,
                 "model_layer_visibility": {
-                    "ValeVision__MainBuildingModel__Existing": true,
-                    "ValeVision__LandscapeEnvironment": true,
-                    "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
                     "ValeVision__SiteBoundaries": true
                 },
+                "scene_description": "Full Context",
+                "scene_name": "IMG01__3dView__MainShot__",
                 "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "VideoStudio__Config": {
+        "VideoStudio__Config__Description": "Per-project camera walkthrough videos. Positions are integer millimetres; convert to 3D units in code.",
+        "VideoStudio__Config__Enabled": true,
+        "VideoStudio__Config__Videos": [
+            {
+                "VideoStudio__Video__Export": {
+                    "VideoStudio__Export__AspectRatio": "3:2",
+                    "VideoStudio__Export__BitrateMbps": 151,
+                    "VideoStudio__Export__Fps": 60,
+                    "VideoStudio__Export__Height": 2160,
+                    "VideoStudio__Export__Width": 3240
+                },
+                "VideoStudio__Video__Id": "Video_001",
+                "VideoStudio__Video__Keyframes": [
+                    {
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 33.3985
+                            },
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 24634,
+                                "Camera__DefaultPos__PosY": 1822,
+                                "Camera__DefaultPos__PosZ": -2247
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.0009,
+                                "Camera__DefaultRotation__RotY": 0.9038,
+                                "Camera__DefaultRotation__RotZ": 0.0007
+                            }
+                        },
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__Id": "Key_001",
+                        "VideoStudio__Keyframe__LensMm": 40,
+                        "VideoStudio__Keyframe__Order": 1,
+                        "VideoStudio__Keyframe__SegmentMs": 5000
+                    },
+                    {
+                        "VideoStudio__Keyframe__Id": "Key_004",
+                        "VideoStudio__Keyframe__Order": 2,
+                        "VideoStudio__Keyframe__CapturedInMode": "Inserted",
+                        "VideoStudio__Keyframe__LensMm": 40,
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 31764,
+                                "Camera__DefaultPos__PosY": 1963,
+                                "Camera__DefaultPos__PosZ": -6142
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.035,
+                                "Camera__DefaultRotation__RotY": 1.2262,
+                                "Camera__DefaultRotation__RotZ": 0.0347
+                            },
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 33.3985
+                            }
+                        },
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 2"
+                    },
+                    {
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 33.3985
+                            },
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 32432,
+                                "Camera__DefaultPos__PosY": 2108,
+                                "Camera__DefaultPos__PosZ": -11597
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -0.4235,
+                                "Camera__DefaultRotation__RotY": 1.5094,
+                                "Camera__DefaultRotation__RotZ": 0.4228
+                            }
+                        },
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__Id": "Key_003",
+                        "VideoStudio__Keyframe__Label": "Inserted Frame 1",
+                        "VideoStudio__Keyframe__LensMm": 40,
+                        "VideoStudio__Keyframe__Order": 3,
+                        "VideoStudio__Keyframe__SegmentMs": 10000
+                    },
+                    {
+                        "VideoStudio__Keyframe__CameraPosition": {
+                            "Camera__DefaultMisc": {
+                                "Camera__DefaultMisc__Fov": 33.3985
+                            },
+                            "Camera__DefaultPos": {
+                                "Camera__DefaultPos__PosX": 28622,
+                                "Camera__DefaultPos__PosY": 2206,
+                                "Camera__DefaultPos__PosZ": -21992
+                            },
+                            "Camera__DefaultRotation": {
+                                "Camera__DefaultRotation__RotX": -3.1307,
+                                "Camera__DefaultRotation__RotY": 0.9886,
+                                "Camera__DefaultRotation__RotZ": 3.1325
+                            }
+                        },
+                        "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__HoldMs": 0,
+                        "VideoStudio__Keyframe__Id": "Key_002",
+                        "VideoStudio__Keyframe__LensMm": 40,
+                        "VideoStudio__Keyframe__Order": 4,
+                        "VideoStudio__Keyframe__SegmentMs": 5000
+                    }
+                ],
+                "VideoStudio__Video__Name": "Video 1",
+                "VideoStudio__Video__Order": 1,
+                "VideoStudio__Video__Playback": {
+                    "VideoStudio__Playback__AnimationsEnabled": true,
+                    "VideoStudio__Playback__ClosedLoop": false,
+                    "VideoStudio__Playback__DefaultHoldMs": 0,
+                    "VideoStudio__Playback__DefaultSegmentMs": 5000,
+                    "VideoStudio__Playback__DoorDistanceM": null,
+                    "VideoStudio__Playback__DoorOpenSeconds": 1.2,
+                    "VideoStudio__Playback__Easing": "easeInOutSine",
+                    "VideoStudio__Playback__SpeedMultiplier": 1
+                }
             }
         ]
     },
     "basePath": "Projects/2026/63986__Hawley",
     "images": [
-        "IMG01__3dView__MainShot____WhitecardImage__13-Aug-2026.png"
+        "IMG01__3dView__MainShot____WhitecardImage__14-Aug-2026.png"
     ],
     "productionData": {
         "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
@@ -87,7 +215,7 @@
     "sketchUpModel": {
         "url": "Nil"
     },
-    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__13-Aug-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__14-Aug-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -116,9 +244,5 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley/Hawley__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley/Hawley__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley/Hawley__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ],
-    "Navmode__EnabledModes": {
-        "Navmode__EnabledModes__Walk": true,
-        "Navmode__EnabledModes__Fly": true
-    }
+    ]
 }

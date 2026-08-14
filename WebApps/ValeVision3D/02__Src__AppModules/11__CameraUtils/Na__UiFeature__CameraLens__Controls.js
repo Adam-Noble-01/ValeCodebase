@@ -55,6 +55,25 @@
     // ------------------------------------------------------------
 
 
+    // MODULE VARIABLES | Live Re-Sync Hook
+    // ------------------------------------------------------------
+    // Assigned during initialization; a no-op before then so callers never
+    // have to guard against the panel not existing yet.
+    // ------------------------------------------------------------
+    let Na__UiFeature__SyncLensFromCamera = () => {};
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Re-Read the Live Camera and Update the Lens Readout
+    // ------------------------------------------------------------
+    // For callers that would rather not dispatch an event.
+    // ------------------------------------------------------------
+    function Na__UiFeature__SyncCameraLensControl() {
+        Na__UiFeature__SyncLensFromCamera();
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Initialize Camera Lens Controls
     // ------------------------------------------------------------
     function Na__UiFeature__InitializeCameraLensControls(camera, config = {}) {
@@ -88,11 +107,40 @@
         };
         
         applyLens(clampedFocal);
-        
+
         slider.addEventListener('input', (event) => {
             const focalLength = parseFloat(event.target.value);
             applyLens(focalLength);
         });
+
+        // RE-SYNC FROM THE LIVE CAMERA | Added 14-Aug-2026
+        // ------------------------------------------------------------
+        // This readout used to be written in exactly two places: once at init,
+        // and again whenever the slider itself moved. Nine other modules also
+        // write camera.fov (Reset View, Walk and Fly entry and exit, saved
+        // camera configs, Presentation Mode transitions, Video Studio preview
+        // and Go To), and none of them touched this label. The moment any of
+        // them ran, the panel carried on reporting a focal length the camera no
+        // longer had, which is how a keyframe could honestly record 55mm while
+        // this said 45mm.
+        //
+        // Anything that changes camera.fov outside this control should now
+        // dispatch na-camera-fov-changed, or call the exported sync directly.
+        // ------------------------------------------------------------
+        Na__UiFeature__SyncLensFromCamera = () => {
+            const liveFocal = Na__UiFeature__LensFovToFocal(camera.fov, lensConfig.sensorHeightMM);
+
+            // The slider is clamped to the panel's range but the label is not:
+            // a Video Studio keyframe can hold a lens outside 24-75mm, and
+            // showing the clamped number instead of the real one would be the
+            // very lie this exists to stop.
+            slider.value = Math.round(Na__UiFeature__ClampLensValue(
+                liveFocal, lensConfig.minFocalLengthMM, lensConfig.maxFocalLengthMM
+            ));
+            valueLabel.textContent = `${Math.round(liveFocal)} mm`;
+        };
+
+        window.addEventListener('na-camera-fov-changed', Na__UiFeature__SyncLensFromCamera);
         
         toggleButton.addEventListener('click', () => {
             const isOpen = panel.classList.contains('is-open');
@@ -105,7 +153,8 @@
     // MODULE EXPORTS | Lens Controls API
     // ------------------------------------------------------------
     export {
-        Na__UiFeature__InitializeCameraLensControls
+        Na__UiFeature__InitializeCameraLensControls,
+        Na__UiFeature__SyncCameraLensControl
     };
     // ------------------------------------------------------------
 

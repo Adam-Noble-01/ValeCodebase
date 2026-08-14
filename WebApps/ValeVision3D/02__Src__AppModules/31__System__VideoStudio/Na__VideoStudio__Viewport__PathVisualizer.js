@@ -134,15 +134,45 @@
     // ------------------------------------------------------------
 
 
-    // MODULE CONSTANTS | Axis Guide (Ctrl-Constrained Drag)
+    // MODULE CONSTANTS | Axis Guide (Constrained Drag)
     // ------------------------------------------------------------
-    // Colours follow the usual 3D convention so the constraint reads instantly:
-    // red is world X, blue is world Z, green is world Y.
+    // Colours follow SKETCHUP, not the Three.js default, because every person
+    // using this tool reads SketchUp axes all day and that muscle memory is
+    // worth more than internal consistency with the library.
+    //
+    // SketchUp is Z-up and Three.js is Y-up, so the vertical axis changes name
+    // between them but must keep its colour. The mapping is by DIRECTION:
+    //
+    //   vertical        -> blue    (Three.js Y, SketchUp Z)
+    //   ground, X       -> green   (Three.js X, SketchUp Y)
+    //   ground, Z       -> red     (Three.js Z, SketchUp X)
+    //
+    // The two ground axes are the way round they are because that is how this
+    // app's SketchUp import actually lands them, confirmed against a real
+    // model rather than derived from the conversion on paper. Do not "correct"
+    // them to match the Three.js convention: getting these backwards is worse
+    // than having no colour at all, because a confidently wrong colour sends
+    // someone dragging along the axis they were trying to avoid.
     // ------------------------------------------------------------
     const Na__VsViz__AXIS_GUIDE_LENGTH = 120;       // <-- Half-length in metres; effectively infinite for a building
-    const Na__VsViz__AXIS_COLOR_X      = 0xff3b30;  // <-- Red
-    const Na__VsViz__AXIS_COLOR_Y      = 0x34c759;  // <-- Green
-    const Na__VsViz__AXIS_COLOR_Z      = 0x0a84ff;  // <-- Blue
+    const Na__VsViz__AXIS_COLOR_X      = 0x00a000;  // <-- Green : ground axis, reads as SketchUp green
+    const Na__VsViz__AXIS_COLOR_Y      = 0x0044dd;  // <-- Blue  : vertical, matches SketchUp blue
+    const Na__VsViz__AXIS_COLOR_Z      = 0xee0000;  // <-- Red   : ground axis, reads as SketchUp red
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Aim Guide (Ctrl+Shift Turn)
+    // ------------------------------------------------------------
+    // Turning a waypoint has no world axis to show, so it gets a ray along the
+    // shot's own view direction instead: where this camera is now pointing.
+    // Purple deliberately sits outside the SketchUp axis set, because it is not
+    // an axis and should not be mistaken for one.
+    //
+    // Drawn forward only, from the waypoint outward, so it reads as an aim
+    // rather than as a line the waypoint happens to sit on.
+    // ------------------------------------------------------------
+    const Na__VsViz__AIM_GUIDE_LENGTH = 60;         // <-- Metres forward from the waypoint
+    const Na__VsViz__AIM_COLOR        = 0x9b4dff;   // <-- Purple: a direction, not an axis
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -157,7 +187,10 @@
     let Na__VsViz__Scene         = null;         // <-- Three.js scene reference
     let Na__VsViz__Renderer      = null;         // <-- Renderer, for fat line resolution
     let Na__VsViz__VizGroup      = null;         // <-- Dedicated group for all overlay objects
-    let Na__VsViz__IsVisible     = false;        // <-- Dev menu toggle state
+    // Default on: a path you cannot see is a path you cannot judge or drag, and
+    // the overlay only ever draws once a video is actually open, so this costs
+    // nothing until there is something to show.
+    let Na__VsViz__IsVisible     = true;         // <-- Dev menu toggle state
     let Na__VsViz__IsInitialized = false;        // <-- Guard double init
     // ------------------------------------------------------------
 
@@ -755,20 +788,58 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Drop Whatever Guide Line Is Currently Drawn
+    // ------------------------------------------------------------
+    // One slot serves both the axis guides and the aim guide, so a mode change
+    // cannot leave two lines fighting for the same meaning.
+    // ------------------------------------------------------------
+    function Na__VsViz__ClearGuide() {
+        if (!Na__VsViz__AxisGuide) return;
+
+        if (Na__VsViz__AxisGuide.parent) Na__VsViz__AxisGuide.parent.remove(Na__VsViz__AxisGuide);
+        Na__VsViz__AxisGuide.geometry.dispose();
+        Na__VsViz__AxisGuide.material.dispose();
+        Na__VsViz__AxisGuide = null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build a Guide Line Between Two Points
+    // ------------------------------------------------------------
+    // Depth testing off and a high render order, so a guide is readable through
+    // the model rather than disappearing inside a wall.
+    // ------------------------------------------------------------
+    function Na__VsViz__BuildGuide(start, end, color) {
+        const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+        const material = new THREE.LineBasicMaterial({
+            color       : color,
+            transparent : true,
+            opacity     : 0.8,
+            depthTest   : false,
+            depthWrite  : false
+        });
+
+        const guide = new THREE.Line(geometry, material);
+        guide.renderOrder   = Na__VsViz__RENDER_ORDER;
+        guide.frustumCulled = false;
+
+        Na__VsViz__VizGroup.add(guide);
+        Na__VsViz__AxisGuide = guide;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Show or Clear the Axis Constraint Guide
     // ------------------------------------------------------------
     // axis is 'x', 'y', 'z' or null.  Draws a world-aligned line through the
-    // origin point so a Ctrl-constrained drag reads as running along a real
-    // axis rather than just refusing to move sideways.
+    // origin point so a constrained drag reads as running along a real axis
+    // rather than just refusing to move in the other directions.
+    //
+    // Used by both constrained modes: 'y' for a Shift drag, and 'x' or 'z' for
+    // whichever axis a Ctrl drag has committed to.
     // ------------------------------------------------------------
     function Na__VideoStudio__PathVisualizer__SetAxisGuide(axis, originUnits) {
-        // CLEAR | Drop any existing guide first; the axis may have changed
-        if (Na__VsViz__AxisGuide) {
-            if (Na__VsViz__AxisGuide.parent) Na__VsViz__AxisGuide.parent.remove(Na__VsViz__AxisGuide);
-            Na__VsViz__AxisGuide.geometry.dispose();
-            Na__VsViz__AxisGuide.material.dispose();
-            Na__VsViz__AxisGuide = null;
-        }
+        Na__VsViz__ClearGuide();
 
         if (!axis || !originUnits || !Na__VsViz__VizGroup) {
             Na__RenderLoop__RequestRender();
@@ -785,24 +856,44 @@
                     : (axis === 'y') ? Na__VsViz__AXIS_COLOR_Y
                     :                  Na__VsViz__AXIS_COLOR_Z;
 
-        const start = originUnits.clone().addScaledVector(direction, -Na__VsViz__AXIS_GUIDE_LENGTH);
-        const end   = originUnits.clone().addScaledVector(direction,  Na__VsViz__AXIS_GUIDE_LENGTH);
+        // Both ways from the origin: an axis constraint runs in both directions
+        Na__VsViz__BuildGuide(
+            originUnits.clone().addScaledVector(direction, -Na__VsViz__AXIS_GUIDE_LENGTH),
+            originUnits.clone().addScaledVector(direction,  Na__VsViz__AXIS_GUIDE_LENGTH),
+            color
+        );
 
-        const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
-        const material = new THREE.LineBasicMaterial({
-            color       : color,
-            transparent : true,
-            opacity     : 0.8,
-            depthTest   : false,
-            depthWrite  : false
-        });
+        Na__RenderLoop__RequestRender();
+    }
+    // ------------------------------------------------------------
 
-        const guide = new THREE.Line(geometry, material);
-        guide.renderOrder   = Na__VsViz__RENDER_ORDER;
-        guide.frustumCulled = false;
 
-        Na__VsViz__VizGroup.add(guide);
-        Na__VsViz__AxisGuide = guide;
+    // FUNCTION | Show or Clear the Aim Guide
+    // ------------------------------------------------------------
+    // A ray from the waypoint along its own view direction, for the Ctrl+Shift
+    // turn where there is no world axis to show. Shares the single guide slot
+    // with the axis lines, so only one is ever on screen and the two can never
+    // be confused for each other.
+    //
+    // Pass a null quaternion to clear.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__PathVisualizer__SetAimGuide(originUnits, quaternion) {
+        Na__VsViz__ClearGuide();
+
+        if (!originUnits || !quaternion || !Na__VsViz__VizGroup) {
+            Na__RenderLoop__RequestRender();
+            return;
+        }
+
+        // Negative Z is the Three.js camera look direction
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(quaternion);
+
+        // Forward only, so it reads as an aim rather than an axis
+        Na__VsViz__BuildGuide(
+            originUnits.clone(),
+            originUnits.clone().addScaledVector(forward, Na__VsViz__AIM_GUIDE_LENGTH),
+            Na__VsViz__AIM_COLOR
+        );
 
         Na__RenderLoop__RequestRender();
     }
@@ -857,6 +948,7 @@
         Na__VideoStudio__PathVisualizer__SetDragRotation,
         Na__VideoStudio__PathVisualizer__GetMarkerQuaternion,
         Na__VideoStudio__PathVisualizer__SetAxisGuide,
+        Na__VideoStudio__PathVisualizer__SetAimGuide,
         Na__VideoStudio__PathVisualizer__EndDragPreview
     };
     // ------------------------------------------------------------

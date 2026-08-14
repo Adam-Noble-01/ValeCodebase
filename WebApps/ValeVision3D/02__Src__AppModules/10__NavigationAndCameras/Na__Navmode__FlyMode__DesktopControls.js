@@ -96,6 +96,34 @@
     // MODULE VARIABLES | Pointer Lock State
     // ------------------------------------------------------------
     let Na__FlyModeDesktop__PointerLocked                    = false;      // <-- Pointer lock active
+
+    // ------------------------------------------------------------
+    // LOOK MODE DEFAULT | Changed 14-Aug-2026 - Adam Noble
+    // ------------------------------------------------------------
+    // TEMPORARY ROLLOUT. On trial as the new default rather than settled, and
+    // deliberately written so it can be put back in one line.
+    //
+    // Fly mode originally held Pointer Lock: the cursor vanished and every
+    // scrap of mouse movement turned the camera. That is the right feel for a
+    // game, but it fights this app the moment anything shares the screen with
+    // the viewport. Reaching for the Image Export panel, the Tools menu or the
+    // Dev menu dragged the view on the way there, so the shot you had framed
+    // was gone before the pointer reached the button.
+    //
+    // Drag look turns the camera only while the left mouse button is held. The
+    // cursor stays visible and usable, which is what makes walk and fly based
+    // image exports genuinely practical: frame the viewpoint, then reach for
+    // the export controls without the framing shifting between composing the
+    // shot and clicking Download. That was the deciding reason for making it
+    // the default rather than a mode the Video Studio switched on.
+    //
+    // TO REVERT: swap the two declarations below. Nothing else needs touching.
+    // Every pointer-lock path is still present and gated on this one flag.
+    // ------------------------------------------------------------
+    // let Na__FlyModeDesktop__DragLookEnabled               = false;      // <-- ORIGINAL: pointer lock, hidden cursor, free look
+    let Na__FlyModeDesktop__DragLookEnabled                  = true;       // <-- CURRENT : left-click drag to look
+    let Na__FlyModeDesktop__IsDragLooking                    = false;      // <-- Left button currently held
+    let Na__FlyModeDesktop__DragPointerId                    = null;       // <-- Pointer that owns the look drag
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -191,7 +219,14 @@
     // HELPER FUNCTION | Handle Mouse Movement While Pointer Lock Is Active
     // ------------------------------------------------------------
     function Na__FlyModeDesktop__OnMouseMove(event) {
-        if (!Na__FlyModeDesktop__PointerLocked) return;
+        // Which gate applies depends on the look mode. movementX/Y is a plain
+        // MouseEvent property and is populated with or without pointer lock, so
+        // the delta maths below is identical either way.
+        const shouldLook = Na__FlyModeDesktop__DragLookEnabled
+            ? Na__FlyModeDesktop__IsDragLooking
+            : Na__FlyModeDesktop__PointerLocked;
+
+        if (!shouldLook) return;
 
         const yawDelta   = event.movementX * Na__FlyModeDesktop__MouseSensitivity;
         const pitchDelta = event.movementY * Na__FlyModeDesktop__MouseSensitivity;
@@ -217,10 +252,75 @@
     // ------------------------------------------------------------
     function Na__FlyModeDesktop__OnCanvasClick() {
         if (!Na__FlyModeDesktop__Active) return;
+        if (Na__FlyModeDesktop__DragLookEnabled) return;                  // <-- Drag look never grabs the pointer
         if (Na__FlyModeDesktop__PointerLocked) return;
 
         if (Na__FlyModeDesktop__DomElement && Na__FlyModeDesktop__DomElement.requestPointerLock) {
             Na__FlyModeDesktop__DomElement.requestPointerLock();
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Begin a Look Drag
+    // ------------------------------------------------------------
+    function Na__FlyModeDesktop__OnDragLookStart(event) {
+        if (!Na__FlyModeDesktop__Active)        return;
+        if (!Na__FlyModeDesktop__DragLookEnabled) return;
+        if (event.button !== 0)                 return;                   // <-- Left button only
+
+        Na__FlyModeDesktop__IsDragLooking = true;
+        Na__FlyModeDesktop__DragPointerId = event.pointerId;
+
+        // Capture so a fast drag that leaves the canvas keeps turning the view
+        // rather than stopping dead at the edge.
+        if (Na__FlyModeDesktop__DomElement && Na__FlyModeDesktop__DomElement.setPointerCapture) {
+            try { Na__FlyModeDesktop__DomElement.setPointerCapture(event.pointerId); } catch (captureError) { /* not capturable */ }
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | End a Look Drag
+    // ------------------------------------------------------------
+    function Na__FlyModeDesktop__OnDragLookEnd(event) {
+        if (!Na__FlyModeDesktop__IsDragLooking) return;
+        if (event && Na__FlyModeDesktop__DragPointerId !== null
+            && event.pointerId !== Na__FlyModeDesktop__DragPointerId) return;
+
+        Na__FlyModeDesktop__IsDragLooking = false;
+
+        if (event && Na__FlyModeDesktop__DomElement && Na__FlyModeDesktop__DomElement.releasePointerCapture) {
+            try { Na__FlyModeDesktop__DomElement.releasePointerCapture(event.pointerId); } catch (releaseError) { /* already released */ }
+        }
+        Na__FlyModeDesktop__DragPointerId = null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Switch Between Pointer Lock and Drag Look
+    // ------------------------------------------------------------
+    // Called when a panel that shares the screen with the viewport opens or
+    // closes. Safe to call whether or not fly mode is currently active, and
+    // safe to call repeatedly with the same value.
+    // ------------------------------------------------------------
+    function Na__FlyModeDesktop__SetDragLookEnabled(enabled) {
+        const next = !!enabled;
+        if (next === Na__FlyModeDesktop__DragLookEnabled) return;
+
+        Na__FlyModeDesktop__DragLookEnabled = next;
+
+        if (next) {
+            // Release the pointer at once; waiting for the user to press Escape
+            // would leave the view lurching for as long as it took them.
+            if (document.pointerLockElement) document.exitPointerLock();
+            Na__FlyModeDesktop__PointerLocked = false;
+        } else {
+            // Going back to pointer lock needs a user gesture, so the existing
+            // click-to-lock handler re-acquires it on the next canvas click
+            // rather than being forced from here.
+            Na__FlyModeDesktop__IsDragLooking = false;
+            Na__FlyModeDesktop__DragPointerId = null;
         }
     }
     // ------------------------------------------------------------
@@ -253,7 +353,12 @@
         document.addEventListener('pointerlockchange', Na__FlyModeDesktop__OnPointerLockChange);
         domElement.addEventListener('click', Na__FlyModeDesktop__OnCanvasClick);
 
-        if (domElement.requestPointerLock) {
+        domElement.addEventListener('pointerdown',   Na__FlyModeDesktop__OnDragLookStart);
+        window.addEventListener('pointerup',         Na__FlyModeDesktop__OnDragLookEnd);
+        window.addEventListener('pointercancel',     Na__FlyModeDesktop__OnDragLookEnd);
+
+        // Entering fly with a panel already open must not snatch the pointer
+        if (!Na__FlyModeDesktop__DragLookEnabled && domElement.requestPointerLock) {
             domElement.requestPointerLock();
         }
 
@@ -275,7 +380,13 @@
 
         if (Na__FlyModeDesktop__DomElement) {
             Na__FlyModeDesktop__DomElement.removeEventListener('click', Na__FlyModeDesktop__OnCanvasClick);
+            Na__FlyModeDesktop__DomElement.removeEventListener('pointerdown', Na__FlyModeDesktop__OnDragLookStart);
         }
+        window.removeEventListener('pointerup',     Na__FlyModeDesktop__OnDragLookEnd);
+        window.removeEventListener('pointercancel', Na__FlyModeDesktop__OnDragLookEnd);
+
+        Na__FlyModeDesktop__IsDragLooking = false;
+        Na__FlyModeDesktop__DragPointerId = null;
 
         if (document.pointerLockElement) {
             document.exitPointerLock();
@@ -304,7 +415,8 @@
     // ------------------------------------------------------------
     export {
         Na__FlyModeDesktop__Activate,
-        Na__FlyModeDesktop__Deactivate
+        Na__FlyModeDesktop__Deactivate,
+        Na__FlyModeDesktop__SetDragLookEnabled
     };
     // ------------------------------------------------------------
 

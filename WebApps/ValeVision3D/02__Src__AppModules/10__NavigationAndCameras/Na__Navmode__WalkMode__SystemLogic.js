@@ -624,6 +624,7 @@
         }
 
         Na__WalkMode__Camera.fov = Na__WalkMode__Config__HorizontalFovDeg;
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));         // <-- Keep the lens readout honest
         Na__WalkMode__Camera.updateProjectionMatrix();
 
         Na__WalkMode__CapsulePosition.set(
@@ -678,6 +679,7 @@
         Na__WalkMode__Camera.position.copy(restorePos);
         Na__WalkMode__Camera.quaternion.copy(Na__WalkMode__SavedOrbitState.cameraQuaternion);
         Na__WalkMode__Camera.fov = Na__WalkMode__SavedOrbitState.cameraFov;
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));         // <-- Keep the lens readout honest
         Na__WalkMode__Camera.updateProjectionMatrix();
 
         if (orbitControls) {

@@ -3022,6 +3022,30 @@
           "endTime": "15:00",
           "title": "Whitecard |  Hawley",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1786695002066",
+          "date": "2026-08-15",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Dev |  Video Creator - Refinements",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1786695008652",
+          "date": "2026-08-15",
+          "startTime": "09:00",
+          "endTime": "09:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1786698255084",
+          "date": "2026-08-15",
+          "startTime": "10:00",
+          "endTime": "16:00",
+          "title": "Whitecard |  Martin",
+          "color": "na-shift-color-purple"
         }
       ]
     }

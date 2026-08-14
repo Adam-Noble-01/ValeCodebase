@@ -121,6 +121,7 @@
                             snapshot.rotation.order);                                              // <-- Restore rotation
         camera.fov = snapshot.fov;                                                                 // <-- Restore field of view
         camera.updateProjectionMatrix();
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));                            // <-- Keep the lens readout honest
         controls.target.set(snapshot.target.x, snapshot.target.y, snapshot.target.z);              // <-- Restore orbit target
     }
     // ------------------------------------------------------------

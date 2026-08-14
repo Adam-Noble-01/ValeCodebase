@@ -118,7 +118,7 @@
     // MODULE CONSTANTS | Playback Defaults for a Newly Created Video
     // ------------------------------------------------------------
     const Na__VideoStudio__DEFAULT_SPEED       = 1.0;              // <-- Global speed multiplier
-    const Na__VideoStudio__DEFAULT_SEGMENT_MS  = 3000;             // <-- Travel time between keyframes
+    const Na__VideoStudio__DEFAULT_SEGMENT_MS  = 5000;             // <-- Travel time between keyframes
     const Na__VideoStudio__DEFAULT_HOLD_MS     = 0;                // <-- Dwell time at a keyframe
     const Na__VideoStudio__DEFAULT_EASING      = 'easeInOutCubic'; // <-- Applied per leg, not per segment
     const Na__VideoStudio__DEFAULT_CLOSED_LOOP = false;            // <-- Open path by default
@@ -829,6 +829,85 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Insert a Keyframe Between Two Existing Ones
+    // ------------------------------------------------------------
+    // afterIndex is the position in the sorted running order that the new
+    // waypoint follows, so inserting on the leg between waypoints 2 and 3 means
+    // afterIndex 1.
+    //
+    // localS is how far along that leg the insertion falls, 0 to 1. The leg's
+    // travel time is split at the same fraction, so the clip's total duration
+    // and the pacing either side of the new waypoint are both unchanged: a
+    // waypoint dropped halfway along a 6 second leg gives two 3 second legs.
+    //
+    // Returns the new keyframe record, or null.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__InsertKeyframeAfter(videoId, afterIndex, cameraPosition, extras) {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        if (!video || !cameraPosition) return null;
+
+        const sorted = Na__VideoStudio__ProjectJson__GetSortedKeyframes(video);
+        const before = sorted[afterIndex];
+        if (!before) return null;
+
+        const playback = Na__VideoStudio__ProjectJson__GetPlaybackOptions(video);
+        const localS   = Math.max(0.01, Math.min(0.99, (extras && extras.localS) || 0.5));
+
+        // SPLIT | The leg's travel time is shared between the two new legs
+        const legMs   = Number.isFinite(before.VideoStudio__Keyframe__SegmentMs)
+            ? before.VideoStudio__Keyframe__SegmentMs
+            : playback.defaultSegmentMs;
+
+        const firstMs = Na__VideoStudio__ClampSegmentMs(legMs * localS);
+        const restMs  = Na__VideoStudio__ClampSegmentMs(legMs * (1 - localS));
+
+        const newKeyframe = Na__VideoStudio__ProjectJson__BuildNewKeyframe({
+            keyframeId     : Na__VideoStudio__ProjectJson__GetNextKeyframeId(video),
+            order          : 0,                                              // <-- Set properly by the reindex below
+            cameraPosition : cameraPosition,
+            lensMm         : (extras && extras.lensMm)         || 45,
+            capturedInMode : (extras && extras.capturedInMode) || 'Inserted',
+            segmentMs      : restMs,
+            holdMs         : playback.defaultHoldMs
+        });
+
+        if (extras && extras.label) {
+            newKeyframe.VideoStudio__Keyframe__Label = extras.label;
+        }
+
+        before.VideoStudio__Keyframe__SegmentMs = firstMs;                   // <-- Leading leg keeps its share
+
+        // ORDER | Rebuild the sorted run with the new record spliced in, then
+        // renumber, so Order values stay contiguous whatever they were before.
+        const rebuilt = sorted.slice();
+        rebuilt.splice(afterIndex + 1, 0, newKeyframe);
+        rebuilt.forEach((keyframe, index) => {
+            keyframe.VideoStudio__Keyframe__Order = index + 1;
+        });
+
+        video.VideoStudio__Video__Keyframes = rebuilt;
+        return newKeyframe;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Generate the Next Free Inserted Waypoint Label
+    // ------------------------------------------------------------
+    // Numbered by how many insertions the video already carries rather than by
+    // running order, so the name stays put when waypoints either side of it are
+    // added or removed.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__GetNextInsertedLabel(video) {
+        const keys = (video && video.VideoStudio__Video__Keyframes) || [];
+        const used = new Set(keys.map(k => k.VideoStudio__Keyframe__Label).filter(Boolean));
+
+        let n = 1;
+        while (used.has(`Inserted Frame ${n}`)) n++;
+        return `Inserted Frame ${n}`;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Delete a Keyframe from a Video
     // ------------------------------------------------------------
     function Na__VideoStudio__ProjectJson__DeleteKeyframe(videoId, keyframeId) {
@@ -1149,6 +1228,8 @@
         Na__VideoStudio__ProjectJson__AddVideo,
         Na__VideoStudio__ProjectJson__DeleteVideo,
         Na__VideoStudio__ProjectJson__AddKeyframe,
+        Na__VideoStudio__ProjectJson__InsertKeyframeAfter,
+        Na__VideoStudio__ProjectJson__GetNextInsertedLabel,
         Na__VideoStudio__ProjectJson__DeleteKeyframe,
         Na__VideoStudio__ProjectJson__MoveKeyframe,
         Na__VideoStudio__ProjectJson__GetKeyframeLensMm,

@@ -2,7 +2,116 @@
 # =========================================================
 
 # ---------------------------------------------------------
-## ValeVision3D v2.13.0 - 13-Aug-2026 - Video Studio
+## ValeVision3D v2.13.1 - 14-Aug-2026 - Video Studio Editing Pass
+
+### Overview
+Everything in this entry came out of actually using v2.13.0 to build a
+walkthrough. The system worked; editing it did not. Waypoints could only be
+placed by re-flying to the spot, nothing could be undone, and the mouse fought
+you the whole time. This pass makes the path editable in the viewport, gives it
+a history, and fixes two genuine bugs found along the way.
+
+### Added
+- **Waypoint editing in the viewport** (`Na__VideoStudio__Viewport__KeyframeDragger.js`):
+  drag a numbered marker to move it. Shift drags vertically, Ctrl locks to a
+  single world axis chosen from the first real travel, Ctrl+Shift turns the shot
+  about world up. Escape cancels. Picking is screen-space rather than by
+  raycast, because the markers are non-attenuated sprites whose raycast hit area
+  would otherwise shrink with distance; a waypoint 70m away is exactly as
+  grabbable as one 3m away.
+- **Guide lines during a constrained drag**, coloured to SketchUp's convention
+  rather than the Three.js one: blue vertical, red and green for the two ground
+  axes, so the axis in play is readable at a glance by anyone who reads SketchUp
+  axes all day. A Ctrl+Shift turn has no axis to show, so it draws a purple ray
+  along the shot's own view direction instead; purple sits outside the axis set
+  deliberately, being a direction rather than an axis.
+- **Undo and redo** (`Na__VideoStudio__Edit__UndoHistory.js`): Ctrl+Z and Ctrl+Y,
+  fifty steps. Two entry shapes. A drag stores that one keyframe's camera block,
+  so undoing a move reverts the move and nothing else; a deletion or an
+  insertion stores the whole keyframes array, because putting a waypoint back
+  means restoring its place in the running order too. An array snapshot is
+  deliberately NOT used for drags: it would quietly revert any lens or travel
+  value typed after the drag. Purged when the panel closes, the active video
+  changes, or preview starts. Ctrl+Z inside a text field stays the browser's own
+  text undo.
+- **Click a waypoint and press Delete** to remove it, recorded so Ctrl+Z puts it
+  back. Backspace works too.
+- **Ctrl+click the path to insert a waypoint there.** Position comes from the
+  point on the curve itself so the trajectory does not shift; aim and lens are
+  interpolated from the two waypoints it falls between. The leg's travel time
+  splits at the same fraction, so total clip duration and the pacing either side
+  are both unchanged. Appears in the list as "Inserted Frame 1", 2, 3.
+- **Update button** per keyframe row: overwrite that shot with the current camera
+  view, including its lens. Pairs with Go To for in-camera tuning.
+- **Per-shot lens** as an editable field, 14 to 200mm. Writes through to the
+  keyframe's stored FOV, which is what the sampler interpolates, so two
+  keyframes with different lenses give a dolly zoom.
+- **Aspect ratio**: 3:2 (default), 4:3, 16:9, 1:1, against height standards of
+  720p to 4320p. Height and aspect are the source of truth and the width is
+  derived, so the pair cannot drift. Because a Three.js camera's fov is the
+  VERTICAL field of view and it is left untouched, every ratio renders the same
+  vertical extent and simply shows more or less to the sides. Nothing is
+  stretched to fit.
+- **Safe frame and rule of thirds**, both on by default, reusing the Image Export
+  viewport overlay rather than drawing a second one.
+- **Advanced Animation Settings**: door swing time in seconds (default 1.2s
+  against the 0.6s the app authors) and a detection distance that defaults to
+  the same threshold Walk and Fly use.
+- **Spacebar plays and pauses** the preview, in Orbit only. Fly binds Space to
+  Ascend, and flying with the panel open to stamp waypoints is the core
+  workflow, so stealing it there would break the main use of the tool.
+
+### Changed
+- **Drag look is now the app-wide default for Walk and Fly**, not just a Video
+  Studio mode (`Na__Navmode__*Mode__DesktopControls.js`). Pointer lock made the
+  cursor vanish and turned the camera on every scrap of mouse movement, which
+  fights any panel sharing the screen: reaching for the Image Export controls
+  dragged the view on the way there and the shot was gone before the pointer
+  arrived. Marked as a temporary rollout with the original line commented
+  directly above the live one; reverting is a one-line swap in each file. Ported
+  to TrueVision, which shares this navigation system.
+- **Video export renders behind the Image Export spinner** in a new opaque mode,
+  with the canvas hidden for the duration and each step reported under the
+  spinner (frame N of M, encoded size, a measured estimate of time remaining).
+  The overlay controller moved to `Na__AppUtils__LoadingOverlay__.js` so both
+  exporters share one implementation.
+- Default travel time raised from 3s to 5s. Arrow keys on the Travel fields step
+  whole seconds and snap to the grid, while typing still accepts tenths.
+- Travel, Hold and Lens moved onto one row, halving the height of a keyframe
+  entry. Panel capped at 340px so a wide drag of the Dev Tools shell no longer
+  makes it enormous.
+
+### Fixed
+- **The Camera Focal Length readout was lying.** It was written in exactly two
+  places, at init and when its own slider moved, while nine other modules also
+  write camera.fov (Reset View, Walk and Fly entry and exit, saved camera
+  configs, Presentation Mode transitions, Video Studio preview and Go To). The
+  moment any of them ran, the panel reported a focal length the camera no longer
+  had. It now re-reads the live camera on a na-camera-fov-changed event, which
+  every one of those paths dispatches. The label shows the true focal length
+  even when it falls outside the slider's 24 to 75mm range; showing the clamped
+  number would be the very lie this exists to stop.
+- **Keyframe capture recorded the wrong lens in Walk and Fly.** It read the
+  pre-mode FOV those modes stash on entry, on the reasoning that their wide
+  navigation lens was a travelling convenience rather than a chosen shot. Wrong
+  in practice: the viewport genuinely renders at the mode's lens, so the
+  composition being judged is that lens. Capture now reads the live camera.
+- **Doors never opened in a video.** Proximity triggers are owned by the Walk and
+  Fly controllers and their enabled flag starts false, so a clip rendered from
+  Orbit left every door shut. A reference-counted session
+  (`Na__VideoStudio__Playback__SceneAnimations.js`) switches them on for the
+  length of a preview or export and guarantees they go off again.
+- **The safe frame and thirds toggles read on with nothing drawn.** The overlay
+  was pushed from two of the ten paths that rebuild the panel, so unfolding the
+  menu or loading a saved video left the viewport disagreeing with its own
+  checkboxes. Applying the overlay is now a consequence of rendering the panel
+  rather than something each call site has to remember.
+- The path overlay ballooned over the viewport during preview, because playback
+  flies the camera THROUGH the waypoints. Suppression is now reason-based, so
+  export and preview can both hide it without either switching it back on early.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.13.0 - 14-Aug-2026 - Video Studio
 
 ### Overview
 New localhost-only Video Studio in the Dev Tools menu, sitting directly after

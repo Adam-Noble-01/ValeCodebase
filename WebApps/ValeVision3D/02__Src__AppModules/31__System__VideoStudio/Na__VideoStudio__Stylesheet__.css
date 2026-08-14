@@ -33,9 +33,13 @@
     /* screen. Video Studio is a column of short controls and never needs that  */
     /* width, so it caps itself and stays a tidy column however wide the shell  */
     /* is dragged. Everything inside is sized to work comfortably at the cap.   */
+    /* 340px is set by the Travel / Hold / Lens row, which needs about 274px of */
+    /* content width. Minus the panel padding (24px), the keyframe list border  */
+    /* and its padding, that leaves roughly 30px of slack so the trailing "mm"  */
+    /* is never clipped and the list never grows a horizontal scrollbar.        */
     .na-vs-dev__panel {
         max-height                         : 70vh;
-        max-width                          : 310px;
+        max-width                          : 340px;
         overflow-y                         : auto;
         overflow-x                         : hidden;
     }
@@ -280,10 +284,11 @@
     .na-vs-dev__key-list {
         border                             : 1px solid #e8eaed;
         border-radius                      : 5px;
-        padding                            : 4px 6px;
+        padding                            : 4px 4px;
         margin-bottom                      : 8px;
         max-height                         : 34vh;
         overflow-y                         : auto;
+        overflow-x                         : hidden;                     /* <-- No sideways scrollbar under the rows */
     }
 
     .na-vs-dev__key-row {
@@ -325,6 +330,52 @@
     .na-vs-dev__key-row .na-vs-dev__btn {
         padding                            : 2px 7px;
         font-size                          : 0.7rem;
+    }
+
+    /* KEYFRAME FIELD ROW | Travel, Hold and Lens on one line                  */
+    /* ------------------------------------------------------------ */
+    /* Three short numbers side by side rather than stacked halves the height  */
+    /* of a keyframe entry, which is what keeps a ten-waypoint path readable   */
+    /* without scrolling. Tight gaps and narrow inputs are what make them fit  */
+    /* inside the panel's 310px cap.                                           */
+    .na-vs-dev__key-fields {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 3px;
+        flex-wrap                          : nowrap;
+    }
+
+    .na-vs-dev__key-fields .na-vs-dev__label {
+        font-size                          : 0.68rem;
+        min-width                          : 0;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__key-fields .na-vs-dev__unit {
+        font-size                          : 0.66rem;
+        margin-right                       : 3px;
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-dev__key-fields .na-vs-dev__input--short {
+        max-width                          : 42px;
+        min-width                          : 42px;
+        padding                            : 3px 2px;
+        font-size                          : 0.72rem;
+        text-align                         : center;
+    }
+
+    /* Native spinners eat horizontal space these fields cannot spare; the     */
+    /* arrow keys still step, which is the faster way to use them anyway.      */
+    .na-vs-dev__key-fields .na-vs-dev__input--short::-webkit-outer-spin-button,
+    .na-vs-dev__key-fields .na-vs-dev__input--short::-webkit-inner-spin-button {
+        -webkit-appearance                 : none;
+        margin                             : 0;
+    }
+
+    .na-vs-dev__key-fields .na-vs-dev__input--short {
+        -moz-appearance                    : textfield;
+        appearance                         : textfield;
     }
 
 /* endregion ---- */

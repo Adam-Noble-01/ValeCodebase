@@ -143,7 +143,23 @@
     // MODULE IMPORTS | Keyframe Dragger
     // @delegate: ./Na__VideoStudio__Viewport__KeyframeDragger.js
     // ------------------------------------------------------------
-    import { Na__VsDrag__MOVED_EVENT } from './Na__VideoStudio__Viewport__KeyframeDragger.js';
+    import { Na__VsDrag__MOVED_EVENT, Na__VsDrag__INSERTED_EVENT } from './Na__VideoStudio__Viewport__KeyframeDragger.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Waypoint Edit Undo History
+    // @delegate: ./Na__VideoStudio__Edit__UndoHistory.js
+    // ------------------------------------------------------------
+    import {
+        Na__VsUndo__MAX_ENTRIES,
+        Na__VideoStudio__UndoHistory__SnapshotKeyframe,
+        Na__VideoStudio__UndoHistory__SnapshotKeyframes,
+        Na__VideoStudio__UndoHistory__Record,
+        Na__VideoStudio__UndoHistory__RecordStructure,
+        Na__VideoStudio__UndoHistory__Undo,
+        Na__VideoStudio__UndoHistory__Redo,
+        Na__VideoStudio__UndoHistory__Clear,
+        Na__VideoStudio__UndoHistory__GetDepth
+    } from './Na__VideoStudio__Edit__UndoHistory.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Scene Animations Session
@@ -214,6 +230,12 @@
     import { Na__NavToolbar__GetActiveMode } from '../10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Walk and Fly Look Mode
+    // ------------------------------------------------------------
+    import { Na__FlyModeDesktop__SetDragLookEnabled  } from '../10__NavigationAndCameras/Na__Navmode__FlyMode__DesktopControls.js';
+    import { Na__WalkModeDesktop__SetDragLookEnabled } from '../10__NavigationAndCameras/Na__Navmode__WalkMode__DesktopControls.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -237,6 +259,16 @@
     // warning about before someone commits to a long render.
     // ------------------------------------------------------------
     const Na__VsDev__HEAVY_EXPORT_PIXELS = 3840 * 2160;
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Keyboard Step for Travel Time Fields
+    // ------------------------------------------------------------
+    // Travel is dialled in whole seconds far more often than tenths, so the
+    // arrow keys move a second at a time. Hold keeps the browser's own tenth
+    // step, because a pause is usually a fraction of a second.
+    // ------------------------------------------------------------
+    const Na__VsDev__TRAVEL_ARROW_STEP_S = 1;
     // ------------------------------------------------------------
 
 
@@ -375,6 +407,39 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Make Arrow Keys Step a Number Input by a Set Amount
+    // ------------------------------------------------------------
+    // Travel times are usually dialled in whole seconds, so holding the arrow
+    // key should cover ground rather than crawl in tenths.  The input keeps
+    // step="any" so a typed 0.1 stays perfectly valid; only the keyboard
+    // increment is overridden, and it is handled here rather than left to the
+    // browser so the amount is the same in every one.
+    // ------------------------------------------------------------
+    function Na__VsDev__AttachArrowStep(input, stepAmount, min, max, onCommit) {
+        input.addEventListener('keydown', (event) => {
+            if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+
+            event.preventDefault();                                          // <-- Replace the browser's own step
+
+            const direction = (event.key === 'ArrowUp') ? 1 : -1;
+            const current   = parseFloat(input.value);
+            const base      = Number.isFinite(current) ? current : min;
+
+            // Snap to the step grid first, so nudging up from a typed 2.3 lands
+            // on 3 rather than 3.3 and every later press stays on whole numbers.
+            const snapped = (direction > 0)
+                ? Math.floor(base / stepAmount + 1e-9) + 1
+                : Math.ceil(base / stepAmount - 1e-9) - 1;
+
+            const next = Math.min(max, Math.max(min, snapped * stepAmount));
+
+            input.value = Number(next.toFixed(2)).toString();
+            if (typeof onCommit === 'function') onCommit();
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build a Button
     // ------------------------------------------------------------
     function Na__VsDev__Button(label, modifier, title) {
@@ -434,16 +499,35 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Apply the Framing Overlays for a Video
+    // HELPER FUNCTION | Drive the Framing Overlays from Current State
     // ------------------------------------------------------------
     // Reuses the Image Export safe frame and thirds grid rather than drawing a
     // second one, so the framing you judge in Video Studio is the same overlay
     // the still export uses.  The aspect string is passed as raw pixel
-    // dimensions, e.g. '3840:2160', because the overlay only ever divides the
+    // dimensions, e.g. '3240:2160', because the overlay only ever divides the
     // two numbers and that keeps the ratio exact for any resolution.
+    //
+    // This is the ONE place the overlay is decided.  It was previously applied
+    // from the checkbox handler and from two of the ten paths that rebuild the
+    // panel, so unfolding the menu, creating a video, or loading a saved one
+    // left the toggles reading on with nothing drawn.  Making the overlay a
+    // consequence of rendering rather than something each call site has to
+    // remember removes that whole class of bug.
+    //
+    // Requires a video, because without one there is no aspect to frame, and
+    // requires the panel to be open, so folding the menu does not leave
+    // letterbox bars on screen with no visible way to clear them.
     // ------------------------------------------------------------
-    function Na__VsDev__ApplyFramingOverlays(video) {
-        if (!Na__VsDev__SafeFrameOn) {
+    function Na__VsDev__RefreshFramingOverlays() {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(
+            Na__VideoStudio__ProjectJson__GetActiveVideoId()
+        );
+
+        const shouldShow = Na__VsDev__IsPanelOpen()
+                        && Na__VsDev__SafeFrameOn
+                        && !!video;
+
+        if (!shouldShow) {
             Na__UiFeature__UpdateViewportOverlays(null, false);
             return;
         }
@@ -451,21 +535,6 @@
         const exportOptions = Na__VideoStudio__ProjectJson__GetExportOptions(video);
         Na__UiFeature__UpdateViewportOverlays(`${exportOptions.width}:${exportOptions.height}`, true);
         Na__UiFeature__SetViewportOverlayThirds(Na__VsDev__ThirdsOn);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Refresh the Overlay for the Currently Expanded Video
-    // ------------------------------------------------------------
-    // Called after a resolution change so the bars follow the new aspect.
-    // ------------------------------------------------------------
-    function Na__VsDev__RefreshFramingOverlays() {
-        if (!Na__VsDev__SafeFrameOn) return;
-
-        const video = Na__VideoStudio__ProjectJson__GetVideoById(
-            Na__VideoStudio__ProjectJson__GetActiveVideoId()
-        );
-        if (video) Na__VsDev__ApplyFramingOverlays(video);
     }
     // ------------------------------------------------------------
 
@@ -505,8 +574,16 @@
         // HEADER | Index badge, captured mode, and row actions
         const header = Na__VsDev__El('div', 'na-vs-dev__key-header');
         header.appendChild(Na__VsDev__El('span', 'na-vs-dev__key-index', String(index + 1)));
-        header.appendChild(Na__VsDev__El('span', 'na-vs-dev__key-mode',
-            keyframe.VideoStudio__Keyframe__CapturedInMode || 'Orbit'));
+        // A waypoint inserted along the path carries its own name; everything
+        // else is identified by the mode it was captured in.
+        const rowLabel = keyframe.VideoStudio__Keyframe__Label
+                      || keyframe.VideoStudio__Keyframe__CapturedInMode
+                      || 'Orbit';
+        const labelSpan = Na__VsDev__El('span', 'na-vs-dev__key-mode', rowLabel);
+        labelSpan.title = keyframe.VideoStudio__Keyframe__Label
+            ? 'Inserted along the path, aim interpolated from its neighbours'
+            : `Captured in ${rowLabel} mode`;
+        header.appendChild(labelSpan);
 
         const goButton = Na__VsDev__Button('Go To', null, 'Snap the camera to this keyframe');
         goButton.addEventListener('click', () => {
@@ -515,6 +592,45 @@
             Na__VideoStudio__PathVisualizer__Rebuild();                      // <-- Highlight moves to this marker
         });
         header.appendChild(goButton);
+
+        // UPDATE | Overwrite this shot with the current camera. The other half
+        // of Go To: jump to a waypoint, nudge the view until it reads right,
+        // then commit it without having to delete and recapture.
+        const updateButton = Na__VsDev__Button('Update', null,
+            'Overwrite this keyframe with the current camera view, including its lens');
+        updateButton.addEventListener('click', () => {
+            const before = Na__VideoStudio__UndoHistory__SnapshotKeyframe(keyframe);
+
+            const captureFov     = Na__VsDev__ResolveCaptureFov();
+            const cameraPosition = Na__VideoStudio__Camera__CaptureCurrentCameraState(Na__VsDev__Camera, captureFov);
+            if (!cameraPosition) {
+                Na__VsDev__Toast('Could not read the camera state.', true);
+                return;
+            }
+
+            const activeMode = (typeof Na__NavToolbar__GetActiveMode === 'function')
+                ? Na__NavToolbar__GetActiveMode()
+                : 'orbit';
+
+            keyframe.VideoStudio__Keyframe__CameraPosition = cameraPosition;
+            keyframe.VideoStudio__Keyframe__LensMm         = Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(captureFov));
+            keyframe.VideoStudio__Keyframe__CapturedInMode = activeMode.charAt(0).toUpperCase() + activeMode.slice(1);
+
+            Na__VideoStudio__UndoHistory__Record({
+                videoId,
+                keyframeId,
+                before,
+                after : Na__VideoStudio__UndoHistory__SnapshotKeyframe(keyframe),
+                label : `Update waypoint ${index + 1}`
+            });
+
+            Na__VideoStudio__ProjectJson__SetActiveKeyframeId(keyframeId);
+            Na__VsDev__OnDataChanged(videoId);
+            Na__VsDev__RenderPanel();                                        // <-- Lens and mode labels both moved
+
+            Na__VsDev__Toast(`Waypoint ${index + 1} updated to the current view.`);
+        });
+        header.appendChild(updateButton);
 
         const upButton = Na__VsDev__Button('▲', null, 'Move earlier');
         upButton.disabled = (index === 0);
@@ -554,24 +670,37 @@
 
         row.appendChild(header);
 
-        // TRAVEL TIME | Seconds spent flying from this keyframe to the next
+        // FIELDS | Travel, Hold and Lens share one compact row. Three short
+        // numbers on one line halves the height of a keyframe entry, which
+        // matters a great deal on a ten-waypoint path.
         const isLast     = (index === total - 1);
-        const travelRow  = Na__VsDev__Row('Travel');
+        const travelRow  = Na__VsDev__El('div', 'na-vs-dev__key-fields');
+        travelRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__label', 'Travel'));
         const travelInput = Na__VsDev__NumberInput(
             (keyframe.VideoStudio__Keyframe__SegmentMs / 1000).toFixed(1),
             Na__VideoStudio__MIN_SEGMENT_MS / 1000,
             Na__VideoStudio__MAX_SEGMENT_MS / 1000,
-            0.1
+            'any'                                                            // <-- Typed tenths stay valid
         );
         travelInput.disabled = isLast && !Na__VideoStudio__ProjectJson__GetPlaybackOptions(video).closedLoop;
         travelInput.title    = travelInput.disabled
             ? 'The final keyframe has nowhere to travel to on an open path'
-            : 'Seconds to fly from this keyframe to the next';
-        travelInput.addEventListener('change', () => {
+            : 'Seconds to fly from this keyframe to the next. Arrow keys step whole seconds; type for tenths.';
+
+        const commitTravel = () => {
             keyframe.VideoStudio__Keyframe__SegmentMs = Na__VideoStudio__ClampSegmentMs(parseFloat(travelInput.value) * 1000);
             travelInput.value = (keyframe.VideoStudio__Keyframe__SegmentMs / 1000).toFixed(1);
             Na__VsDev__OnDataChanged(videoId);
-        });
+        };
+
+        travelInput.addEventListener('change', commitTravel);
+        Na__VsDev__AttachArrowStep(
+            travelInput,
+            Na__VsDev__TRAVEL_ARROW_STEP_S,
+            Na__VideoStudio__MIN_SEGMENT_MS / 1000,
+            Na__VideoStudio__MAX_SEGMENT_MS / 1000,
+            commitTravel
+        );
         travelRow.appendChild(travelInput);
         travelRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__unit', 's'));
 
@@ -592,12 +721,12 @@
         travelRow.appendChild(holdInput);
         travelRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__unit', 's'));
 
-        row.appendChild(travelRow);
+        // LENS | Per-shot focal length, sharing the row with Travel and Hold.
+        // Editing it rewrites the keyframe's stored FOV too, which is what the
+        // sampler interpolates, so a pair of keyframes with different lenses
+        // gives a dolly zoom for free.
+        travelRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__label', 'Lens'));
 
-        // LENS | Per-shot focal length. Editing it rewrites the keyframe's
-        // stored FOV too, which is what the sampler interpolates, so a pair of
-        // keyframes with different lenses gives a dolly zoom for free.
-        const lensRow   = Na__VsDev__Row('Lens');
         const lensInput = Na__VsDev__NumberInput(
             Na__VideoStudio__ProjectJson__GetKeyframeLensMm(keyframe),
             Na__VideoStudio__MIN_LENS_MM,
@@ -607,44 +736,29 @@
         lensInput.title = `Focal length for this shot, ${Na__VideoStudio__MIN_LENS_MM} to ${Na__VideoStudio__MAX_LENS_MM}mm on full frame. `
                         + 'Differing lenses between two keyframes produce a dolly zoom.';
 
-        const lensSlider = Na__VsDev__Slider(
-            Na__VideoStudio__MIN_LENS_MM,
-            Na__VideoStudio__MAX_LENS_MM,
-            1,
-            Na__VideoStudio__ProjectJson__GetKeyframeLensMm(keyframe)
-        );
-        lensSlider.title = lensInput.title;
-
-        // HELPER | Commit a new lens and mirror it into both controls
-        const applyLens = (rawValue, isLivePreview) => {
-            const fov     = Na__VideoStudio__PathSampler__FocalMmToFov(rawValue);
-            const clamped = Na__VideoStudio__ProjectJson__SetKeyframeLens(videoId, keyframeId, rawValue, fov);
+        lensInput.addEventListener('change', () => {
+            const raw     = parseFloat(lensInput.value);
+            const fov     = Na__VideoStudio__PathSampler__FocalMmToFov(raw);
+            const clamped = Na__VideoStudio__ProjectJson__SetKeyframeLens(videoId, keyframeId, raw, fov);
             if (clamped === null) return;
 
-            lensInput.value  = String(clamped);
-            lensSlider.value = String(clamped);
+            lensInput.value = String(clamped);
 
             // LIVE PREVIEW | Only when the camera is actually sitting on this
-            // keyframe, so dragging a slider never yanks the view somewhere else.
-            if (isLivePreview
-                && Na__VsDev__Camera
-                && Na__VideoStudio__ProjectJson__GetActiveKeyframeId() === keyframeId) {
+            // keyframe, so editing a lens never yanks the view somewhere else.
+            if (Na__VsDev__Camera && Na__VideoStudio__ProjectJson__GetActiveKeyframeId() === keyframeId) {
                 Na__VsDev__Camera.fov = Na__VideoStudio__PathSampler__FocalMmToFov(clamped);
                 Na__VsDev__Camera.updateProjectionMatrix();
                 Na__RenderLoop__RequestRender();
             }
 
             Na__VsDev__OnDataChanged(videoId);
-        };
+        });
 
-        lensSlider.addEventListener('input',  () => applyLens(Number(lensSlider.value), true));
-        lensInput.addEventListener('change', () => applyLens(parseFloat(lensInput.value), true));
+        travelRow.appendChild(lensInput);
+        travelRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__unit', 'mm'));
 
-        lensRow.appendChild(lensInput);
-        lensRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__unit', 'mm'));
-        lensRow.appendChild(lensSlider);
-        row.appendChild(lensRow);
-
+        row.appendChild(travelRow);
         return row;
     }
     // ------------------------------------------------------------
@@ -686,14 +800,26 @@
 
         const defaultTravel = Na__VsDev__NumberInput(
             (playback.defaultSegmentMs / 1000).toFixed(1),
-            Na__VideoStudio__MIN_SEGMENT_MS / 1000, Na__VideoStudio__MAX_SEGMENT_MS / 1000, 0.1
+            Na__VideoStudio__MIN_SEGMENT_MS / 1000, Na__VideoStudio__MAX_SEGMENT_MS / 1000,
+            'any'                                                            // <-- Typed tenths stay valid
         );
-        defaultTravel.title = 'Default travel time given to each newly captured keyframe';
-        defaultTravel.addEventListener('change', () => {
+        defaultTravel.title = 'Default travel time given to each newly captured keyframe. '
+                            + 'Arrow keys step whole seconds; type for tenths.';
+
+        const commitDefaultTravel = () => {
             const value = Na__VideoStudio__ClampSegmentMs(parseFloat(defaultTravel.value) * 1000);
             Na__VideoStudio__ProjectJson__SetPlaybackOption(videoId, 'VideoStudio__Playback__DefaultSegmentMs', value);
             defaultTravel.value = (value / 1000).toFixed(1);
-        });
+        };
+
+        defaultTravel.addEventListener('change', commitDefaultTravel);
+        Na__VsDev__AttachArrowStep(
+            defaultTravel,
+            Na__VsDev__TRAVEL_ARROW_STEP_S,
+            Na__VideoStudio__MIN_SEGMENT_MS / 1000,
+            Na__VideoStudio__MAX_SEGMENT_MS / 1000,
+            commitDefaultTravel
+        );
         defaultsRow.appendChild(defaultTravel);
         defaultsRow.appendChild(Na__VsDev__El('span', 'na-vs-dev__unit', 's travel'));
 
@@ -956,7 +1082,7 @@
         safeFrameCheckbox.title   = 'Mask the viewport down to the export aspect ratio, so what you frame is what gets rendered.';
         safeFrameCheckbox.addEventListener('change', () => {
             Na__VsDev__SafeFrameOn = safeFrameCheckbox.checked;
-            Na__VsDev__ApplyFramingOverlays(video);
+            Na__VsDev__RefreshFramingOverlays();
             thirdsCheckbox.disabled = !Na__VsDev__SafeFrameOn;               // <-- Grid lives inside the frame
         });
         safeFrameRow.appendChild(safeFrameCheckbox);
@@ -970,7 +1096,7 @@
         thirdsCheckbox.title    = 'Composition grid drawn inside the safe frame. Needs the safe frame switched on.';
         thirdsCheckbox.addEventListener('change', () => {
             Na__VsDev__ThirdsOn = thirdsCheckbox.checked;
-            Na__UiFeature__SetViewportOverlayThirds(Na__VsDev__ThirdsOn);
+            Na__VsDev__RefreshFramingOverlays();
         });
         thirdsRow.appendChild(thirdsCheckbox);
         section.appendChild(thirdsRow);
@@ -1196,6 +1322,7 @@
             Na__VsDev__ExpandedVideoId = isExpanded ? null : videoId;
             Na__VideoStudio__ProjectJson__SetActiveVideoId(Na__VsDev__ExpandedVideoId);
             Na__VideoStudio__ProjectJson__SetActiveKeyframeId(null);
+            Na__VideoStudio__UndoHistory__Clear('active video changed');     // <-- History belongs to one path
             Na__VideoStudio__PathVisualizer__Rebuild();                      // <-- Overlay follows the expanded video
             Na__VsDev__RefreshFramingOverlays();                             // <-- Safe frame follows its aspect too
             Na__VsDev__RenderPanel();
@@ -1317,7 +1444,10 @@
 
         const dragHint = Na__VsDev__El('div', 'na-vs-dev__hint',
             'Drag a waypoint to move it. Shift: up/down. Ctrl: lock to one axis. '
-          + 'Ctrl+Shift: turn it. Escape cancels. K captures, Space plays.');
+          + 'Ctrl+Shift: turn it. Ctrl+click the line to insert one there. '
+          + 'Escape cancels a drag. Click one and press Delete to remove it. '
+          + `Ctrl+Z and Ctrl+Y step back and forward through the last ${Na__VsUndo__MAX_ENTRIES} edits. `
+          + 'K captures, Space plays.');
         panel.appendChild(dragHint);
 
         // VIDEO BLOCKS
@@ -1340,6 +1470,11 @@
         saveActions.appendChild(saveButton);
 
         panel.appendChild(saveActions);
+
+        // FRAMING OVERLAYS | Driven from here rather than from each caller, so
+        // every route that rebuilds the panel leaves the viewport agreeing with
+        // the checkboxes it just drew.
+        Na__VsDev__RefreshFramingOverlays();
     }
     // ------------------------------------------------------------
 
@@ -1349,6 +1484,52 @@
 // -----------------------------------------------------------------------------
 // REGION | Keyframe Capture
 // -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Switch Walk and Fly Look Between Pointer Lock and Drag
+    // ------------------------------------------------------------
+    // INERT AS OF 14-Aug-2026 - Adam Noble
+    //
+    // This was written to give Walk and Fly left-click drag look for as long as
+    // the Video Studio panel was open, and hand them back to pointer lock on
+    // fold. Trialling it that way made the case for drag look being better
+    // everywhere, not just here, so it is now the app-wide default set in
+    // Na__Navmode__FlyMode__DesktopControls.js and its Walk counterpart.
+    //
+    // Leaving this function in place, doing nothing, rather than deleting it:
+    // if the app-wide default is reverted to pointer lock, uncommenting the
+    // body below restores the panel-scoped behaviour with no other changes.
+    // Calling it as things stand would switch drag look OFF whenever the panel
+    // was folded, which is the opposite of what is now wanted.
+    // ------------------------------------------------------------
+    function Na__VsDev__ApplyLookMode(panelIsOpen) {
+        // if (typeof Na__FlyModeDesktop__SetDragLookEnabled === 'function') {
+        //     Na__FlyModeDesktop__SetDragLookEnabled(panelIsOpen);
+        // }
+        // if (typeof Na__WalkModeDesktop__SetDragLookEnabled === 'function') {
+        //     Na__WalkModeDesktop__SetDragLookEnabled(panelIsOpen);
+        // }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Resolve the Field of View a Capture Should Record
+    // ------------------------------------------------------------
+    // The lens of the camera you are actually looking through, whichever mode
+    // that is. What you framed is what gets recorded.
+    //
+    // Changed 14-Aug-2026. This briefly read the pre-mode FOV that Walk and Fly
+    // stash on entry, on the reasoning that their wide navigation lens was a
+    // travelling convenience rather than a chosen shot. That was wrong in
+    // practice: the viewport genuinely renders at the mode's lens, so the
+    // composition you judge while flying is that lens, and capturing the orbit
+    // one instead recorded a frame nobody had seen. Reading the live camera
+    // makes the panel, the viewport and the keyframe agree.
+    // ------------------------------------------------------------
+    function Na__VsDev__ResolveCaptureFov() {
+        return Na__VsDev__Camera ? Na__VsDev__Camera.fov : null;
+    }
+    // ------------------------------------------------------------
+
 
     // FUNCTION | Capture the Live Camera as a Keyframe on the Active Video
     // ------------------------------------------------------------
@@ -1362,7 +1543,8 @@
         }
         if (!Na__VsDev__Camera) return;
 
-        const cameraPosition = Na__VideoStudio__Camera__CaptureCurrentCameraState(Na__VsDev__Camera);
+        const captureFov     = Na__VsDev__ResolveCaptureFov();
+        const cameraPosition = Na__VideoStudio__Camera__CaptureCurrentCameraState(Na__VsDev__Camera, captureFov);
         if (!cameraPosition) {
             Na__VsDev__Toast('Could not read the camera state.', true);
             return;
@@ -1373,7 +1555,7 @@
             : 'orbit';
 
         const keyframe = Na__VideoStudio__ProjectJson__AddKeyframe(videoId, cameraPosition, {
-            lensMm         : Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(Na__VsDev__Camera.fov)),
+            lensMm         : Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(captureFov)),
             capturedInMode : activeMode.charAt(0).toUpperCase() + activeMode.slice(1)
         });
         if (!keyframe) return;
@@ -1400,24 +1582,54 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Handle the Capture Hotkey While the Panel Is Open
+    // HELPER FUNCTION | Handle the Video Studio Hotkeys
     // ------------------------------------------------------------
     // Both K and Shift+K capture, so the chord works whether or not Shift is
-    // already down from another interaction.  Alt, Ctrl and Meta are excluded
-    // so browser and OS shortcuts are never shadowed.
+    // already down from another interaction.  Ctrl+Z and Ctrl+Y step the
+    // waypoint edit history.  Delete removes the selected waypoint.
+    //
+    // Every branch bails out while a field has focus, so typing a video name
+    // never triggers an action and Ctrl+Z stays the browser's own text undo
+    // inside an input, which is what anyone would expect it to be there.
     // ------------------------------------------------------------
     function Na__VsDev__HandleHotkey(event) {
         if (!Na__VsDev__IsPanelOpen()) return;                               // <-- Only while the Video Studio panel is open
         if (Na__VsDev__IsExporting)    return;                               // <-- Never mid-export
-        if (event.altKey || event.ctrlKey || event.metaKey) return;
-        if (event.repeat) return;                                            // <-- Holding K must not spray keyframes
+        if (!event.key) return;
 
         const target = event.target;
         if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) {
-            return;                                                          // <-- Do not steal K while typing a video name
+            return;                                                          // <-- Fields keep their native behaviour
         }
 
-        if (!event.key) return;
+        // UNDO AND REDO | Ctrl+Z, Ctrl+Y, and Ctrl+Shift+Z as the usual alias.
+        // Handled ahead of the plain hotkeys because those exclude Ctrl.
+        if ((event.ctrlKey || event.metaKey) && !event.altKey) {
+            const chord = event.key.toLowerCase();
+
+            if (chord === 'z' && !event.shiftKey) {
+                event.preventDefault();
+                Na__VsDev__StepHistory(false);
+                return;
+            }
+            if (chord === 'y' || (chord === 'z' && event.shiftKey)) {
+                event.preventDefault();
+                Na__VsDev__StepHistory(true);
+                return;
+            }
+            return;                                                          // <-- Leave every other Ctrl chord alone
+        }
+
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        if (event.repeat) return;                                            // <-- Holding a key must not spray actions
+
+        // DELETE | Remove the selected waypoint. Backspace too, because half
+        // the world reaches for that instead on a laptop.
+        if (event.key === 'Delete' || event.key === 'Backspace') {
+            event.preventDefault();
+            Na__VsDev__DeleteSelectedKeyframe();
+            return;
+        }
 
         // SPACE | Play or pause the preview. Blocked outside Orbit because Fly
         // uses Space to ascend, and a button that already has focus will be
@@ -1436,6 +1648,79 @@
 
         event.preventDefault();
         Na__VsDev__CaptureKeyframe();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Step the Waypoint Edit History
+    // ------------------------------------------------------------
+    // Undo and redo write straight into the keyframe records, so everything
+    // downstream of that data has to be told: the viewport path, the cached
+    // preview timeline, and the panel readouts.
+    // ------------------------------------------------------------
+    function Na__VsDev__StepHistory(isRedo) {
+        const result = isRedo
+            ? Na__VideoStudio__UndoHistory__Redo()
+            : Na__VideoStudio__UndoHistory__Undo();
+
+        if (!result) {
+            Na__VsDev__Toast(isRedo ? 'Nothing to redo.' : 'Nothing to undo.');
+            return;
+        }
+
+        const videoId = Na__VideoStudio__ProjectJson__GetActiveVideoId();
+
+        if (result.keyframeId) {
+            Na__VideoStudio__ProjectJson__SetActiveKeyframeId(result.keyframeId);   // <-- Highlight what just changed
+        }
+
+        Na__VsDev__OnDataChanged(videoId);
+
+        // A structural step changes the keyframe list itself, so the rows have
+        // to be rebuilt rather than just refreshed.
+        if (result.kind === 'structure') Na__VsDev__RenderPanel();
+
+        const depth = Na__VideoStudio__UndoHistory__GetDepth();
+        Na__VsDev__Toast(`${isRedo ? 'Redo' : 'Undo'}: ${result.label} (${depth.undo} back, ${depth.redo} forward)`);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Delete the Selected Waypoint
+    // ------------------------------------------------------------
+    // Recorded as a structural history entry before the removal, so Ctrl+Z puts
+    // the waypoint back in its original place in the running order. Without
+    // that, a stray Delete would be unrecoverable, which is exactly the kind of
+    // unforgiving edit this history exists to stop.
+    // ------------------------------------------------------------
+    function Na__VsDev__DeleteSelectedKeyframe() {
+        const videoId    = Na__VideoStudio__ProjectJson__GetActiveVideoId();
+        const video      = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        const keyframeId = Na__VideoStudio__ProjectJson__GetActiveKeyframeId();
+
+        if (!video || !keyframeId) {
+            Na__VsDev__Toast('Click a waypoint in the viewport first, then press Delete.');
+            return;
+        }
+
+        const keyframes = Na__VideoStudio__ProjectJson__GetSortedKeyframes(video);
+        const index     = keyframes.findIndex(k => k.VideoStudio__Keyframe__Id === keyframeId);
+        if (index === -1) return;
+
+        const before = Na__VideoStudio__UndoHistory__SnapshotKeyframes(video);
+
+        if (!Na__VideoStudio__ProjectJson__DeleteKeyframe(videoId, keyframeId)) return;
+
+        Na__VideoStudio__UndoHistory__RecordStructure({
+            videoId,
+            before,
+            after : Na__VideoStudio__UndoHistory__SnapshotKeyframes(video),
+            label : `Delete waypoint ${index + 1}`
+        });
+
+        Na__VsDev__OnDataChanged(videoId);
+        Na__VsDev__RenderPanel();
+        Na__VsDev__Toast(`Waypoint ${index + 1} deleted. Ctrl+Z puts it back.`);
     }
     // ------------------------------------------------------------
 
@@ -1655,6 +1940,13 @@
                 panel.classList.toggle('is-open', !isOpen);
                 toggleBtn.setAttribute('aria-expanded', String(!isOpen));    // <-- The hotkey reads the class, not a flag
 
+                Na__VsDev__ApplyLookMode(!isOpen);                           // <-- Drag to look while authoring
+                Na__VsDev__RefreshFramingOverlays();                         // <-- Safe frame follows the panel
+
+                if (isOpen) {
+                    Na__VideoStudio__UndoHistory__Clear('panel closed');      // <-- Editing session ended
+                }
+
                 if (!isOpen) Na__VsDev__LoadExistingConfig();                // <-- Pull saved videos on first open
             });
         }
@@ -1669,6 +1961,15 @@
             const videoId = event.detail && event.detail.videoId;
             Na__VideoStudio__Preview__InvalidateTimeline(videoId || null);
             Na__VsDev__RefreshSummaries();
+        });
+
+        // WIRE PATH INSERTIONS | Ctrl+click on the line adds a waypoint, which
+        // changes the keyframe list, so the rows have to be rebuilt.
+        window.addEventListener(Na__VsDrag__INSERTED_EVENT, (event) => {
+            const detail = event.detail || {};
+            Na__VsDev__OnDataChanged(detail.videoId || null);
+            Na__VsDev__RenderPanel();
+            Na__VsDev__Toast(`${detail.label || 'Waypoint'} inserted along the path.`);
         });
 
         // WIRE CAPTURE HOTKEY

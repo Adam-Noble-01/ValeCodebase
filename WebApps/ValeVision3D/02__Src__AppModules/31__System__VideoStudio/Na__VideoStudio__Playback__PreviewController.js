@@ -56,7 +56,8 @@
         Na__VideoStudio__PathSampler__BuildTimeline,
         Na__VideoStudio__PathSampler__SampleAtTime,
         Na__VideoStudio__Camera__ApplyCameraState,
-        Na__VideoStudio__Camera__ApplyKeyframe
+        Na__VideoStudio__Camera__ApplyKeyframe,
+        Na__VideoStudio__Camera__AnnounceFovChange
     } from './Na__VideoStudio__Camera__PathSampler.js';
     // ------------------------------------------------------------
 
@@ -91,6 +92,12 @@
     // @delegate: ./Na__VideoStudio__Viewport__PathVisualizer.js
     // ------------------------------------------------------------
     import { Na__VideoStudio__PathVisualizer__SetSuppressed } from './Na__VideoStudio__Viewport__PathVisualizer.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Waypoint Edit Undo History
+    // @delegate: ./Na__VideoStudio__Edit__UndoHistory.js
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__UndoHistory__Clear } from './Na__VideoStudio__Edit__UndoHistory.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -191,6 +198,8 @@
             Na__VsPreview__Controls.target.copy(Na__VsPreview__SavedTarget);
             Na__VsPreview__Controls.update();
         }
+
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));      // <-- Stop puts the original lens back
 
         Na__VsPreview__ClearCameraSnapshot();
     }
@@ -337,6 +346,10 @@
         // the lens would fill the frame. Hide it while the camera is flying.
         Na__VideoStudio__PathVisualizer__SetSuppressed('preview', true);
 
+        // UNDO | Playback takes the camera over, which ends the editing
+        // session the waypoint history belongs to.
+        Na__VideoStudio__UndoHistory__Clear('preview started');
+
         Na__VsPreview__IsPlaying = true;
         Na__RenderLoop__RequestActiveRender(Na__VsPreview__RENDER_REASON);
 
@@ -358,6 +371,10 @@
             Na__VsPreview__AnimationSession = false;
         }
         Na__VideoStudio__PathVisualizer__SetSuppressed('preview', false);
+
+        // The timeline has been writing camera.fov every frame; tell the Tools
+        // menu lens readout now that the camera has settled.
+        Na__VideoStudio__Camera__AnnounceFovChange();
     }
     // ------------------------------------------------------------
 
@@ -422,6 +439,7 @@
         if (state) {
             Na__VideoStudio__Camera__ApplyCameraState(Na__VsPreview__Camera, state);
             Na__VsPreview__ReseatOrbitTarget();                              // <-- Scrubbing leaves the camera parked here
+            Na__VideoStudio__Camera__AnnounceFovChange();
             Na__RenderLoop__RequestRender();
         }
 
@@ -446,6 +464,7 @@
         if (!applied) return false;
 
         Na__VsPreview__ReseatOrbitTarget();
+        Na__VideoStudio__Camera__AnnounceFovChange();                        // <-- Go To adopts the keyframe's lens
         Na__RenderLoop__RequestRender();
         return true;
     }

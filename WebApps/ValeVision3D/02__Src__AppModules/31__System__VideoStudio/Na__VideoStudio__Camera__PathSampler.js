@@ -183,9 +183,18 @@
     // Returns an object matching VideoStudio__Keyframe__CameraPosition, using
     // the same Camera__DefaultPos / Rotation / Misc field names every other
     // camera block in project.json uses.  Positions are integer millimetres.
+    //
+    // fovOverrideDeg lets a caller store a different field of view from the one
+    // the camera currently has, for a scripted or offline capture.  Interactive
+    // capture omits it and records the live lens, because the composition being
+    // judged is whatever the viewport is actually rendering at.
     // ------------------------------------------------------------
-    function Na__VideoStudio__Camera__CaptureCurrentCameraState(camera) {
+    function Na__VideoStudio__Camera__CaptureCurrentCameraState(camera, fovOverrideDeg) {
         if (!camera) return null;
+
+        const fovDegrees = (Number.isFinite(fovOverrideDeg) && fovOverrideDeg > 0)
+            ? fovOverrideDeg
+            : camera.fov;
 
         return {
             Camera__DefaultPos      : {
@@ -199,7 +208,7 @@
                 Camera__DefaultRotation__RotZ : parseFloat(camera.rotation.z.toFixed(4))
             },
             Camera__DefaultMisc     : {
-                Camera__DefaultMisc__Fov : parseFloat(camera.fov.toFixed(4))               // <-- 4dp degrees
+                Camera__DefaultMisc__Fov : parseFloat(fovDegrees.toFixed(4))               // <-- 4dp degrees
             }
         };
     }
@@ -244,6 +253,30 @@
     // ------------------------------------------------------------
 
 
+    // MODULE VARIABLES | Pending Field of View Announcement
+    // ------------------------------------------------------------
+    // Applying a camera state changes camera.fov, which the Tools menu lens
+    // readout has to hear about or it carries on reporting a focal length the
+    // camera no longer has. Preview runs this sixty times a second, so the flag
+    // is raised here and the announcement is left to the caller to make once
+    // the camera settles rather than on every frame.
+    // ------------------------------------------------------------
+    let Na__VsPath__FovChanged = false;
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Announce a Field of View Change, If One Is Pending
+    // ------------------------------------------------------------
+    // Call at a settle point: a jump, a pause, the end of playback.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__Camera__AnnounceFovChange() {
+        if (!Na__VsPath__FovChanged) return;
+        Na__VsPath__FovChanged = false;
+        window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Snap the Live Camera to a Sampled Camera State
     // ------------------------------------------------------------
     // state is { position, quaternion, fov } as returned by SampleAtTime.
@@ -257,6 +290,7 @@
         if (Number.isFinite(state.fov) && Math.abs(camera.fov - state.fov) > 1e-4) {
             camera.fov = state.fov;
             camera.updateProjectionMatrix();                                 // <-- Only rebuild the matrix when FOV actually moved
+            Na__VsPath__FovChanged = true;                                   // <-- Announced by the caller at a settle point
         }
 
         camera.updateMatrixWorld(true);
@@ -717,6 +751,71 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Sample Camera State at a Point on the Curve
+    // ------------------------------------------------------------
+    // Addressed by curve parameter rather than by time, which is what an
+    // insertion needs: the user picks a place on the drawn path, not a moment
+    // in the clip. u runs 0 to 1 across the whole curve exactly as
+    // GetCurvePoints samples it, so a point picked out of that array maps
+    // straight back through here.
+    //
+    // Orientation and field of view are interpolated between the two keyframes
+    // the point falls between, so a waypoint inserted midway looks halfway
+    // between its neighbours rather than snapping to either.
+    //
+    // Returns { position, quaternion, fov, segIndex, localS } or null.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__PathSampler__SampleAtCurveU(timeline, u) {
+        if (!timeline || !timeline.curve || timeline.keyCount < 2) return null;
+
+        const divisor = timeline.closedLoop ? timeline.keyCount : (timeline.keyCount - 1);
+        if (divisor <= 0) return null;
+
+        const clamped = Math.max(0, Math.min(1, u));
+        const scaled  = clamped * divisor;
+
+        let segIndex = Math.floor(scaled);
+        if (segIndex >= divisor) segIndex = divisor - 1;                     // <-- u exactly 1 belongs to the last segment
+        const localS = scaled - segIndex;
+
+        const nextIndex = timeline.closedLoop
+            ? (segIndex + 1) % timeline.keyCount
+            : Math.min(segIndex + 1, timeline.keyCount - 1);
+
+        const quaternion = new THREE.Quaternion().slerpQuaternions(
+            timeline.quaternions[segIndex],
+            timeline.quaternions[nextIndex],
+            localS
+        );
+
+        return {
+            position   : timeline.curve.getPoint(clamped),
+            quaternion : quaternion,
+            fov        : THREE.MathUtils.lerp(timeline.fovs[segIndex], timeline.fovs[nextIndex], localS),
+            segIndex   : segIndex,
+            localS     : localS
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Convert a Quaternion to the Stored XYZ Euler Block
+    // ------------------------------------------------------------
+    // Camera blocks store rotation as an XYZ Euler; anything that produces a
+    // quaternion has to come back through here before it can be written.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__Camera__QuaternionToEulerBlock(quaternion) {
+        const euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ');
+
+        return {
+            Camera__DefaultRotation__RotX : parseFloat(euler.x.toFixed(4)),
+            Camera__DefaultRotation__RotY : parseFloat(euler.y.toFixed(4)),
+            Camera__DefaultRotation__RotZ : parseFloat(euler.z.toFixed(4))
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Sample Evenly Spaced Points Along the Whole Curve
     // ------------------------------------------------------------
     // Used by the viewport path visualiser to build the fat line geometry.
@@ -759,9 +858,12 @@
         Na__VideoStudio__Camera__ParseKeyframeState,
         Na__VideoStudio__Camera__ApplyCameraState,
         Na__VideoStudio__Camera__ApplyKeyframe,
+        Na__VideoStudio__Camera__AnnounceFovChange,
         Na__VideoStudio__PathSampler__ResolveEasing,
         Na__VideoStudio__PathSampler__BuildTimeline,
         Na__VideoStudio__PathSampler__SampleAtTime,
+        Na__VideoStudio__PathSampler__SampleAtCurveU,
+        Na__VideoStudio__Camera__QuaternionToEulerBlock,
         Na__VideoStudio__PathSampler__GetCurvePoints,
         Na__VideoStudio__PathSampler__FormatDuration
     };

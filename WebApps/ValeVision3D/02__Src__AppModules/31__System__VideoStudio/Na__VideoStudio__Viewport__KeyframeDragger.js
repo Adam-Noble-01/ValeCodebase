@@ -8,7 +8,7 @@
 // AUTHOR     : Adam Noble - Noble Architecture
 // PURPOSE    : Grab waypoint markers in the viewport and drag them, with the
 //              path reflowing live under the pointer
-// CREATED    : 13-Aug-2026
+// CREATED    : 14-Aug-2026
 //
 // DESCRIPTION:
 // - Lets a saved keyframe be repositioned by dragging its numbered marker in
@@ -20,11 +20,21 @@
 // - Ctrl and drag constrains movement to a single world axis, X or Z, chosen
 //   from the direction of the first real travel. That gives square, orthogonal
 //   moves instead of the free diagonal a plain drag produces, which is what you
-//   want when squaring a route up to a building. A coloured guide line marks
-//   the committed axis.
+//   want when squaring a route up to a building.
+//
+// - Both constrained modes draw a guide line along the axis in play, coloured
+//   to SKETCHUP's convention rather than the Three.js one: blue for vertical,
+//   red and green for the two ground axes. Everyone using this reads SketchUp
+//   axes all day, so that muscle memory is worth more than matching the
+//   library. Shift shows its blue line the instant the key goes down, since
+//   the axis is known immediately; Ctrl has none until enough travel has
+//   committed it to X or Z.
 // - Ctrl and Shift together turns the waypoint instead of moving it: dragging
 //   left and right yaws the shot about world up, so a camera can be re-aimed
-//   without flying back to it and recapturing.
+//   without flying back to it and recapturing. There is no world axis to show
+//   for a turn, so it draws a purple ray along the shot's own view direction
+//   instead, swinging with the drag. Purple sits outside the SketchUp axis set
+//   on purpose: it is a direction, not an axis, and should not read as one.
 // - Lens and timings are never touched by a drag.
 //
 // MODIFIERS ARE RESOLVED IN ONE PLACE:
@@ -54,7 +64,7 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 13-Aug-2026 - Version 1.0.0
+// 14-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
 //
 // =============================================================================
@@ -80,6 +90,7 @@
         Na__VideoStudio__PathVisualizer__SetDragRotation,
         Na__VideoStudio__PathVisualizer__GetMarkerQuaternion,
         Na__VideoStudio__PathVisualizer__SetAxisGuide,
+        Na__VideoStudio__PathVisualizer__SetAimGuide,
         Na__VideoStudio__PathVisualizer__EndDragPreview
     } from './Na__VideoStudio__Viewport__PathVisualizer.js';
     // ------------------------------------------------------------
@@ -89,6 +100,7 @@
     // ------------------------------------------------------------
     import {
         Na__VideoStudio__ProjectJson__GetActiveVideoId,
+        Na__VideoStudio__ProjectJson__GetVideoById,
         Na__VideoStudio__ProjectJson__SetActiveKeyframeId,
         Na__VideoStudio__ProjectJson__SetKeyframePosition,
         Na__VideoStudio__ProjectJson__SetKeyframeRotation
@@ -101,6 +113,47 @@
     import { Na__VideoStudio__Preview__IsPlaying } from './Na__VideoStudio__Playback__PreviewController.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Waypoint Edit Undo History
+    // @delegate: ./Na__VideoStudio__Edit__UndoHistory.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__UndoHistory__SnapshotKeyframe,
+        Na__VideoStudio__UndoHistory__Record
+    } from './Na__VideoStudio__Edit__UndoHistory.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Keyframe Lookup for Undo Snapshots
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__ProjectJson__GetKeyframeById,
+        Na__VideoStudio__ProjectJson__InsertKeyframeAfter,
+        Na__VideoStudio__ProjectJson__GetNextInsertedLabel
+    } from './Na__VideoStudio__ProjectJson__VideoData.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Path Sampling for Insertion
+    // @delegate: ./Na__VideoStudio__Camera__PathSampler.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__PathSampler__BuildTimeline,
+        Na__VideoStudio__PathSampler__SampleAtCurveU,
+        Na__VideoStudio__PathSampler__GetCurvePoints,
+        Na__VideoStudio__PathSampler__FovToFocalMm,
+        Na__VideoStudio__Camera__QuaternionToEulerBlock
+    } from './Na__VideoStudio__Camera__PathSampler.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Unit Conversion
+    // ------------------------------------------------------------
+    import { Na__Math__ConvertUnitsToMm } from '../04__MathUtils/Na__Math__Units.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Structural Undo Entries
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__UndoHistory__SnapshotKeyframes,
+             Na__VideoStudio__UndoHistory__RecordStructure } from './Na__VideoStudio__Edit__UndoHistory.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -111,6 +164,9 @@
     // MODULE CONSTANTS | Picking and Movement
     // ------------------------------------------------------------
     const Na__VsDrag__GRAB_RADIUS_PX   = 22;      // <-- Screen-space pick radius around a marker
+    const Na__VsDrag__PATH_GRAB_PX     = 14;      // <-- Tighter than a marker; the line is thin
+    const Na__VsDrag__PATH_PICK_SAMPLES = 600;    // <-- Curve samples walked when picking a point on the path
+    const Na__VsDrag__INSERTED_EVENT   = 'na-video-studio-keyframe-inserted';
     const Na__VsDrag__MIN_RAY_SLOPE    = 0.0015;  // <-- Below this the ground plane is edge-on; ignore the sample
     const Na__VsDrag__MOVED_EVENT      = 'na-video-studio-keyframe-moved';
     // ------------------------------------------------------------
@@ -168,6 +224,7 @@
     let Na__VsDrag__LockedAxis       = null;    // <-- 'x' or 'z' once enough travel has committed one
     let Na__VsDrag__RotateAnchorX    = 0;       // <-- Screen X where the current rotate gesture began
     let Na__VsDrag__DidRotate        = false;   // <-- Orientation changed, so commit a rotation too
+    let Na__VsDrag__UndoBefore       = null;    // <-- Camera block as it was when the drag started
     // ------------------------------------------------------------
 
 
@@ -250,6 +307,52 @@
         }
 
         return bestIndex;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Find the Point on the Path Nearest a Screen Point
+    // ------------------------------------------------------------
+    // Screen space again, and for the same reason as marker picking: the path
+    // is drawn at a constant screen thickness, so it should be equally
+    // clickable however far away it is. Walking the sampled curve and
+    // projecting each point is the direct way to match what is on screen.
+    //
+    // Returns { u, position } for the nearest point inside the grab radius, or
+    // null. u is the curve parameter, which is what an insertion needs.
+    // ------------------------------------------------------------
+    function Na__VsDrag__PickPathAtScreen(timeline, clientX, clientY) {
+        if (!timeline || !timeline.curve) return null;
+
+        const points = Na__VideoStudio__PathSampler__GetCurvePoints(timeline, Na__VsDrag__PATH_PICK_SAMPLES);
+        if (points.length < 2) return null;
+
+        const rect = Na__VsDrag__Renderer.domElement.getBoundingClientRect();
+
+        let bestIndex    = -1;
+        let bestDistance = Na__VsDrag__PATH_GRAB_PX;
+
+        for (let i = 0; i < points.length; i++) {
+            Na__VsDrag__ScratchVec.copy(points[i]).project(Na__VsDrag__Camera);
+            if (Na__VsDrag__ScratchVec.z > 1) continue;                      // <-- Behind the camera
+
+            const screenX = rect.left + ((Na__VsDrag__ScratchVec.x + 1) / 2) * rect.width;
+            const screenY = rect.top  + ((1 - Na__VsDrag__ScratchVec.y) / 2) * rect.height;
+
+            const distance = Math.hypot(screenX - clientX, screenY - clientY);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex    = i;
+            }
+        }
+
+        if (bestIndex < 0) return null;
+
+        // GetCurvePoints returns divisions + 1 points sampled evenly in u.
+        return {
+            u        : bestIndex / (points.length - 1),
+            position : points[bestIndex].clone()
+        };
     }
     // ------------------------------------------------------------
 
@@ -386,7 +489,17 @@
         // SELECTION | The grabbed waypoint becomes the highlighted one
         Na__VideoStudio__ProjectJson__SetActiveKeyframeId(target.keyframeId);
 
+        // UNDO | Snapshot the camera block before anything is written, so a
+        // committed drag can be stepped back. Taken here rather than at commit
+        // because by then the live values have already moved.
+        const record = Na__VideoStudio__ProjectJson__GetKeyframeById(
+            Na__VideoStudio__ProjectJson__GetVideoById(Na__VideoStudio__ProjectJson__GetActiveVideoId()),
+            target.keyframeId
+        );
+        Na__VsDrag__UndoBefore = Na__VideoStudio__UndoHistory__SnapshotKeyframe(record);
+
         Na__VsDrag__SetCursor(Na__VsDrag__Mode === Na__VsDrag__MODE_ROTATE ? 'ew-resize' : 'grabbing');
+        Na__VsDrag__RefreshAxisGuide(target);                            // <-- Shift held from the outset shows blue at once
         Na__VideoStudio__PathVisualizer__SetHovered(index);
     }
     // ------------------------------------------------------------
@@ -405,6 +518,36 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Show the Guide Line the Current Mode Calls For
+    // ------------------------------------------------------------
+    // A vertical drag gets its blue line straight away, because the axis is
+    // known the instant Shift goes down. A Ctrl drag has no line until enough
+    // travel has committed it to X or Z, so it starts with none and the
+    // constraint adds one when it decides.
+    // ------------------------------------------------------------
+    function Na__VsDrag__RefreshAxisGuide(target) {
+        if (!target) return;
+
+        if (Na__VsDrag__Mode === Na__VsDrag__MODE_VERTICAL) {
+            Na__VideoStudio__PathVisualizer__SetAxisGuide('y', target.position);
+            return;
+        }
+
+        if (Na__VsDrag__Mode === Na__VsDrag__MODE_ROTATE) {
+            Na__VideoStudio__PathVisualizer__SetAimGuide(target.position, Na__VsDrag__StartQuat);
+            return;
+        }
+
+        if (Na__VsDrag__Mode === Na__VsDrag__MODE_HORIZONTAL && Na__VsDrag__LockedAxis) {
+            Na__VideoStudio__PathVisualizer__SetAxisGuide(Na__VsDrag__LockedAxis, Na__VsDrag__AxisAnchor);
+            return;
+        }
+
+        Na__VideoStudio__PathVisualizer__SetAxisGuide(null, null);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Re-Anchor a Drag After the Mode Changed
     // ------------------------------------------------------------
     // Rebuilds whatever the new mode measures from, using the waypoint's
@@ -416,12 +559,13 @@
             Na__VsDrag__RotateAnchorX = event.clientX;
             const current = Na__VideoStudio__PathVisualizer__GetMarkerQuaternion(Na__VsDrag__ActiveIndex);
             if (current) Na__VsDrag__StartQuat.copy(current);                // <-- Turn onward from the current aim
-            Na__VideoStudio__PathVisualizer__SetAxisGuide(null, null);
+            Na__VideoStudio__PathVisualizer__SetAimGuide(target.position, Na__VsDrag__StartQuat);
             Na__VsDrag__SetCursor('ew-resize');
             return;
         }
 
         Na__VsDrag__SetCursor('grabbing');
+        Na__VsDrag__RefreshAxisGuide(target);                            // <-- Blue line the moment Shift goes down
         Na__VsDrag__SyncRaycaster(event.clientX, event.clientY);
         Na__VsDrag__BuildDragPlane(target.position, Na__VsDrag__Mode === Na__VsDrag__MODE_VERTICAL);
 
@@ -496,7 +640,7 @@
             Na__VsDrag__IsAxisLocked = event.ctrlKey;
             Na__VsDrag__LockedAxis   = null;
             Na__VsDrag__AxisAnchor.copy(target.position);
-            Na__VideoStudio__PathVisualizer__SetAxisGuide(null, null);
+            Na__VideoStudio__PathVisualizer__SetAxisGuide(null, null);    // <-- Cleared until an axis commits
             Na__VsDrag__ReanchorForMode(target, event);
             return;
         }
@@ -511,6 +655,7 @@
 
             Na__VsDrag__DidRotate = true;
             Na__VideoStudio__PathVisualizer__SetDragRotation(Na__VsDrag__ActiveIndex, Na__VsDrag__WorkQuat);
+            Na__VideoStudio__PathVisualizer__SetAimGuide(target.position, Na__VsDrag__WorkQuat);
             return;
         }
 
@@ -574,6 +719,24 @@
             }
         }
 
+        // UNDO | Record the committed edit. Taken after both the position and
+        // the rotation writes above, so one entry covers the whole gesture
+        // however the modifiers were used during it.
+        if (commit && (didMove || didRotate) && Na__VsDrag__UndoBefore) {
+            const record = Na__VideoStudio__ProjectJson__GetKeyframeById(
+                Na__VideoStudio__ProjectJson__GetVideoById(videoId),
+                keyframeId
+            );
+            Na__VideoStudio__UndoHistory__Record({
+                videoId,
+                keyframeId,
+                before : Na__VsDrag__UndoBefore,
+                after  : Na__VideoStudio__UndoHistory__SnapshotKeyframe(record),
+                label  : didRotate ? 'Turn waypoint' : 'Move waypoint'
+            });
+        }
+        Na__VsDrag__UndoBefore = null;
+
         // RESET STATE BEFORE REBUILDING | EndDragPreview rebuilds the overlay,
         // which replaces the very arrays being read above.
         Na__VsDrag__ActiveIndex      = -1;
@@ -601,6 +764,69 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Insert a Waypoint Where the Path Was Clicked
+    // ------------------------------------------------------------
+    // The position comes from the point on the curve itself, so the new
+    // waypoint sits exactly on the route already drawn and the trajectory does
+    // not shift. Its aim and lens are interpolated from the two waypoints it
+    // falls between, which is the orientation the camera would have had passing
+    // through that spot anyway.
+    //
+    // Returns true when a waypoint was inserted.
+    // ------------------------------------------------------------
+    function Na__VsDrag__InsertOnPath(clientX, clientY) {
+        const videoId = Na__VideoStudio__ProjectJson__GetActiveVideoId();
+        const video   = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        if (!video) return false;
+
+        const timeline = Na__VideoStudio__PathSampler__BuildTimeline(video);
+        if (!timeline || !timeline.curve) return false;                      // <-- Needs two waypoints to have a path
+
+        const hit = Na__VsDrag__PickPathAtScreen(timeline, clientX, clientY);
+        if (!hit) return false;                                              // <-- Click was not on the line
+
+        const sample = Na__VideoStudio__PathSampler__SampleAtCurveU(timeline, hit.u);
+        if (!sample) return false;
+
+        // UNDO | Recorded as a structural change, so Ctrl+Z removes it again
+        const before = Na__VideoStudio__UndoHistory__SnapshotKeyframes(video);
+
+        const cameraPosition = {
+            Camera__DefaultPos      : {
+                Camera__DefaultPos__PosX : Math.round(Na__Math__ConvertUnitsToMm(sample.position.x)),
+                Camera__DefaultPos__PosY : Math.round(Na__Math__ConvertUnitsToMm(sample.position.y)),
+                Camera__DefaultPos__PosZ : Math.round(Na__Math__ConvertUnitsToMm(sample.position.z))
+            },
+            Camera__DefaultRotation : Na__VideoStudio__Camera__QuaternionToEulerBlock(sample.quaternion),
+            Camera__DefaultMisc     : { Camera__DefaultMisc__Fov: parseFloat(sample.fov.toFixed(4)) }
+        };
+
+        const inserted = Na__VideoStudio__ProjectJson__InsertKeyframeAfter(videoId, sample.segIndex, cameraPosition, {
+            localS         : sample.localS,
+            lensMm         : Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(sample.fov)),
+            capturedInMode : 'Inserted',
+            label          : Na__VideoStudio__ProjectJson__GetNextInsertedLabel(video)
+        });
+        if (!inserted) return false;
+
+        Na__VideoStudio__UndoHistory__RecordStructure({
+            videoId,
+            before,
+            after : Na__VideoStudio__UndoHistory__SnapshotKeyframes(video),
+            label : inserted.VideoStudio__Keyframe__Label || 'Insert waypoint'
+        });
+
+        Na__VideoStudio__ProjectJson__SetActiveKeyframeId(inserted.VideoStudio__Keyframe__Id);
+
+        window.dispatchEvent(new CustomEvent(Na__VsDrag__INSERTED_EVENT, {
+            detail: { videoId, keyframeId: inserted.VideoStudio__Keyframe__Id, label: inserted.VideoStudio__Keyframe__Label }
+        }));
+
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Pointer Down, Capture Phase on Window
     // ------------------------------------------------------------
     function Na__VsDrag__OnPointerDown(event) {
@@ -610,13 +836,23 @@
         if (event.target !== Na__VsDrag__Renderer.domElement) return;        // <-- Ignore clicks on the menus
 
         const index = Na__VsDrag__PickAtScreen(event.clientX, event.clientY);
-        if (index < 0) return;
+        if (index >= 0) {
+            // Stop the event reaching the canvas so OrbitControls never sees it.
+            event.preventDefault();
+            event.stopPropagation();
+            Na__VsDrag__BeginDrag(index, event);
+            return;
+        }
 
-        // Stop the event reaching the canvas so OrbitControls never sees it.
-        event.preventDefault();
-        event.stopPropagation();
-
-        Na__VsDrag__BeginDrag(index, event);
+        // CTRL ON THE PATH ITSELF | Insert a waypoint where the line was
+        // clicked. Checked only after the marker pick misses, so Ctrl+clicking
+        // an existing marker still starts an axis-locked drag.
+        if (event.ctrlKey && !event.shiftKey) {
+            if (Na__VsDrag__InsertOnPath(event.clientX, event.clientY)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
     }
     // ------------------------------------------------------------
 
@@ -717,6 +953,7 @@
     // ------------------------------------------------------------
     export {
         Na__VsDrag__MOVED_EVENT,
+        Na__VsDrag__INSERTED_EVENT,
         Na__VideoStudio__KeyframeDragger__Initialize,
         Na__VideoStudio__KeyframeDragger__IsDragging
     };

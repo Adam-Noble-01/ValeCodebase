@@ -1,0 +1,52 @@
+{
+    "projectName": "Bressard-Kayode__Scheme-01",
+    "projectCode": "63592",
+    "productionData": {
+        "input": "NOT YET REVIEWED",
+        "conceptArtist": "Anna",
+        "designer": "Dan",
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues."
+    },
+    "scheduleData": {
+        "dateReceived": "NOT YET REVIEWED",
+        "dateFulfilled": "25-Jun-2026",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "images": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026.png",
+        "IMG02__3dView__ViewOption-02____WhitecardImage__25-Jun-2026.png"
+    ],
+    "ProjectType": "Whitecard",
+    "basePath": "Projects/2026/63592__Bressard-Kayode__Scheme-01",
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-01/Bressard-Kayode__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ],
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        },
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        }
+    },
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__25-Jun-2026__Thumbnail__524p__.webp"
+}

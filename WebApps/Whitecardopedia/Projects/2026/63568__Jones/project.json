@@ -14,7 +14,7 @@
         "timeTaken": 2
     },
     "images": [
-        "IMG01__3dView__ViewOption-01____WhitecardImage__29-May-2026.png"
+        "IMG01__3dView__ViewOption-01____WhitecardImage__18-Aug-2026.png"
     ],
     "ProjectType": "Blockout",
     "basePath": "Projects/2026/63568__Jones",
@@ -48,7 +48,7 @@
             "Camera__DefaultMisc__Fov": 29.8628
         }
     },
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__29-May-2026__Thumbnail__524p__.webp",
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__18-Aug-2026__Thumbnail__524p__.webp",
     "folderId": "2026/63568__Jones",
     "displayImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__29-May-2026.png"
@@ -56,5 +56,53 @@
     "artPairsMap": {},
     "allImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__29-May-2026.png"
-    ]
+    ],
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "18-Aug-2026 at 13:29",
+        "model_name": "Jones__WhiteCardModel__1.1.0__",
+        "coordinate_system": "SketchUp_Z_up",
+        "units": "mm",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "scene_name": "IMG01__3dView__ViewOption-01__",
+                "scene_description": "",
+                "include_in_animation": true,
+                "camera": {
+                    "eye": {
+                        "x": -679.4103,
+                        "y": -3854.6242,
+                        "z": 3200.0
+                    },
+                    "target": {
+                        "x": 10697.9053,
+                        "y": 11638.0195,
+                        "z": 3200.0
+                    },
+                    "up": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.591906,
+                        "y": 0.806007,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 29.6379,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
+                },
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true
+                },
+                "section_planes": null
+            }
+        ]
+    }
 }

@@ -20,8 +20,7 @@
 //   paths would render as broken images and dead links.
 //
 // TOKENS SUBSTITUTED:
-//   __REPORT_PERIOD__, __HEADLINE_TILES__, __TREND_PERIOD__,
-//   __EFFICIENCY_ROWS__, __THROUGHPUT_ROWS__,
+//   __REPORT_PERIOD__, __HEADLINE_TILES__,
 //   __DASHBOARD_URL__, __ACCESS_PHRASE__, __GENERATED_ON__
 //
 // -----------------------------------------------------------------------------
@@ -56,8 +55,6 @@
         wash    : '#f5f5f5',                                                     // <-- Tile background
         good    : '#7d9471',                                                     // <-- Sage accent
         warn    : '#b0846a',                                                     // <-- Clay accent
-        grey    : '#9aa5ac',                                                     // <-- Absolute time card bar
-        line    : '#5b7c99',                                                     // <-- Net in-scope bar
         red     : '#b03a2e'                                                      // <-- Access phrase emphasis
     };
     // ------------------------------------------------------------
@@ -157,103 +154,6 @@
     }
     // ---------------------------------------------------------------
 
-    // HELPER FUNCTION | Select the Months Shown in the Email Trend Blocks
-    // ------------------------------------------------------------
-    // Both blocks use the same window so the two columns line up row for row
-    // and can be read across. The window starts where the efficiency trend
-    // does: months before the established production pipeline are not
-    // comparable, and a ragged pair of columns would not be compact.
-    // ------------------------------------------------------------
-    function na_kpi_email_trend_months(stats) {
-        return (stats.monthly || []).filter(month =>
-            month.key >= EFFICIENCY_TREND_START                                  // <-- Shared cut-off
-        );
-    }
-    // ---------------------------------------------------------------
-
-    // HELPER FUNCTION | Build One Compact Bar Row
-    // ------------------------------------------------------------
-    // Deliberately terse: label, bar, value on a single table row. Mail
-    // clients strip JavaScript and will not draw an SVG, so the bar is a
-    // coloured table cell sized by its width attribute, which Outlook
-    // honours even where it ignores CSS widths.
-    // ------------------------------------------------------------
-    function na_kpi_email_trend_row(label, filledPx, colour, value) {
-        return ''
-            + `<tr>`
-            +   `<td width="46" style="padding:3px 0; font-size:11px; color:${NA_KPI_EMAIL_COLOURS.muted}; white-space:nowrap;">`
-            +     na_kpi_email_escape(label)
-            +   `</td>`
-            +   `<td style="padding:3px 0;">`
-            +     `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="display:inline-table;">`
-            +       `<tr>`
-            +         `<td width="${Math.max(2, filledPx)}" height="8" style="background-color:${colour}; border-radius:3px; font-size:0; line-height:0;">&nbsp;</td>`
-            +         `<td style="padding-left:6px; font-size:11px; font-weight:600; color:${NA_KPI_EMAIL_COLOURS.brand}; white-space:nowrap;">${na_kpi_email_escape(value)}</td>`
-            +       `</tr>`
-            +     `</table>`
-            +   `</td>`
-            + `</tr>`;
-    }
-    // ---------------------------------------------------------------
-
-    // HELPER FUNCTION | Build the Scope Efficiency Trend Rows
-    // ------------------------------------------------------------
-    // Bars are scaled so the 100% break-even point sits at a fixed fraction
-    // of the track. A month that beat its quotes therefore visibly overhangs
-    // the months that did not, without needing an axis.
-    // ------------------------------------------------------------
-    function na_kpi_email_build_efficiency(stats) {
-        const months = na_kpi_email_trend_months(stats).filter(m => m.efficiency !== null);
-        if (!months.length) {
-            return `<tr><td style="padding:6px 0; font-size:11px; color:${NA_KPI_EMAIL_COLOURS.muted};">No reviewed months yet.</td></tr>`;
-        }
-
-        const peak    = Math.max(100, ...months.map(m => m.efficiency));         // <-- Never squash the break-even mark
-        const trackPx = 120;                                                     // <-- Full length of the bar track
-
-        return months.map(month => na_kpi_email_trend_row(
-            month.label,
-            Math.round((month.efficiency / peak) * trackPx),
-            month.efficiency >= 100 ? NA_KPI_EMAIL_COLOURS.good : NA_KPI_EMAIL_COLOURS.warn,
-            `${month.efficiency}%`
-        )).join('');
-    }
-    // ---------------------------------------------------------------
-
-    // HELPER FUNCTION | Build the Jobs Delivered Rows
-    // ------------------------------------------------------------
-    function na_kpi_email_build_throughput(stats) {
-        const months = na_kpi_email_trend_months(stats);
-        if (!months.length) {
-            return `<tr><td style="padding:6px 0; font-size:11px; color:${NA_KPI_EMAIL_COLOURS.muted};">No deliveries recorded yet.</td></tr>`;
-        }
-
-        const peak    = Math.max(1, ...months.map(m => m.count));                // <-- Busiest month sets the scale
-        const trackPx = 120;                                                     // <-- Match the efficiency track
-
-        return months.map(month => na_kpi_email_trend_row(
-            month.label,
-            Math.round((month.count / peak) * trackPx),
-            NA_KPI_EMAIL_COLOURS.line,
-            String(month.count)
-        )).join('');
-    }
-    // ---------------------------------------------------------------
-
-    // HELPER FUNCTION | Describe the Window Both Blocks Cover
-    // ------------------------------------------------------------
-    function na_kpi_email_trend_period(stats) {
-        const months = na_kpi_email_trend_months(stats);
-        if (!months.length) return 'No comparable months recorded yet.';
-
-        const first = months[0].label;
-        const last  = months[months.length - 1].label;
-
-        return `Monthly, ${first} to ${last}. Earlier months predate the established `
-             + `production pipeline and are not comparable.`;
-    }
-    // ---------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -286,9 +186,6 @@
         const output = template
             .replace(/__REPORT_PERIOD__/g,  na_kpi_email_escape(period))
             .replace(/__HEADLINE_TILES__/g, na_kpi_email_build_tiles(stats))
-            .replace(/__TREND_PERIOD__/g,     na_kpi_email_escape(na_kpi_email_trend_period(stats)))
-            .replace(/__EFFICIENCY_ROWS__/g,  na_kpi_email_build_efficiency(stats))
-            .replace(/__THROUGHPUT_ROWS__/g,  na_kpi_email_build_throughput(stats))
             .replace(/__DASHBOARD_URL__/g,  NA_KPI_DASHBOARD_URL)
             .replace(/__ACCESS_PHRASE__/g,  na_kpi_email_escape(NA_KPI_ACCESS_PHRASE))
             .replace(/__GENERATED_ON__/g,   na_kpi_email_escape(generatedOn));

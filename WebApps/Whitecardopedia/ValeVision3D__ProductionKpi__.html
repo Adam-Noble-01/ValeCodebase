@@ -15,24 +15,27 @@
     NAMESPACE  : Whitecardopedia
     MODULE     : External KPI Dashboard
     AUTHOR     : Adam Noble - Noble Architecture
-    PURPOSE    : Read-only production metrics for people outside the Whitecardopedia
-                 app, gated by a shared access phrase.
+    PURPOSE    : Give people outside the Whitecardopedia app the complete Time
+                 Analysis Tool, every chart included, behind a shared access
+                 phrase.
     CREATED    : 18-Aug-2026
 
     DESCRIPTION:
-    - Standalone page: no gallery, no editor, no project data beyond the
-      aggregate figures. Nothing here can be changed by the viewer.
-    - Figures come from Na__AppUtils__ProductionKpiStats.js, the same engine the
-      in-app Time Analysis Tool uses, so the two can never disagree.
-    - Projects load through the production path (R2 first, GitHub Pages
-      fallback), so the page works from any origin without the localhost
-      discovery API.
+    - Mounts the real TimeAnalysisTool component rather than reimplementing it.
+      Every chart, table and tooltip the in-app tool has is present here, and
+      the two can never drift apart because there is only one implementation.
+    - Passing no `onBack` puts the tool in standalone mode: the breadcrumb bar
+      and the report-sharing button are hidden, since an external viewer has no
+      gallery to return to and no need to generate emails.
+    - Project data loads through Na__AppUtils__KpiProjectSource, which falls
+      back from the localhost discovery API to the published master index, so
+      the page works from GitHub Pages with no server behind it.
 
     ACCESS CONTROL - READ THIS BEFORE RELYING ON IT:
     - The access phrase is checked in the browser, so it is a deterrent that
       keeps casual visitors out. It is NOT cryptographic protection: anyone who
-      opens developer tools can read the phrase, and the underlying project JSON
-      is already publicly readable on the CDN.
+      opens developer tools can read the phrase, and the underlying project
+      JSON is already publicly readable on the CDN.
     - Suitable for internal-but-shareable operational figures. Do not treat it
       as protection for anything confidential.
 
@@ -40,19 +43,24 @@
 
     DEVELOPMENT LOG:
     18-Aug-2026 - Version 1.0.0
-    - Initial release: access gate, live KPI load, read-only dashboard.
+    - Initial release: summary-only dashboard.
+
+    18-Aug-2026 - Version 2.0.0
+    - Replaced the bespoke summary with the full TimeAnalysisTool component, so
+      external viewers get every interactive chart rather than a subset.
 
     =============================================================================
 -->
 
 <link rel="stylesheet" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/03__Style__AppStylesheets/Na__CoreUi__Styles__Variables__.css">
+<link rel="stylesheet" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css">
+<link rel="stylesheet" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/03__Style__AppStylesheets/Na__UiFeature__Styles__TimeAnalysis__.css">
+<link rel="stylesheet" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/03__Style__AppStylesheets/Na__UiFeature__Styles__Tools__.css">
 
 <style>
     /* -----------------------------------------------------------------------------
-     * REGION | Page Shell
+     * REGION | Access Gate
      * ----------------------------------------------------------------------------- */
-
-    * { box-sizing: border-box; }
 
     body {
         margin                             : 0;                              /* <-- Reset default margin */
@@ -61,148 +69,8 @@
         color                              : var(--Vale_TextPrimary, #172b3a);
     }
 
-    .kpi-header {
-        display                            : flex;                           /* <-- Two logo band */
-        align-items                        : center;
-        justify-content                    : space-between;
-        background-color                   : var(--Vale_BackgroundWhite, #ffffff);
-        border-bottom                      : 2px solid var(--Vale_PrimaryBrand, #172b3a);
-        padding                            : 12px 24px;
-    }
-
-    .kpi-header__logo-left  { height: 42px; }
-    .kpi-header__logo-right { height: 26px; }
-
-    .kpi-page {
-        max-width                          : 1340px;                         /* <-- Match the in-app dashboard width */
-        margin                             : 0 auto;
-        padding                            : 24px;
-    }
-
-    .kpi-panel {
-        background-color                   : var(--Vale_BackgroundWhite, #ffffff);
-        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
-        border-radius                      : 8px;
-        padding                            : 24px;
-        margin-bottom                      : 24px;
-        box-shadow                         : 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .kpi-panel__head {
-        display                            : flex;
-        justify-content                    : space-between;
-        align-items                        : baseline;
-        flex-wrap                          : wrap;
-        gap                                : 8px;
-        border-bottom                      : 2px solid var(--Vale_BorderLight, #cccccc);
-        padding-bottom                     : 8px;
-        margin-bottom                      : 16px;
-    }
-
-    .kpi-panel__title {
-        margin                             : 0;
-        font-size                          : 24px;
-        font-weight                        : 600;
-    }
-
-    .kpi-panel__span {
-        font-size                          : 12px;
-        color                              : var(--Vale_TextSecondary, #656565);
-    }
-
-    /* endregion ------------------------------------------------------------------- */
-
-    /* -----------------------------------------------------------------------------
-     * REGION | KPI Tiles and Tables
-     * ----------------------------------------------------------------------------- */
-
-    .kpi-tiles {
-        display                            : grid;
-        grid-template-columns              : repeat(auto-fit, minmax(190px, 1fr));
-        gap                                : 8px;
-        margin-bottom                      : 24px;
-    }
-
-    .kpi-tile {
-        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
-        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
-        border-left                        : 4px solid var(--Vale_PrimaryBrand, #172b3a);
-        border-radius                      : 8px;
-        padding                            : 16px;
-    }
-
-    .kpi-tile--good { border-left-color: #7d9471; }
-    .kpi-tile--warn { border-left-color: #b0846a; }
-
-    .kpi-tile__value { font-size: 24px; font-weight: 600; line-height: 1.2; }
-    .kpi-tile__label { font-size: 14px; font-weight: 600; }
-    .kpi-tile__sub   { font-size: 12px; color: var(--Vale_TextSecondary, #656565); }
-
-    .kpi-grid {
-        display                            : grid;
-        grid-template-columns              : repeat(auto-fit, minmax(460px, 1fr));
-        gap                                : 16px;
-    }
-
-    .kpi-block {
-        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
-        border-radius                      : 8px;
-        padding                            : 16px;
-        min-width                          : 0;
-    }
-
-    .kpi-block__title {
-        margin                             : 0 0 8px 0;
-        padding-bottom                     : 6px;
-        font-size                          : 18px;
-        font-weight                        : 600;
-        border-bottom                      : 2px solid var(--Vale_BorderLight, #cccccc);
-    }
-
-    .kpi-table {
-        width                              : 100%;
-        border-collapse                    : collapse;
-        table-layout                       : fixed;
-        font-size                          : 12px;
-    }
-
-    .kpi-table th,
-    .kpi-table td {
-        padding                            : 8px 10px;
-        text-align                         : left;
-        border-bottom                      : 1px solid var(--Vale_BackgroundLight, #f5f5f5);
-    }
-
-    .kpi-table th {
-        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
-        font-weight                        : 600;
-    }
-
-    .kpi-table .num { text-align: right; width: 74px; }
-    .kpi-table .bar-col { width: 124px; white-space: nowrap; }
-
-    .kpi-bar {
-        display                            : inline-block;
-        width                              : 52px;
-        height                             : 8px;
-        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
-        border-radius                      : 4px;
-        overflow                           : hidden;
-        vertical-align                     : middle;
-        margin-right                       : 6px;
-    }
-
-    .kpi-bar__fill { display: block; height: 100%; background-color: #5b7c99; border-radius: 4px; }
-    .kpi-bar__val  { font-size: 12px; color: var(--Vale_TextSecondary, #656565); }
-
-    /* endregion ------------------------------------------------------------------- */
-
-    /* -----------------------------------------------------------------------------
-     * REGION | Access Gate
-     * ----------------------------------------------------------------------------- */
-
     .kpi-gate {
-        position                           : fixed;
+        position                           : fixed;                          /* <-- Cover the page until unlocked */
         inset                              : 0;
         background-color                   : var(--Vale_PrimaryBrand, #172b3a);
         display                            : flex;
@@ -219,8 +87,30 @@
         text-align                         : center;
     }
 
-    .kpi-gate__title { margin: 0 0 8px 0; font-size: 24px; font-weight: 600; }
-    .kpi-gate__intro { margin: 0 0 24px 0; font-size: 14px; color: var(--Vale_TextSecondary, #656565); line-height: 1.5; }
+    /* Three tiers: product name, descriptor, body copy. The name and the
+     * descriptor were one string, which wrapped awkwardly at this card width
+     * and gave the two halves equal visual weight. */
+    .kpi-gate__title {
+        margin                             : 0 0 2px 0;                      /* <-- Sits tight above the descriptor */
+        font-size                          : 26px;                           /* <-- Product name leads */
+        font-weight                        : 600;                            /* <-- Heaviest tier */
+        letter-spacing                     : -0.2px;                         /* <-- Tighten the long name slightly */
+    }
+
+    .kpi-gate__subtitle {
+        margin                             : 0 0 20px 0;                     /* <-- Space before the body copy */
+        font-size                          : 17px;                           /* <-- Below the name, above the body */
+        font-weight                        : 400;                            /* <-- Lighter than the name */
+        color                              : var(--Vale_TextSecondary, #656565);
+        letter-spacing                     : 0.3px;                          /* <-- Open it up a little */
+    }
+
+    .kpi-gate__intro {
+        margin                             : 0 0 24px 0;
+        font-size                          : 14px;
+        color                              : var(--Vale_TextSecondary, #656565);
+        line-height                        : 1.5;
+    }
 
     .kpi-gate__input {
         width                              : 100%;
@@ -251,29 +141,15 @@
     .kpi-gate__error {
         margin                             : 16px 0 0 0;
         font-size                          : 14px;
-        color                              : #a3707a;
+        color                              : #a3707a;                        /* <-- Muted rose, matching the app palette */
         min-height                         : 20px;
     }
 
-    .kpi-status {
+    .kpi-boot {
         text-align                         : center;
-        padding                            : 60px 24px;
+        padding                            : 80px 24px;
         font-size                          : 18px;
         color                              : var(--Vale_TextSecondary, #656565);
-    }
-
-    .kpi-footnote {
-        font-size                          : 12px;
-        color                              : var(--Vale_TextSecondary, #656565);
-        line-height                        : 1.6;
-        margin                             : 0;
-    }
-
-    @media (max-width: 768px) {
-        .kpi-grid  { grid-template-columns: 1fr; }
-        .kpi-tiles { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-        .kpi-page  { padding: 12px; }
-        .kpi-panel { padding: 16px; }
     }
 
     /* endregion ------------------------------------------------------------------- */
@@ -284,10 +160,11 @@
 <!-- ACCESS GATE -->
 <div class="kpi-gate" id="kpiGate">
     <div class="kpi-gate__card">
-        <h1 class="kpi-gate__title">ValeVision3D Production KPIs</h1>
+        <h1 class="kpi-gate__title">ValeVision3D</h1>
+        <p class="kpi-gate__subtitle">Production KPIs</p>
         <p class="kpi-gate__intro">
-            Performance metrics for the Vale Garden Houses 3D Visualisation Department.
-            Enter the access phrase you were sent to continue.
+            Performance metrics for the Vale Garden Houses 3D Visualisation
+            Department. Enter the access phrase you were sent to continue.
         </p>
         <input type="password" id="kpiGateInput" class="kpi-gate__input"
                placeholder="Access phrase" autocomplete="off" spellcheck="false">
@@ -296,43 +173,40 @@
     </div>
 </div>
 
-<!-- DASHBOARD -->
-<div id="kpiApp" hidden>
-    <header class="kpi-header">
-        <img class="kpi-header__logo-left"
-             src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
-             alt="Vale Garden Houses">
-        <img class="kpi-header__logo-right"
-             src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
-             alt="Whitecardopedia">
-    </header>
+<!-- THE TOOL MOUNTS HERE -->
+<div id="kpiRoot"><div class="kpi-boot" id="kpiBoot">Preparing dashboard...</div></div>
+<div id="tooltip" class="tooltip"></div>
 
-    <div class="kpi-page">
-        <div class="kpi-status" id="kpiStatus">Loading production data...</div>
-        <div id="kpiContent"></div>
-    </div>
-</div>
-
-<script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/05__AppUtils/Na__AppUtils__TimeAdjustments.js"></script>
-<script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/05__AppUtils/Na__AppUtils__ProductionKpiStats.js"></script>
+<!-- THIRD PARTY | React, Babel and D3, matching the versions app.html uses -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.7/babel.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 
 <script>
 // -----------------------------------------------------------------------------
 // REGION | Configuration
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Access and Data Sources
+    // MODULE CONSTANTS | Access Control and Module Sources
     // ------------------------------------------------------------
-    // Production URLs are hardcoded, not relative: this page is opened from an
+    // Module URLs are absolute production URLs: this page is opened from an
     // emailed link and must resolve identically wherever it is served from.
     // ------------------------------------------------------------
-    var KPI_ACCESS_PHRASE   = 'VisDptKpi';                                   // <-- Shared access phrase (client-side deterrent)
-    var KPI_SESSION_KEY     = 'valevision_kpi_access';                       // <-- Remembers the gate for this browser session
+    var KPI_ACCESS_PHRASE = 'VisDptKpi';                                     // <-- Shared access phrase (browser-side deterrent)
+    var KPI_SESSION_KEY   = 'valevision_kpi_access';                         // <-- Remembers the gate for this tab session
 
-    var KPI_R2_BASE         = 'https://cdn.noble-architecture.com/VaApps/Projects';
-    var KPI_GH_BASE         = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects';
-    var KPI_MASTER_INDEX_R2 = 'https://cdn.noble-architecture.com/VaApps/Na__MasterIndex__ProjectLocations__.json';
-    var KPI_MASTER_INDEX_GH = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json';
+    var KPI_MODULE_BASE   = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/';
+
+    // Order matters: each module depends on the ones above it.
+    var KPI_MODULES = [
+        '05__AppUtils/Na__AppUtils__TimeAdjustments.js',                      // <-- Offset / net hour arithmetic
+        '05__AppUtils/Na__AppUtils__ProductionKpiStats.js',                   // <-- Shared KPI engine
+        '05__AppUtils/Na__AppUtils__KpiProjectSource.js',                     // <-- Production capable project loader
+        '02__AppCore/Na__AppCore__Header.jsx',                                // <-- Logo band
+        '02__AppCore/Na__AppCore__Breadcrumbs.jsx',                           // <-- Referenced by the tool, inert standalone
+        '13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx'       // <-- The tool itself
+    ];
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -345,8 +219,8 @@
     // FUNCTION | Validate the Entered Access Phrase
     // ------------------------------------------------------------
     function na_kpi_check_access() {
-        var entered = document.getElementById('kpiGateInput').value.trim();  // <-- Read the field
-        var errorEl = document.getElementById('kpiGateError');               // <-- Error line
+        var entered = document.getElementById('kpiGateInput').value.trim();
+        var errorEl = document.getElementById('kpiGateError');
 
         if (entered !== KPI_ACCESS_PHRASE) {                                 // <-- Reject anything else
             errorEl.textContent = 'That access phrase was not recognised.';
@@ -359,12 +233,11 @@
     }
     // ---------------------------------------------------------------
 
-    // FUNCTION | Reveal the Dashboard and Start Loading
+    // FUNCTION | Hide the Gate and Boot the Tool
     // ------------------------------------------------------------
     function na_kpi_unlock() {
-        document.getElementById('kpiGate').style.display = 'none';           // <-- Hide the gate
-        document.getElementById('kpiApp').hidden = false;                    // <-- Show the dashboard shell
-        na_kpi_load_and_render();                                            // <-- Fetch and render
+        document.getElementById('kpiGate').style.display = 'none';
+        na_kpi_boot_tool();
     }
     // ---------------------------------------------------------------
 
@@ -372,184 +245,69 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Data Loading
+// REGION | Module Loading and Mount
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Fetch JSON From the First Source That Answers
+    // HELPER FUNCTION | Fetch and Transpile One Module
     // ------------------------------------------------------------
-    function na_kpi_fetch_first(urls) {
-        var attempt = function (index) {
-            if (index >= urls.length) return Promise.resolve(null);           // <-- Every source exhausted
-            return fetch(urls[index], { cache: 'no-store' })
-                .then(function (response) {
-                    if (!response.ok) throw new Error(String(response.status));
-                    return response.json();
-                })
-                .catch(function () { return attempt(index + 1); });            // <-- Try the next source
-        };
-        return attempt(0);
-    }
-    // ---------------------------------------------------------------
-
-    // FUNCTION | Load Every Published Project via the Master Index
+    // The app's modules are plain scripts and JSX served as .js/.jsx, so they
+    // are fetched as text, transpiled, then appended as classic <script>
+    // elements. That mirrors how app.html loads them via type="text/babel" and
+    // keeps the modules free of any build step.
+    //
+    // Deliberately NOT eval: indirect eval hoists `var` and function
+    // declarations to the global object but discards top-level `let`/`const`.
+    // These modules declare all their constants with `const`, so eval would
+    // drop them and the tool would fail on the first constant it touched.
     // ------------------------------------------------------------
-    // The index names each project's folder and asset home, so each
-    // project.json is fetched from the right place rather than guessed at.
-    // ------------------------------------------------------------
-    function na_kpi_load_projects() {
-        var bust = '?t=' + Date.now();                                        // <-- Never serve a stale index
+    function na_kpi_load_module(relativePath) {
+        var url = KPI_MODULE_BASE + relativePath;
 
-        return na_kpi_fetch_first([KPI_MASTER_INDEX_R2 + bust, KPI_MASTER_INDEX_GH + bust])
-            .then(function (index) {
-                if (!index || !Array.isArray(index.projects)) {
-                    throw new Error('Could not load the project index.');
-                }
-
-                var entries = index.projects.filter(function (entry) {
-                    return entry && entry.folderId && entry.enabled !== false; // <-- Skip hidden projects
-                });
-
-                var loads = entries.map(function (entry) {
-                    var r2 = KPI_R2_BASE + '/' + entry.folderId + '/project.json' + bust;
-                    var gh = KPI_GH_BASE + '/' + entry.folderId + '/project.json' + bust;
-
-                    return na_kpi_fetch_first([r2, gh]).then(function (project) {
-                        if (!project) return null;                            // <-- Drop unreachable records
-                        project.__folderPath = entry.folderId;                // <-- Pin the delivery year
-                        return project;
-                    });
-                });
-
-                return Promise.all(loads);
+        return fetch(url)
+            .then(function (response) {
+                if (!response.ok) throw new Error(relativePath + ' (' + response.status + ')');
+                return response.text();
             })
-            .then(function (projects) {
-                return projects.filter(Boolean);                              // <-- Only records that actually loaded
+            .then(function (source) {
+                var compiled = Babel.transform(source, { presets: ['react'] }).code;  // <-- JSX to plain JS
+
+                return new Promise(function (resolve, reject) {
+                    var script = document.createElement('script');                    // <-- Classic script, not eval
+                    script.textContent = compiled;
+                    script.dataset.kpiModule = relativePath;                          // <-- Traceable in devtools
+
+                    try {
+                        document.head.appendChild(script);                            // <-- Runs synchronously on append
+                        resolve();
+                    } catch (error) {
+                        reject(new Error(relativePath + ': ' + error.message));
+                    }
+                });
             });
     }
     // ---------------------------------------------------------------
 
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Rendering
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Escape Text for HTML Output
+    // FUNCTION | Load Every Module In Order, Then Render the Tool
     // ------------------------------------------------------------
-    function na_kpi_escape(text) {
-        return String(text === null || text === undefined ? '' : text)
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
-    // ---------------------------------------------------------------
+    function na_kpi_boot_tool() {
+        var bootEl = document.getElementById('kpiBoot');
 
-    // HELPER FUNCTION | Render One KPI Tile
-    // ------------------------------------------------------------
-    function na_kpi_tile(label, value, sub, tone) {
-        return '<div class="kpi-tile' + (tone ? ' kpi-tile--' + tone : '') + '">'
-             +   '<div class="kpi-tile__value">' + na_kpi_escape(value) + '</div>'
-             +   '<div class="kpi-tile__label">' + na_kpi_escape(label) + '</div>'
-             +   (sub ? '<div class="kpi-tile__sub">' + na_kpi_escape(sub) + '</div>' : '')
-             + '</div>';
-    }
-    // ---------------------------------------------------------------
+        var chain = Promise.resolve();
+        KPI_MODULES.forEach(function (modulePath) {                          // <-- Strictly sequential: later modules depend on earlier
+            chain = chain.then(function () {
+                bootEl.textContent = 'Preparing dashboard...';
+                return na_kpi_load_module(modulePath);
+            });
+        });
 
-    // HELPER FUNCTION | Render One Breakdown Table Block
-    // ------------------------------------------------------------
-    function na_kpi_block(title, keyHeader, rows) {
-        var maxShare = rows.reduce(function (m, r) { return Math.max(m, r.share); }, 1);
-
-        var body = rows.map(function (row) {
-            return '<tr>'
-                 +   '<td><strong>' + na_kpi_escape(row.key) + '</strong></td>'
-                 +   '<td class="num">' + row.count + '</td>'
-                 +   '<td class="bar-col">'
-                 +     '<span class="kpi-bar"><span class="kpi-bar__fill" style="width:'
-                 +       ((row.share / maxShare) * 100) + '%"></span></span>'
-                 +     '<span class="kpi-bar__val">' + row.share + '%</span>'
-                 +   '</td>'
-                 +   '<td class="num">' + row.hours + 'h</td>'
-                 + '</tr>';
-        }).join('');
-
-        return '<div class="kpi-block">'
-             +   '<h3 class="kpi-block__title">' + na_kpi_escape(title) + '</h3>'
-             +   '<table class="kpi-table"><thead><tr>'
-             +     '<th>' + na_kpi_escape(keyHeader) + '</th>'
-             +     '<th class="num">Jobs</th><th class="bar-col">Share</th><th class="num">Hours</th>'
-             +   '</tr></thead><tbody>' + body + '</tbody></table>'
-             + '</div>';
-    }
-    // ---------------------------------------------------------------
-
-    // FUNCTION | Render the Whole Dashboard
-    // ------------------------------------------------------------
-    function na_kpi_render(stats) {
-        var h = stats.headline;
-        var a = stats.assets;
-
-        var span = (h.firstDelivery && h.lastDelivery)
-            ? formatDate(h.firstDelivery) + ' to ' + formatDate(h.lastDelivery)
-            : 'No delivery dates recorded';
-
-        var tiles = [
-            na_kpi_tile('Jobs Complete',   h.totalJobs, h.reviewedJobs + ' time reviewed'),
-            na_kpi_tile('Jobs This Year',  h.jobsThisYear, h.jobsPerMonth + ' per month average'),
-            na_kpi_tile('Net Hours Delivered', h.hoursNet + 'h',
-                        h.usesOffsets ? h.hoursTaken + 'h absolute time card' : h.hoursAllocated + 'h allocated'),
-            na_kpi_tile('3D Production Efficiency', h.efficiencyPct + '%',
-                        (h.hoursVariance >= 0 ? '+' : '') + h.hoursVariance + 'h vs quote',
-                        h.efficiencyPct >= 100 ? 'good' : 'warn'),
-            h.usesOffsets ? na_kpi_tile('Out Of Scope Hours', h.hoursOffset + 'h', 'across ' + h.offsetJobCount + ' jobs') : '',
-            na_kpi_tile('Median Turnaround', formatDays(h.medianTurnaround), h.avgTurnaround + ' average, working days only'),
-            na_kpi_tile('Delivered In A Week', h.sameWeekPct + '%', 'within 5 working days'),
-            na_kpi_tile('Average Job Size', h.avgHoursPerJob + 'h', 'per reviewed job'),
-            na_kpi_tile('Concept Artists', h.artistCount, h.designerCount + ' designers requesting'),
-            na_kpi_tile('3D Ready Jobs', a.pctWith3d + '%', a.jobsWith3d + ' of ' + h.totalJobs + ' jobs'),
-            na_kpi_tile('Images Published', a.totalImages, a.avgImages + ' per job average'),
-            na_kpi_tile('3D Assets Published', a.totalModels, a.watercolourJobs + ' watercolour jobs')
-        ].join('');
-
-        var blocks = na_kpi_block('Jobs By Type', 'Job Type', stats.typeRows)
-                   + na_kpi_block('Jobs By Year', 'Year', stats.yearRows)
-                   + na_kpi_block('Incoming Source Material', 'Input Type', stats.inputRows)
-                   + na_kpi_block('Requesting Designers', 'Designer', stats.designerRows);
-
-        document.getElementById('kpiContent').innerHTML =
-              '<div class="kpi-panel">'
-            +   '<div class="kpi-panel__head">'
-            +     '<h2 class="kpi-panel__title">ValeVision3D Production Key Performance Indicators</h2>'
-            +     '<span class="kpi-panel__span">' + na_kpi_escape(span) + '</span>'
-            +   '</div>'
-            +   '<div class="kpi-tiles">' + tiles + '</div>'
-            +   '<div class="kpi-grid">' + blocks + '</div>'
-            + '</div>'
-            + '<div class="kpi-panel">'
-            +   '<p class="kpi-footnote">'
-            +     'Turnaround is measured in working days; weekends are excluded and public holidays are not. '
-            +     'Efficiency compares hours quoted against net in-scope hours, so work falling outside a job\'s '
-            +     'original brief does not count against the department. '
-            +     'Figures are generated live from the Whitecardopedia project library each time this page is opened.'
-            +   '</p>'
-            + '</div>';
-
-        document.getElementById('kpiStatus').hidden = true;
-    }
-    // ---------------------------------------------------------------
-
-    // FUNCTION | Load Then Render, With Visible Failure
-    // ------------------------------------------------------------
-    function na_kpi_load_and_render() {
-        var statusEl = document.getElementById('kpiStatus');
-
-        na_kpi_load_projects()
-            .then(function (projects) {
-                if (!projects.length) throw new Error('No project records could be loaded.');
-                na_kpi_render(na_build_production_kpi_stats(projects));       // <-- Shared engine
+        chain
+            .then(function () {
+                var root = ReactDOM.createRoot(document.getElementById('kpiRoot'));
+                root.render(React.createElement(TimeAnalysisTool, {}));       // <-- No onBack: standalone mode
             })
             .catch(function (error) {
-                statusEl.textContent = 'Could not load the production data. ' + error.message;
+                bootEl.textContent = 'Could not load the dashboard: ' + error.message;
+                console.error('KPI dashboard boot failed:', error);
             });
     }
     // ---------------------------------------------------------------
@@ -563,11 +321,11 @@
 
     document.getElementById('kpiGateButton').addEventListener('click', na_kpi_check_access);
     document.getElementById('kpiGateInput').addEventListener('keydown', function (event) {
-        if (event.key === 'Enter') na_kpi_check_access();                     // <-- Enter submits
+        if (event.key === 'Enter') na_kpi_check_access();                    // <-- Enter submits
     });
 
     try {
-        if (sessionStorage.getItem(KPI_SESSION_KEY) === '1') na_kpi_unlock();  // <-- Skip the gate within a session
+        if (sessionStorage.getItem(KPI_SESSION_KEY) === '1') na_kpi_unlock(); // <-- Skip the gate within a session
         else document.getElementById('kpiGateInput').focus();
     } catch (e) {
         document.getElementById('kpiGateInput').focus();

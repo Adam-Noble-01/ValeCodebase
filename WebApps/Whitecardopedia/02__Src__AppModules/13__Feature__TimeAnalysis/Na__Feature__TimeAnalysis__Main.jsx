@@ -78,7 +78,8 @@
 
     // COMPONENT | Time Analysis Visualization Tool
     // ------------------------------------------------------------
-    function TimeAnalysisTool({ onBack }) {
+    function TimeAnalysisTool({ onBack = null }) {
+        const isStandalone = typeof onBack !== 'function';                       // <-- External KPI page passes no onBack
         
         // -----------------------------------------------------------------------------
         // REGION | Module Constants and Configuration
@@ -86,9 +87,6 @@
 
             // MODULE CONSTANTS | Application Configuration Values
             // ------------------------------------------------------------
-            const BASE_PATH         = 'Projects/';                                   // <-- Relative path to projects (year included in folderId)
-            const EXCLUDED_FOLDERS  = ['__BACKUP__', '01__TemplateProject', '00__ExampleProject']; // <-- Folders to skip (client-side fallback)
-            const DISCOVER_API_URL  = '/api/projects/discover';                     // <-- API endpoint for project discovery
             
             // Color palette for artists
             const ARTIST_COLORS     = [                                              // <-- Muted palette harmonised with the Vale brand navy
@@ -182,96 +180,35 @@
         // REGION | Data Loading Functions
         // -----------------------------------------------------------------------------
 
-            // FUNCTION | Load All Project JSON Files from Directory
+            // FUNCTION | Load All Project Data
+            // ------------------------------------------------------------
+            // Discovery and fetching are delegated to the shared
+            // Na__AppUtils__KpiProjectSource module, which works against the
+            // localhost dev server AND the published GitHub Pages / R2 build.
+            // That is what allows this same component to serve the external
+            // KPI page as well as the in-app tool.
             // ------------------------------------------------------------
             async function loadAllProjectData() {
                 setLoadingStatus('Loading project data...');                         // <-- Update status message
                 setLoadingStatusClass('status-message loading');                      // <-- Apply loading style
-                
-                const loadedProjects = [];                                            // <-- Local array to collect projects
-                
+
                 try {
-                    const projectFolders = await getProjectFolders();                // <-- Get list of project folders
-                    
-                    for (const folder of projectFolders) {                           // <-- Iterate through each folder
-                        if (shouldSkipFolder(folder)) continue;                      // <-- Skip excluded folders
-                        
-                        const projectData = await loadProjectFile(folder);           // <-- Load project.json from folder
-                        if (projectData) {                                           // <-- If data loaded successfully
-                            loadedProjects.push(projectData);                        // <-- Add to local array
-                        }
-                    }
-                    
+                    const loadedProjects = await na_kpi_load_all_projects(message => { // <-- Progress while fetching
+                        setLoadingStatus(message);
+                        setLoadingStatusClass('status-message loading');
+                    });
+
                     setAllProjects(loadedProjects);                                   // <-- Update projects state
-                    setLoadingStatus(`Successfully loaded ${loadedProjects.length} projects`); // <-- Update success message
+                    setLoadingStatus(`Successfully loaded ${loadedProjects.length} projects`); // <-- Success message
                     setLoadingStatusClass('status-message success');                  // <-- Apply success style
-                    
-                    setLibraryStats(na_build_production_kpi_stats(loadedProjects));   // <-- Shared KPI engine, also used by the external page
-                    processArtistStatistics(loadedProjects);                          // <-- Process and aggregate artist data
-                    
+
+                    setLibraryStats(na_build_production_kpi_stats(loadedProjects));   // <-- Shared KPI engine
+                    processArtistStatistics(loadedProjects);                          // <-- Aggregate artist data
+
                 } catch (error) {
                     setLoadingStatus(`Error loading data: ${error.message}`);          // <-- Show error message
-                    setLoadingStatusClass('status-message error');                   // <-- Apply error style
-                    console.error('Error loading project data:', error);             // <-- Log error details
-                }
-            }
-            // ---------------------------------------------------------------
-
-            // HELPER FUNCTION | Get List of Project Folders via Discovery API
-            // ---------------------------------------------------------------
-            async function getProjectFolders() {
-                try {
-                    const response = await fetch(DISCOVER_API_URL);                 // <-- Fetch from discovery endpoint
-                    
-                    if (!response.ok) {                                             // <-- Check if fetch failed
-                        throw new Error(`Discovery API returned ${response.status}`); // <-- Throw error for failed response
-                    }
-                    
-                    const data = await response.json();                             // <-- Parse JSON response
-                    
-                    if (data.error) {                                               // <-- Check for API error message
-                        throw new Error(data.error);                                 // <-- Throw error from API
-                    }
-                    
-                    return data.folders || [];                                      // <-- Return discovered folders array
-                    
-                } catch (error) {
-                    console.error('Error discovering project folders:', error);     // <-- Log discovery error
-                    setLoadingStatus(`Warning: Could not discover projects automatically. ${error.message}`); // <-- Update status
-                    setLoadingStatusClass('status-message error');                  // <-- Apply error style
-                    return [];                                                      // <-- Return empty array on error
-                }
-            }
-            // ---------------------------------------------------------------
-
-            // HELPER FUNCTION | Check if Folder Should Be Skipped
-            // ---------------------------------------------------------------
-            function shouldSkipFolder(folderName) {
-                return EXCLUDED_FOLDERS.some(excluded =>                           // <-- Check if folder matches exclusion list
-                    folderName.includes(excluded)
-                );
-            }
-            // ---------------------------------------------------------------
-
-            // HELPER FUNCTION | Load Individual Project JSON File
-            // ---------------------------------------------------------------
-            async function loadProjectFile(folderName) {
-                try {
-                    const filePath = `${BASE_PATH}${folderName}/project.json`;     // <-- Construct full file path
-                    const response = await fetch(filePath);                         // <-- Fetch JSON file
-                    
-                    if (!response.ok) {                                             // <-- Check if fetch failed
-                        console.warn(`Could not load ${folderName}`);               // <-- Log warning
-                        return null;                                                // <-- Return null on failure
-                    }
-                    
-                    const data = await response.json();                             // <-- Parse JSON data
-                    data.__folderPath = folderName;                                 // <-- Stash discovery folder path (year/folder) for stats
-                    return data;                                                    // <-- Return parsed data
-                    
-                } catch (error) {
-                    console.warn(`Error loading ${folderName}:`, error);            // <-- Log error
-                    return null;                                                    // <-- Return null on error
+                    setLoadingStatusClass('status-message error');                    // <-- Apply error style
+                    console.error('Error loading project data:', error);              // <-- Log error details
                 }
             }
             // ---------------------------------------------------------------
@@ -1668,6 +1605,7 @@
                             <h2 className="section-title section-title-no-border">ValeVision3D Production Key Performance Indicators</h2>
                             <div className="overview-section__actions">
                                 <span className="overview-section__span">{span}</span>
+                                {!isStandalone && (
                                 <button
                                     type="button"
                                     className="btn-primary overview-section__share"
@@ -1677,6 +1615,7 @@
                                 >
                                     {shareState === 'working' ? 'Building...' : 'Share Metrics Report'}
                                 </button>
+                                )}
                             </div>
                         </div>
 
@@ -1828,10 +1767,12 @@
                 <>
                     <Header />
 
-                    <Breadcrumbs
-                        trail={[{ label: 'Whitecardopedia', onClick: onBack }]}
-                        current="Production Key Performance Indicators"
-                    />
+                    {!isStandalone && (
+                        <Breadcrumbs
+                            trail={[{ label: 'Whitecardopedia', onClick: onBack }]}
+                            current="Production Key Performance Indicators"
+                        />
+                    )}
                     
                     <div className="time-analysis-tool">
                         <div className="time-analysis-tool__content">

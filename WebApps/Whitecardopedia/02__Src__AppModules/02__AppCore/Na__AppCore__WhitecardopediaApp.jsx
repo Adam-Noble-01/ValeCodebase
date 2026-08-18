@@ -47,6 +47,15 @@
 
     // COMPONENT | Main Application Root
     // ------------------------------------------------------------
+    // MODULE CONSTANT | Gated Online KPI Dashboard
+    // ------------------------------------------------------------
+    // Absolute production URL: the page must resolve the same whether the app
+    // is served from GitHub Pages or opened from a shared link.
+    // ------------------------------------------------------------
+    const PRODUCTION_KPI_PAGE_URL =
+        'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/ValeVision3D__ProductionKpi__.html';
+    // ------------------------------------------------------------
+
     function App() {
         const [currentView, setCurrentView] = React.useState(APP_VIEWS.HOME);  // <-- Current view state
         const [selectedProject, setSelectedProject] = React.useState(null);    // <-- Selected project state
@@ -204,13 +213,16 @@
         // ---------------------------------------------------------------
         const handleOpenTimeAnalysis = async () => {
             const isLocal = await isLocalhost();                         // <-- Check localhost status
-            
+
             if (!isLocal) {
-                showLocalhostRequiredAlert();                            // <-- Show alert for web version
-                return;                                                  // <-- Exit without navigating
+                // The KPI dashboard IS available on the web now: it runs the same
+                // TimeAnalysisTool component behind an access phrase. Send web
+                // users there rather than turning them away.
+                window.location.href = PRODUCTION_KPI_PAGE_URL;          // <-- Gated online dashboard
+                return;
             }
-            
-            setCurrentView(APP_VIEWS.TIME_ANALYSIS);                     // <-- Navigate to time analysis tool
+
+            setCurrentView(APP_VIEWS.TIME_ANALYSIS);                     // <-- In-app tool on localhost
         };
         // ---------------------------------------------------------------
 

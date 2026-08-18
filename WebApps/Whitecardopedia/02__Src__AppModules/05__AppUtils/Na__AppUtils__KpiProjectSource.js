@@ -52,7 +52,7 @@
 
     const NA_KPI_SOURCE_R2_BASE        = 'https://cdn.noble-architecture.com/VaApps/Projects';
     const NA_KPI_SOURCE_GH_BASE        = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects';
-    const NA_KPI_SOURCE_INDEX_R2       = 'https://cdn.noble-architecture.com/VaApps/Na__MasterIndex__ProjectLocations__.json';
+    const NA_KPI_SOURCE_INDEX_R2       = 'https://cdn.noble-architecture.com/VaApps/Index/Na__MasterIndex__ProjectLocations__.json';  // <-- Note /Index/: matches AssetUrls__IndexUrl in masterConfig
     const NA_KPI_SOURCE_INDEX_GH       = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json';
 
     const NA_KPI_SOURCE_EXCLUDED       = ['__BACKUP__', '01__TemplateProject', '00__ExampleProject'];  // <-- Scaffolding, never real jobs

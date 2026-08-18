@@ -1,4 +1,7 @@
 {
+    "projectName": "Majid",
+    "projectCode": "63295",
+    "projectNameAlias": "",
     "Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -58,13 +61,15 @@
         "input": "CAD File",
         "designer": "Steve"
     },
-    "projectCode": "63295",
-    "projectName": "Majid",
     "scheduleData": {
         "dateFulfilled": "05-May-2026",
         "dateReceived": "01-May-2026",
         "timeAllocated": 6,
-        "timeTaken": 5.5
+        "timeTaken": 5.5,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ReusableAssets": 1
+        }
     },
     "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__05-May-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
@@ -75,5 +80,10 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid/Majid__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ]
+    ],
+    "isR2Loaded": true,
+    "displayName": "Majid",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63295__Majid",
+    "hasGlb_R2": true,
+    "enabled": true
 }

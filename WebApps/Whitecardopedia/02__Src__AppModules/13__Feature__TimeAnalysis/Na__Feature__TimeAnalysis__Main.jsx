@@ -1650,8 +1650,9 @@
 
                         <h3 className="overview-block__title overview-block__title--wide">3D Production Efficiency Over Time</h3>
                         <p className="overview-chart-note">
-                            From January 2026 onward. Earlier months predate the established production
-                            pipeline and are not comparable, so they are excluded from this chart only.
+                            From March 2026 onward, the first full month in which every job shipped
+                            with 3D models. Earlier months ran a different process and are not
+                            comparable, so they are excluded from this chart only.
                         </p>
                         <div id="efficiencyTrendChart" className="chart-container"></div>
 

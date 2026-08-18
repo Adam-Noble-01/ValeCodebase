@@ -143,11 +143,12 @@
         'nil', 'n/a', 'na', 'tbc', 'unknown', 'placeholder', ''
     ];
     const MONTHS_ON_CHART   = 18;                                            // <-- Trailing months shown on throughput chart
-    // The efficiency trend chart starts here. The established production
-    // pipeline did not exist before January 2026, so earlier months are not
-    // comparable. This trims THAT CHART ONLY: every other figure in the
-    // dashboard still spans the whole library.
-    const EFFICIENCY_TREND_START  = '2026-01';                               // <-- YYYY-MM, compared lexically
+    // The efficiency trend chart starts here. The 3D pipeline only became
+    // routine in February 2026 and reached every job from March; before that
+    // the department was delivering image-only work against a different
+    // process, so earlier months are not comparable. This trims THAT CHART
+    // ONLY: every other figure in the dashboard still spans the whole library.
+    const EFFICIENCY_TREND_START  = '2026-03';                               // <-- YYYY-MM, compared lexically
 
     const TIMELINE_DOMAIN_PADDING = 0.02;                                    // <-- Pad the timeline axis by 2% of its span each side
     const TIMELINE_MIN_PAD_MS     = 3 * 86400000;                            // <-- ...but never less than three days

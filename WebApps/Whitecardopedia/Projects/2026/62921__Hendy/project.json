@@ -1,4 +1,7 @@
 {
+    "projectName": "Hendy",
+    "projectCode": "62921",
+    "projectNameAlias": "",
     "Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -28,13 +31,11 @@
         "input": "CAD File",
         "designer": "Steve"
     },
-    "projectCode": "62921",
-    "projectName": "Hendy",
     "scheduleData": {
         "dateFulfilled": "24-Apr-2026",
         "dateReceived": "24-Apr-2026",
         "timeAllocated": 2.5,
-        "timeTaken": 3
+        "timeTaken": 3.5
     },
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
@@ -90,5 +91,10 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy/Hendy__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ]
+    ],
+    "isR2Loaded": true,
+    "displayName": "Hendy",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/62921__Hendy",
+    "hasGlb_R2": true,
+    "enabled": true
 }

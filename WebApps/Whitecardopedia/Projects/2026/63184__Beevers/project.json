@@ -1,4 +1,7 @@
 {
+    "projectName": "Beevers",
+    "projectCode": "63184",
+    "projectNameAlias": "",
     "Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {
@@ -49,13 +52,15 @@
         "input": "Early Stage Sketch",
         "designer": "Dan"
     },
-    "projectCode": "63184",
-    "projectName": "Beevers",
     "scheduleData": {
         "dateFulfilled": "29-Apr-2026",
         "dateReceived": "29-Apr-2026",
-        "timeAllocated": 4.5,
-        "timeTaken": 5
+        "timeAllocated": 4,
+        "timeTaken": 7,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__AdditionalContext": 2
+        }
     },
     "thumbnailImage": "IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
@@ -74,5 +79,10 @@
     "artPairsMap": {},
     "allImages": [
         "IMG01__3dView__ViewOption-04____WhitecardImage__29-Apr-2026.png"
-    ]
+    ],
+    "isR2Loaded": true,
+    "displayName": "Beevers",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63184__Beevers",
+    "hasGlb_R2": true,
+    "enabled": true
 }

@@ -44,7 +44,7 @@
         };
         // ---------------------------------------------------------------
         
-        // SUB FUNCTION | Handle Time Analysis Tool Click
+        // SUB FUNCTION | Handle 3D Production KPI Report Click
         // ---------------------------------------------------------------
         const handleTimeAnalysisClick = () => {
             setIsOpen(false);                                                // <-- Close menu
@@ -105,7 +105,7 @@
                             className="hamburger-menu__item"
                             onClick={handleTimeAnalysisClick}
                         >
-                            Time Analysis Tool
+                            3D Production KPI Report
                         </button>
                         <button 
                             className="hamburger-menu__item hamburger-menu__item--danger"

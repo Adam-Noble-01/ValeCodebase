@@ -1,4 +1,7 @@
 {
+    "projectName": "Warwick",
+    "projectCode": "63770",
+    "projectNameAlias": "",
     "Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 33.3985
@@ -189,20 +192,16 @@
         "IMG04__3dView__Closer__RightSide__WhitecardImage__26-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "Easy project, nothing to report",
         "conceptArtist": "Rachael",
         "designer": "Steve",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "63770",
-    "projectName": "Warwick",
     "scheduleData": {
         "dateFulfilled": "25-Jun-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "23-Jun-2026",
+        "timeTaken": 2,
+        "timeAllocated": 2
     },
     "thumbnailImage": "IMG01__3dView__ViewOption-01__MainView____WhitecardImage__26-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
@@ -213,5 +212,24 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick/Warwick__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ]
+    ],
+    "folderId": "2026/63770__Warwick",
+    "isR2Loaded": true,
+    "displayName": "Warwick",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63770__Warwick",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01__MainView____WhitecardImage__26-Jun-2026.png",
+        "IMG02__3dView__FrontDoors____WhitecardImage__26-Jun-2026.png",
+        "IMG03__3dView__Closer__LeftSide__WhitecardImage__26-Jun-2026.png",
+        "IMG04__3dView__Closer__RightSide__WhitecardImage__26-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01__MainView____WhitecardImage__26-Jun-2026.png",
+        "IMG02__3dView__FrontDoors____WhitecardImage__26-Jun-2026.png",
+        "IMG03__3dView__Closer__LeftSide__WhitecardImage__26-Jun-2026.png",
+        "IMG04__3dView__Closer__RightSide__WhitecardImage__26-Jun-2026.png"
+    ],
+    "enabled": true
 }

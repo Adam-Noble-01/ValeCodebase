@@ -5,16 +5,14 @@
     "productionData": {
         "input": "VizDpt SketchUp Model",
         "conceptArtist": "Tom",
-        "additionalNotes": "Tom requested some amendments to the project, we increased the size of the scheme and updated the windows to suit, we then rendered the concept and James embellished a final layer on top."
+        "additionalNotes": "Tom requested some amendments to the project, we increased the size of the scheme and updated the windows to suit, we then rendered the concept and James embellished a final layer on top.",
+        "designer": "Tom"
     },
     "scheduleData": {
         "dateReceived": "28-Nov-2025",
         "dateFulfilled": "28-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

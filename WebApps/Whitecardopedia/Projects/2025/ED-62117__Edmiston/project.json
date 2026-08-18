@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "Well prepared CAD Files, all complete, no issues. Completed within expected timeframe."
+        "additionalNotes": "Well prepared CAD Files, all complete, no issues. Completed within expected timeframe.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "02-Dec-2025",
         "dateFulfilled": "02-Dec-2025",
         "timeAllocated": 2,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

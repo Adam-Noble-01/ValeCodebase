@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Dan",
-        "additionalNotes": "Extremely quick turnaround vs typical Whitecard pipeline due to having a model already produced from some preliminary  detailing work. James & Dan nailed it with this watercolour embellishment, its my favourite final piece to date."
+        "additionalNotes": "Extremely quick turnaround vs typical Whitecard pipeline due to having a model already produced from some preliminary  detailing work. James & Dan nailed it with this watercolour embellishment, its my favourite final piece to date.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "07-Nov-2025",
         "dateFulfilled": "07-Nov-2025",
         "timeAllocated": 4,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__Ball_MainView__Whitecard__.png",

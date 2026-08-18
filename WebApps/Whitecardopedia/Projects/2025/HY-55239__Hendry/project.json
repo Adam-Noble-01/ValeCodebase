@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Took a little while, no issues with the CAD File, Existing house was just a little bit tricky.",
-        "conceptArtist": "Steph"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Steph",
+        "designer": "Martin"
     },
     "images": [
         "IMG01__Hendry__Exterior3dView01__!ArtistsMainShot!__ImageFile__1.0.0.png",

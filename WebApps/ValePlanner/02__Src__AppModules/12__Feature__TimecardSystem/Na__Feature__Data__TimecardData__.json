@@ -571,14 +571,36 @@
     {
       "Timecard__Date": "2026-08-13",
       "Timcard__Clock-In__": "07:30",
-      "Timcard__Clock-Out__": "08:05",
-      "Timecard__AuthHash": "sha256__22a62ecaa0d9d0273bbad26b21fad3b642b823eae908951fe2454e62cca84865"
+      "Timcard__Clock-Out__": "18:35",
+      "Timecard__AuthHash": "sha256__7e0dd72b0cb21e84e46925594495fde5366a3be3b69a250ada2c164e6939a611",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-08-18T07:09:48.425196Z",
+        "Timecard__Reason": "Forgot to LogOut",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "07:30",
+        "Timecard__OriginalClockOut": "08:05"
+      }
     },
     {
       "Timecard__Date": "2026-08-14",
       "Timcard__Clock-In__": "08:05",
-      "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__3fad511160835d7624a4269dcc7094480372da71430e10b1eb9891fd7d5a4b76"
+      "Timcard__Clock-Out__": "19:15",
+      "Timecard__AuthHash": "sha256__e2783402836f824404268aa691101f66807b6518e36a9e01277dc5464ea15e06"
+    },
+    {
+      "Timecard__Date": "2026-08-18",
+      "Timcard__Clock-In__": "08:05",
+      "Timcard__Clock-Out__": "18:35",
+      "Timecard__AuthHash": "sha256__d18b37e076c693910268481ca4e97f94919dfea74f149b1e22fdc4cadbf23e36",
+      "Timecard__AdminOverride__": {
+        "Timecard__IsRetrospectiveEdit": true,
+        "Timecard__EditedAtUtcIso": "2026-08-18T07:08:08.566090Z",
+        "Timecard__Reason": "Retrospective correction",
+        "Timecard__EditedBy": "Admin",
+        "Timecard__OriginalClockIn": "08:05",
+        "Timecard__OriginalClockOut": ""
+      }
     }
   ]
 }

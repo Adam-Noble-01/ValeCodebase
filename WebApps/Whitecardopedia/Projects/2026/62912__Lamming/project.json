@@ -48,9 +48,6 @@
         "timeAllocated": 3,
         "timeTaken": 3.5
     },
-    "sketchUpModel": {
-        "url": "Nil"
-    },
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/62912__Lamming/Lamming__TrueVision__LandscapeEnvironment__LineworkModel__.glb",

@@ -12,7 +12,7 @@
 // DESCRIPTION:
 // - Form component for editing project metadata
 // - Editable fields: projectName, projectCode, projectNameAlias (display-only
-//   override), productionData (incl. designer), scheduleData, sketchUp URL,
+//   override), productionData (incl. designer), scheduleData,
 //   and gallery visibility (enabled)
 // - Production data: input type (dropdown), concept artist (dropdown),
 //   designer (dropdown), additional notes
@@ -403,13 +403,19 @@
             conceptArtist       : project.productionData?.conceptArtist || '', // <-- Concept artist field
             designer            : project.productionData?.designer || '',    // <-- Designer field
             productionNotes     : project.productionData?.additionalNotes || '',  // <-- Production notes field
-            sketchUpUrl         : project.sketchUpModel?.url || '',          // <-- SketchUp URL field
             timeAllocated       : project.scheduleData?.timeAllocated !== undefined && project.scheduleData?.timeAllocated !== null ? String(project.scheduleData.timeAllocated) : '', // <-- Time expected field (convert number to string)
             timeTaken           : project.scheduleData?.timeTaken !== undefined && project.scheduleData?.timeTaken !== null ? String(project.scheduleData.timeTaken) : '',     // <-- Time taken field (convert number to string)
             dateReceived        : project.scheduleData?.dateReceived || '',  // <-- Date received field
             dateFulfilled       : project.scheduleData?.dateFulfilled || '', // <-- Date fulfilled field
             enabled             : project.enabled !== false                  // <-- Gallery visibility field (masterConfig-owned)
         });
+
+        const [timeAdjustments, setTimeAdjustments] = React.useState(            // <-- Advanced Time Data offset fields
+            () => na_seed_time_adjustment_fields(project.scheduleData)
+        );
+        const [showAdvancedTime, setShowAdvancedTime] = React.useState(          // <-- Advanced Time Data section open state
+            () => na_read_time_adjustments(project.scheduleData).hasAny          // <-- Auto open when the job already uses offsets
+        );
 
         const [isSaving, setIsSaving]           = React.useState(false);          // <-- Saving state
         const [message, setMessage]             = React.useState(null);           // <-- Inline status message state
@@ -506,6 +512,35 @@
         // ---------------------------------------------------------------
 
 
+        // SUB FUNCTION | Handle Advanced Time Data Field Change
+        // ---------------------------------------------------------------
+        const handleTimeAdjustmentChange = (categoryKey, value) => {
+            setTimeAdjustments({
+                ...timeAdjustments,                                          // <-- Spread existing offsets
+                [categoryKey]: value                                         // <-- Update changed category
+            });
+            setMessage(null);                                                // <-- Clear message on change
+        };
+        // ---------------------------------------------------------------
+
+
+        // SUB FUNCTION | Compute Live Time Card Preview From Current Form State
+        // ---------------------------------------------------------------
+        // Mirrors exactly what will be written on save, so the readout under
+        // the Advanced Time Data section always matches the saved result.
+        // ---------------------------------------------------------------
+        const computeTimeCardPreview = () => {
+            const absolute = formData.timeTaken !== '' ? parseFloat(formData.timeTaken) : NaN;  // <-- Recorded time card hours
+            const block    = na_build_time_adjustments_block(timeAdjustments);                   // <-- Offsets as they will be saved
+
+            return na_calculate_net_time({
+                timeTaken       : isNaN(absolute) ? undefined : absolute,
+                timeAdjustments : block || undefined
+            });
+        };
+        // ---------------------------------------------------------------
+
+
         // SUB FUNCTION | Validate Form Data
         // ---------------------------------------------------------------
         const validateForm = () => {
@@ -533,6 +568,25 @@
                     setMessage({ type: 'error', text: 'Time taken must be a positive number' });
                     return false;
                 }
+            }
+
+            for (const category of NA_TIME_ADJUSTMENT_CATEGORIES) {
+                const raw = timeAdjustments[category.key];
+                if (raw === '' || raw === undefined || raw === null) continue;   // <-- Blank is a valid "unused" value
+                const hours = parseFloat(raw);
+                if (isNaN(hours) || hours < 0) {
+                    setMessage({ type: 'error', text: `${category.label} must be a positive number of hours` });
+                    return false;
+                }
+            }
+
+            const preview = computeTimeCardPreview();                            // <-- Check offsets against the time card
+            if (preview.overRecorded) {
+                setMessage({
+                    type: 'error',
+                    text: `Offset hours total more than the ${formData.timeTaken}h recorded in Time Taken. Reduce the offsets or raise Time Taken.`
+                });
+                return false;
             }
 
             if (formData.dateReceived !== '') {
@@ -577,12 +631,10 @@
                     ...project.productionData,
                     input           : formData.productionInput.trim(),
                     additionalNotes : formData.productionNotes.trim()
-                },
-                sketchUpModel       : {
-                    ...project.sketchUpModel,
-                    url             : formData.sketchUpUrl.trim()
                 }
             };
+
+            delete updatedProject.sketchUpModel;                             // <-- Legacy SketchUp URL system: never write it back
 
             if (formData.conceptArtist !== '') {
                 updatedProject.productionData.conceptArtist = formData.conceptArtist.trim();
@@ -592,7 +644,9 @@
                 updatedProject.productionData.designer = formData.designer.trim();
             }
 
-            if (formData.timeAllocated !== '' || formData.timeTaken !== '' || formData.dateReceived !== '' || formData.dateFulfilled !== '') {
+            const adjustmentsBlock = na_build_time_adjustments_block(timeAdjustments);  // <-- Null when every category is blank or zero
+
+            if (formData.timeAllocated !== '' || formData.timeTaken !== '' || formData.dateReceived !== '' || formData.dateFulfilled !== '' || adjustmentsBlock) {
                 updatedProject.scheduleData = { ...project.scheduleData };
 
                 if (formData.timeAllocated !== '') {
@@ -606,6 +660,12 @@
                 }
                 if (formData.dateFulfilled !== '') {
                     updatedProject.scheduleData.dateFulfilled = formData.dateFulfilled.trim();
+                }
+
+                if (adjustmentsBlock) {                                          // <-- Write the block only when offsets are in use
+                    updatedProject.scheduleData[NA_TIME_ADJUSTMENTS_BLOCK_KEY] = adjustmentsBlock;
+                } else {                                                         // <-- All offsets cleared: drop the block entirely
+                    delete updatedProject.scheduleData[NA_TIME_ADJUSTMENTS_BLOCK_KEY];
                 }
             }
 
@@ -856,6 +916,12 @@
         const saveBtnLabel = isSaving
             ? (savePhase || 'Saving...')
             : 'Save Changes';
+        // ---------------------------------------------------------------
+
+
+        // HELPER | Live time card figures for the Advanced Time Data readout
+        // ---------------------------------------------------------------
+        const timeCardPreview = computeTimeCardPreview();                        // <-- Absolute / offsets / net as they will be saved
         // ---------------------------------------------------------------
 
 
@@ -1219,6 +1285,89 @@
                     </span>
                 </div>
 
+                {/* ADVANCED TIME DATA SECTION | Offsettable Out Of Scope Hours */}
+                <div className="editor-form__field editor-form__advanced-time">
+                    <button
+                        type="button"
+                        className="editor-form__advanced-time-toggle"
+                        onClick={() => setShowAdvancedTime(!showAdvancedTime)}
+                        disabled={isSaving || showRenameConfirm}
+                        aria-expanded={showAdvancedTime}
+                    >
+                        <span className="editor-form__advanced-time-caret">{showAdvancedTime ? '▾' : '▸'}</span>
+                        <span>Advanced Time Data</span>
+                        {timeCardPreview.hasAdjustments && (
+                            <span className="editor-form__advanced-time-badge">{timeCardPreview.offsets}h offset</span>
+                        )}
+                    </button>
+
+                    {showAdvancedTime && (
+                        <div className="editor-form__advanced-time-body">
+                            <p className="editor-form__help-text editor-form__advanced-time-intro">
+                                Record hours inside Time Taken that fall outside the original job scope. These are
+                                deducted from Time Taken to give the net in-scope figure used for KPI reporting.
+                                The absolute time card keeps the full Time Taken value. Leave blank where not applicable.
+                            </p>
+
+                            {NA_TIME_ADJUSTMENT_CATEGORIES.map(category => (
+                                <div className="editor-form__field" key={category.key}>
+                                    <label className="editor-form__label" htmlFor={`timeAdjust_${category.key}`}>
+                                        <span
+                                            className="editor-form__advanced-time-swatch"
+                                            style={{ backgroundColor: category.color }}
+                                        ></span>
+                                        {category.label}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id={`timeAdjust_${category.key}`}
+                                        className="editor-form__input"
+                                        value={timeAdjustments[category.key] || ''}
+                                        onChange={(e) => handleTimeAdjustmentChange(category.key, e.target.value)}
+                                        placeholder="Hours, e.g., 3 or 1.5"
+                                        disabled={isSaving || showRenameConfirm}
+                                    />
+                                    <span className="editor-form__help-text">{category.help}</span>
+                                </div>
+                            ))}
+
+                            <div className="editor-form__time-card">
+                                <div className="editor-form__time-card-row">
+                                    <span className="editor-form__time-card-label">Absolute Time Card</span>
+                                    <span className="editor-form__time-card-value">
+                                        {timeCardPreview.hasAbsolute ? `${timeCardPreview.absolute}h` : 'Not recorded'}
+                                    </span>
+                                </div>
+                                <div className="editor-form__time-card-row">
+                                    <span className="editor-form__time-card-label">Offset Hours</span>
+                                    <span className="editor-form__time-card-value">
+                                        {timeCardPreview.offsets > 0 ? `-${timeCardPreview.offsets}h` : '0h'}
+                                    </span>
+                                </div>
+                                <div className="editor-form__time-card-row editor-form__time-card-row--total">
+                                    <span className="editor-form__time-card-label">Net In Scope Hours</span>
+                                    <span className="editor-form__time-card-value">
+                                        {timeCardPreview.hasAbsolute ? `${timeCardPreview.net}h` : 'Not recorded'}
+                                    </span>
+                                </div>
+                                {formData.timeAllocated !== '' && timeCardPreview.hasAbsolute && timeCardPreview.net > 0 && (
+                                    <div className="editor-form__time-card-row editor-form__time-card-row--note">
+                                        <span className="editor-form__time-card-label">Scope Efficiency</span>
+                                        <span className="editor-form__time-card-value">
+                                            {Math.round((parseFloat(formData.timeAllocated) / timeCardPreview.net) * 100)}%
+                                        </span>
+                                    </div>
+                                )}
+                                {timeCardPreview.overRecorded && (
+                                    <div className="editor-form__time-card-warning">
+                                        Offsets total more than the recorded Time Taken. Reduce the offsets or raise Time Taken before saving.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* DATE RECEIVED FIELD */}
                 <div className="editor-form__field">
                     <label className="editor-form__label" htmlFor="dateReceived">
@@ -1257,24 +1406,7 @@
                     </span>
                 </div>
 
-                {/* SKETCHUP MODEL URL FIELD */}
-                <div className="editor-form__field">
-                    <label className="editor-form__label" htmlFor="sketchUpUrl">
-                        SketchUp Model URL
-                    </label>
-                    <input
-                        type="text"
-                        id="sketchUpUrl"
-                        className="editor-form__input"
-                        value={formData.sketchUpUrl}
-                        onChange={(e) => handleInputChange('sketchUpUrl', e.target.value)}
-                        placeholder="https://app.sketchup.com/..."
-                        disabled={isSaving || showRenameConfirm}
-                    />
-                    <span className="editor-form__help-text">
-                        Leave blank or set to 'None', 'nil', or 'False' if not available
-                    </span>
-                </div>
+
 
                 {/* DANGER ZONE — ALWAYS VISIBLE UNLESS A RENAME IS PENDING */}
                 {!showRenameConfirm && (

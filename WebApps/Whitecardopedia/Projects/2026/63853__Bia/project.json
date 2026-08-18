@@ -1,4 +1,7 @@
 {
+    "projectName": "Bia",
+    "projectCode": "63853",
+    "projectNameAlias": "",
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -383,20 +386,22 @@
         "IMG08__3dView__BirdseyeView__WhitecardImage__12-Jul-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "A bespoke project requiring modelling of new columns etc (since added to standards library). used as a presentation model during a site meeting.",
         "conceptArtist": "Martin",
         "designer": "Martin",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "63853",
-    "projectName": "Bia",
     "scheduleData": {
         "dateFulfilled": "10-Jul-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "10-Jul-2026",
+        "timeTaken": 8,
+        "timeAllocated": 4,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ReusableAssets": 2,
+            "timeAdjustments__ScopeAmendments": 2,
+            "timeAdjustments__DesignDevelopment": 2
+        }
     },
     "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__12-Jul-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -441,5 +446,32 @@
         "CrossSection__FillColor": "#f0f0f0",
         "CrossSection__LineColor": "#323232",
         "CrossSection__LineWidthPx": 2
-    }
+    },
+    "folderId": "2026/63853__Bia",
+    "isR2Loaded": true,
+    "displayName": "Bia",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63853__Bia",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__12-Jul-2026.png",
+        "IMG02__3dView__HeroShot__WhitecardImage__12-Jul-2026.png",
+        "IMG03__Interior__View-01__WhitecardImage__12-Jul-2026.png",
+        "IMG04__Interior__View-02__WhitecardImage__12-Jul-2026.png",
+        "IMG05__3dView__CloseUp-01__WhitecardImage__12-Jul-2026.png",
+        "IMG06__3dView__CloseUp-02__WhitecardImage__12-Jul-2026.png",
+        "IMG07__3dView__RearFascade__WhitecardImage__12-Jul-2026.png",
+        "IMG08__3dView__BirdseyeView__WhitecardImage__12-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__12-Jul-2026.png",
+        "IMG02__3dView__HeroShot__WhitecardImage__12-Jul-2026.png",
+        "IMG03__Interior__View-01__WhitecardImage__12-Jul-2026.png",
+        "IMG04__Interior__View-02__WhitecardImage__12-Jul-2026.png",
+        "IMG05__3dView__CloseUp-01__WhitecardImage__12-Jul-2026.png",
+        "IMG06__3dView__CloseUp-02__WhitecardImage__12-Jul-2026.png",
+        "IMG07__3dView__RearFascade__WhitecardImage__12-Jul-2026.png",
+        "IMG08__3dView__BirdseyeView__WhitecardImage__12-Jul-2026.png"
+    ],
+    "enabled": true
 }

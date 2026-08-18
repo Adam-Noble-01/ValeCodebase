@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ValeVision3D Production KPIs</title>
+
+<!--
+    =============================================================================
+    VALEVISION3D - PRODUCTION KEY PERFORMANCE INDICATORS (EXTERNAL VIEW)
+    =============================================================================
+
+    FILE       : ValeVision3D__ProductionKpi__.html
+    NAMESPACE  : Whitecardopedia
+    MODULE     : External KPI Dashboard
+    AUTHOR     : Adam Noble - Noble Architecture
+    PURPOSE    : Read-only production metrics for people outside the Whitecardopedia
+                 app, gated by a shared access phrase.
+    CREATED    : 18-Aug-2026
+
+    DESCRIPTION:
+    - Standalone page: no gallery, no editor, no project data beyond the
+      aggregate figures. Nothing here can be changed by the viewer.
+    - Figures come from Na__AppUtils__ProductionKpiStats.js, the same engine the
+      in-app Time Analysis Tool uses, so the two can never disagree.
+    - Projects load through the production path (R2 first, GitHub Pages
+      fallback), so the page works from any origin without the localhost
+      discovery API.
+
+    ACCESS CONTROL - READ THIS BEFORE RELYING ON IT:
+    - The access phrase is checked in the browser, so it is a deterrent that
+      keeps casual visitors out. It is NOT cryptographic protection: anyone who
+      opens developer tools can read the phrase, and the underlying project JSON
+      is already publicly readable on the CDN.
+    - Suitable for internal-but-shareable operational figures. Do not treat it
+      as protection for anything confidential.
+
+    -----------------------------------------------------------------------------
+
+    DEVELOPMENT LOG:
+    18-Aug-2026 - Version 1.0.0
+    - Initial release: access gate, live KPI load, read-only dashboard.
+
+    =============================================================================
+-->
+
+<link rel="stylesheet" href="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/03__Style__AppStylesheets/Na__CoreUi__Styles__Variables__.css">
+
+<style>
+    /* -----------------------------------------------------------------------------
+     * REGION | Page Shell
+     * ----------------------------------------------------------------------------- */
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin                             : 0;                              /* <-- Reset default margin */
+        font-family                        : var(--Vale_FontFamily, 'Open Sans', sans-serif);
+        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
+        color                              : var(--Vale_TextPrimary, #172b3a);
+    }
+
+    .kpi-header {
+        display                            : flex;                           /* <-- Two logo band */
+        align-items                        : center;
+        justify-content                    : space-between;
+        background-color                   : var(--Vale_BackgroundWhite, #ffffff);
+        border-bottom                      : 2px solid var(--Vale_PrimaryBrand, #172b3a);
+        padding                            : 12px 24px;
+    }
+
+    .kpi-header__logo-left  { height: 42px; }
+    .kpi-header__logo-right { height: 26px; }
+
+    .kpi-page {
+        max-width                          : 1340px;                         /* <-- Match the in-app dashboard width */
+        margin                             : 0 auto;
+        padding                            : 24px;
+    }
+
+    .kpi-panel {
+        background-color                   : var(--Vale_BackgroundWhite, #ffffff);
+        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
+        border-radius                      : 8px;
+        padding                            : 24px;
+        margin-bottom                      : 24px;
+        box-shadow                         : 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .kpi-panel__head {
+        display                            : flex;
+        justify-content                    : space-between;
+        align-items                        : baseline;
+        flex-wrap                          : wrap;
+        gap                                : 8px;
+        border-bottom                      : 2px solid var(--Vale_BorderLight, #cccccc);
+        padding-bottom                     : 8px;
+        margin-bottom                      : 16px;
+    }
+
+    .kpi-panel__title {
+        margin                             : 0;
+        font-size                          : 24px;
+        font-weight                        : 600;
+    }
+
+    .kpi-panel__span {
+        font-size                          : 12px;
+        color                              : var(--Vale_TextSecondary, #656565);
+    }
+
+    /* endregion ------------------------------------------------------------------- */
+
+    /* -----------------------------------------------------------------------------
+     * REGION | KPI Tiles and Tables
+     * ----------------------------------------------------------------------------- */
+
+    .kpi-tiles {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fit, minmax(190px, 1fr));
+        gap                                : 8px;
+        margin-bottom                      : 24px;
+    }
+
+    .kpi-tile {
+        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
+        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
+        border-left                        : 4px solid var(--Vale_PrimaryBrand, #172b3a);
+        border-radius                      : 8px;
+        padding                            : 16px;
+    }
+
+    .kpi-tile--good { border-left-color: #7d9471; }
+    .kpi-tile--warn { border-left-color: #b0846a; }
+
+    .kpi-tile__value { font-size: 24px; font-weight: 600; line-height: 1.2; }
+    .kpi-tile__label { font-size: 14px; font-weight: 600; }
+    .kpi-tile__sub   { font-size: 12px; color: var(--Vale_TextSecondary, #656565); }
+
+    .kpi-grid {
+        display                            : grid;
+        grid-template-columns              : repeat(auto-fit, minmax(460px, 1fr));
+        gap                                : 16px;
+    }
+
+    .kpi-block {
+        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
+        border-radius                      : 8px;
+        padding                            : 16px;
+        min-width                          : 0;
+    }
+
+    .kpi-block__title {
+        margin                             : 0 0 8px 0;
+        padding-bottom                     : 6px;
+        font-size                          : 18px;
+        font-weight                        : 600;
+        border-bottom                      : 2px solid var(--Vale_BorderLight, #cccccc);
+    }
+
+    .kpi-table {
+        width                              : 100%;
+        border-collapse                    : collapse;
+        table-layout                       : fixed;
+        font-size                          : 12px;
+    }
+
+    .kpi-table th,
+    .kpi-table td {
+        padding                            : 8px 10px;
+        text-align                         : left;
+        border-bottom                      : 1px solid var(--Vale_BackgroundLight, #f5f5f5);
+    }
+
+    .kpi-table th {
+        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
+        font-weight                        : 600;
+    }
+
+    .kpi-table .num { text-align: right; width: 74px; }
+    .kpi-table .bar-col { width: 124px; white-space: nowrap; }
+
+    .kpi-bar {
+        display                            : inline-block;
+        width                              : 52px;
+        height                             : 8px;
+        background-color                   : var(--Vale_BackgroundLight, #f5f5f5);
+        border-radius                      : 4px;
+        overflow                           : hidden;
+        vertical-align                     : middle;
+        margin-right                       : 6px;
+    }
+
+    .kpi-bar__fill { display: block; height: 100%; background-color: #5b7c99; border-radius: 4px; }
+    .kpi-bar__val  { font-size: 12px; color: var(--Vale_TextSecondary, #656565); }
+
+    /* endregion ------------------------------------------------------------------- */
+
+    /* -----------------------------------------------------------------------------
+     * REGION | Access Gate
+     * ----------------------------------------------------------------------------- */
+
+    .kpi-gate {
+        position                           : fixed;
+        inset                              : 0;
+        background-color                   : var(--Vale_PrimaryBrand, #172b3a);
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        z-index                            : 100;
+    }
+
+    .kpi-gate__card {
+        background-color                   : var(--Vale_BackgroundWhite, #ffffff);
+        border-radius                      : 8px;
+        padding                            : 40px;
+        width                              : min(420px, calc(100vw - 32px));
+        text-align                         : center;
+    }
+
+    .kpi-gate__title { margin: 0 0 8px 0; font-size: 24px; font-weight: 600; }
+    .kpi-gate__intro { margin: 0 0 24px 0; font-size: 14px; color: var(--Vale_TextSecondary, #656565); line-height: 1.5; }
+
+    .kpi-gate__input {
+        width                              : 100%;
+        padding                            : 12px;
+        font-family                        : inherit;
+        font-size                          : 18px;
+        text-align                         : center;
+        border                             : 2px solid var(--Vale_BorderLight, #cccccc);
+        border-radius                      : 8px;
+        margin-bottom                      : 16px;
+    }
+
+    .kpi-gate__button {
+        width                              : 100%;
+        padding                            : 12px 24px;
+        font-family                        : inherit;
+        font-size                          : 14px;
+        font-weight                        : 600;
+        color                              : #ffffff;
+        background-color                   : var(--Vale_PrimaryBrand, #172b3a);
+        border                             : none;
+        border-radius                      : 8px;
+        cursor                             : pointer;
+    }
+
+    .kpi-gate__button:hover { background-color: #0f1e28; }
+
+    .kpi-gate__error {
+        margin                             : 16px 0 0 0;
+        font-size                          : 14px;
+        color                              : #a3707a;
+        min-height                         : 20px;
+    }
+
+    .kpi-status {
+        text-align                         : center;
+        padding                            : 60px 24px;
+        font-size                          : 18px;
+        color                              : var(--Vale_TextSecondary, #656565);
+    }
+
+    .kpi-footnote {
+        font-size                          : 12px;
+        color                              : var(--Vale_TextSecondary, #656565);
+        line-height                        : 1.6;
+        margin                             : 0;
+    }
+
+    @media (max-width: 768px) {
+        .kpi-grid  { grid-template-columns: 1fr; }
+        .kpi-tiles { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        .kpi-page  { padding: 12px; }
+        .kpi-panel { padding: 16px; }
+    }
+
+    /* endregion ------------------------------------------------------------------- */
+</style>
+</head>
+<body>
+
+<!-- ACCESS GATE -->
+<div class="kpi-gate" id="kpiGate">
+    <div class="kpi-gate__card">
+        <h1 class="kpi-gate__title">ValeVision3D Production KPIs</h1>
+        <p class="kpi-gate__intro">
+            Performance metrics for the Vale Garden Houses 3D Visualisation Department.
+            Enter the access phrase you were sent to continue.
+        </p>
+        <input type="password" id="kpiGateInput" class="kpi-gate__input"
+               placeholder="Access phrase" autocomplete="off" spellcheck="false">
+        <button type="button" id="kpiGateButton" class="kpi-gate__button">View Metrics</button>
+        <p class="kpi-gate__error" id="kpiGateError"></p>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="kpiApp" hidden>
+    <header class="kpi-header">
+        <img class="kpi-header__logo-left"
+             src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+             alt="Vale Garden Houses">
+        <img class="kpi-header__logo-right"
+             src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__Whitecardopedia__TopBar__TitleText__.png"
+             alt="Whitecardopedia">
+    </header>
+
+    <div class="kpi-page">
+        <div class="kpi-status" id="kpiStatus">Loading production data...</div>
+        <div id="kpiContent"></div>
+    </div>
+</div>
+
+<script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/05__AppUtils/Na__AppUtils__TimeAdjustments.js"></script>
+<script src="https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/05__AppUtils/Na__AppUtils__ProductionKpiStats.js"></script>
+
+<script>
+// -----------------------------------------------------------------------------
+// REGION | Configuration
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Access and Data Sources
+    // ------------------------------------------------------------
+    // Production URLs are hardcoded, not relative: this page is opened from an
+    // emailed link and must resolve identically wherever it is served from.
+    // ------------------------------------------------------------
+    var KPI_ACCESS_PHRASE   = 'VisDptKpi';                                   // <-- Shared access phrase (client-side deterrent)
+    var KPI_SESSION_KEY     = 'valevision_kpi_access';                       // <-- Remembers the gate for this browser session
+
+    var KPI_R2_BASE         = 'https://cdn.noble-architecture.com/VaApps/Projects';
+    var KPI_GH_BASE         = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects';
+    var KPI_MASTER_INDEX_R2 = 'https://cdn.noble-architecture.com/VaApps/Na__MasterIndex__ProjectLocations__.json';
+    var KPI_MASTER_INDEX_GH = 'https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/02__Src__AppModules/03__AppData/Na__MasterIndex__ProjectLocations__.json';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Access Gate
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Validate the Entered Access Phrase
+    // ------------------------------------------------------------
+    function na_kpi_check_access() {
+        var entered = document.getElementById('kpiGateInput').value.trim();  // <-- Read the field
+        var errorEl = document.getElementById('kpiGateError');               // <-- Error line
+
+        if (entered !== KPI_ACCESS_PHRASE) {                                 // <-- Reject anything else
+            errorEl.textContent = 'That access phrase was not recognised.';
+            document.getElementById('kpiGateInput').value = '';
+            return;
+        }
+
+        try { sessionStorage.setItem(KPI_SESSION_KEY, '1'); } catch (e) {}   // <-- Remember for this tab session
+        na_kpi_unlock();
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Reveal the Dashboard and Start Loading
+    // ------------------------------------------------------------
+    function na_kpi_unlock() {
+        document.getElementById('kpiGate').style.display = 'none';           // <-- Hide the gate
+        document.getElementById('kpiApp').hidden = false;                    // <-- Show the dashboard shell
+        na_kpi_load_and_render();                                            // <-- Fetch and render
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Data Loading
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Fetch JSON From the First Source That Answers
+    // ------------------------------------------------------------
+    function na_kpi_fetch_first(urls) {
+        var attempt = function (index) {
+            if (index >= urls.length) return Promise.resolve(null);           // <-- Every source exhausted
+            return fetch(urls[index], { cache: 'no-store' })
+                .then(function (response) {
+                    if (!response.ok) throw new Error(String(response.status));
+                    return response.json();
+                })
+                .catch(function () { return attempt(index + 1); });            // <-- Try the next source
+        };
+        return attempt(0);
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Load Every Published Project via the Master Index
+    // ------------------------------------------------------------
+    // The index names each project's folder and asset home, so each
+    // project.json is fetched from the right place rather than guessed at.
+    // ------------------------------------------------------------
+    function na_kpi_load_projects() {
+        var bust = '?t=' + Date.now();                                        // <-- Never serve a stale index
+
+        return na_kpi_fetch_first([KPI_MASTER_INDEX_R2 + bust, KPI_MASTER_INDEX_GH + bust])
+            .then(function (index) {
+                if (!index || !Array.isArray(index.projects)) {
+                    throw new Error('Could not load the project index.');
+                }
+
+                var entries = index.projects.filter(function (entry) {
+                    return entry && entry.folderId && entry.enabled !== false; // <-- Skip hidden projects
+                });
+
+                var loads = entries.map(function (entry) {
+                    var r2 = KPI_R2_BASE + '/' + entry.folderId + '/project.json' + bust;
+                    var gh = KPI_GH_BASE + '/' + entry.folderId + '/project.json' + bust;
+
+                    return na_kpi_fetch_first([r2, gh]).then(function (project) {
+                        if (!project) return null;                            // <-- Drop unreachable records
+                        project.__folderPath = entry.folderId;                // <-- Pin the delivery year
+                        return project;
+                    });
+                });
+
+                return Promise.all(loads);
+            })
+            .then(function (projects) {
+                return projects.filter(Boolean);                              // <-- Only records that actually loaded
+            });
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Rendering
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Escape Text for HTML Output
+    // ------------------------------------------------------------
+    function na_kpi_escape(text) {
+        return String(text === null || text === undefined ? '' : text)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    // ---------------------------------------------------------------
+
+    // HELPER FUNCTION | Render One KPI Tile
+    // ------------------------------------------------------------
+    function na_kpi_tile(label, value, sub, tone) {
+        return '<div class="kpi-tile' + (tone ? ' kpi-tile--' + tone : '') + '">'
+             +   '<div class="kpi-tile__value">' + na_kpi_escape(value) + '</div>'
+             +   '<div class="kpi-tile__label">' + na_kpi_escape(label) + '</div>'
+             +   (sub ? '<div class="kpi-tile__sub">' + na_kpi_escape(sub) + '</div>' : '')
+             + '</div>';
+    }
+    // ---------------------------------------------------------------
+
+    // HELPER FUNCTION | Render One Breakdown Table Block
+    // ------------------------------------------------------------
+    function na_kpi_block(title, keyHeader, rows) {
+        var maxShare = rows.reduce(function (m, r) { return Math.max(m, r.share); }, 1);
+
+        var body = rows.map(function (row) {
+            return '<tr>'
+                 +   '<td><strong>' + na_kpi_escape(row.key) + '</strong></td>'
+                 +   '<td class="num">' + row.count + '</td>'
+                 +   '<td class="bar-col">'
+                 +     '<span class="kpi-bar"><span class="kpi-bar__fill" style="width:'
+                 +       ((row.share / maxShare) * 100) + '%"></span></span>'
+                 +     '<span class="kpi-bar__val">' + row.share + '%</span>'
+                 +   '</td>'
+                 +   '<td class="num">' + row.hours + 'h</td>'
+                 + '</tr>';
+        }).join('');
+
+        return '<div class="kpi-block">'
+             +   '<h3 class="kpi-block__title">' + na_kpi_escape(title) + '</h3>'
+             +   '<table class="kpi-table"><thead><tr>'
+             +     '<th>' + na_kpi_escape(keyHeader) + '</th>'
+             +     '<th class="num">Jobs</th><th class="bar-col">Share</th><th class="num">Hours</th>'
+             +   '</tr></thead><tbody>' + body + '</tbody></table>'
+             + '</div>';
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Render the Whole Dashboard
+    // ------------------------------------------------------------
+    function na_kpi_render(stats) {
+        var h = stats.headline;
+        var a = stats.assets;
+
+        var span = (h.firstDelivery && h.lastDelivery)
+            ? formatDate(h.firstDelivery) + ' to ' + formatDate(h.lastDelivery)
+            : 'No delivery dates recorded';
+
+        var tiles = [
+            na_kpi_tile('Jobs Complete',   h.totalJobs, h.reviewedJobs + ' time reviewed'),
+            na_kpi_tile('Jobs This Year',  h.jobsThisYear, h.jobsPerMonth + ' per month average'),
+            na_kpi_tile('Net Hours Delivered', h.hoursNet + 'h',
+                        h.usesOffsets ? h.hoursTaken + 'h absolute time card' : h.hoursAllocated + 'h allocated'),
+            na_kpi_tile('3D Production Efficiency', h.efficiencyPct + '%',
+                        (h.hoursVariance >= 0 ? '+' : '') + h.hoursVariance + 'h vs quote',
+                        h.efficiencyPct >= 100 ? 'good' : 'warn'),
+            h.usesOffsets ? na_kpi_tile('Out Of Scope Hours', h.hoursOffset + 'h', 'across ' + h.offsetJobCount + ' jobs') : '',
+            na_kpi_tile('Median Turnaround', formatDays(h.medianTurnaround), h.avgTurnaround + ' average, working days only'),
+            na_kpi_tile('Delivered In A Week', h.sameWeekPct + '%', 'within 5 working days'),
+            na_kpi_tile('Average Job Size', h.avgHoursPerJob + 'h', 'per reviewed job'),
+            na_kpi_tile('Concept Artists', h.artistCount, h.designerCount + ' designers requesting'),
+            na_kpi_tile('3D Ready Jobs', a.pctWith3d + '%', a.jobsWith3d + ' of ' + h.totalJobs + ' jobs'),
+            na_kpi_tile('Images Published', a.totalImages, a.avgImages + ' per job average'),
+            na_kpi_tile('3D Assets Published', a.totalModels, a.watercolourJobs + ' watercolour jobs')
+        ].join('');
+
+        var blocks = na_kpi_block('Jobs By Type', 'Job Type', stats.typeRows)
+                   + na_kpi_block('Jobs By Year', 'Year', stats.yearRows)
+                   + na_kpi_block('Incoming Source Material', 'Input Type', stats.inputRows)
+                   + na_kpi_block('Requesting Designers', 'Designer', stats.designerRows);
+
+        document.getElementById('kpiContent').innerHTML =
+              '<div class="kpi-panel">'
+            +   '<div class="kpi-panel__head">'
+            +     '<h2 class="kpi-panel__title">ValeVision3D Production Key Performance Indicators</h2>'
+            +     '<span class="kpi-panel__span">' + na_kpi_escape(span) + '</span>'
+            +   '</div>'
+            +   '<div class="kpi-tiles">' + tiles + '</div>'
+            +   '<div class="kpi-grid">' + blocks + '</div>'
+            + '</div>'
+            + '<div class="kpi-panel">'
+            +   '<p class="kpi-footnote">'
+            +     'Turnaround is measured in working days; weekends are excluded and public holidays are not. '
+            +     'Efficiency compares hours quoted against net in-scope hours, so work falling outside a job\'s '
+            +     'original brief does not count against the department. '
+            +     'Figures are generated live from the Whitecardopedia project library each time this page is opened.'
+            +   '</p>'
+            + '</div>';
+
+        document.getElementById('kpiStatus').hidden = true;
+    }
+    // ---------------------------------------------------------------
+
+    // FUNCTION | Load Then Render, With Visible Failure
+    // ------------------------------------------------------------
+    function na_kpi_load_and_render() {
+        var statusEl = document.getElementById('kpiStatus');
+
+        na_kpi_load_projects()
+            .then(function (projects) {
+                if (!projects.length) throw new Error('No project records could be loaded.');
+                na_kpi_render(na_build_production_kpi_stats(projects));       // <-- Shared engine
+            })
+            .catch(function (error) {
+                statusEl.textContent = 'Could not load the production data. ' + error.message;
+            });
+    }
+    // ---------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Boot
+// -----------------------------------------------------------------------------
+
+    document.getElementById('kpiGateButton').addEventListener('click', na_kpi_check_access);
+    document.getElementById('kpiGateInput').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') na_kpi_check_access();                     // <-- Enter submits
+    });
+
+    try {
+        if (sessionStorage.getItem(KPI_SESSION_KEY) === '1') na_kpi_unlock();  // <-- Skip the gate within a session
+        else document.getElementById('kpiGateInput').focus();
+    } catch (e) {
+        document.getElementById('kpiGateInput').focus();
+    }
+
+// endregion -------------------------------------------------------------------
+</script>
+
+</body>
+</html>

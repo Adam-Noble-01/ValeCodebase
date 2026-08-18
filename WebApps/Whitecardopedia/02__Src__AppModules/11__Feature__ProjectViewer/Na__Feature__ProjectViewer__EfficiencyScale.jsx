@@ -112,7 +112,9 @@
             return null;                                                 // <-- Don't render if no schedule data
         }
         
-        const { timeAllocated, timeTaken } = scheduleData;               // <-- Destructure schedule data
+        const { timeAllocated } = scheduleData;                          // <-- Quoted hours for the job
+        const timing = na_calculate_net_time(scheduleData);              // <-- Absolute / offset / net hours
+        const timeTaken = timing.hasAdjustments ? timing.net : scheduleData.timeTaken;  // <-- Score against fair scope when offsets exist
         const position = calculateEfficiencyPosition(timeAllocated, timeTaken);  // <-- Calculate marker position
         const status = getStatusCategory(position);                      // <-- Get status category
         const message = formatStatusMessage(timeAllocated, timeTaken);   // <-- Format detailed message
@@ -171,6 +173,12 @@
                         <p className="efficiency-scale__status-message">
                             {message}
                         </p>
+                        {timing.hasAdjustments && (
+                            <p className="efficiency-scale__status-note">
+                                Scored against net in-scope time. The absolute time card records {timing.absolute} hours,
+                                of which {timing.offsets} fell outside the original scope.
+                            </p>
+                        )}
                     </div>
                 )}
             </div>

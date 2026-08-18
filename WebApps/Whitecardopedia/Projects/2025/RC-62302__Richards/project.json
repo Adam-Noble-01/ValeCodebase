@@ -5,16 +5,14 @@
     "productionData": {
         "input": "Early Stage Sketch",
         "conceptArtist": "Martin",
-        "additionalNotes": "Martin initially asked if I could draft the existing building context based on a couple of site photographs he provided. I drafted the survey and delivered both image and CAD files of the Existing Conditions. I then added Martin’s very well-put-together SketchUp 3D model of the design proposal into the scene, added a simple Whitecard roof lantern, and re-exported the same views to deliver the design proposal Whitecard set."
+        "additionalNotes": "Martin initially asked if I could draft the existing building context based on a couple of site photographs he provided. I drafted the survey and delivered both image and CAD files of the Existing Conditions. I then added Martin’s very well-put-together SketchUp 3D model of the design proposal into the scene, added a simple Whitecard roof lantern, and re-exported the same views to deliver the design proposal Whitecard set.",
+        "designer": "Martin"
     },
     "scheduleData": {
         "dateReceived": "26-Nov-2025",
         "dateFulfilled": "26-Nov-2025",
         "timeAllocated": 3,
         "timeTaken": 3
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

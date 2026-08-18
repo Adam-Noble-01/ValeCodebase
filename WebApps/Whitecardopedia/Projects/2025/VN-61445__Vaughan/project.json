@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Top Notch CAD Work again from Anna as always.",
-        "conceptArtist": "Anna"
+        "conceptArtist": "Anna",
+        "designer": "Gary"
     },
     "scheduleData": {
         "timeAllocated": 4,
         "timeTaken": 3,
         "dateReceived": "21-Oct-2025",
         "dateFulfilled": "22-Oct-2025"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__3dView__FrontLeft__FarView__WhitecardImage__22-Oct-2025.png",

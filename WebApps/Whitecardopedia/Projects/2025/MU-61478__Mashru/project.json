@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Very tricky due to some discrepancies found whilst working things up, had to use photomatch method for validation",
-        "conceptArtist": "Rachael"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Rachael",
+        "designer": "Martin"
     },
     "images": [
         "IMG01__Mashru__Exterior3dView01__ImageFile__1.2.0.png"

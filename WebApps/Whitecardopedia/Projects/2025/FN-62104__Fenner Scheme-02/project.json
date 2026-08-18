@@ -5,16 +5,14 @@
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "The second concept scheme, this one of a pitched roof glasshouse drawn by Dan, capitalised by using scheme-01 file as a template so saved time",
-        "conceptArtist": "Dan"
+        "conceptArtist": "Dan",
+        "designer": "Dan"
     },
     "scheduleData": {
         "timeAllocated": 4,
         "timeTaken": 3,
         "dateFulfilled": "17-Oct-2025",
         "dateReceived": "15-Oct-2025"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__Scheme-02__RightCorner__WhitecardImage__17-Oct-2025.png",

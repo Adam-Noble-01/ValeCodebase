@@ -1,4 +1,7 @@
 {
+    "projectName": "Flynn",
+    "projectCode": "63569",
+    "projectNameAlias": "",
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -36,28 +39,28 @@
                     "eye": {
                         "x": 28295.5122,
                         "y": -10128.9457,
-                        "z": 2635.0
+                        "z": 2635
                     },
                     "target": {
                         "x": 9999.9999,
                         "y": 12250.9249,
-                        "z": 2635.0
+                        "z": 2635
                     },
                     "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
                     },
                     "direction": {
                         "x": -0.632921,
                         "y": 0.774216,
-                        "z": 0.0
+                        "z": 0
                     },
                     "fov_degrees": 30.9573,
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -75,7 +78,7 @@
                     "eye": {
                         "x": 20539.2966,
                         "y": 4763.9527,
-                        "z": 1650.0
+                        "z": 1650
                     },
                     "target": {
                         "x": 10139.0469,
@@ -96,7 +99,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -135,7 +138,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -153,28 +156,28 @@
                     "eye": {
                         "x": -4571.7657,
                         "y": 5499.6572,
-                        "z": 1735.0
+                        "z": 1735
                     },
                     "target": {
                         "x": 6410.0001,
                         "y": 12196.3977,
-                        "z": 1735.0
+                        "z": 1735
                     },
                     "up": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
                     },
                     "direction": {
                         "x": 0.853777,
                         "y": 0.520638,
-                        "z": 0.0
+                        "z": 0
                     },
                     "fov_degrees": 43.6028,
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -213,7 +216,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -252,7 +255,7 @@
                     "fov_is_height": false,
                     "is_perspective": true,
                     "aspect_ratio": 1.5,
-                    "image_width": 0.0
+                    "image_width": 0
                 },
                 "model_layer_visibility": {
                     "ValeVision__MainBuildingModel__Existing": true,
@@ -274,20 +277,20 @@
         "IMG06__3dView__Top-Down__WhitecardImage__01-Jul-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "Additional context was modelled, other than that easy project, nothing to report",
         "conceptArtist": "Amy",
         "designer": "Tom",
         "input": "NOT YET REVIEWED"
     },
-    "projectCode": "63569",
-    "projectName": "Flynn",
     "scheduleData": {
         "dateFulfilled": "01-Jul-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "01-Jul-2026",
+        "timeTaken": 2,
+        "timeAllocated": 3,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__AdditionalContext": 1
+        }
     },
     "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__01-Jul-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -322,5 +325,28 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63569__Flynn/Flynn__TrueVision__SiteBoundaries__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63569__Flynn/Flynn__TrueVision__SiteBoundaries__MeshModel__.glb"
     ],
-    "Navmode__OrbitMaxDistanceMm": 40000
+    "Navmode__OrbitMaxDistanceMm": 40000,
+    "folderId": "2026/63569__Flynn",
+    "isR2Loaded": true,
+    "displayName": "Flynn",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63569__Flynn",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__01-Jul-2026.png",
+        "IMG02__3dView__HeroShot__WhitecardImage__01-Jul-2026.png",
+        "IMG03__3dView__RearFascade__WhitecardImage__01-Jul-2026.png",
+        "IMG04__3dView__LowerTerrace__WhitecardImage__01-Jul-2026.png",
+        "IMG05__3dView__UpperTerrace__WhitecardImage__01-Jul-2026.png",
+        "IMG06__3dView__Top-Down__WhitecardImage__01-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__01-Jul-2026.png",
+        "IMG02__3dView__HeroShot__WhitecardImage__01-Jul-2026.png",
+        "IMG03__3dView__RearFascade__WhitecardImage__01-Jul-2026.png",
+        "IMG04__3dView__LowerTerrace__WhitecardImage__01-Jul-2026.png",
+        "IMG05__3dView__UpperTerrace__WhitecardImage__01-Jul-2026.png",
+        "IMG06__3dView__Top-Down__WhitecardImage__01-Jul-2026.png"
+    ],
+    "enabled": true
 }

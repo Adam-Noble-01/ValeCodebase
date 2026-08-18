@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A Standard Job, No Issues to report, rafter feet maybe added a tiny bit more time but not significant.",
-        "conceptArtist": "Anna"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Anna",
+        "designer": "Dan"
     },
     "images": [
         "IMG01__3dView__FrontLeft__WhitecardImage__17-Sep-2025.png",

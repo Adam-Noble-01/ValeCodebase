@@ -5,10 +5,8 @@
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "Mapped Steph's Hand Drawn Concept to the Whitecard model, result is Stunning!",
-        "conceptArtist": "Steph"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Steph",
+        "designer": "Steve"
     },
     "images": [
         "IMG01__3dView__FrontLeft__WhitecardImage__30-Sep-2025.png",

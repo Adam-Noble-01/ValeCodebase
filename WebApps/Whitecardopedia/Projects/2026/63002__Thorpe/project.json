@@ -1,4 +1,7 @@
 {
+    "projectName": "Thorpe",
+    "projectCode": "63002",
+    "projectNameAlias": "",
     "Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -49,16 +52,11 @@
         "input": "CAD File",
         "designer": "Steve"
     },
-    "projectCode": "63002",
-    "projectName": "Thorpe",
     "scheduleData": {
         "dateFulfilled": "06-Apr-2026",
-        "dateReceived": "06-Oct-2025",
+        "dateReceived": "06-Apr-2026",
         "timeAllocated": 2,
         "timeTaken": 1.5
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63002__Thorpe/Thorpe__01__OrbitHelperCube__MeshModel__.glb",
@@ -76,5 +74,10 @@
     "allImages": [
         "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026.png"
     ],
-    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026__Thumbnail__524p__.webp"
+    "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__07-Apr-2026__Thumbnail__524p__.webp",
+    "isR2Loaded": true,
+    "displayName": "Thorpe",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63002__Thorpe",
+    "hasGlb_R2": true,
+    "enabled": true
 }

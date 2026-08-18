@@ -36,9 +36,6 @@
         "timeAllocated": 2.5,
         "timeTaken": 3
     },
-    "sketchUpModel": {
-        "url": "Nil"
-    },
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,

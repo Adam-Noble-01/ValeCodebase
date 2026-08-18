@@ -1,4 +1,7 @@
 {
+    "projectName": "Miah",
+    "projectCode": "63984",
+    "projectNameAlias": "",
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -72,20 +75,20 @@
         "IMG01__3dView__MainShot____WhitecardImage__16-Jul-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "Main garden room was very easy, however it did include a very complex corbel which has to be modelled.",
         "conceptArtist": "Rachael",
         "designer": "Steve",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "63984",
-    "projectName": "Miah",
     "scheduleData": {
         "dateFulfilled": "16-Jul-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "14-Jul-2026",
+        "timeTaken": 4,
+        "timeAllocated": 1.5,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ReusableAssets": 2.5
+        }
     },
     "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__16-Jul-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -118,5 +121,18 @@
     "Navmode__EnabledModes": {
         "Navmode__EnabledModes__Walk": true,
         "Navmode__EnabledModes__Fly": true
-    }
+    },
+    "folderId": "2026/63984__Miah",
+    "isR2Loaded": true,
+    "displayName": "Miah",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63984__Miah",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__16-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__16-Jul-2026.png"
+    ],
+    "enabled": true
 }

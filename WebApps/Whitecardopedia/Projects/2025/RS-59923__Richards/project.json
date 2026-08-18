@@ -5,10 +5,8 @@
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "Used the texture projection technique to utilise Steph's Hand Drawn Concept, mapping it to the Whitecard model.",
-        "conceptArtist": "Steph"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Steph",
+        "designer": "Gary"
     },
     "images": [
         "IMG01__Richards__Exterior3dView01__WhiteCard__LOD1__ImageFile__1.0.0__.png",

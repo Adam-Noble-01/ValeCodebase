@@ -169,7 +169,11 @@
         if (loading) {
             return (
                 <>
-                    <Header showBackButton={true} onBack={onBack} />
+                    <Header />
+                    <Breadcrumbs
+                        trail={[{ label: 'Whitecardopedia', onClick: onBack }]}
+                        current="Project Editor"
+                    />
                     <div className="project-editor">
                         <div className="project-editor__content">
                             <p style={{ textAlign: 'center', fontSize: '18px' }}>
@@ -188,7 +192,14 @@
         if (editorView === EDITOR_VIEWS.EDITING && selectedProject) {
             return (
                 <>
-                    <Header showBackButton={true} onBack={handleCancelEdit} />
+                    <Header />
+                    <Breadcrumbs
+                        trail={[
+                            { label: 'Whitecardopedia', onClick: onBack },
+                            { label: 'Project Editor',  onClick: handleCancelEdit }
+                        ]}
+                        current={(selectedProject.projectNameAlias || '').trim() || selectedProject.projectName || 'Project'}
+                    />
                     <div className="project-editor">
                         <div className="project-editor__content">
                             <ProjectEditorForm 
@@ -212,7 +223,12 @@
         
         return (
             <>
-                <Header showBackButton={true} onBack={onBack} />
+                <Header />
+
+                <Breadcrumbs
+                    trail={[{ label: 'Whitecardopedia', onClick: onBack }]}
+                    current="Project Editor"
+                />
                 
                 <div className="project-editor">
                     <div className="project-editor__content">

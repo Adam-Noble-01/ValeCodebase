@@ -1,7 +1,8 @@
 {
     "projectName": "Weeks",
-    "ProjectType": "Whitecard",
     "projectCode": "59494",
+    "projectNameAlias": "",
+    "ProjectType": "Whitecard",
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A very complex model to build, required patching together previous hand drawings, Nicks site survey, and numerous Photomatch Images reference images to build an accurate complete model of all the elevations visible as they concept department required this for a planning application drawing."
@@ -9,10 +10,12 @@
     "scheduleData": {
         "timeAllocated": 8,
         "timeTaken": 12,
-        "dateFulfilled": "16-Oct-2025"
-    },
-    "sketchUpModel": {
-        "url": "https://app.sketchup.com/share/tc/europe/luls66XZsNs?source=desktop&stoken=b3A7Z7eyGs20QIcsOxb61KYZyCAUDSRydPnuBP7tSiB0VQrs80IExamPKdRZ6VAx&rtc-engine-version=19"
+        "dateFulfilled": "16-Oct-2025",
+        "dateReceived": "14-Oct-2025",
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ScopeAmendments": 2
+        }
     },
     "images": [
         "IMG01__3dView__Orangery__WhitecardImage__23-Oct-2025.png",
@@ -39,7 +42,7 @@
         "IMG41__Photomatch-06__GeometryOnly.png",
         "IMG42__Photomatch-06__Overlay.png"
     ],
-    "folderId": "WK-3007__Weeks",
+    "folderId": "2025/WK-3007__Weeks",
     "basePath": "Projects/2025/WK-3007__Weeks",
     "displayImages": [
         "IMG01__3dView__Orangery__WhitecardImage__23-Oct-2025.png",
@@ -92,5 +95,10 @@
         "IMG41__Photomatch-06__GeometryOnly.png",
         "IMG42__Photomatch-06__Overlay.png"
     ],
-    "thumbnailImage": "IMG01__3dView__Orangery__WhitecardImage__23-Oct-2025__Thumbnail__524p__.webp"
+    "thumbnailImage": "IMG01__3dView__Orangery__WhitecardImage__23-Oct-2025__Thumbnail__524p__.webp",
+    "isR2Loaded": true,
+    "displayName": "Weeks",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2025/WK-3007__Weeks",
+    "hasGlb_R2": false,
+    "enabled": true
 }

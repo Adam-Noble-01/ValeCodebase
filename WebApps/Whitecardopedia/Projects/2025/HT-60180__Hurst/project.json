@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "Completed with no issues to report, nice clean CAD File input from Rachael like usual, nothing difficult to figure out so went nicely to plan."
+        "additionalNotes": "Completed with no issues to report, nice clean CAD File input from Rachael like usual, nothing difficult to figure out so went nicely to plan.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "18-Nov-2025",
         "dateFulfilled": "19-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__3dView__AlternateView-01____WhitecardImage__19-Nov-2025.png",

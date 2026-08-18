@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A great CAD File, No Issues to report, Anna did a great job with the CAD File.",
-        "conceptArtist": "Anna"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Anna",
+        "designer": "Gary"
     },
     "images": [
         "IMG01__Conyers__Exterior3dView01__ImageFile__1.0.0__.png"

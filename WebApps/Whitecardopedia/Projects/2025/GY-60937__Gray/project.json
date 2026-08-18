@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Amy",
-        "additionalNotes": "CAD provided was great, Amy did a brilliant job, I ended up adding a Photomatch and modelling out the landscape as they was a rather complex topographic level situation, so modelled the surrounding hardscape context which took additional time over the allocated schedule."
+        "additionalNotes": "CAD provided was great, Amy did a brilliant job, I ended up adding a Photomatch and modelling out the landscape as they was a rather complex topographic level situation, so modelled the surrounding hardscape context which took additional time over the allocated schedule.",
+        "designer": "Tom"
     },
     "scheduleData": {
         "dateReceived": "06-Aug-2025",
         "dateFulfilled": "07-Aug-2025",
         "timeAllocated": 5,
         "timeTaken": 7
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__3dView-01__MainView__WhitecardImage__24-Oct-2025.png",

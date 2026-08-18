@@ -27,6 +27,10 @@
 //
 // DEVELOPMENT LOG:
 // 30-Jul-2026 - Version 1.0.3
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-18-2 (legacy SketchUp URL system
+//   removed from the viewer, gallery detector and editor).
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-18-1 (Advanced Time Data + Library
+//   Overview panel: new AppUtils module, app.html + stylesheet changes).
 // - PWA_SW_VERSION_TOKEN bumped to 2026-07-30-3 (Advanced Hotkeys help panel).
 //
 // 30-Jul-2026 - Version 1.0.2
@@ -96,7 +100,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-07-30-3';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-08-18-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

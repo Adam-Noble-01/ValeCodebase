@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Dan",
-        "additionalNotes": "I worked from Dan's hand drawn elevations, I used a photo match to catch a couple of architectural elements outside out the scope of Dans Elevations, but that were visible on a perspective shot."
+        "additionalNotes": "I worked from Dan's hand drawn elevations, I used a photo match to catch a couple of architectural elements outside out the scope of Dans Elevations, but that were visible on a perspective shot.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "25-Nov-2025",
         "dateFulfilled": "26-Nov-2025",
         "timeAllocated": 3,
         "timeTaken": 3
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

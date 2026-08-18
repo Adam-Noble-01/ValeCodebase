@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "A standard project, well prepared CAD linework made it a breeze. No problems to report."
+        "additionalNotes": "A standard project, well prepared CAD linework made it a breeze. No problems to report.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "25-Nov-2025",
         "dateFulfilled": "25-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

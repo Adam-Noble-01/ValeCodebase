@@ -1,4 +1,7 @@
 {
+    "projectName": "Bagot",
+    "projectCode": "62609",
+    "projectNameAlias": "",
     "Navmode__EnabledModes": {
         "Navmode__EnabledModes__Fly": true,
         "Navmode__EnabledModes__Walk": true
@@ -12,21 +15,21 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__10-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type",
+        "additionalNotes": "Used to demonstrate the Max Model system, the model itself was required for coordination with the Project Architect. This was the second scheme modelled for the project.",
+        "conceptArtist": "Dan",
+        "input": "Early Stage Sketch",
         "designer": "Dan"
     },
-    "projectCode": "62609",
-    "projectName": "Bagot",
     "scheduleData": {
         "dateFulfilled": "10-Jun-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "05-Jun-2026",
+        "timeAllocated": 5,
+        "timeTaken": 7,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ReusableAssets": 1,
+            "timeAdjustments__ScopeAmendments": 2
+        }
     },
     "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__12-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
@@ -65,5 +68,18 @@
         "OrbitHelperCube__Position__PosX": 19651,
         "OrbitHelperCube__Position__PosY": 1826,
         "OrbitHelperCube__Position__PosZ": -7286
-    }
+    },
+    "folderId": "2026/62609__Bagot",
+    "isR2Loaded": true,
+    "displayName": "Bagot",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/62609__Bagot",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__10-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__10-Jun-2026.png"
+    ],
+    "enabled": true
 }

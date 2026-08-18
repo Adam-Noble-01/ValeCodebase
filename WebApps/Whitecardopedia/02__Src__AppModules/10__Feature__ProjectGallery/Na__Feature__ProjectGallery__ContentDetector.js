@@ -11,9 +11,12 @@
 //
 // DESCRIPTION:
 // - Detects if project contains watercolor artwork (ART20 images)
-// - Detects if project contains 3D model content (SketchUp or ValeVision)
+// - Detects if project contains 3D model content (ValeVision GLB models)
 // - Used by gallery view to display content indicator icons
 // - Provides consistent content detection logic across application
+//
+// 18-Aug-2026: the legacy sketchUpModel URL check was removed. ValeVision3D
+// GLB models are now the only source of 3D content. See DEVLOG v0.6.15.
 //
 // =============================================================================
 
@@ -39,19 +42,7 @@
     function has3DModelContent(projectData) {
         if (!projectData) return false;                                     // <-- Check if project data exists
         
-        // SUB CHECK | Check ValeVision Model URL
-        // ---------------------------------------------------------------
-        const hasValeVisionModel = checkValeVisionModelUrl(projectData);    // <-- Check for ValeVision GLB model
-        if (hasValeVisionModel) return true;                                // <-- Return true if ValeVision model exists
-        // ---------------------------------------------------------------
-        
-        // SUB CHECK | Check SketchUp Model URL
-        // ---------------------------------------------------------------
-        const hasSketchUpModel = checkSketchUpModelUrl(projectData);        // <-- Check for SketchUp model link
-        if (hasSketchUpModel) return true;                                  // <-- Return true if SketchUp model exists
-        // ---------------------------------------------------------------
-        
-        return false;                                                       // <-- No 3D model content found
+        return checkValeVisionModelUrl(projectData);                        // <-- ValeVision GLB models are the only 3D source
     }
     // ---------------------------------------------------------------
 
@@ -101,22 +92,6 @@
     }
     // ---------------------------------------------------------------
 
-
-    // HELPER FUNCTION | Check if SketchUp Model URL is Valid
-    // ---------------------------------------------------------------
-    function checkSketchUpModelUrl(projectData) {
-        const sketchUpModel = projectData.sketchUpModel;                    // <-- Get SketchUp model object
-        if (!sketchUpModel || !sketchUpModel.url) return false;             // <-- Check if SketchUp model and URL exist
-        
-        const url = sketchUpModel.url;                                      // <-- Get URL string
-        if (typeof url !== 'string') return false;                          // <-- Ensure URL is a string
-        
-        const invalidValues = ['nil', 'none', 'false', 'n/a'];              // <-- Invalid placeholder values
-        const normalizedUrl = url.toLowerCase().trim();                     // <-- Normalize URL for comparison
-        
-        return !invalidValues.includes(normalizedUrl);                      // <-- Exclude invalid placeholder values
-    }
-    // ---------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
 

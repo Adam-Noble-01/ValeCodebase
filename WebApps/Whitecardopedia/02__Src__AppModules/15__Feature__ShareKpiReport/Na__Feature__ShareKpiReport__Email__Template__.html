@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ValeVision3D Production Metrics</title>
+</head>
+<!--
+    =============================================================================
+    WHITECARDOPEDIA - 3D DEPARTMENT KPI EMAIL TEMPLATE
+    =============================================================================
+
+    FILE    : Na__Feature__ShareKpiReport__Email__Template__.html
+    AUTHOR  : Adam Noble - Noble Architecture
+    PURPOSE : Tokenised email presenting the current 3D department performance
+              metrics, with a link through to the live gated dashboard.
+    CREATED : 18-Aug-2026
+
+    TOKENS  : __REPORT_PERIOD__, __HEADLINE_TILES__, __TREND_PERIOD__,
+              __EFFICIENCY_ROWS__, __THROUGHPUT_ROWS__,
+              __DASHBOARD_URL__, __ACCESS_PHRASE__, __GENERATED_ON__
+
+    EMAIL CLIENT CONSTRAINTS:
+    - Table based layout with inline styles throughout. Outlook ignores most
+      external and embedded CSS, and flexbox/grid entirely.
+    - All image and link URLs are absolute production URLs; a mail client has
+      no origin to resolve a relative path against.
+    - No JavaScript: every mail client strips it.
+
+    =============================================================================
+-->
+<body style="margin:0; padding:0; background-color:#f5f5f5; font-family:'Open Sans',Arial,Helvetica,sans-serif; color:#172b3a;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5; padding:24px 12px;">
+<tr>
+<td align="center">
+
+    <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="width:640px; max-width:100%; background-color:#ffffff; border-radius:8px; overflow:hidden; border:1px solid #cccccc;">
+
+        <!-- HEADER -->
+        <tr>
+            <td style="padding:20px 28px; border-bottom:3px solid #172b3a;">
+                <img src="https://adam-noble-01.github.io/ValeCodebase/WebApps/assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                     alt="Vale Garden Houses" width="150" style="display:block; border:0; width:150px; height:auto;">
+            </td>
+        </tr>
+
+        <!-- TITLE -->
+        <tr>
+            <td style="padding:28px 28px 8px 28px;">
+                <h1 style="margin:0 0 6px 0; font-size:22px; font-weight:600; color:#172b3a;">
+                    3D Department Performance Metrics
+                </h1>
+                <p style="margin:0; font-size:13px; color:#656565;">
+                    __REPORT_PERIOD__
+                </p>
+            </td>
+        </tr>
+
+        <!-- INTRO -->
+        <tr>
+            <td style="padding:16px 28px 0 28px;">
+                <p style="margin:0; font-size:14px; line-height:1.6; color:#172b3a;">
+                    A summary of current output from the Vale Garden Houses 3D Visualisation
+                    Department. Figures cover every job in the Whitecardopedia library.
+                </p>
+            </td>
+        </tr>
+
+        <!-- HEADLINE TILES -->
+        <tr>
+            <td style="padding:20px 28px 0 28px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                    __HEADLINE_TILES__
+                </table>
+            </td>
+        </tr>
+
+        <!-- BREAKDOWN -->
+        <tr>
+            <td style="padding:24px 28px 0 28px;">
+                <h2 style="margin:0 0 4px 0; font-size:16px; font-weight:600; color:#172b3a; padding-bottom:6px; border-bottom:2px solid #cccccc;">
+                    Recent Performance
+                </h2>
+                <p style="margin:6px 0 12px 0; font-size:11px; color:#656565;">
+                    __TREND_PERIOD__
+                </p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td width="50%" style="vertical-align:top; padding-right:10px;">
+                        <p style="margin:0 0 6px 0; font-size:12px; font-weight:600; color:#172b3a;">Scope Efficiency</p>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            __EFFICIENCY_ROWS__
+                        </table>
+                        <p style="margin:8px 0 0 0; font-size:10px; color:#656565;">
+                            <span style="color:#7d9471;">&#9632;</span> at or above 100% break even &nbsp;
+                            <span style="color:#b0846a;">&#9632;</span> below
+                        </p>
+                    </td>
+                    <td width="50%" style="vertical-align:top; padding-left:10px; border-left:1px solid #f5f5f5;">
+                        <p style="margin:0 0 6px 0; font-size:12px; font-weight:600; color:#172b3a;">Jobs Delivered</p>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            __THROUGHPUT_ROWS__
+                        </table>
+                    </td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- HOW TO READ -->
+        <tr>
+            <td style="padding:24px 28px 0 28px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f5f5; border-radius:6px;">
+                <tr>
+                    <td style="padding:14px 16px;">
+                        <p style="margin:0; font-size:12px; line-height:1.6; color:#656565;">
+                            <strong style="color:#172b3a;">How to read these figures.</strong><br>
+                            Turnaround counts working days only; weekends are excluded.
+                            Efficiency compares the hours quoted for a job against the hours
+                            actually spent inside its original brief, so work added after the
+                            brief was agreed does not count against the department.
+                        </p>
+                    </td>
+                </tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- CALL TO ACTION -->
+        <tr>
+            <td align="center" style="padding:28px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td align="center" style="background-color:#172b3a; border-radius:6px;">
+                        <a href="__DASHBOARD_URL__"
+                           style="display:inline-block; padding:14px 32px; font-family:'Open Sans',Arial,Helvetica,sans-serif; font-size:15px; font-weight:600; color:#ffffff; text-decoration:none;">
+                            View The Live Dashboard
+                        </a>
+                    </td>
+                </tr>
+                </table>
+                <p style="margin:14px 0 0 0; font-size:13px; color:#656565;">
+                    Access phrase: <strong style="color:#b03a2e; letter-spacing:0.5px;">__ACCESS_PHRASE__</strong>
+                </p>
+                <p style="margin:6px 0 0 0; font-size:12px; color:#8a8a8a;">
+                    The dashboard updates itself each time it is opened.
+                </p>
+            </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+            <td style="padding:18px 28px; background-color:#172b3a;">
+                <p style="margin:0; font-size:11px; line-height:1.6; color:#ffffff;">
+                    Vale Garden Houses &middot; 3D Visualisation Department<br>
+                    <span style="color:#9aa5ac;">Generated __GENERATED_ON__ from the Whitecardopedia project library.</span>
+                </p>
+            </td>
+        </tr>
+
+    </table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

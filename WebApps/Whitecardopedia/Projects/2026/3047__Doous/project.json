@@ -1,4 +1,7 @@
 {
+    "projectName": "Doous",
+    "projectCode": "3047",
+    "projectNameAlias": "",
     "CrossSection__Config": {
         "CrossSection__Enabled": true,
         "CrossSection__FillColor": "#f0f0f0",
@@ -1454,20 +1457,21 @@
         "IMG06__3dView__Interior__View-05__WhitecardImage__13-Aug-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "Worked from Nicks SketchUp model which was a dream to work with, used the old Whitecard model existing building context and modified where needed and modelled a interior scene, and using our new video editor tool created a video for the Client in which Nick delivered 13-Aug-2025",
         "conceptArtist": "James",
         "designer": "Tom",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "3047",
-    "projectName": "Doous",
     "scheduleData": {
         "dateFulfilled": "12-Aug-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "10-Aug-2026",
+        "timeTaken": 6,
+        "timeAllocated": 6,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__ScopeAmendments": 2,
+            "timeAdjustments__DesignDevelopment": 2
+        }
     },
     "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__13-Aug-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -1506,5 +1510,28 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/Doous__TrueVision__MainBuildingModel__ProposedWindows__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/Doous__TrueVision__SiteBoundaries__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous/Doous__TrueVision__SiteBoundaries__MeshModel__.glb"
-    ]
+    ],
+    "folderId": "2026/3047__Doous",
+    "isR2Loaded": true,
+    "displayName": "Doous",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/3047__Doous",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__13-Aug-2026.png",
+        "IMG02__3dView__Interior__View-01__WhitecardImage__13-Aug-2026.png",
+        "IMG03__3dView__Interior__View-02__WhitecardImage__13-Aug-2026.png",
+        "IMG04__3dView__Interior__View-03__WhitecardImage__13-Aug-2026.png",
+        "IMG05__3dView__Interior__View-04__WhitecardImage__13-Aug-2026.png",
+        "IMG06__3dView__Interior__View-05__WhitecardImage__13-Aug-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__13-Aug-2026.png",
+        "IMG02__3dView__Interior__View-01__WhitecardImage__13-Aug-2026.png",
+        "IMG03__3dView__Interior__View-02__WhitecardImage__13-Aug-2026.png",
+        "IMG04__3dView__Interior__View-03__WhitecardImage__13-Aug-2026.png",
+        "IMG05__3dView__Interior__View-04__WhitecardImage__13-Aug-2026.png",
+        "IMG06__3dView__Interior__View-05__WhitecardImage__13-Aug-2026.png"
+    ],
+    "enabled": true
 }

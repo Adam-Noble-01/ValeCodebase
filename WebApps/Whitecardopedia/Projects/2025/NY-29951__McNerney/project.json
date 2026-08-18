@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "This was the first project to the SketchUp Model Link feature, allowing anyone with a link to the Whitecard 3D model to view it in their Web browser. Top Notch CAD Linework was provided by Concept Artist Anna.",
-        "conceptArtist": "Anna"
-    },
-    "sketchUpModel": {
-        "url": "https://app.sketchup.com/share/tc/europe/EjShVZJYLRU?source=desktop&stoken=rm282v4Fh7u95OzDk1ie2bQ6XgWXlDzq9FGpjEwYlxxcQXFtPgPxFkSWa_Ryt18l&rtc-engine-version=19&mode=present"
+        "conceptArtist": "Anna",
+        "designer": "Steve"
     },
     "images": [
         "IMG01__3dView__MainShot__WhitecardImage__09-Oct-2025.png",

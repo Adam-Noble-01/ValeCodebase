@@ -5,16 +5,14 @@
     "productionData": {
         "input": "Hand Drawn Concept",
         "conceptArtist": "Steph",
-        "additionalNotes": "Used the hybrid method rather than \"CADising\". This was OK this time as the PDF provided by Steph was complete and the house quite simple, this is the first Hybrid completed ahead of time."
+        "additionalNotes": "Used the hybrid method rather than \"CADising\". This was OK this time as the PDF provided by Steph was complete and the house quite simple, this is the first Hybrid completed ahead of time.",
+        "designer": "Gary"
     },
     "scheduleData": {
         "dateReceived": "28-Nov-2025",
         "dateFulfilled": "28-Nov-2025",
         "timeAllocated": 3,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

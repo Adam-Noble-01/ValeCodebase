@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A small but fairly complex existing house, No Issues to report, took a slightly longer time than expected.",
-        "conceptArtist": "Rachael"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Rachael",
+        "designer": "Steve"
     },
     "images": [
         "IMG01__Gibbs__3dVisual__WhiteCard_LOD-01__ForArtist__1.0.0__.png",

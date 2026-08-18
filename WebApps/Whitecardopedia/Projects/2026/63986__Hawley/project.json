@@ -1,4 +1,7 @@
 {
+    "projectName": "Hawley",
+    "projectCode": "63986",
+    "projectNameAlias": "",
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -200,20 +203,16 @@
         "IMG01__3dView__MainShot____WhitecardImage__14-Aug-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "An easy job, nothing to report.",
         "conceptArtist": "Rachael",
         "designer": "Martin",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "63986",
-    "projectName": "Hawley",
     "scheduleData": {
         "dateFulfilled": "13-Aug-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "11-Aug-2026",
+        "timeTaken": 2,
+        "timeAllocated": 2
     },
     "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__14-Aug-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -244,5 +243,18 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley/Hawley__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley/Hawley__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley/Hawley__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ]
+    ],
+    "folderId": "2026/63986__Hawley",
+    "isR2Loaded": true,
+    "displayName": "Hawley",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63986__Hawley",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__14-Aug-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__14-Aug-2026.png"
+    ],
+    "enabled": true
 }

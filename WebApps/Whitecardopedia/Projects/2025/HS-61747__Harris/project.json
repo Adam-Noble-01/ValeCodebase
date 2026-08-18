@@ -5,16 +5,14 @@
     "productionData": {
         "input": "Hand Drawn Concept",
         "additionalNotes": "Jo provided outstanding quality drawings for this project, this made the mapping task a breeze. Two schemes for produced and delivered.",
-        "conceptArtist": "Jo"
+        "conceptArtist": "Jo",
+        "designer": "Martin"
     },
     "scheduleData": {
         "timeAllocated": 5,
         "timeTaken": 4,
         "dateFulfilled": "08-Oct-2025",
         "dateReceived": "07-Oct-2025"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__Harris__Scheme-01__Whitecard.png",

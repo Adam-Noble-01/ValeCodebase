@@ -13,7 +13,8 @@
 // - Persistent header component displayed across all pages
 // - Features Vale Garden Houses logo on left
 // - Features Whitecardopedia or Blockoutopedia title logo on right
-// - Optional back button for navigation
+// - Navigation is handled by the Breadcrumbs bar beneath the header, not
+//   by a button inside it; see Na__AppCore__Breadcrumbs.jsx
 // - White background with subtle shadow and Vale blue bottom border
 // - Swaps right logo based on galleryMode prop (whitecard/blockout)
 //
@@ -39,7 +40,7 @@
 
     // COMPONENT | Application Header Bar with Dual Logo Layout
     // ------------------------------------------------------------
-    function Header({ showBackButton = false, onBack = null, showShareButton = false, currentProject = null, galleryMode = 'whitecard' }) {
+    function Header({ showShareButton = false, currentProject = null, galleryMode = 'whitecard' }) {
         const [showCopiedMessage, setShowCopiedMessage] = React.useState(false);  // <-- Copied confirmation state
         
         // SUB FUNCTION | Handle Share Link Generation
@@ -70,20 +71,6 @@
                         className="app-header__logo-left"
                     />
                 </div>
-                
-                {showBackButton && onBack && (
-                    <button 
-                        className="app-header__back-button"
-                        onClick={onBack}
-                    >
-                        <img 
-                            src="../assets__CommonApplicationAssets/AppIcons/Icon__BackSymbol__WhiteVersion.svg" 
-                            alt="Back" 
-                            className="app-header__back-icon"
-                        />
-                        Back to Gallery
-                    </button>
-                )}
                 
                 {showShareButton && currentProject && (
                     <button 

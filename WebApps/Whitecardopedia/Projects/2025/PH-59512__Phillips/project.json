@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "This was a simple standalone small pool house type structure, ended up turning it around extremely quickly, but it was as easy as they come and Anna gave me a perfect CAD File."
+        "additionalNotes": "This was a simple standalone small pool house type structure, ended up turning it around extremely quickly, but it was as easy as they come and Anna gave me a perfect CAD File.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "11-Aug-2025",
         "dateFulfilled": "12-Aug-2025",
         "timeAllocated": 2,
         "timeTaken": 1
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__Phillips__PerspectiveView__WhiteCard__LOD1__IsoA4__1.0.0.png"

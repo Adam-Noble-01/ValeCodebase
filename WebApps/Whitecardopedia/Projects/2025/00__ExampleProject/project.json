@@ -6,10 +6,6 @@
         "input": "Example File",
         "additionalNotes": "This is an example project."
     },
-    "sketchUpModel": {
-        "urlNote": "If the model is not available, set the url to 'None' or 'nil' or 'Nil' or 'False'",
-        "url": "https://3dwarehouse.sketchup.com/model/example"
-    },
     "valeVision_ModelUrl": null,
     "images": [
         "IMG01__TestImage-01.png",

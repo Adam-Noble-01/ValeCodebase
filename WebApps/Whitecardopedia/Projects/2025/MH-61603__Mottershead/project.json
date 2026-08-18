@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "A Timelapse video was provided, No Issues to report, Rachael provided a good CAD File, this went smoothly.",
-        "conceptArtist": "Rachael"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Rachael",
+        "designer": "Gary"
     },
     "images": [
         "IMG01__3dView__FrontLeft__WhitecardImage__10-Oct-2025.png",

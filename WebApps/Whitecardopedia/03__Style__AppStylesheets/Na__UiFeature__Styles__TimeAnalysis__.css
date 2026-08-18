@@ -35,7 +35,7 @@
     .time-analysis-tool__content {
         flex                               : 1;                             /* <-- Grow to fill space */
         padding                            : var(--Vale_Spacing_Large);     /* <-- Content padding */
-        max-width                          : var(--Vale_MaxContentWidth);    /* <-- Maximum content width */
+        max-width                          : 1340px;                        /* <-- Narrower than the gallery: a dashboard, not a wall */
         width                              : 100%;                          /* <-- Full width */
         margin                             : 0 auto;                        /* <-- Center horizontally */
     }
@@ -111,12 +111,12 @@
     }
     
     .status-message.success {
-        color                              : #52c41a;                       /* <-- Green for success */
+        color                              : #7d9471;                       /* <-- Sage for success */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
     }
     
     .status-message.error {
-        color                              : #f5222d;                       /* <-- Red for error */
+        color                              : #a3707a;                       /* <-- Muted rose for error */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
     }
     
@@ -196,15 +196,15 @@
     }
     
     .legend-rect-html.allocated {
-        background-color                   : #8c8c8c;                      /* <-- Allocated color */
+        background-color                   : #9aa5ac;                      /* <-- Allocated color */
     }
     
     .legend-rect-html.actual-under {
-        background-color                   : #52c41a;                      /* <-- Actual under color */
+        background-color                   : #7d9471;                      /* <-- Sage: under allocated */
     }
     
     .legend-rect-html.actual-over {
-        background-color                   : #fa8c16;                      /* <-- Actual over color */
+        background-color                   : #b0846a;                      /* <-- Clay: over allocated */
     }
     
     .legend-text-html {
@@ -343,17 +343,17 @@
     }
     
     .bar-allocated {
-        fill                               : #8c8c8c;                      /* <-- Darker grey for allocated bars */
+        fill                               : #9aa5ac;                      /* <-- Darker grey for allocated bars */
     }
     
     /* Bar actual colors set via .under-allocated and .over-allocated classes */
     
     .bar-actual.under-allocated {
-        fill                               : #52c41a;                      /* <-- Green when under allocated */
+        fill                               : #7d9471;                      /* <-- Sage when under allocated */
     }
     
     .bar-actual.over-allocated {
-        fill                               : #fa8c16;                      /* <-- Orange when over allocated */
+        fill                               : #b0846a;                      /* <-- Clay when over allocated */
     }
     /* ------------------------------------------------------------ */
 
@@ -384,15 +384,15 @@
     }
     
     .legend-rect.allocated {
-        fill                               : #8c8c8c;                      /* <-- Allocated color */
+        fill                               : #9aa5ac;                      /* <-- Allocated color */
     }
     
     .legend-rect.actual-under {
-        fill                               : #52c41a;                      /* <-- Actual under color */
+        fill                               : #7d9471;                      /* <-- Sage: under allocated */
     }
     
     .legend-rect.actual-over {
-        fill                               : #fa8c16;                      /* <-- Actual over color */
+        fill                               : #b0846a;                      /* <-- Clay: over allocated */
     }
     /* ------------------------------------------------------------ */
 
@@ -488,3 +488,406 @@
 
 /* endregion ------------------------------------------------------------------- */
 
+
+/* -----------------------------------------------------------------------------
+ * REGION | Library Overview Panel Styles
+ * ----------------------------------------------------------------------------- */
+
+    .overview-section {
+        padding                            : var(--Vale_Spacing_Large);     /* <-- Roomier panel padding */
+    }
+
+    /* OVERVIEW SECTION | Panel Container and Heading */
+    /* ------------------------------------------------------------ */
+    .overview-section__span {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        white-space                        : nowrap;                        /* <-- Keep date span on one line */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* OVERVIEW TILES | Headline KPI Grid */
+    /* ------------------------------------------------------------ */
+    .overview-tiles {
+        display                            : grid;                          /* <-- Grid layout for tiles */
+        grid-template-columns              : repeat(auto-fit, minmax(190px, 1fr));  /* <-- Responsive tile columns */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Space between tiles */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below tile grid */
+    }
+
+    .overview-tile {
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Light tile background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-left                        : 4px solid var(--Vale_PrimaryBrand);  /* <-- Brand accent edge */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Tile padding */
+        display                            : flex;                          /* <-- Flexbox layout */
+        flex-direction                     : column;                        /* <-- Stack contents vertically */
+        gap                                : 2px;                           /* <-- Tight internal spacing */
+    }
+
+    .overview-tile--good {
+        border-left-color                  : #7d9471;                       /* <-- Sage accent for healthy metrics */
+    }
+
+    .overview-tile--warn {
+        border-left-color                  : #b0846a;                       /* <-- Clay accent for attention metrics */
+    }
+
+    .overview-tile__value {
+        font-size                          : var(--Vale_FontSize_Heading);  /* <-- Large numeric display */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        line-height                        : 1.2;                           /* <-- Tight line height */
+    }
+
+    .overview-tile__label {
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+
+    .overview-tile__sub {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* OVERVIEW GRID | Breakdown Block Layout */
+    /* ------------------------------------------------------------ */
+    .overview-grid {
+        display                            : grid;                          /* <-- Grid layout for blocks */
+        grid-template-columns              : repeat(auto-fit, minmax(460px, 1fr));  /* <-- Two columns at full width; tables fit without scrolling */
+        gap                                : var(--Vale_Spacing_Medium);    /* <-- Space between blocks */
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below block grid */
+    }
+
+    .overview-grid--thirds {
+        grid-template-columns              : repeat(3, minmax(0, 1fr));      /* <-- Three summary blocks share one row */
+    }
+
+    .overview-block {
+        background-color                   : var(--Vale_BackgroundWhite);   /* <-- White block background */
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Block padding */
+        min-width                          : 0;                             /* <-- Let grid tracks shrink instead of forcing overflow */
+    }
+
+    .overview-block__title {
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_SubHeading);  /* <-- Sub-heading size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0;  /* <-- Space below title */
+        padding-bottom                     : 6px;                           /* <-- Bottom padding */
+        border-bottom                      : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Bottom border */
+    }
+
+    .overview-block__title--wide {
+        margin-top                         : var(--Vale_Spacing_Medium);    /* <-- Space above full width heading */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* OVERVIEW TABLE | Compact Breakdown Table and Share Bars */
+    /* ------------------------------------------------------------ */
+    .overview-table {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Compact table text */
+        width                              : 100%;                          /* <-- Fill the block, never exceed it */
+        table-layout                       : fixed;                         /* <-- Columns share the width predictably */
+    }
+
+    .overview-table th,
+    .overview-table td {
+        padding                            : 8px 10px;                      /* <-- Tighter than the default stats table */
+        overflow                           : hidden;                        /* <-- Clip rather than force the table wider */
+        text-overflow                      : ellipsis;                      /* <-- Long labels degrade gracefully */
+    }
+
+    .overview-table th:first-child,
+    .overview-table td:first-child {
+        white-space                        : normal;                        /* <-- Allow long category names to wrap */
+        word-break                         : break-word;                    /* <-- Break rather than overflow */
+    }
+
+    .overview-table__bar-col {
+        width                              : 124px;                         /* <-- Fits a 52px bar plus a five character value ("89.6%") */
+        white-space                        : nowrap;                        /* <-- Keep bar and value on one line */
+    }
+
+    /* OVERVIEW TABLE (WIDE) | Full width tables with many numeric columns */
+    /* ------------------------------------------------------------ */
+    /* The compact rules above are tuned for the narrow two-column
+     * breakdown blocks. A full width table with eight numeric columns
+     * needs the opposite balance: a modest label column and numeric
+     * columns wide enough that their headers never truncate. */
+    .stats-table__unit {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        font-weight                        : var(--Vale_FontWeight_Regular);  /* <-- Lighter than the header label */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        text-transform                     : none;                          /* <-- Plain wording under the header */
+    }
+
+    .overview-table--wide th:first-child,
+    .overview-table--wide td:first-child {
+        width                              : 150px;                         /* <-- Label column no longer swallows the table */
+    }
+
+    .overview-table--wide .number-cell {
+        width                              : auto;                          /* <-- Remaining width shares evenly across the numerics */
+    }
+
+    .overview-table--wide th {
+        white-space                        : normal;                        /* <-- Headers wrap rather than truncate */
+        overflow                           : visible;                       /* <-- Never clip a header word */
+        text-overflow                      : clip;                          /* <-- No ellipsis on headers */
+        vertical-align                     : bottom;                        /* <-- One- and two-line headers share a baseline */
+    }
+
+    .overview-table--wide td {
+        white-space                        : nowrap;                        /* <-- Keep each figure on one line */
+    }
+    /* ------------------------------------------------------------ */
+
+    .overview-table .number-cell {
+        width                              : 68px;                          /* <-- Numeric columns stay narrow */
+    }
+
+    .overview-bar {
+        display                            : inline-block;                  /* <-- Inline bar track */
+        width                              : 52px;                          /* <-- Fixed track width */
+        height                             : 8px;                           /* <-- Track height */
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Light track background */
+        border-radius                      : 5px;                           /* <-- Rounded track */
+        overflow                           : hidden;                        /* <-- Clip the fill */
+        vertical-align                     : middle;                        /* <-- Align with adjacent text */
+        margin-right                       : 6px;                           /* <-- Space before value text */
+    }
+
+    .overview-bar__fill {
+        display                            : block;                         /* <-- Block fill element */
+        height                             : 100%;                          /* <-- Fill the track height */
+        background-color                   : #5b7c99;                       /* <-- Default fill colour */
+        border-radius                      : 5px;                           /* <-- Rounded fill */
+    }
+
+    .overview-bar__value {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* OVERVIEW LIST | Label Bar Count Rows */
+    /* ------------------------------------------------------------ */
+    .overview-list {
+        list-style                         : none;                          /* <-- Remove bullets */
+        margin                             : 0;                             /* <-- Reset margin */
+        padding                            : 0;                             /* <-- Reset padding */
+    }
+
+    .overview-list__row {
+        display                            : flex;                          /* <-- Flexbox row */
+        align-items                        : center;                        /* <-- Vertically centre contents */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Space between elements */
+        padding                            : 6px 0;                         /* <-- Row padding */
+        border-bottom                      : 1px solid var(--Vale_BackgroundLight);  /* <-- Subtle row divider */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Compact list text */
+    }
+
+    .overview-list__row:last-child {
+        border-bottom                      : none;                          /* <-- No divider on final row */
+    }
+
+    .overview-list__label {
+        flex                               : 1;                             /* <-- Grow to fill available space */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+    }
+
+    .overview-list__count {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        text-align                         : right;                         /* <-- Right align counts */
+        min-width                          : 40px;                          /* <-- Keep counts aligned */
+    }
+
+    .overview-list--plain .overview-list__count {
+        min-width                          : auto;                          /* <-- Allow long text values */
+    }
+
+    .overview-empty {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        margin                             : var(--Vale_Spacing_Small) 0 0 0;  /* <-- Space above message */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* THROUGHPUT CHART | Monthly Delivery Columns */
+    /* ------------------------------------------------------------ */
+    .overview-section .chart-container {
+        overflow                           : visible;                       /* <-- Never clip axis or value labels */
+        padding-left                       : 0;                             /* <-- Chart margins provide the gutter */
+        padding-right                      : 0;                             /* <-- Chart margins provide the gutter */
+    }
+
+    .chart-measure-probe {
+        width                              : 0;                             /* <-- Off-screen text measurement probe */
+        height                             : 0;                             /* <-- Takes no layout space */
+        overflow                           : visible;                       /* <-- getBBox needs the text rendered */
+    }
+
+    .throughput-bar {
+        cursor                             : pointer;                       /* <-- Indicate hover interaction */
+        transition                         : opacity var(--Vale_Transition_Standard);  /* <-- Smooth hover fade */
+    }
+
+    .throughput-bar:hover {
+        opacity                            : 0.75;                          /* <-- Highlight the hovered column */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* RESPONSIVE | Overview Panel Mobile Adjustments */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 768px) {
+        .overview-tiles {
+            grid-template-columns          : repeat(auto-fit, minmax(140px, 1fr));  /* <-- Narrower tiles on mobile */
+        }
+
+        .overview-grid,
+        .overview-grid--thirds {
+            grid-template-columns          : 1fr;                           /* <-- Single column on mobile */
+        }
+
+        .overview-section {
+            padding                        : var(--Vale_Spacing_Small);     /* <-- Reclaim width on small screens */
+        }
+
+        .overview-section__span {
+            white-space                    : normal;                        /* <-- Allow the span to wrap */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Efficiency Trend Line Chart Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* EFFICIENCY TREND | Line, target rule and point markers */
+    /* ------------------------------------------------------------ */
+    @media (max-width: 1100px) {
+        .overview-grid--thirds {
+            grid-template-columns          : 1fr;                           /* <-- Three across is too cramped below this */
+        }
+    }
+
+    .trend-line {
+        fill                               : none;                          /* <-- Stroke only */
+        stroke                             : #5b7c99;                       /* <-- Steel blue trend */
+        stroke-width                       : 2.5px;                         /* <-- Readable at a glance */
+        stroke-linejoin                    : round;                         /* <-- Soften the corners */
+        stroke-linecap                     : round;                         /* <-- Soften the ends */
+    }
+
+    .trend-target {
+        stroke                             : #7d9471;                       /* <-- Sage: the 100% break-even rule */
+        stroke-width                       : 1.5px;                         /* <-- Thinner than the trend */
+        stroke-dasharray                   : 5 4;                           /* <-- Dashed so it reads as a reference */
+    }
+
+    .trend-target-label {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        fill                               : #7d9471;                       /* <-- Match the rule */
+    }
+
+    .trend-point {
+        cursor                             : pointer;                       /* <-- Indicate hover interaction */
+        transition                         : r var(--Vale_Transition_Standard);  /* <-- Grow smoothly on hover */
+    }
+
+    .trend-point:hover {
+        r                                  : 6;                             /* <-- Enlarge the hovered month */
+    }
+
+    .trend-band {
+        fill                               : #7d9471;                       /* <-- Sage wash above break-even */
+        opacity                            : 0.07;                          /* <-- Barely there, just orientation */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | Net Time Productivity Chart Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* PRODUCTIVITY CHARTS | Absolute vs Net Bars and Offset Composition */
+    /* ------------------------------------------------------------ */
+    .overview-block--wide {
+        margin-bottom                      : var(--Vale_Spacing_Large);     /* <-- Space below full width block */
+    }
+
+    .net-bar,
+    .offset-bar {
+        cursor                             : pointer;                       /* <-- Indicate hover interaction */
+        transition                         : opacity var(--Vale_Transition_Standard);  /* <-- Smooth hover fade */
+    }
+
+    .net-bar:hover,
+    .offset-bar:hover {
+        opacity                            : 0.75;                          /* <-- Highlight the hovered bar */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * REGION | KPI Report Share Control
+ * ----------------------------------------------------------------------------- */
+
+    /* SHARE | Button and feedback line in the KPI panel head */
+    /* ------------------------------------------------------------ */
+    .overview-section__actions {
+        display                            : flex;                          /* <-- Date span and button on one line */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : var(--Vale_Spacing_Medium);    /* <-- Space between span and button */
+        flex-wrap                          : wrap;                          /* <-- Wrap on narrow screens */
+    }
+
+    .overview-section__share {
+        padding                            : 8px 16px;                      /* <-- Smaller than the main action button */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Compact label */
+        white-space                        : nowrap;                        /* <-- Never break the label */
+    }
+
+    .overview-section__share:disabled {
+        opacity                            : 0.6;                           /* <-- Dim while building */
+        cursor                             : wait;                          /* <-- Signal work in progress */
+        transform                          : none;                          /* <-- Suppress the lift effect */
+    }
+
+    .overview-share-note {
+        margin                             : 0 0 var(--Vale_Spacing_Medium) 0;  /* <-- Space below the notice */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Notice padding */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Light background */
+        border-left                        : 4px solid var(--Vale_PrimaryBrand);  /* <-- Brand accent edge */
+    }
+
+    .overview-share-note--done  { border-left-color: #7d9471; }             /* <-- Sage on success */
+    .overview-share-note--error { border-left-color: #a3707a; }             /* <-- Muted rose on failure */
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */
+
+    /* CHART NOTE | Caption under a chart heading */
+    /* ------------------------------------------------------------ */
+    .overview-chart-note {
+        margin                             : 0 0 var(--Vale_Spacing_Small) 0;  /* <-- Sits between heading and chart */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        line-height                        : 1.5;                           /* <-- Readable wrap */
+        max-width                          : 70ch;                          /* <-- Keep the caption to a readable measure */
+    }
+    /* ------------------------------------------------------------ */

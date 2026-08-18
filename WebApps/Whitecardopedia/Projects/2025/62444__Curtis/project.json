@@ -62,9 +62,6 @@
         "timeAllocated": 3.5,
         "timeTaken": 3.5
     },
-    "sketchUpModel": {
-        "url": "Nil"
-    },
     "valeVision_ModelUrls": [
         "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__01__OrbitHelperCube__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2025/62444__Curtis/Curtis__TrueVision__LandscapeEnvironment__LineworkModel__.glb",

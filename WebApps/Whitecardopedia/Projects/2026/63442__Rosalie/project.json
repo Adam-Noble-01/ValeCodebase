@@ -1,4 +1,7 @@
 {
+    "projectName": "Rosalie",
+    "projectCode": "63442",
+    "projectNameAlias": "",
     "Camera__DefaultPosition": {
         "Camera__DefaultMisc": {
             "Camera__DefaultMisc__Fov": 29.8628
@@ -148,21 +151,20 @@
         "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
-        "conceptArtist": "Default Concept Artist",
-        "input": "Default Input Type",
+        "additionalNotes": "Had to model additional context and the site. Completed within the anticipated time.",
+        "conceptArtist": "Rachael",
+        "input": "CAD File",
         "designer": "Gary"
     },
-    "projectCode": "63442",
-    "projectName": "Rosalie",
     "scheduleData": {
         "dateFulfilled": "16-Jun-2026",
-        "dateReceived": "10-Oct-2025",
-        "timeAllocated": 2,
-        "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "15-Jun-2026",
+        "timeAllocated": 4,
+        "timeTaken": 5,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__AdditionalContext": 1
+        }
     },
     "thumbnailImage": "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026__Thumbnail__524p__.webp",
     "valeVision_ModelUrls": [
@@ -173,5 +175,18 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie/Rosalie__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
-    ]
+    ],
+    "folderId": "2026/63442__Rosalie",
+    "isR2Loaded": true,
+    "displayName": "Rosalie",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63442__Rosalie",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__ViewOption-01____WhitecardImage__16-Jun-2026.png"
+    ],
+    "enabled": true
 }

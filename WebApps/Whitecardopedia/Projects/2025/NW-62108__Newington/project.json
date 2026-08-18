@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "No site survey was conducted, so Rachael provided a CAD file with the Orangery framework only (No host building or site levels etc). Because of the split levels I took it upon myself to model the site context and host building, however I went completely by eye (Got the levels by brick gauge counting the retaining wall). I warned Rachael if she uses the CAD file that I sent to take everything as very loose, as I'd usually use a pair of Photomatched Images to validate the model, however, only a handful of unsuitable photos existed. I allowed an extra hour for this but I managed to add the existing site and building context quicker than expected."
+        "additionalNotes": "No site survey was conducted, so Rachael provided a CAD file with the Orangery framework only (No host building or site levels etc). Because of the split levels I took it upon myself to model the site context and host building, however I went completely by eye (Got the levels by brick gauge counting the retaining wall). I warned Rachael if she uses the CAD file that I sent to take everything as very loose, as I'd usually use a pair of Photomatched Images to validate the model, however, only a handful of unsuitable photos existed. I allowed an extra hour for this but I managed to add the existing site and building context quicker than expected.",
+        "designer": "Dan"
     },
     "scheduleData": {
         "dateReceived": "04-Dec-2025",
         "dateFulfilled": "04-Dec-2025",
         "timeAllocated": 3,
         "timeTaken": 2.5
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

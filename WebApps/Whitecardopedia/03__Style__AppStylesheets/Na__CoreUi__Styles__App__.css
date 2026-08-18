@@ -146,41 +146,83 @@
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
     }
     
-    .app-header__back-button {
-        display                            : flex;                         /* <-- Flexbox for icon alignment */
-        align-items                        : center;                       /* <-- Vertical centering */
-        justify-content                    : center;                       /* <-- Horizontal centering */
-        gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between icon and text */
-        position                           : absolute;                     /* <-- Absolute positioning */
-        left                               : 40%;                          /* <-- Center horizontally */
-        transform                          : translateX(-50%);             /* <-- Center adjustment */
-        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Button padding */
-        font-size                          : var(--Vale_FontSize_Standard);  /* <-- Standard font size */
+    /* BREADCRUMBS | Trail navigation bar beneath the header */
+    /* ------------------------------------------------------------ */
+    /* Replaces the old .app-header__back-button, which was absolutely
+     * positioned at left:40% inside the header and overlapped both logos.
+     * A full width bar under the header cannot collide with anything. */
+    .breadcrumbs {
+        background-color                   : var(--Vale_BackgroundWhite);   /* <-- White bar */
+        border-bottom                      : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Separator from content */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Large);  /* <-- Bar padding */
+    }
+
+    .breadcrumbs__list {
+        display                            : flex;                          /* <-- Flexbox trail */
+        align-items                        : center;                        /* <-- Vertical centering */
+        flex-wrap                          : wrap;                          /* <-- Wrap on narrow screens */
+        gap                                : 4px;                           /* <-- Tight gap between entries */
+        list-style                         : none;                          /* <-- Remove bullets */
+        margin                             : 0;                             /* <-- Reset margin */
+        padding                            : 0;                             /* <-- Reset padding */
+        max-width                          : 1340px;                        /* <-- Align with the tool content width */
+        margin-left                        : auto;                          /* <-- Centre the trail */
+        margin-right                       : auto;                          /* <-- Centre the trail */
+    }
+
+    .breadcrumbs__item {
+        display                            : flex;                          /* <-- Keep link and separator inline */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : 4px;                           /* <-- Gap before the separator */
+    }
+
+    .breadcrumbs__link {
+        display                            : inline-flex;                   /* <-- Icon and label on one line */
+        align-items                        : center;                        /* <-- Vertical centering */
+        gap                                : 6px;                           /* <-- Gap between icon and label */
+        background                         : none;                          /* <-- Plain text link, not a button */
+        border                             : none;                          /* <-- No border */
+        padding                            : 4px 6px;                       /* <-- Comfortable click target */
+        border-radius                      : 4px;                           /* <-- Subtle hover shape */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard font size */
         font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold text */
-        font-family                        : var(--Vale_FontFamily);       /* <-- Standard font family */
-        color                              : var(--Vale_TextLight);        /* <-- Light text color */
-        background                         : var(--Vale_PrimaryBrand);     /* <-- Vale blue background */
-        border                             : none;                         /* <-- No border */
-        border-radius                      : var(--Vale_BorderRadius);     /* <-- Rounded corners */
-        cursor                             : pointer;                      /* <-- Pointer cursor */
-        transition                         : all var(--Vale_Transition_Standard);  /* <-- Smooth transition */
+        color                              : var(--Vale_PrimaryBrand);      /* <-- Brand blue link */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        transition                         : background-color var(--Vale_Transition_Standard);  /* <-- Smooth hover */
     }
-    
-    .app-header__back-button:hover {
-        background                         : #0f1e28;                      /* <-- Darker blue on hover */
-        transform                          : translateX(-50%) scale(1.02); /* <-- Maintain center and slight grow */
-        box-shadow                         : 0 4px 12px rgba(0,0,0,0.25); /* <-- Shadow on hover */
+
+    .breadcrumbs__link:hover:not(:disabled) {
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Subtle hover fill */
+        text-decoration                    : underline;                     /* <-- Reinforce it is a link */
     }
-    
-    .app-header__back-button:active {
-        transform                          : translateX(-50%) scale(1.0);  /* <-- Reset scale on click */
+
+    .breadcrumbs__link:disabled {
+        cursor                             : default;                       /* <-- Not actionable */
+        color                              : var(--Vale_TextSecondary);     /* <-- Muted when inert */
     }
-    
-    .app-header__back-icon {
-        width                              : 16px;                         /* <-- Icon width */
-        height                             : 16px;                         /* <-- Icon height */
-        filter                             : brightness(0) invert(1);      /* <-- Make SVG white to match button text */
+
+    .breadcrumbs__home-icon {
+        width                              : 12px;                          /* <-- Small leading chevron */
+        height                             : 12px;                          /* <-- Small leading chevron */
+        filter                             : brightness(0) saturate(100%) invert(13%) sepia(18%) saturate(1462%) hue-rotate(163deg) brightness(94%) contrast(90%);  /* <-- Tint the white SVG to brand blue */
     }
+
+    .breadcrumbs__separator {
+        color                              : var(--Vale_BorderLight);       /* <-- Light divider glyph */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Match the trail text */
+    }
+
+    .breadcrumbs__item--current .breadcrumbs__separator {
+        display                            : none;                          /* <-- No trailing separator */
+    }
+
+    .breadcrumbs__current {
+        padding                            : 4px 6px;                       /* <-- Align with the links */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard font size */
+        color                              : var(--Vale_TextSecondary);     /* <-- Current page is not a link */
+    }
+    /* ------------------------------------------------------------ */
     
     .app-header__share-button {
         display                            : flex;                         /* <-- Flexbox for icon alignment */
@@ -895,6 +937,11 @@
         gap                                : var(--Vale_Spacing_Small);    /* <-- Gap between label and value */
     }
     
+    .project-viewer__data-field--emphasis {
+        padding-top                        : var(--Vale_Spacing_Small);    /* <-- Space above separator */
+        border-top                         : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Separator above the net figure */
+    }
+    
     .project-viewer__data-field--notes {
         margin-bottom                      : var(--Vale_Spacing_Large);    /* <-- Extra space for notes field */
     }
@@ -1405,6 +1452,13 @@
         margin                             : 0;                            /* <-- Remove default margin */
     }
     
+    .efficiency-scale__status-note {
+        font-size                          : var(--Vale_FontSize_Small);   /* <-- Small caption text */
+        color                              : var(--Vale_TextSubtle);       /* <-- Subtle text color */
+        line-height                        : 1.5;                          /* <-- Line height for readability */
+        margin                             : var(--Vale_Spacing_Small) 0 0 0;  /* <-- Space above note */
+    }
+    
     .efficiency-scale--compact {
         margin-top                         : var(--Vale_Spacing_Small);    /* <-- Reduced space for compact mode */
         gap                                : var(--Vale_Spacing_Small);    /* <-- Smaller gap */
@@ -1815,6 +1869,10 @@
         .app-header {
             padding                        : 0 var(--Vale_Spacing_Medium); /* <-- Reduced padding on mobile */
         }
+
+        .breadcrumbs {
+            padding                        : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Reclaim width on mobile */
+        }
         
         .homepage__logo {
             max-width                      : 300px;                        /* <-- Smaller logo on mobile */
@@ -1878,7 +1936,7 @@
 
         /* SECTION ORDER | Mobile portrait: actions first, then stats */
         .project-viewer__panel-section--viewer-actions { order: 1; }       /* <-- Share */
-        .project-viewer__panel-section--download       { order: 2; }       /* <-- SketchUp / Download (when no VV3D) */
+        .project-viewer__panel-section--download       { order: 2; }       /* <-- Download Images (when no VV3D) */
         .project-viewer__panel-section--data           { order: 3; }       /* <-- Production Data */
         .project-viewer__panel-section--efficiency     { order: 4; }       /* <-- Efficiency Scale */
 

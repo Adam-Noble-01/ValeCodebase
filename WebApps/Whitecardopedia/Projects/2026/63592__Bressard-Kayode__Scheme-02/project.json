@@ -276,16 +276,13 @@
     },
     "projectCode": "63592",
     "projectName": "Bressard-Kayode__Scheme-02",
-    "projectNameAlias": "Bressard-Kayode |  Scheme \u2013 02",
+    "projectNameAlias": "Bressard-Kayode |  Scheme – 02",
     "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63592__Bressard-Kayode__Scheme-02",
     "scheduleData": {
         "dateFulfilled": "07-Jul-2026",
         "dateReceived": "07-Jul-2026",
         "timeAllocated": 1,
         "timeTaken": 1.25
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "thumbnailImage": "IMG01__3dView__ViewOption-01__MainView__WhitecardImage__08-Jul-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {

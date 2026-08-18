@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Dan",
-        "additionalNotes": "This was the first job completed using ValeVision, I converted Dans hand drawing into CAD, nice fast job, fairly simple."
+        "additionalNotes": "This was the first job completed using ValeVision, I converted Dans hand drawing into CAD, nice fast job, fairly simple.",
+        "designer": "Martin"
     },
     "scheduleData": {
         "dateReceived": "14-Nov-2025",
         "dateFulfilled": "14-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "images": [
         "IMG01__3dView__MainShot____WhitecardImage__20-Nov-2025.png"

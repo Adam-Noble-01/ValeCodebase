@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "A really speedy one,  I learned that using a Rightmove plan rather than photo-matching is better for gauging roof pitches when I don't have complete side elevations showing the roof profile. Moving forward, this may be a quicker method for white cards, where accuracy isn't required and speed is the priority. It's much more efficient than tedious photo-matching to get every angle correct, especially when only general background building context is needed."
+        "additionalNotes": "A really speedy one,  I learned that using a Rightmove plan rather than photo-matching is better for gauging roof pitches when I don't have complete side elevations showing the roof profile. Moving forward, this may be a quicker method for white cards, where accuracy isn't required and speed is the priority. It's much more efficient than tedious photo-matching to get every angle correct, especially when only general background building context is needed.",
+        "designer": "Steve"
     },
     "scheduleData": {
         "dateReceived": "27-Nov-2025",
         "dateFulfilled": "27-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 1.5
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

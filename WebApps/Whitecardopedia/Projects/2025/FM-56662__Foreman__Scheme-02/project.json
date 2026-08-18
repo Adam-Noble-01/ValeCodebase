@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Anna",
-        "additionalNotes": "A revised scheme meaning I could use the same existing building context model from scheme-01. A nice easy change, only had to model the new orangery from Anna's CAD file which was well put together as always."
+        "additionalNotes": "A revised scheme meaning I could use the same existing building context model from scheme-01. A nice easy change, only had to model the new orangery from Anna's CAD file which was well put together as always.",
+        "designer": "Martin"
     },
     "scheduleData": {
         "dateReceived": "03-Dec-2025",
         "dateFulfilled": "03-Dec-2025",
         "timeAllocated": 1.5,
         "timeTaken": 1.25
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Tom",
-        "additionalNotes": "Steph sent me the project, but I worked from Toms CAD File, the file was a roughed out wire frame so additional time was needed for windows and doors etc as only openings were modelled in the 2D CAD. Toms file itself was good though, accurate tidy, and lightweight."
+        "additionalNotes": "Steph sent me the project, but I worked from Toms CAD File, the file was a roughed out wire frame so additional time was needed for windows and doors etc as only openings were modelled in the 2D CAD. Toms file itself was good though, accurate tidy, and lightweight.",
+        "designer": "Tom"
     },
     "scheduleData": {
         "dateReceived": "02-Dec-2025",
         "dateFulfilled": "02-Dec-2025",
         "timeAllocated": 2.5,
         "timeTaken": 2.5
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

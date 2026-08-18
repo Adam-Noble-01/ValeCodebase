@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Quick & Easy, Rachaels CAD Linework provided was tidy and easy to work with, No Issues at all.",
-        "conceptArtist": "Rachael"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Rachael",
+        "designer": "Steve"
     },
     "images": [
         "IMG01__3dView__FrontLeft__MainView__WhitecardImage__02-Oct-2025.png",

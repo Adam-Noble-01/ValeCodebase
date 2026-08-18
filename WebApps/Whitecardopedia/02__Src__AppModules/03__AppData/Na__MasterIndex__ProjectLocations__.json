@@ -386,7 +386,7 @@
             "folderId": "2025/PC-61922__PlumblyClegg__Scheme-01",
             "year": "2025",
             "projectCode": "61922",
-            "name": "Plumbly-Clegg\u200e \u200e \u200e \u2014\u200e \u200e \u200e Scheme-01",
+            "name": "Plumbly-Clegg‎ ‎ ‎ —‎ ‎ ‎ Scheme-01",
             "enabled": true,
             "assetHome": "r2",
             "hasProjectJson_R2": true,
@@ -400,7 +400,7 @@
             "folderId": "2025/PC-61922__PlumblyClegg__Scheme-02",
             "year": "2025",
             "projectCode": "61922",
-            "name": "Plumbly-Clegg \u2014 Scheme-02",
+            "name": "Plumbly-Clegg — Scheme-02",
             "enabled": true,
             "assetHome": "r2",
             "hasProjectJson_R2": true,
@@ -537,7 +537,7 @@
             "lastSynced": "26-Jun-2026 at 12:50"
         },
         {
-            "folderId": "2025/WK-3007__Weeks",
+            "folderId": "2025/59494__Weeks",
             "year": "2025",
             "projectCode": "59494",
             "name": "Weeks",

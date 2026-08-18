@@ -703,3 +703,123 @@
 
 /* endregion ------------------------------------------------------------------- */
 
+
+/* -----------------------------------------------------------------------------
+ * REGION | Advanced Time Data Section Styles
+ * ----------------------------------------------------------------------------- */
+
+    /* ADVANCED TIME DATA | Collapsible Section Container */
+    /* ------------------------------------------------------------ */
+    .editor-form__advanced-time {
+        border                             : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Light border */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        padding                            : 0;                             /* <-- Padding handled by children */
+        overflow                           : hidden;                        /* <-- Clip children to rounded corners */
+    }
+
+    .editor-form__advanced-time-toggle {
+        width                              : 100%;                          /* <-- Full width click target */
+        display                            : flex;                          /* <-- Flexbox layout */
+        align-items                        : center;                        /* <-- Center items vertically */
+        gap                                : var(--Vale_Spacing_Small);     /* <-- Space between caret and label */
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Light header background */
+        border                             : none;                          /* <-- No border, container provides it */
+        padding                            : var(--Vale_Spacing_Small) var(--Vale_Spacing_Medium);  /* <-- Header padding */
+        font-family                        : var(--Vale_FontFamily);        /* <-- Match app font */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+        cursor                             : pointer;                       /* <-- Pointer cursor */
+        text-align                         : left;                          /* <-- Left align contents */
+    }
+
+    .editor-form__advanced-time-toggle:hover:not(:disabled) {
+        background-color                   : var(--Vale_BorderLight);       /* <-- Darken slightly on hover */
+    }
+
+    .editor-form__advanced-time-toggle:disabled {
+        cursor                             : not-allowed;                   /* <-- Blocked cursor while saving */
+        opacity                            : 0.6;                           /* <-- Dim while disabled */
+    }
+
+    .editor-form__advanced-time-caret {
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caret glyph */
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+        width                              : 12px;                          /* <-- Fixed width stops label shifting */
+    }
+
+    .editor-form__advanced-time-badge {
+        margin-left                        : auto;                          /* <-- Push badge to the right edge */
+        background-color                   : var(--Vale_PrimaryBrand);      /* <-- Brand background */
+        color                              : var(--Vale_TextLight);         /* <-- Light text */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+        padding                            : 2px 10px;                      /* <-- Badge padding */
+        border-radius                      : 10px;                          /* <-- Pill shape */
+    }
+
+    .editor-form__advanced-time-body {
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Body padding */
+        display                            : flex;                          /* <-- Flexbox layout */
+        flex-direction                     : column;                        /* <-- Stack fields vertically */
+        gap                                : var(--Vale_Spacing_Medium);    /* <-- Space between fields */
+    }
+
+    .editor-form__advanced-time-intro {
+        margin                             : 0;                             /* <-- Reset margin */
+    }
+
+    .editor-form__advanced-time-swatch {
+        display                            : inline-block;                  /* <-- Inline colour chip */
+        width                              : 10px;                          /* <-- Chip width */
+        height                             : 10px;                          /* <-- Chip height */
+        border-radius                      : 2px;                           /* <-- Slightly rounded */
+        margin-right                       : 8px;                           /* <-- Space before label text */
+        vertical-align                     : middle;                        /* <-- Align with label text */
+    }
+    /* ------------------------------------------------------------ */
+
+    /* ADVANCED TIME DATA | Live Time Card Readout */
+    /* ------------------------------------------------------------ */
+    .editor-form__time-card {
+        background-color                   : var(--Vale_BackgroundLight);   /* <-- Light readout background */
+        border-radius                      : var(--Vale_BorderRadius);      /* <-- Rounded corners */
+        padding                            : var(--Vale_Spacing_Medium);    /* <-- Readout padding */
+    }
+
+    .editor-form__time-card-row {
+        display                            : flex;                          /* <-- Flexbox row */
+        justify-content                    : space-between;                 /* <-- Label left, value right */
+        align-items                        : center;                        /* <-- Center items vertically */
+        padding                            : 4px 0;                         /* <-- Row padding */
+        font-size                          : var(--Vale_FontSize_Standard); /* <-- Standard text size */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+    }
+
+    .editor-form__time-card-row--total {
+        border-top                         : var(--Vale_BorderWidth) solid var(--Vale_BorderLight);  /* <-- Separator above the total */
+        margin-top                         : 4px;                           /* <-- Space above separator */
+        padding-top                        : 8px;                           /* <-- Space below separator */
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+
+    .editor-form__time-card-row--note {
+        color                              : var(--Vale_TextSecondary);     /* <-- Secondary text color */
+    }
+
+    .editor-form__time-card-value {
+        font-weight                        : var(--Vale_FontWeight_SemiBold);  /* <-- Semi-bold weight */
+    }
+
+    .editor-form__time-card-warning {
+        margin-top                         : var(--Vale_Spacing_Small);     /* <-- Space above warning */
+        padding                            : var(--Vale_Spacing_Small);     /* <-- Warning padding */
+        background-color                   : #fff4e6;                       /* <-- Pale amber background */
+        border-left                        : 4px solid #fa8c16;             /* <-- Amber accent edge */
+        border-radius                      : 4px;                           /* <-- Slightly rounded */
+        font-size                          : var(--Vale_FontSize_Small);    /* <-- Small caption text */
+        color                              : var(--Vale_TextPrimary);       /* <-- Primary text color */
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

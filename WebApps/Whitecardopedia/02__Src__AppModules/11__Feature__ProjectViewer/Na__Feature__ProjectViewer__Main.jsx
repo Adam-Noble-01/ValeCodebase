@@ -25,6 +25,10 @@
 // - Added Designer field to Production Data panel (productionData.designer).
 // - Time Taken displays sentinel text without "Hours" suffix when non-numeric.
 // - Efficiency Scale hidden until scheduleData has numeric timeAllocated + timeTaken.
+// - 18-Aug-2026: out-of-scope offset hours and Net In Scope Time shown when
+//   a job records them; Efficiency Scale scores against net time.
+// - 18-Aug-2026: legacy "View SketchUp Model" button removed (superseded by
+//   ValeVision3D). See DEVLOG v0.6.15.
 //
 // 01-Jul-2026 - Version 1.2.0
 // - Replaced standalone "Back to Gallery" button with top-left breadcrumb nav
@@ -36,16 +40,6 @@
 // -----------------------------------------------------------------------------
 // REGION | Module Helper Functions
 // -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Validate SketchUp Model URL
-    // ---------------------------------------------------------------
-    const isValidSketchUpUrl = (url) => {
-        if (!url || typeof url !== 'string') return false;              // <-- Check if URL exists and is string
-        const invalidValues = ['nil', 'none', 'false'];                 // <-- Invalid placeholder values
-        return !invalidValues.includes(url.toLowerCase().trim());       // <-- Exclude invalid values
-    };
-    // ---------------------------------------------------------------
-
 
     // HELPER FUNCTION | Validate Text Field Content
     // ---------------------------------------------------------------
@@ -127,6 +121,8 @@
     function ProjectViewer({ project, onBack }) {
         const [isDownloading, setIsDownloading] = React.useState(false);  // <-- Track download state
         const [showCopiedMessage, setShowCopiedMessage] = React.useState(false);  // <-- Track copied message state
+
+        const projectTiming = na_calculate_net_time(project?.scheduleData);  // <-- Absolute / offset / net hours for this job
 
         // SUB FUNCTION | Handle Share Link Copy Action
         // ---------------------------------------------------------------
@@ -232,6 +228,29 @@
                                             </span>
                                         </div>
                                     )}
+
+                                    {/* OFFSET HOURS | Only rendered when this job records out-of-scope time */}
+                                    {projectTiming.hasAdjustments && (
+                                        <>
+                                            {NA_TIME_ADJUSTMENT_CATEGORIES
+                                                .filter(category => projectTiming.offsetsByKey[category.key] > 0)
+                                                .map(category => (
+                                                    <div className="project-viewer__data-field" key={category.key}>
+                                                        <span className="project-viewer__data-label">{category.label}</span>
+                                                        <span className="project-viewer__data-value">
+                                                            {projectTiming.offsetsByKey[category.key]} Hours
+                                                        </span>
+                                                    </div>
+                                                ))}
+
+                                            {projectTiming.hasAbsolute && (
+                                                <div className="project-viewer__data-field project-viewer__data-field--emphasis">
+                                                    <span className="project-viewer__data-label">Net In Scope Time</span>
+                                                    <span className="project-viewer__data-value">{projectTiming.net} Hours</span>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
                                     
                                     {project.productionData.conceptArtist && (
                                         <div className="project-viewer__data-field">
@@ -277,24 +296,6 @@
                             {!checkValeVisionModelUrl(project) && (
                                 <div className="project-viewer__panel-section project-viewer__panel-section--download">
                                     <h3 className="project-viewer__actions-title">Project Actions</h3>
-                                    
-                                    {project.sketchUpModel && isValidSketchUpUrl(project.sketchUpModel.url) && (
-                                        <div className="project-viewer__download-section">
-                                            <a 
-                                                href={project.sketchUpModel.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="project-viewer__download-button"
-                                            >
-                                                <img 
-                                                    src="../assets__CommonApplicationAssets/AppIcons/Icon__SketchUpLogo__WhiteFillVersion.svg" 
-                                                    alt="SketchUp" 
-                                                    className="project-viewer__download-icon"
-                                                />
-                                                View SketchUp Model
-                                            </a>
-                                        </div>
-                                    )}
                                     
                                     <div className="project-viewer__download-section">
                                         <button 

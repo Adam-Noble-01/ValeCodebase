@@ -5,10 +5,8 @@
     "productionData": {
         "input": "CAD File",
         "additionalNotes": "Took me quite a while as the landscape was very complex, had to reference and align many images which took additional time.",
-        "conceptArtist": "Rachael"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "conceptArtist": "Rachael",
+        "designer": "Tom"
     },
     "images": [
         "IMG01__3dView__FrontRight__WhitecardImage__01-Oct-2025.png"

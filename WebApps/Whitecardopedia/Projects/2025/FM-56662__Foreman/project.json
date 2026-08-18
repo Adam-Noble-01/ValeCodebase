@@ -5,16 +5,14 @@
     "productionData": {
         "input": "CAD File",
         "conceptArtist": "Rachael",
-        "additionalNotes": "Quick and easy typical job, nothing to report."
+        "additionalNotes": "Quick and easy typical job, nothing to report.",
+        "designer": "Martin"
     },
     "scheduleData": {
         "dateReceived": "19-Nov-2025",
         "dateFulfilled": "20-Nov-2025",
         "timeAllocated": 2,
         "timeTaken": 2
-    },
-    "sketchUpModel": {
-        "url": "Nil"
     },
     "valeVision_ModelUrl": null,
     "images": [

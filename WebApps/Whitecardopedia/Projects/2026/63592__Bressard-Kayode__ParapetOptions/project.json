@@ -11,10 +11,8 @@
     "scheduleData": {
         "dateReceived": "08-Jul-2026",
         "dateFulfilled": "08-Jul-2026",
-        "timeTaken": 1
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "timeTaken": 1,
+        "timeAllocated": 1
     },
     "images": [
         "IMG01__ParapetDetail__Option-01__WhitecardImage__08-Jul-2026.png",
@@ -278,5 +276,5 @@
         "IMG05__ParapetDetail__Option-05__WhitecardImage__08-Jul-2026.png",
         "IMG06__Abutment__WhitecardImage__08-Jul-2026.png"
     ],
-    "enabled": true
+    "enabled": false
 }

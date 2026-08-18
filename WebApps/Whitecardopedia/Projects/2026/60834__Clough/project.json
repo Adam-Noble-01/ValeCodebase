@@ -14,9 +14,6 @@
         "timeAllocated": 2,
         "timeTaken": 2
     },
-    "sketchUpModel": {
-        "url": "Nil"
-    },
     "valeVision_Camera__DefaultPosition": {
         "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
         "Camera__DefaultPos": {

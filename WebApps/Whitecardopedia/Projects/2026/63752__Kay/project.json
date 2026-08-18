@@ -1,4 +1,7 @@
 {
+    "projectName": "Kay",
+    "projectCode": "63752",
+    "projectNameAlias": "",
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
         "FogPlane__Config__Enabled": true,
@@ -281,20 +284,20 @@
         "IMG06__3dView__BirdseyeView__WhitecardImage__02-Jul-2026.png"
     ],
     "productionData": {
-        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "additionalNotes": "Additional context had to be modelled, other than that, easy project, nothing to report",
         "conceptArtist": "Amy",
         "designer": "Tom",
-        "input": "NOT YET REVIEWED"
+        "input": "CAD File"
     },
-    "projectCode": "63752",
-    "projectName": "Kay",
     "scheduleData": {
         "dateFulfilled": "02-Jul-2026",
-        "dateReceived": "NOT YET REVIEWED",
-        "timeTaken": "NOT YET REVIEWED"
-    },
-    "sketchUpModel": {
-        "url": "Nil"
+        "dateReceived": "01-Jul-2026",
+        "timeTaken": 4.5,
+        "timeAllocated": 3,
+        "timeAdjustments": {
+            "timeAdjustments__Description": "Hours inside timeTaken that fall outside the original job scope. Subtracted from timeTaken to give the net in-scope hours used for KPI reporting. All values are hours and support decimals.",
+            "timeAdjustments__AdditionalContext": 1.5
+        }
     },
     "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__02-Jul-2026__Thumbnail__524p__.webp",
     "valeVision_Camera__DefaultPosition": {
@@ -328,5 +331,28 @@
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63752__Kay/Kay__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63752__Kay/Kay__TrueVision__SceneContextual__LineworkModel__.glb",
         "https://cdn.noble-architecture.com/VaApps/Projects/2026/63752__Kay/Kay__TrueVision__SceneContextual__MeshModel__.glb"
-    ]
+    ],
+    "folderId": "2026/63752__Kay",
+    "isR2Loaded": true,
+    "displayName": "Kay",
+    "r2BasePath": "https://cdn.noble-architecture.com/VaApps/Projects/2026/63752__Kay",
+    "hasGlb_R2": true,
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__02-Jul-2026.png",
+        "IMG02__3dView__HeroShot__WhitecardImage__02-Jul-2026.png",
+        "IMG03__3dView__RearFascade__WhitecardImage__02-Jul-2026.png",
+        "IMG04__3dView__CloseUp-01__WhitecardImage__02-Jul-2026.png",
+        "IMG05__3dView__CloseUp-02__WhitecardImage__02-Jul-2026.png",
+        "IMG06__3dView__BirdseyeView__WhitecardImage__02-Jul-2026.png"
+    ],
+    "artPairsMap": {},
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__02-Jul-2026.png",
+        "IMG02__3dView__HeroShot__WhitecardImage__02-Jul-2026.png",
+        "IMG03__3dView__RearFascade__WhitecardImage__02-Jul-2026.png",
+        "IMG04__3dView__CloseUp-01__WhitecardImage__02-Jul-2026.png",
+        "IMG05__3dView__CloseUp-02__WhitecardImage__02-Jul-2026.png",
+        "IMG06__3dView__BirdseyeView__WhitecardImage__02-Jul-2026.png"
+    ],
+    "enabled": true
 }

@@ -8,7 +8,7 @@
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "11-Aug-2026 15:24:08",
-        "VghLantern__ProjectFile__Metadata__DateModified": "13-Aug-2026 13:00:28",
+        "VghLantern__ProjectFile__Metadata__DateModified": "18-Aug-2026 09:37:16",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -138,7 +138,7 @@
                     38.53513233697237,
                     61.46486766302763
                 ],
-                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.1565651525203369,
+                "Lantern__DrawingLayout__Config__SheetZoomFactor": 1.592737982799207,
                 "Lantern__DrawingLayout__Config__ViewCameraStates": {
                     "threeDimensional": {
                         "Position": {

@@ -19,6 +19,228 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.16 - 18-Aug-2026 - Feature: Advanced Time Data, Production KPI Dashboard, Working-Day Turnaround
+
+### Overview
+Three connected pieces of work. The Time Analysis Tool gained a production KPI dashboard as its first panel; a new **Advanced Time Data** system lets out-of-scope hours be deducted from a job so KPIs reflect fair scope; and turnaround now measures **working days** rather than calendar days, so weekends no longer inflate delivery averages.
+
+---
+
+### 1. Advanced Time Data (offsettable hours)
+
+A job's `timeTaken` is the **absolute time card**: every hour spent. Some of those hours fall outside the original brief. A whitecard that reads as 6 hours might be 2 hours of drawing, 3 hours building reusable assets and 1 hour of out-of-scope amendments. Scoring the studio against the full 6 hours is unfair; scoring against the 2 is the real measure.
+
+**New JSON block** on `scheduleData`, written only when at least one category is non-zero so untouched records are never bloated:
+
+```json
+"scheduleData": {
+    "timeAllocated"   : 6,
+    "timeTaken"       : 6,
+    "timeAdjustments" : {
+        "timeAdjustments__Description"       : "Hours inside timeTaken that fall outside the original job scope...",
+        "timeAdjustments__ReusableAssets"    : 3,
+        "timeAdjustments__ScopeAmendments"   : 1,
+        "timeAdjustments__DesignDevelopment" : 0,
+        "timeAdjustments__AdditionalContext" : 0,
+        "timeAdjustments__HealthImpact"      : 0
+    }
+}
+```
+
+The five categories are: Modelled Reusable Assets, Amendments Outside Original Scope, Additional Design Development Outside Original Scope, Additional Context Required Outside Original Scope, Additional Time Due To User Health.
+
+**All arithmetic lives in one new module**, `Na__AppUtils__TimeAdjustments.js`, so the editor, viewer and analysis tool can never disagree on the maths:
+- `na_calculate_net_time()` returns `{ absolute, offsets, net, hasAdjustments, overRecorded }`.
+- `net` is floored at zero and can never exceed `absolute`, so a mis-keyed offset cannot produce a negative or inflated KPI. `overRecorded` flags that case for the editor.
+- Placeholder / non-numeric `timeTaken` yields `hasAbsolute: false` rather than a bogus zero.
+
+**Project Editor** (`Na__Feature__ProjectEditor__Form.jsx`) gained a collapsible **Advanced Time Data** section beneath Time Taken, with a live readout of Absolute -> Offsets -> Net -> Scope Efficiency that mirrors exactly what will be saved. It auto-opens on jobs that already carry offsets, and blocks saving when offsets exceed the recorded Time Taken. The builder deletes the block when every category is cleared.
+
+**Project Viewer** shows the offset lines and a Net In Scope Time row only when a job records them. The Efficiency Scale now scores against net time, with a note giving the absolute figure.
+
+**Backwards compatible throughout**: a record with no `timeAdjustments` behaves exactly as before, offsets are zero, and net equals absolute. The offset-specific tiles and charts stay hidden until offsets are actually in use.
+
+---
+
+### 2. ValeVision3D Production Key Performance Indicators panel
+
+New first panel in the Time Analysis Tool. Unlike the artist charts, which only count jobs with numeric schedule data, the KPI panel analyses **every** discovered `project.json`, so its counts match the gallery.
+
+**Twelve headline tiles**: Jobs Complete, Jobs This Year, Net Hours Delivered, 3D Production Efficiency, Out Of Scope Hours, Absolute Efficiency, Median Turnaround, Delivered In A Week, Average Job Size, Concept Artists, 3D Ready Jobs, Images Published, 3D Assets Published, Awaiting Time Review. The two offset tiles appear only when offsets exist.
+
+**Breakdown tables** (jobs, share bar, hours): Jobs By Type, Jobs By Year, Incoming Source Material, Requesting Designers.
+
+**Charts**: Monthly Delivery Throughput (D3 columns, trailing 18 months); Absolute Time Card vs Net In Scope Hours per artist; Where The Out Of Scope Hours Went (offset composition).
+
+**Artist Productivity On Net Figures** table: jobs, allocated, absolute, out-of-scope, net, avg per job, jobs per day, scope efficiency.
+
+**ValeVision3D Feature Coverage**: how far each viewer feature has rolled out (models published, default camera, orbit target, fog plane, walk/fly, imported SketchUp scenes, cross section, presentation scenes, render engine override, video studio).
+
+**Records Needing Attention**: awaiting time review, no job type, no concept artist, no designer, no input source, no images, no notes, missing received or delivery dates. Zero-count rows are hidden.
+
+**Implementation notes**
+- Placeholder sentinels (`NOT YET REVIEWED`, `Default Input Type`, `Default Concept Artist`, `Nil`, anything containing `PLACEHOLDER`) are treated as "not set" so first-sync stubs do not inflate the breakdowns.
+- Delivery year comes from the project folder path, because most 2025 records predate the `folderId` field. The discovery folder path is stashed as `__folderPath` on load so grouping never depends on optional JSON fields.
+- `parseDateStrict` was added alongside `parseDate`, which returns *today* for invalid input and would otherwise silently corrupt every turnaround and throughput figure.
+
+---
+
+### 3. Working-day turnaround
+
+Turnaround measured calendar days, so a job received Friday and delivered Monday read as 3 days when the studio had one working day on it. Weekends were inflating every delivery average.
+
+`countBusinessDays()` measures days **elapsed** minus any Saturday or Sunday, so a job that never crosses a weekend is unchanged:
+
+| Span | Before | After |
+|---|---|---|
+| Tue -> Wed | 1 | 1 (unchanged) |
+| Mon -> Fri | 4 | 4 (unchanged) |
+| Fri -> Mon | 3 | **1** |
+| Fri -> Tue | 4 | **2** |
+| Sat -> Sun | 1 | 1 (floored) |
+
+Dates are normalised to UTC midnight so a British Summer Time transition cannot shift a day boundary. Floored at 1 so same-day delivery, or a span falling wholly on a weekend, still represents work done. Two separate implementations (`buildJobRecord` and `calculateTurnaroundDays`) now share the one helper so they cannot drift.
+
+"Delivered In A Week" now means **5 working days**, not 7 calendar days.
+
+**Impact**: 13 of 137 dated jobs changed, all weekend-spanning. Mean turnaround 1.42 -> 1.24 working days, median unchanged at 1, longest job 6 -> 4.
+
+**Not covered**: public holidays are not deducted. That would need a holiday calendar in the app data; weekends alone remove the bulk of the distortion.
+
+---
+
+### 4. Designer backfill from Vale server link paths
+
+45 of 144 records had no designer. The earlier CSV-based backfill only covered jobs with a `*__ProjectData__.json` metadata file, which left the legacy 2025 block empty.
+
+The missing source was the auto-generated Vale server links: every job folder carries a shortcut into the office file server, and the target path names the designer's own sales folder — `N:\Sales\Gary Hood\Gary 2026\Lawrence62430 NEW DB`.
+
+New `AutomationUtil__BackfillDesignersFromServerLinks__Main__.py` reads four sources in priority order: ProjectData metadata, the private server path inside that JSON, then `.lnk` (binary, both ASCII and UTF-16LE runs swept) and `.url` targets. Full names map to the app's first-name options list; anything unmapped is reported rather than guessed.
+
+**Result: 44 of 45 filled.** Designers now read Dan 40, Steve 34, Gary 23, Martin 21, Tom 19, House 3, James 3. The one holdout, `2025/WK-3007__Weeks`, links to `N:\Clients\2025 Orders-Bespoke\...` rather than a designer's Sales folder, so there is genuinely nothing to extract. Two names surfaced unmapped: `Nick` (on `2760__AshybyHall__3dDetails`, not in the designer options list) and `Example Designer` (the template).
+
+Dry run by default; existing values are never overwritten without `--overwrite`.
+
+---
+
+### 5. Layout and visual pass
+
+- **Chart clipping fixed.** `clientWidth` includes a container's own padding, so every SVG was sized ~29px wider than its content box and `overflow-x: hidden` cut the edges. `margin.left` of 100px was also narrower than the longest axis label ("Default Concept Artist", 111px). Charts now measure the real content box (`measureChartWidth`) and the widest rendered label (`measureWidestLabel`, via an off-screen probe SVG). Verified zero clipped text across all five charts.
+- **Horizontal scrollbars removed.** Four breakdown tables were squeezed into 359px grid tracks while needing 426-517px. Now two columns per row with fixed table layout; the redundant "Avg Job" column dropped.
+- **Muted palette.** Desaturated tones harmonised with the brand navy `#172b3a`: slate `#5b7c99`, sage `#7d9471`, clay `#b0846a`, rose `#a3707a`, plum `#7d6b8f`, teal `#5f8a8b`, grey `#9aa5ac`.
+- **Narrower dashboard.** Tool content capped at 1340px (was 1800px) so every section aligns.
+- Removed the redundant "Artist Efficiency Data Visualisation Tool" title and subtitle.
+- Panel titled **ValeVision3D Production Key Performance Indicators**; efficiency tile renamed **3D Production Efficiency**.
+- **Wide table balanced.** The compact `.overview-table` rules pinned every numeric column to 68px, letting the Artist column take 55% of the width and truncating the Allocated and Scope Efficiency headers. A new `.overview-table--wide` modifier caps the label column and shares the rest evenly: Artist 673px -> 263px, numerics 68px -> 119px, header height 42px -> 32px.
+- **Share column widened** 108px -> 124px. A five-character value such as "89.6%" needed 89px in an 88px content box, so every two-digit percentage was showing an ellipsis. Now 15px of headroom.
+- Fixed "1 days" -> "1 day" pluralisation on the Median Turnaround tile.
+
+---
+
+### Files Changed
+- `02__Src__AppModules/05__AppUtils/Na__AppUtils__TimeAdjustments.js` (new, v1.0.0)
+- `02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx` (v1.5.0)
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx`
+- `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx`
+- `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__EfficiencyScale.jsx`
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ContentDetector.js`
+- `02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js` (token `2026-08-18-2`)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__TimeAnalysis__.css`
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__Tools__.css`
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css`
+- `app.html` (registers the new AppUtils module)
+- `Tools__DevUtils/OneOff__DesignerArtistBackfill__/AutomationUtil__BackfillDesignersFromServerLinks__Main__.py` (new)
+- `Projects/*/*/project.json` (44 designer backfills)
+
+### Outstanding
+- **7 jobs still awaiting time review** (all 2026 Whitecards): `61755__Goodson-Hudson`, `63569__Flynn`, `63592__Bressard-Kayode__ParapetOptions`, `63742__Hanson`, `63752__Kay`, `63770__Warwick`, `63984__Miah`. Six carry `timeTaken: "NOT YET REVIEWED"` with no `timeAllocated`; Bressard-Kayode has `timeTaken: 1` but no `timeAllocated`, so it cannot produce an efficiency figure.
+- Local `project.json` writes still need pushing to R2, or the next sync restores the old copies.
+- The hamburger menu still reads "Time Analysis Tool", now narrower than what the page does.
+
+# -----------------------------------------------------------------------------
+
+## Whitecardopedia v0.6.15 - 18-Aug-2026 - Removal: Legacy SketchUp Model URL Linking System
+
+### Overview
+ValeVision3D superseded the old SketchUp share-link workflow, so the `sketchUpModel` URL system has been removed end to end: the Project Viewer button, the gallery content-detector check, the Project Editor field, and the dead data block in every `project.json`.
+
+### Removed
+- **`Na__Feature__ProjectViewer__Main.jsx`** - the `isValidSketchUpUrl()` helper and the "View SketchUp Model" anchor (with its SketchUp logo icon). The `--download` panel section stays; it still hosts the Download Image Files button.
+- **`Na__Feature__ProjectGallery__ContentDetector.js`** - `checkSketchUpModelUrl()` deleted, and the SketchUp branch dropped from `has3DModelContent()`, which now simply returns `checkValeVisionModelUrl()`. A project with only a legacy SketchUp link no longer earns a 3D content badge.
+- **`Na__Feature__ProjectEditor__Form.jsx`** - the `sketchUpUrl` form state, the "SketchUp Model URL" field with its "Leave blank or set to 'None', 'nil', or 'False'" help text, and the `sketchUpModel` write in `buildUpdatedProject`. The builder now explicitly deletes the block so a legacy copy carried in by the `restOfProject` spread is never written back.
+- **`Projects/*/*/project.json`** - the `sketchUpModel` block stripped from all 146 records via `AutomationUtil__StripLegacySketchUpModelBlock__Main__.py`. No build or sync utility writes the field, so this is permanent.
+
+### URLs Captured Before Removal
+143 records held the placeholder `"Nil"`. Three held a real URL, recorded here so nothing is lost:
+- `2025/NY-29951__McNerney` - `https://app.sketchup.com/share/tc/europe/EjShVZJYLRU`
+- `2025/WK-3007__Weeks` - `https://app.sketchup.com/share/tc/europe/luls66XZsNs`
+- `2025/00__ExampleProject` - `https://3dwarehouse.sketchup.com/model/example` (template placeholder)
+
+### Deliberately Kept
+These share the SketchUp name but belong to the live ValeVision Cloud Sync pipeline, not the removed link system:
+- `ValeVison3D__SketchUpCameraData` - camera scenes imported from the SketchUp model
+- `GLB_NAMODEL_NAMESPACE` / `__NaModel__` - the GLB export namespace marker
+- The Project Editor rename note about renaming the local SketchUp folder to match
+- `AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py` and the SketchUp plugin tooling
+
+### Files Changed
+- `02__Src__AppModules/10__Feature__ProjectGallery/Na__Feature__ProjectGallery__ContentDetector.js`
+- `02__Src__AppModules/11__Feature__ProjectViewer/Na__Feature__ProjectViewer__Main.jsx`
+- `02__Src__AppModules/12__Feature__ProjectEditor/Na__Feature__ProjectEditor__Form.jsx`
+- `03__Style__AppStylesheets/Na__CoreUi__Styles__App__.css` (comment only)
+- `Tools__DevUtils/OneOff__DesignerArtistBackfill__/AutomationUtil__StripLegacySketchUpModelBlock__Main__.py` (new)
+- `Projects/*/*/project.json` (146 records)
+
+# -----------------------------------------------------------------------------
+
+## Whitecardopedia v0.6.14 - 18-Aug-2026 - Feature: Library Overview Panel In The Time Analysis Tool
+
+### Overview
+The localhost-only Time Analysis Tool previously opened straight into artist-level charts, and every metric it showed was filtered down to jobs with numeric `timeAllocated`/`timeTaken`. That meant the tool could report on artist efficiency but could never answer the simpler operational questions: how many jobs has the department actually completed, what is the split between Whitecard / Blockout / MaxModel work, how much of the library is 3D ready, and which records are still incomplete.
+
+A new **Whitecardopedia Library Overview** panel is now the first section of the tool. It analyses **every** discovered `project.json` (not just time-reviewed ones), so the counts match the gallery rather than the efficiency charts.
+
+### What The Panel Reports
+
+**Headline KPI tiles**
+- Jobs Complete (whole library) with the count that has been time reviewed
+- Jobs This Year, with the rolling average jobs-per-month
+- Hours Delivered vs Hours Allocated
+- Studio Efficiency (allocated / taken) with the hour variance against quote
+- Median and average turnaround in calendar days
+- Percentage of jobs delivered inside a week
+- Average job size in hours
+- Concept artist count and requesting designer count
+- 3D Ready Jobs percentage, images published, 3D assets published
+- Awaiting Time Review backlog count
+
+**Breakdown tables** (jobs, share bar, hours, average job size)
+- Jobs By Type: Whitecard / Blockout / MaxModel / Unclassified
+- Jobs By Year
+- Incoming Source Material: CAD File / Early Stage Sketch / Hand Drawn Concept etc
+- Requesting Designers
+
+**Monthly Delivery Throughput** - a D3 column chart of jobs delivered per calendar month over the trailing 18 months, with jobs and hours on hover.
+
+**ValeVision3D Feature Coverage** - how far each viewer feature has rolled out across the library: models published, default camera set, orbit target set, fog plane, walk/fly modes, imported SketchUp scenes, cross section, presentation scenes, render engine override, video studio content.
+
+**Records Needing Attention** - a backlog list built from the same data: jobs awaiting time review, no job type, no concept artist, no designer, no input source, no images, no notes, missing received or delivery dates. Rows with a zero count are hidden.
+
+**Library Composition** - jobs with and without imagery, alternative scheme entries, watercolour artwork jobs, the largest image set in the library, and total quoted vs delivered hours.
+
+### Implementation Notes
+- Placeholder sentinels (`NOT YET REVIEWED`, `Default Input Type`, `Default Concept Artist`, `Nil`, anything containing `PLACEHOLDER`) are treated as "not set" rather than as real values, so first-sync stubs do not inflate the breakdowns.
+- Delivery year is derived from the project folder path (`Projects/<year>/<folder>`) rather than `folderId`, because most 2025 records predate the `folderId` field.
+- `parseDateStrict` was added alongside the existing `parseDate`, which returns "today" for invalid input and would otherwise silently corrupt turnaround and throughput statistics.
+- The discovery folder path is stashed on each loaded record as `__folderPath` so scheme-variant detection and year grouping do not depend on optional JSON fields.
+
+### Files Changed
+- `02__Src__AppModules/13__Feature__TimeAnalysis/Na__Feature__TimeAnalysis__Main.jsx` (v1.3.0)
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__TimeAnalysis__.css`
+
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.6.13 - 08-Jul-2026 - Fix: project.json Cache-Busting Gap + Auto Reload After Editor Save
 
 ### Overview

@@ -601,6 +601,12 @@
         "Timecard__OriginalClockIn": "08:05",
         "Timecard__OriginalClockOut": ""
       }
+    },
+    {
+      "Timecard__Date": "2026-08-19",
+      "Timcard__Clock-In__": "09:00",
+      "Timcard__Clock-Out__": "",
+      "Timecard__AuthHash": "sha256__72dae70bfbdb2ee27a9c71b5f2ccf4bcebce61c97d589fbb826951265742b0b5"
     }
   ]
 }

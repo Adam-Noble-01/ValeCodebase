@@ -854,6 +854,35 @@
                     </div>
                 </li>
                 <!-- -------------------------------------------------------- -->
+                <!-- EXPORT RENDER LAYERS (localhost dev only)                -->
+                <!-- Registry-driven structural passes for Qwen conditioning. -->
+                <!-- Rows, output framing and category selection are injected -->
+                <!-- by the controller module from the pass registry.         -->
+                <!-- -------------------------------------------------------- -->
+                <!-- @delegate: ./02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__DevMenu__Controls__.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naExportRenderLayersDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naExportRenderLayersToggle" aria-expanded="false">
+                        Export Render Layers
+                        <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-erl__panel" id="naExportRenderLayersPanel">
+                        <div class="na-erl__help" id="naExportRenderLayersHelp"></div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-erl__output" id="naExportRenderLayersOutput"></div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-erl__pass-list" id="naExportRenderLayersPassList"></div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-erl__categories" id="naExportRenderLayersCategories"></div>
+                        <hr class="na-dropdown-menu__panel-divider" />
+                        <div class="na-erl__status" id="naExportRenderLayersStatus"></div>
+                        <div class="na-erl__retained" id="naExportRenderLayersRetained"></div>
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--secondary" id="naExportRenderLayersReturnToBeauty">Return to Beauty</button>
+                        <button class="na-dropdown-menu__action" id="naExportRenderLayersExportSelected">Export Selected Layers</button>
+                        <button class="na-dropdown-menu__action na-dropdown-menu__action--danger" id="naExportRenderLayersCancel" style="display:none;">Cancel Export</button>
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
+                <!-- -------------------------------------------------------- -->
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naSceneInspectorToggle" aria-expanded="false">
                         Scene Inspector
@@ -1219,6 +1248,12 @@
     import { Na__VideoStudio__KeyframeDragger__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__KeyframeDragger.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Export Render Layers (Localhost Dev Only)
+    // @delegate: ./02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__DevMenu__Controls__.js
+    // ------------------------------------------------------------
+    import { Na__ExportRenderLayers__InitializeDevControls } from './02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__DevMenu__Controls__.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -1300,6 +1335,7 @@
     const Na__Config__SceneEnvironment = Na__AppConfig__Data.Scene__Environment || null;    // <-- HDR environment config (MaxEngine only)
     const Na__Config__DistanceCulling  = Na__AppConfig__Data.RenderEffect__DistanceCulling || null;   // <-- Distance culling config (MaxEngine only)
     const Na__Config__Resilience       = Na__AppConfig__Data.LoadResilience__Config || null; // <-- Load resilience config (timeouts, retries, concurrency)
+    const Na__Config__ExportRenderLayers = Na__AppConfig__Data.ExportRenderLayers__Config || null; // <-- Export Render Layers config (localhost dev structural export)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -1942,6 +1978,23 @@
         showToast              : Na__UiFeature__ShowToast,
         cameraLensConfig       : Na__Config__CameraLens,                        // <-- Same sensor height as the Tools menu lens slider
         navmodeSettings        : Na__AppConfig__Data.Navmode__Settings          // <-- Door proximity threshold for animations
+    });
+    // ------------------------------------------------------------
+
+    // EXPORT RENDER LAYERS | Localhost-only structural pass exporter
+    // @delegate: ./02__Src__AppModules/71__System__ExportRenderLayers/Na__ExportRenderLayers__DevMenu__Controls__.js
+    // ------------------------------------------------------------
+    Na__ExportRenderLayers__InitializeDevControls({                             // <-- Registry-driven Qwen conditioning map export
+        renderer               : Na__Renderer__Main,
+        scene                  : Na__Scene__Main,
+        camera                 : Na__Camera__Main,
+        controls               : Na__Controls__Orbit,
+        modelRoot              : Na__ModelGroup__Root,                          // <-- Category groups and Na__ModelType tags live here
+        getRenderPipelineState : () => Na__AppFlow__PipelineRef.current,        // <-- LAZY: the ref is rebuilt on every engine switch
+        config                 : Na__Config__ExportRenderLayers,
+        imageExportConfig      : Na__Config__ImageExport,                       // <-- Shared aspect ratios and resolutions
+        lineworkConfig         : Na__Config__Models ? Na__Config__Models.RenderConfig__Linework : null,
+        showToast              : Na__UiFeature__ShowToast
     });
     // ------------------------------------------------------------
 

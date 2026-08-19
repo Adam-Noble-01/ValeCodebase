@@ -26,6 +26,27 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Aug-2026 - Version 1.0.3
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-19-5 (five approximation passes
+//   removed from Export Render Layers).
+//
+// 19-Aug-2026 - Version 1.0.3
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-19-4 (Canny is now inverted Line
+//   Art, sRGB target reverted, sky-dome exclusion tokens).
+//
+// 19-Aug-2026 - Version 1.0.3
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-19-3 (Pose removed, Clay rename,
+//   Line Art on the composed profile-line path, line weight scale fix).
+//
+// 19-Aug-2026 - Version 1.0.3
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-19-2 (Export Render Layers colour
+//   round-trip fix, measured depth range and bulk selection controls).
+//
+// 19-Aug-2026 - Version 1.0.3
+// - PWA_SW_VERSION_TOKEN bumped to 2026-08-19-1 (ValeVision3D Export Render
+//   Layers dev system: new shell JS modules, new stylesheet import and new
+//   index.html markup, so the old shell cache must be force-evicted).
+//
 // 30-Jul-2026 - Version 1.0.3
 // - PWA_SW_VERSION_TOKEN bumped to 2026-08-18-2 (legacy SketchUp URL system
 //   removed from the viewer, gallery detector and editor).
@@ -100,7 +121,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-08-18-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-08-19-5';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

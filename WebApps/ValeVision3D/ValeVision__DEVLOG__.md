@@ -2,6 +2,312 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.14.4 - 19-Aug-2026 - Export Render Layers: Approximations Removed
+
+### Overview
+Five passes deleted, and the code they justified deleted with them. Every one
+was an engine-generated approximation of something a learned detector produces,
+and every one was worse than a map ValeVision can derive exactly. Keeping them
+meant maintaining a shader family, a config surface and a segment-chaining
+algorithm to produce output nobody should choose.
+
+### Removed
+- **MLSD Lines.** The geometric filter over the CAD linework worked in the sense
+  that it selected segments, but it exported a blank frame in the last two
+  batches and was never root-caused. The condition it was meant to supply
+  (long straight architectural lines) is already carried better by Line Art and
+  by the inverted Canny, both of which come from the same linework without a
+  filtering step that can silently select nothing.
+- **Exact Linework Buffer.** Its purpose was diagnosing which edges the SketchUp
+  export delivered. Line Art answers that question directly and is a deliverable
+  as well, so a second raw view of the same data earned nothing.
+- **HED-compatible Map.** It was labelled an approximation from the first
+  commit because it was one: smooth structural gradients plus a luminance term,
+  shaped to suit an HED input rather than produced by a learned HED network.
+- **Scribble Map.** Deliberately coarse by design, and for an orangery that
+  meant deliberately discarding the glazing bars that make the building read.
+- **Soft Edge Map.** The antialiased sibling of a Canny that is now derived from
+  exact linework instead, which leaves nothing for a softened version of a
+  guess to add.
+
+### Cleaned up
+- Deleted `Na__ExportRenderLayers__Pass__MlsdLines__.js` outright, including the
+  collinear chain-merging algorithm and its endpoint quantisation.
+- `Na__ExportRenderLayers__Pass__LineArt__.js` lost its last pass and is now
+  `Na__ExportRenderLayers__ExportLineMaterial__.js`, holding only the shared
+  fat-line material and the beauty-exporter width-compensation convention that
+  Gray Control still needs. That convention is easy to get wrong, so it keeps
+  its own file rather than being inlined.
+- The full screen shader lost four derivation modes (Soft Edge, HED, Scribble
+  and the Profile Edge overlay the old Line Art composite used), the six
+  uniforms that fed only those branches, and their entries in the manifest's
+  threshold record. The remaining modes are renumbered compactly. Every
+  declared uniform is now read by something; the edge section is one branch.
+- Ten AppConfig keys removed. The config had grown tuning knobs for detectors
+  that no longer exist.
+
+### Result
+- 16 passes, 6 essential: Beauty, Clay, Depth, Normal, Canny and Line Art.
+- Every remaining structural pass is derived exactly rather than inferred, with
+  the single deliberate exception of True Canny, which is kept off by default
+  for comparison against the inverted linework.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.3 - 19-Aug-2026 - Canny From Linework, and Two Real Bugs
+
+### Changed
+- **Canny Edges is now the Line Art render inverted**, not a derived edge
+  detection. ValeVision already knows exactly where every edge is, so running a
+  detector over a raster to rediscover them can only lose accuracy. The inverted
+  linework is sharper, complete and correctly hidden-line removed. Inversion is
+  a single composited fillRect using the difference operator against white, so
+  it costs nothing at 6144x4096 and never touches a pixel array.
+- **The derived detector survives as True Canny**, off by default, so the two
+  can be compared and a workflow that genuinely wants detector output has one.
+
+### Fixed
+- **The sRGB output target was a regression and is reverted.** Making the target
+  sRGB was meant to round-trip authored ID colours, but Three then gamma-encoded
+  the raw bytes this system's own shader writes. Measured on a real export: the
+  Normal map's sky should be 128,128,255 and the shader wrote linear 0.789, but
+  the file contained byte 230 rather than 201 - an exact sRGB encode of the
+  intended value. Every data pass was lifted the same way. The target is back to
+  NoColorSpace, and the authored-colour problem is fixed at its actual source
+  instead: the ID mask materials now set their hex in the working colour space,
+  so Three skips the conversion and the byte written is the byte the manifest
+  promises.
+
+### Found, and now controllable
+- **A mesh is covering the sky in the Doous model.** Every structural pass reads
+  the sky as geometry: the Silhouette mask comes out solid white, the Normal
+  buffer never shows its background, and Depth only looks right by coincidence
+  because the far clamp is also black. It is invisible in a Beauty render
+  because it is white. `ExportRenderLayers__Config__ExcludeNameTokens` now
+  excludes matching objects from the structural set by name, defaulting to
+  Sky, Backdrop, Dome and Horizon, and the classifier logs what it dropped.
+
+### Still open
+- **Four passes exported pure white and byte-identical**: Linework Buffer,
+  MLSD Lines, Shadow Mask and Silhouette Mask. Silhouette is explained by the
+  sky mesh above. The other three are not yet root-caused; MLSD reports 45,469
+  segments kept from 252,875, so its geometry filter is working and the failure
+  is downstream of it. MLSD is the one remaining broken essential.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.2 - 19-Aug-2026 - Export Render Layers: Line Art on the Real Renderer
+
+### Changed
+- **Line Art now renders through ValeVision's own profile-line pipeline**
+  rather than a hand-rolled edge composite. Structural surfaces go flat white
+  and unlit, ambient occlusion is switched off for the duration, and what is
+  left on the page is the profile-line pass plus the exact CAD linework. That
+  renderer has been tuned against real Vale models for years; the composite was
+  never going to beat it. Line Art is now a COMPOSED pass alongside Beauty and
+  Clay, so it also inherits vertical correction and the beauty tile path for
+  free.
+- **Whitecard Render is renamed Clay Render** throughout: row label, filename
+  suffix `__ClayRender__`, config keys, and the preset itself. It is now in the
+  essential set and ticked by default.
+- **Pose Map is removed from the registry.** It was registered as a permanently
+  unavailable row to document the capability gap, which turned out to be noise
+  in a panel people actually use. The base-model note in the help text carries
+  the useful part of that information instead.
+
+### Fixed
+- **Line weights in the structural line passes were roughly three times too
+  thin.** LineMaterial resolves its pixel width against its own resolution
+  uniform, and the export was setting that uniform to the tile framebuffer
+  size, so a line came out one tile-pixel wide instead of scaling with the
+  image. The beauty exporter solves it the other way round: it leaves every
+  material's load-time resolution alone and multiplies the width by
+  outputHeight / tileFramebufferHeight. MLSD, the Linework Buffer and Gray
+  Control now follow exactly that convention, so a line carries the same weight
+  in a structural map as it does in Beauty.
+- **Pixel registration can no longer diverge silently.** The tile interior and
+  gutter are configurable for the render layers but hard-coded for Beauty, so
+  overriding them would quietly stop the two aligning. The planner now exports
+  its defaults and the tiled pass renderer warns when the config differs.
+- The capability note read "unavailable, unavailable" on an unavailable row.
+
+### Notes
+- **Clay Render and Gray Control are both clay, and they are not the same
+  thing.** Clay is the flat neutral edit reference with exact linework, composed
+  through the live engine. Gray Control is the lit mid-grey control image the
+  Fun Union adapter names. Keeping both is deliberate.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.1 - 19-Aug-2026 - Export Render Layers: First Export Review
+
+### Overview
+Findings from the first real export set (Doous orangery, MaxEngine, 5461x4096)
+plus the two selection controls that set was missing. Two of the three fixes are
+correctness bugs found by reading the exported manifest against the exported
+pixels, not by looking at the images.
+
+### Added
+- **Select All, Select None and Essential Only** above the pass list. All three
+  are registry-driven. A bulk action never ticks a layer that is unavailable in
+  the current scene or still waiting on a category selection, so it cannot queue
+  something the export would then reject.
+- **`isEssential` on every registry entry**, and the rows carry an "essential"
+  note so the Qwen working set is readable without pressing anything. The set is
+  Beauty, Depth, Normal, Canny, Line Art and MLSD: the composed edit image plus
+  the structural conditions the cited adapter model cards actually list.
+
+### Fixed
+- **ID mask colours did not match their own manifest dictionary.** Three converts
+  every authored material colour from sRGB into its linear working space on
+  assignment, and the export target was `NoColorSpace`, so nothing converted it
+  back. `#ef52a7` was landing in the PNG as `(220, 22, 99)` and `#294bb3` as
+  `(6, 18, 115)`. Selecting a category by its documented colour was impossible.
+  The output target is now sRGB encoded, so Three's own colorspace chunk undoes
+  the conversion and the byte written is the byte authored. Passes that write raw
+  data through the system's own shader are unaffected, because a ShaderMaterial
+  never includes that chunk; their colour uniforms are now set explicitly without
+  conversion, which also fixes the `#8080ff` normal background that was landing
+  as `(55, 55, 255)`.
+- **The depth map was too flat to condition anything.** The range came from
+  bounding boxes, and the landscape plane's box straddles the camera, so the near
+  end collapsed onto the camera near plane and the far end reached the site
+  boundary: 0.1 m to 99.9 m, leaving the whole orangery inside bytes 102 to 191.
+  The range is now MEASURED. The G-buffer renders once at 256px, the normalised
+  depth of every covered pixel is histogrammed, and robust percentiles give the
+  range the image actually occupies. Percentiles rather than min and max, because
+  one blade of grass at the camera should not spend half the range.
+
+### Verified against the model cards (19-Aug-2026)
+Every essential output was checked against its adapter's own documentation
+rather than against memory. All six are accepted, and the check turned up a
+base-model split that had been glossed over:
+
+| Pass | Route | Required base |
+|---|---|---|
+| Beauty | Qwen-Image-Edit-2511, multi-image reference | Qwen-Image-Edit-2511 |
+| Depth | Fun Union / InstantX / DiffSynth patch / DiffSynth Union LoRA | either |
+| Canny | Fun Union / InstantX / DiffSynth patch / DiffSynth Union LoRA | either |
+| Normal | DiffSynth In-Context Control Union LoRA only | Qwen-Image |
+| Line Art | DiffSynth In-Context Control Union LoRA only | Qwen-Image |
+| MLSD | Fun ControlNet Union only | Qwen-Image-2512 |
+
+- **MLSD and Normal cannot share one graph.** MLSD exists only on the Fun
+  Union, which needs Qwen-Image-2512; Normal and Line Art exist only on the
+  DiffSynth In-Context Control Union, which needs Qwen-Image. Depth and Canny
+  are the only conditions every family carries, which is what makes them the
+  safest first test whichever base is loaded. The registry now records the
+  required base model per adapter family and the manifest publishes it.
+- **Two attributions were overstated and are corrected.** Line Art no longer
+  claims Qwen-Image-Edit-2511 as an adapter family, because that card documents
+  no ControlNet compatibility at all: a structural map handed to the edit model
+  is a reference image, not a constraint. The single `DiffSynth` family is split
+  into the Blockwise ControlNet (canny, depth, inpaint, loaded in ComfyUI as a
+  model patch) and the In-Context Control Union LoRA (canny, depth, pose,
+  lineart, softedge, normal, openpose), because ComfyUI treats them as two
+  different artefacts loaded in two different ways.
+- The Fun Union's own card lists Canny, HED, Depth, Pose, MLSD, Scribble and
+  Gray plus inpainting, and does NOT list Normal or Line Art. The registry never
+  claimed it did.
+
+### Notes
+- **The depth percentiles are the contrast lever, and they are a real trade.**
+  Default 2% to 98%. Tighter gives the building more of the range and clips the
+  nearest ground to white and the horizon to black, which is normal for a depth
+  map. Wider keeps the whole site gradient. A view with a ground plane running to
+  the horizon will always spend range on that ground; hiding the landscape
+  category before exporting Depth is the other lever.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.14.0 - 19-Aug-2026 - Export Render Layers
+
+### Overview
+A new localhost-only developer system that turns a framed ValeVision view into a
+folder of pixel-aligned structural maps for Qwen image workflows, plus a
+manifest that says honestly what each image is. The point is spatial fidelity:
+ValeVision already owns the geometry, so a depth map derived from it beats
+running a depth estimator over a whitecard render, and exact SketchUp linework
+beats inferring edges from a raster.
+
+Every pass renders at the same camera, crop, dimensions and pixel registration
+as the ordinary Beauty export, because both now consume one shared tile planner.
+
+### Added
+- **Export Render Layers panel** in the Dev Tools menu
+  (`02__Src__AppModules/71__System__ExportRenderLayers/`). Every row is generated
+  from the pass registry: an export checkbox, the pass name, a capability note
+  derived from registry data, and its own Preview button. Adding a registry entry
+  adds a row, a filename and a manifest record with no other edit anywhere.
+- **Twenty registered passes** across five groups. Beauty and Whitecard as edit
+  images; Depth, Normal, Canny, Soft Edge, HED-compatible and Scribble as
+  structural conditions; Line Art, MLSD and the raw Linework Buffer as line
+  conditions; Gray, Inpaint, Silhouette and the Category, Object and Material ID
+  masks; Ambient Occlusion, Albedo and Shadow as supporting buffers.
+- **Structural G-buffer** (`Na__ExportRenderLayers__GBufferPass__.js`): one
+  RGBA16F target carrying view-space normals in rgb and globally normalised
+  linear view depth in alpha. Coverage rides on the normal's length rather than
+  a sentinel alpha, which leaves the whole alpha range for depth. It uses Three's
+  logarithmic depth chunks so occlusion matches the live renderer, but the
+  exported depth is computed from view space, never read back from the
+  logarithmic hardware sample.
+- **One global depth range per export** (`Na__ExportRenderLayers__DepthRange__.js`),
+  derived from the visible structural bounds rather than the camera's broad near
+  and far planes. Per-tile normalisation would reset contrast at every tile
+  boundary; a facade spanning four tiles now has one continuous gradient.
+- **MLSD collinear chain merging** (`Na__ExportRenderLayers__Pass__MlsdLines__.js`).
+  Dropping every segment shorter than N pixels destroys exactly the lines that
+  matter, because SketchUp exports one glazing bar as a run of short collinear
+  segments. Segments are chained through shared endpoints within an angle
+  tolerance, the length test applies to the whole chain, and the survivors are
+  baked into a private scene so the live scene graph is never touched.
+- **Viewport preview overlay**: a canvas above the WebGL canvas with pointer
+  events disabled. The live composer is never put into a debug mode, so
+  switching from a Normal preview back to MaxEngine beauty cannot leave ambient
+  occlusion or profile lines in a debug configuration. Previews clear themselves
+  when the camera moves, an engine switch begins, a scene changes or an export
+  starts, so a stale structural snapshot can never read as a live view.
+- **Manifest** written last, after every selected image has landed, so a manifest
+  on disk means the set beside it is complete. It records the engine, camera
+  matrices, the depth range in metres and millimetres, visible categories, edge
+  tuning, and per pass the polarity, colour space, background, Qwen adapter
+  families and approximation status. HED-compatible and MLSD say plainly that
+  they are engine-generated approximations rather than learned detectors.
+- **Folder writing** through the File System Access API, with a paced download
+  fallback that retains completed Blobs so anything the browser refused can
+  still be saved by hand from the panel.
+- **`ExportRenderLayers__Config`** in `Na__AppConfig__Main.json`. Thresholds,
+  weights, tile sizes, background colours, default selection and the enable flag
+  all live there. Aspect ratios and resolutions are reused from
+  `ImageExport__Config` rather than duplicated, so a structural map always drops
+  beside a normal export without resizing.
+
+### Changed
+- **Tile mathematics extracted** from `Na__ImageExport__StaticExport__TiledRenderer.js`
+  into `Na__ImageExport__StaticExport__TilePlan__.js`. The beauty exporter's
+  behaviour and public exports are unchanged; it simply consumes the planner now.
+  This is what makes Beauty and Depth align to the pixel rather than nearly.
+- **PWA_SW_VERSION_TOKEN** bumped to 2026-08-19-1.
+
+### Notes on scope
+- **Pose is registered as permanently unavailable, not omitted.** Qwen adapters
+  accept pose maps, but ValeVision architecture has no semantic human skeleton,
+  and a blank pose image is not a useful condition. The row states this.
+- **Shadow Mask is off by default and checks availability at runtime**, reporting
+  in the row when the renderer has shadows disabled or the scene has no visible
+  shadow-casting light, rather than exporting a uniformly white image.
+- **Engine neutral by design.** The structural passes never read MaxEngine's
+  ambient occlusion or depth pre-pass targets. Those are optional on-screen
+  capabilities, and the live AO pre-pass excludes layer-one geometry, which would
+  silently drop visible content from an image claiming to describe the scene.
+  Depth, Normal, IDs, Silhouette, Line Art and MLSD are therefore equivalent
+  under PureEngine and MaxEngine; only Beauty differs, as it should.
+- **Isolation is by camera layer, not by hiding objects.** The classifier tags
+  the loaded model onto two spare layers and leaves layer 0 enabled, so the live
+  viewport is unaffected even mid-export and the default cube, orbit helper,
+  grid, ground plane, fog planes and section gizmos are excluded by construction
+  rather than by a blocklist.
+- **Pass-major memory use.** One layer is rendered, encoded, written and its
+  full-size canvas released before the next starts. Ten selected layers allocate
+  the same GPU memory as one.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.13.1 - 14-Aug-2026 - Video Studio Editing Pass
 
 ### Overview

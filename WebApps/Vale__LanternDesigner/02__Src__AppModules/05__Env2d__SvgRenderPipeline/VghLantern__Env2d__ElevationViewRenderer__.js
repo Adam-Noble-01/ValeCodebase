@@ -81,7 +81,7 @@ const VghLantern__Env2d__ElevationViewRenderer = (function() {
         if (Profiles) await Profiles.VghLantern__Env2d__ProfileTraceRenderer__Render(instance, skeleton, barSet, lantern);
         if (Finials)  await Finials.VghLantern__Env2d__FinialRenderer__Render(instance, skeleton, lantern);
 
-        if (Dimensions) Dimensions.VghLantern__Env2d__DimensionRenderer__Render(instance, skeleton, lantern);
+        if (Dimensions) Dimensions.VghLantern__Env2d__DimensionRenderer__Render(instance, skeleton, lantern, barSet);
 
         return true;
     }

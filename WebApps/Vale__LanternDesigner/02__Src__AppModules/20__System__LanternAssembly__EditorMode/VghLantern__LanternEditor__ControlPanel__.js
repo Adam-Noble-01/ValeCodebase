@@ -69,6 +69,7 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_GROUP           =  'VghLantern__ControlPanel__Group';
     const CSS_GROUP_BODY      =  'VghLantern__ControlPanel__GroupBody';
     const CSS_SUBHEADING      =  'VghLantern__ControlPanel__SubHeading';
+    const CSS_DIVIDER         =  'VghLantern__ControlPanel__Divider';
     const CSS_EMPTY           =  'VghLantern__ControlPanel__EmptyState';
 
     const CSS_CARD_GRID       =  'VghLantern__ControlPanel__CardGrid';
@@ -78,6 +79,8 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     const CSS_CARD_NAME       =  'VghLantern__ControlPanel__CardName';
     const CSS_CARD_EMPTY      =  'VghLantern__ControlPanel__CardEmpty';
     const CSS_CARD_SWATCH     =  'VghLantern__ControlPanel__Card--swatch';
+    const CSS_CARD_DIAGRAM    =  'VghLantern__ControlPanel__Card--diagram';
+    const CSS_DIAGRAM_GRID    =  'VghLantern__ControlPanel__CardGrid--diagram';
     const CSS_SWATCH_GRID     =  'VghLantern__ControlPanel__SwatchGrid';
     const CSS_SWATCH          =  'VghLantern__ControlPanel__Swatch';
     const CSS_SWATCH_TIMBER   =  'VghLantern__ControlPanel__Swatch--timber';
@@ -265,11 +268,20 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
     // into the component index, so a strip of cards costs no network traffic and
     // the picture is the component's real front elevation rather than a stock
     // icon that has to be maintained separately.
-    function VghLantern__ControlPanel__BuildCard(descriptor, option, isSelected) {
+    //
+    // An option may instead carry PreviewMarkup: a whole SVG element authored by
+    // an app data module, for a card whose picture is an explanatory diagram
+    // rather than one product outline. That markup is inserted UNESCAPED, which is
+    // safe and deliberate - it is written in this codebase, never derived from a
+    // project file, a component index or anything else a user can put text into.
+    // Escaping it would print the tags on the card instead of drawing them.
+    function VghLantern__ControlPanel__BuildCard(descriptor, option, isSelected, extraCardClass) {
         var preview     =  option.Preview2d;
         var previewSvg  =  '';
 
-        if (preview && preview.PathData) {
+        if (option.PreviewMarkup) {
+            previewSvg  =  option.PreviewMarkup;
+        } else if (preview && preview.PathData) {
             previewSvg  =  '<svg class="' + CSS_CARD_PREVIEW + '"'
                         +      ' viewBox="' + VghLantern__ControlPanel__Escape(preview.ViewBox) + '"'
                         +      ' preserveAspectRatio="xMidYMid meet" aria-hidden="true">'
@@ -280,13 +292,17 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             previewSvg  =  '<div class="' + CSS_CARD_PREVIEW + ' ' + CSS_CARD_EMPTY + '">No preview</div>';
         }
 
+        var cardClass  =  CSS_CARD
+                       +  (extraCardClass ? ' ' + extraCardClass : '')
+                       +  (isSelected ? ' ' + CSS_CARD_SELECTED : '');
+
         var html  =  '<button type="button"'
-                  +      ' class="' + CSS_CARD + (isSelected ? ' ' + CSS_CARD_SELECTED : '') + '"'
+                  +      ' class="' + cardClass + '"'
                   +      ' ' + ATTR_CONTROL + '="' + VghLantern__ControlPanel__Escape(descriptor.Key) + '"'
                   +      ' ' + ATTR_ROLE + '="card"'
                   +      ' ' + ATTR_VALUE + '="' + VghLantern__ControlPanel__Escape(option.Value) + '"'
                   +      ' aria-pressed="' + (isSelected ? 'true' : 'false') + '"'
-                  +      ' title="' + VghLantern__ControlPanel__Escape(option.Label) + '">';
+                  +      ' title="' + VghLantern__ControlPanel__Escape(option.Summary || option.Label) + '">';
         html     +=      previewSvg;
         html     +=      '<span class="' + CSS_CARD_NAME + '">' + VghLantern__ControlPanel__Escape(option.Label) + '</span>';
         html     +=  '</button>';
@@ -312,7 +328,14 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
             return '<p class="' + CSS_CONTROL_HINT + '">No components available for this role.</p>';
         }
 
-        var html  =  '<div class="' + CSS_CARD_GRID + '" role="radiogroup">';
+        // A diagram strip is two wide landscape cards rather than a reflowing grid
+        // of square product tiles, because a plan sketch has nothing to say once
+        // it is squeezed into a 120px square beside three of its neighbours.
+        var isDiagram   =  descriptor.CardLayout === 'diagram';
+        var gridClass   =  CSS_CARD_GRID + (isDiagram ? ' ' + CSS_DIAGRAM_GRID : '');
+        var cardExtra   =  isDiagram ? CSS_CARD_DIAGRAM : '';
+
+        var html  =  '<div class="' + gridClass + '" role="radiogroup">';
 
         if (descriptor.AllowEmpty) {
             var noneSelected  =  selected === '';
@@ -332,7 +355,8 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         }
 
         for (var i = 0; i < options.length; i++) {
-            html  +=  VghLantern__ControlPanel__BuildCard(descriptor, options[i], String(options[i].Value) === selected);
+            html  +=  VghLantern__ControlPanel__BuildCard(
+                descriptor, options[i], String(options[i].Value) === selected, cardExtra);
         }
 
         html  +=  '</div>';
@@ -487,6 +511,13 @@ const VghLantern__LanternEditor__ControlPanel = (function() {
         // event can never resolve to it.
         if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeHeading) {
             return '<h4 class="' + CSS_SUBHEADING + '">' + VghLantern__ControlPanel__Escape(descriptor.Label) + '</h4>';
+        }
+
+        // A divider is a heading with the words taken out: same job of parting two
+        // groups of controls, no value, no key, nothing to commit. Kept out of the
+        // descriptor map for the same reason a heading is.
+        if (descriptor.Type === Descriptors.VghLantern__ControlDescriptors__TypeDivider) {
+            return '<hr class="' + CSS_DIVIDER + '">';
         }
 
         // A button holds no Block/Field either, but it does need to be resolvable

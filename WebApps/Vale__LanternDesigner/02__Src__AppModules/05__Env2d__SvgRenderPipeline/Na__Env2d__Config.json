@@ -14,7 +14,7 @@
                 "ProjectionKey"               : "plan",
                 "HorizontalAxisLabel"         : "Width",
                 "VerticalAxisLabel"           : "Depth",
-                "DimensionKeys"               : ["width", "depth", "ridgeLength", "upstandThickness"]
+                "DimensionKeys"               : ["width", "depth", "internalUpstand", "ridgeLength", "hipEndRun", "upstandThickness"]
             },
             "frontElevation": {
                 "Label"                       : "Front Elevation",
@@ -22,7 +22,7 @@
                 "ProjectionKey"               : "frontElevation",
                 "HorizontalAxisLabel"         : "Width",
                 "VerticalAxisLabel"           : "Height",
-                "DimensionKeys"               : ["width", "overallHeight", "upstandHeight", "pitch"]
+                "DimensionKeys"               : ["width", "internalUpstand", "overallHeight", "upstandHeight", "pitch"]
             },
             "sideElevation": {
                 "Label"                       : "Side Elevation",
@@ -30,7 +30,7 @@
                 "ProjectionKey"               : "sideElevation",
                 "HorizontalAxisLabel"         : "Depth",
                 "VerticalAxisLabel"           : "Height",
-                "DimensionKeys"               : ["depth", "overallHeight", "upstandHeight", "pitch"]
+                "DimensionKeys"               : ["depth", "internalUpstand", "overallHeight", "upstandHeight", "pitch"]
             }
         },
 
@@ -127,8 +127,36 @@
             "AngleShowBaselineLeg"            : false,
             "AngleBaselineOverrunFactor"      : 1.15,
             "AngleBaselineNote"               : "The horizontal leg of the pitch angle is the eaves line, which is already drawn. Set AngleShowBaselineLeg true only if a sheet needs the leg restated in the annotation colour; the overrun factor then controls how far past the arc it runs.",
+            "UpstandSuffixNote"               : "Plan only. The overall size and the opening through the upstand are two numbers a builder must not mix up: one is what the lantern measures, the other is the hole they cut. On a Vale sheet each is named on the dimension itself rather than left to position on the page. The suffix follows the value with no space, so 6000 reads as '6000mm External Upstand'.",
+            "ExternalUpstandTextSuffix"       : "mm External Upstand",
+            "InternalUpstandTextSuffix"       : "mm Internal Upstand",
+
             "EditableCursor"                  : "text",
             "EditHintTooltip"                 : "Click to type a new value"
+        },
+
+        "VghLantern__Env2d__Config__SecondaryDimensions": {
+            "TierNote"                        : "Second of three dimension ranks. Rank is not decoration: it is the drawing saying what governs. The overall EXTERNAL upstand is what the lantern is ordered as and what every other drawing on the job repeats; the INTERNAL upstand is derived from it and is drawn at this rank; the glaze bar set-out is derived from that and is drawn at the third. Only the three values that set rank are stated here - glyph size, tick length, and the gap the value sits off its line. Everything else is inherited from the main dimension config, because a second rank dimension must read as the SAME drawing convention one step quieter, not as a second convention.",
+            "TextFontSizeMm"                  : 72,
+            "TextOffsetFromLineMm"            : 26,
+            "TerminatorLengthMm"              : 52
+        },
+
+        "VghLantern__Env2d__Config__GlazeBarSetOutDimensions": {
+            "Enabled"                         : true,
+            "TierNote"                        : "The glaze bar setting out chain: bar centreline to bar centreline along the long eaves and along the short eaves, drawn in plan only. It is a SECOND TIER under the overall dimensions - subordinate annotation, not a competing set. It sits innermost, nearest the lantern, and pushes the overall width, depth and upstand chains one step further out, which is normal drafting order: detail nearest the drawing, overall outermost.",
+            "OffsetFromGeometryMm"            : 280,
+            "OffsetNote"                      : "Where the spacing chain's dimension line sits, measured out from the drawn extents. Tighter than the overall chain so the tier reads as belonging to the lantern, but far enough out that its value text clears the glaze bar ends rather than sitting on them.",
+            "OverallChainStepsPushed"         : 2,
+            "OverallChainStepsNote"           : "How many chain steps the overall width, depth and ridge dimensions move outward when this tier draws, so the two tiers do not overprint. Two steps rather than one because this tier's value text and 45 degree ticks together occupy most of one step on their own. Applied only when the tier actually draws, so switching Enabled off closes the gap rather than leaving the overall chain floating out from nothing.",
+            "TextFontSizeMm"                  : 60,
+            "TextOffsetFromLineMm"            : 22,
+            "TextSizeNote"                    : "About 70 percent of the overall dimension text. Small enough to step back, large enough to read at 1:50.",
+            "TerminatorLengthMm"              : 42,
+            "ShowEndPaneDimensions"           : true,
+            "ShowEndPaneNote"                 : "The two outer segments of each chain - eaves corner to the first bar - are the flexible end pane that absorbs the ridge division remainder. Shown by default because it is the number a fitter checks first, and read only because it is a result rather than an input.",
+            "MinSegmentToLabelMm"             : 40,
+            "MinSegmentNote"                  : "A segment shorter than this gets its terminator but no value text, because the number would overprint its neighbours. It cannot happen on a resolved set-out; it is a guard for a hand-edited project file."
         },
 
         "VghLantern__Env2d__Config__DimensionEditor": {

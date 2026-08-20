@@ -1186,6 +1186,21 @@
     /* ------------------------------------------------------------ */
 
 
+    /* DIVIDER | Faint Rule Between Control Groups */
+    /* ------------------------------------------------------------ */
+    /* The same rule a subheading carries on its top edge, on its own. Where a
+       subheading names the group it opens, this only says the group above has
+       ended - for a boundary that is obvious once seen and would be laboured if
+       captioned. Fainter than the heading rule for exactly that reason.         */
+    .VghLantern__ControlPanel__Divider {
+        margin                             : var(--Vale_Spacing_Medium) 0;
+        border                             : none;
+        border-top                         : 1px solid var(--Vale_BorderLight);
+        opacity                            : 0.55;
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* GROUP | Expandable Control Group */
     /* ------------------------------------------------------------ */
     .VghLantern__ControlPanel__Group {
@@ -1334,6 +1349,77 @@
         font-weight                        : var(--Vale_FontWeight_SemiBold);
         color                              : var(--Vale_TextPrimary);
         line-height                        : 1.25;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DIAGRAM CARDS | Explanatory Plan Sketches */
+    /* ------------------------------------------------------------ */
+    /* Two fixed columns rather than a reflowing auto-fill track, and landscape
+       rather than square. A plan diagram of a lantern is 5:3 and stops saying
+       anything at all once it is squeezed into a square tile beside three of its
+       neighbours, so the strip holds its shape at every panel width.            */
+    .VghLantern__ControlPanel__CardGrid--diagram {
+        grid-template-columns              : repeat(2, minmax(0, 1fr));
+    }
+
+    .VghLantern__ControlPanel__Card--diagram {
+        aspect-ratio                       : auto;
+        padding                            : calc(var(--Vale_Spacing_Small) * 0.75);
+    }
+
+    /* The product card sizes its preview the other way round: the card is square
+       and the drawing fills whatever the name line leaves, which needs basis 0 so
+       a tall component's own viewBox cannot stretch the tile. A diagram card has
+       no fixed height to divide up, so basis 0 would collapse the drawing to
+       nothing. Here the SVG's own aspect ratio sets the height and the card
+       follows it.                                                               */
+    .VghLantern__ControlPanel__Card--diagram .VghLantern__ControlPanel__CardPreview {
+        flex                               : 0 0 auto;
+        height                             : auto;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* DIAGRAM | Glaze Bar Set-Out Mode Plan Sketch */
+    /* ------------------------------------------------------------ */
+    /* Drawn by VghLantern__AppData__GlazeBarSetOutModes as inline SVG carrying
+       nothing but class names, so the whole set of diagrams restyles from here
+       and no colour is ever written into the markup.
+       Line weights are set as a hierarchy on purpose: the roof shell is the
+       quietest thing on the card, the bars sit above it, and the members that
+       make each mode's point are the only coloured strokes on either diagram.  */
+    .VghLantern__ControlPanel__ModeDiagram {
+        aspect-ratio                       : 120 / 72;
+        stroke-width                       : 1;
+        stroke-linecap                     : butt;
+    }
+
+    /* Shell, ridge and ordinary bars are ONE weight and ONE light grey. Every
+       weight or tone spent separating them is spent on information the card is
+       not about: it is not a drawing of a lantern, it is a drawing of where the
+       set-out lands, and everything except that is context for it.              */
+    .VghLantern__ControlPanel__ModeDiagram__Outline,
+    .VghLantern__ControlPanel__ModeDiagram__Ridge,
+    .VghLantern__ControlPanel__ModeDiagram__Bar {
+        fill                               : none;
+        stroke                             : var(--Vale_BorderLight);
+        stroke-width                       : 1;
+    }
+
+    /* The members that make each mode's point. Same weight as everything else, so
+       the only thing separating them is that they are the Vale brand blue and the
+       rest of the diagram is not. Nothing needs to be thicker for the eye to go
+       straight to the one coloured thing on a grey card.                        */
+    .VghLantern__ControlPanel__ModeDiagram__Bar--key {
+        stroke                             : var(--Vale_PrimaryBrand);
+        stroke-width                       : 1;
+    }
+
+    .VghLantern__ControlPanel__ModeDiagram__Block {
+        fill                               : var(--Vale_BackgroundWhite);
+        stroke                             : var(--Vale_TextPrimary);
+        stroke-width                       : 1.4;
     }
     /* ------------------------------------------------------------ */
 

@@ -280,6 +280,76 @@
 
 
 /* #region ----------------------------------------------------------------------
+ * REGION | Second Rank Dimensions - Internal Upstand
+ * ----------------------------------------------------------------------------- */
+
+    /* Between the overall external size and the glaze bar set-out. Same tick,
+       same font, same witness gap, one step down in size and saturation - so the
+       three ranks read as one drawing convention stated at three volumes rather
+       than as three competing systems. Text size comes from
+       Na__Env2d__Config.json and is set per node, so it is not restated here.   */
+
+    .VghLantern__Env2d__Dimension--secondary .VghLantern__Env2d__Dimension__Witness,
+    .VghLantern__Env2d__Dimension--secondary .VghLantern__Env2d__Dimension__Line,
+    .VghLantern__Env2d__Dimension--secondary .VghLantern__Env2d__Dimension__Terminator {
+        stroke                            : var(--VghLantern_SvgSecondDimensionLine);
+        stroke-width                      : 2.6;                              /* <-- Between the 3 of the overall chain and the 2.2 of the set-out */
+    }
+
+    .VghLantern__Env2d__Dimension--secondary .VghLantern__Env2d__Dimension__Terminator {
+        fill                              : var(--VghLantern_SvgSecondDimensionLine);
+    }
+
+    .VghLantern__Env2d__Dimension--secondary .VghLantern__Env2d__Dimension__Witness {
+        stroke-opacity                    : 0.62;
+    }
+
+    .VghLantern__Env2d__Dimension--secondary .VghLantern__Env2d__Dimension__Text {
+        fill                              : var(--VghLantern_SvgSecondDimensionText);
+        font-weight                       : 600;                              /* <-- Holds the overall chain's weight; size and colour carry the rank on their own */
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
+ * REGION | Third Rank Dimensions - Glaze Bar Setting Out
+ * ----------------------------------------------------------------------------- */
+
+    /* The whole tier is muted from one class on its group, so nothing inside it
+       carries a colour of its own and the two tiers can never drift apart.
+
+       Same drawing convention as the overall dimensions - same tick, same font,
+       same witness gap - at a lower contrast and a smaller size. That is the
+       point: it must read as the SAME kind of annotation, one level down, rather
+       than as a different system fighting for the same space. Text size comes
+       from Na__Env2d__Config.json and is set per node, so it is not restated
+       here.                                                                     */
+
+    .VghLantern__Env2d__Dimension--setOut .VghLantern__Env2d__Dimension__Witness,
+    .VghLantern__Env2d__Dimension--setOut .VghLantern__Env2d__Dimension__Line,
+    .VghLantern__Env2d__Dimension--setOut .VghLantern__Env2d__Dimension__Terminator {
+        stroke                            : var(--VghLantern_SvgSetOutDimensionLine);
+        stroke-width                      : 2.2;                              /* <-- Lighter than the 3 of the overall chain */
+    }
+
+    .VghLantern__Env2d__Dimension--setOut .VghLantern__Env2d__Dimension__Terminator {
+        fill                              : var(--VghLantern_SvgSetOutDimensionLine);
+    }
+
+    .VghLantern__Env2d__Dimension--setOut .VghLantern__Env2d__Dimension__Witness {
+        stroke-opacity                    : 0.55;
+    }
+
+    .VghLantern__Env2d__Dimension--setOut .VghLantern__Env2d__Dimension__Text {
+        fill                              : var(--VghLantern_SvgSetOutDimensionText);
+        font-weight                       : 500;                              /* <-- One step back from the 600 of the overall values */
+    }
+
+/* #endregion ------------------------------------------------------------------- */
+
+
+/* #region ----------------------------------------------------------------------
  * REGION | Floating Dimension Input
  * ----------------------------------------------------------------------------- */
 

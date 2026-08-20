@@ -22,7 +22,14 @@
      moulding, and each card instead draws the whole assembled bar - cap, core
      and that trim - so the depths are compared as the shapes they are.
    - Division is always by target spacing, which the GlazeBarLayout rounds to a
-     whole number of panes.
+     whole number of panes ACROSS THE RIDGE SPAN, then replicates outward to the
+     hips. Where those panes sit relative to the octagonal end block is the
+     set-out mode, and it is the first thing this section asks, because it is the
+     decision the spacing is then resolved inside.
+   - The two modes are picture cards for the same reason the trims are: they
+     differ by half a pane, which reads as a footnote in words and as an obvious
+     difference in a plan diagram. The diagrams are drawn by
+     VghLantern__AppData__GlazeBarSetOutModes.
    - There is no separate hip end control. One set-out drives the whole lantern and
      the hip end bars are wrapped from it, which is what makes them converge on the
      hip and ridge points.
@@ -68,14 +75,15 @@ const VghLantern__LanternEditor__Section__GlazeBars = (function() {
     function VghLantern__Section__GlazeBars__Build() {
         return [
             {
-                Key           : 'trimOptionId',
+                Key           : 'setOutMode',
                 Type          : 'cards',
-                Label         : 'Glaze Bar Trim',
+                Label         : 'Bar Set Out',
                 Block         : BARS_BLOCK,
-                Field         : 'Lantern__GlazingBars__Config__TrimOptionId',
-                OptionsSource : 'glazeBarTrims',
+                Field         : 'Lantern__GlazingBars__Config__SetOutMode',
+                OptionsSource : 'glazeBarSetOutModes',
+                CardLayout    : 'diagram',
                 AllowEmpty    : false,
-                Hint          : 'The internal joinery moulding. Each card shows the whole bar: cap, core and that trim.'
+                Hint          : 'Where the set-out lands relative to the ridge end blocks. Bar Central puts a glaze bar on each block; Panel Central puts a glazed pane over it.'
             },
             {
                 Key         : 'targetSpacingMm',
@@ -85,7 +93,21 @@ const VghLantern__LanternEditor__Section__GlazeBars = (function() {
                 Field       : 'Lantern__GlazingBars__Config__TargetSpacingMm',
                 BoundsKey   : 'TargetSpacingMm',
                 Unit        : 'mm',
-                Hint        : 'Rounded to whole panes, so actual spacing will differ slightly.'
+                Hint        : 'Rounded to whole panes across the ridge span, so actual spacing will differ slightly. The end pane at each hip takes up the remainder.'
+            },
+            {
+                Key  : 'setOutDivider',
+                Type : 'divider'
+            },
+            {
+                Key           : 'trimOptionId',
+                Type          : 'cards',
+                Label         : 'Glaze Bar Trim',
+                Block         : BARS_BLOCK,
+                Field         : 'Lantern__GlazingBars__Config__TrimOptionId',
+                OptionsSource : 'glazeBarTrims',
+                AllowEmpty    : false,
+                Hint          : 'The internal joinery moulding. Each card shows the whole bar: cap, core and that trim.'
             },
             {
                 Key   : 'horizontalTransomEnabled',

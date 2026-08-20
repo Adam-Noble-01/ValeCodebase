@@ -3,6 +3,287 @@
 
 
 # ---------------------------------------------------------
+## Vale__LanternDesigner v0.4.2 - 20-Aug-2026
+### GLAZE BARS | Set out from the ridge, not from the eaves
+
+The glaze bar set-out was normalising the target spacing across the WHOLE long
+eaves length and letting the bars fall wherever that division put them. That is not
+how Vale set a lantern out. It produced a roof where the bars drifted past the ridge
+end block by an arbitrary amount that changed with every width edit, and where the
+one junction the octagonal block exists to make - long slope bar, ridge, hip end
+centre bar, all on one point - only happened by luck.
+
+The set-out now starts from the RIDGE SPAN, the run between the two end blocks, and
+replicates that pitch outward towards the hips. Two modes decide where the stations
+sit relative to the block, and the user picks between them on two plan diagrams.
+
+---
+
+#### THE DIVISION
+
+    1. Divide the RIDGE SPAN into the whole number of panes closest to the target
+       spacing. That division is the resolved pitch.
+    2. Place stations across the ridge span at that pitch.
+    3. Replicate the same pitch outboard of each block, towards the hips.
+    4. The last pane at each end is whatever is left over, and is flexible by design.
+
+Because the pitch divides the ridge span exactly, every station either lands on a
+block or is a whole number of pitches from one. The hip ends are wrapped from that
+same station list, so the four-way convergence at the block is exact by construction
+rather than by tolerance. The old `CentreMergeLimit` machinery - which existed only
+to clean up slivers left by an arbitrary set-out - is gone with the arbitrariness
+that made it necessary.
+
+| Worked example | 6000 x 2500, target 390 |
+|---|---|
+| Ridge span | 3500 |
+| Panes | 9 |
+| Resolved pitch | 388.9 |
+| Stations, Mode 01 | on the blocks at 1750, out to 2527.8 |
+| Flexible end pane | 472.2 |
+
+---
+
+#### THE TWO MODES
+
+**Mode 01, Glaze Bar Locked Central To End Blocks.** The default. A station lands ON
+each block. Bar, ridge and hip end centre bar all converge on it.
+
+**Mode 02, Glazed Panel Central To End Blocks.** Every station offset half a pitch,
+so the block falls in the middle of a pane. There is no hip end centre bar in this
+mode: the pane straddles the hip end centreline exactly as it straddles the block on
+the long slopes, which is the whole point of choosing it.
+
+They are two functions, not one function with a flag. They are two drawing office
+conventions and a reader should be able to see each one whole. Everything after the
+station list is identical for both, because a mode is nothing more than where its
+stations sit.
+
+**The flexible end pane is only intervened on when it stops being buildable.** Below
+200mm the outermost bar is removed, as a symmetric pair, and one wider final pane
+accepted. That is the drawing office answer and it is now the code's answer.
+
+**A pyramid has no ridge span and no block.** The APEX is the anchor instead: the
+pitch is the target as entered because there is nothing to normalise against, Mode 01
+puts a station on the centreline through the apex, Mode 02 offsets by half. Same code
+path, no special casing, including a rectangular pyramid whose hips are not at 45
+degrees.
+
+---
+
+#### THE SECOND DIMENSION TIER
+
+Plan only. Bar centreline to bar centreline along the long eaves and along the short
+eaves, each chain closed out to the eaves datum corner so the flexible end pane is
+stated rather than inferred.
+
+It reads the station lists the layout module publishes on the bar set rather than
+deriving bar positions of its own, so the chain and the bars it measures cannot
+disagree - there is one set of numbers. That is why `GlazeBarSet` gained a `SetOut`
+block: not as reporting, but as the single place the stations live.
+
+Drawn subordinate on purpose - 60mm text against 85, a red at half the saturation,
+and innermost with the overall chains stepped one place out past it. Normal drafting
+order: detail nearest the drawing, overall outermost. Whether the tier drew is what
+decides the shift, so switching it off in config closes the gap rather than leaving
+the overall chain floating one step out from nothing.
+
+A segment measuring the resolved pitch is typed-editable through the existing
+`paneWidth` constraint, so a spacing can be changed on the drawing as well as on the
+slider. The end panes never are. They are what the division leaves over, not a value
+anybody sets.
+
+---
+
+#### THE MENU
+
+Two picture cards, same reasoning as the finial and trim strips: the modes differ by
+half a pane, which reads as a footnote in words and as an obvious difference in a
+plan diagram. The diagrams are honest little plans of a 6000 x 3000 lantern with the
+ridge, hips, blocks, long slope bars and hip end wrap all where the layout module
+would actually put them.
+
+The card renderer gained `PreviewMarkup` for an option whose picture is a whole
+authored SVG rather than one baked outline path, and `CardLayout: 'diagram'` for a
+strip of two wide landscape cards rather than a reflowing grid of square tiles.
+
+---
+
+#### WHAT MOVED
+
+| | |
+|---|---|
+| `Geometry__GlazeBarLayout` | rewritten set-out. Publishes `SetOut` alongside `Meta`. `Meta` is unchanged, so the takeoff, the warning system and the exporters needed no edit |
+| `AppData__GlazeBarSetOutModes` | new. Labels, hints and the two card diagrams |
+| `Env2d__DimensionRenderer` | the setting out chain, and the chain-index shift |
+| `Env2d__Styles__Main` | the muted second tier |
+| `LanternEditor__ControlPanel` | `PreviewMarkup` and the diagram card layout |
+| `LanternEditor__Section__GlazeBars` | the mode card control |
+| `AppUtils__ProjectSchemaValidator` | `SetOutMode` seeded on load, canonicalised by the geometry module's own keys rather than a second copy of them |
+
+`MAX_BARS_PER_SLOPE` went from 40 to 80. It was described as matching a schema clamp
+on a field that has since been retired, so it matched nothing, and the widest lantern
+the schema allows at the tightest spacing it allows resolves to 61 stations - a legal
+configuration was silently truncatable. It is now documented as what it actually is,
+a runaway guard on the station walk.
+
+---
+
+#### THE PLAN DIMENSION BLOCK, REWORKED AROUND IT
+
+Adding a tier under the overall chain exposed how tight the whole plan block
+already was. Both tiers moved out and apart:
+
+| | |
+|---|---|
+| Setting out chain | 280 out from the extents, up from 120. Its value text now clears the glaze bar ends rather than sitting on them |
+| Overall chain | pushed two chain steps rather than one. One step left the overall text overprinting the setting out ticks: this tier's glyphs and its 45 degree ticks together occupy most of a step on their own |
+| `ViewFitMarginFactor` | 0.10 to 0.14, buying back the room the taller block needs |
+
+How far the overall chain moves is now config (`OverallChainStepsPushed`) rather
+than a hardcoded 1, and it is still applied only when the tier actually draws.
+
+**A run table entry may now be an ARRAY.** One dimension is sometimes true in more
+than one place, and the fix for that is not a second key naming the same quantity:
+
+- **Upstand thickness at BOTH ends of the near edge**, and in the subordinate
+  style. The upstand is the same thickness all the way round, so one corner
+  stating it and the other left blank reads as though they might differ. And at
+  full dimension size a three digit number about a builder's blockwork was
+  shouting louder than the overall width beside it. Both ends now sit on the
+  internal upstand's line, chained - see below.
+- **Two hip end runs closing the top chain**, eaves corner to ridge end either
+  side of the ridge length. Without them the top chain states the middle of the
+  lantern and leaves the reader to subtract it from the width themselves, which
+  is the arithmetic a setting out drawing exists to have already done.
+
+**The overall size and the opening through the upstand are now stated as a pair,
+and each is named on the dimension itself.** They are two numbers a builder must
+not read for one another: one is what the lantern measures, the other is the hole
+they cut. Position on the page is not enough to tell them apart, so the plan
+follows the Vale sheet convention and says which is which:
+
+    far edge     110 | 5780mm Internal Upstand | 110      second rank
+    near edge    6000mm External Upstand                  first rank, editable
+
+Both axes, because the reference sheets dimension both. The suffixes are config
+strings rather than literals - the older sheets say INTERNAL OPENING where these
+say Internal Upstand, and that is a wording decision, not a code one.
+
+The suffix is appended to the DISPLAY only. `data-vgh-dimension-value` still
+carries the bare number, so a named dimension is still typed-editable from the
+number alone and the editor needed no knowledge of any of this.
+
+Internal upstand is read only on purpose: it is the overall size less two upstand
+thicknesses, so it is a consequence of two values that are each already editable
+rather than a third input that could contradict them.
+
+---
+
+#### THREE RANKS, AND WHAT RANK IS FOR
+
+Rank is not decoration. It is the drawing saying what governs:
+
+| | | |
+|---|---|---|
+| **First** | 85mm, `#cc3333` | overall EXTERNAL upstand - what the lantern is ordered as, and what every other drawing on the job repeats |
+| **Second** | 72mm, `#bf4a4a` | INTERNAL upstand and the thicknesses chained with it - derived from the size above |
+| **Third** | 60mm, `#b36161` | glaze bar set-out - derived from that |
+
+Each rank steps down one size and one step in saturation, and all three keep the
+same 45 degree tick, the same font and the same witness gap. That is the whole
+idea: one drawing convention stated at three volumes, not three systems competing
+for one margin. A run declares its rank and `RankFor` resolves the sizes and the
+group class; chain POSITION always comes from the main config, so every rank
+stacks in one ladder rather than each measuring from its own origin. Only the
+three values that actually set rank live in each tier's config block, and
+everything else is inherited.
+
+**The internal pair crossed to the far edge.** Stacked under the external size they
+were two long strings one above the other, sharing a margin that already had the
+setting out chain in it. On opposite edges each has a clear side of the drawing to
+itself and the pairing reads ACROSS the lantern:
+
+    far edge     110 | 5780mm Internal Upstand | 110      second
+    far edge     1500 | 3000 | 1500                       second, one step in
+    near edge    375 | 500 | 500 ...                      third
+    near edge    6000mm External Upstand                  first
+    left edge    2780mm Internal Upstand                  second
+    right edge   3000mm External Upstand                  first
+
+The ridge and its two hip end runs sit at the second rank too. They are a
+BREAKDOWN of the width - the same relationship to it the opening has - so they
+belong at the opening's volume rather than shouting at the volume of the size
+they add up to. They also drop a step nearer the lantern: a value always sits on
+the FAR side of its own line, which on this edge means it grows towards whatever
+is outboard of it, and that step gives the text somewhere to go that is not the
+internal upstand chain above it.
+
+Fixed while in there: the hip end runs took their outer witness point off the NEAR
+eaves corner, which drew a witness line the full height of the lantern to reach a
+dimension line on the other side of it. Both witnesses now come off the edge the
+dimension actually sits against.
+
+Witness points are built on the edge the dimension sits against, so no witness
+line crosses the lantern to reach its own dimension line. The 110s travel with the
+opening they bracket, because the three of them are one chained dimension summing
+to the size stated on the opposite edge - which is the addition the reader was
+going to do anyway.
+
+**Elevations carry the pair too**, named identically, so the two views cannot be
+read as describing different things. They stack there rather than crossing to
+opposite edges: the opposite edge of an elevation is the sky above the ridge, and
+nothing else is competing under this one.
+
+Two chain steps between them rather than one, for the reason the plan's overall
+chain needed two: a chain step is sized for a dimension line and its ticks, and
+the value hanging off each line takes most of the step on its own. One step apart
+left the internal chain's ticks and the external value's glyphs 19mm from touching.
+Skipping a step gives the pair room to read as a pair - 179mm of it.
+
+The hip end run has no constraint descriptor, so it needed the documented
+read-only-annotation path to actually work. It did not: `ReadCurrentValue`
+returns null for a key the resolver does not know, and the loop skipped it. A run
+may now carry its own `ValueMm`, consulted only when the resolver has nothing,
+which makes derived annotation drawable without inventing a fake constraint for
+it to hang off.
+
+`Style: 'setOut'` on a run opts it into the subordinate look - smaller glyphs,
+shorter ticks, the muted red. Chain POSITION still comes from the main config, so
+a subordinate run stacks in the same ladder as everything else rather than
+measuring itself from a different origin.
+
+---
+
+#### THE MENU, SETTLED
+
+Target Spacing rose above the trim cards, to sit under the set-out cards it is
+resolved inside, with a new `divider` descriptor parting that group from the bar
+section group below it. A divider is a heading with the words taken out: the
+boundary is obvious once seen and would be laboured if captioned.
+
+Slider range tightened to 300 - 800mm.
+
+The card diagrams settled on one weight and one light grey for shell, ridge and
+ordinary bars, with the members that make each mode's point in the Vale brand
+blue at that same weight. Nothing needs to be thicker for the eye to go straight
+to the one coloured thing on a grey card, and the earlier accent red and pane
+wash were both louder than the distinction they were drawing. Mode 02 now states
+its pane by what is MISSING at the block rather than by a wash, which is the same
+way the drawing itself states it.
+
+---
+
+#### STILL OPEN
+
+The `paneWidth` constraint allows 100 to 3000mm, mirroring the schema, while the
+Target Spacing slider allows 300 to 800, being the practical shop floor range. That
+gap has always existed but was unreachable until the spacing dimensions became
+typed-editable. A value typed on the drawing outside the slider range will be stored
+and drawn correctly, and the slider will clamp it on the next drag.
+
+
+# ---------------------------------------------------------
 ## Vale__LanternDesigner v0.4.0 - 12-Aug-2026
 ### RELEASE | The Vale ridge and hip, end to end
 

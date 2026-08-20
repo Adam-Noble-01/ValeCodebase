@@ -28,6 +28,29 @@
    A key present in the view list but absent from the resolver draws as a
    read-only annotation rather than silently disappearing.
 
+   ---------------------------------------------------------------------------
+
+   THE SECOND TIER - GLAZE BAR SETTING OUT
+
+   Plan only, and outside the key list above, because it is not one dimension per
+   key: it is a CHAIN whose segment count changes with the set-out. It reads the
+   station lists the GlazeBarLayout published on the bar set rather than deriving
+   bar positions of its own, so the chain and the bars it measures can never
+   disagree - there is only one set of numbers.
+
+   Two chains: bar centreline to bar centreline along the long eaves, and the same
+   along the short eaves. Each closes out to the eaves datum corner at both ends,
+   so the flexible end pane is stated rather than left to be inferred.
+
+   It is drawn subordinate on purpose - smaller text, a desaturated red, and
+   nearest the lantern with the overall chains stepped out past it. A fitter reads
+   the overall size first and the set-out second, and the drawing should say so.
+
+   A segment that measures the resolved set-out pitch is typed-editable through
+   the existing paneWidth constraint, so a spacing can be changed on the drawing
+   as well as on the slider. The end panes never are: they are what the division
+   leaves over, not a value anybody sets.
+
    ============================================================================= */
 
 // =============================================================================
@@ -50,11 +73,23 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     const CSS_DIM_TEXT_EDIT    =  'VghLantern__Env2d__Dimension__Text--editable'; // <-- Editable variant
     const CSS_DIM_TEXT_ANGLE   =  'VghLantern__Env2d__Dimension__Text--angle';    // <-- Pitch label centred on the hip
     const CSS_DIM_ARC          =  'VghLantern__Env2d__Dimension__Arc';            // <-- Pitch angle arc
+    const CSS_DIM_GROUP_SECOND =  'VghLantern__Env2d__Dimension--secondary';      // <-- Wraps a second rank dimension; the stylesheet steps its colour and weight back from this one class
+    const CSS_DIM_GROUP_SETOUT =  'VghLantern__Env2d__Dimension--setOut';         // <-- Wraps the glaze bar setting out chain; the stylesheet mutes every line and value inside it from this one class
 
     const ATTR_KEY             =  'data-vgh-dimension-key';                       // <-- Editor binding hook
     const ATTR_VALUE           =  'data-vgh-dimension-value';                      // <-- Current numeric value
     const ATTR_UNIT            =  'data-vgh-dimension-unit';                       // <-- 'mm' or 'deg'
     const ATTR_EDITABLE        =  'data-vgh-dimension-editable';                    // <-- 'true' when resolver-backed
+
+    // THREE RANKS OF DIMENSION, and a run says which one it belongs to. Rank is
+    // not decoration: it is the drawing telling the reader what governs. The
+    // overall external size is what the lantern is ordered as; the opening through
+    // the upstand is derived from it; the glaze bar set-out is derived from that.
+    // Each rank steps down one size and one step in colour saturation, and they
+    // all keep the same tick, font and witness convention so they read as one
+    // drawing rather than three.
+    const STYLE_SECONDARY      =  'secondary';                                    // <-- Internal upstand and the thicknesses chained with it
+    const STYLE_SETOUT         =  'setOut';                                       // <-- Glaze bar setting out, the quietest rank
 
     const SIDE_BELOW           =  'below';
     const SIDE_ABOVE           =  'above';
@@ -105,9 +140,74 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             AngleTextOffsetFactorOfRadius: num('AngleTextOffsetFactorOfRadius'),
             AngleTextMaxStationFactorOfHip: num('AngleTextMaxStationFactorOfHip'),
             AngleTickLengthFactorOfTerminator: num('AngleTickLengthFactorOfTerminator'),
+            ExternalUpstandTextSuffix    : str('ExternalUpstandTextSuffix'),
+            InternalUpstandTextSuffix    : str('InternalUpstandTextSuffix'),
             AngleShowBaselineLeg         : bool('AngleShowBaselineLeg'),
             AngleBaselineOverrunFactor   : num('AngleBaselineOverrunFactor'),
             EditHintTooltip              : str('EditHintTooltip')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read the Second Rank Dimension Config
+    // ------------------------------------------------------------
+    // Same shape as the main dimension config, differing only in the three values
+    // that set its rank: glyph size, tick length and the gap the value sits off
+    // its line. Everything else is inherited, because a second rank dimension must
+    // read as the SAME drawing convention one step quieter, not as a second one.
+    function VghLantern__Env2d__DimensionRenderer__ReadSecondaryConfig(mainConfig) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
+        var tierCfg       =  (env2d && env2d['VghLantern__Env2d__Config__SecondaryDimensions']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__SecondaryDimensions';
+
+        function num(key)  { return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(tierCfg, key, LABEL); }
+
+        return {
+            OffsetFromGeometryMm    : mainConfig.OffsetFromGeometryMm,
+            ChainOffsetStepMm       : mainConfig.ChainOffsetStepMm,
+            ExtensionLineOverrunMm  : mainConfig.ExtensionLineOverrunMm,
+            ExtensionLineGapMm      : mainConfig.ExtensionLineGapMm,
+            TerminatorLengthMm      : num('TerminatorLengthMm'),
+            TerminatorStyle         : mainConfig.TerminatorStyle,
+            TextFontSizeMm          : num('TextFontSizeMm'),
+            TextOffsetFromLineMm    : num('TextOffsetFromLineMm'),
+            EditHintTooltip         : mainConfig.EditHintTooltip
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read the Glaze Bar Setting Out Tier Config
+    // ------------------------------------------------------------
+    // Returned in the same shape the main dimension config uses, so the shared
+    // witness, terminator and value-text helpers can be handed either one and
+    // neither has to know which tier it is drawing. ChainOffsetStepMm is borrowed
+    // from the main tier because the two chains must step outward together.
+    function VghLantern__Env2d__DimensionRenderer__ReadSetOutConfig(mainConfig) {
+        var ConfigLoader  =  window.VghLantern__AppCore__ConfigLoader;
+        var env2d         =  ConfigLoader ? ConfigLoader.VghLantern__ConfigLoader__GetSection('Env2d') : null;
+        var tierCfg       =  (env2d && env2d['VghLantern__Env2d__Config__GlazeBarSetOutDimensions']) || {};
+        var LABEL         =  'Na__Env2d__Config.json -> VghLantern__Env2d__Config__GlazeBarSetOutDimensions';
+
+        function num(key)  { return ConfigLoader.VghLantern__ConfigLoader__RequireNumber(tierCfg, key, LABEL); }
+        function bool(key) { return ConfigLoader.VghLantern__ConfigLoader__RequireBoolean(tierCfg, key, LABEL); }
+
+        return {
+            Enabled                 : bool('Enabled'),
+            OffsetFromGeometryMm    : num('OffsetFromGeometryMm'),
+            ChainOffsetStepMm       : mainConfig.ChainOffsetStepMm,
+            ExtensionLineOverrunMm  : mainConfig.ExtensionLineOverrunMm,
+            ExtensionLineGapMm      : mainConfig.ExtensionLineGapMm,
+            TerminatorLengthMm      : num('TerminatorLengthMm'),
+            TerminatorStyle         : mainConfig.TerminatorStyle,
+            TextFontSizeMm          : num('TextFontSizeMm'),
+            TextOffsetFromLineMm    : num('TextOffsetFromLineMm'),
+            ShowEndPaneDimensions   : bool('ShowEndPaneDimensions'),
+            MinSegmentToLabelMm     : num('MinSegmentToLabelMm'),
+            OverallChainStepsPushed : num('OverallChainStepsPushed'),
+            EditHintTooltip         : mainConfig.EditHintTooltip
         };
     }
     // ------------------------------------------------------------
@@ -149,40 +249,122 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
     // SUB FUNCTION | Derive Witness Point Pairs for the Plan View
     // ------------------------------------------------------------
-    function VghLantern__Env2d__DimensionRenderer__PlanRuns(skeleton) {
+    // chainBase shifts every run one step outward when the glaze bar setting out
+    // tier is drawn beneath them. Passed in rather than baked into the numbers
+    // below so that turning the tier off in config closes the gap it left rather
+    // than leaving the overall chain floating one step out from nothing.
+    function VghLantern__Env2d__DimensionRenderer__PlanRuns(skeleton, chainBase, config) {
         var meta        =  skeleton.Meta;
         var base        =  skeleton.Base || {};
         var halfWidth   =  meta.WidthMm / 2;
         var halfDepth   =  meta.DepthMm / 2;
         var Pt          =  VghLantern__Env2d__DimensionRenderer__Pt;
+        var chainFrom   =  Number(chainBase) || 0;
 
         // No eavesProjection run any more: the roof springs from the eaves
         // datum ring INSIDE the envelope (head beam inner face), so there is no
         // oversailing projection left to dimension in plan.
+        //
+        // The overall size is the EXTERNAL upstand, and it is named as such,
+        // because the plan now states the opening through the upstand beside it
+        // and the two must never be read for one another. One is what the lantern
+        // measures; the other is the hole the builder cuts.
+        var externalSuffix  =  config ? config.ExternalUpstandTextSuffix : '';
+        var internalSuffix  =  config ? config.InternalUpstandTextSuffix : '';
+
         var runs  =  {
             'width' : {
-                Start : Pt(-halfWidth, -halfDepth, 0),
-                End   : Pt( halfWidth, -halfDepth, 0),
-                Side  : SIDE_BELOW,
-                Chain : 0
+                Start      : Pt(-halfWidth, -halfDepth, 0),
+                End        : Pt( halfWidth, -halfDepth, 0),
+                Side       : SIDE_BELOW,
+                Chain      : chainFrom,
+                TextSuffix : externalSuffix
             },
             'depth' : {
-                Start : Pt(halfWidth, -halfDepth, 0),
-                End   : Pt(halfWidth,  halfDepth, 0),
-                Side  : SIDE_RIGHT,
-                Chain : 0
+                Start      : Pt(halfWidth, -halfDepth, 0),
+                End        : Pt(halfWidth,  halfDepth, 0),
+                Side       : SIDE_RIGHT,
+                Chain      : chainFrom,
+                TextSuffix : externalSuffix
             }
         };
 
-        // Builders Upstand thickness is dimensioned off the near edge, so the reveal offset
-        // reads against the same line the width is measured from.
+        // The opening through the upstand, inboard of the overall size on both
+        // axes. Read only: it is the overall size less two upstand thicknesses,
+        // so it is a consequence of two values that are each already editable
+        // rather than a third input that could contradict them.
+        //
+        // SECOND RANK, AND ON THE OPPOSITE EDGE TO THE SIZE IT DERIVES FROM.
+        //
+        // Rank first: between the two the EXTERNAL size governs. It is what the
+        // lantern is ordered as and what every other drawing on the job repeats;
+        // the opening is derived from it. Two dimensions of equal weight sitting
+        // one above the other invite the reader to work out which of them leads.
+        //
+        // Side second: stacked under the external size they were two long numbers
+        // one above the other, competing for the same strip of paper as a setting
+        // out chain already in it. Sent to the far edge each has a clear side of
+        // the drawing to itself, and the pair reads ACROSS the lantern rather than
+        // down one crowded margin. Points are built on the edge the dimension
+        // sits against, so no witness line crosses the lantern to reach its own
+        // dimension line.
+        if (base.HasReveal && base.RevealWidthMm > 0 && base.RevealDepthMm > 0) {
+            runs['internalUpstand']  =  [
+                {
+                    Start      : Pt(-base.InnerHalfWidthMm, halfDepth, 0),
+                    End        : Pt( base.InnerHalfWidthMm, halfDepth, 0),
+                    Side       : SIDE_ABOVE,
+                    Chain      : chainFrom + 1,
+                    Style      : STYLE_SECONDARY,
+                    ValueMm    : Math.round(base.RevealWidthMm),
+                    TextSuffix : internalSuffix,
+                    Label      : 'Internal Upstand Width'
+                },
+                {
+                    Start      : Pt(-halfWidth, -base.InnerHalfDepthMm, 0),
+                    End        : Pt(-halfWidth,  base.InnerHalfDepthMm, 0),
+                    Side       : SIDE_LEFT,
+                    Chain      : chainFrom,
+                    Style      : STYLE_SECONDARY,
+                    ValueMm    : Math.round(base.RevealDepthMm),
+                    TextSuffix : internalSuffix,
+                    Label      : 'Internal Upstand Depth'
+                }
+            ];
+        }
+
+        // Builders Upstand thickness, at BOTH ends of the FAR edge and on the SAME
+        // line as the internal upstand it brackets. That makes one chained
+        // dimension across that edge - 110, the opening, 110 - and the external
+        // size on the opposite edge is what it sums to. A chain is how a
+        // draughtsman states a set of parts that make a whole, and it is the sum
+        // the reader was going to do anyway.
+        //
+        // Second rank like the opening it brackets, so the line they share is one
+        // line throughout rather than changing weight and colour partway along
+        // itself. It travels with that chain, which is why it left the near edge
+        // when the opening did.
+        //
+        // The upstand is the same thickness all the way round, so one corner
+        // stating it and the other left blank would read as though the two might
+        // differ.
         if (base.HasReveal) {
-            runs['upstandThickness']  =  {
-                Start : Pt(-halfWidth,                       -halfDepth, 0),
-                End   : Pt(-base.InnerHalfWidthMm,           -halfDepth, 0),
-                Side  : SIDE_BELOW,
-                Chain : 1
-            };
+            runs['upstandThickness']  =  [
+                {
+                    Start : Pt(-halfWidth,             halfDepth, 0),
+                    End   : Pt(-base.InnerHalfWidthMm, halfDepth, 0),
+                    Side  : SIDE_ABOVE,
+                    Chain : chainFrom + 1,
+                    Style : STYLE_SECONDARY
+                },
+                {
+                    Start : Pt(base.InnerHalfWidthMm,  halfDepth, 0),
+                    End   : Pt(halfWidth,              halfDepth, 0),
+                    Side  : SIDE_ABOVE,
+                    Chain : chainFrom + 1,
+                    Style : STYLE_SECONDARY
+                }
+            ];
         }
 
         // The ridge only exists as a run when it has length - a pyramid has none.
@@ -190,12 +372,68 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
             .VghLantern__SkeletonSolver__MembersByRole(skeleton, 'ridge');
 
         if (ridgeMembers.length) {
+            var ridgeStart  =  ridgeMembers[0].Start;
+            var ridgeEnd    =  ridgeMembers[0].End;
+
+            // SECOND RANK, and one step nearer the lantern than the rest of the
+            // ladder. The ridge and the two hip end runs are a BREAKDOWN of the
+            // width - the same relationship to it that the opening has - so they
+            // belong at the opening's rank rather than shouting at the volume of
+            // the overall size they add up to.
+            //
+            // A value always sits on the far side of its own dimension line, which
+            // on this edge means it grows towards whatever is outboard of it.
+            // Dropping this chain a step gives its text somewhere to go that is
+            // not the internal upstand chain above it.
+            var setOutChain  =  Math.max(0, chainFrom - 1);
+
             runs['ridgeLength']  =  {
-                Start : ridgeMembers[0].Start,
-                End   : ridgeMembers[0].End,
+                Start : ridgeStart,
+                End   : ridgeEnd,
                 Side  : SIDE_ABOVE,
-                Chain : 0
+                Chain : setOutChain,
+                Style : STYLE_SECONDARY
             };
+
+            // The two hip end runs that close the top chain: eaves corner to ridge
+            // end, either side of the ridge length. Without them the top chain
+            // states the middle of the lantern and leaves the reader to subtract
+            // it from the width themselves, which is the arithmetic a setting out
+            // drawing exists to have already done.
+            //
+            // The inner witness point IS the ridge end point, so each run shares a
+            // witness line with the ridge dimension rather than drawing a second
+            // one beside it. The outer one is taken off the FAR eaves corner, the
+            // one this edge's dimension line actually sits against - off the near
+            // corner it drew a witness the full height of the lantern to reach a
+            // line on the other side of it. The value is carried on the run: the hip end run is a
+            // consequence of the width, the depth and the pitch rather than an
+            // input, so it has no constraint descriptor and is read only.
+            var ridgeHalfMm  =  Math.max(Math.abs(ridgeStart.x), Math.abs(ridgeEnd.x));
+            var hipRunMm     =  Math.round(halfWidth - ridgeHalfMm);
+
+            if (hipRunMm > 0) {
+                runs['hipEndRun']  =  [
+                    {
+                        Start   : Pt(-halfWidth, halfDepth, 0),
+                        End     : { x: -ridgeHalfMm, y: ridgeStart.y, z: ridgeStart.z },
+                        Side    : SIDE_ABOVE,
+                        Chain   : setOutChain,
+                        Style   : STYLE_SECONDARY,
+                        ValueMm : hipRunMm,
+                        Label   : 'Hip End Run'
+                    },
+                    {
+                        Start   : { x: ridgeHalfMm, y: ridgeEnd.y, z: ridgeEnd.z },
+                        End     : Pt(halfWidth, halfDepth, 0),
+                        Side    : SIDE_ABOVE,
+                        Chain   : setOutChain,
+                        Style   : STYLE_SECONDARY,
+                        ValueMm : hipRunMm,
+                        Label   : 'Hip End Run'
+                    }
+                ];
+            }
         }
 
         return runs;
@@ -207,12 +445,19 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     // ------------------------------------------------------------
     // isFront selects which world axis lies across the page: front elevation
     // reads along X (width), side elevation reads along Y (depth).
-    function VghLantern__Env2d__DimensionRenderer__ElevationRuns(skeleton, isFront) {
+    function VghLantern__Env2d__DimensionRenderer__ElevationRuns(skeleton, isFront, config) {
         var meta        =  skeleton.Meta;
+        var base        =  skeleton.Base || {};
         var Pt          =  VghLantern__Env2d__DimensionRenderer__Pt;
 
         var acrossHalf  =  isFront ? (meta.WidthMm / 2)      : (meta.DepthMm / 2);
         var depthKey    =  isFront ? 'width'                 : 'depth';
+
+        var innerHalf   =  isFront ? base.InnerHalfWidthMm   : base.InnerHalfDepthMm;
+        var openingMm   =  isFront ? base.RevealWidthMm      : base.RevealDepthMm;
+
+        var externalSuffix  =  config ? config.ExternalUpstandTextSuffix : '';
+        var internalSuffix  =  config ? config.InternalUpstandTextSuffix : '';
 
         // Build points on the near face so the projection is unambiguous.
         function acrossPt(acrossValue, zValue) {
@@ -223,12 +468,40 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
         var runs  =  {};
 
+        // The same pair the plan states, and named the same way, so the two views
+        // cannot be read as describing different things. They stack here rather
+        // than crossing to opposite edges as they do in plan: the opposite edge of
+        // an elevation is the sky above the ridge, and there is nothing under this
+        // one to crowd them.
+        //
+        // TWO chain steps between them, not one. A chain step is sized for a
+        // dimension line and its ticks; the value that hangs off each line takes
+        // most of the step on its own, so two stacked dimensions one step apart
+        // end up with their ticks and the next value's glyphs almost touching.
+        // Skipping a step is what gives the pair room to read as a pair.
+        var hasOpening    =  base.HasReveal && innerHalf > 0 && openingMm > 0;
+        var externalChain =  hasOpening ? 2 : 0;
+
         runs[depthKey]  =  {
-            Start : acrossPt(-acrossHalf, 0),
-            End   : acrossPt( acrossHalf, 0),
-            Side  : SIDE_BELOW,
-            Chain : 0
+            Start      : acrossPt(-acrossHalf, 0),
+            End        : acrossPt( acrossHalf, 0),
+            Side       : SIDE_BELOW,
+            Chain      : externalChain,
+            TextSuffix : externalSuffix
         };
+
+        if (hasOpening) {
+            runs['internalUpstand']  =  {
+                Start      : acrossPt(-innerHalf, 0),
+                End        : acrossPt( innerHalf, 0),
+                Side       : SIDE_BELOW,
+                Chain      : 0,
+                Style      : STYLE_SECONDARY,
+                ValueMm    : Math.round(openingMm),
+                TextSuffix : internalSuffix,
+                Label      : 'Internal Upstand'
+            };
+        }
 
         // The base reads bottom-up on the same side: builders upstand, then the
         // overall height chained outside it. The retired frameHeight and
@@ -257,10 +530,10 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
     // SUB FUNCTION | Build the Run Table for the Active View
     // ------------------------------------------------------------
-    function VghLantern__Env2d__DimensionRenderer__BuildRuns(skeleton, viewKey) {
-        if (viewKey === 'plan')           return VghLantern__Env2d__DimensionRenderer__PlanRuns(skeleton);
-        if (viewKey === 'frontElevation') return VghLantern__Env2d__DimensionRenderer__ElevationRuns(skeleton, true);
-        if (viewKey === 'sideElevation')  return VghLantern__Env2d__DimensionRenderer__ElevationRuns(skeleton, false);
+    function VghLantern__Env2d__DimensionRenderer__BuildRuns(skeleton, viewKey, chainBase, config) {
+        if (viewKey === 'plan')           return VghLantern__Env2d__DimensionRenderer__PlanRuns(skeleton, chainBase, config);
+        if (viewKey === 'frontElevation') return VghLantern__Env2d__DimensionRenderer__ElevationRuns(skeleton, true,  config);
+        if (viewKey === 'sideElevation')  return VghLantern__Env2d__DimensionRenderer__ElevationRuns(skeleton, false, config);
         return {};
     }
     // ------------------------------------------------------------
@@ -377,11 +650,33 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Resolve Which Rank a Run Is Drawn At
+    // ------------------------------------------------------------
+    // A run says which of the three ranks it belongs to and this picks up that
+    // rank's sizes and its group class. Chain POSITION always comes from the main
+    // config, so every rank stacks in the same ladder rather than each measuring
+    // itself from a different origin.
+    function VghLantern__Env2d__DimensionRenderer__RankFor(run, ranks) {
+        if (run.Style === STYLE_SECONDARY && ranks.Secondary) {
+            return { Config : ranks.Secondary, GroupClass : ' ' + CSS_DIM_GROUP_SECOND };
+        }
+        if (run.Style === STYLE_SETOUT && ranks.SetOut) {
+            return { Config : ranks.SetOut, GroupClass : ' ' + CSS_DIM_GROUP_SETOUT };
+        }
+        return { Config : ranks.Main, GroupClass : '' };
+    }
+    // ------------------------------------------------------------
+
+
     // SUB FUNCTION | Draw One Complete Linear Dimension
     // ------------------------------------------------------------
-    function VghLantern__Env2d__DimensionRenderer__DrawLinear(targetLayer, run, dimensionKey, label, numericValue, unitLabel, isEditable, extents, viewKey, config) {
+    function VghLantern__Env2d__DimensionRenderer__DrawLinear(targetLayer, run, dimensionKey, label, numericValue, unitLabel, isEditable, extents, viewKey, ranks) {
         var SvgHelpers    =  window.VghLantern__Env2d__SvgHelpers;
         var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
+
+        var config  =  ranks.Main;
+        var rank    =  VghLantern__Env2d__DimensionRenderer__RankFor(run, ranks);
+        var style   =  rank.Config;
 
         var p1  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ProjectPoint(run.Start, viewKey);
         var p2  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ProjectPoint(run.End,   viewKey);
@@ -396,23 +691,25 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         var runLength  =  isHorizontalRun ? Math.abs(d2.x - d1.x) : Math.abs(d2.y - d1.y);
         if (runLength < 1) return;
 
-        var group  =  SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateGroup(CSS_DIM_GROUP, {
-            'data-vgh-dimension-group' : dimensionKey
-        });
+        var group  =  SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateGroup(
+            CSS_DIM_GROUP + rank.GroupClass, {
+                'data-vgh-dimension-group' : dimensionKey
+            });
 
-        VghLantern__Env2d__DimensionRenderer__DrawWitness(group, p1, base, isHorizontalRun, config);
-        VghLantern__Env2d__DimensionRenderer__DrawWitness(group, p2, base, isHorizontalRun, config);
+        VghLantern__Env2d__DimensionRenderer__DrawWitness(group, p1, base, isHorizontalRun, style);
+        VghLantern__Env2d__DimensionRenderer__DrawWitness(group, p2, base, isHorizontalRun, style);
 
         group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(d1, d2, CSS_DIM_LINE));
 
-        VghLantern__Env2d__DimensionRenderer__DrawTerminator(group, d1, isHorizontalRun, config);
-        VghLantern__Env2d__DimensionRenderer__DrawTerminator(group, d2, isHorizontalRun, config);
+        VghLantern__Env2d__DimensionRenderer__DrawTerminator(group, d1, isHorizontalRun, style);
+        VghLantern__Env2d__DimensionRenderer__DrawTerminator(group, d2, isHorizontalRun, style);
 
         var midPt  =  { x: (d1.x + d2.x) / 2, y: (d1.y + d2.y) / 2 };
         var display  =  VghLantern__Env2d__DimensionRenderer__FormatValue(numericValue, unitLabel);
+        if (run.TextSuffix) display  +=  run.TextSuffix;                       // <-- Naming stays out of the numeric value, so a named dimension is still typed-editable from the number alone
 
         VghLantern__Env2d__DimensionRenderer__DrawValueText(
-            group, midPt, isHorizontalRun, display, numericValue, unitLabel, dimensionKey, isEditable, config);
+            group, midPt, isHorizontalRun, display, numericValue, unitLabel, dimensionKey, isEditable, style);
 
         group.setAttribute('data-vgh-dimension-label', label || dimensionKey);
         targetLayer.appendChild(group);
@@ -429,6 +726,216 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
         if (UnitConverter) return UnitConverter.VghLantern__UnitConverter__FormatMmLabel(numericValue);
         return Math.round(numericValue) + ' mm';
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Glaze Bar Setting Out Chain
+// -----------------------------------------------------------------------------
+// The second dimension tier. A chain rather than a run table, because its segment
+// count is whatever the set-out resolved to. Every number in it comes off the
+// station lists GlazeBarLayout published, so nothing here re-derives a bar
+// position and nothing here can disagree with the bars that are drawn.
+// -----------------------------------------------------------------------------
+
+    // SUB FUNCTION | Build the Two Setting Out Chains for the Plan View
+    // ------------------------------------------------------------
+    // Returns one chain per plan axis, each carrying the ordered offsets along
+    // that axis closed out to the eaves datum corner at both ends. Which station
+    // list lands on which axis follows LongAxis, so a lantern deeper than it is
+    // wide annotates correctly without a second code path.
+    //
+    // Sides match the overall chain the tier sits under: the horizontal axis is
+    // dimensioned below the lantern, the vertical axis to its right.
+    function VghLantern__Env2d__DimensionRenderer__SetOutChains(skeleton, barSet) {
+        var setOut  =  barSet && barSet.SetOut;
+        if (!setOut) return [];
+
+        var meta       =  skeleton.Meta;
+        var halfWidth  =  meta.WidthMm / 2;
+        var halfDepth  =  meta.DepthMm / 2;
+        var longIsX    =  setOut.LongAxis !== 'y';
+
+        var xStations   =  longIsX ? setOut.LongAxisStationsMm  : setOut.ShortAxisStationsMm;
+        var yStations   =  longIsX ? setOut.ShortAxisStationsMm : setOut.LongAxisStationsMm;
+        var xHalfSpan   =  longIsX ? setOut.LongAxisHalfSpanMm  : setOut.ShortAxisHalfSpanMm;
+        var yHalfSpan   =  longIsX ? setOut.ShortAxisHalfSpanMm : setOut.LongAxisHalfSpanMm;
+
+        // The chain runs corner to corner along the EAVES DATUM, which is where
+        // the bars actually spring from, while the witness lines start at the
+        // outer envelope edge so they clear the lantern outline the way the
+        // overall dimensions do.
+        return [
+            {
+                Key       : 'glazeBarSpacingX',
+                Values    : VghLantern__Env2d__DimensionRenderer__CloseChain(xStations, xHalfSpan),
+                Side      : SIDE_BELOW,
+                FixedFrom : -halfDepth,
+                IsAlongX  : true
+            },
+            {
+                Key       : 'glazeBarSpacingY',
+                Values    : VghLantern__Env2d__DimensionRenderer__CloseChain(yStations, yHalfSpan),
+                Side      : SIDE_RIGHT,
+                FixedFrom : halfWidth,
+                IsAlongX  : false
+            }
+        ];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Close a Station List Out to Both Eaves Corners
+    // ------------------------------------------------------------
+    // A station list describes bars only. Adding the two eaves datum corners turns
+    // it into a chain that accounts for the whole span, which is what makes the
+    // flexible end pane visible instead of implied.
+    function VghLantern__Env2d__DimensionRenderer__CloseChain(stations, halfSpanMm) {
+        if (!Array.isArray(stations) || stations.length === 0) return [];
+        if (!(halfSpanMm > 0)) return [];
+
+        var values  =  [-halfSpanMm];
+        var i;
+
+        for (i = 0; i < stations.length; i++) {
+            if (Math.abs(stations[i]) >= halfSpanMm) continue;                 // <-- A station on the corner would make a zero length segment
+            values.push(stations[i]);
+        }
+
+        values.push(halfSpanMm);
+        return values;
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Draw One Complete Setting Out Chain
+    // ------------------------------------------------------------
+    // One witness line per station, ONE dimension line across the whole chain, a
+    // terminator at every station and a value between each adjacent pair. That is
+    // a chained dimension as a draughtsman draws it, rather than a stack of
+    // individual dimensions that would repeat every witness line.
+    function VghLantern__Env2d__DimensionRenderer__DrawSetOutChain(targetLayer, chain, spacingMm, extents, viewKey, config) {
+        var SvgHelpers    =  window.VghLantern__Env2d__SvgHelpers;
+        var CoordHelpers  =  window.VghLantern__Env2d__CoordHelpers;
+        var Pt            =  VghLantern__Env2d__DimensionRenderer__Pt;
+
+        if (chain.Values.length < 2) return;
+
+        var isHorizontalRun  =  (chain.Side === SIDE_BELOW || chain.Side === SIDE_ABOVE);
+        var base             =  VghLantern__Env2d__DimensionRenderer__BaseForSide(extents, chain.Side, 0, config);
+
+        var group  =  SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateGroup(
+            CSS_DIM_GROUP + ' ' + CSS_DIM_GROUP_SETOUT, {
+                'data-vgh-dimension-group' : chain.Key
+            });
+
+        // Project every station once. The plan projection is rigid, so a segment
+        // measures the same on the page as it does in the model, but the values
+        // are read from the model list rather than off the projected points so a
+        // label can never disagree with the set-out by a rounding step.
+        var projected  =  [];
+        var i, modelPt, linePt;
+
+        for (i = 0; i < chain.Values.length; i++) {
+            modelPt  =  chain.IsAlongX
+                ? Pt(chain.Values[i], chain.FixedFrom, 0)
+                : Pt(chain.FixedFrom, chain.Values[i], 0);
+
+            projected.push(CoordHelpers.VghLantern__Env2d__CoordHelpers__ProjectPoint(modelPt, viewKey));
+        }
+
+        for (i = 0; i < projected.length; i++) {
+            VghLantern__Env2d__DimensionRenderer__DrawWitness(group, projected[i], base, isHorizontalRun, config);
+        }
+
+        var linePts  =  [];
+        for (i = 0; i < projected.length; i++) {
+            linePt  =  isHorizontalRun ? { x: projected[i].x, y: base } : { x: base, y: projected[i].y };
+            linePts.push(linePt);
+        }
+
+        group.appendChild(SvgHelpers.VghLantern__Env2d__SvgHelpers__CreateLine(
+            linePts[0], linePts[linePts.length - 1], CSS_DIM_LINE));
+
+        for (i = 0; i < linePts.length; i++) {
+            VghLantern__Env2d__DimensionRenderer__DrawTerminator(group, linePts[i], isHorizontalRun, config);
+        }
+
+        VghLantern__Env2d__DimensionRenderer__DrawSetOutValues(group, chain, linePts, spacingMm, isHorizontalRun, config);
+
+        group.setAttribute('data-vgh-dimension-label', 'Glaze bar setting out');
+        targetLayer.appendChild(group);
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Label Every Segment of a Setting Out Chain
+    // ------------------------------------------------------------
+    // A segment that measures the resolved set-out pitch is tagged with the
+    // paneWidth dimension key, which makes it typed-editable through the existing
+    // constraint. Anything else - the two flexible end panes, and the hip end legs
+    // on a plan whose hips are not at 45 degrees - is drawn read only, because it
+    // is a consequence of the set-out rather than an input to it.
+    function VghLantern__Env2d__DimensionRenderer__DrawSetOutValues(group, chain, linePts, spacingMm, isHorizontalRun, config) {
+        var lastIndex  =  chain.Values.length - 2;                            // <-- Index of the final segment
+        var i, segmentMm, isEndPane, isPitch, midPt, display;
+
+        for (i = 0; i < chain.Values.length - 1; i++) {
+            segmentMm  =  Math.abs(chain.Values[i + 1] - chain.Values[i]);
+            if (segmentMm < config.MinSegmentToLabelMm) continue;
+
+            isEndPane  =  (i === 0 || i === lastIndex);
+            if (isEndPane && !config.ShowEndPaneDimensions) continue;
+
+            isPitch  =  !isEndPane && spacingMm > 0 && Math.abs(segmentMm - spacingMm) < 1;
+
+            midPt  =  {
+                x : (linePts[i].x + linePts[i + 1].x) / 2,
+                y : (linePts[i].y + linePts[i + 1].y) / 2
+            };
+
+            display  =  VghLantern__Env2d__DimensionRenderer__FormatValue(segmentMm, 'mm');
+
+            // Read-only segments still carry a descriptive key so the DOM says
+            // what each number is. The editor binds on the editable flag, not on
+            // the presence of a key, so naming them costs nothing.
+            VghLantern__Env2d__DimensionRenderer__DrawValueText(
+                group, midPt, isHorizontalRun, display,
+                Math.round(segmentMm), 'mm',
+                isPitch ? 'paneWidth' : (isEndPane ? 'glazeBarEndPane' : 'glazeBarSpacing'),
+                isPitch, config);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw the Whole Setting Out Tier for a View
+    // ------------------------------------------------------------
+    // Plan only. Returns how many chain steps the overall dimensions must move
+    // outward to clear what was drawn, which is zero when nothing was, so a tier
+    // switched off in config leaves no gap behind it.
+    function VghLantern__Env2d__DimensionRenderer__DrawSetOutTier(targetLayer, skeleton, barSet, viewKey, extents, mainConfig) {
+        if (viewKey !== 'plan') return 0;
+        if (!barSet || !barSet.SetOut) return 0;
+
+        var config  =  VghLantern__Env2d__DimensionRenderer__ReadSetOutConfig(mainConfig);
+        if (!config.Enabled) return 0;
+
+        var chains  =  VghLantern__Env2d__DimensionRenderer__SetOutChains(skeleton, barSet);
+        var drewAny =  false;
+        var i;
+
+        for (i = 0; i < chains.length; i++) {
+            if (chains[i].Values.length < 2) continue;
+            VghLantern__Env2d__DimensionRenderer__DrawSetOutChain(
+                targetLayer, chains[i], barSet.SetOut.SpacingMm, extents, viewKey, config);
+            drewAny  =  true;
+        }
+
+        return drewAny ? config.OverallChainStepsPushed : 0;
     }
     // ------------------------------------------------------------
 
@@ -664,7 +1171,7 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
 
     // FUNCTION | Render the Dimension Layer for a Viewport
     // ------------------------------------------------------------
-    function VghLantern__Env2d__DimensionRenderer__Render(instance, skeleton, lantern) {
+    function VghLantern__Env2d__DimensionRenderer__Render(instance, skeleton, lantern, barSet) {
         if (!instance || !skeleton || !skeleton.Meta) return;
 
         var config  =  VghLantern__Env2d__DimensionRenderer__ReadConfig();
@@ -680,38 +1187,71 @@ const VghLantern__Env2d__DimensionRenderer = (function() {
         var extents  =  CoordHelpers.VghLantern__Env2d__CoordHelpers__ExtentsOfSkeleton(skeleton, viewKey);
         if (!extents) return;
 
-        var runs  =  VghLantern__Env2d__DimensionRenderer__BuildRuns(skeleton, viewKey);
+        // The setting out tier is drawn FIRST, and whether it drew decides where
+        // the overall chains start. Asking it afterwards would mean either laying
+        // the overall chains out twice or leaving a permanent gap for a tier that
+        // may be switched off in config.
+        var chainBase  =  VghLantern__Env2d__DimensionRenderer__DrawSetOutTier(
+            targetLayer, skeleton, barSet, viewKey, extents, config);
+
+        var runs  =  VghLantern__Env2d__DimensionRenderer__BuildRuns(skeleton, viewKey, chainBase, config);
         var keys  =  VghLantern__Env2d__DimensionRenderer__KeysForView(viewKey);
 
-        var i, dimensionKey, descriptor, numericValue, run;
+        // All three ranks are built whether or not the setting out tier drew, because
+        // a run borrows a rank's look without belonging to that tier.
+        var ranks  =  {
+            Main      : config,
+            Secondary : VghLantern__Env2d__DimensionRenderer__ReadSecondaryConfig(config),
+            SetOut    : VghLantern__Env2d__DimensionRenderer__ReadSetOutConfig(config)
+        };
+
+        var i, j, dimensionKey, descriptor, resolvedValue, keyRuns, run, numericValue;
 
         for (i = 0; i < keys.length; i++) {
             dimensionKey  =  keys[i];
             descriptor    =  Resolver ? Resolver.VghLantern__ConstraintResolver__GetDescriptor(dimensionKey) : null;
 
-            numericValue  =  (Resolver && lantern)
+            resolvedValue  =  (Resolver && lantern)
                 ? Resolver.VghLantern__ConstraintResolver__ReadCurrentValue(dimensionKey, lantern, skeleton)
                 : null;
 
-            if (numericValue === null || isNaN(numericValue)) continue;
-
             if (dimensionKey === 'pitch') {
+                if (resolvedValue === null || isNaN(resolvedValue)) continue;
                 VghLantern__Env2d__DimensionRenderer__DrawAngular(
-                    targetLayer, skeleton, viewKey, numericValue, !!descriptor, config);
+                    targetLayer, skeleton, viewKey, resolvedValue, !!descriptor, config);
                 continue;
             }
 
-            run  =  runs[dimensionKey];
-            if (!run) continue;
+            // A key may carry more than one run - the upstand thickness states the
+            // same number at both ends of the near edge, and the hip end run states
+            // it either side of the ridge. One key, several places it is true.
+            keyRuns  =  runs[dimensionKey];
+            if (!keyRuns) continue;
+            if (!Array.isArray(keyRuns)) keyRuns  =  [keyRuns];
 
-            VghLantern__Env2d__DimensionRenderer__DrawLinear(
-                targetLayer, run, dimensionKey,
-                descriptor ? descriptor.Label : dimensionKey,
-                numericValue,
-                descriptor ? descriptor.Unit : 'mm',
-                !!descriptor,
-                extents, viewKey, config
-            );
+            for (j = 0; j < keyRuns.length; j++) {
+                run  =  keyRuns[j];
+
+                // The constraint resolver is asked first, because a dimension the
+                // user can type into must read back exactly what typing would set.
+                // A run may instead carry its own value, which is how a derived
+                // annotation with no constraint behind it still draws rather than
+                // silently disappearing.
+                numericValue  =  (resolvedValue === null || isNaN(resolvedValue))
+                    ? (typeof run.ValueMm === 'number' ? run.ValueMm : null)
+                    : resolvedValue;
+
+                if (numericValue === null || isNaN(numericValue)) continue;
+
+                VghLantern__Env2d__DimensionRenderer__DrawLinear(
+                    targetLayer, run, dimensionKey,
+                    run.Label || (descriptor ? descriptor.Label : dimensionKey),
+                    numericValue,
+                    descriptor ? descriptor.Unit : 'mm',
+                    !!descriptor,
+                    extents, viewKey, ranks
+                );
+            }
         }
     }
     // ------------------------------------------------------------

@@ -342,6 +342,29 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Apply the Glaze Bar Set-Out Mode Field
+    // ------------------------------------------------------------
+    // A two-value enum, canonicalised by the geometry module that implements it:
+    // anything unrecognised comes back as the default. Restating the allowed keys
+    // here would be a second copy of them that could quietly fall out of step with
+    // the module actually laying the bars out.
+    //
+    // If that module has not loaded yet, the field is left exactly as found rather
+    // than being defaulted on a guess - a load-order accident must not be able to
+    // silently rewrite a stored set-out.
+    function VghLantern__SchemaValidator__ApplySetOutModeField(configObj, key) {
+        var Layout  =  window.VghLantern__Geometry__GlazeBarLayout;
+        if (!Layout) return false;
+
+        var canonical  =  Layout.VghLantern__GlazeBarLayout__ResolveModeKey(configObj[key]);
+        if (configObj[key] === canonical) return false;
+
+        configObj[key]  =  canonical;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Apply a Boolean Field with Mutation Tracking
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__ApplyBoolField(configObj, key, fallbackValue) {
@@ -505,6 +528,13 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
                 didMutate  =  true;
             }
         }
+
+        // The set-out mode. Every project saved before modes existed was laid out
+        // by a single method, and Mode01 is the mode that method was trying to be,
+        // so seeding the default is the migration - there is nothing else to carry
+        // across. The value is checked against the geometry module's own keys
+        // rather than a list restated here, so the two cannot drift apart.
+        if (VghLantern__SchemaValidator__ApplySetOutModeField(barsCfg, 'Lantern__GlazingBars__Config__SetOutMode')) didMutate  =  true;
 
         if (VghLantern__SchemaValidator__ApplyIntField(barsCfg, 'Lantern__GlazingBars__Config__TargetSpacingMm', SCHEMA__DEFAULT_BAR_SPACING_MM, 100, 3000)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__TrimOptionId', SCHEMA__DEFAULT_TRIM_OPTION_ID)) didMutate  =  true;

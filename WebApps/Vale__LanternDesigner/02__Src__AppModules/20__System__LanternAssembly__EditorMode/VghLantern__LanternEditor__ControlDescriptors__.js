@@ -33,7 +33,7 @@
      {
        Key           : 'widthMm',                       unique within its section
        Type          : 'slider' | 'toggle' | 'select' | 'expandable' | 'heading'
-                       | 'text' | 'textarea' | 'button',
+                       | 'divider' | 'text' | 'textarea' | 'button',
        Label         : 'Width',
        Block         : 'Lantern__Dimensions__Config',   lantern block name
        Field         : 'Lantern__Dimensions__Config__WidthMm',
@@ -42,6 +42,7 @@
        OptionsSource : 'roofForms' | 'profiles:ridge' | 'components:finial' | ...
        Options       : [ { Value, Label, Disabled } ]   literal alternative
        AllowEmpty    : true,                            select may resolve to ''
+       CardLayout    : 'diagram',                       cards / swatchCards only
        VisibleWhen   : function(lantern) -> boolean,
        Children      : [ descriptors ],                 expandable only
        Hint          : 'shown under the control',
@@ -59,6 +60,17 @@
    section into named subsections without introducing a nested accordion, which
    is what a section like Frame and Builders Upstand needs: two groups of controls that
    belong together and should both be visible at once.
+
+   A 'divider' descriptor carries neither label nor value - it draws a faint rule
+   and nothing else. It is the quieter half of the same job: where a heading names
+   a new subsection, a divider only says that one group of controls has ended and
+   another has begun. Reach for it where a name would be stating the obvious, as
+   in Glaze Bars, where the set-out group and the bar section group need parting
+   but neither needs announcing.
+
+   CardLayout switches a card strip from the default square product tiles to a
+   pair of wide landscape cards, for a choice whose picture is an explanatory
+   diagram rather than one component outline. Only 'diagram' is defined.
 
    A 'button' descriptor has no Block/Field - it has no stored value, it only
    fires Action(lantern) when clicked. Confirm, when present, routes the click
@@ -85,6 +97,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
     const TYPE_SELECT      =  'select';                                      // <-- Single choice from a resolved option list
     const TYPE_EXPANDABLE   =  'expandable';                                 // <-- Nested group revealed by its own toggle
     const TYPE_HEADING      =  'heading';                                    // <-- Subsection label, no value and no input
+    const TYPE_DIVIDER      =  'divider';                                    // <-- Faint rule between control groups, no label and no value
     const TYPE_TEXT         =  'text';                                       // <-- Single-line free text entry
     const TYPE_TEXTAREA     =  'textarea';                                   // <-- Multi-line free text entry
     const TYPE_BUTTON       =  'button';                                     // <-- Fires an Action, holds no value
@@ -327,6 +340,16 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             return GlazeBars.VghLantern__GlazeBarSystemLoader__ListTrimOptions();
         }
 
+        // The two glaze bar set-out modes. Sourced from the app data module that
+        // draws them rather than from config, because the choice is not a list of
+        // values at all - it is two plan diagrams, and the keys behind them belong
+        // to the geometry module that implements them.
+        if (sourceName === 'glazeBarSetOutModes') {
+            var SetOutModes  =  window.VghLantern__AppData__GlazeBarSetOutModes;
+            if (!SetOutModes) return [];
+            return SetOutModes.VghLantern__GlazeBarSetOutModes__ListModeOptions();
+        }
+
         // Interior cornice options from the hand-authored interior joinery system.
         if (sourceName === 'interiorCornices') {
             var InteriorJoinery  =  window.VghLantern__AppData__InteriorJoinerySystemLoader;
@@ -411,6 +434,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
             OptionsSource : descriptor.OptionsSource || '',
             Options       : Array.isArray(descriptor.Options) ? descriptor.Options : null,
             AllowEmpty    : descriptor.AllowEmpty !== false,
+            CardLayout    : descriptor.CardLayout || '',
             VisibleWhen   : (typeof descriptor.VisibleWhen === 'function') ? descriptor.VisibleWhen : null,
             Multiline     : descriptor.Type === TYPE_TEXTAREA,
             MaxLength     : (typeof descriptor.MaxLength === 'number') ? descriptor.MaxLength : 0,
@@ -628,6 +652,7 @@ const VghLantern__LanternEditor__ControlDescriptors = (function() {
         VghLantern__ControlDescriptors__TypeSelect      : TYPE_SELECT,
         VghLantern__ControlDescriptors__TypeExpandable  : TYPE_EXPANDABLE,
         VghLantern__ControlDescriptors__TypeHeading     : TYPE_HEADING,
+        VghLantern__ControlDescriptors__TypeDivider     : TYPE_DIVIDER,
         VghLantern__ControlDescriptors__TypeText        : TYPE_TEXT,
         VghLantern__ControlDescriptors__TypeTextarea    : TYPE_TEXTAREA,
         VghLantern__ControlDescriptors__TypeButton      : TYPE_BUTTON,

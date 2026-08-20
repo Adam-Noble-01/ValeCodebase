@@ -132,6 +132,14 @@
         --VghLantern_SvgDimensionText       : #cc3333;                      /* <-- Red dimension text colour */
         --VghLantern_SvgDimensionHover      : #ff6b3d;                      /* <-- Editable dimension hover highlight */
 
+        /* 2D Environment - Second Rank Dimensions (internal upstand) */
+        --VghLantern_SvgSecondDimensionLine : #bf4a4a;                      /* <-- The same red hue at three quarters of the main saturation. One step down from the overall size and one step up from the glaze bar set-out, so the three ranks read as one family rather than three colours */
+        --VghLantern_SvgSecondDimensionText : #bf4a4a;                      /* <-- Second rank value text, paired with the line above */
+
+        /* 2D Environment - Glaze Bar Setting Out Dimensions (third rank) */
+        --VghLantern_SvgSetOutDimensionLine : #b36161;                      /* <-- Same red hue at roughly half the saturation. The glaze bar spacing chain is subordinate annotation: it must read as the same drawing convention as the overall dimensions and must not compete with them for the eye */
+        --VghLantern_SvgSetOutDimensionText : #b36161;                      /* <-- Glaze bar spacing value text, paired with the line above */
+
         /* Status Banner Fills */
         --VghLantern_WarningBackground      : #fdf3e3;                      /* <-- Warning banner fill, pairs with WarningOrange */
         --VghLantern_ErrorBackground        : #fbeaea;                      /* <-- Error banner fill, pairs with ErrorRed */

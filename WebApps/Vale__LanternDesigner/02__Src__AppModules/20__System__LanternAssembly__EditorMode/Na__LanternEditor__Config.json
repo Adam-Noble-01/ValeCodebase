@@ -46,7 +46,7 @@
             "UpstandHeightMm"          : { "Min": 100, "Max": 400,  "Step": 10 },
             "UpstandThicknessMm"       : { "Min": 90,  "Max": 150,  "Step": 5  },
             "FrameHeightMm"         : { "Min": 30,  "Max": 100,  "Step": 5  },
-            "TargetSpacingMm"       : { "Min": 200, "Max": 900,  "Step": 10 },
+            "TargetSpacingMm"       : { "Min": 300, "Max": 800,  "Step": 10 },
             "RidgeDepthAdjustmentMm": { "Min": -100, "Max": 100, "Step": 5  },
             "HipDepthAdjustmentMm"  : { "Min": -100, "Max": 100, "Step": 5  },
             "CorniceHeightOffsetMm" : { "Min": -100, "Max": 100, "Step": 5  },
@@ -84,8 +84,8 @@
             "DualViewShareMinPct"      : 25,
             "DualViewShareMaxPct"      : 75,
             "DualViewNote"             : "Dual view stacks a second 2D surface under the primary so plan and an elevation can be compared at once. Orientation vertical = stacked; horizontal = side by side.",
-            "ViewFitMarginFactor"      : 0.10,
-            "ViewFitMarginFactorNote"  : "Extra breathing room applied once the panes have been put on one drawing scale. The fit is measured from the skeleton members alone, so the dimension chains, the finials and the view title all sit outside it. Stepping the shared scale back by this fraction brings them inside the frame instead of against its edge.",
+            "ViewFitMarginFactor"      : 0.14,
+            "ViewFitMarginFactorNote"  : "Extra breathing room applied once the panes have been put on one drawing scale. The fit is measured from the skeleton members alone, so the dimension chains, the finials and the view title all sit outside it. Stepping the shared scale back by this fraction brings them inside the frame instead of against its edge. Raised from 0.10 when the glaze bar setting out tier was added below the lantern. The plan block is three tiers deep under the near edge: the setting out chain, then the internal upstand chained between its two upstand thicknesses, then the overall external upstand. Raise it again if a plan chain ever runs off the bottom of its pane.",
             "ProfileTraceNote"         : "Profile traces are off by default in the editor because they read as clutter at configurator zoom levels. The drawing editor turns them on for the issued sheet."
         },
 

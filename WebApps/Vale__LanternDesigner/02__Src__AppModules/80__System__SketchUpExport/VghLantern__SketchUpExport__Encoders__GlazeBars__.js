@@ -13,11 +13,11 @@
    - A Vale roof glaze bar is not one section. It is three parts sharing one
      datum, and the exported model says so:
 
-         Glaze Bar Core   45_1011   mill aluminium, the concealed structural
+         Glaze Bar Core   45_2011   mill aluminium, the concealed structural
                                     extrusion carrying the glass
-         Glaze Bar Cap    45_1021   powder coated aluminium, the decorative
+         Glaze Bar Cap    45_2021   powder coated aluminium, the decorative
                                     outer capping seen from the garden
-         Glaze Bar Trim   45_1031   Douglas fir, the internal moulding seen
+         Glaze Bar Trim   45_2031   Douglas fir, the internal moulding seen
                           /1032     from inside the room, in 45, 70 or 90 mm
                           /1033     depth
 
@@ -67,6 +67,10 @@ const VghLantern__SketchUpExport__Encoders__GlazeBars = (function() {
     const PART_TRIM  =  'trim';
 
     const PART_ORDER  =  [PART_CORE, PART_CAP, PART_TRIM];
+
+    const END_CAP_TAG_KEY       =  'glazeBarEndCap';
+    const END_CAP_NAME_KEY      =  'GlazeBarEndCap';
+    const END_CAP_MATERIAL_KEY  =  'frameFinish';                            // <-- Welded to the cap, so it takes the cap's own swatch
 
     const PART_PRESENTATION  =  {
         core : { TagKey: 'glazeBarCore', NameKey: 'GlazeBarCore', MaterialKey: 'millAluminium' },
@@ -310,6 +314,108 @@ const VghLantern__SketchUpExport__Encoders__GlazeBars = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | End Cap Encoder
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Encode the Cast Cap on the End of Every Bar
+    // ------------------------------------------------------------
+    // Answers { Definitions, Parts } rather than a bare list, because the cap is a
+    // placed MESH and travels with its own definition - the same shape the ridge
+    // block and the components encoder use, merged into the same table.
+    //
+    // ONE DEFINITION, HOWEVER MANY BARS. Forty bars are forty instances of one
+    // component, exactly as the model holds them, so a lantern's worth of caps
+    // costs one mesh in the payload rather than forty copies of the same 224
+    // vertices.
+    //
+    // The transform comes straight from the geometry module's placement basis. Its
+    // three vectors are already unit length, already right handed and already in
+    // model millimetres, which is the frame this payload is written in, so there is
+    // nothing to convert and no pair of angles to compose in the right order.
+    //
+    // @param barSet   SolvedGlazeBarSet
+    // @param lantern  The lantern config block
+    // @return         Promise resolving to { Definitions, Parts }
+    async function VghLantern__SketchUpExport__Encoders__GlazeBarEndCaps(barSet, lantern) {
+        var Factory   =  VghLantern__EncodersGlazeBars__Factory();
+        var Geometry  =  window.VghLantern__Geometry__GlazeBarAssembly;
+        var Loader    =  window.VghLantern__AppData__GlazeBarSystemLoader;
+        var MeshCodec =  window.VghLantern__SketchUpExport__Encoders__JoineryAndComponents;
+
+        var result  =  { Definitions : [], Parts : [] };
+        if (!barSet || !Factory || !Geometry || !Loader || !MeshCodec) return result;
+
+        var placements  =  Geometry.VghLantern__GlazeBarAssembly__EndCapPlacements(barSet, lantern);
+        if (placements.length === 0) return result;
+
+        var relationship  =  Geometry.VghLantern__GlazeBarAssembly__EndCapGeometry();
+
+        var asset;
+        try {
+            asset  =  await Loader.VghLantern__GlazeBarSystemLoader__LoadEndCapAsset();
+        } catch (loadError) {
+            console.warn('[VghLantern SketchUpExport] Glaze bar end cap could not be loaded:', loadError);
+            return result;
+        }
+        if (!asset || !asset['Na__Asset__Mesh3D']) return result;
+
+        var definition  =  MeshCodec.VghLantern__SketchUpExport__Encoders__MeshDefinition(
+            asset['Na__Asset__Mesh3D'],
+            'glazeBarEndCap__' + Factory.VghLantern__SketchUpExport__PartFactory__SafeName(relationship.AssetId),
+            relationship.PartName || 'Glaze Bar End Cap',
+            relationship.AssetId);
+
+        if (!definition) return result;
+        result.Definitions.push(definition);
+
+        var finishes  =  VghLantern__EncodersGlazeBars__BarFinishes(lantern);
+        var counters  =  {};
+        var i, placement, slopeKey, record;
+
+        for (i = 0; i < placements.length; i++) {
+            placement  =  placements[i];
+            slopeKey   =  placement.SlopeKey || 'slope';
+
+            counters[slopeKey]  =  (counters[slopeKey] || 0) + 1;
+
+            record  =  Factory.VghLantern__SketchUpExport__PartFactory__Instance(
+                definition.Key,
+                {
+                    Origin      : placement.Point,
+                    XAxis       : placement.AxisX,
+                    YAxis       : placement.AxisY,
+                    ZAxis       : placement.AxisZ,
+                    ScaleFactor : 1.0
+                },
+                {
+                    Name        : Factory.VghLantern__SketchUpExport__PartFactory__Name(END_CAP_NAME_KEY, {
+                                      SlopeKey : slopeKey,
+                                      Index    : VghLantern__EncodersGlazeBars__Pad(counters[slopeKey])
+                                  }),
+                    TagKey      : END_CAP_TAG_KEY,
+                    MaterialKey : END_CAP_MATERIAL_KEY,
+                    Attributes  : {
+                        PartRole    : 'glazeBarEndCap',
+                        PartCode    : relationship.AssetId,
+                        PartName    : relationship.PartName || '',
+                        PlacementId : placement.Id || '',
+                        BarId       : placement.BarId || '',
+                        SlopeKey    : placement.SlopeKey || '',
+                        Finish      : finishes.Cap
+                    }
+                });
+
+            if (record) result.Parts.push(record);
+        }
+
+        return result;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
@@ -317,6 +423,7 @@ const VghLantern__SketchUpExport__Encoders__GlazeBars = (function() {
     // ------------------------------------------------------------
     return {
         VghLantern__SketchUpExport__Encoders__GlazeBars           : VghLantern__SketchUpExport__Encoders__GlazeBars,
+        VghLantern__SketchUpExport__Encoders__GlazeBarEndCaps     : VghLantern__SketchUpExport__Encoders__GlazeBarEndCaps,
         VghLantern__SketchUpExport__Encoders__GlazeBars__Finishes : VghLantern__SketchUpExport__Encoders__GlazeBars__Finishes
     };
 

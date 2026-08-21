@@ -6,7 +6,7 @@
         "LibraryRoot": "06__Data__LanternProfileLibrary/",
         "ProfileCount": 2,
         "DoNotEditByHand": true,
-        "GlazeBarNote": "Glazing bars are deliberately absent. A Vale glaze bar is a three part composite, not one swept section, so it is catalogued by 06__Data__LanternProfileLibrary/45_1000__GlazeBars/VghLantern__GlazeBarSystem__Index__.json and loaded by VghLantern__AppData__GlazeBarSystemLoader."
+        "GlazeBarNote": "Glazing bars are deliberately absent. A Vale glaze bar is a three part composite, not one swept section, so it is catalogued by the glazeBar system index, which VghLantern__AppData__GlazeBarSystemLoader reaches through VghLantern__AssetRegistry__.json rather than by a path written down here."
     },
     "VghLantern__ProfileDataIndex__Categories": [
         {

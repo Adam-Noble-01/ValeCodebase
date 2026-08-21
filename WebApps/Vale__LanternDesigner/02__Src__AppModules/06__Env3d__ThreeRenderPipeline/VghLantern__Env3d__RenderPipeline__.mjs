@@ -75,6 +75,7 @@ import { VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build } from './VghLante
 import { VghLantern__Env3d__MeshBuilder__HipAssembly__Build } from './VghLantern__Env3d__MeshBuilder__HipAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__RidgeBlock__Build, VghLantern__Env3d__MeshBuilder__RidgeBlock__ClearCache } from './VghLantern__Env3d__MeshBuilder__RidgeBlock__.mjs';
 import { VghLantern__Env3d__MeshBuilder__RidgeEndCap__Build } from './VghLantern__Env3d__MeshBuilder__RidgeEndCap__.mjs';
+import { VghLantern__Env3d__MeshBuilder__GlazeBarEndCap__Build } from './VghLantern__Env3d__MeshBuilder__GlazeBarEndCap__.mjs';
 import {
     VghLantern__Env3d__ElementFilter__Apply,
     VghLantern__Env3d__ElementFilter__Current,
@@ -330,6 +331,10 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // directly under the finial and the three read as one assembly.
         surface.LastRidgeEndCapSummary  =  await VghLantern__Env3d__MeshBuilder__RidgeEndCap__Build(solidComponentsGroup, skeleton, lantern);
 
+        // The cast cap closing the cut end of every glaze bar cap at the eaves.
+        // A placed mesh like the two above it, so it lands in the same group.
+        surface.LastGlazeBarEndCapSummary  =  await VghLantern__Env3d__MeshBuilder__GlazeBarEndCap__Build(solidComponentsGroup, barSet, lantern);
+
         // A ridge or hip that could not be built the way it was specified says so
         // here rather than only in a summary object nobody has to read. The
         // loudest case is a lantern specified with a glaze bar hip, which is drawn
@@ -339,6 +344,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Hip', surface.LastHipSummary);
         VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge block', surface.LastRidgeBlockSummary);
         VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge end cap', surface.LastRidgeEndCapSummary);
+        VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Glaze bar end cap', surface.LastGlazeBarEndCapSummary);
 
         await VghLantern__Env3d__ComponentLoader__Glb__Build(solidComponentsGroup, skeleton, lantern);
 

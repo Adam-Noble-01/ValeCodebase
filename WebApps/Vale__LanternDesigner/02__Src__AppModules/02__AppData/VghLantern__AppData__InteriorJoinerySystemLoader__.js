@@ -37,10 +37,27 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Index Source Paths
+    // MODULE CONSTANTS | System Index Identity
     // ------------------------------------------------------------
-    const LIBRARY_ROOT_PATH  =  '06__Data__LanternProfileLibrary/49_1000__InternalTrims/';
-    const INDEX_PATH         =  LIBRARY_ROOT_PATH + 'VghLantern__InteriorJoinerySystem__Index__.json';
+    // A KEY rather than a path. VghLantern__AppData__AssetRegistry resolves both
+    // this loader's own index and every asset it names, so no folder is written
+    // down here and a library that moves needs the registry rebuilt and nothing
+    // else. This module carried a LIBRARY_ROOT_PATH and an INDEX_PATH until
+    // 21-Aug-2026; see the registry's header for what that cost.
+    const SYSTEM_INDEX_KEY  =  'interiorJoinery';
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | The Asset Registry This Loader Resolves Through
+    // ------------------------------------------------------------
+    // Throws rather than returning null, because a missing registry is a script
+    // order fault and every symptom downstream of it is an unexplained absence.
+    function VghLantern__InteriorJoinerySystemLoader__Registry() {
+        var Registry  =  window.VghLantern__AppData__AssetRegistry;
+        if (!Registry) {
+            throw new Error('VghLantern__AppData__AssetRegistry is not loaded - check the script order in VghLantern__App__.html');
+        }
+        return Registry;
+    }
     // ------------------------------------------------------------
 
 
@@ -87,7 +104,12 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
 
         VghLantern__InteriorJoinerySystemLoader__LoadPromise  =  (async function() {
             try {
-                var response  =  await fetch(INDEX_PATH, { cache: 'no-store' });
+                await VghLantern__InteriorJoinerySystemLoader__Registry().VghLantern__AssetRegistry__Load();
+
+                var indexUrl  =  VghLantern__InteriorJoinerySystemLoader__Registry().VghLantern__AssetRegistry__SystemIndexUrl(SYSTEM_INDEX_KEY);
+                if (!indexUrl) throw new Error('the asset registry carries no "' + SYSTEM_INDEX_KEY + '" system index');
+
+                var response  =  await fetch(indexUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 VghLantern__InteriorJoinerySystemLoader__IndexData  =  await response.json();
@@ -299,7 +321,7 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
 
     // HELPER FUNCTION | Fetch One Asset File by Id (memoised)
     // ------------------------------------------------------------
-    function VghLantern__InteriorJoinerySystemLoader__LoadAsset(assetId, jsonUrl) {
+    function VghLantern__InteriorJoinerySystemLoader__LoadAsset(assetId) {
         if (VghLantern__InteriorJoinerySystemLoader__AssetCache[assetId]) {
             return Promise.resolve(VghLantern__InteriorJoinerySystemLoader__AssetCache[assetId]);
         }
@@ -309,7 +331,10 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
 
         VghLantern__InteriorJoinerySystemLoader__AssetPromise[assetId]  =  (async function() {
             try {
-                var response  =  await fetch(LIBRARY_ROOT_PATH + jsonUrl, { cache: 'no-store' });
+                var assetUrl  =  VghLantern__InteriorJoinerySystemLoader__Registry().VghLantern__AssetRegistry__Url(assetId);
+                if (!assetUrl) throw new Error('the asset registry carries no entry for this id');
+
+                var response  =  await fetch(assetUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 var data  =  await response.json();
@@ -333,7 +358,7 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
 
     // HELPER FUNCTION | Stitch an Asset's Top Plan Into Closed Faces
     // ------------------------------------------------------------
-    async function VghLantern__InteriorJoinerySystemLoader__FacesForAsset(assetId, jsonUrl) {
+    async function VghLantern__InteriorJoinerySystemLoader__FacesForAsset(assetId) {
         if (VghLantern__InteriorJoinerySystemLoader__FaceCache[assetId]) {
             return VghLantern__InteriorJoinerySystemLoader__FaceCache[assetId];
         }
@@ -344,7 +369,7 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
             return null;
         }
 
-        var asset  =  await VghLantern__InteriorJoinerySystemLoader__LoadAsset(assetId, jsonUrl);
+        var asset  =  await VghLantern__InteriorJoinerySystemLoader__LoadAsset(assetId);
         if (!asset) return null;
 
         var result  =  LoopBuilder.VghLantern__SectionLoopBuilder__BuildFacesFromAsset(asset);
@@ -362,8 +387,8 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
 
     // HELPER FUNCTION | Build One Resolved Part Record
     // ------------------------------------------------------------
-    async function VghLantern__InteriorJoinerySystemLoader__BuildPart(partKey, partName, assetId, jsonUrl, meta) {
-        var result  =  await VghLantern__InteriorJoinerySystemLoader__FacesForAsset(assetId, jsonUrl);
+    async function VghLantern__InteriorJoinerySystemLoader__BuildPart(partKey, partName, assetId, meta) {
+        var result  =  await VghLantern__InteriorJoinerySystemLoader__FacesForAsset(assetId);
         if (!result || !result.Faces || result.Faces.length === 0) return null;
 
         return {
@@ -407,7 +432,6 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
                     part.PartKey,
                     option.Label || part.PartName,
                     option.AssetId,
-                    option.JsonUrl,
                     {
                         ElementType           : option.ElementType || part.ElementType,
                         SpecMaterial          : option.SpecMaterial || part.SpecMaterial,
@@ -423,7 +447,6 @@ const VghLantern__AppData__InteriorJoinerySystemLoader = (function() {
                 part.PartKey,
                 part.PartName,
                 part.AssetId,
-                part.JsonUrl,
                 {
                     ElementType              : part.ElementType,
                     SpecMaterial             : part.SpecMaterial,

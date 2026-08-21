@@ -2,7 +2,6 @@
   "VghLantern__BaseFrameSystem__Meta": {
     "SchemaVersion": "1.0.0",
     "CreatedDate": "07-Aug-2026",
-    "LibraryRoot": "06__Data__LanternProfileLibrary/46_1000__BaseFrame/",
     "Description": "The Vale base frame as built: a Sapele head beam seated atop the builders upstand, a mill aluminium eaves extrusion the glaze bar cores weld to, and a lead cover flashing rebated into the timber. Three parts sharing one section frame.",
     "SectionFrameNote": "All parts are authored in one shared section frame taken from Na__Asset__Plan2D__Top. Section 0,0 is the EAVES DATUM POINT: section x=0 is the head beam inner face plane, section y=0 sits 100mm above the head beam underside (the +/-0000 seating benchmark). Section -x runs outboard to the outer upstand face at x=-125, section +y runs up. The parts assemble with no fitting.",
     "ElementTypeVocabulary": [
@@ -13,7 +12,8 @@
       "Glazing"
     ],
     "HandAuthored": true,
-    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed three part system, not a catalogue: a build utility scanning a folder could not know which asset fills which slot."
+    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed three part system, not a catalogue: a build utility scanning a folder could not know which asset fills which slot.",
+    "AssetResolutionNote": "Parts name an AssetId and nothing else. The file behind an id is resolved through VghLantern__AssetRegistry__.json, which is the one place a path is written down. LibraryRoot and the per part JsonUrl were removed on 21-Aug-2026."
   },
   "VghLantern__BaseFrameSystem__DatumGeometry": {
     "HeadBeamWidthMm": 125,
@@ -23,19 +23,52 @@
     "ReferencePitchNote": "The assets were exported with the weathered top faces cut for the reference roof pitch implied by the geometry below (about 19.88 degrees on the seating face). At any other pitch the top construction is re-sloped about the eaves datum origin by the geometry module; the seating benchmark, outer face, rebate construction and outer chamfer stay fixed.",
     "ReslopeReference": {
       "HeadBeam": {
-        "InnerTopCorner":  { "X": 0.0,      "Y": -4.0    },
-        "RebateOuterTop":  { "X": -41.401,  "Y": -18.972 },
-        "RebateBase":      { "X": -40.401,  "Y": -21.736 },
-        "ChamferTop":      { "X": -82.445,  "Y": -37.797 },
-        "ChamferBase":     { "X": -125.0,   "Y": -75.0   }
+        "InnerTopCorner": {
+          "X": 0.0,
+          "Y": -4.0
+        },
+        "RebateOuterTop": {
+          "X": -41.401,
+          "Y": -18.972
+        },
+        "RebateBase": {
+          "X": -40.401,
+          "Y": -21.736
+        },
+        "ChamferTop": {
+          "X": -82.445,
+          "Y": -37.797
+        },
+        "ChamferBase": {
+          "X": -125.0,
+          "Y": -75.0
+        }
       },
       "LeadFlashing": {
-        "UnderTop":         { "X": -40.401,  "Y": -21.736 },
-        "OuterTop":         { "X": -41.08,   "Y": -19.858 },
-        "UnderMid":         { "X": -82.445,  "Y": -37.797 },
-        "OuterMid":         { "X": -83.527,  "Y": -36.042 },
-        "OuterChamferFoot": { "X": -126.905, "Y": -74.089 },
-        "OuterLegBottom":   { "X": -129.0,   "Y": -99.88  }
+        "UnderTop": {
+          "X": -40.401,
+          "Y": -21.736
+        },
+        "OuterTop": {
+          "X": -41.08,
+          "Y": -19.858
+        },
+        "UnderMid": {
+          "X": -82.445,
+          "Y": -37.797
+        },
+        "OuterMid": {
+          "X": -83.527,
+          "Y": -36.042
+        },
+        "OuterChamferFoot": {
+          "X": -126.905,
+          "Y": -74.089
+        },
+        "OuterLegBottom": {
+          "X": -129.0,
+          "Y": -99.88
+        }
       }
     }
   },
@@ -50,7 +83,6 @@
       "PartKey": "headBeam",
       "PartName": "Head Beam",
       "AssetId": "46_1001",
-      "JsonUrl": "46_1001__ValeRoofLantern____HeadBeam__StandardBaseFrame__.json",
       "Selectable": false,
       "AlwaysPresent": true,
       "ElementType": "Structural",
@@ -69,7 +101,6 @@
       "PartKey": "eavesExtrusion",
       "PartName": "Eaves Extrusion",
       "AssetId": "46_1002",
-      "JsonUrl": "46_1002__ValeRoofLantern____HeadBeam__StandardEavesExtrusion__.json",
       "Selectable": false,
       "AlwaysPresent": true,
       "ElementType": "Structural",
@@ -88,7 +119,6 @@
       "PartKey": "leadFlashing",
       "PartName": "Lead Cover Flashing",
       "AssetId": "46_1003",
-      "JsonUrl": "46_1003__ValeRoofLantern____HeadBeam__LeadCoverFlashing__.json",
       "Selectable": false,
       "AlwaysPresent": true,
       "ElementType": "Flashing",

@@ -75,6 +75,7 @@ import { VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build }      from '../06
 import { VghLantern__Env3d__MeshBuilder__HipAssembly__Build }        from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__HipAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__RidgeBlock__Build }         from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__RidgeBlock__.mjs';
 import { VghLantern__Env3d__MeshBuilder__RidgeEndCap__Build }        from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__RidgeEndCap__.mjs';
+import { VghLantern__Env3d__MeshBuilder__GlazeBarEndCap__Build }     from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__MeshBuilder__GlazeBarEndCap__.mjs';
 import { VghLantern__Env3d__ComponentLoader__Glb__Build }            from '../06__Env3d__ThreeRenderPipeline/VghLantern__Env3d__ComponentLoader__Glb__.mjs';
 
 import { VghLantern__ProjectedEdges__ConfigAccess__Section } from './VghLantern__ProjectedEdges__ConfigAccess__.mjs';
@@ -133,6 +134,7 @@ import { VghLantern__ProjectedEdges__Scheduler__CreateSlicer } from './VghLanter
         if (model.IncludeComponents === true) {
             await VghLantern__Env3d__MeshBuilder__RidgeBlock__Build(stage, skeleton, lantern);
             await VghLantern__Env3d__MeshBuilder__RidgeEndCap__Build(stage, skeleton, lantern);
+            await VghLantern__Env3d__MeshBuilder__GlazeBarEndCap__Build(stage, barSet, lantern);
             await VghLantern__Env3d__ComponentLoader__Glb__Build(stage, skeleton, lantern);
         }
 

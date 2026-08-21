@@ -44,17 +44,35 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Index Source Paths
+    // MODULE CONSTANTS | System Index Identity
     // ------------------------------------------------------------
-    const LIBRARY_ROOT_PATH  =  '06__Data__LanternProfileLibrary/45_1000__GlazeBars/';
-    const INDEX_PATH         =  LIBRARY_ROOT_PATH + 'VghLantern__GlazeBarSystem__Index__.json';
+    // A KEY rather than a path. VghLantern__AppData__AssetRegistry resolves both
+    // this loader's own index and every asset it names, so no folder is written
+    // down here and a library that moves needs the registry rebuilt and nothing
+    // else. This module carried a LIBRARY_ROOT_PATH and an INDEX_PATH until
+    // 21-Aug-2026; see the registry's header for what that cost.
+    const SYSTEM_INDEX_KEY  =  'glazeBar';
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | The Asset Registry This Loader Resolves Through
+    // ------------------------------------------------------------
+    // Throws rather than returning null, because a missing registry is a script
+    // order fault and every symptom downstream of it is an unexplained absence.
+    function VghLantern__GlazeBarSystemLoader__Registry() {
+        var Registry  =  window.VghLantern__AppData__AssetRegistry;
+        if (!Registry) {
+            throw new Error('VghLantern__AppData__AssetRegistry is not loaded - check the script order in VghLantern__App__.html');
+        }
+        return Registry;
+    }
     // ------------------------------------------------------------
 
 
     // MODULE CONSTANTS | Index Field Names
     // ------------------------------------------------------------
-    const KEY_META   =  'VghLantern__GlazeBarSystem__Meta';
-    const KEY_PARTS  =  'VghLantern__GlazeBarSystem__Parts';
+    const KEY_META    =  'VghLantern__GlazeBarSystem__Meta';
+    const KEY_PARTS   =  'VghLantern__GlazeBarSystem__Parts';
+    const KEY_ENDCAP  =  'VghLantern__GlazeBarSystem__EndCapRelationship';
     // ------------------------------------------------------------
 
 
@@ -98,7 +116,12 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
 
         VghLantern__GlazeBarSystemLoader__LoadPromise  =  (async function() {
             try {
-                var response  =  await fetch(INDEX_PATH, { cache: 'no-store' });
+                await VghLantern__GlazeBarSystemLoader__Registry().VghLantern__AssetRegistry__Load();
+
+                var indexUrl  =  VghLantern__GlazeBarSystemLoader__Registry().VghLantern__AssetRegistry__SystemIndexUrl(SYSTEM_INDEX_KEY);
+                if (!indexUrl) throw new Error('the asset registry carries no "' + SYSTEM_INDEX_KEY + '" system index');
+
+                var response  =  await fetch(indexUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 VghLantern__GlazeBarSystemLoader__IndexData  =  await response.json();
@@ -213,7 +236,7 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
     // The in-flight promise is cached as well as the result. Three parts resolve
     // in parallel on every rebuild, and without it a lantern opened twice in
     // quick succession would fetch the 650 kB cap file twice.
-    function VghLantern__GlazeBarSystemLoader__LoadAsset(assetId, jsonUrl) {
+    function VghLantern__GlazeBarSystemLoader__LoadAsset(assetId) {
         if (VghLantern__GlazeBarSystemLoader__AssetCache[assetId]) {
             return Promise.resolve(VghLantern__GlazeBarSystemLoader__AssetCache[assetId]);
         }
@@ -223,7 +246,10 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
 
         VghLantern__GlazeBarSystemLoader__AssetPromise[assetId]  =  (async function() {
             try {
-                var response  =  await fetch(LIBRARY_ROOT_PATH + jsonUrl, { cache: 'no-store' });
+                var assetUrl  =  VghLantern__GlazeBarSystemLoader__Registry().VghLantern__AssetRegistry__Url(assetId);
+                if (!assetUrl) throw new Error('the asset registry carries no entry for this id');
+
+                var response  =  await fetch(assetUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 var data  =  await response.json();
@@ -250,7 +276,7 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
     // asset for the life of the page. The cap's 205 segments are the reason this
     // is cached rather than recomputed: stitching and triangulating them on every
     // slider drag would be felt.
-    async function VghLantern__GlazeBarSystemLoader__FacesForAsset(assetId, jsonUrl) {
+    async function VghLantern__GlazeBarSystemLoader__FacesForAsset(assetId) {
         if (VghLantern__GlazeBarSystemLoader__FaceCache[assetId]) {
             return VghLantern__GlazeBarSystemLoader__FaceCache[assetId];
         }
@@ -261,7 +287,7 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
             return null;
         }
 
-        var asset  =  await VghLantern__GlazeBarSystemLoader__LoadAsset(assetId, jsonUrl);
+        var asset  =  await VghLantern__GlazeBarSystemLoader__LoadAsset(assetId);
         if (!asset) return null;
 
         var result  =  LoopBuilder.VghLantern__SectionLoopBuilder__BuildFacesFromAsset(asset);
@@ -288,8 +314,8 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
     // index, so the number a takeoff multiplies by a bar length is measured from
     // the same outline that was extruded. The index carries its own copy for
     // catalogue display, and if the two ever disagree the geometry is right.
-    async function VghLantern__GlazeBarSystemLoader__BuildPart(partKey, partName, assetId, jsonUrl, elementType, specMaterial) {
-        var result  =  await VghLantern__GlazeBarSystemLoader__FacesForAsset(assetId, jsonUrl);
+    async function VghLantern__GlazeBarSystemLoader__BuildPart(partKey, partName, assetId, elementType, specMaterial) {
+        var result  =  await VghLantern__GlazeBarSystemLoader__FacesForAsset(assetId);
         if (!result || !result.Faces || result.Faces.length === 0) return null;
 
         return {
@@ -316,6 +342,54 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
         var meta   =  index ? index[KEY_META] : null;
 
         return (meta && typeof meta.OverallWidthMm === 'number') ? meta.OverallWidthMm : 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The End Cap Relationship Numbers (synchronous)
+    // ------------------------------------------------------------
+    // The seating height, the along-bar offset and the cap's own asset id.
+    // Answered from the index so the geometry module stays synchronous and needs
+    // no asset fetch to work out where the cap sits.
+    function VghLantern__GlazeBarSystemLoader__EndCapRelationship() {
+        var index  =  VghLantern__GlazeBarSystemLoader__IndexData;
+        return (index && index[KEY_ENDCAP]) ? index[KEY_ENDCAP] : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Load the Decorative End Cap Component (memoised)
+    // ------------------------------------------------------------
+    // Returned as the raw asset document rather than as geometry: the cap is a
+    // mesh component placed at a point, not a section swept along a line, and
+    // turning a Na__Asset__Mesh3D block into a buffer geometry is the Env3d
+    // MeshJson loader's job.
+    //
+    // It shares this loader's asset cache with the swept sections, which is right:
+    // both are glaze bar system assets, both live for the page, and neither is
+    // large enough to want the component cache's byte budget.
+    function VghLantern__GlazeBarSystemLoader__LoadEndCapAsset() {
+        return (async function() {
+            await VghLantern__GlazeBarSystemLoader__LoadIndex();
+
+            var relationship  =  VghLantern__GlazeBarSystemLoader__EndCapRelationship();
+            if (!relationship || !relationship.AssetId) {
+                console.error('[VghLantern__GlazeBarSystemLoader] The index declares no glaze bar end cap.');
+                return null;
+            }
+
+            return VghLantern__GlazeBarSystemLoader__LoadAsset(relationship.AssetId);
+        })();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read the End Cap Asset if It Is Already Resident (synchronous)
+    // ------------------------------------------------------------
+    // For a renderer that draws whatever is in hand and asks for a redraw when the
+    // rest lands, rather than stalling a viewport behind a fetch.
+    function VghLantern__GlazeBarSystemLoader__PeekAsset(assetId) {
+        return VghLantern__GlazeBarSystemLoader__AssetCache[assetId] || null;
     }
     // ------------------------------------------------------------
 
@@ -406,13 +480,13 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
 
                 pending.push(VghLantern__GlazeBarSystemLoader__BuildPart(
                     part.PartKey, part.PartName + ' - ' + option.Label,
-                    option.AssetId, option.JsonUrl, option.ElementType, option.SpecMaterial));
+                    option.AssetId, option.ElementType, option.SpecMaterial));
                 continue;
             }
 
             pending.push(VghLantern__GlazeBarSystemLoader__BuildPart(
                 part.PartKey, part.PartName,
-                part.AssetId, part.JsonUrl, part.ElementType, part.SpecMaterial));
+                part.AssetId, part.ElementType, part.SpecMaterial));
         }
 
         var resolved  =  await Promise.all(pending);
@@ -438,6 +512,9 @@ const VghLantern__AppData__GlazeBarSystemLoader = (function() {
         VghLantern__GlazeBarSystemLoader__TrimOptionId          : VghLantern__GlazeBarSystemLoader__TrimOptionId,
         VghLantern__GlazeBarSystemLoader__DescribeParts         : VghLantern__GlazeBarSystemLoader__DescribeParts,
         VghLantern__GlazeBarSystemLoader__OverallWidthMm        : VghLantern__GlazeBarSystemLoader__OverallWidthMm,
+        VghLantern__GlazeBarSystemLoader__EndCapRelationship    : VghLantern__GlazeBarSystemLoader__EndCapRelationship,
+        VghLantern__GlazeBarSystemLoader__LoadEndCapAsset       : VghLantern__GlazeBarSystemLoader__LoadEndCapAsset,
+        VghLantern__GlazeBarSystemLoader__PeekAsset             : VghLantern__GlazeBarSystemLoader__PeekAsset,
         VghLantern__GlazeBarSystemLoader__ResolveParts          : VghLantern__GlazeBarSystemLoader__ResolveParts
     };
 

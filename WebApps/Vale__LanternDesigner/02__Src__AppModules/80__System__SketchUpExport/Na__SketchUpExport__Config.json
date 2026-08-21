@@ -64,11 +64,12 @@
         { "Key": "glazeBarCap",        "Name": "VGH__18__GlazeBar__Cap",                     "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" },
         { "Key": "glazeBarCore",       "Name": "VGH__19__GlazeBar__Core",                    "ColorRgb": [199, 204, 209], "Visible": true, "ElementType": "Structural" },
         { "Key": "glazeBarTrim",       "Name": "VGH__20__GlazeBar__Trim",                    "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
-        { "Key": "glazing",            "Name": "VGH__21__Glazing",                           "ColorRgb": [230, 240, 255], "Visible": true, "ElementType": "Glazing" },
-        { "Key": "cornice",            "Name": "VGH__22__InteriorJoinery__Cornice",          "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
-        { "Key": "cornicePacker",      "Name": "VGH__23__InteriorJoinery__Packer",           "ColorRgb": [210, 194, 160], "Visible": true, "ElementType": "Trim" },
-        { "Key": "eavesTrim",          "Name": "VGH__24__InteriorJoinery__EavesTrim",        "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
-        { "Key": "components",         "Name": "VGH__25__Components__Finials",               "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" }
+        { "Key": "glazeBarEndCap",     "Name": "VGH__21__GlazeBar__EndCap",                  "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" },
+        { "Key": "glazing",            "Name": "VGH__22__Glazing",                           "ColorRgb": [230, 240, 255], "Visible": true, "ElementType": "Glazing" },
+        { "Key": "cornice",            "Name": "VGH__23__InteriorJoinery__Cornice",          "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
+        { "Key": "cornicePacker",      "Name": "VGH__24__InteriorJoinery__Packer",           "ColorRgb": [210, 194, 160], "Visible": true, "ElementType": "Trim" },
+        { "Key": "eavesTrim",          "Name": "VGH__25__InteriorJoinery__EavesTrim",        "ColorRgb": [216, 214, 207], "Visible": true, "ElementType": "Trim" },
+        { "Key": "components",         "Name": "VGH__26__Components__Finials",               "ColorRgb": [ 56,  62,  66], "Visible": true, "ElementType": "Trim" }
     ],
     "VghLantern__SketchUpExport__Config__TagsNote": "One tag per physical part family, numbered so SketchUp's alphabetical tag list reads in build order. ElementType mirrors Na__Asset__ValeSpec__ElementType and is stamped onto every group as an attribute, so a downstream report can filter on it without re-deriving anything from the tag name. RENUMBERED 12-Aug-2026: the single ridge and hip tags became six and four, matching the real assemblies the way the glaze bar's three already did, and everything after them shifted up. A model carrying an import made before that date keeps its old tags alongside the new ones - they are not renamed in place, because the importer creates tags by name and has no way to know the old ones were the same thing.",
 
@@ -142,6 +143,7 @@
         "GlazeBarCap"        : "GlazeBarCap__{SlopeKey}__{Index}",
         "GlazeBarCore"       : "GlazeBarCore__{SlopeKey}__{Index}",
         "GlazeBarTrim"       : "GlazeBarTrim__{SlopeKey}__{Index}",
+        "GlazeBarEndCap"     : "GlazeBarEndCap__{SlopeKey}__{Index}",
         "Glazing"            : "GlazingUnit__{SlopeKey}",
         "Cornice"            : "Cornice__{Side}",
         "CornicePacker"      : "CornicePacker__{Side}",

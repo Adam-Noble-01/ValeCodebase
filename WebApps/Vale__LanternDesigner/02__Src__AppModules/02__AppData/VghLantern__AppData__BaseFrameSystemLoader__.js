@@ -45,10 +45,27 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Index Source Paths
+    // MODULE CONSTANTS | System Index Identity
     // ------------------------------------------------------------
-    const LIBRARY_ROOT_PATH  =  '06__Data__LanternProfileLibrary/46_1000__BaseFrame/';
-    const INDEX_PATH         =  LIBRARY_ROOT_PATH + 'VghLantern__BaseFrameSystem__Index__.json';
+    // A KEY rather than a path. VghLantern__AppData__AssetRegistry resolves both
+    // this loader's own index and every asset it names, so no folder is written
+    // down here and a library that moves needs the registry rebuilt and nothing
+    // else. This module carried a LIBRARY_ROOT_PATH and an INDEX_PATH until
+    // 21-Aug-2026; see the registry's header for what that cost.
+    const SYSTEM_INDEX_KEY  =  'baseFrame';
+    // ------------------------------------------------------------
+
+    // HELPER FUNCTION | The Asset Registry This Loader Resolves Through
+    // ------------------------------------------------------------
+    // Throws rather than returning null, because a missing registry is a script
+    // order fault and every symptom downstream of it is an unexplained absence.
+    function VghLantern__BaseFrameSystemLoader__Registry() {
+        var Registry  =  window.VghLantern__AppData__AssetRegistry;
+        if (!Registry) {
+            throw new Error('VghLantern__AppData__AssetRegistry is not loaded - check the script order in VghLantern__App__.html');
+        }
+        return Registry;
+    }
     // ------------------------------------------------------------
 
 
@@ -103,7 +120,12 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
 
         VghLantern__BaseFrameSystemLoader__LoadPromise  =  (async function() {
             try {
-                var response  =  await fetch(INDEX_PATH, { cache: 'no-store' });
+                await VghLantern__BaseFrameSystemLoader__Registry().VghLantern__AssetRegistry__Load();
+
+                var indexUrl  =  VghLantern__BaseFrameSystemLoader__Registry().VghLantern__AssetRegistry__SystemIndexUrl(SYSTEM_INDEX_KEY);
+                if (!indexUrl) throw new Error('the asset registry carries no "' + SYSTEM_INDEX_KEY + '" system index');
+
+                var response  =  await fetch(indexUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 VghLantern__BaseFrameSystemLoader__IndexData  =  await response.json();
@@ -251,7 +273,7 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
 
     // HELPER FUNCTION | Fetch One Asset File by Id (memoised, concurrency safe)
     // ------------------------------------------------------------
-    function VghLantern__BaseFrameSystemLoader__LoadAsset(assetId, jsonUrl) {
+    function VghLantern__BaseFrameSystemLoader__LoadAsset(assetId) {
         if (VghLantern__BaseFrameSystemLoader__AssetCache[assetId]) {
             return Promise.resolve(VghLantern__BaseFrameSystemLoader__AssetCache[assetId]);
         }
@@ -261,7 +283,10 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
 
         VghLantern__BaseFrameSystemLoader__AssetPromise[assetId]  =  (async function() {
             try {
-                var response  =  await fetch(LIBRARY_ROOT_PATH + jsonUrl, { cache: 'no-store' });
+                var assetUrl  =  VghLantern__BaseFrameSystemLoader__Registry().VghLantern__AssetRegistry__Url(assetId);
+                if (!assetUrl) throw new Error('the asset registry carries no entry for this id');
+
+                var response  =  await fetch(assetUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 var data  =  await response.json();
@@ -287,7 +312,7 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
     // The cached faces are PRISTINE, exactly as exported. Pitch transforms
     // (rotating the eaves extrusion, re-sloping the beam and flashing tops) are
     // applied by the geometry module per solve onto copies - never onto these.
-    async function VghLantern__BaseFrameSystemLoader__FacesForAsset(assetId, jsonUrl) {
+    async function VghLantern__BaseFrameSystemLoader__FacesForAsset(assetId) {
         if (VghLantern__BaseFrameSystemLoader__FaceCache[assetId]) {
             return VghLantern__BaseFrameSystemLoader__FaceCache[assetId];
         }
@@ -298,7 +323,7 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
             return null;
         }
 
-        var asset  =  await VghLantern__BaseFrameSystemLoader__LoadAsset(assetId, jsonUrl);
+        var asset  =  await VghLantern__BaseFrameSystemLoader__LoadAsset(assetId);
         if (!asset) return null;
 
         var result  =  LoopBuilder.VghLantern__SectionLoopBuilder__BuildFacesFromAsset(asset);
@@ -322,7 +347,7 @@ const VghLantern__AppData__BaseFrameSystemLoader = (function() {
     // HELPER FUNCTION | Build One Resolved Part Record
     // ------------------------------------------------------------
     async function VghLantern__BaseFrameSystemLoader__BuildPart(part) {
-        var result  =  await VghLantern__BaseFrameSystemLoader__FacesForAsset(part.AssetId, part.JsonUrl);
+        var result  =  await VghLantern__BaseFrameSystemLoader__FacesForAsset(part.AssetId);
         if (!result || !result.Faces || result.Faces.length === 0) return null;
 
         return {

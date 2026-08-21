@@ -290,7 +290,8 @@
     // ------------------------------------------------------------
     import {
         Na__PresentationMode__ProjectJson__HasValidSavedScenes,
-        Na__PresentationMode__ProjectJson__GetSavedCameraScenes
+        Na__PresentationMode__ProjectJson__GetSavedCameraScenes,
+        Na__PresentationMode__ProjectJson__SetActiveImageList
     } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
@@ -623,6 +624,13 @@
                     || projectData.valeVision_Camera__DefaultPosition
                     || null;
                 Na__Saved__ProjectOrbitTarget  = projectData.OrbitHelperCube__Position || null;
+
+                // REGISTER LIVE IMAGE LIST FOR THUMBNAIL RESOLUTION
+                // Cloud Sync re-dates every image on each run and purges the
+                // previous edition, so scene ThumbnailUrl strings baked into
+                // project.json go stale. The scene data layer uses this array
+                // to re-point them at the current files instead of 404ing.
+                Na__PresentationMode__ProjectJson__SetActiveImageList(projectData.images); // <-- Current date-stamped source PNGs
 
                 // APPLY PER-PROJECT NAVIGATION MODE ENABLE FLAGS
                 if (projectData.Navmode__EnabledModes) {

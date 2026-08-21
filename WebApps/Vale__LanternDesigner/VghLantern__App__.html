@@ -274,6 +274,7 @@
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__StretchTools__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__BaseFrameAssembly__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__InteriorJoineryAssembly__.js"></script>
+    <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__GlazeBarAssembly__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__RidgeAssembly__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__HipAssembly__.js"></script>
     <script src="02__Src__AppModules/04__MathUtils__LanternGeometry/VghLantern__Geometry__GlazeBarLayout__.js"></script>
@@ -299,6 +300,8 @@
     <script src="02__Src__AppModules/05__Env2d__SvgRenderPipeline/VghLantern__Env2d__DimensionEditor__.js"></script>
 
     <!-- Data Layer (depends on utils) -->
+    <!-- The asset registry resolves every id in both libraries, so it loads before anything that resolves one. -->
+    <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__AssetRegistry__.js"></script>
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__ComponentAssetCache__.js"></script>
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__ComponentIndexLoader__.js"></script>
     <script src="02__Src__AppModules/02__AppData/VghLantern__AppData__ProfileIndexLoader__.js"></script>

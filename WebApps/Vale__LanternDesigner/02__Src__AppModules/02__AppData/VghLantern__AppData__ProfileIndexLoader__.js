@@ -45,7 +45,7 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
     // ------------------------------------------------------------
     const API_INDEX_PATH     =  '/api/profile-index';                                              // <-- Preferred: live, no-store
     const STATIC_INDEX_PATH  =  '06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json'; // <-- Fallback: direct file
-    const LIBRARY_ROOT_PATH  =  '06__Data__LanternProfileLibrary/';                                // <-- Base for relative profile URLs
+    const LIBRARY_ROOT_PATH  =  '06__Data__LanternProfileLibrary/';                                // <-- Fallback base; the asset registry answers first
     // ------------------------------------------------------------
 
 
@@ -212,7 +212,17 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
 
     // HELPER FUNCTION | Resolve an Index Entry Url Against the Library Root
     // ------------------------------------------------------------
-    function VghLantern__ProfileIndexLoader__ResolveUrl(relativeUrl) {
+    // THE REGISTRY ANSWERS FIRST when a profile id is given. Both this catalogue
+    // and the registry are generated from the same walk, so they normally agree -
+    // but only one of them is the place a path is written down, and when they
+    // disagree it is because this one was built before a file moved.
+    function VghLantern__ProfileIndexLoader__ResolveUrl(relativeUrl, profileId) {
+        if (profileId) {
+            var Registry  =  window.VghLantern__AppData__AssetRegistry;
+            var fromRegistry  =  Registry ? Registry.VghLantern__AssetRegistry__Url(profileId) : '';
+            if (fromRegistry) return fromRegistry;
+        }
+
         if (!relativeUrl) return null;
         if (/^(https?:)?\/\//.test(relativeUrl) || relativeUrl.charAt(0) === '/') return relativeUrl;
         return LIBRARY_ROOT_PATH + relativeUrl;
@@ -234,7 +244,7 @@ const VghLantern__AppData__ProfileIndexLoader = (function() {
             return null;
         }
 
-        var profileUrl  =  VghLantern__ProfileIndexLoader__ResolveUrl(entry.JsonUrl);
+        var profileUrl  =  VghLantern__ProfileIndexLoader__ResolveUrl(entry.JsonUrl, profileId);
         if (!profileUrl) {
             console.warn('[VghLantern__ProfileIndexLoader] Index entry has no JsonUrl:', profileId);
             return null;

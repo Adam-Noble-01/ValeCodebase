@@ -19,6 +19,7 @@ upstands) live in `06__Data__LanternProfileLibrary` instead.
 05__Data__LanternComponentLibrary/
 ├── VghLantern__ComponentDataIndex__.json   ← GENERATED — never hand-edit
 ├── VghLantern__ComponentLibrary__README__.md
+├── 45_1000__Roof__GlazeBars__Components/      ← glaze bar system, not a picker category
 ├── 47_1000__Roof__RidgeElement__Components/   ← ridge system, not a picker category
 ├── 48_1000__Roof__HipElement__Components/     ← hip system, not a picker category
 ├── 50_1000__Roof__Finials/
@@ -34,9 +35,14 @@ folder and a rule, never editing the generated index.
 A folder with **no rule is skipped**, and that is how the fixed assembly
 components stay out of the picker. `47_1000__Roof__RidgeElement__Components`
 holds the octagonal block `47_1001` and the two end caps `47_1011` and `47_1012`;
-all three are named by the ridge system index and none of them is anything a user
-chooses, so none of them belongs in a catalogue. The build utility prints the
-folders it skipped, so a genuinely missing rule is not silent.
+`45_1000__Roof__GlazeBars__Components` holds the decorative bar end cap
+`45_1001`. Each is named by its own system index and none is anything a user
+chooses, so none belongs in a catalogue. The build utility prints the folders it
+skipped, so a genuinely missing rule is not silent.
+
+Those folders are still in `VghLantern__AssetRegistry__.json`, which spans BOTH
+libraries and is what a system index resolves an `AssetId` through. The catalogue
+answers *what can the user pick*; the registry answers *where does this id live*.
 
 File naming: `{ProductCode}__{Type}__{Descriptor}__.json`, e.g.
 `50_1001__Finial__Ball__SmallVariantBallFinial__.json`. The product code is the

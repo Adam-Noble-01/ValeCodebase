@@ -2,6 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.14.5 - 21-Aug-2026 - Fix: Views Bar Thumbnails Survive an Image Re-Sync
+
+### Overview
+Cloud Sync exports a fresh date-stamped image edition on every run and purges
+the one before it, but the PresentationMode__Scene__ThumbnailUrl baked into
+project.json was never re-pointed, so every Views bar thumbnail 404'd after an
+image re-sync on both the R2 primary and the GH Pages fallback. Found on
+2026/3047__Doous, whose six scenes still named 13-Aug-2026 files after the
+21-Aug-2026 sync. ResolveThumbnailUrlPair in
+Na__PresentationMode__ProjectJson__SceneData.js now checks the stored filename
+against the live project.json "images" array and re-derives the current name
+from the matching IMG## slot when it has gone stale, warning to console with
+the substitution. A valid stored name, an absolute URL, an unregistered image
+list and a slot no longer exported all pass through untouched, and IMG01__
+never resolves to IMG01_ART20__. Na__AppFlow__LoadingSequence.js registers the
+live array through the new SetActiveImageList. The auto-built scene path was
+never affected because it already derives filenames at load; this gives the
+explicit-scene path the same guarantee. Sync-side counterpart in
+Whitecardopedia v0.6.17.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.14.4 - 19-Aug-2026 - Export Render Layers: Approximations Removed
 
 ### Overview

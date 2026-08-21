@@ -42,15 +42,21 @@
    because the 2D drawing pipeline reads them from there. See
    AttachAuthoredEdges below.
 
-   Faces are arbitrary convex-ish polygons rather than triangles, so each outer
-   loop is fanned. A fan is correct for the convex loops a lathe or extrusion
-   produces, which is everything in the Vale component library; a concave loop
-   would need real ear clipping and is called out in the console rather than
-   quietly rendered wrong.
+   Faces are arbitrary polygons rather than triangles, so each outer loop is
+   triangulated. A CONVEX loop is fanned from its first vertex, which is exact
+   and costs nothing. A CONCAVE loop is ear clipped through THREE.ShapeUtils,
+   because fanning one fills the hollow it turns back on.
 
-   Inner loops (holes) are not triangulated. The exporter records them so the
-   data is not lossy, but a hole in a finial is not a case that exists yet, and
-   guessing at it would produce worse geometry than omitting it.
+   THAT IS NOT HYPOTHETICAL. The glaze bar end cap 45_1001 is a 3mm shell swept
+   into an arch: each end of it is a 54 point C, strongly concave, enclosing
+   199mm2 of metal around a mouth the bar slides into. Fanned, it came out as a
+   filled 700mm2 slab and the part read as a solid block with its ends bricked
+   up - which looked so much like an export fault that the SketchUp component was
+   rebuilt twice before the renderer was suspected.
+
+   Inner loops (holes) are still not triangulated. The exporter records them so
+   the data is not lossy, but nothing in the library models one yet, and a face
+   that carries one is reported rather than quietly rendered solid.
 
    AXES:
    SketchUp exports are Z-up in millimetres. Three.js is Y-up in world units.
@@ -84,6 +90,17 @@ import {
     const FIELD_FACES     =  'Na__Geometry__Faces';
     const FIELD_EDGES     =  'Na__Geometry__Edges';
     const FIELD_BBOX      =  'Na__Geometry__BoundingBox';
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Concavity Tolerance
+    // ------------------------------------------------------------
+    // How hard a corner has to turn back before the loop counts as concave. It is
+    // an area in square millimetres, not an angle, so it scales with the size of
+    // the corner rather than firing on every rounded fillet: a lathe turning is a
+    // ring of very slightly convex corners and must not be dragged through the ear
+    // clipper, while the 90 degree return on a shell section must be.
+    const CONCAVE_EPSILON  =  1e-6;
     // ------------------------------------------------------------
 
 
@@ -180,9 +197,11 @@ import {
 
         const positions  =  [];
         const normals    =  [];
-        let   skippedFaces  =  0;
-        let   holedFaces    =  0;
-        let   hiddenFaces   =  0;
+        let   skippedFaces    =  0;
+        let   holedFaces      =  0;
+        let   hiddenFaces     =  0;
+        let   clippedFaces    =  0;
+        let   concaveFailures =  0;
 
         for (let f = 0; f < faceList.length; f++) {
             const face  =  faceList[f];
@@ -195,22 +214,26 @@ import {
 
             if (Array.isArray(face.InnerLoops) && face.InnerLoops.length > 0) holedFaces++;
 
-            const first  =  vertexTable.get(loop[0]);
-            if (!first) { skippedFaces++; continue; }
+            const corners  =  [];
+            let   resolved  =  true;
+            for (let c = 0; c < loop.length; c++) {
+                const corner  =  vertexTable.get(loop[c]);
+                if (!corner) { resolved = false; break; }
+                corners.push(corner);
+            }
+            if (!resolved) { skippedFaces++; continue; }
 
-            // Fan the loop from its first vertex: (0,1,2), (0,2,3), (0,3,4) ...
-            for (let t = 1; t < loop.length - 1; t++) {
-                const second  =  vertexTable.get(loop[t]);
-                const third   =  vertexTable.get(loop[t + 1]);
-                if (!second || !third) { skippedFaces++; continue; }
+            const triangles  =  VghLantern__Env3d__MeshJson__TriangulateLoop(corners, face);
+            if (triangles === null) { concaveFailures++; continue; }
+            if (triangles.WasClipped) clippedFaces++;
 
-                positions.push(first.Px,  first.Py,  first.Pz,
-                               second.Px, second.Py, second.Pz,
-                               third.Px,  third.Py,  third.Pz);
+            for (let t = 0; t < triangles.Indices.length; t += 3) {
+                const a  =  corners[triangles.Indices[t]];
+                const b  =  corners[triangles.Indices[t + 1]];
+                const c  =  corners[triangles.Indices[t + 2]];
 
-                normals.push(first.Nx,  first.Ny,  first.Nz,
-                             second.Nx, second.Ny, second.Nz,
-                             third.Nx,  third.Ny,  third.Nz);
+                positions.push(a.Px, a.Py, a.Pz,  b.Px, b.Py, b.Pz,  c.Px, c.Py, c.Pz);
+                normals.push(  a.Nx, a.Ny, a.Nz,  b.Nx, b.Ny, b.Nz,  c.Nx, c.Ny, c.Nz);
             }
         }
 
@@ -237,8 +260,165 @@ import {
             console.info('[VghLantern Env3d] Component "' + assetLabel + '": '
                 + hiddenFaces + ' face(s) hidden by the author in SketchUp and not rendered.');
         }
+        if (clippedFaces > 0) {
+            console.info('[VghLantern Env3d] Component "' + assetLabel + '": '
+                + clippedFaces + ' concave face(s) ear clipped. A fan would have filled them in.');
+        }
+        if (concaveFailures > 0) {
+            console.warn('[VghLantern Env3d] Component "' + assetLabel + '": '
+                + concaveFailures + ' face(s) could not be triangulated and were dropped. '
+                + 'A self-intersecting or degenerate loop is the usual cause.');
+        }
 
         return geometry;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Triangulate One Face Loop
+    // ------------------------------------------------------------
+    // Returns { Indices, WasClipped } addressing the corner array it was handed,
+    // or null when the loop cannot be triangulated at all.
+    //
+    // A CONVEX loop is fanned from its first vertex. That is exact, allocates
+    // nothing, and covers every lathe turning and every plain extrusion end in
+    // the library - which is almost all of it.
+    //
+    // A CONCAVE loop is ear clipped. Fanning one is not a rough approximation, it
+    // is wrong: the fan spans the hollow the loop turns back around, so a C comes
+    // out as a filled D. The ear clip runs in the face's OWN plane, projected
+    // onto whichever pair of world axes that plane is most square to, because a
+    // face lying flat in world Y projected onto XY would collapse to a line.
+    function VghLantern__Env3d__MeshJson__TriangulateLoop(corners, face) {
+        const count  =  corners.length;
+        if (count < 3) return null;
+
+        if (!VghLantern__Env3d__MeshJson__LoopIsConcave(corners)) {
+            const fan  =  [];
+            for (let t = 1; t < count - 1; t++) fan.push(0, t, t + 1);
+            return { Indices : fan, WasClipped : false };
+        }
+
+        // SWAP THE NORMAL FIRST. The corners arrived already swapped into Three's
+        // frame by the vertex table, and the authored normal has not been - so
+        // choosing a projection axis from the raw one picks an axis of the WRONG
+        // FRAME. On the glaze bar end cap, whose ends face SketchUp +Y, that chose
+        // the single plane those faces are perpendicular to: the polygon collapsed
+        // to a line and the clipper returned no triangles at all, which drew the
+        // ends as nothing and read on screen as see-through.
+        const normal  =  VghLantern__Env3d__MeshJson__NormalToThree(face.Normal);
+
+        // DROP THE AXIS THE FACE FACES ALONG. The normal's largest component names
+        // the axis the face is most perpendicular to, which is the one carrying the
+        // least of its shape, so it is the one to discard.
+        const ax  =  Math.abs(normal.x);
+        const ay  =  Math.abs(normal.y);
+        const az  =  Math.abs(normal.z);
+
+        const flat  =  corners.map(function(corner) {
+            if (ax >= ay && ax >= az) return new THREE.Vector2(corner.Py, corner.Pz);
+            if (ay >= ax && ay >= az) return new THREE.Vector2(corner.Pz, corner.Px);
+            return new THREE.Vector2(corner.Px, corner.Py);
+        });
+
+        let clipped;
+        try {
+            clipped  =  THREE.ShapeUtils.triangulateShape(flat, []);
+        } catch (error) {
+            return null;
+        }
+        // Zero triangles from a loop that is genuinely a polygon means the
+        // projection degenerated. Reported rather than silently dropped, because a
+        // dropped face renders as a hole and a hole looks like a material fault.
+        if (!Array.isArray(clipped) || clipped.length === 0) return null;
+
+        // ShapeUtils works to its own winding, and the projection above may have
+        // reflected the loop, so the triangles come back facing either way. The
+        // authored normal decides which is right, and correcting it here means no
+        // component needs a two sided material to hide the question.
+        const wound  =  VghLantern__Env3d__MeshJson__WindToNormal(clipped, corners, normal);
+        return { Indices : wound, WasClipped : true };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether a Loop Turns Both Ways
+    // ------------------------------------------------------------
+    // A convex loop turns the same way at every corner. One that turns back on
+    // itself anywhere is concave and cannot be fanned. Measured with the cross
+    // product of successive edges projected onto the face's dominant plane, which
+    // is the same projection the ear clip uses.
+    function VghLantern__Env3d__MeshJson__LoopIsConcave(corners) {
+        const count  =  corners.length;
+        if (count < 4) return false;                                          // <-- A triangle is always convex
+
+        let sawPositive  =  false;
+        let sawNegative  =  false;
+
+        for (let i = 0; i < count; i++) {
+            const a  =  corners[i];
+            const b  =  corners[(i + 1) % count];
+            const c  =  corners[(i + 2) % count];
+
+            const ux  =  b.Px - a.Px, uy = b.Py - a.Py, uz = b.Pz - a.Pz;
+            const vx  =  c.Px - b.Px, vy = c.Py - b.Py, vz = c.Pz - b.Pz;
+
+            const cx  =  (uy * vz) - (uz * vy);
+            const cy  =  (uz * vx) - (ux * vz);
+            const cz  =  (ux * vy) - (uy * vx);
+
+            // Signed against the first corner's normal, so the test is about the
+            // face's own plane rather than about world up.
+            const sense  =  (cx * a.Nx) + (cy * a.Ny) + (cz * a.Nz);
+            if (sense >  CONCAVE_EPSILON) sawPositive  =  true;
+            if (sense < -CONCAVE_EPSILON) sawNegative  =  true;
+            if (sawPositive && sawNegative) return true;
+        }
+
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | An Authored Face Normal in Three's Frame
+    // ------------------------------------------------------------
+    // The same axis swap the vertex table applies to positions, without the
+    // millimetre scale. Kept as its own function because using it on one of the
+    // two and not the other is exactly the mistake that dropped the end caps.
+    function VghLantern__Env3d__MeshJson__NormalToThree(authored) {
+        const n  =  Array.isArray(authored) ? authored : [0, 0, 1];
+        return { x : n[0], y : n[2], z : -n[1] };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Wind Every Triangle to Face the Authored Normal
+    // ------------------------------------------------------------
+    // normal is ALREADY in Three's frame - see NormalToThree above.
+    function VghLantern__Env3d__MeshJson__WindToNormal(triangles, corners, normal) {
+        const out  =  [];
+
+        for (let t = 0; t < triangles.length; t++) {
+            const tri  =  triangles[t];
+            const a    =  corners[tri[0]];
+            const b    =  corners[tri[1]];
+            const c    =  corners[tri[2]];
+            if (!a || !b || !c) continue;
+
+            const ux  =  b.Px - a.Px, uy = b.Py - a.Py, uz = b.Pz - a.Pz;
+            const vx  =  c.Px - a.Px, vy = c.Py - a.Py, vz = c.Pz - a.Pz;
+
+            const cx  =  (uy * vz) - (uz * vy);
+            const cy  =  (uz * vx) - (ux * vz);
+            const cz  =  (ux * vy) - (uy * vx);
+
+            const facing  =  (cx * normal.x) + (cy * normal.y) + (cz * normal.z);
+
+            if (facing < 0) out.push(tri[0], tri[2], tri[1]);
+            else            out.push(tri[0], tri[1], tri[2]);
+        }
+
+        return out;
     }
     // ------------------------------------------------------------
 

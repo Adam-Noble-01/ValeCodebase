@@ -2,7 +2,6 @@
   "VghLantern__HipSystem__Meta": {
     "SchemaVersion": "1.0.0",
     "CreatedDate": "12-Aug-2026",
-    "LibraryRoot": "06__Data__LanternProfileLibrary/48_2000__HipElements__Profiles/",
     "TimberDepthTableUrl": "06__Data__LanternProfileLibrary/VghLantern__RidgeHipSystem__TimberDepthTable__.json",
     "Description": "The Vale hip as built: an aluminium core spine welded between the eaves extrusion and the ridge core, a Sapele hip beam hung beneath it, a timber flashing fillet, and lead flashing over that. Four parts sharing one section frame.",
     "SectionFrameNote": "All parts are authored in one shared section frame taken from Na__Asset__Plan2D__Top, in the plane NORMAL to the hip line. Section 0,0 is the HIP DATUM - the hip construction triangle line running from the eaves datum corner up to the ridge end point. Section +x runs across the hip, section +y runs up out through the roof: the beam hangs below the datum, the core straddles it, and the blocking and flashing stack above it.",
@@ -16,7 +15,8 @@
     "ElementRoleNote": "ElementType is the five word vocabulary the 3D element isolation and the specification tables filter on. ElementRole carries the finer wording the technical department uses on a drawing, which is descriptive rather than functional and is never filtered on.",
     "StandardsNote": "Taken from the 22.5 Degree CAD Standards library held by the Vale Garden Houses technical department, captured 12-Aug-2026. Every section here is authored for a 22.5 degree roof. Other pitches are reached by transforming these assets, not by holding a library per pitch.",
     "HandAuthored": true,
-    "HandAuthoredNote": "Written by hand rather than generated. A build utility scanning a folder could not know which asset fills which slot, nor where a section's pitch hinge sits."
+    "HandAuthoredNote": "Written by hand rather than generated. A build utility scanning a folder could not know which asset fills which slot, nor where a section's pitch hinge sits.",
+    "AssetResolutionNote": "Parts name an AssetId and nothing else. The file behind an id is resolved through VghLantern__AssetRegistry__.json, which is the one place a path is written down. LibraryRoot and the per part JsonUrl were removed on 21-Aug-2026."
   },
   "VghLantern__HipSystem__Types": [
     {
@@ -92,7 +92,6 @@
       "PartKey": "core",
       "PartName": "Hip Core",
       "AssetId": "48_2001",
-      "JsonUrl": "48_2001__ValeGlazedRoof__HipCore__StandardAliExtrusion__.json",
       "Selectable": false,
       "ElementType": "Structural",
       "ElementRole": "Structural",
@@ -112,7 +111,6 @@
       "PartKey": "beam",
       "PartName": "Hip Beam",
       "AssetId": "48_2021",
-      "JsonUrl": "48_2021__ValeGlazedRoof__HipBeam__RidgeTimber__.json",
       "Selectable": false,
       "ElementType": "Structural",
       "ElementRole": "Timber Substructure",
@@ -143,7 +141,6 @@
       "PartKey": "blocking",
       "PartName": "Hip Blocking",
       "AssetId": "48_2101",
-      "JsonUrl": "48_2101__ValeGlazedRoof__HipBlocking__FlashingBlock__.json",
       "Selectable": false,
       "ElementType": "Trim",
       "ElementRole": "Timber Packer",
@@ -193,7 +190,6 @@
       "PartKey": "flashing",
       "PartName": "Hip Lead Flashing",
       "AssetId": "48_2121",
-      "JsonUrl": "48_2121__ValeGlazedRoof__HipFlashing__LeadFlashing__.json",
       "Selectable": false,
       "ElementType": "Flashing",
       "ElementRole": "Flashing",

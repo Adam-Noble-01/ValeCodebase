@@ -19,6 +19,21 @@
 
 # -----------------------------------------------------------------------------
 
+## Whitecardopedia v0.6.17 - 21-Aug-2026 - Fix: project.json Keys Follow the New Image Edition
+
+### Overview
+`na_update_project_json_images` rewrote only `images` while a sync re-dates every filename and purges the previous edition from disk and from R2, so every key derived from that array kept naming files the same run had just deleted. The visible casualty was the ValeVision3D Views bar: `PresentationMode__Scene__ThumbnailUrl` is written once by the SketchUp scene converter and was never refreshed, so all six Doous scenes still named 13-Aug-2026 files after the 21-Aug-2026 sync reported success at all sixteen steps.
+
+### Changes
+- **NEW scene thumbnail re-point** - `na_repoint_presentation_thumbnails()` re-points each scene onto the current edition by IMG## slot; a scene with an empty path falls back to its position in `ValeVison3D__SketchUpCameraData.scenes`. Hand-authored paths (`PresentationMode/Thumbnails/...`) are never overwritten, and a slot with no image in this edition is named in the report rather than pointed at a neighbouring shot.
+- **NEW derived list rebuild** - `na_rebuild_derived_image_lists()` refreshes `allImages` and `displayImages`. Both are recomputed at load by `Na__AppData__ProjectLoader.js`, so this is file hygiene rather than a live fix.
+- **New report step** - `Re-point Scene Thumbnails`, emitted only when there was presentation-scene work to do. Both helpers run inside the existing atomic project.json write, so the R2 upload that follows carries the corrected file.
+
+### Files Changed
+- `Tools__DevUtils/AutomationUtil__SyncSingleProject__ToCloudAndWeb__Main__.py`
+
+# -----------------------------------------------------------------------------
+
 ## Whitecardopedia v0.6.16 - 18-Aug-2026 - Feature: Advanced Time Data, Production KPI Dashboard, Working-Day Turnaround
 
 ### Overview

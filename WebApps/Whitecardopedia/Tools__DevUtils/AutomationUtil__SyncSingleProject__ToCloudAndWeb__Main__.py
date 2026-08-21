@@ -50,6 +50,20 @@
 #   without loading the 3D model because the URL array was only written once
 #   (on first scaffold) and never refreshed on subsequent syncs.
 #
+# 21-Aug-2026 - Version 1.2.1
+# - Fix: na_update_project_json_images now rewrites every key derived from
+#   "images", not just "images" itself. Each sync exports a new date-stamped
+#   edition and purges the previous one, so any filename left on the old date
+#   named a file this same run had just deleted.
+# - na_repoint_presentation_thumbnails: re-points the ValeVision3D Views bar
+#   scene thumbnails onto the current edition by IMG## slot. Written once by
+#   the SketchUp scene converter and never refreshed, so every thumbnail 404'd
+#   after an image re-sync (found on 2026/3047__Doous). Hand-authored paths are
+#   left alone; a slot with no image is reported, not guessed at.
+# - na_rebuild_derived_image_lists: refreshes allImages / displayImages. Both
+#   are recomputed at load by Na__AppData__ProjectLoader.js, so this is file
+#   hygiene rather than a live fix.
+#
 # =============================================================================
 
 import os
@@ -88,6 +102,20 @@ R2_BASE_PREFIX               = "VaApps/Projects"                     # <-- R2 ro
 ENV_FILE_PATH                = _SCRIPT_DIR / "API__Cloudflare" / "Token__CloudflareAPI.env"  # <-- Cloudflare credentials
 THUMBNAIL_SCRIPT             = _SCRIPT_DIR / "AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py"
 FETCH_SCRIPT                 = _SCRIPT_DIR / "AutomationUtil__FetchLocalProjects__BuildWhitecardopediaProject__Main__.py"
+# ------------------------------------------------------------
+
+# MODULE CONSTANTS | Derived Filename Contract and Presentation Scene Keys
+# ------------------------------------------------------------
+THUMBNAIL_SUFFIX_TOKEN        = "__Thumbnail__524p__"                       # <-- Suffix the 524p generator appends to the source image base name
+THUMBNAIL_WEBP_EXTENSION      = ".webp"                                     # <-- Primary thumbnail extension consumed by the web apps
+PRESENTATION_SCENES_BLOCK_KEY = "PresentationMode__SavedCameraScenes"       # <-- ValeVision3D Views bar block
+PRESENTATION_SCENES_ARRAY_KEY = "PresentationMode__SavedCameraScenes__Scenes"
+PRESENTATION_SCENE_THUMB_KEY  = "PresentationMode__Scene__ThumbnailUrl"     # <-- Baked-once thumbnail path this module keeps current
+PRESENTATION_SCENE_NAME_KEY   = "PresentationMode__Scene__Name"
+PRESENTATION_SCENE_ID_KEY     = "PresentationMode__Scene__Id"
+PRESENTATION_SCENE_ORDER_KEY  = "PresentationMode__Scene__Order"
+IMG_SLOT_PATTERN              = re.compile(r'^(IMG\d{2,3}(?:_ART\d{2})?)', re.IGNORECASE)  # <-- Scene slot token at the head of a filename
+ART_VARIANT_PATTERN           = re.compile(r'^IMG\d{2,3}_ART\d{2}', re.IGNORECASE)          # <-- ART pair variant, not a base scene
 # ------------------------------------------------------------
 
 # MODULE CONSTANTS | Console Colours
@@ -284,6 +312,137 @@ def na_clone_images_to_wcp(local_project_root: Path, wcp_project_dir: Path, repo
     return copied
 
 
+def na_derive_thumbnail_filename(image_name: str) -> str:
+    """IMG01__...__21-Aug-2026.png -> IMG01__...__21-Aug-2026__Thumbnail__524p__.webp
+
+    Mirrors AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py and the
+    matching JS helpers in the web apps."""
+    stem = re.sub(r'\.png$', '', image_name, flags=re.IGNORECASE)
+    return f'{stem}{THUMBNAIL_SUFFIX_TOKEN}{THUMBNAIL_WEBP_EXTENSION}'
+
+
+def na_slot_token_from_filename(name: str) -> Optional[str]:
+    """Return the leading IMG## / IMG##_ART## slot token, upper-cased."""
+    match = IMG_SLOT_PATTERN.match(name or '')
+    return match.group(1).upper() if match else None
+
+
+def na_build_slot_index(source_images: List[str]) -> Dict[str, str]:
+    """Map each IMG## slot token to the current dated source PNG for that slot."""
+    index: Dict[str, str] = {}
+    for name in source_images:
+        slot = na_slot_token_from_filename(name)
+        if slot and slot not in index:
+            index[slot] = name                                   # <-- Sorted input, so the first hit per slot wins
+    return index
+
+
+def na_rebuild_derived_image_lists(existing: Dict, source_images: List[str]):
+    """Refresh the cached lists the Whitecardopedia loader derives from 'images'.
+
+    displayImages holds base scenes only; ART variants pair onto them at render
+    time (see buildImagePairsMap in Na__AppData__ProjectLoader.js). artPairsMap
+    is a runtime Map and is deliberately left alone."""
+    existing['allImages']     = list(source_images)
+    existing['displayImages'] = [n for n in source_images if not ART_VARIANT_PATTERN.match(n)]
+
+
+def na_scene_slot_from_camera_data(existing: Dict, scene: Dict) -> Optional[str]:
+    """Fallback slot resolution for a scene with no usable stored thumbnail path.
+
+    su_scene_N (or Order N) indexes the Nth SketchUp camera scene, whose
+    scene_name carries the IMG## token."""
+    camera_block = existing.get(CAMERA_DATA_KEY)
+    if not isinstance(camera_block, dict):
+        return None
+
+    cam_scenes = camera_block.get('scenes')
+    if not isinstance(cam_scenes, list) or not cam_scenes:
+        return None
+
+    index    = None
+    scene_id = str(scene.get(PRESENTATION_SCENE_ID_KEY) or '')
+    id_match = re.match(r'^su_scene_(\d+)$', scene_id, re.IGNORECASE)
+
+    if id_match:
+        index = int(id_match.group(1)) - 1                       # <-- su_scene_1 is the first camera scene
+    else:
+        order = scene.get(PRESENTATION_SCENE_ORDER_KEY)
+        if isinstance(order, int) and order > 0:
+            index = order - 1                                    # <-- Order is 1-based and follows export order
+
+    if index is None or index < 0 or index >= len(cam_scenes):
+        return None
+
+    entry = cam_scenes[index]
+    if not isinstance(entry, dict):
+        return None
+
+    return na_slot_token_from_filename(str(entry.get('scene_name') or ''))
+
+
+def na_repoint_presentation_thumbnails(existing: Dict, source_images: List[str]):
+    """Re-point every PresentationMode scene thumbnail at the current edition.
+
+    The ValeVision3D Views bar reads PresentationMode__Scene__ThumbnailUrl
+    verbatim. Those strings are written once by the SketchUp scene converter, so
+    without this step they keep naming the edition that was current when the
+    scenes were first built - files this sync has just purged from the local
+    folder and from R2. Returns (repointed_count, orphaned_scene_labels)."""
+    block = existing.get(PRESENTATION_SCENES_BLOCK_KEY)
+    if not isinstance(block, dict):
+        return 0, []                                             # <-- Project has no Views bar
+
+    scenes = block.get(PRESENTATION_SCENES_ARRAY_KEY)
+    if not isinstance(scenes, list) or not scenes:
+        return 0, []
+
+    slot_index = na_build_slot_index(source_images)
+    repointed  = 0
+    orphaned   = []
+
+    for scene in scenes:
+        if not isinstance(scene, dict):
+            continue
+
+        stored = str(scene.get(PRESENTATION_SCENE_THUMB_KEY) or '').strip()
+
+        if stored and not IMG_SLOT_PATTERN.match(stored):
+            continue                                             # <-- Hand-authored path (PresentationMode/Thumbnails/...), never overwrite
+
+        slot = na_slot_token_from_filename(stored) if stored \
+            else na_scene_slot_from_camera_data(existing, scene)  # <-- Only infer a slot for a scene with no path at all
+
+        if not slot:
+            continue                                             # <-- Nothing to anchor on, leave the scene alone
+
+        source_image = slot_index.get(slot)
+        if not source_image:
+            label = str(scene.get(PRESENTATION_SCENE_NAME_KEY)
+                        or scene.get(PRESENTATION_SCENE_ID_KEY) or '?')
+            orphaned.append(label)                               # <-- Slot had an image before and has none in this edition
+            continue
+
+        wanted = na_derive_thumbnail_filename(source_image)
+        if stored != wanted:
+            scene[PRESENTATION_SCENE_THUMB_KEY] = wanted
+            repointed += 1
+
+    return repointed, orphaned
+
+
+def na_report_thumbnail_repoint(report: SyncReport, repointed: int, orphaned: List[str]):
+    """Emit a report step only when there was presentation scene work to do."""
+    if repointed == 0 and not orphaned:
+        return                                                   # <-- No Views bar, or already current
+
+    message = f'Re-pointed {repointed} scene thumbnail(s) at the current edition.'
+    if orphaned:
+        message += f" No image exported for: {', '.join(orphaned)}."
+
+    report.add_step('Re-point Scene Thumbnails', not orphaned, message)
+
+
 def na_update_project_json_images(wcp_project_dir: Path, report: SyncReport) -> List[str]:
     """Rebuild project.json 'images' from the IMG## PNGs actually present in the
     Whitecardopedia folder, so freshly-cloned scenes (e.g. IMG02) appear and stale
@@ -309,6 +468,10 @@ def na_update_project_json_images(wcp_project_dir: Path, report: SyncReport) -> 
         previous            = existing.get('images', [])
         existing['images']  = source_images
 
+        # RE-POINT EVERY DERIVED KEY | Nothing may keep naming the purged edition
+        na_rebuild_derived_image_lists(existing, source_images)                            # <-- allImages / displayImages
+        repointed, orphaned = na_repoint_presentation_thumbnails(existing, source_images)  # <-- ValeVision3D Views bar thumbnails
+
         tmp_path = project_json_path.with_suffix('.tmp.json')
         tmp_path.write_text(json.dumps(existing, indent=4), encoding='utf-8')
         tmp_path.replace(project_json_path)
@@ -316,6 +479,7 @@ def na_update_project_json_images(wcp_project_dir: Path, report: SyncReport) -> 
         changed = 'updated' if previous != source_images else 'unchanged'
         report.add_step('Update Image List', True,
                         f"project.json images {changed} — {len(source_images)} scene(s): {', '.join(source_images)}.")
+        na_report_thumbnail_repoint(report, repointed, orphaned)
         return source_images
     except Exception as exc:
         report.add_step('Update Image List', False, f'Could not rewrite images array: {exc}')

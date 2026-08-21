@@ -5,7 +5,7 @@
     "generator"        : "Na__ComponentEditorTools::Na__ExportTools - Export tab multi-view exporter",
     "generatedDate"    : "05-Aug-2026",
     "sourceModel"      : "SketchUp__ModelWorkshop__AssetExporter__Active__.skp",
-    "sourceAsset"      : "45_1011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
+    "sourceAsset"      : "45_2011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
     "exportedScenes"   : [
         {
             "sceneName" : "FixedAxis__FrontElevation",
@@ -35,8 +35,8 @@
     }
   },
   "Na__Asset__Metadata"           : {
-    "Na__Asset__Metadata__Id"           : "45_1011",
-    "Na__Asset__Metadata__Name"         : "45_1011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
+    "Na__Asset__Metadata__Id"           : "45_2011",
+    "Na__Asset__Metadata__Name"         : "45_2011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
     "Na__Asset__Metadata__CategoryId"   : "",
     "Na__Asset__Metadata__CategoryName" : "",
     "Na__Asset__Metadata__Description"  : "",
@@ -48,14 +48,14 @@
     "Na__Asset__Metadata__Tags"         : []
   },
   "Na__Asset__ValeSpecification"  : {
-    "Na__Asset__ValeSpec__ProductCode"  : "45_1011",
+    "Na__Asset__ValeSpec__ProductCode"  : "45_2011",
     "Na__Asset__ValeSpec__ProductName"  : "Glaze Bar Core - Standard Aluminium Extrusion",
     "Na__Asset__ValeSpec__Supplier"     : "Vale Garden Houses",
     "Na__Asset__ValeSpec__Material"     : "Aluminium",
     "Na__Asset__ValeSpec__Finish"       : "Mill Finish",
     "Na__Asset__ValeSpec__ElementType"  : "Structural",
     "Na__Asset__ValeSpec__SpecMaterial" : "Mill Finish Aluminium",
-    "Na__Asset__ValeSpec__Notes"        : "Concealed structural extrusion carrying the glass. Capped externally by 45_1021 and clad internally by a 45_103x trim."
+    "Na__Asset__ValeSpec__Notes"        : "Concealed structural extrusion carrying the glass. Capped externally by 45_2021 and clad internally by a 45_203x trim."
   },
   "Na__Asset__Elevation2D__Front" : {
     "Na__View__SourceSceneName" : "FixedAxis__FrontElevation",
@@ -2713,8 +2713,8 @@
             "Na__Object__NodeId"                    : "OBJ0001",
             "Na__Object__ParentNodeId"              : null,
             "Na__Object__EntityType"                : "ComponentDefinition",
-            "Na__Object__Name"                      : "45_1011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
-            "Na__Object__DefinitionName"            : "45_1011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
+            "Na__Object__Name"                      : "45_2011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
+            "Na__Object__DefinitionName"            : "45_2011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__",
             "Na__Object__TagName"                   : "",
             "Na__Object__LocalTransform__Matrix4x4" : [
                 [1.0, 0.0, 0.0, 0.0],

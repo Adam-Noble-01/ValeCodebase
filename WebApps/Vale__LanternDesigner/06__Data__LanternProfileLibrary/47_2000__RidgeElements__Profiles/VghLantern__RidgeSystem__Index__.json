@@ -2,9 +2,7 @@
   "VghLantern__RidgeSystem__Meta": {
     "SchemaVersion": "1.0.0",
     "CreatedDate": "12-Aug-2026",
-    "LibraryRoot": "06__Data__LanternProfileLibrary/47_2000__RidgeElements__Profiles/",
     "TimberDepthTableUrl": "06__Data__LanternProfileLibrary/VghLantern__RidgeHipSystem__TimberDepthTable__.json",
-    "RidgeBlockRoot": "05__Data__LanternComponentLibrary/47_1000__Roof__RidgeElement__Components/",
     "Description": "The Vale ridge as built: an aluminium core spine, a Sapele ridge beam hung beneath it, a timber flashing block, lead flashing over that, and on the capped type a second timber block carrying the decorative aluminium capping. Six parts sharing one section frame.",
     "SectionFrameNote": "All parts are authored in one shared section frame taken from Na__Asset__Plan2D__Top. Section 0,0 is the RIDGE DATUM - the ridge centreline the skeleton solver publishes as RidgeLevelMm. Section +x runs across the ridge, section +y runs up out through the roof: the beam hangs below the datum, the core straddles it, and the blocking, flashing and capping stack above it. The parts assemble with no fitting.",
     "ElementTypeVocabulary": [
@@ -17,7 +15,8 @@
     "ElementRoleNote": "ElementType is the five word vocabulary the 3D element isolation and the specification tables filter on. ElementRole carries the finer wording the technical department uses on a drawing - Timber Substructure, Timber Packer, Decoration - which is descriptive rather than functional and is never filtered on.",
     "StandardsNote": "Taken from the 22.5 Degree CAD Standards library held by the Vale Garden Houses technical department, captured 12-Aug-2026. Every section here is authored for a 22.5 degree roof. Other pitches are reached by transforming these assets, not by holding a library per pitch - the same approach the eaves abutment already takes on the base frame.",
     "HandAuthored": true,
-    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed assembly with two type variants, not a catalogue: a build utility scanning a folder could not know which asset fills which slot, which slots drop out on a leaded only ridge, or where a section's pitch hinge sits."
+    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed assembly with two type variants, not a catalogue: a build utility scanning a folder could not know which asset fills which slot, which slots drop out on a leaded only ridge, or where a section's pitch hinge sits.",
+    "AssetResolutionNote": "Parts name an AssetId and nothing else. The file behind an id is resolved through VghLantern__AssetRegistry__.json, which is the one place a path is written down. LibraryRoot and the per part JsonUrl were removed on 21-Aug-2026."
   },
   "VghLantern__RidgeSystem__Types": [
     {
@@ -53,7 +52,6 @@
   ],
   "VghLantern__RidgeSystem__BlockRelationship": {
     "BlockAssetId": "47_1001",
-    "BlockJsonUrl": "47_1001__ValeRoofSystem__RidgeBlock__StandardOctagonalBlock__.json",
     "AcrossFlatsMm": 135,
     "FacetInsetMm": 67.5,
     "FacetInsetNote": "Half the across-flats dimension. The octagon's flats face along the ridge and on both hip diagonals, so a plumb cut plane at this distance from the block centre, normal along the member's plan direction, lands exactly on the facet the member abuts.",
@@ -99,12 +97,10 @@
     "EndCapRootNote": "The cast aluminium cap that finishes each end of the ridge capping. Like the octagonal block it is a placed mesh component rather than a swept section, so it lives in the component library and is named here rather than found by a folder scan.",
     "RidgeEnd": {
       "AssetId": "47_1011",
-      "JsonUrl": "47_1011__Roof__RidgeEndCap__.json",
       "PartName": "Ridge End Cap"
     },
     "Apex": {
       "AssetId": "47_1012",
-      "JsonUrl": "47_1012__Roof__RidgeEndCap__PyramidLanternVaritaion__.json",
       "PartName": "Ridge End Cap - Pyramid Variant"
     },
     "ApexNote": "A pyramid has no ridge and no ridge capping, so the ridge end variant's socket would open onto nothing. The pyramid variant is the same cap closed as a full octagon with no return. A square lantern reaches this case without the user choosing Pyramid, because the ridge collapses to a point on its own.",
@@ -130,7 +126,6 @@
       "PartKey": "core",
       "PartName": "Ridge Core",
       "AssetId": "47_2001",
-      "JsonUrl": "47_2001__ValeGlazedRoof__RidgeCore__StandardAliExtrusion__.json",
       "Selectable": false,
       "ElementType": "Structural",
       "ElementRole": "Structural",
@@ -150,7 +145,6 @@
       "PartKey": "beam",
       "PartName": "Ridge Beam",
       "AssetId": "47_2021",
-      "JsonUrl": "47_2021__ValeGlazedRoof__RidgeBeam__RidgeTimber__.json",
       "Selectable": false,
       "ElementType": "Structural",
       "ElementRole": "Timber Substructure",
@@ -181,7 +175,6 @@
       "PartKey": "blocking",
       "PartName": "Ridge Blocking",
       "AssetId": "47_2101",
-      "JsonUrl": "47_2101__ValeGlazedRoof__RidgeBlocking__FlashingBlock__.json",
       "Selectable": false,
       "ElementType": "Trim",
       "ElementRole": "Timber Packer",
@@ -217,7 +210,6 @@
       "PartKey": "flashing",
       "PartName": "Ridge Lead Flashing",
       "AssetId": "47_2121",
-      "JsonUrl": "47_2121__ValeGlazedRoof__RidgeFlashing__LeadFlashing__.json",
       "Selectable": false,
       "ElementType": "Flashing",
       "ElementRole": "Flashing",
@@ -266,7 +258,6 @@
       "PartKey": "cappingBlock",
       "PartName": "Ridge Capping Block",
       "AssetId": "47_2202",
-      "JsonUrl": "47_2202__ValeGlazedRoof__RidgeCapping__TimberBlock__.json",
       "Selectable": false,
       "ElementType": "Trim",
       "ElementRole": "Timber Packer",
@@ -286,7 +277,6 @@
       "PartKey": "capping",
       "PartName": "Ridge Capping",
       "AssetId": "47_2201",
-      "JsonUrl": "47_2201__ValeGlazedRoof__RidgeCapping__AluminiumCapping__.json",
       "Selectable": false,
       "ElementType": "Trim",
       "ElementRole": "Decoration",

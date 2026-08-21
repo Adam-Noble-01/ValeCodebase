@@ -44,6 +44,7 @@ const load = rel => vm.runInContext(fs.readFileSync(path.join(MOD, rel), 'utf8')
     '04__MathUtils__LanternGeometry/VghLantern__Geometry__SectionLoopBuilder__.js',
     '04__MathUtils__LanternGeometry/VghLantern__Geometry__StretchTools__.js',
     '04__MathUtils__LanternGeometry/VghLantern__Geometry__RidgeAssembly__.js',
+    '02__AppData/VghLantern__AppData__AssetRegistry__.js',
     '02__AppData/VghLantern__AppData__RidgeHipDepthTable__.js',
     '02__AppData/VghLantern__AppData__RidgeSystemLoader__.js',
     '05__Env2d__SvgRenderPipeline/VghLantern__Env2d__ComponentPathRenderer__.js'

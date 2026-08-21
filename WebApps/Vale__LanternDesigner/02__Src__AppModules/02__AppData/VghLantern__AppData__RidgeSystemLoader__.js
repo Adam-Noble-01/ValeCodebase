@@ -43,11 +43,28 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Index Source Paths
+    // MODULE CONSTANTS | System Index Identity
     // ------------------------------------------------------------
-    const LIBRARY_ROOT_PATH  =  '06__Data__LanternProfileLibrary/47_2000__RidgeElements__Profiles/';
-    const INDEX_PATH         =  LIBRARY_ROOT_PATH + 'VghLantern__RidgeSystem__Index__.json';
-    const BLOCK_ROOT_PATH    =  '05__Data__LanternComponentLibrary/47_1000__Roof__RidgeElement__Components/';
+    // A KEY rather than a path. The ridge reaches into BOTH libraries - swept
+    // sections from the profile library, the octagonal block and the two end caps
+    // from the component library - and used to name a root for each. It now names
+    // neither: VghLantern__AppData__AssetRegistry resolves an id wherever it lives,
+    // which is the whole reason a registry spans both libraries rather than one.
+    const SYSTEM_INDEX_KEY  =  'ridge';
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Asset Registry This Loader Resolves Through
+    // ------------------------------------------------------------
+    // Throws rather than returning null, because a missing registry is a script
+    // order fault and every symptom downstream of it is an unexplained absence.
+    function VghLantern__RidgeSystemLoader__Registry() {
+        var Registry  =  window.VghLantern__AppData__AssetRegistry;
+        if (!Registry) {
+            throw new Error('VghLantern__AppData__AssetRegistry is not loaded - check the script order in VghLantern__App__.html');
+        }
+        return Registry;
+    }
     // ------------------------------------------------------------
 
 
@@ -105,7 +122,12 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
             if (DepthTable) await DepthTable.VghLantern__RidgeHipDepthTable__LoadTable();
 
             try {
-                var response  =  await fetch(INDEX_PATH, { cache: 'no-store' });
+                await VghLantern__RidgeSystemLoader__Registry().VghLantern__AssetRegistry__Load();
+
+                var indexUrl  =  VghLantern__RidgeSystemLoader__Registry().VghLantern__AssetRegistry__SystemIndexUrl(SYSTEM_INDEX_KEY);
+                if (!indexUrl) throw new Error('the asset registry carries no "' + SYSTEM_INDEX_KEY + '" system index');
+
+                var response  =  await fetch(indexUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 VghLantern__RidgeSystemLoader__IndexData  =  await response.json();
@@ -287,7 +309,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
         if (!relationship) return null;
 
         var variant  =  (anchorRole === ANCHOR_ROLE_APEX) ? relationship.Apex : relationship.RidgeEnd;
-        if (!variant || !variant.AssetId || !variant.JsonUrl) return null;
+        if (!variant || !variant.AssetId) return null;
 
         return variant;
     }
@@ -343,7 +365,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
 
     // HELPER FUNCTION | Fetch One Asset File by Id (memoised, concurrency safe)
     // ------------------------------------------------------------
-    function VghLantern__RidgeSystemLoader__LoadAsset(assetId, jsonUrl) {
+    function VghLantern__RidgeSystemLoader__LoadAsset(assetId) {
         if (VghLantern__RidgeSystemLoader__AssetCache[assetId]) {
             return Promise.resolve(VghLantern__RidgeSystemLoader__AssetCache[assetId]);
         }
@@ -353,7 +375,10 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
 
         VghLantern__RidgeSystemLoader__AssetPromise[assetId]  =  (async function() {
             try {
-                var response  =  await fetch(LIBRARY_ROOT_PATH + jsonUrl, { cache: 'no-store' });
+                var assetUrl  =  VghLantern__RidgeSystemLoader__Registry().VghLantern__AssetRegistry__Url(assetId);
+                if (!assetUrl) throw new Error('the asset registry carries no entry for this id');
+
+                var response  =  await fetch(assetUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 var data  =  await response.json();
@@ -379,7 +404,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
     // The section is the same on every rebuild, so the stitch is done once per
     // asset for the life of the page. The pitch and depth transforms downstream
     // work on COPIES of what this returns, so the cached stitch stays authored.
-    async function VghLantern__RidgeSystemLoader__FacesForAsset(assetId, jsonUrl) {
+    async function VghLantern__RidgeSystemLoader__FacesForAsset(assetId) {
         if (VghLantern__RidgeSystemLoader__FaceCache[assetId]) {
             return VghLantern__RidgeSystemLoader__FaceCache[assetId];
         }
@@ -390,7 +415,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
             return null;
         }
 
-        var asset  =  await VghLantern__RidgeSystemLoader__LoadAsset(assetId, jsonUrl);
+        var asset  =  await VghLantern__RidgeSystemLoader__LoadAsset(assetId);
         if (!asset) return null;
 
         var result  =  LoopBuilder.VghLantern__SectionLoopBuilder__BuildFacesFromAsset(asset);
@@ -415,7 +440,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
     //
     // Keyed by asset id and shared by every caller, so two placements of one cap,
     // the 2D renderer and the projected edges stage all cost a single fetch.
-    function VghLantern__RidgeSystemLoader__LoadComponentAsset(assetId, jsonUrl, label) {
+    function VghLantern__RidgeSystemLoader__LoadComponentAsset(assetId, label) {
         if (VghLantern__RidgeSystemLoader__PartAsset[assetId]) {
             return Promise.resolve(VghLantern__RidgeSystemLoader__PartAsset[assetId]);
         }
@@ -425,7 +450,10 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
 
         VghLantern__RidgeSystemLoader__PartPromise[assetId]  =  (async function() {
             try {
-                var response  =  await fetch(BLOCK_ROOT_PATH + jsonUrl, { cache: 'no-store' });
+                var assetUrl  =  VghLantern__RidgeSystemLoader__Registry().VghLantern__AssetRegistry__Url(assetId);
+                if (!assetUrl) throw new Error('the asset registry carries no entry for this id');
+
+                var response  =  await fetch(assetUrl, { cache: 'no-store' });
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 VghLantern__RidgeSystemLoader__PartAsset[assetId]  =  await response.json();
@@ -462,13 +490,12 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
             await VghLantern__RidgeSystemLoader__LoadIndex();
 
             var relationship  =  VghLantern__RidgeSystemLoader__BlockRelationship();
-            if (!relationship || !relationship.BlockJsonUrl) {
+            if (!relationship || !relationship.BlockAssetId) {
                 console.error('[VghLantern__RidgeSystemLoader] The index declares no ridge block.');
                 return null;
             }
 
-            return VghLantern__RidgeSystemLoader__LoadComponentAsset(
-                relationship.BlockAssetId || 'ridgeBlock', relationship.BlockJsonUrl, 'Ridge block');
+            return VghLantern__RidgeSystemLoader__LoadComponentAsset(relationship.BlockAssetId, 'Ridge block');
         })();
     }
     // ------------------------------------------------------------
@@ -491,7 +518,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
             }
 
             return VghLantern__RidgeSystemLoader__LoadComponentAsset(
-                variant.AssetId, variant.JsonUrl, 'Ridge end cap ' + variant.AssetId);
+                variant.AssetId, 'Ridge end cap ' + variant.AssetId);
         })();
     }
     // ------------------------------------------------------------
@@ -514,7 +541,7 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
     // read them: fetching and stitching is one job, adapting a section to a roof
     // is another.
     async function VghLantern__RidgeSystemLoader__BuildPart(part) {
-        var result  =  await VghLantern__RidgeSystemLoader__FacesForAsset(part.AssetId, part.JsonUrl);
+        var result  =  await VghLantern__RidgeSystemLoader__FacesForAsset(part.AssetId);
         if (!result || !result.Faces || result.Faces.length === 0) return null;
 
         return {

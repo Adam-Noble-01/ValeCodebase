@@ -13,11 +13,11 @@
    - A Vale roof glaze bar is not one section. It is three parts sharing one
      datum, and the model now says so:
 
-         Glaze Bar Cap    45_1021   powder coated aluminium, the decorative
+         Glaze Bar Cap    45_2021   powder coated aluminium, the decorative
                                     outer capping seen from outside the roof
-         Glaze Bar Core   45_1011   mill finish aluminium, the concealed
+         Glaze Bar Core   45_2011   mill finish aluminium, the concealed
                                     structural extrusion carrying the glass
-         Glaze Bar Trim   45_1031   Douglas fir, the internal decorative
+         Glaze Bar Trim   45_2031   Douglas fir, the internal decorative
                           /1032     moulding seen from inside the room, in
                           /1033     45, 70 or 90 mm depth
 

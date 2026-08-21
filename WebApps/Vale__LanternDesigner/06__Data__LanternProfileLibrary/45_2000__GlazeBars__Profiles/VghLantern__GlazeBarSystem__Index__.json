@@ -1,8 +1,7 @@
 {
   "VghLantern__GlazeBarSystem__Meta": {
-    "SchemaVersion": "1.0.0",
+    "SchemaVersion": "2.0.0",
     "CreatedDate": "05-Aug-2026",
-    "LibraryRoot": "06__Data__LanternProfileLibrary/45_1000__GlazeBars/",
     "Description": "The Vale roof glaze bar as built: a cap, a core and a trim sharing one section datum. Cap and core are fixed; only the trim depth is configurable.",
     "SectionFrameNote": "All parts are authored in one shared section frame taken from Na__Asset__Plan2D__Top. Section +x runs across the bar, section +y runs out through the roof, and section 0,0 is the glaze bar datum. The parts assemble with no fitting and their solid areas do not overlap.",
     "ElementTypeVocabulary": [
@@ -15,14 +14,15 @@
     "OverallWidthMm": 40.584,
     "OverallWidthNote": "The widest point across the assembled bar, which is the cap. Consumed by the 2D profile trace overlay, where a bar is drawn as a band of its real width.",
     "HandAuthored": true,
-    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed three part system, not a catalogue: a build utility scanning a folder could not know which asset fills which slot."
+    "HandAuthoredNote": "Written by hand rather than generated. This is a fixed three part system, not a catalogue: a build utility scanning a folder could not know which asset fills which slot.",
+    "AssetResolutionNote": "Parts name an AssetId and nothing else. The file behind an id is resolved through VghLantern__AssetRegistry__.json, which is the one place a path is written down. This index carried a LibraryRoot and a JsonUrl per part until 21-Aug-2026, when the folder was renamed 45_1000__GlazeBars to 45_2000__GlazeBars__Profiles and every one of them pointed at a file that no longer existed, with nothing to report it.",
+    "ProductCodeNote": "Renumbered 45_10xx to 45_20xx on 21-Aug-2026. The x_1xxx block is the component library and the x_2xxx block is the profile library, matching the ridge and hip systems, so a code now says which library holds it. TrimOptionId is a product code and moved with them; ProjectSchemaValidator migrates the stored value on load."
   },
   "VghLantern__GlazeBarSystem__Parts": [
     {
       "PartKey": "core",
       "PartName": "Glaze Bar Core",
-      "AssetId": "45_1011",
-      "JsonUrl": "45_1011__ValeGlazedRoof____GlazeBarCore__StandardAliExtrusion__.json",
+      "AssetId": "45_2011",
       "Selectable": false,
       "AlwaysPresent": true,
       "ElementType": "Structural",
@@ -38,8 +38,7 @@
     {
       "PartKey": "cap",
       "PartName": "Glaze Bar Cap",
-      "AssetId": "45_1021",
-      "JsonUrl": "45_1021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__.json",
+      "AssetId": "45_2021",
       "Selectable": false,
       "AlwaysPresent": true,
       "ElementType": "Trim",
@@ -59,15 +58,14 @@
       "PartName": "Glaze Bar Trim",
       "Selectable": true,
       "AlwaysPresent": true,
-      "DefaultOptionId": "45_1031",
+      "DefaultOptionId": "45_2031",
       "Note": "Always present, but the depth is the one glaze bar choice the user makes.",
       "Options": [
         {
-          "OptionId": "45_1031",
-          "AssetId": "45_1031",
+          "OptionId": "45_2031",
+          "AssetId": "45_2031",
           "Label": "45 mm",
           "DepthMm": 45,
-          "JsonUrl": "45_1031__ValeGlazedRoof____GlazeBarTrim__d45mm__.json",
           "ElementType": "Trim",
           "SpecMaterial": "Douglas Fir",
           "SectionAreaSqMm": 1241.835,
@@ -86,11 +84,10 @@
           }
         },
         {
-          "OptionId": "45_1032",
-          "AssetId": "45_1032",
+          "OptionId": "45_2032",
+          "AssetId": "45_2032",
           "Label": "70 mm",
           "DepthMm": 70,
-          "JsonUrl": "45_1032__ValeGlazedRoof____GlazeBarTrim__d70mm__.json",
           "ElementType": "Trim",
           "SpecMaterial": "Douglas Fir",
           "SectionAreaSqMm": 2216.835,
@@ -109,11 +106,10 @@
           }
         },
         {
-          "OptionId": "45_1033",
-          "AssetId": "45_1033",
+          "OptionId": "45_2033",
+          "AssetId": "45_2033",
           "Label": "90 mm",
           "DepthMm": 90,
-          "JsonUrl": "45_1033__ValeGlazedRoof____GlazeBarTrim__d90mm__.json",
           "ElementType": "Trim",
           "SpecMaterial": "Douglas Fir",
           "SectionAreaSqMm": 2994.892,
@@ -133,5 +129,31 @@
         }
       ]
     }
-  ]
+  ],
+  "VghLantern__GlazeBarSystem__EndCapRelationship": {
+    "AssetId": "45_1001",
+    "PartName": "Glaze Bar End Cap",
+    "RotationDegrees": {
+      "LocalX": 90.0,
+      "LocalY": 0.0,
+      "LocalZ": 180.0
+    },
+    "RotationDegreesNote": "THREE ANGLES IN DEGREES, about the asset's OWN X, Y and Z. Edit these until it looks right; nothing else needs touching. At 0, 0, 0 the part sits exactly as authored in SketchUp.",
+    "RotationOrderNote": "Applied LocalX, then LocalY, then LocalZ, each about the asset's axes IN THEIR REST POSITION rather than about wherever the previous turn left them. That is what makes them nudgeable: one number always means the same thing however the other two are set. Try 90, -90 and 180 first.",
+    "EndCapNote": "The cast cap that closes the cut end of the glaze bar cap at the eaves, welded to 45_2021. Without it the bare extrusion section is left on show at the bottom of every bar.",
+    "SeatsOnPartKey": "cap",
+    "SeatSectionYMm": 36.908,
+    "SeatSectionYNote": "The seating height in the shared section frame, measured along Up from the bar datum. 36.908 is the BASE of the cap section that 45_2021 declares as its SectionMinYMm. If the cap sits proud or buried, this is the number to move - it and LocalAxisMap are the two knobs, and neither needs a code change.",
+    "AlongBarOffsetMm": 0.0,
+    "AlongBarOffsetNote": "Signed along the bar, positive further out towards the eaves. Zero puts the cap's outer face exactly where the glaze bar cap extrusion now ends. It is declared rather than assumed so a measured weld gap is one number in this file rather than an edit to a mesh builder.",
+    "ElementType": "Trim",
+    "ElementRole": "Decoration",
+    "ElementTypeNote": "Trim and Decoration, identical to the cap it terminates. Decoration is the drawing office word and sits in ElementRole; ElementType stays inside the five word vocabulary the 3D isolation and the specification tables filter on.",
+    "SpecMaterial": "Powder Coated Aluminium",
+    "SpecFinishNote": "Powder coated. Follows the glaze bar cap finish, so cap and end cap move together when a lantern diverges the cap to White Painted or Lead.",
+    "FinishPalette": "VghLantern__PbrMaterials__Config__CapFinishes",
+    "FinishSource": "cap",
+    "PlacementNote": "One at the eaves end of every bar that HAS an eaves end. A bar running ridge to hip has none and takes no cap, which the layout already answers with EavesEnd null.",
+    "RotationRestFrameNote": "At rest the asset's X runs down the bar towards the eaves, its Y runs across the bar, and its Z runs out through the roof square to the slope. So LocalX rolls it, LocalY tips it nose over tail, and LocalZ spins it flat on the roof plane."
+  }
 }

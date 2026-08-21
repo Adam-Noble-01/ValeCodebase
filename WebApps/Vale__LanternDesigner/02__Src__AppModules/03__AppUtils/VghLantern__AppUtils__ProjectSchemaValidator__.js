@@ -67,12 +67,26 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     ];
 
 
-    // MODULE CONSTANTS | Glaze Bar Trim Default
+    // MODULE CONSTANTS | Glaze Bar Trim Default and Renumber Aliases
     // ------------------------------------------------------------
     // The 45 mm trim, matching the DefaultOptionId in the glaze bar system index.
     // Named here so a project saved before trims existed loads with the depth a
     // new lantern would be given rather than with no trim at all.
-    const SCHEMA__DEFAULT_TRIM_OPTION_ID  =  '45_1031';
+    const SCHEMA__DEFAULT_TRIM_OPTION_ID  =  '45_2031';
+
+    // THE RENUMBER OF 21-AUG-2026. The glaze bar profiles moved from the x_1xxx
+    // block to the x_2xxx block when the profile library was separated from the
+    // component library, and the trim option id is a product code, so it moved
+    // with them. Twenty four saved lanterns hold the old value.
+    //
+    // Remapped rather than defaulted, which matters: defaulting would quietly put
+    // every 70mm and 90mm trim in the estate back to 45mm, and nobody would see it
+    // until a cutting list came out wrong.
+    const SCHEMA__TRIM_OPTION_ID_ALIASES  =  {
+        '45_1031' : '45_2031',
+        '45_1032' : '45_2032',
+        '45_1033' : '45_2033'
+    };
     // ------------------------------------------------------------
 
 
@@ -331,6 +345,21 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Remap a Renumbered Trim Option Id
+    // ------------------------------------------------------------
+    // Runs before the field is defaulted, so a stored 45_1032 becomes 45_2032
+    // rather than falling through to the 45mm default as an unrecognised value.
+    function VghLantern__SchemaValidator__RemapTrimOptionIdAlias(configObj, key) {
+        if (!configObj) return false;
+        var current  =  configObj[key];
+        var mapped   =  (typeof current === 'string') ? SCHEMA__TRIM_OPTION_ID_ALIASES[current] : null;
+        if (!mapped) return false;
+        configObj[key]  =  mapped;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Apply a String Field Defaulting to Empty
     // ------------------------------------------------------------
     function VghLantern__SchemaValidator__ApplyStringField(configObj, key, fallbackValue) {
@@ -537,6 +566,7 @@ const VghLantern__AppUtils__ProjectSchemaValidator = (function() {
         if (VghLantern__SchemaValidator__ApplySetOutModeField(barsCfg, 'Lantern__GlazingBars__Config__SetOutMode')) didMutate  =  true;
 
         if (VghLantern__SchemaValidator__ApplyIntField(barsCfg, 'Lantern__GlazingBars__Config__TargetSpacingMm', SCHEMA__DEFAULT_BAR_SPACING_MM, 100, 3000)) didMutate  =  true;
+        if (VghLantern__SchemaValidator__RemapTrimOptionIdAlias(barsCfg, 'Lantern__GlazingBars__Config__TrimOptionId')) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyStringField(barsCfg, 'Lantern__GlazingBars__Config__TrimOptionId', SCHEMA__DEFAULT_TRIM_OPTION_ID)) didMutate  =  true;
         if (VghLantern__SchemaValidator__ApplyBoolField(barsCfg, 'Lantern__GlazingBars__Config__HorizontalTransomEnabled', false)) didMutate  =  true;
 

@@ -5,7 +5,7 @@
     "generator"        : "Na__ComponentEditorTools::Na__ExportTools - Export tab multi-view exporter",
     "generatedDate"    : "05-Aug-2026",
     "sourceModel"      : "SketchUp__ModelWorkshop__AssetExporter__Active__.skp",
-    "sourceAsset"      : "45_1021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
+    "sourceAsset"      : "45_2021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
     "exportedScenes"   : [
         {
             "sceneName" : "FixedAxis__FrontElevation",
@@ -35,8 +35,8 @@
     }
   },
   "Na__Asset__Metadata"           : {
-    "Na__Asset__Metadata__Id"           : "45_1021",
-    "Na__Asset__Metadata__Name"         : "45_1021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
+    "Na__Asset__Metadata__Id"           : "45_2021",
+    "Na__Asset__Metadata__Name"         : "45_2021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
     "Na__Asset__Metadata__CategoryId"   : "",
     "Na__Asset__Metadata__CategoryName" : "",
     "Na__Asset__Metadata__Description"  : "",
@@ -48,7 +48,7 @@
     "Na__Asset__Metadata__Tags"         : []
   },
   "Na__Asset__ValeSpecification"  : {
-    "Na__Asset__ValeSpec__ProductCode"  : "45_1021",
+    "Na__Asset__ValeSpec__ProductCode"  : "45_2021",
     "Na__Asset__ValeSpec__ProductName"  : "Glaze Bar Cap - Powder Coated Decorative Cap",
     "Na__Asset__ValeSpec__Supplier"     : "Vale Garden Houses",
     "Na__Asset__ValeSpec__Material"     : "Aluminium",
@@ -21109,8 +21109,8 @@
             "Na__Object__NodeId"                    : "OBJ0001",
             "Na__Object__ParentNodeId"              : null,
             "Na__Object__EntityType"                : "ComponentDefinition",
-            "Na__Object__Name"                      : "45_1021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
-            "Na__Object__DefinitionName"            : "45_1021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
+            "Na__Object__Name"                      : "45_2021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
+            "Na__Object__DefinitionName"            : "45_2021__ValeGlazedRoof____GlazeBarCap__PowderCotedDecorativeCap__",
             "Na__Object__TagName"                   : "",
             "Na__Object__LocalTransform__Matrix4x4" : [
                 [1.0, 0.0, 0.0, 0.0],

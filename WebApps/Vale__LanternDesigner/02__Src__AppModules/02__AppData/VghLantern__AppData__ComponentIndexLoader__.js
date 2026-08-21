@@ -243,9 +243,23 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
 // REGION | Individual Asset Loading
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Resolve an Index Entry Url Against the Library Root
+    // HELPER FUNCTION | Resolve an Index Entry Url
     // ------------------------------------------------------------
-    function VghLantern__ComponentIndexLoader__ResolveUrl(relativeUrl) {
+    // THE REGISTRY ANSWERS FIRST. This catalogue is generated from the same walk
+    // the registry is, so the two normally agree - but only one of them is the
+    // place a path is written down, and when they disagree it is because this one
+    // was built before a file moved. An absolute or protocol relative url is
+    // passed straight through: it is pointing outside the library on purpose.
+    //
+    // assetId is optional so the preview and GLB url helpers, which resolve a
+    // SIBLING file rather than the asset itself, still reach the library root.
+    function VghLantern__ComponentIndexLoader__ResolveUrl(relativeUrl, assetId) {
+        if (assetId) {
+            var Registry  =  window.VghLantern__AppData__AssetRegistry;
+            var fromRegistry  =  Registry ? Registry.VghLantern__AssetRegistry__Url(assetId) : '';
+            if (fromRegistry) return fromRegistry;
+        }
+
         if (!relativeUrl) return null;
         if (/^(https?:)?\/\//.test(relativeUrl) || relativeUrl.charAt(0) === '/') return relativeUrl;
         return LIBRARY_ROOT_PATH + relativeUrl;
@@ -277,9 +291,9 @@ const VghLantern__AppData__ComponentIndexLoader = (function() {
             return null;
         }
 
-        var assetUrl  =  VghLantern__ComponentIndexLoader__ResolveUrl(entry.JsonUrl);
+        var assetUrl  =  VghLantern__ComponentIndexLoader__ResolveUrl(entry.JsonUrl, assetId);
         if (!assetUrl) {
-            console.warn('[VghLantern__ComponentIndexLoader] Index entry has no JsonUrl:', assetId);
+            console.warn('[VghLantern__ComponentIndexLoader] Nothing resolves an asset url for:', assetId);
             return null;
         }
 

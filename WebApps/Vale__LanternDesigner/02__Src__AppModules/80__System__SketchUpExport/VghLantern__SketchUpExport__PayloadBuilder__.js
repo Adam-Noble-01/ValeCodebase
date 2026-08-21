@@ -203,10 +203,18 @@ const VghLantern__SketchUpExport__PayloadBuilder = (function() {
         }
         VghLantern__PayloadBuilder__PushAssembly(assemblies, ASSEMBLY_ROOF, parts, warnings);
 
-        // GLAZE BARS | Cap, core and trim on every solved bar datum
-        parts  =  (VghLantern__PayloadBuilder__BuildSwitch('IncludeGlazeBars') && barSet)
-            ? await Bars.VghLantern__SketchUpExport__Encoders__GlazeBars(barSet, lantern)
-            : [];
+        // GLAZE BARS | Cap, core and trim on every solved bar datum, and the cast
+        // cap closing each one at the eaves. The swept parts answer a bare list and
+        // the end cap answers { Definitions, Parts } because it is a placed mesh, so
+        // its definition joins the same table the ridge block's does.
+        parts  =  [];
+        if (VghLantern__PayloadBuilder__BuildSwitch('IncludeGlazeBars') && barSet) {
+            parts  =  await Bars.VghLantern__SketchUpExport__Encoders__GlazeBars(barSet, lantern);
+
+            var barCapResult  =  await Bars.VghLantern__SketchUpExport__Encoders__GlazeBarEndCaps(barSet, lantern);
+            definitions       =  definitions.concat(barCapResult.Definitions);
+            parts             =  parts.concat(barCapResult.Parts);
+        }
         VghLantern__PayloadBuilder__PushAssembly(assemblies, ASSEMBLY_BARS, parts, warnings);
 
         // GLAZING | One sealed unit slab per solved slope

@@ -38,6 +38,18 @@
 //   (Source === 'SketchUpCameraData'), so scene navigation can decide whether
 //   to trust it as an orbit pivot. See Na__PresentationMode__Camera__SceneTransition.js.
 //
+// 21-Aug-2026 - Version 1.1.1
+// - Fix: thumbnail resolution is now self-healing against re-synced editions.
+//   Cloud Sync date-stamps every image export and purges the one before it,
+//   but the baked-once PresentationMode__Scene__ThumbnailUrl was never
+//   re-pointed, so every Views-bar thumbnail 404'd after an image re-sync
+//   (found on 2026/3047__Doous). ResolveThumbnailUrlPair now validates the
+//   stored filename against the live project.json "images" array and, when it
+//   is stale, re-derives the current name from the matching IMG## slot.
+//   Register the array via Na__PresentationMode__ProjectJson__SetActiveImageList.
+//   Same matching contract as Na__SketchUp__LoadSceneData__.js, so the
+//   explicit-scene and auto-built-scene paths resolve identically.
+//
 // =============================================================================
 
 
@@ -74,6 +86,14 @@
     const Na__PresentationMode__DEFAULT_YEAR      = '2026';                                         // <-- Year fallback for URL building
     // ------------------------------------------------------------
 
+    // MODULE CONSTANTS | Thumbnail Filename Contract (matches the 524p generator)
+    // ------------------------------------------------------------
+    const Na__PresentationMode__THUMBNAIL_TOKEN   = '__Thumbnail__524p__';                          // <-- Suffix appended to the source image base name
+    const Na__PresentationMode__THUMBNAIL_EXT     = '.webp';                                        // <-- Primary thumbnail extension
+    const Na__PresentationMode__IMAGE_EXT         = '.png';                                         // <-- Full resolution scene image extension
+    const Na__PresentationMode__SLOT_PATTERN      = /^(IMG\d{2,3}(?:_ART\d{2})?)/i;                 // <-- Scene slot token at the head of a filename
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -86,6 +106,7 @@
     let Na__PresentationMode__ActiveConfig      = null;   // <-- Full PresentationMode__SavedCameraScenes block for current project
     let Na__PresentationMode__ActiveProjectCode = null;   // <-- Project code used to resolve thumbnail URLs
     let Na__PresentationMode__ActiveSceneId     = null;   // <-- Currently displayed/selected scene id
+    let Na__PresentationMode__ActiveImageList   = [];     // <-- Live project.json "images" array used to re-point stale thumbnail filenames
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -219,6 +240,78 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Derive the 524p Thumbnail Filename From a Source Image
+    // ------------------------------------------------------------
+    // "IMG01__...__WhitecardImage__21-Aug-2026.png"
+    //   -> "IMG01__...__WhitecardImage__21-Aug-2026__Thumbnail__524p__.webp"
+    // Mirrors AutomationUtil__GenerateGalleryThumbnails__524p__Main__.py.
+    // ------------------------------------------------------------
+    function na_derive_thumbnail_filename(imageName) {
+        const stem = imageName.replace(/\.png$/i, '');                       // <-- Strip the source extension
+        return `${stem}${Na__PresentationMode__THUMBNAIL_TOKEN}${Na__PresentationMode__THUMBNAIL_EXT}`;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Recover the Source Image a Thumbnail Filename Came From
+    // ------------------------------------------------------------
+    function na_source_image_from_thumbnail(thumbName) {
+        const tokenIndex = thumbName.indexOf(Na__PresentationMode__THUMBNAIL_TOKEN);
+        if (tokenIndex === -1) return thumbName;                             // <-- Not a derived thumbnail name, use as-is
+        return `${thumbName.slice(0, tokenIndex)}${Na__PresentationMode__IMAGE_EXT}`;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Find the Current Source Image for a Scene Slot
+    // ------------------------------------------------------------
+    // Slot token is the leading "IMG##" (or "IMG##_ART##") of a filename. The
+    // trailing double underscore keeps IMG01 from matching IMG01_ART20.
+    // ------------------------------------------------------------
+    function na_current_image_for_slot(slotToken, images) {
+        const token = `${slotToken.toUpperCase()}__`;
+
+        return images.find(name =>
+            typeof name === 'string' &&
+            name.toLowerCase().endsWith(Na__PresentationMode__IMAGE_EXT) &&
+            name.indexOf(Na__PresentationMode__THUMBNAIL_TOKEN) === -1 &&    // <-- Never point a scene at a thumbnail
+            name.toUpperCase().startsWith(token)
+        ) || null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Re-Point a Stale Thumbnail Filename at the Current Edition
+    // ------------------------------------------------------------
+    // ValeVision Cloud Sync date-stamps every export and purges the superseded
+    // edition from both the Whitecardopedia folder and R2, but nothing rewrites
+    // the PresentationMode__Scene__ThumbnailUrl baked into project.json. That
+    // leaves the Views bar pointing at deleted files after any image re-sync.
+    // When the stored name is no longer backed by an entry in the live "images"
+    // array, re-derive it from the matching IMG## slot. Returns the input
+    // unchanged when no list is registered or no slot matches, so projects that
+    // are already current behave exactly as before.
+    // ------------------------------------------------------------
+    function na_resolve_current_thumbnail_filename(rawUrl) {
+        const images = Na__PresentationMode__ActiveImageList;
+        if (!Array.isArray(images) || images.length === 0) return rawUrl;    // <-- No live list registered, trust the stored name
+
+        const sourceName = na_source_image_from_thumbnail(rawUrl);
+        if (images.indexOf(sourceName) !== -1) return rawUrl;                // <-- Stored name still backed by a live image
+
+        const slotMatch = rawUrl.match(Na__PresentationMode__SLOT_PATTERN);
+        if (!slotMatch) return rawUrl;                                       // <-- Not a slot-named thumbnail, leave it alone
+
+        const currentImage = na_current_image_for_slot(slotMatch[1], images);
+        if (!currentImage) return rawUrl;                                    // <-- Slot no longer exported, leave it alone
+
+        const repointed = na_derive_thumbnail_filename(currentImage);
+        console.warn(`[ValeVision3D] Stale scene thumbnail re-pointed: ${rawUrl} -> ${repointed}`); // <-- Surfaces a project.json that needs re-syncing
+        return repointed;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Resolve Thumbnail URL for a Scene
     // ------------------------------------------------------------
     // Thumbnail URL from JSON is a relative path like:
@@ -250,16 +343,17 @@
         if (!code) return null;
 
         const folderId = Na__AppUtils__NormalizeProjectFolderId(code);
+        const fileName = na_resolve_current_thumbnail_filename(rawUrl);      // <-- Self-heal a filename left behind by an image re-sync
 
         if (Na__AppUtils__IsRunningOnLocalhost()) {
-            const localUrl = `/Projects/${folderId}/${rawUrl}?t=${Date.now()}`; // <-- Flask static path + cache-bust
+            const localUrl = `/Projects/${folderId}/${fileName}?t=${Date.now()}`; // <-- Flask static path + cache-bust
             return { primary: localUrl, fallback: localUrl };
         }
 
-        const resolved = Na__AppUtils__ResolveAssetUrl(folderId, rawUrl);    // <-- { primary: R2, fallback: GH }
+        const resolved = Na__AppUtils__ResolveAssetUrl(folderId, fileName);  // <-- { primary: R2, fallback: GH }
         return resolved || {
-            primary:  `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${rawUrl}`,  // <-- Defensive GH fallback
-            fallback: `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${rawUrl}`
+            primary:  `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${fileName}`,  // <-- Defensive GH fallback
+            fallback: `${Na__PresentationMode__GH_PAGES_BASE}/${folderId}/${fileName}`
         };
     }
     // ------------------------------------------------------------
@@ -277,6 +371,18 @@
         Na__PresentationMode__ActiveConfig      = config || null;      // <-- Persist config for this session
         Na__PresentationMode__ActiveProjectCode = projectCode || null; // <-- Persist project code for URL resolution
         Na__PresentationMode__ActiveSceneId     = null;                // <-- Reset selection on new project load
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Register the Live project.json Image List (called by loading sequence)
+    // ------------------------------------------------------------
+    // Supplies the current date-stamped source image filenames so thumbnail
+    // paths baked into PresentationMode__SavedCameraScenes can be re-pointed at
+    // render time. Call with undefined to clear.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__ProjectJson__SetActiveImageList(images) {
+        Na__PresentationMode__ActiveImageList = Array.isArray(images) ? images.slice() : []; // <-- Snapshot so later mutation cannot surprise the resolver
     }
     // ------------------------------------------------------------
 
@@ -336,6 +442,7 @@
         Na__PresentationMode__ProjectJson__ResolveThumbnailUrl,
         Na__PresentationMode__ProjectJson__ResolveThumbnailUrlPair,
         Na__PresentationMode__ProjectJson__SetActiveConfig,
+        Na__PresentationMode__ProjectJson__SetActiveImageList,
         Na__PresentationMode__ProjectJson__GetActiveConfig,
         Na__PresentationMode__ProjectJson__SetActiveSceneId,
         Na__PresentationMode__ProjectJson__GetActiveSceneId,

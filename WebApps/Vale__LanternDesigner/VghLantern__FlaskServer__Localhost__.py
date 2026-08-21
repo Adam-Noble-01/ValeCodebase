@@ -59,6 +59,7 @@ NA__SERVER__USER_MENU_DATA_PATH     = (NA__SERVER__APP_ROOT_PATH / "08__LocalUse
 NA__SERVER__MAIN_APP_CONFIG_PATH    = (NA__SERVER__APP_ROOT_PATH / "02__Src__AppModules/02__AppData/VghLantern__AppConfig__Main__.json").resolve()
 NA__SERVER__COMPONENT_INDEX_PATH    = (NA__SERVER__APP_ROOT_PATH / "05__Data__LanternComponentLibrary/VghLantern__ComponentDataIndex__.json").resolve()
 NA__SERVER__PROFILE_INDEX_PATH      = (NA__SERVER__APP_ROOT_PATH / "06__Data__LanternProfileLibrary/VghLantern__ProfileDataIndex__.json").resolve()
+NA__SERVER__ASSET_REGISTRY_PATH     = (NA__SERVER__APP_ROOT_PATH / "VghLantern__AssetRegistry__.json").resolve()
 NA__SERVER__SERVICE_WORKER_PATH     = (NA__SERVER__APP_ROOT_PATH / "Na__ServiceWorker__VghLantern.js").resolve()
 NA__SERVER__DEFAULT_PORT            = 8006                                       # <-- Reserved port for the Lantern Designer
 NA__SERVER__OUTPUT_LOG_HANDLE       = None
@@ -331,6 +332,10 @@ class Na__Server__RequestHandler(SimpleHTTPRequestHandler):
 
         if request_path == "/api/profile-index":
             self.Na__Server__HandleDataIndexLoad(NA__SERVER__PROFILE_INDEX_PATH, "Profile index")
+            return
+
+        if request_path == "/api/asset-registry":
+            self.Na__Server__HandleDataIndexLoad(NA__SERVER__ASSET_REGISTRY_PATH, "Asset registry")
             return
 
         project_code = self.Na__Server__ParseProjectCode(request_path)

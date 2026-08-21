@@ -612,6 +612,10 @@
         {
             "folderId": "2026/51536__Hamilton",
             "enabled": true
+        },
+        {
+            "folderId": "2026/64033__Negretti",
+            "enabled": true
         }
     ]
 }

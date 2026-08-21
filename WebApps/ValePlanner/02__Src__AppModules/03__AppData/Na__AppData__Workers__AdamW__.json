@@ -3062,6 +3062,30 @@
           "endTime": "13:00",
           "title": "Whitecard |  Hamilton",
           "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1787316187329",
+          "date": "2026-08-23",
+          "startTime": "14:00",
+          "endTime": "14:15",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1787316182131",
+          "date": "2026-08-23",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Admin",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1787316187203",
+          "date": "2026-08-23",
+          "startTime": "14:30",
+          "endTime": "18:00",
+          "title": "Whitecard |  Negretti",
+          "color": "na-shift-color-purple"
         }
       ]
     }

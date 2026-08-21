@@ -26,53 +26,53 @@
         "RenderEngine__Active": "PureEngine"
     },
     "ValeVison3D__SketchUpCameraData": {
-        "captured_at": "21-Aug-2026 at 13:35",
+        "captured_at": "21-Aug-2026 at 16:38",
+        "model_name": "Hamilton__WhiteCardModel__1.1.0__",
         "coordinate_system": "SketchUp_Z_up",
-        "model_name": "Hamilton__WhiteCardModel__1.0.0__",
+        "units": "mm",
         "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
         "scenes": [
             {
+                "scene_name": "IMG01__3dView__MainShot__",
+                "scene_description": "Full Context",
+                "include_in_animation": true,
                 "camera": {
-                    "aspect_ratio": 0,
-                    "direction": {
-                        "x": 0.638375,
-                        "y": 0.769725,
-                        "z": 0
-                    },
                     "eye": {
                         "x": -12041.1285,
                         "y": -20391.6999,
                         "z": 3240.1198
                     },
-                    "fov_degrees": 24.616,
-                    "fov_is_height": true,
-                    "image_width": 0,
-                    "is_perspective": true,
                     "target": {
                         "x": 14046.7173,
                         "y": 11063.8987,
                         "z": 3240.1198
                     },
                     "up": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 1
-                    }
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                    },
+                    "direction": {
+                        "x": 0.638375,
+                        "y": 0.769725,
+                        "z": 0.0
+                    },
+                    "fov_degrees": 24.616,
+                    "fov_is_height": true,
+                    "is_perspective": true,
+                    "aspect_ratio": 0.0,
+                    "image_width": 0.0
                 },
-                "include_in_animation": true,
                 "model_layer_visibility": {
-                    "ValeVision__01__OrbitHelperCube": false,
-                    "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__LandscapeEnvironment": true,
                     "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__01__OrbitHelperCube": false,
                     "ValeVision__SiteBoundaries": true
                 },
-                "scene_description": "Full Context",
-                "scene_name": "IMG01__3dView__MainShot__",
                 "section_planes": null
             }
-        ],
-        "units": "mm"
+        ]
     },
     "allImages": [
         "IMG01__3dView__MainShot____WhitecardImage__21-Aug-2026.png"

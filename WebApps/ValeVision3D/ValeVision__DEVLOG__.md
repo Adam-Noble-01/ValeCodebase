@@ -76,6 +76,14 @@ and they still whitecard opaque under PureEngine as before.
   glass would otherwise drop a solid silhouette onto the geometry behind it.
 - MaxEngine needed no change: its swap pass only touches indexed names, so exempt
   glazing carries through both engines and survives engine switching.
+- Catalogued as a reusable material: `MAT105__GenericGlass__WhitecardTranslucent`
+  in the DataLib SSOT (`Na__DataLib__CoreIndex__Materials__.json` v1.4.1), whose
+  `SketchUpName` is `MAT000E__Glass__WhitecardTranslucent`. The library key/name
+  split means every plugin reading the DataLib can discover and create it, while
+  the SketchUp-side name keeps the `MAT000E__` prefix that all of the above
+  plumbing already keys off — so no further viewer or exporter code was needed.
+  The entry is a reference recipe, not a render-time override: exempt materials
+  take their colour and opacity from the SketchUp material itself.
 
 # ---------------------------------------------------------
 ## ValeVision3D v2.14.5 - 21-Aug-2026 - Fix: Views Bar Thumbnails Survive an Image Re-Sync

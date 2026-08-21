@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "21-Aug-2026 at 13:35",
+    "generatedAt": "21-Aug-2026 at 18:08",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -2004,7 +2004,21 @@
             "hasThumbnails_R2": true,
             "hasGlb_R2": true,
             "imageCount": 1,
-            "lastSynced": "21-Aug-2026 at 13:35"
+            "lastSynced": "21-Aug-2026 at 16:38"
+        },
+        {
+            "folderId": "2026/64033__Negretti",
+            "year": "2026",
+            "projectCode": "64033",
+            "name": "Negretti",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "21-Aug-2026 at 18:08"
         }
     ]
 }

@@ -19,12 +19,19 @@
 //   storey and unrecognised-but-valid categories load via the unordered second pass.
 // - Indexed MAT###__ materials are preserved at load so the render-engine materials
 //   swap pass can match them by name (glass, mirrors, etc.).
+// - Transparent MAT000E__ exempt materials are preserved at load as glazing so the
+//   SketchUp Opacity slider carried in the GLB survives into both render engines.
 // - Each category gets its own THREE.Group for future per-category toggling.
 // - Material config and linework config are read from AppConfig (passed in).
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 21-Aug-2026 - Version 1.3.0
+// - LoadSingleMesh preserves transparent MAT000E__ exempt materials (clone +
+//   transparent + depthWrite false) instead of collapsing them into the opaque
+//   shared whitecard, so exempt glazing reads as see-through under PureEngine.
+//
 // 10-Jun-2026 - Version 1.1.0
 // - Added Na__ModelUrl__StoreyParseRegex + storey branch in ParseModelUrl (before
 //   the legacy fallback) so storey GLB sets no longer collapse into the single
@@ -303,6 +310,7 @@ import {
         const meshRoot     = gltf.scene;                                 // <-- Extract scene graph
 
         const indexedNameRegex = /^MAT\d{3}__/;                          // <-- Indexed materials that survive to the swap pass (TrueVision parity)
+        const exemptNameRegex  = /^MAT000E__/;                           // <-- MAT000E__ "Material Exempt" one-off materials (never SSOT enriched)
 
         const Na__Material__WhiteMat = new THREE.MeshStandardMaterial({
             color               : baseMeshConfig.material.whiteColor,    // <-- White base color
@@ -315,13 +323,17 @@ import {
         });
 
         let indexedMaterialsSeen = 0;                                    // <-- Diagnostics: indexed materials preserved
+        let exemptGlazingSeen    = 0;                                    // <-- Diagnostics: transparent MAT000E__ materials preserved
 
         // SUB HELPER FUNCTION | Resolve Prepared Material for a Mesh Node
         // ------------------------------------------------------------
         // Indexed MAT###__ materials are PRESERVED (cloned + polygon offset only)
         // so the engine materials swap pass can match them by name (glass etc.).
-        // Non-indexed materials keep the exact pre-existing whitecard treatment:
-        // textured -> emissive prep, untextured -> shared whitecard material.
+        // Transparent MAT000E__ exempt materials are PRESERVED as glazing — the
+        // GLB carries the SketchUp Opacity slider as alphaMode BLEND, and the
+        // shared whitecard below is opaque, so collapsing them would block the
+        // view out. Everything else keeps the exact pre-existing whitecard
+        // treatment: textured -> emissive prep, untextured -> shared whitecard.
         // ------------------------------------------------------------
         const Na__ModelLoader__PrepareMeshMaterial = (sourceMaterial) => {
             if (!sourceMaterial || !sourceMaterial.isMaterial) {
@@ -335,6 +347,30 @@ import {
                 preparedMaterial.polygonOffset       = true;
                 preparedMaterial.polygonOffsetFactor = baseMeshConfig.material.polygonOffsetFactor;
                 preparedMaterial.polygonOffsetUnits  = baseMeshConfig.material.polygonOffsetUnits;
+                return preparedMaterial;
+            }
+
+            // EXEMPT GLAZING | MAT000E__ + SketchUp opacity < 100% -> see-through
+            const sourceIsTransparent = sourceMaterial.transparent === true
+                || (typeof sourceMaterial.opacity === 'number' && sourceMaterial.opacity < 1.0);
+
+            if (sourceIsTransparent && exemptNameRegex.test(sourceMaterial.name || '')) {
+                exemptGlazingSeen++;
+                const preparedMaterial               = sourceMaterial.clone();  // <-- Preserve GLB alpha (SketchUp Opacity slider)
+                preparedMaterial.side                = THREE.DoubleSide;
+                preparedMaterial.polygonOffset       = true;
+                preparedMaterial.polygonOffsetFactor = baseMeshConfig.material.polygonOffsetFactor;
+                preparedMaterial.polygonOffsetUnits  = baseMeshConfig.material.polygonOffsetUnits;
+                preparedMaterial.transparent         = true;             // <-- Blend even when only opacity < 1 survived the GLB
+                preparedMaterial.depthWrite          = false;            // <-- Glazing must not occlude geometry behind it
+                preparedMaterial.userData            = Object.assign({}, preparedMaterial.userData, { na_exemptGlazing: true });  // <-- Tag for the shadow-cast opt-out below
+
+                if (preparedMaterial.map && !preparedMaterial.emissiveMap) {
+                    preparedMaterial.emissiveMap       = preparedMaterial.map;  // <-- Textured glazing keeps the emissive prep path
+                    preparedMaterial.emissive          = new THREE.Color(baseMeshConfig.material.textureEmissive);
+                    preparedMaterial.emissiveIntensity = 0.0;
+                }
+
                 return preparedMaterial;
             }
 
@@ -371,11 +407,18 @@ import {
             } else {
                 node.material = Na__ModelLoader__PrepareMeshMaterial(node.material);
             }
+
+            // EXEMPT GLAZING | Shadow maps ignore opacity, so glass would drop a
+            // solid silhouette onto whatever sits behind it. Opt these meshes out.
+            const nodeMaterials = Array.isArray(node.material) ? node.material : [node.material];
+            if (nodeMaterials.some((mat) => mat && mat.userData && mat.userData.na_exemptGlazing === true)) {
+                node.castShadow = false;                                 // <-- Glazing lets light through
+            }
         });
 
-        if (indexedMaterialsSeen > 0) {
+        if (indexedMaterialsSeen > 0 || exemptGlazingSeen > 0) {
             const modelNameForLog = (typeof modelUrl === 'string') ? modelUrl.split('/').pop() : 'UnknownModel.glb';
-            console.log(`[ValeVision3D] Mesh material prep ${modelNameForLog}: preserved ${indexedMaterialsSeen} indexed material(s) for swap pass`);
+            console.log(`[ValeVision3D] Mesh material prep ${modelNameForLog}: preserved ${indexedMaterialsSeen} indexed material(s) for swap pass, ${exemptGlazingSeen} transparent MAT000E__ glazing material(s)`);
         }
 
         return meshRoot;                                                 // <-- Return processed mesh root

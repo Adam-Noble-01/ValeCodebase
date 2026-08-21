@@ -26,11 +26,17 @@
 // - Captures each node's original material on first swap so the engine
 //   switcher can restore the whitecard appearance when returning to PureEngine.
 // - PureEngine: ApplyExemptTextureBrightness lifts MAT000E__ embedded textures
-//   toward whitecard luminance via config-driven emissive intensity.
+//   toward whitecard luminance via config-driven emissive intensity, skipping
+//   transparent MAT000E__ glazing so glass stays see-through instead of glowing.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 21-Aug-2026 - Version 1.2.1
+// - ApplyExemptTextureBrightness now skips transparent MAT000E__ slots. These
+//   carry the SketchUp Opacity slider through the GLB (alphaMode BLEND) and are
+//   glazing, not fake-detail textures — the emissive lift would make them glow.
+//
 // 16-Jul-2026 - Version 1.2.0
 // - Added Na__MaterialsSystem__ApplyExemptTextureBrightness for PureEngine
 //   MAT000E__ one-off textures (clone + white base + emissiveMap lift).
@@ -521,6 +527,9 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
     // MaxEngine restore original stays unboosted), forces a white base
     // colour, wires the diffuse map as emissiveMap, and applies a config
     // emissive intensity so textured detail sits near whitecard luminance.
+    // Transparent exempt slots (MAT000E__ glazing carrying the SketchUp
+    // Opacity slider) are skipped — they are glass, not fake detail, and an
+    // emissive lift would make them glow instead of read as see-through.
     //
     // Parameters:
     //   modelGroup             - THREE.Group containing loaded model meshes
@@ -547,6 +556,9 @@ import { Na__DataLib__GetPipelineExclusions } from '../01__AppCore/AppCore__Data
             }
             if (!material.map && !material.emissiveMap) {
                 return material;                                              // <-- Nothing to lift without a texture
+            }
+            if (material.transparent === true || (typeof material.opacity === 'number' && material.opacity < 1.0)) {
+                return material;                                              // <-- Transparent exempt = glazing, not fake detail; a lift would make it glow
             }
 
             const boosted               = material.clone();                   // <-- Keep na_originalMaterial undimmed for MaxEngine

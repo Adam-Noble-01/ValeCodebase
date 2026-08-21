@@ -3054,6 +3054,14 @@
           "endTime": "18:00",
           "title": "Whitecard |  Martin",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1787304516301",
+          "date": "2026-08-23",
+          "startTime": "10:30",
+          "endTime": "13:15",
+          "title": "Whitecard |  Hamilton",
+          "color": "na-shift-color-indigo"
         }
       ]
     }

@@ -744,7 +744,10 @@
         //             MAT###__ materials — PureEngine must show NO face
         //             colours or opacity (classic whitecard appearance).
         //             MAT000E__ exempt textures then get an emissive lift so
-        //             fake-detail maps sit near whitecard luminance.
+        //             fake-detail maps sit near whitecard luminance. Transparent
+        //             MAT000E__ glazing is the one exemption from the opaque
+        //             whitecard rule: it keeps the SketchUp Opacity slider
+        //             carried through the GLB and is skipped by the lift pass.
         // Door animations are unaffected in both directions: the door registry
         // holds Object3D references and transforms, never material references.
         // ---------------------------------------------------------------

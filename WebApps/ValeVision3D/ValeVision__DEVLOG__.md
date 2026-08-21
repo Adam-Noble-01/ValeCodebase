@@ -2,6 +2,45 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.14.6 - 21-Aug-2026 - MAT000E__ Glazing: SketchUp Opacity Reaches PureEngine
+
+### Overview
+A balcony balustrade painted `MAT000E__Glass__Balcony` at 30% opacity in
+SketchUp arrived in ValeVision as a solid white panel, blocking the elevation
+behind it. Three separate places were flattening it, and all three are fixed so
+the SketchUp Materials tray Opacity slider is now the single control for exempt
+glazing — no new SSOT entry, no MAT###__ index required.
+
+The `E` in `MAT000E__` was already an exemption from *material stripping* and
+from *whitecard replacement*; it now also carries opacity. Indexed `MAT###__`
+materials are untouched — their alpha still comes from the materials library,
+and they still whitecard opaque under PureEngine as before.
+
+### Fixed
+- **Exporter wrote alpha 1.0 regardless.** `Na__MaterialEngine__EnsureMaterialRegistered`
+  in the GLB Builder built `baseColorFactor` with a hardcoded `1.0` alpha and only
+  ever set `alphaMode` from a materials-library `Opacity` key, which exempt
+  materials by definition do not have. Non-indexed materials now read
+  `Sketchup::Material#alpha` and write it as `baseColorFactor[3]` plus
+  `alphaMode: "BLEND"` and `doubleSided: true`. See GLB Builder MaterialHandling
+  v3.2.0.
+- **The model loader threw the material away.** `Na__ModelLoader__LoadSingleMesh`
+  routed every untextured non-indexed material to the shared opaque whitecard, so
+  an untextured glazing material lost its name and its alpha before any materials
+  pass could see it. Transparent `MAT000E__` materials are now preserved (clone +
+  `transparent` + `depthWrite: false`), textured or not.
+- **The PureEngine lift would have made glass glow.** `ApplyExemptTextureBrightness`
+  wires the diffuse map into `emissiveMap` to pull fake-detail textures up to
+  whitecard luminance. Transparent exempt slots are glazing rather than fake
+  detail, so they are now skipped.
+
+### Also
+- Exempt glazing meshes opt out of `castShadow`. Shadow maps ignore opacity, so
+  glass would otherwise drop a solid silhouette onto the geometry behind it.
+- MaxEngine needed no change: its swap pass only touches indexed names, so exempt
+  glazing carries through both engines and survives engine switching.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.14.5 - 21-Aug-2026 - Fix: Views Bar Thumbnails Survive an Image Re-Sync
 
 ### Overview

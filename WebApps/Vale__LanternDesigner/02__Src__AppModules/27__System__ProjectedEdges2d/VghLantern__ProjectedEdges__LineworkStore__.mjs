@@ -54,6 +54,9 @@
    PUBLIC API:
        BlockName()                                  -> the project block key
        Fingerprint(stageKey)                        -> short stable string
+                                                       (of the LANTERN only - see
+                                                       MODEL_BUILD_TOKEN for the
+                                                       half it cannot cover)
        Serialise(entries, meta)                     -> block object
        Deserialise(block, fingerprint)              -> [{ ViewKey, Segments }] or []
        DescribeBlock(block)                         -> one line for logs
@@ -77,6 +80,32 @@
     // and let the user render again, which costs a second and is always safe.
     const BLOCK_NAME      =  'Lantern__ProjectedLinework__Data';
     const SCHEMA_VERSION  =  1;
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Staged Model Build Token
+    // ------------------------------------------------------------
+    // WHAT THE FINGERPRINT CANNOT SEE
+    //
+    // The fingerprint below is taken over the LANTERN. It catches a shape that has
+    // changed and it is exactly right for that. What it cannot catch is the MODEL
+    // BUILD changing underneath an unchanged lantern - a mesh builder added to the
+    // stage, a part's geometry corrected, an asset re-exported. The lantern is
+    // untouched, so the fingerprint still matches, so a render made before the
+    // change is restored on load and quietly shown as current.
+    //
+    // That is not hypothetical. The ridge end cap was added to the staged model on
+    // 20-Aug-2026 and every project on disk carried a stored render made minutes
+    // earlier without it. The drawings came back missing a part that was plainly
+    // there in 3D, with nothing on screen or in the console to say why - which is
+    // the worst kind of wrong, because the picture looks finished.
+    //
+    // BUMP THIS whenever the geometry ProjectedEdges stages changes: a builder
+    // added to or removed from ModelStage, a part's shape corrected, a component
+    // asset replaced. Every stored block then reads as belonging to an older model
+    // and is re-rendered rather than restored. Bumping needlessly costs one render;
+    // not bumping when it was needed costs a wrong drawing nobody questions.
+    const MODEL_BUILD_TOKEN  =  '2026-08-20-ridge-end-cap';
     // ------------------------------------------------------------
 
 
@@ -193,6 +222,7 @@
             Meta : {
                 Description         : 'Projected 3D linework, rendered from the solid model and stored so it survives between sessions. Coordinates are drawing millimetres in Env2d space (x right, y DOWN), four numbers per segment: x0, y0, x1, y1. They are already in the space the 2D viewports draw in, so they need no fitting, scaling or centring. Ignore this block entirely if LanternFingerprint does not match the lantern you are holding: the linework belongs to a shape that has since changed.',
                 SchemaVersion       : SCHEMA_VERSION,
+                ModelBuildToken     : MODEL_BUILD_TOKEN,
                 RenderedAtIso       : stamp.toISOString(),
                 RenderedAtEpochMs   : stamp.getTime(),
                 RenderedAtLocal     : stamp.toString(),
@@ -251,6 +281,17 @@
         if (block.Meta.SchemaVersion !== SCHEMA_VERSION) {
             console.info('[VghLantern ProjectedEdges] Stored linework is schema v' + block.Meta.SchemaVersion +
                          ' and this build reads v' + SCHEMA_VERSION + '. Ignoring it; render again to replace it.');
+            return [];
+        }
+
+        // A block written before the staged model last changed shape. The lantern
+        // may be identical and its fingerprint may match perfectly; the MODEL it
+        // was projected from is not the one this build stages, so the linework is
+        // of a different object. See MODEL_BUILD_TOKEN above.
+        if (block.Meta.ModelBuildToken !== MODEL_BUILD_TOKEN) {
+            console.info('[VghLantern ProjectedEdges] Stored linework was projected from model build "'
+                         + (block.Meta.ModelBuildToken || 'untokened') + '" and this build stages "'
+                         + MODEL_BUILD_TOKEN + '". Ignoring it; render again to replace it.');
             return [];
         }
 

@@ -227,7 +227,7 @@ const VghLantern__SketchUpExport__Encoders__JoineryAndComponents = (function() {
                                       Index : (index < 10) ? ('0' + index) : String(index)
                                   }),
                     TagKey      : 'components',
-                    MaterialKey : 'frameFinish',
+                    MaterialKey : 'ridgeCappingFinish',                       // <-- Welded to the capping, so it is sprayed with it
                     Attributes  : {
                         PartRole    : 'finial',
                         AnchorId    : anchor.Id || '',

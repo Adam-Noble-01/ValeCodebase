@@ -74,6 +74,7 @@ import { VghLantern__Env3d__MeshBuilder__GlazeBarComposite__Build } from './VghL
 import { VghLantern__Env3d__MeshBuilder__RidgeAssembly__Build } from './VghLantern__Env3d__MeshBuilder__RidgeAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__HipAssembly__Build } from './VghLantern__Env3d__MeshBuilder__HipAssembly__.mjs';
 import { VghLantern__Env3d__MeshBuilder__RidgeBlock__Build, VghLantern__Env3d__MeshBuilder__RidgeBlock__ClearCache } from './VghLantern__Env3d__MeshBuilder__RidgeBlock__.mjs';
+import { VghLantern__Env3d__MeshBuilder__RidgeEndCap__Build } from './VghLantern__Env3d__MeshBuilder__RidgeEndCap__.mjs';
 import {
     VghLantern__Env3d__ElementFilter__Apply,
     VghLantern__Env3d__ElementFilter__Current,
@@ -324,6 +325,11 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         // group with the finials it sits between.
         surface.LastRidgeBlockSummary  =  await VghLantern__Env3d__MeshBuilder__RidgeBlock__Build(solidComponentsGroup, skeleton, lantern);
 
+        // The cast cap closing each end of the ridge capping. A placed mesh like
+        // the block, and it goes in the same group for the same reason - it sits
+        // directly under the finial and the three read as one assembly.
+        surface.LastRidgeEndCapSummary  =  await VghLantern__Env3d__MeshBuilder__RidgeEndCap__Build(solidComponentsGroup, skeleton, lantern);
+
         // A ridge or hip that could not be built the way it was specified says so
         // here rather than only in a summary object nobody has to read. The
         // loudest case is a lantern specified with a glaze bar hip, which is drawn
@@ -332,6 +338,7 @@ import { VghLantern__CrossSection__CapFactory__DisposeMaterials, VghLantern__Cro
         VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge', surface.LastRidgeSummary);
         VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Hip', surface.LastHipSummary);
         VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge block', surface.LastRidgeBlockSummary);
+        VghLantern__Env3d__RenderPipeline__ReportBuildWarnings('Ridge end cap', surface.LastRidgeEndCapSummary);
 
         await VghLantern__Env3d__ComponentLoader__Glb__Build(solidComponentsGroup, skeleton, lantern);
 

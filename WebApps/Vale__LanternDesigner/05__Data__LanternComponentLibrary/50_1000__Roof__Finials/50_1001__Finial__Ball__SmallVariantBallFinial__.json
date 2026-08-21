@@ -41,21 +41,21 @@
     "Na__Asset__Metadata__Name"         : "50_1001__Finial__Ball__SmallVariantBallFinial__",
     "Na__Asset__Metadata__CategoryId"   : "",
     "Na__Asset__Metadata__CategoryName" : "",
-    "Na__Asset__Metadata__Description"  : "",
+    "Na__Asset__Metadata__Description"  :"Decorative aluminium ball finial. Seats on the ridge end cap at each ridge end, or on the pyramid end cap at an apex.",
     "Na__Asset__Metadata__Revision"     : "A",
     "Na__Asset__Metadata__Author"       : "",
     "Na__Asset__Metadata__CreatedDate"  : "20-Aug-2026",
     "Na__Asset__Metadata__DataStatus"   : "Draft - auto-captured by Component Editor Export tab, awaiting audit",
-    "Na__Asset__Metadata__Material"     : "",
+    "Na__Asset__Metadata__Material"     :"Aluminium",
     "Na__Asset__Metadata__Tags"         : []
   },
   "Na__Asset__ValeSpecification"  : {
     "Na__Asset__ValeSpec__ProductCode" : "50_1001",
-    "Na__Asset__ValeSpec__ProductName" : "",
+    "Na__Asset__ValeSpec__ProductName" :"Ball Finial",
     "Na__Asset__ValeSpec__Supplier"    : "",
-    "Na__Asset__ValeSpec__Material"    : "",
-    "Na__Asset__ValeSpec__Finish"      : "",
-    "Na__Asset__ValeSpec__Notes"       : ""
+    "Na__Asset__ValeSpec__Material"    :"Powder Coated Aluminium",
+    "Na__Asset__ValeSpec__Finish"      :"Follows the ridge capping finish. Anthracite Grey by default, may be diverged to White Painted or Lead.",
+    "Na__Asset__ValeSpec__Notes"       :"Replaces the earlier low poly ball finial under the same asset id. Its base sits at local Z 100mm, which is the top face of the ridge end cap, so it needs no seating offset."
   },
   "Na__Asset__Elevation2D__Front" : {
     "Na__View__SourceSceneName" : "FixedAxis__FrontElevation",

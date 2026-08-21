@@ -1,7 +1,14 @@
 # VghLantern Component Library
 
-Discrete objects placed at a point on the lantern — finials and cresting.
-Cross-sections swept along skeleton lines (glazing bars, ridge caps, builders
+Discrete objects placed at a point on the lantern. Two kinds live here:
+
+- **Catalogue components** the user picks from a list — finials, cresting.
+- **Fixed assembly components** placed by a system rather than chosen — the
+  octagonal ridge block and the two ridge end cap variants. These are named by
+  `VghLantern__RidgeSystem__Index__.json` and loaded by the ridge system loader,
+  not by the component index below.
+
+Cross-sections swept along skeleton lines (glazing bars, ridge capping, builders
 upstands) live in `06__Data__LanternProfileLibrary` instead.
 
 ---
@@ -12,7 +19,9 @@ upstands) live in `06__Data__LanternProfileLibrary` instead.
 05__Data__LanternComponentLibrary/
 ├── VghLantern__ComponentDataIndex__.json   ← GENERATED — never hand-edit
 ├── VghLantern__ComponentLibrary__README__.md
-├── 50__Roof__Finials/
+├── 47_1000__Roof__RidgeElement__Components/   ← ridge system, not a picker category
+├── 48_1000__Roof__HipElement__Components/     ← hip system, not a picker category
+├── 50_1000__Roof__Finials/
 └── 55__Roof__Crestings/
 ```
 
@@ -22,9 +31,25 @@ build utility reads the placement role, display name and sort order from its
 `CATEGORY_RULES` table keyed by folder name. Adding a category means adding a
 folder and a rule, never editing the generated index.
 
+A folder with **no rule is skipped**, and that is how the fixed assembly
+components stay out of the picker. `47_1000__Roof__RidgeElement__Components`
+holds the octagonal block `47_1001` and the two end caps `47_1011` and `47_1012`;
+all three are named by the ridge system index and none of them is anything a user
+chooses, so none of them belongs in a catalogue. The build utility prints the
+folders it skipped, so a genuinely missing rule is not silent.
+
 File naming: `{ProductCode}__{Type}__{Descriptor}__.json`, e.g.
-`50_1001__Finial__Ball__.json`. The product code is the leading digit block and
-becomes the `AssetId`.
+`50_1001__Finial__Ball__SmallVariantBallFinial__.json`. The product code is the
+leading digit block and becomes the `AssetId`.
+
+Where a file name carries a long descriptor, fill in
+`Na__Asset__ValeSpec__ProductName` — the build utility prefers it over a name
+derived from the file stem, which is what keeps the picker reading "Ball Finial"
+rather than "Ball Small Variant Ball Finial Finial".
+
+`50__Roof__Finials` was renamed `50_1000__Roof__Finials` on 20-Aug-2026 to match
+the four digit block form the ridge and hip folders use. AssetIds were untouched,
+so every project referencing `50_1001` or `50_2001` resolved unchanged.
 
 ---
 
@@ -70,13 +95,18 @@ so local `0,0,0` is the seating point and **placing a component is putting its
 local origin on the anchor** — in 2D and in 3D, with no per-asset offset table
 to maintain.
 
-An asset may reach below its origin. The ball finial extends 30 mm down as a
-spigot that buries into the ridge; the index records this as
+An asset may reach below its origin, and the index records that as
 `DepthBelowOriginMm` so a renderer can reason about it without loading the
-geometry.
+geometry. The spire finial extends 30 mm down as a spigot buried in the ridge.
+
+An asset may equally start well ABOVE its origin. The ball finial `50_1001` runs
+from 100 mm upwards, because 100 mm is the top face of the ridge end cap it
+stands on and the cap is authored about the same ridge end point. Neither part
+carries a seating offset; both are simply placed on the anchor and land right.
 
 Finial anchors are published by the SkeletonSolver at the two ridge ends, or at
-the single apex on a pyramid roof.
+the single apex on a pyramid roof. The ridge end caps are placed on those same
+points, by the ridge system rather than from the picker.
 
 ---
 

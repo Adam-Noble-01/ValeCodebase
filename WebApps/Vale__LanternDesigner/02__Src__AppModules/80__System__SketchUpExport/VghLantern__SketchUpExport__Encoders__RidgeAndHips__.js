@@ -58,6 +58,8 @@
 
        ridge beam     plumb cut 67.5mm short of each block centre, dying on the
                       octagon's facet
+       ridge capping  plumb cut 95mm in from each ridge end, into the socket
+                      face of the cast end cap that closes it
        ridge others   run the full ridge datum length and pass over the block
        hip beam       plumb cut on the block facet at its head, and 18mm inboard
                       of the eaves datum corner at its foot
@@ -106,6 +108,13 @@ const VghLantern__SketchUpExport__Encoders__RidgeAndHips = (function() {
     const BLOCK_TAG_KEY       =  'ridgeBlock';
     const BLOCK_NAME_KEY      =  'RidgeBlock';
     const BLOCK_MATERIAL_KEY  =  'joineryFinish';
+
+    // The cast cap on the end of the capping. Powder coated rather than painted,
+    // so it takes the capping's own material key and moves with it when a lantern
+    // diverges the capping to White Painted or Lead.
+    const END_CAP_TAG_KEY       =  'ridgeEndCap';
+    const END_CAP_NAME_KEY      =  'RidgeEndCap';
+    const END_CAP_MATERIAL_KEY  =  'ridgeCappingFinish';
 
     const FINISH_BLOCK        =  'Lantern__FinishAndGlazing__Config';
     const FIELD_FRAME_FINISH  =  'Lantern__FinishAndGlazing__Config__FrameFinish';
@@ -379,7 +388,7 @@ const VghLantern__SketchUpExport__Encoders__RidgeAndHips = (function() {
     // Geom::Transformation.axes takes, and because a rotation angle would have to
     // be signed against an axis convention this payload deliberately does not
     // carry.
-    function VghLantern__EncodersRidgeHips__BlockTransform(placement) {
+    function VghLantern__EncodersRidgeHips__PlacementTransform(placement) {
         var radians  =  (Number(placement.PlanRotationDegrees) || 0) * DEG_TO_RAD;
         var cosA     =  Math.cos(radians);
         var sinA     =  Math.sin(radians);
@@ -445,7 +454,7 @@ const VghLantern__SketchUpExport__Encoders__RidgeAndHips = (function() {
         for (i = 0; i < placements.length; i++) {
             record  =  Factory.VghLantern__SketchUpExport__PartFactory__Instance(
                 definition.Key,
-                VghLantern__EncodersRidgeHips__BlockTransform(placements[i]),
+                VghLantern__EncodersRidgeHips__PlacementTransform(placements[i]),
                 {
                     Name        : Factory.VghLantern__SketchUpExport__PartFactory__Name(BLOCK_NAME_KEY, {
                                       Index : VghLantern__EncodersRidgeHips__Pad(i + 1)
@@ -458,6 +467,91 @@ const VghLantern__SketchUpExport__Encoders__RidgeAndHips = (function() {
                         PlacementId  : placements[i].Id || '',
                         StretchMm    : deltaMm,
                         Finish       : finishes.Joinery
+                    }
+                });
+
+            if (record) result.Parts.push(record);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // SUB FUNCTION | Encode the Cast Cap Closing Every Ridge End
+    // ------------------------------------------------------------
+    // One definition per VARIANT rather than one for the lot: a hipped ridge uses
+    // the ridge end cap twice and never touches the pyramid one, and a pyramid
+    // uses the pyramid one once and never touches the other, so in practice this
+    // writes a single definition either way.
+    //
+    // The mesh is encoded as authored. Nothing about the cap is stretched - it
+    // does not follow the ridge beam depth the way the block does, because it sits
+    // above the capping rather than around the beam - so there is no transform to
+    // apply and no depth to key anything on.
+    //
+    // A Leaded Only ridge carries no capping, so there is nothing for a cap to
+    // close and the encoder returns without writing one or warning about it.
+    async function VghLantern__EncodersRidgeHips__EndCap(skeleton, lantern, finishes, result) {
+        var Factory   =  VghLantern__EncodersRidgeHips__Factory();
+        var Geometry  =  VghLantern__EncodersRidgeHips__RidgeGeometry();
+        var Loader    =  VghLantern__EncodersRidgeHips__RidgeLoader();
+        var MeshCodec =  VghLantern__EncodersRidgeHips__Mesh();
+        if (!Geometry || !Loader || !MeshCodec) return;
+
+        if (Loader.VghLantern__RidgeSystemLoader__AllowsEndCaps(lantern) === false) return;
+
+        var placements  =  Geometry.VghLantern__RidgeAssembly__EndCapPlacements(skeleton);
+        if (placements.length === 0) return;
+
+        var definitionsByAsset  =  {};
+        var i, placement, variant, asset, definition, record;
+
+        for (i = 0; i < placements.length; i++) {
+            placement  =  placements[i];
+            variant    =  Loader.VghLantern__RidgeSystemLoader__EndCapVariant(placement.Role);
+            if (!variant) continue;
+
+            if (!Object.prototype.hasOwnProperty.call(definitionsByAsset, variant.AssetId)) {
+                definitionsByAsset[variant.AssetId]  =  null;
+
+                try {
+                    asset  =  await Loader.VghLantern__RidgeSystemLoader__LoadEndCapAsset(placement.Role);
+                } catch (loadError) {
+                    console.warn('[VghLantern SketchUpExport] Ridge end cap could not be loaded:', loadError);
+                    asset  =  null;
+                }
+
+                if (asset && asset['Na__Asset__Mesh3D']) {
+                    definition  =  MeshCodec.VghLantern__SketchUpExport__Encoders__MeshDefinition(
+                        asset['Na__Asset__Mesh3D'],
+                        'ridgeEndCap__' + Factory.VghLantern__SketchUpExport__PartFactory__SafeName(variant.AssetId),
+                        variant.PartName || 'Ridge End Cap',
+                        variant.AssetId);
+
+                    if (definition) {
+                        definitionsByAsset[variant.AssetId]  =  definition;
+                        result.Definitions.push(definition);
+                    }
+                }
+            }
+
+            definition  =  definitionsByAsset[variant.AssetId];
+            if (!definition) continue;                                          // <-- Asset carries no mesh; nothing to instance
+
+            record  =  Factory.VghLantern__SketchUpExport__PartFactory__Instance(
+                definition.Key,
+                VghLantern__EncodersRidgeHips__PlacementTransform(placement),
+                {
+                    Name        : Factory.VghLantern__SketchUpExport__PartFactory__Name(END_CAP_NAME_KEY, {
+                                      Index : VghLantern__EncodersRidgeHips__Pad(i + 1)
+                                  }),
+                    TagKey      : END_CAP_TAG_KEY,
+                    MaterialKey : END_CAP_MATERIAL_KEY,
+                    Attributes  : {
+                        PartRole     : 'ridgeEndCap',
+                        PartCode     : variant.AssetId,
+                        PlacementId  : placement.Id || '',
+                        AnchorRole   : placement.Role || '',
+                        Finish       : finishes.Capping
                     }
                 });
 
@@ -512,6 +606,7 @@ const VghLantern__SketchUpExport__Encoders__RidgeAndHips = (function() {
         await VghLantern__EncodersRidgeHips__Ridge(skeleton, lantern, depths, pitchDeg, finishes, result.Parts);
         await VghLantern__EncodersRidgeHips__Hips(skeleton, lantern, depths, pitchDeg, finishes, result.Parts, warnings);
         await VghLantern__EncodersRidgeHips__Block(skeleton, lantern, depths, result);
+        await VghLantern__EncodersRidgeHips__EndCap(skeleton, lantern, finishes, result);
 
         return result;
     }

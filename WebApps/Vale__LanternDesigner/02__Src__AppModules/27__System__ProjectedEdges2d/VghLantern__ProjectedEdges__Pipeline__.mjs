@@ -1100,7 +1100,24 @@ import {
             VghLantern__ProjectedEdges__Pipeline__RestoredKeys.has(stageKey)) return;
 
         VghLantern__ProjectedEdges__Pipeline__RestoredKeys.add(stageKey);
-        VghLantern__ProjectedEdges__Pipeline__ImportFromProject(block, lantern);
+
+        const recovered  =  VghLantern__ProjectedEdges__Pipeline__ImportFromProject(block, lantern);
+        if (recovered > 0) return;
+
+        // A BLOCK WAS THERE AND NONE OF IT WAS USABLE.
+        //
+        // Two things reject one: a lantern whose shape has changed, and a stored
+        // render made before the staged MODEL last changed shape. The first case
+        // needs nothing from here - whatever changed the lantern scheduled a render
+        // on its way past. The second is the one that would otherwise sit there,
+        // because the lantern is byte for byte what it was and nothing is going to
+        // ask for a redraw on its own. That is a drawing that opens empty and stays
+        // empty until somebody happens to nudge a dimension.
+        //
+        // So a rejected block schedules a render itself. It rides the same debounce
+        // as every other trigger, so arriving alongside a real edit collapses into
+        // one run rather than two, and with Realtime off it correctly does nothing.
+        VghLantern__ProjectedEdges__Pipeline__ScheduleAuto();
     }
     // ------------------------------------------------------------
 

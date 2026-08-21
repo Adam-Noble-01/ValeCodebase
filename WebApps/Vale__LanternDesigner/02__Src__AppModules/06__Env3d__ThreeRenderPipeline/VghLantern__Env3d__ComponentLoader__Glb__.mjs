@@ -97,7 +97,7 @@ import {
     const FINIALS_BLOCK            =  'Lantern__Finials__Config';
     const FIELD_AT_APEX            =  'Lantern__Finials__Config__PlaceAtApex';
 
-    const FINISH_BLOCK             =  'Lantern__FinishAndGlazing__Config';   // <-- Frame finish tints every component
+    const FINISH_BLOCK             =  'Lantern__FinishAndGlazing__Config';   // <-- Exterior finish, the fallback every component takes
     const FINISH_FIELD             =  'Lantern__FinishAndGlazing__Config__FrameFinish';
     // ------------------------------------------------------------
 
@@ -339,13 +339,33 @@ import {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Read the Lantern's Frame Finish
+    // HELPER FUNCTION | The Finish a Placed Component Is Coated In
     // ------------------------------------------------------------
+    // THE RIDGE CAPPING'S finish, falling back to the lantern's exterior finish
+    // when the capping has not been diverged.
+    //
+    // Both things this loader places are WELDED TO THE CAPPING - that is already
+    // the reason a Leaded Only ridge refuses them - so a finial or a cresting run
+    // is the same piece of coated aluminium as the extrusion it stands on and was
+    // sprayed with it. Following the exterior finish directly was right only while
+    // the capping did too; once a project diverges its capping to White Painted or
+    // Lead, reading the exterior finish here leaves the finial the one part of the
+    // ridge in the old colour.
+    //
+    // The end cap between them resolves its finish the same way, from the same
+    // loader, so cap, capping and finial cannot drift apart.
     function VghLantern__Env3d__ComponentLoader__FinishName(lantern) {
         if (!lantern) return '';
 
-        const block  =  lantern[FINISH_BLOCK];
-        return block ? (block[FINISH_FIELD] || '') : '';
+        const RidgeSystem  =  window.VghLantern__AppData__RidgeSystemLoader;
+
+        const block     =  lantern[FINISH_BLOCK];
+        const exterior  =  block ? (block[FINISH_FIELD] || '') : '';
+        const capping   =  RidgeSystem
+            ? (RidgeSystem.VghLantern__RidgeSystemLoader__CappingFinish(lantern) || '')
+            : '';
+
+        return capping || exterior;
     }
     // ------------------------------------------------------------
 

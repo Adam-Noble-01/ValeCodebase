@@ -57,8 +57,13 @@ SCHEMA_VERSION = "2.0.0"
 # block seating a finial onto the ridge is the octagonal block RidgeAssembly now
 # builds from the ridge system index, sized off the beam depth for the pitch, so
 # it is no longer a component anybody picks from a list.
+# 50__Roof__Finials was renamed 50_1000__Roof__Finials on 20-Aug-2026, bringing the
+# folder into line with the four digit block form the ridge and hip component
+# folders already use. The rule is keyed by folder name and the folder is the
+# classification, so a rename here is the whole migration - the AssetIds inside are
+# untouched and every project referencing 50_1001 or 50_2001 resolves unchanged.
 CATEGORY_RULES = {
-    "50__Roof__Finials": {
+    "50_1000__Roof__Finials": {
         "CategoryName" : "Finials",
         "Role"         : "finial",
         "TypeToken"    : "Finial",

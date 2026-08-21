@@ -208,6 +208,14 @@
         stroke-opacity                    : 0.55;
     }
 
+    /* The cast cap under the finial. Same stroke as the finial deliberately: on a
+       drawing they are one item, and two weights would imply two components. */
+    .VghLantern__Env2d__RidgeEndCap {
+        fill                              : none;
+        stroke                            : var(--VghLantern_SvgComponentStroke);
+        stroke-linejoin                   : round;
+    }
+
     .VghLantern__Env2d__FinialAnchor {
         fill                              : none;
         stroke                            : var(--VghLantern_SvgComponentStroke);

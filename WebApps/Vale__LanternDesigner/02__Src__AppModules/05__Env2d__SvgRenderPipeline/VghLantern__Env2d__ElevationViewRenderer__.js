@@ -61,8 +61,11 @@ const VghLantern__Env2d__ElevationViewRenderer = (function() {
         var Skeleton   =  window.VghLantern__Env2d__SkeletonRenderer;
         var GlazeBars  =  window.VghLantern__Env2d__GlazeBarRenderer;
         var Profiles   =  window.VghLantern__Env2d__ProfileTraceRenderer;
-        var Finials    =  window.VghLantern__Env2d__FinialRenderer;
         var Dimensions =  window.VghLantern__Env2d__DimensionRenderer;
+
+        // Held for the commented debug draw at the foot of this function.
+        var EndCaps    =  window.VghLantern__Env2d__RidgeEndCapRenderer;      // eslint-disable-line no-unused-vars
+        var Finials    =  window.VghLantern__Env2d__FinialRenderer;           // eslint-disable-line no-unused-vars
 
         instance.ClearAllLayers();
 
@@ -79,7 +82,24 @@ const VghLantern__Env2d__ElevationViewRenderer = (function() {
         }
 
         if (Profiles) await Profiles.VghLantern__Env2d__ProfileTraceRenderer__Render(instance, skeleton, barSet, lantern);
-        if (Finials)  await Finials.VghLantern__Env2d__FinialRenderer__Render(instance, skeleton, lantern);
+
+        // THE COMPONENTS ARE DRAWN BY THE PROJECTION, NOT FROM THEIR OWN LINEWORK
+        // ---------------------------------------------------------------------
+        // Both of these draw a component's exported 2D linework straight onto the
+        // view. That was the only way to show a finial before ProjectedEdges
+        // existed; now the drawing takes its components from the 3D model like
+        // everything else, and drawing them twice puts a schematic outline on top
+        // of the projected one.
+        //
+        // LEFT COMMENTED RATHER THAN DELETED, deliberately. Switching them back on
+        // draws the asset's own exported view over the projection of the same
+        // asset, which is the fastest way there is to see whether a component is
+        // seated where its author put it: if the two silhouettes sit on top of one
+        // another the placement is right, and if they do not the gap IS the error.
+        // That is how the ridge end cap and the ball finial were checked in.
+        //
+        // if (EndCaps)  await EndCaps.VghLantern__Env2d__RidgeEndCapRenderer__Render(instance, skeleton, lantern);
+        // if (Finials)  await Finials.VghLantern__Env2d__FinialRenderer__Render(instance, skeleton, lantern);
 
         if (Dimensions) Dimensions.VghLantern__Env2d__DimensionRenderer__Render(instance, skeleton, lantern, barSet);
 

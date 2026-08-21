@@ -114,11 +114,49 @@ function signedVolume(part) {
         hipRoles.every(r => parts.filter(p => role(p) === r).length === hipCount),
         `(${hipCount} hips, ${hipRoles.map(r => r.replace('hip', '') + ':' + parts.filter(p => role(p) === r).length).join(' ')})`);
 
+    const definitionFor = key => result.Definitions.find(d => d.Key === key);
+
     const blocks = parts.filter(p => role(p) === 'ridgeBlock');
     check('a block was placed at every ridge end', blocks.length === 2, `(${blocks.length} placed)`);
     check('the block travels with exactly one definition',
-        result.Definitions.length === 1 && blocks.every(b => b.DefinitionKey === result.Definitions[0].Key),
-        result.Definitions.length ? `(${result.Definitions[0].VertexCount} vertices, ${result.Definitions[0].FaceCount} faces)` : '');
+        blocks.length > 0
+        && new Set(blocks.map(b => b.DefinitionKey)).size === 1
+        && definitionFor(blocks[0].DefinitionKey) !== undefined,
+        blocks.length ? `(${definitionFor(blocks[0].DefinitionKey).VertexCount} vertices, ${definitionFor(blocks[0].DefinitionKey).FaceCount} faces)` : '');
+
+    // -- THE END CAP ---------------------------------------------------------
+    // One at each ridge end, sharing a definition the way the block does, and
+    // sprayed with the capping rather than painted with the joinery.
+    const caps = parts.filter(p => role(p) === 'ridgeEndCap');
+    check('an end cap was placed at every ridge end', caps.length === 2, `(${caps.length} placed)`);
+    check('the end cap travels with exactly one definition',
+        caps.length > 0
+        && new Set(caps.map(c => c.DefinitionKey)).size === 1
+        && definitionFor(caps[0].DefinitionKey) !== undefined,
+        caps.length ? `(${definitionFor(caps[0].DefinitionKey).VertexCount} vertices, ${definitionFor(caps[0].DefinitionKey).FaceCount} faces)` : '');
+    check('the end cap is the ridge end variant, not the pyramid one',
+        caps.every(c => c.Attributes.PartCode === '47_1011'),
+        `(${caps.map(c => c.Attributes.PartCode).join(' ')})`);
+    check('the end cap follows the capping finish',
+        caps.every(c => c.MaterialKey === 'ridgeCappingFinish'));
+    // The cap's socket must face back down the ridge. Its local +Y is the
+    // transform's Y axis, so the test is that axis pointing at the OTHER end -
+    // which also proves the two caps are the half turn apart that stands in for
+    // the mirrored instance.
+    const ridgeMember = skeleton.Members.find(m => m.Role === 'ridge');
+    const inwardOk = caps.every(c => {
+        const o     = c.Transform.Origin;
+        const far   = Math.hypot(ridgeMember.Start.x - o[0], ridgeMember.Start.y - o[1]) > 1
+                    ? ridgeMember.Start : ridgeMember.End;
+        const dx    = far.x - o[0], dy = far.y - o[1];
+        const len   = Math.hypot(dx, dy) || 1;
+        return (((c.Transform.YAxis[0] * dx) + (c.Transform.YAxis[1] * dy)) / len) > 0.999;
+    });
+    check('every cap points its socket back down the ridge', caps.length === 2 && inwardOk,
+        `(${caps.map(c => '[' + c.Transform.YAxis.join(',') + ']').join(' ')})`);
+
+    check('the block and the cap do not share a definition',
+        blocks.length > 0 && caps.length > 0 && blocks[0].DefinitionKey !== caps[0].DefinitionKey);
 
     // -- TAGS AND MATERIALS --------------------------------------------------
     const Factory   = sandbox.VghLantern__SketchUpExport__PartFactory;
@@ -164,8 +202,10 @@ function signedVolume(part) {
         .VghLantern__SketchUpExport__Encoders__RidgeAndHips(skeleton, leaded, []);
     const leadedRoles = leadedResult.Parts.map(role);
 
-    check('a leaded only ridge drops the capping and its block',
-        leadedRoles.indexOf('ridgeCapping') === -1 && leadedRoles.indexOf('ridgeCappingBlock') === -1,
+    check('a leaded only ridge drops the capping, its block and the end cap',
+        leadedRoles.indexOf('ridgeCapping') === -1
+        && leadedRoles.indexOf('ridgeCappingBlock') === -1
+        && leadedRoles.indexOf('ridgeEndCap') === -1,
         `(${leadedResult.Parts.length} parts against ${parts.length})`);
     check('a leaded only ridge keeps everything else',
         ['ridgeCore', 'ridgeBeam', 'ridgeBlocking', 'ridgeFlashing'].every(r => leadedRoles.indexOf(r) !== -1));

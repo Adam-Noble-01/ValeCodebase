@@ -82,11 +82,48 @@
         "core",
         "blocking",
         "flashing",
-        "cappingBlock",
+        "cappingBlock"
+      ],
+      "Note": "The aluminium spine and the weathering under the capping run the full ridge datum length, from one ridge end point to the other, and pass over the block rather than dying into it. The overhang past the block centre is declared here as zero. The capping itself is no longer in this group: it stops short of the end cap and takes the Capping treatment below."
+    },
+    "Capping": {
+      "Mode": "endCapPlumbCut",
+      "EndCapInsetMm": 95.0,
+      "AppliesToParts": [
         "capping"
       ],
-      "Note": "The aluminium spine and the weathering above it run the full ridge datum length, from one ridge end point to the other, and pass over the block rather than dying into it. The overhang past the block centre is declared here as zero: the capping does cantilever a little beyond the block on the workshop drawings, but that projection is not dimensioned in the 22.5 degree standard set, so it is carried as a number to fill in rather than a figure invented in code."
+      "Note": "The decorative capping dies into the ridge end cap rather than running past the block. The cap carries a socket face 95mm in from the ridge end point whose section is the capping's own outline, so the capping is plumb cut on that plane at each end and the two parts meet with no fitting. The inset is the cap's own dimension and is declared on the end cap relationship below; it is repeated here as the number this treatment cuts at, exactly as the beam treatment repeats the block facet inset."
     }
+  },
+  "VghLantern__RidgeSystem__EndCapRelationship": {
+    "EndCapRootNote": "The cast aluminium cap that finishes each end of the ridge capping. Like the octagonal block it is a placed mesh component rather than a swept section, so it lives in the component library and is named here rather than found by a folder scan.",
+    "RidgeEnd": {
+      "AssetId": "47_1011",
+      "JsonUrl": "47_1011__Roof__RidgeEndCap__.json",
+      "PartName": "Ridge End Cap"
+    },
+    "Apex": {
+      "AssetId": "47_1012",
+      "JsonUrl": "47_1012__Roof__RidgeEndCap__PyramidLanternVaritaion__.json",
+      "PartName": "Ridge End Cap - Pyramid Variant"
+    },
+    "ApexNote": "A pyramid has no ridge and no ridge capping, so the ridge end variant's socket would open onto nothing. The pyramid variant is the same cap closed as a full octagon with no return. A square lantern reaches this case without the user choosing Pyramid, because the ridge collapses to a point on its own.",
+    "CappingInsetMm": 95.0,
+    "CappingInsetNote": "The distance from the ridge end point to the cap's socket face, measured along the ridge. It is the cap's own authored dimension - local +Y 95mm on 47_1011, where the mesh presents a flat face matching the capping section exactly - and it is what the capping is cut back by at each end.",
+    "SeatBaseZMm": 56.0,
+    "SeatTopZMm": 100.0,
+    "SeatNote": "The cap occupies the same 56 to 100 band above the ridge datum that the capping section does, so it reads as the end of that extrusion rather than as a lid over it. Its top face at 100 is the finial's seating plane, which is why the finial is authored from 100 upwards and needs no offset of its own.",
+    "OriginNote": "Placed with its origin directly on the ridge end point, the same point the octagonal block is placed on, with no vertical offset. The cap is authored about that datum.",
+    "PlanRotationNote": "The asset's local +Y points back down the ridge towards the middle, so the cap at the start end is turned to the ridge bearing minus 90 degrees and the cap at the far end to the ridge bearing plus 90. The cap is symmetric across its local X, so that 180 degree difference IS the mirror; there is no reflected instance to build.",
+    "RequiresCapping": true,
+    "RequiresCappingNote": "The cap finishes the aluminium capping, so a Leaded Only ridge has nothing for it to finish. Resolved from whether the ridge type carries the capping part rather than from a type name, so a third ridge type needs no edit here - the same reasoning AllowsFinials is written with.",
+    "ElementType": "Trim",
+    "ElementRole": "Decoration",
+    "ElementTypeNote": "Trim and Decoration, identical to the capping it terminates. Decoration is the drawing office word and sits in ElementRole; ElementType stays inside the five word vocabulary the 3D isolation and the specification tables filter on.",
+    "SpecMaterial": "Powder Coated Aluminium",
+    "SpecFinishNote": "Powder coated. Follows the ridge capping finish, so cap, capping and finial move together when the capping is diverged to White Painted or Lead.",
+    "FinishPalette": "VghLantern__PbrMaterials__Config__CapFinishes",
+    "FinishSource": "capping"
   },
   "VghLantern__RidgeSystem__Parts": [
     {

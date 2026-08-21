@@ -41,21 +41,21 @@
     "Na__Asset__Metadata__Name"         : "47_1011__Roof__RidgeEndCap__",
     "Na__Asset__Metadata__CategoryId"   : "",
     "Na__Asset__Metadata__CategoryName" : "",
-    "Na__Asset__Metadata__Description"  : "",
+    "Na__Asset__Metadata__Description"  :"Decorative ridge end cap. Closes the end of the aluminium ridge capping, seats the ball finial and forms the weathering detail over the ridge end.",
     "Na__Asset__Metadata__Revision"     : "A",
     "Na__Asset__Metadata__Author"       : "",
     "Na__Asset__Metadata__CreatedDate"  : "20-Aug-2026",
     "Na__Asset__Metadata__DataStatus"   : "Draft - auto-captured by Component Editor Export tab, awaiting audit",
-    "Na__Asset__Metadata__Material"     : "",
+    "Na__Asset__Metadata__Material"     :"Aluminium",
     "Na__Asset__Metadata__Tags"         : []
   },
   "Na__Asset__ValeSpecification"  : {
     "Na__Asset__ValeSpec__ProductCode" : "47_1011",
-    "Na__Asset__ValeSpec__ProductName" : "",
+    "Na__Asset__ValeSpec__ProductName" :"Ridge End Cap",
     "Na__Asset__ValeSpec__Supplier"    : "",
-    "Na__Asset__ValeSpec__Material"    : "",
-    "Na__Asset__ValeSpec__Finish"      : "",
-    "Na__Asset__ValeSpec__Notes"       : ""
+    "Na__Asset__ValeSpec__Material"    :"Powder Coated Aluminium",
+    "Na__Asset__ValeSpec__Finish"      :"Follows the ridge capping finish. Anthracite Grey by default, may be diverged to White Painted or Lead.",
+    "Na__Asset__ValeSpec__Notes"       :"One at each ridge end. Local origin sits on the ridge end point, the same datum the octagonal block is placed on. The flat face at local +Y 95mm is the socket the ridge capping butts into, so the capping is cut 95mm short at each end."
   },
   "Na__Asset__Elevation2D__Front" : {
     "Na__View__SourceSceneName" : "FixedAxis__FrontElevation",

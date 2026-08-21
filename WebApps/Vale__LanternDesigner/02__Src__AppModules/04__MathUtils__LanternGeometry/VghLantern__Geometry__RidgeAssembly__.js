@@ -24,6 +24,11 @@
          flashing         2.8 .. 77   lead, the weathering projection
          cappingBlock      77 .. 97   timber upstand, capped type only
          capping           56 .. 100  powder coated aluminium, capped type only
+   - THE END CAP: a cast aluminium cap closes each end of that capping, placed on
+     the ridge end point over the block. It occupies the same 56..100 band and
+     presents a socket face 95mm in from the end whose section is the capping's
+     own outline, so the capping is cut back to that plane and the finial seats on
+     the cap's 100 top face rather than on thin air.
    - PITCH: the beam depth comes from the shared timber depth table and is
      reached by STRETCHING the authored section below its moulding, never by
      scaling it. The blocking's seating faces and the flashing's wings follow the
@@ -44,12 +49,17 @@
    and its moulded end has to finish clean on a flat facet, so it is plumb cut
    67.5mm short of the block centre at each end.
 
-   Nothing else in the stack does. The core is a welded spine and the blocking,
-   flashing and capping are the weathering above it, and all of them run the full
-   ridge datum length and carry on over the block. The overhang past the block
-   centre is declared as zero in the system index rather than assumed here, so
-   the day a real capping overhang is dimensioned it is one number in a data file
-   and no code at all.
+   The core, the blocking and the flashing do not. They are a welded spine and the
+   weathering above it, they run the full ridge datum length and they carry on over
+   the block. The overhang past the block centre is declared as zero in the system
+   index rather than assumed here, so the day a real overhang is dimensioned it is
+   one number in a data file and no code at all.
+
+   The capping is the third case and is cut for a different reason again: not to
+   die into the block below it, but to die into the end cap in front of it. That
+   cut is a plumb plane like the beam's, taken at the end cap inset rather than the
+   block facet inset, which is why EndPlanesForPart answers per part rather than
+   the call site deciding.
 
    ============================================================================= */
 
@@ -74,6 +84,15 @@ const VghLantern__Geometry__RidgeAssembly = (function() {
     const FALLBACK_FACET_INSET_MM      =  67.5;
     const FALLBACK_BLOCK_SPLIT_Z_MM    =  -247;
     const FALLBACK_AUTHORED_PITCH_DEG  =  22.5;
+    const FALLBACK_END_CAP_INSET_MM    =  95.0;
+
+    const PART_KEY_BEAM     =  'beam';                                       // <-- Plumb cut into the block facet
+    const PART_KEY_CAPPING  =  'capping';                                    // <-- Plumb cut into the end cap socket
+
+    const ANCHOR_ROLE_RIDGE_END  =  'ridgeEnd';                              // <-- Cap with a ridge return
+    const ANCHOR_ROLE_APEX       =  'apex';                                  // <-- Cap with none, four hips and no ridge
+
+    const QUARTER_TURN_DEG  =  90;                                           // <-- Local +Y sits a quarter turn off local +X
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -108,6 +127,28 @@ const VghLantern__Geometry__RidgeAssembly = (function() {
             StretchSplitZMm  : block ? Number(block.StretchSplitZMm) : FALLBACK_BLOCK_SPLIT_Z_MM,
             AcrossFlatsMm    : block ? Number(block.AcrossFlatsMm)   : (FALLBACK_FACET_INSET_MM * 2),
             PrismTopZMm      : block ? Number(block.PrismTopZMm)     : -27
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The End Cap Relationship Numbers (synchronous)
+    // ------------------------------------------------------------
+    // The one number this module actually reasons with is the capping inset. The
+    // seating band is carried alongside it because it is what makes the inset
+    // legible: the cap fills the same 56..100 the capping section does, so cutting
+    // the capping back to the cap's socket leaves no gap and no overlap.
+    //
+    // The fallback mirrors the index for a lantern whose data files have not
+    // loaded, exactly as the block fallbacks do.
+    function VghLantern__RidgeAssembly__EndCapGeometry() {
+        var loader  =  VghLantern__RidgeAssembly__Loader();
+        var cap     =  loader ? loader.VghLantern__RidgeSystemLoader__EndCapRelationship() : null;
+
+        return {
+            CappingInsetMm : cap ? Number(cap.CappingInsetMm) : FALLBACK_END_CAP_INSET_MM,
+            SeatBaseZMm    : cap ? Number(cap.SeatBaseZMm)    : 56,
+            SeatTopZMm     : cap ? Number(cap.SeatTopZMm)     : 100
         };
     }
     // ------------------------------------------------------------
@@ -358,6 +399,55 @@ const VghLantern__Geometry__RidgeAssembly = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Where Every Ridge End Cap Sits
+    // ------------------------------------------------------------
+    // The same points the blocks go on, because it is the same junction seen from
+    // above the roof rather than below it, and the cap is authored about that same
+    // datum. So the origin goes straight on the point with no vertical offset, and
+    // the cap's own 56..100 band puts it exactly over the capping.
+    //
+    // THE ROTATION, AND WHY THERE IS NO MIRRORED INSTANCE
+    // The asset's local +Y points back down the ridge towards the middle, at a
+    // quarter turn from its local +X. Squaring local +Y onto the inward direction
+    // therefore means turning the cap to the ridge bearing LESS a quarter turn at
+    // the start end, and PLUS a quarter turn at the far end. The cap is symmetric
+    // across its local X, so that 180 degrees between the two IS the mirror the
+    // workshop drawing calls for - there is no reflected geometry to build, and
+    // both ends share one buffer.
+    //
+    // Each placement carries the anchor role it was solved from, because the two
+    // roles take DIFFERENT cap assets: a ridge end takes the cap with the capping
+    // socket, an apex takes the pyramid variant that closes as a full octagon.
+    function VghLantern__RidgeAssembly__EndCapPlacements(skeleton) {
+        var member  =  VghLantern__RidgeAssembly__RidgeMember(skeleton);
+
+        if (member) {
+            var direction  =  VghLantern__RidgeAssembly__PlanDirection(member);
+            var bearing    =  Math.atan2(direction.y, direction.x) / DEG_TO_RAD;
+
+            return [
+                { Id : 'ridgeEndCap__start', Role : ANCHOR_ROLE_RIDGE_END,
+                  Point : VghLantern__RidgeAssembly__Copy(member.Start),
+                  PlanRotationDegrees : bearing - QUARTER_TURN_DEG },
+                { Id : 'ridgeEndCap__end',   Role : ANCHOR_ROLE_RIDGE_END,
+                  Point : VghLantern__RidgeAssembly__Copy(member.End),
+                  PlanRotationDegrees : bearing + QUARTER_TURN_DEG }
+            ];
+        }
+
+        // PYRAMID | No ridge, so no capping and no socket for one to open onto.
+        // The apex still takes a cap: it is what the finial seats on, and without
+        // one the finial stands 100mm clear of everything. The pyramid variant is
+        // the same cap with the ridge return closed off, so its rotation is a free
+        // choice and is left at zero to match the block below it.
+        var apex  =  VghLantern__RidgeAssembly__ApexPoint(skeleton);
+        if (!apex) return [];
+
+        return [{ Id : 'ridgeEndCap__apex', Role : ANCHOR_ROLE_APEX, Point : apex, PlanRotationDegrees : 0 }];
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | The Apex a Pyramid's Hips Converge On
     // ------------------------------------------------------------
     function VghLantern__RidgeAssembly__ApexPoint(skeleton) {
@@ -402,11 +492,39 @@ const VghLantern__Geometry__RidgeAssembly = (function() {
     // anyway, because the hip beam's identical treatment is NOT square and one
     // shared idea across the two is worth more than the arithmetic saved.
     function VghLantern__RidgeAssembly__BeamEndPlanes(skeleton) {
+        return VghLantern__RidgeAssembly__PlumbEndPlanes(
+            skeleton, VghLantern__RidgeAssembly__BlockGeometry().FacetInsetMm);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Two Plumb Cut Planes the Ridge Capping Dies Into
+    // ------------------------------------------------------------
+    // The same construction as the beam's, taken at the END CAP inset rather than
+    // the block facet inset. The cap presents a flat socket face that distance in
+    // from the ridge end point, and that face IS the capping's own section, so a
+    // capping cut on this plane meets it with no fitting.
+    //
+    // Null on a pyramid. There is no ridge to run a capping along, so there is
+    // nothing to cut, and the pyramid cap has no socket for one to enter.
+    function VghLantern__RidgeAssembly__CappingEndPlanes(skeleton) {
+        return VghLantern__RidgeAssembly__PlumbEndPlanes(
+            skeleton, VghLantern__RidgeAssembly__EndCapGeometry().CappingInsetMm);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Pair of Plumb Cut Planes Set In From Both Ridge Ends
+    // ------------------------------------------------------------
+    // Two parts take this treatment at two different insets - the beam at the
+    // block facet, the capping at the end cap socket - and they differ in nothing
+    // else, so the construction is written once and the distance is the argument.
+    function VghLantern__RidgeAssembly__PlumbEndPlanes(skeleton, insetMm) {
         var member  =  VghLantern__RidgeAssembly__RidgeMember(skeleton);
         if (!member) return null;
 
         var direction  =  VghLantern__RidgeAssembly__PlanDirection(member);
-        var inset      =  VghLantern__RidgeAssembly__BlockGeometry().FacetInsetMm;
+        var inset      =  Number(insetMm) || 0;
 
         return {
             Start : {
@@ -428,12 +546,15 @@ const VghLantern__Geometry__RidgeAssembly = (function() {
 
     // FUNCTION | The End Planes One Named Part Takes
     // ------------------------------------------------------------
-    // The beam dies into the block; the spine and the covering above it run the
-    // full ridge datum length and pass over it. Answered per part rather than
-    // decided at the call site so the mesh builder holds one loop.
+    // The beam dies into the block below it and the capping dies into the end cap
+    // in front of it. The spine and the two concealed layers between them run the
+    // full ridge datum length and pass over the block. Answered per part rather
+    // than decided at the call site so the mesh builder and the SketchUp encoder
+    // each hold one loop and cannot disagree about which parts get cut.
     function VghLantern__RidgeAssembly__EndPlanesForPart(partKey, skeleton) {
-        if (partKey !== 'beam') return null;
-        return VghLantern__RidgeAssembly__BeamEndPlanes(skeleton);
+        if (partKey === PART_KEY_BEAM)    return VghLantern__RidgeAssembly__BeamEndPlanes(skeleton);
+        if (partKey === PART_KEY_CAPPING) return VghLantern__RidgeAssembly__CappingEndPlanes(skeleton);
+        return null;
     }
     // ------------------------------------------------------------
 
@@ -504,7 +625,10 @@ const VghLantern__Geometry__RidgeAssembly = (function() {
         VghLantern__RidgeAssembly__PlanDirection     : VghLantern__RidgeAssembly__PlanDirection,
         VghLantern__RidgeAssembly__BlockPlacements   : VghLantern__RidgeAssembly__BlockPlacements,
         VghLantern__RidgeAssembly__BlockGeometry     : VghLantern__RidgeAssembly__BlockGeometry,
+        VghLantern__RidgeAssembly__EndCapPlacements  : VghLantern__RidgeAssembly__EndCapPlacements,
+        VghLantern__RidgeAssembly__EndCapGeometry    : VghLantern__RidgeAssembly__EndCapGeometry,
         VghLantern__RidgeAssembly__BeamEndPlanes     : VghLantern__RidgeAssembly__BeamEndPlanes,
+        VghLantern__RidgeAssembly__CappingEndPlanes  : VghLantern__RidgeAssembly__CappingEndPlanes,
         VghLantern__RidgeAssembly__EndPlanesForPart  : VghLantern__RidgeAssembly__EndPlanesForPart,
         VghLantern__RidgeAssembly__StretchBlockMesh  : VghLantern__RidgeAssembly__StretchBlockMesh,
         VghLantern__RidgeAssembly__BlockCacheKey     : VghLantern__RidgeAssembly__BlockCacheKey

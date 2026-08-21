@@ -53,10 +53,14 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
 
     // MODULE CONSTANTS | Index Field Names
     // ------------------------------------------------------------
-    const KEY_META   =  'VghLantern__RidgeSystem__Meta';
-    const KEY_TYPES  =  'VghLantern__RidgeSystem__Types';
-    const KEY_BLOCK  =  'VghLantern__RidgeSystem__BlockRelationship';
-    const KEY_PARTS  =  'VghLantern__RidgeSystem__Parts';
+    const KEY_META    =  'VghLantern__RidgeSystem__Meta';
+    const KEY_TYPES   =  'VghLantern__RidgeSystem__Types';
+    const KEY_BLOCK   =  'VghLantern__RidgeSystem__BlockRelationship';
+    const KEY_ENDCAP  =  'VghLantern__RidgeSystem__EndCapRelationship';
+    const KEY_PARTS   =  'VghLantern__RidgeSystem__Parts';
+
+    const PART_KEY_CAPPING  =  'capping';                                    // <-- The part the end cap exists to finish
+    const ANCHOR_ROLE_APEX  =  'apex';                                       // <-- Takes the pyramid variant with no ridge return
     // ------------------------------------------------------------
 
 
@@ -76,8 +80,8 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
     let VghLantern__RidgeSystemLoader__AssetCache    =  {};                  // <-- AssetId -> parsed asset JSON
     let VghLantern__RidgeSystemLoader__AssetPromise  =  {};                  // <-- AssetId -> in-flight fetch
     let VghLantern__RidgeSystemLoader__FaceCache     =  {};                  // <-- AssetId -> stitched face result
-    let VghLantern__RidgeSystemLoader__BlockAsset    =  null;                // <-- Parsed octagonal block component
-    let VghLantern__RidgeSystemLoader__BlockPromise  =  null;                // <-- In-flight block fetch
+    let VghLantern__RidgeSystemLoader__PartAsset     =  {};                  // <-- AssetId -> parsed component library asset
+    let VghLantern__RidgeSystemLoader__PartPromise   =  {};                  // <-- AssetId -> in-flight component fetch
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -259,6 +263,55 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The End Cap Relationship Numbers (synchronous)
+    // ------------------------------------------------------------
+    // The capping inset, the seating band and the two cap variants. Answered from
+    // the index for the same reason the block relationship is: the geometry module
+    // has to know how far to cut the capping back without fetching a 3.5 MB mesh
+    // to measure it.
+    function VghLantern__RidgeSystemLoader__EndCapRelationship() {
+        var index  =  VghLantern__RidgeSystemLoader__IndexData;
+        return (index && index[KEY_ENDCAP]) ? index[KEY_ENDCAP] : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Cap Variant an Anchor Role Takes
+    // ------------------------------------------------------------
+    // An apex takes the pyramid variant with no ridge return; a ridge end takes the
+    // one with the capping socket. Returns null when the index declares no cap for
+    // the role, which is how a variant that has not been drawn yet reports itself
+    // rather than by throwing halfway through a build.
+    function VghLantern__RidgeSystemLoader__EndCapVariant(anchorRole) {
+        var relationship  =  VghLantern__RidgeSystemLoader__EndCapRelationship();
+        if (!relationship) return null;
+
+        var variant  =  (anchorRole === ANCHOR_ROLE_APEX) ? relationship.Apex : relationship.RidgeEnd;
+        if (!variant || !variant.AssetId || !variant.JsonUrl) return null;
+
+        return variant;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether This Lantern's Ridge Carries End Caps
+    // ------------------------------------------------------------
+    // The cap finishes the aluminium capping, so a type without the capping part
+    // has nothing for it to finish. Tested against the type's own part list rather
+    // than against a type name, so a third ridge type would need no edit here.
+    //
+    // Answers true before the index loads, for the same reason AllowsFinials does:
+    // the default type carries a capping, and a cap that vanished for the first
+    // frame of every page load would read as a fault rather than as a load.
+    function VghLantern__RidgeSystemLoader__AllowsEndCaps(lantern) {
+        var type  =  VghLantern__RidgeSystemLoader__ResolvedType(lantern);
+        if (!type || !Array.isArray(type.PartKeys)) return true;
+
+        return type.PartKeys.indexOf(PART_KEY_CAPPING) !== -1;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Depth Adjustment a Lantern Has Overridden the Ridge By
     // ------------------------------------------------------------
     function VghLantern__RidgeSystemLoader__DepthAdjustmentMm(lantern) {
@@ -352,20 +405,60 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Load the Octagonal Ridge Block Component (memoised)
+    // HELPER FUNCTION | Fetch One Component Library Asset (memoised, concurrency safe)
     // ------------------------------------------------------------
-    // Returned as the raw asset document rather than as geometry: the block is a
-    // mesh component, not a swept section, and the Env3d MeshJson loader is what
-    // turns a Na__Asset__Mesh3D block into a buffer geometry.
-    function VghLantern__RidgeSystemLoader__LoadBlockAsset() {
-        if (VghLantern__RidgeSystemLoader__BlockAsset) {
-            return Promise.resolve(VghLantern__RidgeSystemLoader__BlockAsset);
+    // The block and both end cap variants are mesh components rather than swept
+    // sections, so they come from the component library rather than the profile
+    // library and are returned as raw asset documents. Turning a Na__Asset__Mesh3D
+    // block into a buffer geometry is the Env3d MeshJson loader's job and encoding
+    // it for SketchUp is the mesh codec's; this loader only fetches.
+    //
+    // Keyed by asset id and shared by every caller, so two placements of one cap,
+    // the 2D renderer and the projected edges stage all cost a single fetch.
+    function VghLantern__RidgeSystemLoader__LoadComponentAsset(assetId, jsonUrl, label) {
+        if (VghLantern__RidgeSystemLoader__PartAsset[assetId]) {
+            return Promise.resolve(VghLantern__RidgeSystemLoader__PartAsset[assetId]);
         }
-        if (VghLantern__RidgeSystemLoader__BlockPromise) {
-            return VghLantern__RidgeSystemLoader__BlockPromise;
+        if (VghLantern__RidgeSystemLoader__PartPromise[assetId]) {
+            return VghLantern__RidgeSystemLoader__PartPromise[assetId];
         }
 
-        VghLantern__RidgeSystemLoader__BlockPromise  =  (async function() {
+        VghLantern__RidgeSystemLoader__PartPromise[assetId]  =  (async function() {
+            try {
+                var response  =  await fetch(BLOCK_ROOT_PATH + jsonUrl, { cache: 'no-store' });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                VghLantern__RidgeSystemLoader__PartAsset[assetId]  =  await response.json();
+                return VghLantern__RidgeSystemLoader__PartAsset[assetId];
+
+            } catch (error) {
+                console.error('[VghLantern__RidgeSystemLoader] ' + label + ' failed to load:', error.message);
+                return null;
+
+            } finally {
+                delete VghLantern__RidgeSystemLoader__PartPromise[assetId];
+            }
+        })();
+
+        return VghLantern__RidgeSystemLoader__PartPromise[assetId];
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read a Component Library Asset Already Resident (synchronous)
+    // ------------------------------------------------------------
+    // For the 2D renderers, which draw whatever is resident and ask for a redraw
+    // when the rest lands rather than stalling a viewport behind a megabyte fetch.
+    function VghLantern__RidgeSystemLoader__PeekComponentAsset(assetId) {
+        return VghLantern__RidgeSystemLoader__PartAsset[assetId] || null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Load the Octagonal Ridge Block Component (memoised)
+    // ------------------------------------------------------------
+    function VghLantern__RidgeSystemLoader__LoadBlockAsset() {
+        return (async function() {
             await VghLantern__RidgeSystemLoader__LoadIndex();
 
             var relationship  =  VghLantern__RidgeSystemLoader__BlockRelationship();
@@ -374,23 +467,32 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
                 return null;
             }
 
-            try {
-                var response  =  await fetch(BLOCK_ROOT_PATH + relationship.BlockJsonUrl, { cache: 'no-store' });
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-
-                VghLantern__RidgeSystemLoader__BlockAsset  =  await response.json();
-                return VghLantern__RidgeSystemLoader__BlockAsset;
-
-            } catch (error) {
-                console.error('[VghLantern__RidgeSystemLoader] Ridge block failed to load:', error.message);
-                return null;
-
-            } finally {
-                VghLantern__RidgeSystemLoader__BlockPromise  =  null;
-            }
+            return VghLantern__RidgeSystemLoader__LoadComponentAsset(
+                relationship.BlockAssetId || 'ridgeBlock', relationship.BlockJsonUrl, 'Ridge block');
         })();
+    }
+    // ------------------------------------------------------------
 
-        return VghLantern__RidgeSystemLoader__BlockPromise;
+
+    // FUNCTION | Load the End Cap Variant for an Anchor Role (memoised)
+    // ------------------------------------------------------------
+    // Null when the index declares no cap for that role. The pyramid variant is a
+    // separate asset from the ridge end one and is fetched only by a lantern that
+    // has an apex, so a hipped roof never pays for it.
+    function VghLantern__RidgeSystemLoader__LoadEndCapAsset(anchorRole) {
+        return (async function() {
+            await VghLantern__RidgeSystemLoader__LoadIndex();
+
+            var variant  =  VghLantern__RidgeSystemLoader__EndCapVariant(anchorRole);
+            if (!variant) {
+                console.error('[VghLantern__RidgeSystemLoader] The index declares no end cap for the "'
+                    + anchorRole + '" anchor role.');
+                return null;
+            }
+
+            return VghLantern__RidgeSystemLoader__LoadComponentAsset(
+                variant.AssetId, variant.JsonUrl, 'Ridge end cap ' + variant.AssetId);
+        })();
     }
     // ------------------------------------------------------------
 
@@ -526,9 +628,14 @@ const VghLantern__AppData__RidgeSystemLoader = (function() {
         VghLantern__RidgeSystemLoader__AllowsFinials       : VghLantern__RidgeSystemLoader__AllowsFinials,
         VghLantern__RidgeSystemLoader__AllowsCresting      : VghLantern__RidgeSystemLoader__AllowsCresting,
         VghLantern__RidgeSystemLoader__BlockRelationship   : VghLantern__RidgeSystemLoader__BlockRelationship,
+        VghLantern__RidgeSystemLoader__EndCapRelationship  : VghLantern__RidgeSystemLoader__EndCapRelationship,
+        VghLantern__RidgeSystemLoader__EndCapVariant       : VghLantern__RidgeSystemLoader__EndCapVariant,
+        VghLantern__RidgeSystemLoader__AllowsEndCaps       : VghLantern__RidgeSystemLoader__AllowsEndCaps,
         VghLantern__RidgeSystemLoader__DepthAdjustmentMm   : VghLantern__RidgeSystemLoader__DepthAdjustmentMm,
         VghLantern__RidgeSystemLoader__CappingFinish       : VghLantern__RidgeSystemLoader__CappingFinish,
         VghLantern__RidgeSystemLoader__LoadBlockAsset      : VghLantern__RidgeSystemLoader__LoadBlockAsset,
+        VghLantern__RidgeSystemLoader__LoadEndCapAsset     : VghLantern__RidgeSystemLoader__LoadEndCapAsset,
+        VghLantern__RidgeSystemLoader__PeekComponentAsset  : VghLantern__RidgeSystemLoader__PeekComponentAsset,
         VghLantern__RidgeSystemLoader__DescribeParts       : VghLantern__RidgeSystemLoader__DescribeParts,
         VghLantern__RidgeSystemLoader__ResolveParts        : VghLantern__RidgeSystemLoader__ResolveParts
     };

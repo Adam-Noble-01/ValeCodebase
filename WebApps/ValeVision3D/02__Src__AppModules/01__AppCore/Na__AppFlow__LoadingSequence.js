@@ -96,6 +96,8 @@
 // - Added Fly Mode branch to RenderFrame (Na__FlyMode__Update + door proximity).
 // - Reads Navmode__EnabledModes from project.json and forwards to
 //   Na__NavigationModes__State for dynamic Tools menu and hotkey gating.
+//   (21-Aug-2026: now forwarded unconditionally — an absent block means every
+//    mode stays enabled, so the event must still fire to reveal the UI.)
 //
 // 10-Jun-2026 - Version 1.2.0
 // - Dual render engine support: PureEngine (default, unchanged) vs MaxEngine
@@ -282,7 +284,10 @@
 
     // MODULE IMPORTS | Navigation Modes State
     // ------------------------------------------------------------
-    import { Na__NavigationModes__SetEnabledModes } from '../10__NavigationAndCameras/Na__NavigationModes__State.js';
+    import {
+        Na__NavigationModes__SetEnabledModes,
+        Na__NavigationModes__GetEnabledModes
+    } from '../10__NavigationAndCameras/Na__NavigationModes__State.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Presentation Mode Scene Data (per-project saved camera scenes)
@@ -633,12 +638,14 @@
                 Na__PresentationMode__ProjectJson__SetActiveImageList(projectData.images); // <-- Current date-stamped source PNGs
 
                 // APPLY PER-PROJECT NAVIGATION MODE ENABLE FLAGS
-                if (projectData.Navmode__EnabledModes) {
-                    Na__NavigationModes__SetEnabledModes(projectData.Navmode__EnabledModes);
-                    window.dispatchEvent(new CustomEvent('na-navigation-modes-loaded', {
-                        detail: { enabledModes: projectData.Navmode__EnabledModes }
-                    }));
-                }
+                // Walk and Fly are enabled by default; a project only loses one
+                // by storing an explicit false.  The setter therefore runs even
+                // when the block is absent, and the event carries the RESOLVED
+                // flags (not the raw block) so every listener sees real booleans.
+                Na__NavigationModes__SetEnabledModes(projectData.Navmode__EnabledModes);
+                window.dispatchEvent(new CustomEvent('na-navigation-modes-loaded', {
+                    detail: { enabledModes: Na__NavigationModes__GetEnabledModes() }
+                }));
 
                 // APPLY PER-PROJECT RENDER ENGINE SELECTION (PureEngine when key absent)
                 if (projectData.RenderEngine__Config) {

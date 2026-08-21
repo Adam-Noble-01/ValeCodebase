@@ -27,7 +27,7 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
-// 21-Aug-2026 - Version 1.3.0
+// 21-Aug-2026 - Version 1.2.2
 // - LoadSingleMesh preserves transparent MAT000E__ exempt materials (clone +
 //   transparent + depthWrite false) instead of collapsing them into the opaque
 //   shared whitecard, so exempt glazing reads as see-through under PureEngine.

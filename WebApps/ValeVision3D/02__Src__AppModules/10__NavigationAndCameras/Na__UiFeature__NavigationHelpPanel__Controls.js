@@ -28,8 +28,12 @@
 //   unfolds by default and the other folds shut, both stay clickable.
 //
 // INTEGRATION:
-// - Call Na__UiFeature__InitializeNavigationHelpPanel({ isTouchDevice })
-//   from index.html, passing the Na__Device__UseTouchControls flag.
+// - Call Na__UiFeature__InitializeNavigationHelpPanel({ isTouchDevice,
+//   walkEnabled, flyEnabled }) from index.html, passing the
+//   Na__Device__UseTouchControls flag and the current navigation mode flags.
+//   Walk / Fly default to shown when the flags are omitted; the
+//   'na-navigation-modes-loaded' event hides them again if the project
+//   explicitly disables a mode.
 // - Pass Na__UiFeature__OpenNavigationHelpPanel as the toolbar's openHelp
 //   callback.
 //
@@ -319,6 +323,8 @@
         const closeBtn      = document.getElementById(Na__NavHelp__CloseBtnId);
         const backdrop      = document.getElementById(Na__NavHelp__BackdropId);
         const isTouchDevice = Boolean(options && options.isTouchDevice);             // <-- Device flag from index.html detection
+        const walkEnabled   = !options || options.walkEnabled !== false;             // <-- Walk instructions shown unless explicitly off
+        const flyEnabled    = !options || options.flyEnabled  !== false;             // <-- Fly instructions shown unless explicitly off
 
         if (closeBtn) closeBtn.addEventListener('click', Na__UiFeature__CloseNavigationHelpPanel);   // <-- Close (X) button
         if (backdrop) backdrop.addEventListener('click', Na__UiFeature__CloseNavigationHelpPanel);   // <-- Click outside to close
@@ -326,6 +332,7 @@
         Na__NavHelp__InitializeSectionToggles();                                     // <-- Wire fold/unfold on all section + subsection headers
         Na__NavHelp__ApplyDeviceDefaults(isTouchDevice);                             // <-- Unfold the sub-dropdowns matching this device
         Na__NavHelp__PopulateHotkeySection();                                        // <-- Inject keyboard shortcut rows from dictionary JSON
+        Na__NavHelp__RevealModeSections(walkEnabled, flyEnabled);                    // <-- Initial visibility (refined by the load event below)
 
         // CLOSE ON ESCAPE KEY (only while open — leaves other Escape handlers untouched)
         window.addEventListener('keydown', (event) => {
@@ -339,8 +346,8 @@
             const modes = event.detail && event.detail.enabledModes;
             if (!modes) return;
             Na__NavHelp__RevealModeSections(
-                Boolean(modes.Navmode__EnabledModes__Walk),                  // <-- Walk enabled for this model
-                Boolean(modes.Navmode__EnabledModes__Fly)                    // <-- Fly enabled for this model
+                modes.Navmode__EnabledModes__Walk !== false,                 // <-- Walk enabled unless project.json says false
+                modes.Navmode__EnabledModes__Fly  !== false                  // <-- Fly enabled unless project.json says false
             );
         }, { once: true });
     }

@@ -160,9 +160,9 @@
         "ExportRenderLayers__Config__YieldEveryNTiles"           : 1
     },
     "Navmode__EnabledModes": {
-        "Navmode__EnabledModes__Description"                       : "Global defaults. Per-model overrides live in project.json under the same key. Orbit is always available.",
-        "Navmode__EnabledModes__Walk"                              : false,
-        "Navmode__EnabledModes__Fly"                               : false
+        "Navmode__EnabledModes__Description"                       : "Global defaults. Walk and Fly are ON for every model; a project opts out by storing an explicit false under the same key in project.json (dev menu, Navigation Modes). Orbit is always available.",
+        "Navmode__EnabledModes__Walk"                              : true,
+        "Navmode__EnabledModes__Fly"                               : true
     },
     "Navmode__FovCompensation": {
         "Navmode__FovCompensation__Description"                    : "Compensates for the FOV change when entering walk or fly mode. The orbit lens is typically narrow; walk/fly use a wider FOV which makes the scene appear to jump back. Compensation moves the camera/capsule forward so the apparent visual scale of the scene is preserved. Scale 1.0 = full mathematical compensation; 0.0 = disabled. 0.65 is recommended as a starting value.",

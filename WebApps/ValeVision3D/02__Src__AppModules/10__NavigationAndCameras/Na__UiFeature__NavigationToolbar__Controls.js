@@ -295,8 +295,8 @@
             const modes = event.detail && event.detail.enabledModes;
             if (!modes) return;
             Na__UiFeature__RevealNavigationToolbarModes(
-                Boolean(modes.Navmode__EnabledModes__Walk),                  // <-- Walk enabled for this model
-                Boolean(modes.Navmode__EnabledModes__Fly)                    // <-- Fly enabled for this model
+                modes.Navmode__EnabledModes__Walk !== false,                 // <-- Walk enabled unless project.json says false
+                modes.Navmode__EnabledModes__Fly  !== false                  // <-- Fly enabled unless project.json says false
             );
         }, { once: true });
     }

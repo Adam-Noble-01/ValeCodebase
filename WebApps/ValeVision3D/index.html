@@ -764,11 +764,11 @@
                         </div>
                         <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
                             <span class="na-dropdown-menu__panel-title" style="font-weight:400;">Walk</span>
-                            <input type="checkbox" id="naNavModesDevWalkCheck" class="na-dropdown-menu__checkbox" />
+                            <input type="checkbox" id="naNavModesDevWalkCheck" class="na-dropdown-menu__checkbox" checked />
                         </div>
                         <div class="na-dropdown-menu__panel-row na-dropdown-menu__panel-row--toggle">
                             <span class="na-dropdown-menu__panel-title" style="font-weight:400;">Fly</span>
-                            <input type="checkbox" id="naNavModesDevFlyCheck" class="na-dropdown-menu__checkbox" />
+                            <input type="checkbox" id="naNavModesDevFlyCheck" class="na-dropdown-menu__checkbox" checked />
                         </div>
                         <hr class="na-dropdown-menu__panel-divider" />
                         <button class="na-dropdown-menu__action" id="naNavModesDevSave">Save Navigation Modes</button>
@@ -1830,20 +1830,25 @@
     // INITIALIZE NAVIGATION HELP PANEL (Modal triggered by toolbar Help button)
     // ------------------------------------------------------------
     // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationHelpPanel__Controls.js
-    Na__UiFeature__InitializeNavigationHelpPanel({ isTouchDevice: Na__Device__UseTouchControls });  // <-- Unfolds the matching PC/touch instruction sub-dropdowns
+    Na__UiFeature__InitializeNavigationHelpPanel({
+        isTouchDevice : Na__Device__UseTouchControls,           // <-- Unfolds the matching PC/touch instruction sub-dropdowns
+        walkEnabled   : Na__NavigationModes__IsWalkEnabled(),   // <-- Default ON; project.json can switch it off
+        flyEnabled    : Na__NavigationModes__IsFlyEnabled()     // <-- Default ON; project.json can switch it off
+    });
     Na__Feature__BreadcrumbNav__Initialize();                                                       // <-- Top-left breadcrumb back to Whitecardopedia (hidden without ?project=)
     // ------------------------------------------------------------
 
     // INITIALIZE FLOATING NAVIGATION TOOLBAR (Bottom Centre)
     // ------------------------------------------------------------
     // @delegate: ./02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js
-    // Orbit / Reset View / Help are always visible; Walk and Fly buttons are
-    // revealed by the 'na-navigation-modes-loaded' event when project.json is
-    // read (async) inside the loading sequence. Reset View restores the
+    // Orbit / Reset View / Help are always visible; Walk and Fly default to
+    // visible and are re-checked by the 'na-navigation-modes-loaded' event when
+    // project.json is read (async) inside the loading sequence — a project only
+    // loses a mode by storing an explicit false. Reset View restores the
     // canonical project.json start state captured by the loading sequence.
     Na__UiFeature__InitializeNavigationToolbar({
-        walkEnabled  : Na__NavigationModes__IsWalkEnabled(),    // <-- Initial state (false until project loads)
-        flyEnabled   : Na__NavigationModes__IsFlyEnabled(),     // <-- Initial state (false until project loads)
+        walkEnabled  : Na__NavigationModes__IsWalkEnabled(),    // <-- Initial state (enabled until project.json says otherwise)
+        flyEnabled   : Na__NavigationModes__IsFlyEnabled(),     // <-- Initial state (enabled until project.json says otherwise)
         toggleWalk   : Na__UiFeature__WalkMode__ToggleFn,       // <-- Walk toggle wrapper with mutual exclusivity
         toggleFly    : Na__UiFeature__FlyMode__ToggleFn,        // <-- Fly toggle wrapper with mutual exclusivity
         openHelp     : Na__UiFeature__OpenNavigationHelpPanel   // <-- Help panel open callback
@@ -1857,8 +1862,8 @@
     // project data loads via the na-navigation-modes-loaded event.  After Save, calls
     // onSaved to refresh the user-facing section visibility live.
     Na__UiFeature__InitializeNavigationModesDevControls({
-        isWalkEnabled : false,                                  // <-- Set to false initially; updated below when project loads
-        isFlyEnabled  : false,                                  // <-- Set to false initially; updated below when project loads
+        isWalkEnabled : Na__NavigationModes__IsWalkEnabled(),   // <-- Default ON; updated below when project loads
+        isFlyEnabled  : Na__NavigationModes__IsFlyEnabled(),    // <-- Default ON; updated below when project loads
         showToast     : Na__UiFeature__ShowToast,               // <-- Toast feedback callback
         onSaved       : ({ walkEnabled, flyEnabled }) => {
             Na__UiFeature__RevealNavigationToolbarModes(walkEnabled, flyEnabled);
@@ -1871,8 +1876,8 @@
         if (!modes) return;
         const walkCheck = document.getElementById('naNavModesDevWalkCheck');
         const flyCheck  = document.getElementById('naNavModesDevFlyCheck');
-        if (walkCheck) walkCheck.checked = Boolean(modes.Navmode__EnabledModes__Walk);
-        if (flyCheck)  flyCheck.checked  = Boolean(modes.Navmode__EnabledModes__Fly);
+        if (walkCheck) walkCheck.checked = modes.Navmode__EnabledModes__Walk !== false;   // <-- Absent key ==> enabled
+        if (flyCheck)  flyCheck.checked  = modes.Navmode__EnabledModes__Fly  !== false;   // <-- Absent key ==> enabled
     }, { once: true });
     // ------------------------------------------------------------
 

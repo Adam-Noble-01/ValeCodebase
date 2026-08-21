@@ -1,0 +1,130 @@
+{
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 5000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -23015
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": -1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 33205
+        }
+    },
+    "Navmode__EnabledModes": {
+        "Navmode__EnabledModes__Fly": true,
+        "Navmode__EnabledModes__Walk": true
+    },
+    "Navmode__OrbitMaxDistanceMm": 50000,
+    "ProjectType": "Whitecard",
+    "RenderEngine__Config": {
+        "RenderEngine__Active": "PureEngine"
+    },
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "21-Aug-2026 at 13:35",
+        "coordinate_system": "SketchUp_Z_up",
+        "model_name": "Hamilton__WhiteCardModel__1.0.0__",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.638375,
+                        "y": 0.769725,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": -12041.1285,
+                        "y": -20391.6999,
+                        "z": 3240.1198
+                    },
+                    "fov_degrees": 24.616,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 14046.7173,
+                        "y": 11063.8987,
+                        "z": 3240.1198
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "Full Context",
+                "scene_name": "IMG01__3dView__MainShot__",
+                "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__21-Aug-2026.png"
+    ],
+    "basePath": "Projects/2026/51536__Hamilton",
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__21-Aug-2026.png"
+    ],
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__21-Aug-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Amy",
+        "designer": "Gary",
+        "input": "NOT YET REVIEWED"
+    },
+    "projectCode": "51536",
+    "projectName": "Hamilton",
+    "scheduleData": {
+        "dateFulfilled": "21-Aug-2026",
+        "dateReceived": "NOT YET REVIEWED",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__21-Aug-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/51536__Hamilton/Hamilton__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/51536__Hamilton/Hamilton__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/51536__Hamilton/Hamilton__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/51536__Hamilton/Hamilton__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/51536__Hamilton/Hamilton__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/51536__Hamilton/Hamilton__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
+}

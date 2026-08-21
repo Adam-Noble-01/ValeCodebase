@@ -2,6 +2,43 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.14.7 - 21-Aug-2026 - Walk and Fly Enabled by Default
+
+### Overview
+Walk and Fly were opt-in: a model only got them once someone ticked the boxes
+in the dev menu Navigation Modes panel and saved the block into project.json.
+Every new job therefore shipped orbit-only until it was remembered. That is now
+inverted — all three modes are on for every model, and a job opts a mode out by
+unticking it and saving, which writes an explicit false.
+
+### Changed
+- **Na__NavigationModes__State.js v1.1.0.** Walk and Fly module flags default to
+  true. New `ResolveModeFlag` helper gives the opt-out reading: only a literal
+  `false` (or legacy `"false"`) disables a mode, so an absent key, an absent
+  block and a project.json written before the key existed all resolve to
+  enabled. `SetEnabledModes` no longer early-returns on a missing block, and a
+  new `GetEnabledModes` reads the resolved pair back in project.json shape.
+- **Na__AppFlow__LoadingSequence.js.** The `Navmode__EnabledModes` guard is gone:
+  the setter runs and `na-navigation-modes-loaded` fires on every project load.
+  The event now carries the *resolved* flags from `GetEnabledModes` rather than
+  the raw block, so listeners always receive real booleans. Without this, a
+  project.json with no nav block never fired the event and the Walk/Fly UI stayed
+  hidden regardless of the new defaults.
+- **Toolbar, help panel and dev menu.** All three listeners switched from
+  `Boolean(key)` to `key !== false` to match the opt-out semantics. The help
+  panel now takes `walkEnabled` / `flyEnabled` at init and reveals its Walk/Fly
+  instruction sections immediately, which also covers a session opened with no
+  `?project=` code. The dev menu checkboxes are ticked in markup and seeded from
+  the state getters instead of hardcoded false.
+- **Na__AppConfig__Main.json.** Global `Navmode__EnabledModes` defaults flipped
+  to true with the description rewritten to state the opt-out rule.
+
+### Note
+Orbit is unchanged: it is always available and is never stored in the block.
+Existing project.json files that explicitly hold `false` keep their setting, so
+any model deliberately locked to orbit stays that way.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.14.6 - 21-Aug-2026 - MAT000E__ Glazing: SketchUp Opacity Reaches PureEngine
 
 ### Overview
@@ -23,7 +60,7 @@ and they still whitecard opaque under PureEngine as before.
   materials by definition do not have. Non-indexed materials now read
   `Sketchup::Material#alpha` and write it as `baseColorFactor[3]` plus
   `alphaMode: "BLEND"` and `doubleSided: true`. See GLB Builder MaterialHandling
-  v3.2.0.
+  v3.1.1.
 - **The model loader threw the material away.** `Na__ModelLoader__LoadSingleMesh`
   routed every untextured non-indexed material to the shared opaque whitecard, so
   an untextured glazing material lost its name and its alpha before any materials

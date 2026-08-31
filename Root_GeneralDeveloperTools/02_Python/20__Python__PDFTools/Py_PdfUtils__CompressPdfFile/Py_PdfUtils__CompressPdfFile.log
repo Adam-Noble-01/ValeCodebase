@@ -327,3 +327,16 @@
 2026-06-03 11:37:18,453 | INFO | PyMuPDF (fitz) library loaded successfully
 2026-06-03 11:37:18,496 | INFO | Successfully imported Noble Architecture icon loader
 2026-06-03 11:37:18,550 | INFO | PDF Compression App initialized
+2026-07-20 22:02:53,770 | INFO | PyMuPDF (fitz) library loaded successfully
+2026-07-20 22:02:53,995 | INFO | Successfully imported Noble Architecture icon loader
+2026-07-20 22:02:54,134 | INFO | PDF Compression App initialized
+2026-07-20 22:03:04,972 | INFO | Starting batch compression for 1 file(s)
+2026-07-20 22:03:04,972 | INFO | Settings: DPI=300, JPEG=True, Quality=90
+2026-07-20 22:03:04,973 | INFO | Compressing file 1/1: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/EB03__TheFirs__Esha/10__ContentDelivered/EB03_T02_D01__ProjectIntroduction__IsoA1__RevA__.pdf
+2026-07-20 22:03:04,974 | INFO | Output path: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/EB03__TheFirs__Esha/10__ContentDelivered/EB03_T02_D01__ProjectIntroduction__IsoA1__RevA____Compressed__DPI-300__JPEG-90.pdf
+2026-07-20 22:03:10,788 | INFO | Compression successful: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/EB03__TheFirs__Esha/10__ContentDelivered/EB03_T02_D01__ProjectIntroduction__IsoA1__RevA____Compressed__DPI-300__JPEG-90.pdf
+2026-07-20 22:03:21,472 | INFO | Starting batch compression for 1 file(s)
+2026-07-20 22:03:21,472 | INFO | Settings: DPI=300, JPEG=True, Quality=94
+2026-07-20 22:03:21,473 | INFO | Compressing file 1/1: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/EB03__TheFirs__Esha/10__ContentDelivered/EB03_T02_D01__ProjectIntroduction__IsoA1__RevA__.pdf
+2026-07-20 22:03:21,474 | INFO | Output path: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/EB03__TheFirs__Esha/10__ContentDelivered/EB03_T02_D01__ProjectIntroduction__IsoA1__RevA____Compressed__DPI-300__JPEG-94.pdf
+2026-07-20 22:03:27,430 | INFO | Compression successful: D:/02__NobleArchitecture__MasterLibrary/02__Projects/NA_Projects__2026/EB03__TheFirs__Esha/10__ContentDelivered/EB03_T02_D01__ProjectIntroduction__IsoA1__RevA____Compressed__DPI-300__JPEG-94.pdf

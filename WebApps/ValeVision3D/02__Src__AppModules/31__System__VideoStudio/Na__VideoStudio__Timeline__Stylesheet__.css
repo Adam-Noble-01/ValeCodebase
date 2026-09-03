@@ -1,0 +1,723 @@
+/* ================================================================= */
+/* VALEVISION3D - VIDEO STUDIO - TIMELINE STYLESHEET                 */
+/* ================================================================= */
+/*
+ * FILE      : Na__VideoStudio__Timeline__Stylesheet__.css
+ * NAMESPACE : na-vs-tl
+ * AUTHOR    : Adam Noble - Noble Architecture
+ * PURPOSE   : Styling for the bottom-of-screen Video Studio timeline
+ * CREATED   : 02-Sep-2026
+ *
+ * DESCRIPTION:
+ * - Scoped entirely to .na-vs-tl__* so nothing here can reach the Dev panel
+ *   (.na-vs-dev__*) or the Presentation Mode carousel (.na-pm-carousel__*).
+ * - Sits where the scene carousel sits, and only ever one of the two is up,
+ *   so the two share a visual language: light surface, soft shadow, rounded
+ *   corners. The timeline is wider because it has a ruler to fit.
+ * - The strip is three stacked bands: a header of transport and readouts, a
+ *   track carrying the keyframe tiles, and a ruler of ticks. The playhead is
+ *   one absolutely positioned line drawn across both the track and the ruler.
+ * - The keyframe context menu (.na-vs-menu__*) is styled here too rather than
+ *   in a file of its own. It exists only to edit a tile on this strip, shares
+ *   this file's palette and control sizing, and would drift out of step if the
+ *   two were kept apart. Its rules are in their own regions at the foot.
+ *
+ * DEVELOPMENT LOG:
+ * 02-Sep-2026 - Version 1.0.0
+ * - Initial implementation, replacing the Dev panel's transport slider.
+ *
+ * 02-Sep-2026 - Version 1.1.0
+ * - Added the keyframe context menu: surface, fields, buttons and the Advanced
+ *   Camera Settings disclosure.
+ */
+/* ================================================================= */
+
+
+/* #Region ---
+ * REGION | Strip Container (hidden until a path is opened)
+ * ----- */
+
+    /* How much of the bottom of the screen the strip occupies, gap included.
+       Declared once here because the dropdown menus have to clamp themselves
+       against it, and a number written twice is a number that drifts.       */
+    :root {
+        --Vale_VideoTimelineClearance    : 196px;
+    }
+
+    .na-vs-tl {
+        position                           : fixed;
+        bottom                             : 18px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        display                            : none;           /* shown by --visible                 */
+        flex-direction                     : column;
+        gap                                : 6px;
+        width                              : calc(100vw - 96px);
+        max-width                          : 1680px;
+        background                         : rgba(255, 255, 255, 0.97);
+        border                             : 1px solid #e2e6ea;
+        border-radius                      : 14px;
+        padding                            : 10px 18px 12px 18px;
+        box-shadow                         : 0 6px 28px rgba(0, 0, 0, 0.16);
+        z-index                            : 1000;           /* same layer as the scene carousel   */
+        backdrop-filter                    : blur(8px);
+        -webkit-backdrop-filter            : blur(8px);
+        font-family                        : inherit;
+    }
+
+    .na-vs-tl--visible {
+        display                            : flex;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Header Row - Transport, Title, Clock
+ * ----- */
+
+    .na-vs-tl__header {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 8px;
+        min-height                         : 26px;
+    }
+
+    .na-vs-tl__btn {
+        flex-shrink                        : 0;
+        padding                            : 4px 12px;
+        font-size                          : 0.76rem;
+        font-family                        : inherit;
+        border                             : 1px solid #ccc;
+        border-radius                      : 5px;
+        background                         : #f4f6f8;
+        color                              : #333;
+        cursor                             : pointer;
+        transition                         : background 0.14s, border-color 0.14s;
+    }
+
+    .na-vs-tl__btn:hover {
+        background                         : #e8edf3;
+    }
+
+    .na-vs-tl__btn--primary {
+        border-color                       : #1a7fc4;
+        color                              : #1a7fc4;
+        background                         : #eef5fb;
+        min-width                          : 68px;           /* Play and Pause must not resize it  */
+    }
+
+    .na-vs-tl__btn--primary:hover {
+        background                         : #daeaf6;
+    }
+
+    .na-vs-tl__title {
+        font-size                          : 0.82rem;
+        font-weight                        : 600;
+        color                              : #2b3138;
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        max-width                          : 32ch;
+        margin-left                        : 4px;
+    }
+
+    /* Pushes the clock and Refresh to the right-hand end of the header, and
+       carries the thumbnail progress note when there is one to show.        */
+    .na-vs-tl__status {
+        flex                               : 1;
+        font-size                          : 0.72rem;
+        color                              : #7a8590;
+        white-space                        : nowrap;
+        overflow                           : hidden;
+        text-overflow                      : ellipsis;
+        padding-left                       : 8px;
+    }
+
+    .na-vs-tl__status--warn {
+        color                              : #a35200;
+    }
+
+    .na-vs-tl__clock {
+        flex-shrink                        : 0;
+        font-size                          : 0.76rem;
+        color                              : #333;
+        font-variant-numeric               : tabular-nums;
+        min-width                          : 92px;
+        text-align                         : right;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Track - Scrub Surface Holding the Keyframe Tiles
+ * ----- */
+
+    .na-vs-tl__track {
+        position                           : relative;
+        width                              : 100%;
+        padding                            : 0 46px;         /* gutter for the end tiles to sit in */
+        cursor                             : ew-resize;      /* the whole surface scrubs           */
+        touch-action                       : none;           /* pointer capture owns the gesture   */
+        user-select                        : none;
+    }
+
+    /* The 0% to 100% coordinate space. A shot at time zero is centred on the
+       lane's left edge, so the gutter on the track is what stops its tile
+       hanging off the strip. Every tile, tick and the playhead position
+       against this, and so does the pointer maths that reads a scrub.       */
+    .na-vs-tl__lane {
+        position                           : relative;
+        width                              : 100%;
+        padding-bottom                     : 22px;           /* room for the ruler band below      */
+    }
+
+    /* Exactly one tile tall: frame 56, gap 2, caption 12, gap 2, stem 12. The
+       ruler band starts where this ends, so every stem lands on the line
+       rather than crossing it.                                              */
+    .na-vs-tl__tiles {
+        position                           : relative;
+        height                             : 84px;
+    }
+
+    .na-vs-tl__empty {
+        position                           : absolute;
+        inset                              : 0;
+        display                            : flex;
+        align-items                        : center;
+        justify-content                    : center;
+        font-size                          : 0.78rem;
+        color                              : #8a939c;
+        text-align                         : center;
+        padding                            : 0 12px;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Keyframe Tile
+ * ----- */
+
+    /* Positioned by percentage of the total duration and pulled back by half
+       its own width, so the tile is centred on the moment it happens. Tiles
+       that land close together overlap rather than shuffle: the stem below
+       each one keeps the ruler honest about where the shot really is.       */
+    .na-vs-tl__tile {
+        position                           : absolute;
+        top                                : 0;
+        transform                          : translateX(-50%);
+        display                            : flex;
+        flex-direction                     : column;
+        align-items                        : center;
+        gap                                : 2px;
+        width                              : 88px;
+        padding                            : 0;
+        border                             : none;
+        background                         : transparent;
+        cursor                             : pointer;
+        font-family                        : inherit;
+    }
+
+    .na-vs-tl__tile:hover {
+        z-index                            : 4;              /* an overlapped tile is still reachable */
+    }
+
+    .na-vs-tl__tile:focus-visible {
+        outline                            : 2px solid #1a7fc4;
+        outline-offset                     : 2px;
+        border-radius                      : 8px;
+        z-index                            : 5;
+    }
+
+    .na-vs-tl__tile--selected {
+        z-index                            : 6;              /* the one being edited sits on top   */
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Tile Frame, Still Image and Overlays
+ * ----- */
+
+    .na-vs-tl__frame {
+        position                           : relative;
+        display                            : block;
+        width                              : 84px;
+        height                             : 56px;
+        border                             : 2px solid #cfd6dd;
+        border-radius                      : 6px;
+        overflow                           : hidden;
+        background                         : #eef1f4;
+        transition                         : border-color 0.16s, transform 0.16s, box-shadow 0.16s;
+    }
+
+    .na-vs-tl__tile:hover .na-vs-tl__frame {
+        border-color                       : #99bedd;
+        transform                          : scale(1.04);
+        box-shadow                         : 0 3px 10px rgba(0, 0, 0, 0.16);
+    }
+
+    /* Red, matching the selected waypoint marker drawn in the viewport, so the
+       tile and the 3D marker are obviously the same thing.                  */
+    .na-vs-tl__tile--selected .na-vs-tl__frame {
+        border-color                       : #d93b3b;
+        box-shadow                         : 0 0 0 2px rgba(217, 59, 59, 0.22);
+    }
+
+    .na-vs-tl__still {
+        display                            : block;
+        width                              : 100%;
+        height                             : 100%;
+        object-fit                         : cover;
+        pointer-events                     : none;
+    }
+
+    /* Striped placeholder until the still for this waypoint has been rendered */
+    .na-vs-tl__frame--pending {
+        background-image                   : repeating-linear-gradient(
+                                                135deg,
+                                                #eef1f4 0px, #eef1f4 6px,
+                                                #e4e8ec 6px, #e4e8ec 12px
+                                             );
+    }
+
+    .na-vs-tl__badge {
+        position                           : absolute;
+        top                                : 3px;
+        left                               : 3px;
+        min-width                          : 16px;
+        height                             : 16px;
+        padding                            : 0 4px;
+        border-radius                      : 8px;
+        background                         : rgba(20, 26, 32, 0.72);
+        color                              : #fff;
+        font-size                          : 0.62rem;
+        line-height                        : 16px;
+        text-align                         : center;
+        font-variant-numeric               : tabular-nums;
+        pointer-events                     : none;
+    }
+
+    .na-vs-tl__tile--selected .na-vs-tl__badge {
+        background                         : #d93b3b;
+    }
+
+    /* Only drawn when the waypoint actually parks the camera, so its presence
+       is itself the information.                                            */
+    .na-vs-tl__hold {
+        position                           : absolute;
+        bottom                             : 3px;
+        right                              : 3px;
+        padding                            : 0 4px;
+        border-radius                      : 3px;
+        background                         : rgba(20, 26, 32, 0.72);
+        color                              : #ffd58a;
+        font-size                          : 0.58rem;
+        line-height                        : 14px;
+        font-variant-numeric               : tabular-nums;
+        pointer-events                     : none;
+    }
+
+    .na-vs-tl__caption {
+        font-size                          : 0.64rem;
+        color                              : #5a636c;
+        font-variant-numeric               : tabular-nums;
+        line-height                        : 1.2;
+        pointer-events                     : none;
+    }
+
+    /* Drops from the caption to the ruler line, marking the exact instant the
+       shot happens even where two tiles have drifted over one another.      */
+    .na-vs-tl__stem {
+        display                            : block;
+        width                              : 1px;
+        height                             : 12px;
+        background                         : #b7c0c9;
+        pointer-events                     : none;
+    }
+
+    .na-vs-tl__tile--selected .na-vs-tl__stem {
+        width                              : 2px;
+        background                         : #d93b3b;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Ruler - Tick Marks and Time Labels
+ * ----- */
+
+    .na-vs-tl__ruler {
+        position                           : absolute;
+        left                               : 0;
+        right                              : 0;
+        bottom                             : 0;
+        height                             : 22px;
+        border-top                         : 1px solid #c9d1d8;
+        pointer-events                     : none;           /* the track underneath owns the drag */
+    }
+
+    .na-vs-tl__tick {
+        position                           : absolute;
+        top                                : 0;
+        width                              : 1px;
+        height                             : 6px;
+        background                         : #c9d1d8;
+    }
+
+    .na-vs-tl__tick-label {
+        position                           : absolute;
+        top                                : 7px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        font-size                          : 0.62rem;
+        color                              : #8a939c;
+        font-variant-numeric               : tabular-nums;
+        white-space                        : nowrap;
+    }
+
+    /* The end labels would hang off the strip if they stayed centred.        */
+    .na-vs-tl__tick--first .na-vs-tl__tick-label {
+        left                               : 0;
+        transform                          : none;
+    }
+
+    .na-vs-tl__tick--last .na-vs-tl__tick-label {
+        left                               : auto;
+        right                              : 0;
+        transform                          : none;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Playhead
+ * ----- */
+
+    .na-vs-tl__playhead {
+        position                           : absolute;
+        top                                : 0;
+        bottom                             : 0;
+        left                               : 0;
+        width                              : 2px;
+        margin-left                        : -1px;
+        background                         : #1a7fc4;
+        pointer-events                     : none;
+        box-shadow                         : 0 0 0 1px rgba(255, 255, 255, 0.75);
+    }
+
+    /* Handle at the top, so the playhead reads as something you can drag      */
+    .na-vs-tl__playhead::before {
+        content                            : '';
+        position                           : absolute;
+        top                                : -3px;
+        left                               : 50%;
+        transform                          : translateX(-50%);
+        width                              : 9px;
+        height                             : 9px;
+        border-radius                      : 50%;
+        background                         : #1a7fc4;
+        box-shadow                         : 0 0 0 2px rgba(255, 255, 255, 0.85);
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Layout Handover
+ * ----- */
+
+    /* The timeline is taller than the carousel it replaces, so the navigation
+       toolbar moves to the top for as long as it is up. Projects with saved
+       scenes already do this through na-presentation-mode-active; this rule
+       makes it true for projects that have none, which is most of the ones
+       being filmed.                                                          */
+    body.na-video-studio-timeline-active .na-nav-toolbar {
+        bottom                             : auto;
+        top                                : calc(var(--Vale_HeaderHeight, 54px) + 14px);
+        left                               : 50%;
+        transform                          : translateX(-50%);
+    }
+
+    /* Views has nothing to toggle while the timeline owns the bottom.        */
+    body.na-video-studio-timeline-active #naNavToolbarViewsBtn {
+        opacity                            : 0.4;
+        pointer-events                     : none;
+    }
+
+    /* The dropdown menus are fixed columns that can run the full height of the
+       viewport, and the Video Studio panel that drives this strip is the
+       longest of them. Left alone it would cover the tiles it just opened, so
+       both menus stop short while the strip is up and scroll instead. The
+       divide by 1.2 undoes the menus' own scale(1.2), the same way their base
+       clamp does.                                                            */
+    body.na-video-studio-timeline-active .na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
+        max-height                         : calc(
+                                                (100vh
+                                                 - var(--Vale_HeaderHeight, 54px)
+                                                 - 64px
+                                                 - var(--Vale_VideoTimelineClearance)) / 1.2
+                                             );
+    }
+
+    body.na-video-studio-timeline-active .na-dropdown-menu__details {
+        max-height                         : calc(
+                                                (100vh
+                                                 - var(--Vale_HeaderHeight, 54px)
+                                                 - 10px
+                                                 - var(--Vale_VideoTimelineClearance)) / 1.2
+                                             );
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Responsive Adjustments
+ * ----- */
+
+    @media (max-width: 1100px) {
+        .na-vs-tl {
+            width                          : calc(100vw - 32px);
+            padding                        : 8px 12px 10px 12px;
+        }
+
+        .na-vs-tl__title {
+            max-width                      : 18ch;
+        }
+
+        .na-vs-tl__tile {
+            width                          : 72px;
+        }
+
+        .na-vs-tl__frame {
+            width                          : 68px;
+            height                         : 45px;
+        }
+
+        .na-vs-tl__tiles {
+            height                         : 73px;            /* frame 45 + gap 2 + caption 12 + gap 2 + stem 12 */
+        }
+
+        .na-vs-tl__track {
+            padding                        : 0 38px;          /* half of the narrower tile */
+        }
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Keyframe Context Menu
+ * ----- */
+
+    /* Appended to <body> rather than to the strip, because a menu opened from
+       a tile near the top of the strip has to be able to sit above it, which
+       an absolutely positioned child of a rounded, clipped panel cannot do.
+       Positioned in page coordinates by the module, which clamps it inside the
+       window on open and again whenever it changes height. Above the dropdown
+       menus at 1002, below the toasts at 9998.                              */
+    .na-vs-menu {
+        position                           : fixed;
+        top                                : 0;
+        left                               : 0;
+        z-index                            : 1400;
+        width                              : 268px;
+        display                            : flex;
+        flex-direction                     : column;
+        gap                                : 5px;
+        padding                            : 10px 12px 12px 12px;
+        background                         : rgba(255, 255, 255, 0.99);
+        border                             : 1px solid #dfe4e9;
+        border-radius                      : 10px;
+        box-shadow                         : 0 8px 30px rgba(0, 0, 0, 0.22);
+        font-family                        : inherit;
+    }
+
+    .na-vs-menu__title {
+        font-size                          : 0.84rem;
+        font-weight                        : 600;
+        color                              : #2b3138;
+        padding-bottom                     : 6px;
+        border-bottom                      : 1px solid #eceff2;
+        margin-bottom                      : 2px;
+    }
+
+    .na-vs-menu__section-title {
+        font-size                          : 0.72rem;
+        font-weight                        : 600;
+        color                              : #6b747d;
+        text-transform                     : uppercase;
+        letter-spacing                     : 0.04em;
+        margin-bottom                      : 2px;
+    }
+
+    .na-vs-menu__divider {
+        height                             : 1px;
+        background                         : #eceff2;
+        margin                             : 5px 0 3px 0;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Context Menu Fields
+ * ----- */
+
+    /* Input first, then its unit, then the label. The numbers therefore line
+       up down the left edge and a column of them can be scanned without
+       reading the words beside them.                                       */
+    .na-vs-menu__field {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 7px;
+        min-height                         : 26px;
+    }
+
+    .na-vs-menu__input {
+        flex                               : none;
+        width                              : 74px;
+        padding                            : 3px 6px;
+        font-size                          : 0.78rem;
+        font-family                        : inherit;
+        text-align                         : right;
+        color                              : #2b3138;
+        border                             : 1px solid #ccd3da;
+        border-radius                      : 4px;
+        background                         : #fff;
+        font-variant-numeric               : tabular-nums;
+    }
+
+    .na-vs-menu__input:focus {
+        outline                            : none;
+        border-color                       : #1a7fc4;
+        box-shadow                         : 0 0 0 2px rgba(26, 127, 196, 0.16);
+    }
+
+    .na-vs-menu__input:disabled {
+        background                         : #f2f4f6;
+        color                              : #9aa3ab;
+        cursor                             : not-allowed;
+    }
+
+    .na-vs-menu__unit {
+        font-size                          : 0.70rem;
+        color                              : #8d959d;
+        min-width                          : 22px;             /* s, mm and deg all align            */
+        flex-shrink                        : 0;
+    }
+
+    .na-vs-menu__label {
+        font-size                          : 0.76rem;
+        color                              : #4c545c;
+        line-height                        : 1.25;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Context Menu Buttons
+ * ----- */
+
+    .na-vs-menu__btn {
+        flex                               : none;
+        width                              : 74px;             /* matches the inputs so the column holds */
+        padding                            : 4px 8px;
+        font-size                          : 0.75rem;
+        font-family                        : inherit;
+        border                             : 1px solid #ccd3da;
+        border-radius                      : 4px;
+        background                         : #f4f6f8;
+        color                              : #333;
+        cursor                             : pointer;
+        transition                         : background 0.14s, border-color 0.14s;
+    }
+
+    .na-vs-menu__btn:hover {
+        background                         : #e8edf3;
+    }
+
+    .na-vs-menu__btn--primary {
+        border-color                       : #1a7fc4;
+        color                              : #1a7fc4;
+        background                         : #eef5fb;
+    }
+
+    .na-vs-menu__btn--primary:hover {
+        background                         : #daeaf6;
+    }
+
+    .na-vs-menu__btn--danger {
+        border-color                       : #cc3333;
+        color                              : #cc3333;
+        background                         : #fdf0f0;
+    }
+
+    .na-vs-menu__btn--danger:hover {
+        background                         : #fbd9d9;
+    }
+
+    .na-vs-menu__btn--wide {
+        width                              : 100%;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Context Menu Disclosure
+ * ----- */
+
+    .na-vs-menu__disclosure {
+        display                            : flex;
+        align-items                        : center;
+        gap                                : 6px;
+        width                              : 100%;
+        padding                            : 4px 0;
+        margin-top                         : 2px;
+        border                             : none;
+        background                         : transparent;
+        font-family                        : inherit;
+        font-size                          : 0.74rem;
+        color                              : #1a7fc4;
+        text-align                         : left;
+        cursor                             : pointer;
+    }
+
+    .na-vs-menu__disclosure::before {
+        content                            : "\25B8";          /* right-pointing triangle */
+        display                            : inline-block;
+        font-size                          : 0.70rem;
+        transition                         : transform 0.16s ease;
+    }
+
+    .na-vs-menu__disclosure.is-open::before {
+        transform                          : rotate(90deg);
+    }
+
+    .na-vs-menu__advanced {
+        display                            : none;
+        flex-direction                     : column;
+        gap                                : 5px;
+        padding                            : 4px 0 2px 12px;
+        border-left                        : 2px solid #eceff2;
+    }
+
+    .na-vs-menu__advanced.is-open {
+        display                            : flex;
+    }
+
+    .na-vs-menu__note {
+        font-size                          : 0.72rem;
+        color                              : #8d959d;
+        line-height                        : 1.4;
+    }
+
+/* endregion ---- */

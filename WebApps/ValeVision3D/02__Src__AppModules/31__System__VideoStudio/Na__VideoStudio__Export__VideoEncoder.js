@@ -48,6 +48,11 @@
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
 //
+// 01-Sep-2026 - Version 1.1.0
+// - The export now opens a model layers session for the path being rendered,
+//   so a boundary or foreground building switched off for that path stays out
+//   of the video no matter what the Tools panel was showing.
+//
 // =============================================================================
 
 
@@ -82,7 +87,8 @@
     // ------------------------------------------------------------
     import {
         Na__VideoStudio__ProjectJson__GetExportOptions,
-        Na__VideoStudio__ProjectJson__GetPlaybackOptions
+        Na__VideoStudio__ProjectJson__GetPlaybackOptions,
+        Na__VideoStudio__ProjectJson__GetModelLayerOptions
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     // ------------------------------------------------------------
 
@@ -93,6 +99,15 @@
         Na__VideoStudio__SceneAnimations__Begin,
         Na__VideoStudio__SceneAnimations__End
     } from './Na__VideoStudio__Playback__SceneAnimations.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Path Model Layers Session
+    // @delegate: ./Na__VideoStudio__Playback__ModelLayers.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__ModelLayers__Begin,
+        Na__VideoStudio__ModelLayers__End
+    } from './Na__VideoStudio__Playback__ModelLayers.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Hidden-Tab-Safe Async Yield
@@ -460,6 +475,15 @@
             }
         );
 
+        // MODEL LAYERS | The export borrows the live scene, so without this it
+        // renders whatever the Tools panel happened to be showing. Apply this
+        // path's own layer state instead, and put the viewport back afterwards.
+        const layerOptions = Na__VideoStudio__ProjectJson__GetModelLayerOptions(video);
+        const layerSession = Na__VideoStudio__ModelLayers__Begin(
+            layerOptions.enabled,
+            layerOptions.visibility
+        );
+
         const session = Na__VideoStudio__FrameRenderer__BeginSession({
             renderer, scene, camera, controls,
             getRenderPipelineState,
@@ -615,6 +639,7 @@
             }
             session.end();
             Na__VideoStudio__SceneAnimations__End(animationSession);          // <-- Doors back to orbit behaviour
+            Na__VideoStudio__ModelLayers__End(layerSession);                  // <-- Hidden layers back on screen
         }
     }
     // ------------------------------------------------------------

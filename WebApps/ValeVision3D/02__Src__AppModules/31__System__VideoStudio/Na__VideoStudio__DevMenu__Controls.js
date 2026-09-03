@@ -43,6 +43,19 @@
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
 //
+// 01-Sep-2026 - Version 1.1.0
+// - Added the Model Layers section, with its collapsible Advanced Layer State
+//   list, so each path pins its own model layer visibility. Ticking a row
+//   writes the path's saved state and switches the live viewport at the same
+//   time, because composing a shot means seeing what you are hiding.
+//
+// 02-Sep-2026 - Version 1.2.0
+// - Removed the in-panel Play / Stop / scrubber row. The transport now lives on
+//   the bottom timeline (Na__VideoStudio__Timeline__Controls.js), which shows
+//   the keyframes as the shots they are rather than as unlabelled ticks on a
+//   slider. This panel keeps the authoring controls and hands the strip its
+//   active path; the strip owns playback.
+//
 // =============================================================================
 
 
@@ -107,6 +120,10 @@
         Na__VideoStudio__ProjectJson__GetVideoById,
         Na__VideoStudio__ProjectJson__GetExportOptions,
         Na__VideoStudio__ProjectJson__GetPlaybackOptions,
+        Na__VideoStudio__ProjectJson__GetModelLayerOptions,
+        Na__VideoStudio__ProjectJson__SetModelLayersEnabled,
+        Na__VideoStudio__ProjectJson__SetModelLayerVisibility,
+        Na__VideoStudio__ProjectJson__ReplaceModelLayerVisibility,
         Na__VideoStudio__ProjectJson__AddVideo,
         Na__VideoStudio__ProjectJson__DeleteVideo,
         Na__VideoStudio__ProjectJson__AddKeyframe,
@@ -171,6 +188,18 @@
     } from './Na__VideoStudio__Playback__SceneAnimations.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Model Category Toggle Controls
+    // The Advanced Layer State list is the same set of categories the Tools
+    // menu draws buttons for, read from the one module that owns them.
+    // @delegate: ../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
+    // ------------------------------------------------------------
+    import {
+        Na__ModelToggle__GetCategories,
+        Na__ModelToggle__CaptureVisibilityMap,
+        Na__ModelToggle__ApplySceneLayerVisibility
+    } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Render Loop Invalidation
     // ------------------------------------------------------------
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
@@ -199,16 +228,40 @@
     // @delegate: ./Na__VideoStudio__Playback__PreviewController.js
     // ------------------------------------------------------------
     import {
-        Na__VsPreview__TICK_EVENT,
-        Na__VsPreview__ENDED_EVENT,
         Na__VideoStudio__Preview__Play,
         Na__VideoStudio__Preview__Pause,
         Na__VideoStudio__Preview__Stop,
-        Na__VideoStudio__Preview__Seek,
         Na__VideoStudio__Preview__JumpToKeyframe,
         Na__VideoStudio__Preview__IsPlaying,
-        Na__VideoStudio__Preview__InvalidateTimeline
+        Na__VideoStudio__Preview__InvalidateTimeline,
+        Na__VideoStudio__Preview__ReleaseModelLayers
     } from './Na__VideoStudio__Playback__PreviewController.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Bottom Timeline
+    // The transport and the keyframe strip live there now, not in this panel.
+    // @delegate: ./Na__VideoStudio__Timeline__Controls.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__Timeline__SetActiveVideo,
+        Na__VideoStudio__Timeline__Refresh,
+        Na__VideoStudio__Timeline__SyncTransport
+    } from './Na__VideoStudio__Timeline__Controls.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Timeline Keyframe Context Menu
+    // @delegate: ./Na__VideoStudio__Timeline__ContextMenu.js
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__Timeline__ContextMenu__Initialize } from './Na__VideoStudio__Timeline__ContextMenu.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Timeline Keyframe Thumbnails
+    // @delegate: ./Na__VideoStudio__Timeline__Thumbnails.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__Thumbnails__SetRenderContext,
+        Na__VideoStudio__Thumbnails__SetSuspended
+    } from './Na__VideoStudio__Timeline__Thumbnails.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Video Encoder
@@ -331,7 +384,8 @@
 
     // MODULE VARIABLES | Sub-Section Expansion
     // ------------------------------------------------------------
-    let Na__VsDev__AdvancedAnimOpen = false;   // <-- Survives panel rebuilds
+    let Na__VsDev__AdvancedAnimOpen   = false;   // <-- Survives panel rebuilds
+    let Na__VsDev__AdvancedLayersOpen = false;   // <-- Advanced Layer State list, same lifetime
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -553,6 +607,7 @@
         Na__VideoStudio__Preview__InvalidateTimeline(videoId || null);        // <-- Cached timeline is now stale
         Na__VideoStudio__PathVisualizer__Rebuild();
         Na__VsDev__RefreshSummaries();
+        Na__VideoStudio__Timeline__Refresh();                                // <-- Tile positions and the ruler both moved
     }
     // ------------------------------------------------------------
 
@@ -983,6 +1038,159 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build One Category Row in the Advanced Layer State List
+    // ------------------------------------------------------------
+    // Ticking a row does two things at once, deliberately: it writes the state
+    // into this path's saved map AND switches the category in the live
+    // viewport. Composing a shot means seeing what you are hiding, so the two
+    // cannot sensibly be separated into a toggle and an apply step.
+    // ------------------------------------------------------------
+    function Na__VsDev__BuildLayerRow(videoId, category, savedVisibility, isLocked) {
+        const hasOverride = Object.prototype.hasOwnProperty.call(savedVisibility, category.key);
+        const isVisible   = hasOverride ? savedVisibility[category.key] : category.visible;
+
+        const row = Na__VsDev__Row(category.label);
+        row.classList.add('na-vs-dev__row--layer');                          // <-- Category names are long enough to need wrapping
+
+        const checkbox = Na__VsDev__El('input', 'na-vs-dev__checkbox');
+        checkbox.type     = 'checkbox';
+        checkbox.checked  = isVisible;
+        checkbox.disabled = isLocked;
+        checkbox.title    = isLocked
+            ? 'Switch this path\'s layer state on to edit it'
+            : `Show ${category.label} in this path's preview and export`;
+
+        checkbox.addEventListener('change', () => {
+            Na__VideoStudio__ProjectJson__SetModelLayerVisibility(videoId, category.key, checkbox.checked);
+            Na__ModelToggle__ApplySceneLayerVisibility({ [category.key]: checkbox.checked });  // <-- Viewport and Tools buttons follow
+        });
+
+        row.appendChild(checkbox);
+        return row;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the Model Layers Section for a Video
+    // ------------------------------------------------------------
+    // Layer visibility is otherwise global state owned by the Tools menu, which
+    // makes it a property of the moment rather than of the path. A boundary or
+    // a foreground building sitting across the lens on one route is wanted on
+    // the next, and an export would happily render it because the exporter
+    // borrows the live scene. This section pins a layer state to the path and
+    // the preview and the exporter both honour it.
+    // ------------------------------------------------------------
+    function Na__VsDev__BuildModelLayersSection(video) {
+        const videoId    = video.VideoStudio__Video__Id;
+        const layers     = Na__VideoStudio__ProjectJson__GetModelLayerOptions(video);
+        const categories = Na__ModelToggle__GetCategories();
+        const section    = Na__VsDev__El('div', 'na-vs-dev__section');
+
+        section.appendChild(Na__VsDev__El('div', 'na-vs-dev__section-title', 'Model Layers'));
+
+        // ENABLED | Master switch. Off means this path renders whatever the
+        // Tools panel is showing, which is how every video behaved before.
+        const enabledRow      = Na__VsDev__Row('Enabled');
+        const enabledCheckbox = Na__VsDev__El('input', 'na-vs-dev__checkbox');
+        enabledCheckbox.type    = 'checkbox';
+        enabledCheckbox.checked = layers.enabled;
+        enabledCheckbox.title   = 'Pin this path\'s own model layer state. Preview and export both use it, '
+                                + 'and the viewport goes back to how you had it when playback stops.';
+        enabledCheckbox.addEventListener('change', () => {
+            Na__VideoStudio__ProjectJson__SetModelLayersEnabled(videoId, enabledCheckbox.checked);
+
+            // SEEDING | Switching on with nothing saved captures the view as it
+            // stands, so the path starts from what is on screen rather than
+            // from an empty map that silently does nothing.
+            if (enabledCheckbox.checked && Object.keys(layers.visibility).length === 0) {
+                Na__VideoStudio__ProjectJson__ReplaceModelLayerVisibility(videoId, Na__ModelToggle__CaptureVisibilityMap());
+            }
+
+            // SWITCHING OFF | This path no longer has an opinion, so anything a
+            // preview hid on its behalf goes straight back on screen.
+            if (!enabledCheckbox.checked) Na__VideoStudio__Preview__ReleaseModelLayers();
+
+            Na__VsDev__AdvancedLayersOpen = enabledCheckbox.checked || Na__VsDev__AdvancedLayersOpen;
+            Na__VsDev__RenderPanel();                                         // <-- Rows enable or disable with the switch
+        });
+        enabledRow.appendChild(enabledCheckbox);
+        section.appendChild(enabledRow);
+
+        // ADVANCED | Collapsible, so a path that does not need this stays a
+        // single checkbox, matching how the Animations section reads.
+        const advancedToggle = Na__VsDev__Button(
+            `${Na__VsDev__AdvancedLayersOpen ? '▾' : '▸'}  Advanced Layer State`,
+            null,
+            'Choose which model layers this path shows'
+        );
+        advancedToggle.classList.add('na-vs-dev__subsection-toggle');
+
+        const advancedPanel = Na__VsDev__El('div', 'na-vs-dev__subsection');
+        advancedPanel.style.display = Na__VsDev__AdvancedLayersOpen ? '' : 'none';
+
+        advancedToggle.addEventListener('click', () => {
+            Na__VsDev__AdvancedLayersOpen = !Na__VsDev__AdvancedLayersOpen;   // <-- Survives panel rebuilds
+            advancedPanel.style.display = Na__VsDev__AdvancedLayersOpen ? '' : 'none';
+            advancedToggle.textContent  = `${Na__VsDev__AdvancedLayersOpen ? '▾' : '▸'}  Advanced Layer State`;
+        });
+
+        section.appendChild(advancedToggle);
+
+        if (categories.length === 0) {
+            advancedPanel.appendChild(Na__VsDev__El('div', 'na-vs-dev__empty',
+                'Model layers appear here once the model has finished loading.'));
+            section.appendChild(advancedPanel);
+            return section;
+        }
+
+        // BULK ACTIONS | Capture the Tools panel wholesale, or push this path's
+        // saved state back onto the view after hopping between paths.
+        const bulkRow = Na__VsDev__El('div', 'na-vs-dev__actions');
+
+        const captureButton = Na__VsDev__Button('Capture Current View', null,
+            'Save exactly what the Tools menu is showing right now as this path\'s layer state');
+        captureButton.disabled = !layers.enabled;
+        captureButton.addEventListener('click', () => {
+            Na__VideoStudio__ProjectJson__ReplaceModelLayerVisibility(videoId, Na__ModelToggle__CaptureVisibilityMap());
+            Na__VsDev__RenderPanel();
+            Na__VsDev__Toast('Layer state captured for this path.');
+        });
+        bulkRow.appendChild(captureButton);
+
+        const applyButton = Na__VsDev__Button('Apply To View', null,
+            'Switch the viewport to this path\'s saved layer state');
+        applyButton.disabled = !layers.enabled;
+        applyButton.addEventListener('click', () => {
+            // READ FRESH | The rows above write straight into the saved map
+            // without a rebuild, so the map captured when this button was drawn
+            // may already be behind what the path actually holds.
+            const current = Na__VideoStudio__ProjectJson__GetModelLayerOptions(
+                Na__VideoStudio__ProjectJson__GetVideoById(videoId)
+            );
+            Na__ModelToggle__ApplySceneLayerVisibility(current.visibility);
+            Na__VsDev__RenderPanel();
+        });
+        bulkRow.appendChild(applyButton);
+
+        advancedPanel.appendChild(bulkRow);
+
+        // CATEGORY ROWS | One per loaded model group, same labels as the Tools menu
+        categories.forEach((category) => {
+            advancedPanel.appendChild(
+                Na__VsDev__BuildLayerRow(videoId, category, layers.visibility, !layers.enabled)
+            );
+        });
+
+        advancedPanel.appendChild(Na__VsDev__El('div', 'na-vs-dev__note',
+            'Unticking a layer hides it in the viewport now, and in this path\'s preview and exported video. '
+          + 'Other paths keep their own state, and the viewport returns to how you had it when playback stops.'));
+
+        section.appendChild(advancedPanel);
+        return section;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Export Settings Section for a Video
     // ------------------------------------------------------------
     function Na__VsDev__BuildExportSection(video) {
@@ -1180,6 +1388,12 @@
         Na__VsDev__IsExporting     = true;
         Na__VsDev__CancelRequested = false;
 
+        // THUMBNAILS | The export is about to resize the renderer and drive the
+        // camera itself. A timeline still burst landing in the middle of that
+        // would capture an export frame and hand back the wrong camera, so the
+        // strip stops asking for stills until the renderer is given back.
+        Na__VideoStudio__Thumbnails__SetSuspended(true);
+
         exportButton.disabled      = true;
         cancelButton.disabled      = false;
         cancelButton.style.display = '';
@@ -1230,6 +1444,8 @@
             if (!wasCancelled) console.error('[VideoStudio] Export failed:', error);
 
         } finally {
+            Na__VideoStudio__Thumbnails__SetSuspended(false);                // <-- Renderer is ours again; stale stills refresh
+
             Na__VsDev__IsExporting     = false;
             Na__VsDev__CancelRequested = false;
             exportButton.disabled      = !!Na__VideoStudio__Encoder__GetUnsupportedReason();
@@ -1246,65 +1462,6 @@
 // REGION | Video Block Construction
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build the Preview Transport for a Video
-    // ------------------------------------------------------------
-    function Na__VsDev__BuildTransport(video) {
-        const videoId  = video.VideoStudio__Video__Id;
-        const timeline = Na__VideoStudio__PathSampler__BuildTimeline(video);
-        const duration = timeline ? timeline.totalDurationMs : 0;
-
-        const transport = Na__VsDev__El('div', 'na-vs-dev__transport');
-
-        const playButton = Na__VsDev__Button('Play', 'primary',
-            'Fly the path in the viewport at normal speed. Spacebar does the same, in Orbit mode.');
-        const stopButton = Na__VsDev__Button('Stop', null, 'Stop and return the camera to where it was');
-
-        const scrubber = Na__VsDev__Slider(0, Math.max(1, duration), 10, 0);
-        scrubber.classList.add('na-vs-dev__scrubber');
-        scrubber.dataset.vsScrubberFor = videoId;
-        scrubber.title = 'Scrub the playhead';
-
-        const timeLabel = Na__VsDev__El('span', 'na-vs-dev__value',
-            `0:00 / ${Na__VideoStudio__PathSampler__FormatDuration(duration)}`);
-        timeLabel.dataset.vsTimeFor = videoId;
-
-        playButton.addEventListener('click', () => {
-            if (Na__VideoStudio__Preview__IsPlaying()) {
-                Na__VideoStudio__Preview__Pause();
-                playButton.textContent = 'Play';
-                return;
-            }
-            const error = Na__VideoStudio__Preview__Play(video);
-            if (error) {
-                Na__VsDev__Toast(error, true);
-                return;
-            }
-            playButton.textContent = 'Pause';
-        });
-
-        stopButton.addEventListener('click', () => {
-            Na__VideoStudio__Preview__Stop();
-            playButton.textContent = 'Play';
-        });
-
-        scrubber.addEventListener('input', () => {
-            if (Na__VideoStudio__Preview__IsPlaying()) {
-                Na__VideoStudio__Preview__Pause();
-                playButton.textContent = 'Play';
-            }
-            Na__VideoStudio__Preview__Seek(video, Number(scrubber.value));
-        });
-
-        transport.appendChild(playButton);
-        transport.appendChild(stopButton);
-        transport.appendChild(scrubber);
-        transport.appendChild(timeLabel);
-
-        return transport;
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | Build One Collapsible Video Block
     // ------------------------------------------------------------
     function Na__VsDev__BuildVideoBlock(video) {
@@ -1319,6 +1476,7 @@
         const expandButton = Na__VsDev__Button(isExpanded ? '▾' : '▸', null, 'Show this video\'s controls');
         expandButton.classList.add('na-vs-dev__expand');
         expandButton.addEventListener('click', () => {
+            Na__VideoStudio__Preview__ReleaseModelLayers();                  // <-- This path's hidden layers do not follow the next one
             Na__VsDev__ExpandedVideoId = isExpanded ? null : videoId;
             Na__VideoStudio__ProjectJson__SetActiveVideoId(Na__VsDev__ExpandedVideoId);
             Na__VideoStudio__ProjectJson__SetActiveKeyframeId(null);
@@ -1366,9 +1524,11 @@
 
         if (!isExpanded) return block;
 
-        // BODY | Everything below only exists while the block is expanded
-        block.appendChild(Na__VsDev__BuildTransport(video));
-
+        // BODY | Everything below only exists while the block is expanded.
+        // There is no transport here any more: Play, Stop, the clock and the
+        // playhead all live on the bottom timeline, which is up whenever this
+        // block is expanded and shows the keyframes as pictures rather than as
+        // an unlabelled slider.
         const captureButton = Na__VsDev__Button('Capture Keyframe  (K or Shift+K)', 'primary',
             'Record the current camera position and orientation as the next keyframe');
         captureButton.addEventListener('click', () => Na__VsDev__CaptureKeyframe());
@@ -1395,6 +1555,7 @@
 
         block.appendChild(Na__VsDev__BuildPlaybackSection(video));
         block.appendChild(Na__VsDev__BuildAnimationsSection(video));
+        block.appendChild(Na__VsDev__BuildModelLayersSection(video));
         block.appendChild(Na__VsDev__BuildExportSection(video));
 
         return block;
@@ -1475,6 +1636,11 @@
         // every route that rebuilds the panel leaves the viewport agreeing with
         // the checkboxes it just drew.
         Na__VsDev__RefreshFramingOverlays();
+
+        // BOTTOM TIMELINE | Same reasoning: every route that expands a block,
+        // collapses one, or deletes the expanded path ends up here, so the
+        // strip follows from one place instead of from all of them.
+        Na__VsDev__SyncTimeline();
     }
     // ------------------------------------------------------------
 
@@ -1754,14 +1920,14 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Sync Play Button Labels to the Transport State
+    // HELPER FUNCTION | Sync the Transport Button to the Playback State
+    // ------------------------------------------------------------
+    // The button lives on the bottom timeline now, so this is a one-line
+    // forward.  Kept as a named function because the spacebar handler calls it
+    // and the hotkey has no business knowing where the button ended up.
     // ------------------------------------------------------------
     function Na__VsDev__SyncTransportButtons() {
-        if (!Na__VsDev__PanelElement) return;
-
-        const label = Na__VideoStudio__Preview__IsPlaying() ? 'Pause' : 'Play';
-        Na__VsDev__PanelElement.querySelectorAll('.na-vs-dev__transport .na-vs-dev__btn--primary')
-            .forEach((button) => { button.textContent = label; });
+        Na__VideoStudio__Timeline__SyncTransport();
     }
     // ------------------------------------------------------------
 
@@ -1816,37 +1982,22 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Transport Sync
+// REGION | Timeline Hand-Off
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Update the Scrubber and Time Readout from a Preview Tick
+    // HELPER FUNCTION | Point the Bottom Timeline at the Right Path
     // ------------------------------------------------------------
-    function Na__VsDev__HandlePreviewTick(event) {
-        const detail = event.detail;
-        if (!detail || !Na__VsDev__PanelElement) return;
-
-        const scrubber = Na__VsDev__PanelElement.querySelector(`[data-vs-scrubber-for="${detail.videoId}"]`);
-        if (scrubber && document.activeElement !== scrubber) {
-            scrubber.max   = String(Math.max(1, detail.durationMs));
-            scrubber.value = String(detail.currentMs);                       // <-- Never fight a drag in progress
-        }
-
-        const timeLabel = Na__VsDev__PanelElement.querySelector(`[data-vs-time-for="${detail.videoId}"]`);
-        if (timeLabel) {
-            timeLabel.textContent = `${Na__VideoStudio__PathSampler__FormatDuration(detail.currentMs)}`
-                                  + ` / ${Na__VideoStudio__PathSampler__FormatDuration(detail.durationMs)}`;
-        }
-    }
+    // The timeline is up exactly when this panel is open with a path expanded,
+    // and down otherwise.  Deciding that here, from the panel's own state,
+    // rather than at each of the call sites that can change it, is what stops
+    // the strip being left behind after a delete or a fold.
+    //
+    // Passing null stands the timeline down and hands the bottom of the screen
+    // back to the Presentation Mode scene carousel.
     // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Reset Play Buttons When Playback Ends
-    // ------------------------------------------------------------
-    function Na__VsDev__HandlePreviewEnded() {
-        if (!Na__VsDev__PanelElement) return;
-
-        Na__VsDev__PanelElement.querySelectorAll('.na-vs-dev__transport .na-vs-dev__btn--primary')
-            .forEach((button) => { button.textContent = 'Play'; });
+    function Na__VsDev__SyncTimeline() {
+        const shouldShow = Na__VsDev__IsPanelOpen() && !!Na__VsDev__ExpandedVideoId;
+        Na__VideoStudio__Timeline__SetActiveVideo(shouldShow ? Na__VsDev__ExpandedVideoId : null);
     }
     // ------------------------------------------------------------
 
@@ -1945,15 +2096,38 @@
 
                 if (isOpen) {
                     Na__VideoStudio__UndoHistory__Clear('panel closed');      // <-- Editing session ended
+                    Na__VideoStudio__Preview__ReleaseModelLayers();           // <-- Never leave the viewport missing a model
                 }
+
+                Na__VsDev__SyncTimeline();                                   // <-- Bottom strip follows the panel up and down
 
                 if (!isOpen) Na__VsDev__LoadExistingConfig();                // <-- Pull saved videos on first open
             });
         }
 
-        // WIRE PREVIEW TRANSPORT SYNC
-        window.addEventListener(Na__VsPreview__TICK_EVENT,  Na__VsDev__HandlePreviewTick);
-        window.addEventListener(Na__VsPreview__ENDED_EVENT, Na__VsDev__HandlePreviewEnded);
+        // CONTEXT MENU | The right-click editor on a timeline tile writes
+        // straight into the keyframe records, so it is given the same refresh
+        // routine every other edit in this panel goes through. Rebuilding the
+        // panel as well keeps its keyframe rows agreeing with the menu.
+        Na__VideoStudio__Timeline__ContextMenu__Initialize({
+            camera    : options.camera,
+            showToast : options.showToast,
+            onChanged : (videoId) => {
+                Na__VsDev__OnDataChanged(videoId);
+                Na__VsDev__RenderPanel();
+            }
+        });
+
+        // THUMBNAILS | The timeline renders a still per waypoint through the
+        // live pipeline, and this is the one place already holding every
+        // reference that needs.
+        Na__VideoStudio__Thumbnails__SetRenderContext({
+            renderer               : options.renderer,
+            scene                  : options.scene,
+            camera                 : options.camera,
+            controls               : options.controls,
+            getRenderPipelineState : options.getRenderPipelineState
+        });
 
         // WIRE WAYPOINT DRAG COMMITS | A drag rewrites a keyframe position, so
         // the panel's duration and frame count readouts need refreshing.

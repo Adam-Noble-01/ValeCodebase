@@ -33,6 +33,15 @@
 // - Toggle buttons now keep a reference to their DOM element in the state map
 //   so programmatic visibility changes stay in sync with the active class.
 //
+// 01-Sep-2026 - Version 1.2.0
+// - Added Na__ModelToggle__GetCategories and Na__ModelToggle__CaptureVisibilityMap
+//   so the Video Studio can list the loaded categories in its own UI and snapshot
+//   the live toggle state into a per-video layer override.
+// - BuildButtons now clears the state map before rebuilding. It only rewrote
+//   entries before, so a second load left categories from the previous model in
+//   the map with dead group references. Harmless while nothing read the map
+//   wholesale; not harmless now that a snapshot of it gets saved to a project.
+//
 // =============================================================================
 
 
@@ -173,6 +182,47 @@
     }
     // ---------------------------------------------------------------
 
+
+    // FUNCTION | List Every Loaded Category with Its Live Visibility
+    // ------------------------------------------------------------
+    // Returns [{ key, label, visible }] in load order, so another feature can
+    // draw its own list of the same categories the Tools panel shows without
+    // reaching into the state map or re-deriving the display names.
+    // Returns an empty array before any groups have loaded.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__GetCategories() {
+        const categories = [];
+
+        Na__ModelToggle__StateMap.forEach((state, categoryKey) => {
+            categories.push({
+                key     : categoryKey,                                        // <-- Category key as saved in project.json
+                label   : Na__ModelToggle__ResolveDisplayName(categoryKey),    // <-- Same label the Tools panel button carries
+                visible : state.visible === true                              // <-- Live visibility right now
+            });
+        });
+
+        return categories;
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Snapshot the Live Visibility of Every Loaded Category
+    // ------------------------------------------------------------
+    // Produces a plain object in the same shape ApplySceneLayerVisibility
+    // consumes, so a caller can capture the current view, store it, and hand
+    // it straight back later to restore exactly this state.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__CaptureVisibilityMap() {
+        const snapshot = {};
+
+        Na__ModelToggle__StateMap.forEach((state, categoryKey) => {
+            snapshot[categoryKey] = state.visible === true;                   // <-- Boolean per category
+        });
+
+        return snapshot;
+    }
+    // ---------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -190,6 +240,7 @@
         }
 
         listContainer.innerHTML = '';                                    // <-- Clear any existing buttons
+        Na__ModelToggle__StateMap.clear();                               // <-- Drop categories from a previously loaded model
 
         if (!loadedGroups || loadedGroups.size === 0) {
             listContainer.style.display = 'none';                        // <-- Hide if no groups
@@ -275,7 +326,9 @@
     // ------------------------------------------------------------
     export {
         Na__UiFeature__InitializeModelToggleControls,
-        Na__ModelToggle__ApplySceneLayerVisibility
+        Na__ModelToggle__ApplySceneLayerVisibility,
+        Na__ModelToggle__GetCategories,
+        Na__ModelToggle__CaptureVisibilityMap
     };
     // ------------------------------------------------------------
 

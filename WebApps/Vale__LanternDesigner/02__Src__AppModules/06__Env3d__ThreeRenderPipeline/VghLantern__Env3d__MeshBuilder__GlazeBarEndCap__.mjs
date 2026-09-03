@@ -30,14 +30,21 @@
    slope and right on the other three.
 
    So the geometry publishes three unit vectors - AxisX, AxisY, AxisZ, being where
-   the asset's OWN axes point once placed - and this module drops them straight
-   into a rotation matrix. WHICH bar direction each of them follows is declared in
-   the glaze bar system index as LocalAxisMap, so an asset that turns out to have
-   been authored lying on its side is corrected in a JSON file rather than here.
+   the asset's OWN axes point once placed - and this module builds a rotation
+   matrix from them. How far the asset is turned within that frame is declared in
+   the glaze bar system index as RotationDegrees, so an asset that turns out to
+   have been authored lying on its side is corrected in a JSON file rather than
+   here.
 
-   THE MILLIMETRE TO WORLD SWAP applies to a direction exactly as it does to a
-   point, minus the scaling: model (x, y, z) lands as world (x, z, -y). That swap
-   is itself a rotation, so it preserves the handedness it is handed.
+   THE MILLIMETRE TO WORLD SWAP IS A CHANGE OF BASIS HERE, NOT A SWAP. Model
+   (x, y, z) lands as world (x, z, -y), and applying that to a point or to a bare
+   direction is the swap itself. But the basis above rotates a MESH, and the mesh
+   arrives from the MeshJson loader with its vertices already swapped into world
+   orientation. Rotating world oriented vertices by a model space basis lands the
+   swap on the part twice. So the basis is carried across as S * M * S inverse,
+   which ApplyBasis writes out as its three columns. Both forms are rotations and
+   both preserve handedness, which is exactly why the wrong one is not obvious:
+   it produces a clean placement, just a quarter turn about the bar.
 
    WHY THE MATERIAL IS THE COMPONENT ROLE AND NOT THE BAR CAP ROLE
 
@@ -115,28 +122,27 @@ import {
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | A Model-Space Direction in World Space
-    // ------------------------------------------------------------
-    // The millimetre to world swap applied to a DIRECTION: no translation and no
-    // scaling, so a unit vector stays one.
-    function VghLantern__Env3d__GlazeBarEndCap__DirectionToWorld(direction) {
-        return new THREE.Vector3(direction.x, direction.z, -direction.y);
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | Turn a Placement Basis Into a Mesh Rotation
     // ------------------------------------------------------------
-    // The placement's AxisX, AxisY and AxisZ are already where the asset's own
-    // axes belong, resolved from the index's LocalAxisMap. makeBasis takes them as
-    // its three columns in that order, so there is nothing left to decide here -
-    // no angle, no order of application, and nothing to get backwards.
+    // The columns come from the geometry module rather than being swapped here,
+    // because the exporter places this same cap from the same placement and the
+    // two must not each carry their own opinion about how model space reaches
+    // world. See VghLantern__GlazeBarAssembly__WorldBasis for why this is a change
+    // of basis and not a swap of the three vectors.
+    //
+    // A placement whose basis will not resolve is left unrotated rather than
+    // guessed at: the cap then sits square to the lantern, which reads as wrong
+    // at a glance, where a guessed rotation would read as merely odd.
     function VghLantern__Env3d__GlazeBarEndCap__ApplyBasis(mesh, placement) {
-        const axisX  =  VghLantern__Env3d__GlazeBarEndCap__DirectionToWorld(placement.AxisX);
-        const axisY  =  VghLantern__Env3d__GlazeBarEndCap__DirectionToWorld(placement.AxisY);
-        const axisZ  =  VghLantern__Env3d__GlazeBarEndCap__DirectionToWorld(placement.AxisZ);
+        const Geometry  =  window.VghLantern__Geometry__GlazeBarAssembly;
+        const basis     =  Geometry ? Geometry.VghLantern__GlazeBarAssembly__WorldBasis(placement) : null;
+        if (!basis) return;
 
-        mesh.setRotationFromMatrix(new THREE.Matrix4().makeBasis(axisX, axisY, axisZ));
+        mesh.setRotationFromMatrix(new THREE.Matrix4().makeBasis(
+            new THREE.Vector3(basis.ColumnX.x, basis.ColumnX.y, basis.ColumnX.z),
+            new THREE.Vector3(basis.ColumnY.x, basis.ColumnY.y, basis.ColumnY.z),
+            new THREE.Vector3(basis.ColumnZ.x, basis.ColumnZ.y, basis.ColumnZ.z)
+        ));
     }
     // ------------------------------------------------------------
 

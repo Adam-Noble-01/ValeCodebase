@@ -1,0 +1,27 @@
+[
+    {
+        "_Comment"   : "Single underscore aliases for the original double underscore triggers. The drive link hotstrings added in v0.7.0 use a single underscore, so both spellings now work everywhere and neither has to be remembered.",
+        "Hotstring"  : ";v_build",
+        "Action"     : "Copy&Paste",
+        "Folder"     : "02__PowerShellCommands",
+        "Location"   : "RunPyhton__BuildValeProjectStructure__.md"
+    },
+    {
+        "Hotstring"  : ";v_email",
+        "Action"     : "PasteDeliveryEmailCommand",
+        "Folder"     : "10__Standard__ValeEmails",
+        "Location"   : "EmailTemplate__WhitecardDelivery__.html"
+    },
+    {
+        "Hotstring"  : ";v_projectemail",
+        "Action"     : "PasteProjectSharingEmailCommand",
+        "Folder"     : "10__Standard__ValeEmails",
+        "Location"   : "EmailTemplate__ProjectIntroductionEmail.html"
+    },
+    {
+        "Hotstring"  : ";v_project_email",
+        "Action"     : "PasteProjectSharingEmailCommand",
+        "Folder"     : "10__Standard__ValeEmails",
+        "Location"   : "EmailTemplate__ProjectIntroductionEmail.html"
+    }
+]

@@ -1,0 +1,363 @@
+{
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2500,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 0,
+            "FogPlane__Config__PlaneA__NormalZ": 1,
+            "FogPlane__Config__PlaneA__PositionMm": -22925
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 1,
+            "FogPlane__Config__PlaneB__NormalZ": 0,
+            "FogPlane__Config__PlaneB__PositionMm": 4417
+        }
+    },
+    "ProjectType": "MaxModel",
+    "RenderEngine__Config": {
+        "RenderEngine__Active": "MaxEngine"
+    },
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "02-Sep-2026 at 09:37",
+        "coordinate_system": "SketchUp_Z_up",
+        "model_name": "Thorpe__WhiteCardModel__0.5.0__",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.56421,
+                        "y": 0.825383,
+                        "z": -0.020219
+                    },
+                    "eye": {
+                        "x": 33067.3251,
+                        "y": -12351.4284,
+                        "z": 2497.6474
+                    },
+                    "fov_degrees": 33.3985,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 17837.7835,
+                        "y": 9927.8666,
+                        "z": 1951.8698
+                    },
+                    "up": {
+                        "x": -0.01141,
+                        "y": 0.016692,
+                        "z": 0.999796
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "01 - Main Shot",
+                "scene_name": "IMG01__3dView__MainShot__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.001838,
+                        "y": 0.999998,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 17216.8082,
+                        "y": 19.5304,
+                        "z": 1800
+                    },
+                    "fov_degrees": 39.5978,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 17235.205,
+                        "y": 10026.2333,
+                        "z": 1800
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "02 - Frontage",
+                "scene_name": "IMG02__3dView__OrangeryFrontage__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.026267,
+                        "y": -0.999634,
+                        "z": -0.006514
+                    },
+                    "eye": {
+                        "x": 17834.0143,
+                        "y": 16285.5069,
+                        "z": 1690
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 17939.2688,
+                        "y": 12279.8262,
+                        "z": 1663.8957
+                    },
+                    "up": {
+                        "x": 0.000171,
+                        "y": -0.006512,
+                        "z": 0.999979
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "03 - Interior",
+                "scene_name": "IMG03__3dView__Interior-01__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.376009,
+                        "y": -0.926436,
+                        "z": -0.01829
+                    },
+                    "eye": {
+                        "x": 19430.9355,
+                        "y": 13541.8991,
+                        "z": 1290
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 17924.2124,
+                        "y": 9829.5343,
+                        "z": 1216.7084
+                    },
+                    "up": {
+                        "x": -0.006878,
+                        "y": -0.016948,
+                        "z": 0.999833
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "04 - Interior",
+                "scene_name": "IMG04__3dView__Interior-02__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.313172,
+                        "y": 0.692272,
+                        "z": -0.650141
+                    },
+                    "eye": {
+                        "x": 10733.9624,
+                        "y": -4238.5934,
+                        "z": 17323.9565
+                    },
+                    "fov_degrees": 26.9915,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 24704.6637,
+                        "y": 26643.8995,
+                        "z": -11679.0844
+                    },
+                    "up": {
+                        "x": 0.267968,
+                        "y": 0.592348,
+                        "z": 0.759813
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "05 - Top Down View",
+                "scene_name": "IMG05__3dView__Top-Down__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.536794,
+                        "y": 0.843075,
+                        "z": -0.032813
+                    },
+                    "eye": {
+                        "x": 48063.8692,
+                        "y": -29653.4314,
+                        "z": 3000
+                    },
+                    "fov_degrees": 26.9915,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 24117.2859,
+                        "y": 7956.4564,
+                        "z": 1536.192
+                    },
+                    "up": {
+                        "x": -0.017623,
+                        "y": 0.027679,
+                        "z": 0.999462
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "06 - Full Building",
+                "scene_name": "IMG06__3dView__FullBuildingContext__",
+                "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026.png",
+        "IMG02__3dView__OrangeryFrontage____WhitecardImage__02-Sep-2026.png",
+        "IMG03__3dView__Interior-01____WhitecardImage__02-Sep-2026.png",
+        "IMG04__3dView__Interior-02____WhitecardImage__02-Sep-2026.png",
+        "IMG05__3dView__Top-Down____WhitecardImage__02-Sep-2026.png",
+        "IMG06__3dView__FullBuildingContext____WhitecardImage__02-Sep-2026.png"
+    ],
+    "basePath": "Projects/2026/64143__Thorpe",
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026.png",
+        "IMG02__3dView__OrangeryFrontage____WhitecardImage__02-Sep-2026.png",
+        "IMG03__3dView__Interior-01____WhitecardImage__02-Sep-2026.png",
+        "IMG04__3dView__Interior-02____WhitecardImage__02-Sep-2026.png",
+        "IMG05__3dView__Top-Down____WhitecardImage__02-Sep-2026.png",
+        "IMG06__3dView__FullBuildingContext____WhitecardImage__02-Sep-2026.png"
+    ],
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026.png",
+        "IMG02__3dView__OrangeryFrontage____WhitecardImage__02-Sep-2026.png",
+        "IMG03__3dView__Interior-01____WhitecardImage__02-Sep-2026.png",
+        "IMG04__3dView__Interior-02____WhitecardImage__02-Sep-2026.png",
+        "IMG05__3dView__Top-Down____WhitecardImage__02-Sep-2026.png",
+        "IMG06__3dView__FullBuildingContext____WhitecardImage__02-Sep-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Rachael",
+        "designer": "Tom",
+        "input": "NOT YET REVIEWED"
+    },
+    "projectCode": "64143",
+    "projectName": "Thorpe",
+    "scheduleData": {
+        "dateFulfilled": "02-Sep-2026",
+        "dateReceived": "NOT YET REVIEWED",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__02-Sep-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__ProposedDoors__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__ProposedDoors__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__ProposedRoofs__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__ProposedRoofs__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__ProposedWalls__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/64143__Thorpe/Thorpe__TrueVision__MainBuildingModel__ProposedWalls__MeshModel__.glb"
+    ],
+    "Navmode__OrbitMaxDistanceMm": 50000
+}

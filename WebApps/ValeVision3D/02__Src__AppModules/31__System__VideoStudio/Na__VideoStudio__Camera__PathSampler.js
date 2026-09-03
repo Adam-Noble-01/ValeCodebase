@@ -71,6 +71,14 @@
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
 //
+// 02-Sep-2026 - Version 1.1.0
+// - Added GetKeyframeTimes, which reports the clock time the camera reaches
+//   each waypoint, for the editing timeline to lay its tiles out against.
+//   It lives here rather than in the timeline because a leg's easing ramp
+//   stretches the travel either side of a cruise, so the authored travel times
+//   alone put every mid-leg waypoint in the wrong place. Inverting that ramp
+//   is this module's business and nobody else's.
+//
 // =============================================================================
 
 
@@ -319,6 +327,7 @@
     // ------------------------------------------------------------
     const Na__VsPath__RAMP_MS            = 900;   // <-- Acceleration and braking time at each end of a leg
     const Na__VsPath__RAMP_MAX_FRACTION  = 0.4;   // <-- Ramps may never exceed this share of a short leg
+    const Na__VsPath__WARP_INVERSE_STEPS = 24;    // <-- Bisection halvings used to invert the ramp for the timeline
     // ------------------------------------------------------------
 
 
@@ -401,6 +410,40 @@
         // leg's full progress without changing either ramp's shape.
         const scaled = displacement * (legDurationMs / (legDurationMs - ramp));
         return Math.max(0, Math.min(legDurationMs, scaled));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Invert the Leg Warp: Progress Back to Elapsed Time
+    // ------------------------------------------------------------
+    // WarpLegTime answers "where along the leg am I at time t".  The timeline
+    // UI needs the opposite: a keyframe sits at a known progress through the
+    // leg (the sum of the travel times authored before it), and the question is
+    // what clock time the camera actually passes it.  Under an easing ramp
+    // those two are not the same number, so a keyframe drawn at its authored
+    // offset would sit slightly off the moment the camera reaches it.
+    //
+    // The warp is monotonic, so bisection inverts it exactly with no algebra
+    // per ramp shape.  Twenty-four halvings resolve a sixty-second leg to well
+    // under a hundredth of a millisecond, which is far finer than one pixel of
+    // any timeline this will ever draw.
+    // ------------------------------------------------------------
+    function Na__VsPath__InvertLegWarp(targetMs, legDurationMs, rampIntegral) {
+        if (legDurationMs <= 0) return 0;
+
+        const target = Math.max(0, Math.min(legDurationMs, targetMs));
+        if (!rampIntegral) return target;                                    // <-- 'linear': the warp is the identity
+
+        let low  = 0;
+        let high = legDurationMs;
+
+        for (let i = 0; i < Na__VsPath__WARP_INVERSE_STEPS; i++) {
+            const mid = (low + high) / 2;
+            if (Na__VsPath__WarpLegTime(mid, legDurationMs, rampIntegral) < target) low = mid;
+            else                                                                    high = mid;
+        }
+
+        return (low + high) / 2;
     }
     // ------------------------------------------------------------
 
@@ -628,6 +671,71 @@
             positions, quaternions, fovs,
             events          : events
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve the Clock Time the Camera Reaches Each Keyframe
+    // ------------------------------------------------------------
+    // Returns an array of milliseconds, one per entry in timeline.keyframes,
+    // giving the moment the camera ARRIVES at that waypoint.  A waypoint with
+    // a hold therefore reports the start of its hold, not the end of it.
+    //
+    // This exists so the timeline UI can place a waypoint at the point on the
+    // ruler where it actually happens.  Working it out from the event list is
+    // not something a caller should be doing by hand: a leg's easing ramp
+    // stretches the first and last stretch of travel, so the authored travel
+    // times alone put every mid-leg waypoint in the wrong place.  Only this
+    // module knows the ramp, so only this module can answer the question.
+    //
+    // The walk is first-write-wins.  A waypoint that a hold has already timed
+    // is not rewritten by the leg that departs from it, which is what keeps the
+    // reported time an arrival rather than a departure.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__PathSampler__GetKeyframeTimes(timeline) {
+        if (!timeline || !Array.isArray(timeline.events)) return [];
+
+        const keyCount = timeline.keyCount || 0;
+        if (keyCount === 0) return [];
+
+        const times = new Array(keyCount).fill(0);
+        const known = new Array(keyCount).fill(false);
+
+        const stamp = (index, timeMs) => {
+            if (index < 0 || index >= keyCount) return;                      // <-- A closed loop's last leg wraps to key 0
+            if (known[index]) return;                                        // <-- Arrival already recorded; never overwrite
+            times[index] = timeMs;
+            known[index] = true;
+        };
+
+        timeline.events.forEach((event) => {
+            if (event.type === 'hold') {
+                stamp(event.keyIndex, event.startMs);                        // <-- Parked here from startMs onward
+                return;
+            }
+
+            if (event.type !== 'leg' || !Array.isArray(event.segments)) return;
+
+            const rampIntegral = Na__VideoStudio__PathSampler__ResolveEasing(event.easing);
+            let   travelledMs  = 0;                                          // <-- Progress through the leg, unwarped
+
+            event.segments.forEach((segment) => {
+                const elapsed = Na__VsPath__InvertLegWarp(travelledMs, event.durationMs, rampIntegral);
+                stamp(segment.segIndex, event.startMs + elapsed);            // <-- Waypoint this segment departs from
+                travelledMs += segment.durationMs;
+            });
+
+            const lastSegment = event.segments[event.segments.length - 1];
+            stamp(lastSegment.segIndex + 1, event.startMs + event.durationMs); // <-- Waypoint the leg arrives at
+        });
+
+        // FALLBACK | A malformed event list must still yield a usable ruler
+        // rather than stacking every unresolved waypoint on zero.
+        for (let i = 1; i < keyCount; i++) {
+            if (!known[i]) times[i] = times[i - 1];
+        }
+
+        return times;
     }
     // ------------------------------------------------------------
 
@@ -861,6 +969,7 @@
         Na__VideoStudio__Camera__AnnounceFovChange,
         Na__VideoStudio__PathSampler__ResolveEasing,
         Na__VideoStudio__PathSampler__BuildTimeline,
+        Na__VideoStudio__PathSampler__GetKeyframeTimes,
         Na__VideoStudio__PathSampler__SampleAtTime,
         Na__VideoStudio__PathSampler__SampleAtCurveU,
         Na__VideoStudio__Camera__QuaternionToEulerBlock,

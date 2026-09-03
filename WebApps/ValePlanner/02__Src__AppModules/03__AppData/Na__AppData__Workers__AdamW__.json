@@ -3086,6 +3086,118 @@
           "endTime": "18:00",
           "title": "Whitecard |  Negretti",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1788246638957",
+          "date": "2026-09-01",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Admin |  Post Hol Cathcup",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1788253290223",
+          "date": "2026-09-01",
+          "startTime": "09:00",
+          "endTime": "09:30",
+          "title": "Meeting |  JW",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1788253278245",
+          "date": "2026-09-01",
+          "startTime": "09:30",
+          "endTime": "09:45",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1788253312341",
+          "date": "2026-09-01",
+          "startTime": "09:45",
+          "endTime": "10:15",
+          "title": "Meeting |  JM & Concept",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1788264411900",
+          "date": "2026-09-01",
+          "startTime": "10:15",
+          "endTime": "10:45",
+          "title": "Tea",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1788253411942",
+          "date": "2026-09-01",
+          "startTime": "10:45",
+          "endTime": "13:00",
+          "title": "Doous |  Chimney Addtion",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1788269718447",
+          "date": "2026-09-01",
+          "startTime": "13:00",
+          "endTime": "14:00",
+          "title": "Vale |  Render Factory Fascade Concept",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1788253431809",
+          "date": "2026-09-01",
+          "startTime": "14:00",
+          "endTime": "19:00",
+          "title": "Whitecard |  Thorpe",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1788358779262",
+          "date": "2026-09-02",
+          "startTime": "08:00",
+          "endTime": "11:00",
+          "title": "Whitecard |  Thorpe - Revisions",
+          "color": "na-shift-color-cyan"
+        },
+        {
+          "id": "new-1788253441927",
+          "date": "2026-09-04",
+          "startTime": "08:45",
+          "endTime": "15:00",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1788339386450",
+          "date": "2026-09-02",
+          "startTime": "11:00",
+          "endTime": "14:00",
+          "title": "Doous |  Revsion 3",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1788358815047",
+          "date": "2026-09-02",
+          "startTime": "14:00",
+          "endTime": "15:00",
+          "title": "Dev | ValeVision Video Editor Fixes",
+          "color": "na-shift-color-slate"
+        },
+        {
+          "id": "new-1788423245558",
+          "date": "2026-09-03",
+          "startTime": "11:00",
+          "endTime": "11:30",
+          "title": "Whitecard |  Mudie",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1788433574032",
+          "date": "2026-09-03",
+          "startTime": "12:00",
+          "endTime": "14:00",
+          "title": "Whitecard |  Mudie",
+          "color": "na-shift-color-lime"
         }
       ]
     }

@@ -969,6 +969,12 @@
         <!-- Cards, nav buttons, dots and play/pause injected by Na__PresentationMode__UI__SceneCarousel.js -->
     </div>
 
+    <!-- Video Studio Timeline (bottom, takes the carousel's place while a video path is open) -->
+    <!-- @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js -->
+    <div class="na-vs-tl" id="naVideoStudioTimeline" aria-label="Video path timeline" role="group">
+        <!-- Transport, keyframe tiles, ruler and playhead injected by Na__VideoStudio__Timeline__Controls.js -->
+    </div>
+
     <!-- endregion -------------------------------------------------------- -->
 
 
@@ -1241,11 +1247,13 @@
     // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__DevMenu__Controls.js
     // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__PathVisualizer.js
     // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js
+    // @delegate: ./02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js
     // ------------------------------------------------------------
     import { Na__VideoStudio__DevMenu__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__DevMenu__Controls.js';
     import { Na__VideoStudio__PathVisualizer__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__PathVisualizer.js';
     import { Na__VideoStudio__Preview__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Playback__PreviewController.js';
     import { Na__VideoStudio__KeyframeDragger__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Viewport__KeyframeDragger.js';
+    import { Na__VideoStudio__Timeline__Initialize } from './02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Export Render Layers (Localhost Dev Only)
@@ -1973,6 +1981,8 @@
         camera   : Na__Camera__Main,
         controls : Na__Controls__Orbit
     });
+
+    Na__VideoStudio__Timeline__Initialize();                                    // <-- Bottom keyframe strip; wired before the panel that drives it
 
     Na__VideoStudio__DevMenu__Initialize({                                      // <-- Localhost-only Video Studio panel
         renderer               : Na__Renderer__Main,

@@ -2,6 +2,83 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.15.0 - 02-Sep-2026 - Video Studio: Keyframe Timeline Replaces the Transport Slider
+
+### Overview
+Composing a walkthrough meant reading an unlabelled range slider and a scrolling
+column of near-identical keyframe rows. Neither told you what any shot actually
+looked like or when it happened. The Video Studio panel's Play / Stop / scrubber
+row is gone, and in its place is a timeline across the bottom of the screen
+showing every keyframe as the shot it is, at the moment it happens, with a ruler
+under it. Right-clicking a shot opens a context menu that edits it in place.
+
+Only one thing is ever at the bottom of the screen: opening a video path hides
+the Presentation Mode scene carousel and closing it puts the carousel back
+exactly as it was. Two strips both calling themselves scenes was the confusion
+this replaces.
+
+### Added
+- **Na__VideoStudio__Timeline__Controls.js v1.0.0.** The strip itself: transport,
+  keyframe tiles, ruler, playhead and scrubbing. Tiles are positioned by
+  percentage of the total duration inside an inset lane, so the shot at time zero
+  and the shot at the end both sit inside the strip rather than half off it. A
+  stem drops from each tile to its tick, which keeps the ruler truthful where two
+  shots sit close enough for their tiles to overlap. Single click selects a
+  waypoint and lights its viewport marker; double click flies the camera to it,
+  the same call `Go To` makes; right click opens the context menu.
+- **Na__VideoStudio__Timeline__Thumbnails.js v1.0.0.** Renders and caches the
+  still for each waypoint by placing the camera there and rendering one frame
+  through the live pipeline. Every render in a burst happens inside one
+  synchronous task and the live view is redrawn before the task ends, so the
+  browser only ever composites the correct frame and the whole thing is invisible
+  on screen. Cached against a signature of the waypoint's camera block, lens and
+  the path's model layer state, so a dragged waypoint costs one frame rather than
+  a rebuild. Bursts are capped at eight frames and suspended while an MP4 export
+  owns the renderer.
+- **Na__VideoStudio__Timeline__ContextMenu.js v1.0.0.** Right-click editor for one
+  keyframe: Travel Time, Hold Time, Match Current Camera, Camera Lens, and a
+  collapsed Advanced Camera Settings section holding Camera Height in millimetres
+  and Camera Tilt in degrees from the horizon. Every field commits through the
+  data layer and records an undo entry, so Ctrl+Z steps back through menu edits
+  as it does through a waypoint drag. A Delete Keyframe action sits at the foot
+  behind a destructive confirmation.
+- **Na__VideoStudio__Timeline__Stylesheet__.css v1.1.0.** Strip and context menu,
+  scoped to `.na-vs-tl__*` and `.na-vs-menu__*`.
+
+### Changed
+- **Na__VideoStudio__Camera__PathSampler.js v1.1.0.** New
+  `GetKeyframeTimes(timeline)` reports the clock time the camera reaches each
+  waypoint. It lives here because a leg's easing ramp stretches the travel either
+  side of its cruise, so the authored travel times alone put every mid-leg
+  waypoint in the wrong place on a ruler. A new `InvertLegWarp` bisects the ramp
+  to answer the question exactly, twenty-four halvings resolving a sixty-second
+  leg to far finer than one pixel.
+- **Na__VideoStudio__ProjectJson__VideoData.js v1.2.0.** `SetActiveKeyframeId`
+  now dispatches `na-video-studio-keyframe-selected`. Selection reaches this
+  module from the panel's Go To, a click on a viewport marker, a drag, an
+  insertion and the timeline's tiles; announcing it from the single place that
+  records it is what lets a viewport click highlight a tile and a tile click
+  highlight a marker with neither module knowing the other exists.
+- **Na__VideoStudio__DevMenu__Controls.js v1.2.0.** The in-panel transport is
+  removed. `SyncTransportButtons` forwards to the timeline so the spacebar hotkey
+  and the strip cannot disagree. A new `SyncTimeline` decides from the panel's own
+  state whether the strip is up, called from `RenderPanel` and the fold toggle, so
+  no individual call site can leave it behind after a delete or a fold. The panel
+  also registers the thumbnail render context and hands the context menu the one
+  refresh routine that knows what a keyframe edit has to update.
+- **Na__VideoStudio__Stylesheet__.css v1.2.0.** Preview Transport block deleted.
+- **index.html.** Timeline container added beside the carousel, and
+  `Na__VideoStudio__Timeline__Initialize` runs before the Dev menu that drives it.
+
+### Note
+Deleting a waypoint from the context menu is recorded as a structural undo entry
+before the removal, exactly as the Delete hotkey already was, so Ctrl+Z puts it
+back in its place in the running order. The confirm dialog says so and states the
+real limit alongside it: the history is cleared when the Video Studio panel closes
+or another path is opened, so it is a safety net for the editing session and not
+beyond it.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.14.7 - 21-Aug-2026 - Walk and Fly Enabled by Default
 
 ### Overview

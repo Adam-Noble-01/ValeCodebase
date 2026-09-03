@@ -21,6 +21,9 @@
 // - Stop restores the camera and the orbit target to where they were before
 //   playback began.  Pause leaves the camera where it is and re-aims the orbit
 //   target ahead of it, so orbiting from a paused frame behaves sensibly.
+// - A path's saved model layer state is applied for the run and put back by
+//   Stop, not by Pause: a paused frame has to look like the video, so anything
+//   this path hides stays hidden until playback is actually ended.
 //
 // INTEGRATION:
 // - Na__AppFlow__LoadingSequence.js must route its per-frame update:
@@ -36,6 +39,10 @@
 // DEVELOPMENT LOG:
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
+//
+// 01-Sep-2026 - Version 1.1.0
+// - Play and Seek now open a model layers session for the video being watched,
+//   and Stop closes it, so a preview shows the same model the export renders.
 //
 // =============================================================================
 
@@ -81,11 +88,23 @@
     // MODULE IMPORTS | Playback Options and Scene Animations
     // @delegate: ./Na__VideoStudio__Playback__SceneAnimations.js
     // ------------------------------------------------------------
-    import { Na__VideoStudio__ProjectJson__GetPlaybackOptions } from './Na__VideoStudio__ProjectJson__VideoData.js';
+    import {
+        Na__VideoStudio__ProjectJson__GetPlaybackOptions,
+        Na__VideoStudio__ProjectJson__GetModelLayerOptions
+    } from './Na__VideoStudio__ProjectJson__VideoData.js';
     import {
         Na__VideoStudio__SceneAnimations__Begin,
         Na__VideoStudio__SceneAnimations__End
     } from './Na__VideoStudio__Playback__SceneAnimations.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Path Model Layer Visibility
+    // @delegate: ./Na__VideoStudio__Playback__ModelLayers.js
+    // ------------------------------------------------------------
+    import {
+        Na__VideoStudio__ModelLayers__Begin,
+        Na__VideoStudio__ModelLayers__End
+    } from './Na__VideoStudio__Playback__ModelLayers.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Path Overlay Suppression
@@ -151,6 +170,18 @@
     let Na__VsPreview__DoorOpenSeconds   = 1.2;     // <-- Single-leaf swing time for this video
     let Na__VsPreview__DoorDistanceM     = null;    // <-- Detection distance; null follows the app config
     let Na__VsPreview__AnimationSession  = false;   // <-- True while this module holds an animation session
+    // ------------------------------------------------------------
+
+
+    // MODULE VARIABLES | Model Layer State
+    // ------------------------------------------------------------
+    // Held across a pause, unlike the animation session: a paused frame has to
+    // look like the video, so a boundary hidden for this path must stay hidden
+    // until the user actually stops. Stop is what puts the viewport back.
+    // ------------------------------------------------------------
+    let Na__VsPreview__LayersEnabled = false;   // <-- From the active video's model layers block
+    let Na__VsPreview__LayersMap     = null;    // <-- categoryKey -> boolean for this video
+    let Na__VsPreview__LayerSession  = false;   // <-- True while this module holds a layer session
     // ------------------------------------------------------------
 
 
@@ -296,7 +327,40 @@
         Na__VsPreview__DoorOpenSeconds   = playback.doorOpenSeconds;
         Na__VsPreview__DoorDistanceM     = playback.doorDistanceM;
 
+        const layers = Na__VideoStudio__ProjectJson__GetModelLayerOptions(video);
+        Na__VsPreview__LayersEnabled     = layers.enabled;
+        Na__VsPreview__LayersMap         = layers.visibility;
+
         return timeline;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Apply the Loaded Video's Model Layer State
+    // ------------------------------------------------------------
+    // Opening a session for a video while one is already open for a different
+    // video would restore the wrong state later, so the old one is closed first.
+    // Called from Play and Seek, because both are ways of watching the path and
+    // both put a Stop button on screen to undo this.
+    // ------------------------------------------------------------
+    function Na__VsPreview__ApplyModelLayers() {
+        if (Na__VsPreview__LayerSession) return;                             // <-- Already applied for this video
+
+        Na__VsPreview__LayerSession = Na__VideoStudio__ModelLayers__Begin(
+            Na__VsPreview__LayersEnabled,
+            Na__VsPreview__LayersMap
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Put the Model Layer State Back
+    // ------------------------------------------------------------
+    function Na__VsPreview__ReleaseModelLayers() {
+        if (!Na__VsPreview__LayerSession) return;
+
+        Na__VideoStudio__ModelLayers__End(true);
+        Na__VsPreview__LayerSession = false;
     }
     // ------------------------------------------------------------
 
@@ -321,12 +385,22 @@
             && Na__VsPreview__CurrentMs > 0;
 
         if (!isResume) {
+            // LAYERS | A session still open for another path would restore that
+            // path's state later, so close it before the video id moves on.
+            if (Na__VsPreview__VideoId !== video.VideoStudio__Video__Id) {
+                Na__VsPreview__ReleaseModelLayers();
+            }
+
             const timeline = Na__VsPreview__LoadTimeline(video);
             if (!timeline) return 'This video has no keyframes to preview.';
             Na__VsPreview__CurrentMs = 0;
         }
 
         Na__VsPreview__SaveCameraState();                                    // <-- No-op when a snapshot already exists
+
+        // LAYERS | Hide whatever this path says gets in the way of its camera,
+        // so the preview shows the same model the export will render.
+        Na__VsPreview__ApplyModelLayers();
 
         // ANIMATIONS | Enable proximity doors for the run, exactly as Walk and
         // Fly do, so the video previews with the doors actually opening.
@@ -404,6 +478,7 @@
         Na__VsPreview__IsPlaying = false;
         Na__RenderLoop__StopActiveRender(Na__VsPreview__RENDER_REASON);
         Na__VsPreview__ReleasePlaybackResources();
+        Na__VsPreview__ReleaseModelLayers();                                  // <-- Layers come back with the camera, not on pause
 
         Na__VsPreview__RestoreCameraState();
 
@@ -428,10 +503,14 @@
         if (!Na__VsPreview__Camera || !video) return;
 
         if (!Na__VsPreview__IsLoaded || Na__VsPreview__VideoId !== video.VideoStudio__Video__Id) {
+            if (Na__VsPreview__VideoId !== video.VideoStudio__Video__Id) {
+                Na__VsPreview__ReleaseModelLayers();                          // <-- Do not carry the other path's state over
+            }
             if (!Na__VsPreview__LoadTimeline(video)) return;                 // <-- Nothing to seek through
         }
 
         Na__VsPreview__SaveCameraState();                                    // <-- So Stop can still put the view back
+        Na__VsPreview__ApplyModelLayers();                                   // <-- Scrubbing shows the path's own layer state
 
         Na__VsPreview__CurrentMs = Math.max(0, Math.min(Na__VsPreview__Timeline.totalDurationMs, timeMs));
 
@@ -583,6 +662,20 @@
         Na__VsPreview__IsLoaded  = false;
         Na__VsPreview__CurrentMs = 0;
         Na__VsPreview__ClearCameraSnapshot();
+        Na__VsPreview__ReleaseModelLayers();                                 // <-- The preview this state belonged to is gone
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put a Preview's Model Layer Overrides Back Immediately
+    // ------------------------------------------------------------
+    // The Dev menu calls this when the Video Studio panel closes or the
+    // expanded path changes, so a path's hidden layers can never outlive the
+    // preview that applied them and leave the viewport quietly missing a model.
+    // Safe to call when nothing is applied.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__Preview__ReleaseModelLayers() {
+        Na__VsPreview__ReleaseModelLayers();
     }
     // ------------------------------------------------------------
 
@@ -608,7 +701,8 @@
         Na__VideoStudio__Preview__AreAnimationsEnabled,
         Na__VideoStudio__Preview__UpdateFrame,
         Na__VideoStudio__Preview__GetState,
-        Na__VideoStudio__Preview__InvalidateTimeline
+        Na__VideoStudio__Preview__InvalidateTimeline,
+        Na__VideoStudio__Preview__ReleaseModelLayers
     };
     // ------------------------------------------------------------
 

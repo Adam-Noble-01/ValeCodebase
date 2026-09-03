@@ -412,6 +412,52 @@ const VghLantern__Geometry__GlazeBarAssembly = (function() {
 
 
 // -----------------------------------------------------------------------------
+// REGION | World Space Basis
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | A Placement's Basis as Three World Space Columns
+    // ------------------------------------------------------------
+    // The placement's AxisX, AxisY and AxisZ are MODEL space directions, which is
+    // the frame the SketchUp payload is written in and the frame its importer
+    // applies them in. The 3D viewport cannot use them as they stand, because the
+    // mesh it rotates has already had its vertices swapped into world orientation
+    // by the MeshJson loader. Rotating world oriented vertices by a model space
+    // basis applies the swap a second time and rolls the part a quarter turn about
+    // its own X - the axis running down the bar.
+    //
+    // So the basis is carried across as a CHANGE OF BASIS, S * M * S inverse,
+    // rather than by swapping its three vectors. Written out as columns that is
+    // (S.AxisX, S.AxisZ, -S.AxisY), which is what this returns.
+    //
+    // IT LIVES HERE RATHER THAN IN THE VIEWPORT so there is one written down
+    // answer for the two consumers to disagree from. That is not hypothetical: the
+    // exporter and the viewport composed this differently for a fortnight, the
+    // viewport's error was cancelled by a 90 degree LocalX dialled into the system
+    // index to make it look right, and the export shipped every cap rolled a
+    // quarter turn. Both forms are proper rotations and both leave the cap facing
+    // down the roof and sitting the right way up, so nothing but a direct
+    // comparison of the two placements catches it.
+    //
+    // @param placement  One record from EndCapPlacements
+    // @return           { ColumnX, ColumnY, ColumnZ } unit vectors, or null
+    function VghLantern__GlazeBarAssembly__WorldBasis(placement) {
+        if (!placement || !placement.AxisX || !placement.AxisY || !placement.AxisZ) return null;
+
+        var swap  =  function(v) { return { x : v.x, y : v.z, z : -v.y }; };
+        var y     =  swap(placement.AxisY);
+
+        return {
+            ColumnX : swap(placement.AxisX),                                  // <-- Model +X stays world +X
+            ColumnY : swap(placement.AxisZ),                                  // <-- Model +Z is world up, so it lands in column Y
+            ColumnZ : { x : -y.x, y : -y.y, z : -y.z }                        // <-- Model +Y is world -Z, so it lands negated in column Z
+        };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Public API
 // -----------------------------------------------------------------------------
 
@@ -421,6 +467,7 @@ const VghLantern__Geometry__GlazeBarAssembly = (function() {
         VghLantern__GlazeBarAssembly__EndCapGeometry    : VghLantern__GlazeBarAssembly__EndCapGeometry,
         VghLantern__GlazeBarAssembly__ResolveRotation   : VghLantern__GlazeBarAssembly__ResolveRotation,
         VghLantern__GlazeBarAssembly__EndCapPlacements  : VghLantern__GlazeBarAssembly__EndCapPlacements,
+        VghLantern__GlazeBarAssembly__WorldBasis        : VghLantern__GlazeBarAssembly__WorldBasis,
         VghLantern__GlazeBarAssembly__Basis             : VghLantern__GlazeBarAssembly__Basis
     };
 

@@ -20,6 +20,16 @@
  * DEVELOPMENT LOG:
  * 12-Aug-2026 - Version 1.0.0
  * - Initial implementation for the Video Studio system.
+ *
+ * 01-Sep-2026 - Version 1.1.0
+ * - Added the Advanced Layer State row modifier. Category names run long
+ *   ("Main Building Model - Proposed Windows"), so those rows let the label
+ *   wrap rather than shoving the checkbox off the 340px panel.
+ *
+ * 02-Sep-2026 - Version 1.2.0
+ * - Dropped the Preview Transport block. Play, Stop, the clock and the
+ *   playhead now live on the bottom timeline, styled by
+ *   Na__VideoStudio__Timeline__Stylesheet__.css.
  */
 /* ================================================================= */
 
@@ -253,31 +263,6 @@
 
 
 /* #Region ---
- * REGION | Preview Transport
- * ----- */
-
-    .na-vs-dev__transport {
-        display                            : flex;
-        align-items                        : center;
-        gap                                : 6px;
-        flex-wrap                          : wrap;
-        padding                            : 6px 0;
-    }
-
-    .na-vs-dev__scrubber {
-        flex                               : 1 1 100%;
-        min-width                          : 0;
-        margin-top                         : 2px;
-    }
-
-    .na-vs-dev__transport .na-vs-dev__value {
-        min-width                          : 84px;
-    }
-
-/* endregion ---- */
-
-
-/* #Region ---
  * REGION | Keyframe List
  * ----- */
 
@@ -419,6 +404,30 @@
         color                              : #8a8f96;
         line-height                        : 1.4;
         margin                             : 2px 0 6px 0;
+    }
+
+    /* Layer rows carry model category names, which are far longer than the    */
+    /* one-word labels every other row uses. The shared label rule pins        */
+    /* flex-shrink to 0 to stop numeric fields collapsing, which here would    */
+    /* push the checkbox past the panel edge, so these rows opt back out.      */
+    .na-vs-dev__row--layer .na-vs-dev__label {
+        flex-shrink                        : 1;
+        min-width                          : 0;
+        line-height                        : 1.3;
+        overflow-wrap                      : anywhere;
+    }
+
+    .na-vs-dev__row--layer {
+        align-items                        : flex-start;
+        margin-bottom                      : 5px;
+    }
+
+    .na-vs-dev__row--layer .na-vs-dev__checkbox {
+        margin-top                         : 1px;
+    }
+
+    .na-vs-dev__row--layer:has(.na-vs-dev__checkbox:disabled) .na-vs-dev__label {
+        opacity                            : 0.45;
     }
 
     .na-vs-dev__progress {

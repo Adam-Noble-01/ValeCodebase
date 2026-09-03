@@ -136,6 +136,13 @@ const VghLantern__AppData__AssetRegistry = (function() {
             VghLantern__AssetRegistry__Data  =  data;
             VghLantern__AssetRegistry__BuildLookups(data);
 
+            if (data && !Array.isArray(data[KEY_ASSETS]) && !Array.isArray(data[KEY_INDEXES])) {
+                console.error('[VghLantern__AssetRegistry] The document that loaded carries neither an asset '
+                    + 'list nor a system index list, so no id and no system index will resolve. Its top level '
+                    + 'keys are: ' + Object.keys(data).join(', ') + '. Keys of "ok, data" mean a fetch path '
+                    + 'adopted the server envelope instead of unwrapping it to the registry inside.');
+            }
+
             if (data) {
                 var meta  =  data[KEY_META] || {};
                 console.log('[VghLantern__AssetRegistry] Registry loaded ('
@@ -156,28 +163,56 @@ const VghLantern__AppData__AssetRegistry = (function() {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Fetch the Registry from the Server API Route
+    // ------------------------------------------------------------
+    // The development server wraps every data route in an { ok, data } envelope,
+    // so the registry document is payload.data and NEVER the payload itself. A
+    // body that is not an envelope, or an envelope reporting not-ok, is thrown so
+    // the caller falls through to the static file rather than adopting a document
+    // that carries no assets and no system indexes.
+    async function VghLantern__AssetRegistry__FetchFromApi() {
+        var response  =  await fetch(API_REGISTRY_PATH, { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+
+        var payload  =  await response.json();
+        if (!payload || !payload.ok) throw new Error((payload && payload.error) || 'API returned not-ok');
+        return payload.data;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fetch the Registry Directly from the Static File
+    // ------------------------------------------------------------
+    // The file on disk is the registry document itself, with no envelope round it.
+    async function VghLantern__AssetRegistry__FetchFromStaticFile() {
+        var response  =  await fetch(STATIC_REGISTRY_PATH, { cache: 'no-store' });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        return await response.json();
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Try the Live Endpoint, Then the Static File
     // ------------------------------------------------------------
     // The same two step the component and profile index loaders take, and for the
     // same reason: while assets are being authored the development server serves a
     // freshly built registry no-store, and a static deployment has no such server.
     async function VghLantern__AssetRegistry__FetchFirstAvailable() {
-        var paths  =  [API_REGISTRY_PATH, STATIC_REGISTRY_PATH];
-        var i, response;
-
-        for (i = 0; i < paths.length; i++) {
-            try {
-                response  =  await fetch(paths[i], { cache: 'no-store' });
-                if (response.ok) return await response.json();
-            } catch (error) {
-                // Falls through to the next path. A missing /api route on a static
-                // host is expected rather than exceptional and is not logged.
-            }
+        try {
+            return await VghLantern__AssetRegistry__FetchFromApi();
+        } catch (apiError) {
+            // Falls through to the file. A missing /api route on a static host is
+            // expected rather than exceptional and is not logged.
         }
 
-        console.error('[VghLantern__AssetRegistry] The asset registry could not be loaded from '
-            + paths.join(' or ') + '. No asset will resolve. '
-            + 'Rebuild it with 60__Dev__WebBuildUtils/VghLantern__BuildUtil__AssetRegistry__.py');
+        try {
+            return await VghLantern__AssetRegistry__FetchFromStaticFile();
+        } catch (fileError) {
+            console.error('[VghLantern__AssetRegistry] The asset registry could not be loaded from '
+                + API_REGISTRY_PATH + ' or ' + STATIC_REGISTRY_PATH + '. No asset will resolve. '
+                + 'Rebuild it with 60__Dev__WebBuildUtils/VghLantern__BuildUtil__AssetRegistry__.py');
+        }
+
         return null;
     }
     // ------------------------------------------------------------

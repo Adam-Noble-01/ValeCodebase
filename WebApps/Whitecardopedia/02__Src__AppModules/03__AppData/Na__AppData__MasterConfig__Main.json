@@ -616,6 +616,14 @@
         {
             "folderId": "2026/64033__Negretti",
             "enabled": true
+        },
+        {
+            "folderId": "2026/64143__Thorpe",
+            "enabled": true
+        },
+        {
+            "folderId": "2026/64136__Mudie",
+            "enabled": true
         }
     ]
 }

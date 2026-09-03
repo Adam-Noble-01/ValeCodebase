@@ -227,6 +227,55 @@ const cross = (a, b) => ({
             && near(dot(sample.AxisZ, sample.Up), 1, 1e-9));
     }
 
+    // THE VIEWPORT AND THE EXPORTER MUST LAND THE PART IN THE SAME PLACE.
+    //
+    // They compose the placement differently and always will: the exporter writes
+    // the basis in model millimetres and the importer applies it there, while the
+    // viewport rotates a mesh whose vertices the MeshJson loader has ALREADY
+    // swapped into world orientation, so it needs the basis conjugated.
+    //
+    // This reads the viewport's columns from the geometry module's own WorldBasis,
+    // which is the function the Three builder calls, and compares the placement it
+    // produces against the exporter's. Restating the conjugation here instead
+    // would be an identity that holds for any basis and would pass whatever the
+    // application did - so the check has to go through the real one.
+    //
+    // Getting this wrong is invisible to every other check in this file. Both
+    // forms are proper rotations, both keep the frame orthonormal and right
+    // handed, and both leave the cap facing down the roof and sitting the right
+    // way up. The only thing that moves is the ROLL about the bar.
+    const swap    = v => ({ x : v.x, y : v.z, z : -v.y });                 // <-- Model to world, as ConfigAccess and the vertex table both do it
+    const combine = (o, x, y, z, v) => ({
+        x : o.x + (x.x * v.x) + (y.x * v.y) + (z.x * v.z),
+        y : o.y + (x.y * v.x) + (y.y * v.y) + (z.y * v.z),
+        z : o.z + (x.z * v.x) + (y.z * v.y) + (z.z * v.z)
+    });
+
+    // Deliberately asymmetric, so no coincidence of the asset's own symmetry can
+    // hide a disagreement, and spanning the cap's real extent in every axis.
+    const probes  = [ { x : -25, y :  20.5, z : 39 }, { x : -25, y : -20.5, z : 0 },
+                      { x :   0, y :  20.5, z :  0 }, { x :  -7, y :  13.0, z : 31 } ];
+
+    const noBasis = placements.filter(p => !BarGeom.VghLantern__GlazeBarAssembly__WorldBasis(p));
+    check('every placement resolves a world basis for the viewport', noBasis.length === 0,
+        noBasis.length ? '(' + noBasis.map(p => p.BarId).join(' ') + ')' : `(${placements.length} placements)`);
+
+    const drifted = placements.filter(p => {
+        const w = BarGeom.VghLantern__GlazeBarAssembly__WorldBasis(p);
+        if (!w) return true;
+        return probes.some(v => {
+            const exporter = swap(combine(p.Point, p.AxisX, p.AxisY, p.AxisZ, v));                // <-- Placed in model space, then viewed in world
+            const viewport = combine(swap(p.Point), w.ColumnX, w.ColumnY, w.ColumnZ, swap(v));    // <-- The viewport's own columns on an already swapped vertex
+            return !(near(exporter.x, viewport.x, 1e-9)
+                  && near(exporter.y, viewport.y, 1e-9)
+                  && near(exporter.z, viewport.z, 1e-9));
+        });
+    });
+
+    check('the viewport and the exporter place the cap identically', drifted.length === 0,
+        drifted.length ? '(' + drifted.map(p => p.BarId).join(' ') + ')'
+                       : `(${placements.length} caps x ${probes.length} probe points)`);
+
     // A quarter turn must land exactly on an axis, not near one - so a placement
     // that should be square reads as square rather than as 89.9999 degrees.
     const spun = BarGeom.VghLantern__GlazeBarAssembly__ResolveRotation(

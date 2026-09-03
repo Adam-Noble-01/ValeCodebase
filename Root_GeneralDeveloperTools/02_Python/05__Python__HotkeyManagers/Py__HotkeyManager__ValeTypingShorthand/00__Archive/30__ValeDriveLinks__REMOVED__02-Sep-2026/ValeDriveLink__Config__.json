@@ -1,0 +1,46 @@
+{
+    "_Comment__LinkScheme"      : "Default href scheme. 'protocol' uses the valefile handler and needs the one-time per user install. 'file' emits file:// links, which Microsoft blocks by design in New Outlook and Outlook on the web, and which Edge and Chrome refuse to open even when Outlook Classic hands them over. file is kept only for testing; protocol is the working option.",
+    "LinkScheme"                : "protocol",
+
+    "_Comment__FileUrlStyle"    : "Shape of the file:// href for UNC paths. 'Host' = file://vale-fs1/share/path (RFC form). 'FiveSlash' = file://///vale-fs1/share/path (the form Office itself emits). Flip this if links do not open in your Outlook build.",
+    "FileUrlStyle"              : "Host",
+
+    "_Comment__ProtocolScheme"  : "Custom URI scheme registered by ValeDriveLink__ProtocolHandler__Install__.ps1. Must match the installer and launcher.",
+    "ProtocolScheme"            : "valefile",
+
+    "_Comment__AllowedHosts"    : "Servers the protocol launcher is permitted to open. Anything else is refused. Lower case, no leading slashes.",
+    "AllowedHosts"              : [ "vale-fs1" ],
+
+    "_Comment__DriveMapFallback": "Used when the live mapped-drive query fails, and to render the friendly drive-letter path shown under each link. Keys are drive letters with colon, values are the UNC share root.",
+    "DriveMapFallback"          : {
+        "N:" : "\\\\vale-fs1\\companydata$\\Vale\\Vale",
+        "J:" : "\\\\vale-fs1\\companydata$\\Vale\\Administration",
+        "P:" : "\\\\vale-fs1\\companydata$\\Vale\\Standards",
+        "Y:" : "\\\\vale-fs1\\companydata$\\Vale\\Central Services",
+        "Z:" : "\\\\vale-fs1\\companydata$\\Vale\\Temp & Scans"
+    },
+
+    "_Comment__Styling"         : "Inline styles applied to the pasted HTML. Outlook strips stylesheets, so everything must stay inline.",
+    "BrandColour"               : "#172b3a",
+
+    "_Comment__LinkColour"      : "Colour of the clickable text itself. Kept as the standard Office hyperlink blue rather than Vale navy, because a link has to read as a link at a glance. Set this to BrandColour if you would rather it matched the brand.",
+    "LinkColour"                : "#0563c1",
+
+    "MutedColour"               : "#6b7280",
+    "AccentRuleColour"          : "#c9d3dc",
+    "FontStack"                 : "Aptos, Calibri, Segoe UI, Arial, sans-serif",
+    "MonoFontStack"             : "Consolas, Courier New, monospace",
+    "LinkFontSize"              : "11pt",
+    "PathFontSize"              : "8.5pt",
+
+    "_Comment__ShowPathSubLine" : "Show the friendly N:\\... path as small grey text under the link. Strongly recommended: it means the message is still usable when a recipient's client blocks the click.",
+    "ShowPathSubLine"           : true,
+
+    "_Comment__HistoryFallback" : "When the live clipboard holds no usable path (for example you copied a screenshot since), fall back to the most recent Vale path in Windows clipboard history, the Win+V panel. A path found this way is ALWAYS announced in a tray balloon, so a stale link can never be inserted silently. Set false to use only the live clipboard.",
+    "UseClipboardHistoryFallback": true,
+    "ClipboardHistoryMaxItems"  : 20,
+
+    "_Comment__Notifications"   : "Show a system tray balloon when a hotstring fires or when no usable path is on the clipboard.",
+    "NotifyOnSuccess"           : false,
+    "NotifyOnFailure"           : true
+}

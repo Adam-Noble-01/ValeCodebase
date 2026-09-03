@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "21-Aug-2026 at 18:08",
+    "generatedAt": "03-Sep-2026 at 16:06",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -1962,7 +1962,7 @@
             "hasThumbnails_R2": true,
             "hasGlb_R2": true,
             "imageCount": 6,
-            "lastSynced": "21-Aug-2026 at 09:43"
+            "lastSynced": "02-Sep-2026 at 14:38"
         },
         {
             "folderId": "2026/63986__Hawley",
@@ -2019,6 +2019,34 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "21-Aug-2026 at 18:08"
+        },
+        {
+            "folderId": "2026/64143__Thorpe",
+            "year": "2026",
+            "projectCode": "64143",
+            "name": "Thorpe",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 6,
+            "lastSynced": "02-Sep-2026 at 09:42"
+        },
+        {
+            "folderId": "2026/64136__Mudie",
+            "year": "2026",
+            "projectCode": "64136",
+            "name": "Mudie",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "03-Sep-2026 at 16:06"
         }
     ]
 }

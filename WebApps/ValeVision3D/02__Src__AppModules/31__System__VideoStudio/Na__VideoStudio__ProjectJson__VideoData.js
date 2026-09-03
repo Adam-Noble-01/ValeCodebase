@@ -30,6 +30,9 @@
 //       VideoStudio__Video__Order        {number}
 //       VideoStudio__Video__Export       {object}   width/height/fps/bitrate
 //       VideoStudio__Video__Playback     {object}   speed/defaults/easing/loop
+//       VideoStudio__Video__ModelLayers  {object}   per-path model layer overrides
+//         VideoStudio__ModelLayers__Enabled    {boolean}
+//         VideoStudio__ModelLayers__Visibility {object}  categoryKey -> boolean
 //       VideoStudio__Video__Keyframes    {array}
 //         VideoStudio__Keyframe__Id             {string}  'Key_001'
 //         VideoStudio__Keyframe__Order          {number}
@@ -55,6 +58,20 @@
 // DEVELOPMENT LOG:
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
+//
+// 01-Sep-2026 - Version 1.1.0
+// - Added the VideoStudio__Video__ModelLayers block so each path remembers its
+//   own model layer visibility. A boundary or a foreground building that gets
+//   in the way of one path can now be switched off for that path alone, and the
+//   state is written into project.json rather than being left to whatever the
+//   Tools panel happened to be showing when Export was pressed.
+//
+// 02-Sep-2026 - Version 1.2.0
+// - SetActiveKeyframeId now announces itself on the window. Selection reaches
+//   this module from the panel's Go To, a click on a viewport marker, a drag,
+//   an insertion and the timeline's tiles, and every one of those wants the
+//   others to follow. Announcing it from the single place that records it
+//   means no two of them have to know about each other.
 //
 // =============================================================================
 
@@ -82,9 +99,18 @@
     // MODULE CONSTANTS | JSON Section and Record Key Names
     // ------------------------------------------------------------
     const Na__VideoStudio__SECTION_KEY     = 'VideoStudio__Config';                // <-- Root block key in project.json
+    const Na__VideoStudio__SELECTED_EVENT  = 'na-video-studio-keyframe-selected';   // <-- Fires whenever the highlighted waypoint changes
     const Na__VideoStudio__ENABLED_KEY     = 'VideoStudio__Config__Enabled';       // <-- Enabled flag key
     const Na__VideoStudio__DESCRIPTION_KEY = 'VideoStudio__Config__Description';   // <-- Human-readable block note
     const Na__VideoStudio__VIDEOS_KEY      = 'VideoStudio__Config__Videos';        // <-- Videos array key
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Model Layer Override Key Names
+    // ------------------------------------------------------------
+    const Na__VideoStudio__LAYERS_KEY            = 'VideoStudio__Video__ModelLayers';        // <-- Per-video block key
+    const Na__VideoStudio__LAYERS_ENABLED_KEY    = 'VideoStudio__ModelLayers__Enabled';      // <-- Master switch for this path
+    const Na__VideoStudio__LAYERS_VISIBILITY_KEY = 'VideoStudio__ModelLayers__Visibility';   // <-- categoryKey -> boolean
     // ------------------------------------------------------------
 
 
@@ -493,16 +519,31 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Build the Default Model Layer Override Block
+    // ------------------------------------------------------------
+    // Starts switched off with no overrides, so a new path renders whatever the
+    // Tools panel is showing until someone deliberately pins a layer state to it.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__BuildDefaultModelLayers() {
+        return {
+            [Na__VideoStudio__LAYERS_ENABLED_KEY]    : false,
+            [Na__VideoStudio__LAYERS_VISIBILITY_KEY] : {}
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build a New Empty Video Record
     // ------------------------------------------------------------
     function Na__VideoStudio__ProjectJson__BuildNewVideo(videoId, videoName, order) {
         return {
-            VideoStudio__Video__Id        : videoId,
-            VideoStudio__Video__Name      : videoName,
-            VideoStudio__Video__Order     : order,
-            VideoStudio__Video__Export    : Na__VideoStudio__ProjectJson__BuildDefaultExport(),
-            VideoStudio__Video__Playback  : Na__VideoStudio__ProjectJson__BuildDefaultPlayback(),
-            VideoStudio__Video__Keyframes : []
+            VideoStudio__Video__Id          : videoId,
+            VideoStudio__Video__Name        : videoName,
+            VideoStudio__Video__Order       : order,
+            VideoStudio__Video__Export      : Na__VideoStudio__ProjectJson__BuildDefaultExport(),
+            VideoStudio__Video__Playback    : Na__VideoStudio__ProjectJson__BuildDefaultPlayback(),
+            VideoStudio__Video__ModelLayers : Na__VideoStudio__ProjectJson__BuildDefaultModelLayers(),
+            VideoStudio__Video__Keyframes   : []
         };
     }
     // ------------------------------------------------------------
@@ -715,6 +756,34 @@
 
             // DOOR DETECTION | Null means follow the app config threshold
             doorDistanceM    : Na__VideoStudio__ClampDoorDistanceM(raw.VideoStudio__Playback__DoorDistanceM)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Read a Video's Model Layer Overrides with Defaults Applied
+    // ------------------------------------------------------------
+    // Returns { enabled, visibility } where visibility is a plain object of
+    // categoryKey -> boolean holding ONLY the categories this path has an
+    // opinion about. A category absent from the map is deliberately untouched,
+    // so a layer added to the model after this path was authored keeps whatever
+    // the Tools panel is showing rather than being force-hidden.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__GetModelLayerOptions(video) {
+        const raw = (video && video[Na__VideoStudio__LAYERS_KEY]) || {};
+        const map = raw[Na__VideoStudio__LAYERS_VISIBILITY_KEY];
+
+        const visibility = {};
+        if (map && typeof map === 'object') {
+            Object.entries(map).forEach(([categoryKey, value]) => {
+                if (typeof categoryKey !== 'string' || categoryKey === '') return;  // <-- Discard malformed keys
+                visibility[categoryKey] = (value === true);                          // <-- Anything but true reads as hidden
+            });
+        }
+
+        return {
+            enabled    : raw[Na__VideoStudio__LAYERS_ENABLED_KEY] === true,          // <-- Absent means off, so old videos are unchanged
+            visibility : visibility
         };
     }
     // ------------------------------------------------------------
@@ -1089,6 +1158,83 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Ensure a Video Carries a Model Layers Block
+    // ------------------------------------------------------------
+    // Repairs a missing or malformed block in place and returns it, so every
+    // writer below can assume the visibility map exists.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__EnsureModelLayersBlock(video) {
+        if (!video) return null;
+
+        if (!video[Na__VideoStudio__LAYERS_KEY] || typeof video[Na__VideoStudio__LAYERS_KEY] !== 'object') {
+            video[Na__VideoStudio__LAYERS_KEY] = Na__VideoStudio__ProjectJson__BuildDefaultModelLayers();
+        }
+
+        const block = video[Na__VideoStudio__LAYERS_KEY];
+
+        const map = block[Na__VideoStudio__LAYERS_VISIBILITY_KEY];
+        if (!map || typeof map !== 'object' || Array.isArray(map)) {
+            block[Na__VideoStudio__LAYERS_VISIBILITY_KEY] = {};               // <-- Repair a malformed visibility map
+        }
+
+        return block;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Switch a Video's Model Layer Overrides On or Off
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__SetModelLayersEnabled(videoId, enabled) {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        const block = Na__VideoStudio__EnsureModelLayersBlock(video);
+        if (!block) return false;
+
+        block[Na__VideoStudio__LAYERS_ENABLED_KEY] = (enabled === true);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Write One Category's Visibility on a Video
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__SetModelLayerVisibility(videoId, categoryKey, visible) {
+        if (!categoryKey || typeof categoryKey !== 'string') return false;
+
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        const block = Na__VideoStudio__EnsureModelLayersBlock(video);
+        if (!block) return false;
+
+        block[Na__VideoStudio__LAYERS_VISIBILITY_KEY][categoryKey] = (visible === true);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Replace a Video's Whole Visibility Map
+    // ------------------------------------------------------------
+    // Used by the Dev menu's Capture Current button. Categories the incoming
+    // snapshot does not mention are dropped rather than merged, because the
+    // point of a capture is that the saved state matches the view exactly.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__ReplaceModelLayerVisibility(videoId, visibilityMap) {
+        const video = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        const block = Na__VideoStudio__EnsureModelLayersBlock(video);
+        if (!block) return false;
+
+        const replacement = {};
+        if (visibilityMap && typeof visibilityMap === 'object') {
+            Object.entries(visibilityMap).forEach(([categoryKey, value]) => {
+                if (typeof categoryKey !== 'string' || categoryKey === '') return;
+                replacement[categoryKey] = (value === true);
+            });
+        }
+
+        block[Na__VideoStudio__LAYERS_VISIBILITY_KEY] = replacement;
+        return true;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -1141,8 +1287,27 @@
 
     // FUNCTION | Set the Currently Highlighted Keyframe Id
     // ------------------------------------------------------------
+    // Every route to a selection runs through here: the panel's Go To, a click
+    // on a marker in the viewport, a drag, an insertion along the path, and the
+    // timeline's own tiles.  Announcing the change from this one place is what
+    // lets the timeline highlight follow a viewport click without the two
+    // modules having to know about each other at all.
+    //
+    // Silent when nothing actually moved, so a repeated set does not churn
+    // through every listener for no reason.
+    // ------------------------------------------------------------
     function Na__VideoStudio__ProjectJson__SetActiveKeyframeId(keyframeId) {
-        Na__VideoStudio__ActiveKeyframeId = keyframeId || null;
+        const next = keyframeId || null;
+        if (next === Na__VideoStudio__ActiveKeyframeId) return;              // <-- Same waypoint; nothing to announce
+
+        Na__VideoStudio__ActiveKeyframeId = next;
+
+        window.dispatchEvent(new CustomEvent(Na__VideoStudio__SELECTED_EVENT, {
+            detail: {
+                videoId    : Na__VideoStudio__ActiveVideoId,
+                keyframeId : next
+            }
+        }));
     }
     // ------------------------------------------------------------
 
@@ -1191,6 +1356,7 @@
     // ------------------------------------------------------------
     export {
         Na__VideoStudio__SECTION_KEY,
+        Na__VideoStudio__SELECTED_EVENT,
         Na__VideoStudio__MIN_SEGMENT_MS,
         Na__VideoStudio__MAX_SEGMENT_MS,
         Na__VideoStudio__MIN_HOLD_MS,
@@ -1225,6 +1391,10 @@
         Na__VideoStudio__ProjectJson__GetKeyframeById,
         Na__VideoStudio__ProjectJson__GetExportOptions,
         Na__VideoStudio__ProjectJson__GetPlaybackOptions,
+        Na__VideoStudio__ProjectJson__GetModelLayerOptions,
+        Na__VideoStudio__ProjectJson__SetModelLayersEnabled,
+        Na__VideoStudio__ProjectJson__SetModelLayerVisibility,
+        Na__VideoStudio__ProjectJson__ReplaceModelLayerVisibility,
         Na__VideoStudio__ProjectJson__AddVideo,
         Na__VideoStudio__ProjectJson__DeleteVideo,
         Na__VideoStudio__ProjectJson__AddKeyframe,

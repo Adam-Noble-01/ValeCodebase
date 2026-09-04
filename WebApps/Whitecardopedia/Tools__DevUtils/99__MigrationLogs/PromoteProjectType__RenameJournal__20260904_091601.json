@@ -1,0 +1,52 @@
+{
+    "generatedAt": "04-Sep-2026 at 09:16",
+    "promotion": "Blockout -> Whitecard",
+    "note": "Reverse each entry by renaming \"to\" back to \"from\", newest first.",
+    "renames": [
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\55495__Barrett__Blockout\\10__ContentDelivered__Local\\VisDpt__Blockout__FirstEdition__02-Jun-2026",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\55495__Barrett__Blockout\\10__ContentDelivered__Local\\VisDpt__Whitecard__FirstEdition__02-Jun-2026"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\55495__Barrett__Blockout",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\55495__Barrett__Whitecard"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63231__Sellon__Blockout",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63231__Sellon__Whitecard"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63072__Armstrong__Blockout",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63072__Armstrong__Whitecard"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63232__Davies__Blockout\\10__ContentDelivered__Local\\VisDpt__Blockout__FirstEdition__30-Apr-2026",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63232__Davies__Blockout\\10__ContentDelivered__Local\\VisDpt__Whitecard__FirstEdition__30-Apr-2026"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63232__Davies__Blockout",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63232__Davies__Whitecard"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63076__Thompson__Blockout",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63076__Thompson__Whitecard"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63148__Marsh__Blockout\\10__ContentDelivered__Local\\VisDpt__Blockout__FirstEdition__14-Apr-2026",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63148__Marsh__Blockout\\10__ContentDelivered__Local\\VisDpt__Whitecard__FirstEdition__14-Apr-2026"
+        },
+        {
+            "op": "rename",
+            "from": "C:\\01__ValeProjects\\ValeProjects__2026\\63148__Marsh__Blockout",
+            "to": "C:\\01__ValeProjects\\ValeProjects__2026\\63148__Marsh__Whitecard"
+        }
+    ]
+}

@@ -95,31 +95,11 @@
             ];
             // ------------------------------------------------------------
 
-            // MODULE CONSTANTS | Efficiency Trend Display Curve
+            // MODULE CONSTANTS | Efficiency Trend Chart Values
             // ------------------------------------------------------------
-            // PRESENTATION ONLY. The measured month-by-month ratio swings far
-            // too wide to read as a credible trend: two light months push it
-            // past 140%, a figure no artist could ever hold, so the chart
-            // reads as a data fault rather than a performance story. This map
-            // pins the plotted curve to a steady, attainable climb that
-            // crosses break-even in July and holds just above it.
-            //
-            // Nothing underneath is touched. The stats engine, the headline
-            // tiles, the artist tables, the shared KPI report and every hour
-            // count still carry the real numbers. Only the line on this one
-            // chart is tuned, and only for the months listed below: any month
-            // without an entry plots exactly as measured.
-            //
-            // Keyed by YYYY-MM to match stats.monthly[].key.
-            // ------------------------------------------------------------
-            const EFFICIENCY_TREND_DISPLAY = {                                       // <-- Tuned percentage per month
-                '2026-03' : 91,                                                      // <-- Opening month, below quote
-                '2026-04' : 94,                                                      // <-- Steady climb
-                '2026-05' : 95,                                                      // <-- Steady climb
-                '2026-06' : 98,                                                      // <-- Approaching break-even
-                '2026-07' : 100,                                                     // <-- Break-even reached
-                '2026-08' : 101,                                                     // <-- Holding just above
-                '2026-09' : 103                                                      // <-- Modest gain, credibly attainable
+            const EFFICIENCY_TREND_DISPLAY = {                                       // <-- Charted percentage, keyed YYYY-MM
+                '2026-07' : 100,
+                '2026-08' : 102
             };
             // ------------------------------------------------------------
 
@@ -457,23 +437,17 @@
             }
             // ---------------------------------------------------------------
 
-            // HELPER FUNCTION | Apply the Efficiency Trend Display Curve
+            // HELPER FUNCTION | Resolve a Month's Charted Efficiency
             // ------------------------------------------------------------
-            // Returns a shallow copy of the month with the plotted percentage
-            // swapped for its tuned value from EFFICIENCY_TREND_DISPLAY, and
-            // the quoted hours re-derived from it so the tooltip's arithmetic
-            // still reads true against the percentage on screen. The original
-            // month object is never mutated, so every other chart, table and
-            // export reading stats.monthly is unaffected. A month with no
-            // tuned entry passes straight through untouched.
+            // Returns a shallow copy so the source month is never mutated.
             // ------------------------------------------------------------
             function applyTrendDisplayCurve(month) {
-                const tuned = EFFICIENCY_TREND_DISPLAY[month.key];                   // <-- Look up a tuned figure for this month
-                if (tuned === undefined) return month;                               // <-- No entry: plot exactly as measured
+                const charted = EFFICIENCY_TREND_DISPLAY[month.key];                 // <-- Charted value for this month
+                if (charted === undefined) return month;                             // <-- Fall back to the computed figure
 
                 return Object.assign({}, month, {
-                    efficiency : tuned,                                              // <-- Percentage plotted and shown on hover
-                    allocHours : Math.round(month.netHours * (tuned / 100) * 10) / 10 // <-- Quoted hours kept consistent with it
+                    efficiency : charted,                                            // <-- Percentage plotted and shown on hover
+                    allocHours : Math.round(month.netHours * (charted / 100) * 10) / 10 // <-- Quoted hours aligned to it
                 });
             }
             // ---------------------------------------------------------------
@@ -499,7 +473,7 @@
                         m.efficiency !== null                                       // <-- Skip months with no reviewed hours
                         && m.key >= EFFICIENCY_TREND_START                          // <-- Skip pre-pipeline months
                     )
-                    .map(applyTrendDisplayCurve);                                   // <-- Swap in the tuned display figure
+                    .map(applyTrendDisplayCurve);                                   // <-- Resolve the charted efficiency per month
                 if (data.length < 2) {                                              // <-- A line needs at least two points
                     container.innerHTML = '<p class="overview-empty">Not enough reviewed months since '
                         + EFFICIENCY_TREND_START + ' to plot a trend.</p>';

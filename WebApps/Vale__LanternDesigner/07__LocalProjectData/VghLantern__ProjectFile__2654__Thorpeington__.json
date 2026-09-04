@@ -8,7 +8,7 @@
         "VghLantern__ProjectFile__Metadata__SiteAddress": "",
         "VghLantern__ProjectFile__Metadata__DocumentStatus": "Draft",
         "VghLantern__ProjectFile__Metadata__DateCreated": "01-Sep-2026 17:42:44",
-        "VghLantern__ProjectFile__Metadata__DateModified": "02-Sep-2026 08:38:28",
+        "VghLantern__ProjectFile__Metadata__DateModified": "04-Sep-2026 17:00:55",
         "VghLantern__ProjectFile__Metadata__DateIssued": "",
         "VghLantern__ProjectFile__Metadata__RevisionCode": "A",
         "VghLantern__ProjectFile__Metadata__Author": "",
@@ -35,13 +35,17 @@
     },
     "VghLantern__ProjectFile__ClientDocument": {
         "VghLantern__ProjectFile__ClientDocument__Description": "The client-facing welcome letter and this project's own terms. Standard terms live in the markdown library; only their on/off state is recorded here.",
-        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "",
-        "VghLantern__ProjectFile__ClientDocument__LetterBody": "",
-        "VghLantern__ProjectFile__ClientDocument__SignOffName": "",
-        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "",
+        "VghLantern__ProjectFile__ClientDocument__LetterSalutation": "Dear {{ClientName}}",
+        "VghLantern__ProjectFile__ClientDocument__LetterBody": "Thank you for your invitation to quote for the roof lanterns at {{ProjectAddress}}. We are grateful for the opportunity and pleased to enclose our proposal for your consideration.\n\nOur quotation covers {{LanternCount}}, and is accompanied by the drawings and the specification schedule that follow. Together these describe what we propose to manufacture and install.\n\nEvery lantern is made at our own works in Lincolnshire by joiners who build these roofs day in and day out. The drawings enclosed are produced from the same model our workshop builds from, so what you are looking at is what will be made.\n\nThe drawings are issued at quotation stage and are indicative until a site survey has been carried out and manufacturing drawings have been approved. Please check the sizes and the setting out against your own information and let us know of anything that does not agree.\n\nOur quotation is issued subject to the terms and conditions set out at the end of this document. They cover payment, access to site and the builders upstand, and we would ask you to read them in full before placing an order.\n\nWe would be glad to talk any part of this through with you. If you would like to proceed, or if you would like us to look at an alternative, please do get in touch.",
+        "VghLantern__ProjectFile__ClientDocument__SignOffName": "Adam Noble",
+        "VghLantern__ProjectFile__ClientDocument__SignOffRole": "Developer",
         "VghLantern__ProjectFile__ClientDocument__CriticalTerms": [],
         "VghLantern__ProjectFile__ClientDocument__SpecialTerms": [],
-        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {}
+        "VghLantern__ProjectFile__ClientDocument__SectionToggles": {},
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressLine1": "{{ClientAddress__Line01}}",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressStreet": "{{ClientAddress__StreetName}}",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressTownCity": "{{ClientAddress__Town/City}}",
+        "VghLantern__ProjectFile__ClientDocument__ClientAddressPostCode": "{{ClientAddress__PostCode}}"
     },
     "VghLantern__ProjectFile__Lanterns": [
         {

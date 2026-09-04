@@ -3160,14 +3160,6 @@
           "color": "na-shift-color-cyan"
         },
         {
-          "id": "new-1788253441927",
-          "date": "2026-09-04",
-          "startTime": "08:45",
-          "endTime": "15:00",
-          "title": "Mordaunt |  MaxModel",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1788339386450",
           "date": "2026-09-02",
           "startTime": "11:00",
@@ -3198,6 +3190,38 @@
           "endTime": "14:00",
           "title": "Whitecard |  Mudie",
           "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1788514293989",
+          "date": "2026-09-04",
+          "startTime": "08:00",
+          "endTime": "09:00",
+          "title": "Admin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1788253441927",
+          "date": "2026-09-04",
+          "startTime": "11:30",
+          "endTime": "12:00",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1788520002278",
+          "date": "2026-09-04",
+          "startTime": "12:15",
+          "endTime": "17:00",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1788535569462",
+          "date": "2026-09-05",
+          "startTime": "13:00",
+          "endTime": "18:30",
+          "title": "R&D |  Photogrammetry Test",
+          "color": "na-shift-color-indigo"
         }
       ]
     }

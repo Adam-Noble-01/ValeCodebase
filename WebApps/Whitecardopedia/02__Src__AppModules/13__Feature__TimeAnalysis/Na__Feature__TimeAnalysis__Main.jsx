@@ -98,8 +98,8 @@
             // MODULE CONSTANTS | Efficiency Trend Chart Values
             // ------------------------------------------------------------
             const EFFICIENCY_TREND_DISPLAY = {                                       // <-- Charted percentage, keyed YYYY-MM
-                '2026-07' : 100,
-                '2026-08' : 102
+                '2026-07' : 97,
+                '2026-08' : 100
             };
             // ------------------------------------------------------------
 

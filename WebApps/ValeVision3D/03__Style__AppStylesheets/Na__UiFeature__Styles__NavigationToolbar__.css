@@ -40,6 +40,12 @@
         box-shadow                         : 0 4px 16px rgba(0, 0, 0, 0.14);  /* <-- Subtle floating shadow */
         z-index                            : 1002;                  /* <-- Above canvas, below toast/modals */
     }
+
+    /* DRAWING MODE | Hidden while a 2D drawing owns the viewport (port Phase 2) */
+    /* ------------------------------------------------------------ */
+    .na-nav-toolbar.na-nav-toolbar--drawing-hidden {
+        display                            : none;
+    }
     /* ------------------------------------------------------------ */
 
 /* endregion ------------------------------------------------------------------- */

@@ -38,6 +38,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Drawing approach flag (port Phase 2)
+// - na-pm-scene-activated now carries isDrawingApproach so per-scene bindings
+// - can ignore the synthetic pose a floor plan or elevation flies to.
+//
 // 11-Jun-2026 - Version 1.0.0
 // - Initial implementation for Presentation Mode system.
 //
@@ -343,8 +347,9 @@
     function Na__PresentationMode__Camera__DispatchSceneActivated(scene) {
         window.dispatchEvent(new CustomEvent('na-pm-scene-activated', {
             detail: {
-                sceneName : scene.PresentationMode__Scene__Name || null,
-                sceneId   : scene.PresentationMode__Scene__Id   || null
+                sceneName         : scene.PresentationMode__Scene__Name || null,
+                sceneId           : scene.PresentationMode__Scene__Id   || null,
+                isDrawingApproach : scene.PresentationMode__Scene__IsDrawingApproach === true   // <-- Synthetic pose of a 2D drawing flight (port Phase 2)
             }
         }));
     }

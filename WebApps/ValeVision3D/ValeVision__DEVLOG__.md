@@ -2,6 +2,300 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.19.0 - 09-Sep-2026 - Elevations and Sections (Port Phase 3)
+
+### Overview
+Elevations and sections as drawing pages. An elevation is the building seen
+head-on through an orthographic camera from a chosen compass bearing; a section
+is the same drawing with a vertical cut applied through the existing Cross
+Sections tool. Both are authored from a new Elevations panel in the Dev menu,
+filed into the Elevations or Cross Sections scene group by drawing type (D28),
+and carry the same annotations, dimensions and style toggles as the floor
+plans. Ported from TrueVision's elevation folder onto the Phase 2 seams, with
+face picking and a draggable plane gizmo added as the plan decided (D16). Every
+plan cut and section drawing now uses the Doous section look, dark grey poche
+and profile, in place of the tool's light default.
+
+### Added
+- **46__System__ElevationViews.** Config, ortho camera, framing and plane
+  gizmo ported verbatim (the config gains the section group, face pick and
+  grip setups; the gizmo an additive face mesh export). The data module
+  reads the drawings block and carries styles, exclusions, the linework slot
+  and where a record was seeded from. Scene link files a section into Cross
+  Sections and an elevation into Elevations, and moves the card when the
+  type changes. The mode controller and Dev panel are adapted to the
+  section adapter, presets and shared transitions. New: **Pick Face** (a new
+  elevation aimed at a clicked wall) and **Re-pick** (an existing row) using
+  the legacy elevation tool's raycast rules, and the **gizmo grip**, a drag
+  along the plane's normal with a throttled recut in section mode and an
+  exact recut on release; the sliders remain the precise path and show
+  where a drag landed. Seed N / E / S / W and Save Thumbnail as in
+  TrueVision; the row also carries the shared style toggles and the
+  exclusion field.
+- **Na__DrawView__ConfigState__.js** (42). One reader for the drawing
+  config: main config over system JSON over built-in fallbacks. Carries the
+  section appearance the adapter applies, the Doous dark grey fill and line
+  at 2 px (`DrawingView__Config__Section*` in Na__AppConfig__Main.json
+  overrides it).
+- **Na__DrawView__StyleRows__.js** (42). The four style toggles and the
+  exclusion field, built once for plans and elevations from record
+  accessors.
+
+### Changed
+- **Section adapter.** Applies the drawing colours while the live tool is
+  parked (the tool's own colours come back with its sections); new
+  SuspendLiveTool holds the tool parked with or without a plane, so a plain
+  elevation shows the building whole with the author's sections out of the
+  way and a flip between a section and a plain elevation does not rebuild
+  them in between; new Release hands the tool back. Plane name prefix read
+  from config.
+- **Composer and material presets** read through the config state instead
+  of fetching or receiving config themselves.
+- **Floor plan row builders** use the shared style rows; the **floor plan
+  mode controller** holds the tool on entry and releases it on exit,
+  matching the elevation controller.
+- **index.html** gains the Elevations dev section, the config state
+  bootstrap and the elevation initialisation block (gizmo, face pick, grip,
+  mode controller, Dev panel). **Loading sequence** hands resize to the
+  elevation controller. **CSS index** imports the elevation sheet.
+  **Na__DrawView__AppConfig__.json** and **Na__AppConfig__Main.json** carry
+  the section colour keys.
+
+### Before testing
+- Purge the shared service worker on localhost (token 2026-09-09-3).
+- The Phase 2 worker deploy and Flask restart still apply if not yet done
+  (Save Thumbnail uses the asset route).
+- The hand-over test list is section 9.3 of the plan document.
+
+### Note
+- Not run in a browser. Every module passes a syntax check, every import
+  resolves to an export, and the verbatim ports are line-for-line against
+  TrueVision.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.18.0 - 09-Sep-2026 - Drawing Substrate, Floor Plans, Annotations, Dimensions, Client Measuring (Port Phase 2)
+
+### Overview
+The first 2D drawings. A floor plan is a section cut at a chosen height seen
+through a top-down orthographic camera, authored from a new Floor Plans panel in
+the Dev menu, filed into the Floor Plans scene group as a carousel card, and
+carried into the drawing with its own annotations and dimensions. Ported from
+TrueVision v2.19.0 across four new module folders, with the drawing render and
+cut engine seams re-plumbed onto ValeVision's own composer and Cross Sections
+tool as the plan decided (D07, D12).
+
+### Added
+- **42__System__DrawingViewCore.** The seam every 2D drawing shares.
+  Ported: the active view broker (ActiveView), the shared pan and zoom
+  (Navigation), the markup mount order (MarkupMount), the focus arbiter
+  (MarkupFocus, relocated here from the TrueVision floor plan folder) and the
+  scene link row. New: the section adapter driving the existing Cross
+  Sections tool as the cut engine, the composer preset (RenderPass camera
+  swap, fog and AO off, paper background, ortho-aware profile pre-pass at a
+  fixed width), the reversible material preset (Glass Transparency Off,
+  Whitecard under MaxEngine), the drawings project data owner and the shared
+  transitions (suspend 3D, fly, register with the carousel).
+- **43__System__FloorPlanViews.** Config, ortho camera, framing and scene
+  link ported verbatim; the data module reads the drawings block and carries
+  the four style toggles, the exclusion list and the linework asset slot; the
+  mode controller and Dev panel adapted to the seams. Add Ground Floor Plan
+  is the one-click start; Seed From Model Storeys degrades to its message.
+- **44__System__PlanAnnotations** and **45__System__PlanDimensions.** Ported
+  near-verbatim, twenty-one files. The dimension data module is split into a
+  record layer and a config layer, and the dimension editor's rubber-band
+  preview moved to its own module, so every file stays inside the line
+  budget. Client measuring (red, ephemeral, behind the disclaimer) ships with
+  them, gated by the Let clients measure toggle on the Floor Plans panel.
+- **Na__AppUtils__R2AssetUpload__.js** and **Na__AppUtils__SnapshotHistory__.js.**
+  The binary asset twin of the R2 save utility (worker first, Flask mirror),
+  and the ported undo snapshot stack.
+- **Worker asset route.** `POST /api/editor/projects/{folderId}/assets` in
+  `CloudflareHandler__ProjectAsset__.js`, path-guarded to thumbnails, baked
+  linework and snapshots; bumps the build manifest like a project save. Flask
+  mirror at `/api/projects/<folder_id>/assets`.
+- **Data.** New top-level project.json block `LayoutEditor__DrawingsData`
+  (floor plans, elevations, sheets, the client measuring grant). Scene links
+  stay on the scene inside the presentation block.
+
+### Changed
+- **Cross Sections tool.** Three additive exports (GetSectionById,
+  SetSectionPositionMm, ReapplyClipping) and the scene data listener skips
+  the synthetic approach scene a drawing flies to, so the drawing cut is not
+  cleared mid-flight.
+- **Scene transition** forwards isDrawingApproach on na-pm-scene-activated.
+- **Thumbnail renderer** takes a frame renderer from the composer preset so a
+  captured card is the drawing as shown; the 3D path now draws the section
+  overlay into the frame; CaptureAndUpload writes through the asset route.
+- **Loading sequence** dispatches na-layouteditor-drawingsdata-loaded, runs a
+  2D drawing branch ahead of the 3D per-frame work, and hands resize to the
+  floor plan controller. **index.html** gains the Floor Plans dev section and
+  the drawing initialisation block. **Na__AppConfig__Main.json** gains the
+  Drawing2d profile keys, DrawingView__Config, ProjectedLinework__Config and
+  LayoutEditor__Config. The hotkey dictionary documents the contextual markup
+  keys in the advanced fold. The navigation pill hides while a drawing is up.
+  Add Scene From Camera refuses while a drawing owns the viewport and
+  drawing scenes lose their Update Camera button.
+
+### Before testing
+- Deploy the worker (`CloudflareWorker/Deploy__Worker.bat`) for the asset
+  route and restart Flask for the mirror endpoint; without them Save
+  Thumbnail fails with a red toast and everything else still works.
+- Purge the shared service worker on localhost (token 2026-09-09-2).
+- The hand-over test list is section 8.8 of the plan document.
+
+### Note
+- Not run in a browser. Every module passes a syntax check, every import
+  resolves to an export, and the ports are line-for-line against TrueVision.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.17.0 - 09-Sep-2026 - Presentation Mode Scene Groups (Port Phase 1)
+
+### Overview
+Saved scenes can now be split into named groups (Exterior 3D Views, Interior
+3D Views, Dollhouse View, Floor Plans, Elevations, Cross Sections, or whatever
+a job needs). The carousel shows one group at a time and a small pill above its
+top-left corner names the group, counts its views and opens the list. Ported
+from TrueVision v2.11.0 with the router hook from v2.18.0, so the floor plan
+and elevation systems that follow in the next phases can take over a scene
+card the moment they register. Naming stays Na__ throughout: ported files keep
+their TrueVision names so the two trees diff cleanly (plan decision D04 as
+corrected on 09-Sep-2026).
+
+### Added
+- **Na__PresentationMode__SceneGroups__Data__.js v1.0.0.** Pure data layer:
+  reads and validates the groups array, resolves every scene to exactly one
+  enabled group (fallback to the first enabled group, so nothing can vanish),
+  sorts into (Group Order, Scene Order) playback order, renumbers Scene Order
+  1..N inside each group, and steps across group boundaries. Verbatim port.
+- **Na__PresentationMode__SceneGroups__AppConfig__.json.** Behaviour flags,
+  labels, Dev menu wording and the default group set. Six groups, only the
+  first enabled: the five TrueVision defaults plus Cross Sections.
+- **Na__PresentationMode__UI__SceneGroupSelector__.js v1.0.0.** The pill and
+  its upward-opening list. Mounts inside #naPresentationCarousel so it shows
+  and hides with the strip; choosing a group re-aims the strip without moving
+  the camera. Verbatim port.
+- **Na__PresentationMode__DevMenu__GroupEditor__.js v1.0.0.** Collapsible
+  Scene Groups section at the top of the Presentation Scenes panel: enable,
+  rename, count, reorder, delete, Add Group. Seeds the default set in memory
+  only; never saves for itself, it raises na-presentation-groups-changed and
+  the scene editor writes. Prompts use the ValeVision confirm dialog.
+- **Na__PresentationMode__DevMenu__SceneRowBuilders__.js v1.0.0.** The scene
+  row moved out of the editor: drag handle, position title, move arrows, Name,
+  Group dropdown (enabled groups only), FOV, Move Speed, Easing, Position and
+  the four action buttons.
+- **Na__PresentationMode__DevMenu__SceneReorder__.js v1.0.0.** Per-group
+  array moves (slice bounds, clamped move, drop index) and the native drag and
+  drop wiring, taking the scenes array and config as arguments.
+- **Na__PresentationMode__DevMenu__ScenePersistence__.js v1.0.0.** The
+  editor's two writes moved out unchanged: the GET-merge plus R2-first
+  project.json save and the Flask thumbnail upload.
+- **Na__PresentationMode__Styles__SceneGroupSelector__.css.** Pill, list,
+  empty-group message, Dev group section, group headings and the row controls
+  the port brought across (drag handle, reorder buttons, drop indicators).
+
+### Changed
+- **Na__PresentationMode__ProjectJson__SceneData.js v1.2.0.** GetSortedScenes
+  and GetDefaultScene use the group-aware playback order; an ungrouped project
+  sorts exactly as before. New GetActiveProjectCode and BroadcastScenesChanged.
+- **Na__PresentationMode__UI__SceneCarousel.js v1.2.0.** Shows the active
+  group only, keeps the bar standing when it rebuilds, shows a message for an
+  empty group, steps across groups with the chevrons (three documented cases,
+  including entering a group at its edge after a dropdown re-aim), and routes
+  every navigation through one path that first offers the scene to any
+  registered router (Na__PresentationMode__UI__AddSceneNavigationRouter).
+- **Na__PresentationMode__DevMenu__SceneEditor.js v1.3.0.** Rows clustered
+  under fold-down group headings (folded by default, open state remembered
+  across rebuilds), reordering confined to a scene's own group by arrows, drag
+  handle or Position field, the Group dropdown as the only way between
+  groups, new scenes filed into the group the carousel shows, and one
+  mutation tail (renumber, commit, save, rebuild) for every row action.
+- **index.html.** Imports the selector and initialises it directly after the
+  carousel. **Na__CoreUi__Styles__Index__.css** imports the new sheet after
+  the carousel sheet.
+
+### Where the data lives
+- Groups nest inside PresentationMode__SavedCameraScenes under __Groups, with
+  a per-scene PresentationMode__Scene__GroupId (plan decision D08). The
+  Whitecardopedia sync only patches its own keys inside that block, so groups
+  survive a SketchUp re-sync, and the existing Save All path already writes
+  the whole block. A project whose scenes were auto-built from SketchUp camera
+  data gets its explicit scenes block materialised on the first group save.
+- Scene Order restarts at 1 inside each group. A project with no __Groups
+  array reads as ungrouped: no bar, flat order, byte-identical behaviour.
+
+### Note
+- Not run in a browser. Every new module passes a syntax check and the port is
+  line-for-line against TrueVision, but the pill, the dropdown, the reorder
+  paths and the save round trip have not been exercised on a live project.
+  Purge the shared service worker on localhost before testing.
+- ValeVision__PARITY__TrueVisionLedger__.md created in the ValeVision root and
+  seeded with the Phase 0 and Phase 1 module pairs.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.16.0 - 09-Sep-2026 - Three r184 Version-Locked Library Set (Port Phase 0)
+
+### Overview
+First step of the TrueVision drawing systems port and the Layout Editor, planned in
+ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md (decisions D01 to D40). The
+projected linework engine that the plans, elevations and sheets will draw with was
+built in the Lantern Designer against three r184 with three-mesh-bvh and
+three-edge-projection as one locked set, so ValeVision moves to that same set
+first. Every later phase is then built and tested on the final libraries rather
+than on a build that would have to change under it.
+
+### Added
+- **04__Lib__ThirdParty__VersionLocked/.** Byte-identical copies of the Lantern
+  Designer vendor folders 01 (three 0.184.0, full build and addons tree), 02
+  (three-mesh-bvh 0.9.9) and 04 (three-edge-projection 0.0.10 at f794481), plus
+  Vale__Dependencies__ImportMap__Index__.json as the path SSOT and a README. The
+  folder numbering is kept so the two apps read as one set; 03 (clipper2-js) is
+  not needed here and is not copied. jsPDF stays where it was.
+- **ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md.** The plan for the whole
+  port: scope, decisions, source maps, naming discipline, the project.json data
+  model, six phases with hand-over test lists, the risk register and the file
+  map that seeds the parity ledger.
+
+### Changed
+- **index.html.** The import map now targets the version-locked set and carries
+  the same keys as the Lantern Designer (three, three/addons/, three/webgpu,
+  three/tsl, three-mesh-bvh and three-edge-projection, with their worker and
+  webgpu variants), so the projected linework modules port without edits.
+- **Shared PWA service worker** (Whitecardopedia__Pwa__ServiceWorker__Logic__.js
+  v1.0.4 and the live_sw.js copy). Shell precache paths repointed to the new
+  folder, three.core.js added because the r184 module build imports it, and
+  PWA_SW_VERSION_TOKEN bumped to 2026-09-09-1 so warm caches do not serve the
+  old module graph beside the new import map.
+
+### What was checked against the r184 sources
+- Logarithmic depth is unchanged in behaviour: the fragment chunk still writes
+  gl_FragDepth = log2(1 + w) / log2(far + 1), so the fog and SSAO inversion
+  pow(far + 1, depth) - 1 still holds and the fat-line depth bias patch still
+  finds #include <logdepthbuf_fragment> in LineMaterial. The chunks moved from
+  three.core.js into three.module.js and the internal define was renamed to
+  USE_LOGARITHMIC_DEPTH_BUFFER, which no ValeVision shader references.
+- WebGLMultipleRenderTargets no longer exists; ValeVision never used it. The
+  synchronous readRenderTargetPixels the Export Render Layers passes rely on
+  still exists.
+- OrbitControls now extends the Controls base class and connects itself to the
+  element passed to its constructor; enabled, target, update, dispose and
+  listenToKeyEvents are unchanged, so the orbit, walk and fly hand-offs need no
+  edit.
+- FXAAShader keeps the resolution uniform as one over the pixel size, so both
+  engine setups are untouched, but the filter itself was rewritten upstream
+  after r160 and edge softness may read slightly differently.
+- EffectComposer, RenderPass, ShaderPass, Pass and FullScreenQuad, MaskPass,
+  CopyShader, GLTFLoader, RGBELoader, BufferGeometryUtils and the fat-line
+  modules are all present at the same addon paths.
+
+### Note
+- 04__Lib__ThirdParty__Three is retained, unused, until the Phase 0 checklist in
+  the plan (section 6.3) has been run on a live project. Delete it after that.
+- On localhost purge the shared service worker before testing; the token bump
+  evicts warm caches on the live site by itself.
+- Nothing here has been run in a browser. The checks above were made against the
+  vendored sources, not against a rendered frame.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.15.0 - 02-Sep-2026 - Video Studio: Keyframe Timeline Replaces the Transport Slider
 
 ### Overview

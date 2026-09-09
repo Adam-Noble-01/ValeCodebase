@@ -60,7 +60,12 @@
         "RenderEffect__ProfileLines__EdgeWidthMin"         : 0.15,
         "RenderEffect__ProfileLines__EdgeWidthMax"         : 0.40,
         "RenderEffect__ProfileLines__EdgeWidthDistanceNear": 1.0,
-        "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0
+        "RenderEffect__ProfileLines__EdgeWidthDistanceFar" : 80.0,
+        "RenderEffect__ProfileLines__Drawing2dDescription"   : "Profile lines on 2D drawings (floor plans, elevations, sections). Rendered through the ortho-aware pre-pass at a fixed width; null colour and threshold fall back to the 3D values above.",
+        "RenderEffect__ProfileLines__Drawing2dEnabled"       : true,
+        "RenderEffect__ProfileLines__Drawing2dEdgeColor"     : null,
+        "RenderEffect__ProfileLines__Drawing2dEdgeThresholdNormal": null,
+        "RenderEffect__ProfileLines__Drawing2dEdgeWidth"     : 1.0
     },
     "RenderEngine__Config": {
         "RenderEngine__Config__Description"                : "Dual render engine system. PureEngine = original lightweight whitecard pipeline (ALWAYS the default). MaxEngine = full PBR + SSAO pipeline ported from TrueVision (per-model opt-in). Per-model overrides live in project.json under the same key; this global default applies when project.json has no RenderEngine__Config.",
@@ -343,6 +348,26 @@
         "LoadResilience__Config__GlbConcurrencyCap"     : 3,
         "LoadResilience__Config__WatchdogBudgetMs"      : 120000,
         "LoadResilience__Config__WatchdogStallThresholdMs" : 30000
+    },
+
+    "DrawingView__Config": {
+        "DrawingView__Config__Description"       : "Shared by every 2D drawing (floor plans, elevations, sections). The paper colour behind a drawing, the section cap fill and profile line the drawing cut is drawn with (the Doous look), and the flight timings into and out of a drawing. System-owned defaults live in 42__System__DrawingViewCore/Na__DrawView__AppConfig__.json.",
+        "DrawingView__Config__BackgroundColour"  : "#ffffff",
+        "DrawingView__Config__SectionFillColour" : "#505050",
+        "DrawingView__Config__SectionLineColour" : "#505050",
+        "DrawingView__Config__SectionLineWidthPx": 2,
+        "DrawingView__Config__TransitionIntoMs"  : 1400,
+        "DrawingView__Config__TransitionOutOfMs" : 1400
+    },
+
+    "ProjectedLinework__Config": {
+        "ProjectedLinework__Config__Description"                  : "Projected linework on drawings (port Phase 4). Category tokens matched against model group names are left out of the projection unless a drawing record overrides the list.",
+        "ProjectedLinework__Config__Exclusions__DefaultCategoryTokens": ["Planting", "Trees", "People", "Vehicles", "Furniture", "Decor"]
+    },
+
+    "LayoutEditor__Config": {
+        "LayoutEditor__Config__Description"   : "Layout Editor (port Phase 5). Drawing tabs are visible to everyone; authoring is localhost-only and the web build is read-only.",
+        "LayoutEditor__Config__ReadOnlyOnWeb" : true
     }
 }
 

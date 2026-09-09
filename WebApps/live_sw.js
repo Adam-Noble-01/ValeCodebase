@@ -26,6 +26,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.0.4
+// - Token bumped again (2026-09-09-3) for the ValeVision port Phase 3 shell edits (index.html, CSS index).
+// - Token bumped again (2026-09-09-2) for the ValeVision port Phase 2 shell edits (index.html, CSS index).
+// - PWA_SW_VERSION_TOKEN bumped to 2026-09-09-1 (ValeVision3D v2.16.0: three r184
+//   version-locked vendor set; import map and shell precache paths moved from
+//   04__Lib__ThirdParty__Three to 04__Lib__ThirdParty__VersionLocked, and
+//   three.core.js added to the precache because three.module.js now imports it).
+//
 // 01-Jul-2026 - Version 1.3.0
 // - PWA_SW_VERSION_TOKEN bumped to 2026-07-01-1 (force shell cache eviction after
 //   the gallery filter drawer responsive reflow fix; ensures the corrected
@@ -50,7 +58,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-07-01-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
+    const PWA_SW_VERSION_TOKEN              = '2026-09-09-3';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy)
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -103,23 +111,25 @@
         // VALEVISION3D HDRI ENVIRONMENT (MaxEngine reflections — optimised 1024p, 1.46 MB)
         'ValeVision3D/01__AppAssets__ValeVision/05__AppAssets__SkyDomes/HdriSkydome__RuralLandscape__AutumnField__SunnyDay__OptimisedVersion__1024p__.hdr',
         // VALEVISION3D VENDORED THREE.JS (full dependency graph — every relative import must be present)
-        'ValeVision3D/04__Lib__ThirdParty__Three/three.module.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/controls/OrbitControls.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/lines/Line2.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/lines/LineGeometry.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/lines/LineMaterial.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/lines/LineSegments2.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/lines/LineSegmentsGeometry.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/loaders/GLTFLoader.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/loaders/RGBELoader.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/EffectComposer.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/MaskPass.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/Pass.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/RenderPass.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/postprocessing/ShaderPass.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/shaders/CopyShader.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/shaders/FXAAShader.js',
-        'ValeVision3D/04__Lib__ThirdParty__Three/examples/jsm/utils/BufferGeometryUtils.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js',
+
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.core.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/controls/OrbitControls.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/lines/Line2.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/lines/LineGeometry.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/lines/LineMaterial.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/lines/LineSegments2.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/lines/LineSegmentsGeometry.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/loaders/GLTFLoader.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/loaders/RGBELoader.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/postprocessing/EffectComposer.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/postprocessing/MaskPass.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/postprocessing/Pass.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/postprocessing/RenderPass.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/postprocessing/ShaderPass.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/shaders/CopyShader.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/shaders/FXAAShader.js',
+        'ValeVision3D/04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/utils/BufferGeometryUtils.js',
         // VALEVISION3D STYLESHEETS
         'ValeVision3D/03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css',
         'ValeVision3D/03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css',

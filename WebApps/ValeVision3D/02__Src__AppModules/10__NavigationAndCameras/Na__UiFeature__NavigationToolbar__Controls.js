@@ -38,6 +38,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Drawing mode visibility (port Phase 2)
+// - The pill hides from the start of a floor plan or elevation transition and
+// - returns on exit, so it never sits under the drawing markup toolbar.
+//
 // 10-Jun-2026 - Version 1.0.0
 // - Initial implementation. Supersedes the Tools-menu "Navigation Mode"
 //   section from Na__UiFeature__NavigationModes__Controls.js (retired).
@@ -259,6 +263,26 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Drawing Mode Visibility (port Phase 2)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Hide the Pill While a 2D Drawing Owns the Viewport
+    // ------------------------------------------------------------
+    // The annotation toolbar lands where this pill sits. The drawing systems
+    // raise their mode event from the start of the transition, so the pill is
+    // gone before the markup arrives and back the moment 3D returns.
+    // ------------------------------------------------------------
+    function Na__NavToolbar__SetHiddenForDrawing(hidden) {
+        const container = document.getElementById(Na__NavToolbar__ContainerId);
+        if (!container) return;
+        container.classList.toggle('na-nav-toolbar--drawing-hidden', hidden === true);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Initialization
 // -----------------------------------------------------------------------------
 
@@ -299,6 +323,15 @@
                 modes.Navmode__EnabledModes__Fly  !== false                  // <-- Fly enabled unless project.json says false
             );
         }, { once: true });
+
+        // HIDE WHILE A 2D DRAWING IS ON SCREEN (or flying to one)
+        // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+        const Na__NavToolbar__OnDrawingMode = (event) => {
+            const detail = event.detail || {};
+            Na__NavToolbar__SetHiddenForDrawing(Boolean(detail.state) && detail.state !== 'idle');
+        };
+        window.addEventListener('na-floorplan-mode-changed', Na__NavToolbar__OnDrawingMode);
+        window.addEventListener('na-elevation-mode-changed', Na__NavToolbar__OnDrawingMode);
     }
     // ------------------------------------------------------------
 

@@ -40,6 +40,7 @@
 # =============================================================================
 
 import os
+import re
 import sys
 import json
 import shutil
@@ -709,6 +710,45 @@ def save_presentation_thumbnail(folder_id, scene_id):
             'success' : True,
             'url'     : rel_url,
             'message' : f'Thumbnail saved: {rel_url}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Save Project Asset (thumbnail, baked linework, snapshot)
+# ------------------------------------------------------------
+# Local mirror of the worker asset route. Receives multipart/form-data with
+# a 'path' field (relative to the project folder) and a 'file' field, writes
+# the file under Projects/{folder_id}/{path} and returns the relative path.
+# The path is guarded to the same three asset folders the worker accepts.
+# ------------------------------------------------------------
+ASSET_PATH_GUARD = re.compile(r'^(PresentationMode/Thumbnails|LayoutEditor/(Linework|Snapshots))/[A-Za-z0-9_.-]+\.(webp|png|json)$')
+
+@app.route('/api/projects/<path:folder_id>/assets', methods=['POST'])
+def save_project_asset(folder_id):
+    """Save one binary asset into the project folder (local mirror of the R2 asset route)"""
+    try:
+        rel_path   = (request.form.get('path') or '').strip()
+        asset_file = request.files.get('file')
+        if not asset_file:
+            return jsonify({'error': 'No asset file provided'}), 400
+        if not ASSET_PATH_GUARD.match(rel_path):
+            return jsonify({'error': f'Asset path not allowed: {rel_path}'}), 400
+
+        project_path = get_project_path(folder_id)                           # <-- Resolve project directory
+        if not os.path.exists(project_path):
+            return jsonify({'error': f'Project folder not found: {folder_id}'}), 404
+
+        dest_path = os.path.join(project_path, *rel_path.split('/'))
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)               # <-- Create dirs if missing
+        asset_file.save(dest_path)                                           # <-- Write file to disk
+
+        return jsonify({
+            'success' : True,
+            'path'    : rel_path,
+            'message' : f'Asset saved: {rel_path}'
         })
 
     except Exception as e:

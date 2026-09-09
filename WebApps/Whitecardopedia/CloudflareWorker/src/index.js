@@ -16,6 +16,7 @@
 // - Routes POST /api/editor/projects/{folderId}/visibility to the ProjectVisibility handler
 // - Routes POST /api/editor/projects/{folderId}/rename to the ProjectRename handler
 // - Routes POST /api/editor/projects/{folderId}/delete to the ProjectDelete handler
+// - Routes POST /api/editor/projects/{folderId}/assets to the ProjectAsset handler (binary assets)
 // - GET /api/editor/health returns a simple health-check response
 //
 // ENVIRONMENT SECRETS (set via wrangler secret put):
@@ -25,6 +26,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.4.0
+// - Added POST /api/editor/projects/{folderId}/assets (binary asset upload
+// - for the ValeVision drawing systems, port Phase 2).
+//
 // 08-Jul-2026 - Version 1.3.0
 // - Added POST /api/editor/projects/{folderId}/delete (permanent R2 + index +
 //   config removal, with a re-list verification step in the response).
@@ -47,12 +52,14 @@
 // @delegate: ./handlers/CloudflareHandler__ProjectVisibility__.js
 // @delegate: ./handlers/CloudflareHandler__ProjectRename__.js
 // @delegate: ./handlers/CloudflareHandler__ProjectDelete__.js
+// @delegate: ./handlers/CloudflareHandler__ProjectAsset__.js
 // @delegate: ./CloudflareHelper__Cors__.js
 
 import { Na__CloudflareHandler__ProjectEditor__HandleSave } from './handlers/CloudflareHandler__ProjectEditor__.js';
 import { Na__CloudflareHandler__ProjectVisibility__HandleToggle } from './handlers/CloudflareHandler__ProjectVisibility__.js';
 import { Na__CloudflareHandler__ProjectRename__HandleRename } from './handlers/CloudflareHandler__ProjectRename__.js';
 import { Na__CloudflareHandler__ProjectDelete__HandleDelete } from './handlers/CloudflareHandler__ProjectDelete__.js';
+import { Na__CloudflareHandler__ProjectAsset__HandleUpload } from './handlers/CloudflareHandler__ProjectAsset__.js';
 import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
 
 // -----------------------------------------------------------------------------
@@ -164,6 +171,17 @@ import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
             if (method === 'POST' && deleteMatch) {
                 const folderId = decodeURIComponent(deleteMatch[1]);         // <-- Decode: '2026%2F63592__Name' → '2026/63592__Name'
                 return Na__CloudflareHandler__ProjectDelete__HandleDelete(request, env, folderId, requestOrigin);
+            }
+
+            // ROUTE | POST /api/editor/projects/{folderId}/assets
+            // Binary project assets (thumbnails, baked linework, snapshots)
+            // from the ValeVision drawing systems. Matched BEFORE the generic
+            // save route so the "/assets" suffix always wins.
+            const assetMatch = url.pathname.match(/^\/api\/editor\/projects\/(.+)\/assets$/);
+
+            if (method === 'POST' && assetMatch) {
+                const folderId = decodeURIComponent(assetMatch[1]);          // <-- Decode: '2026%2F3047__Doous' -> '2026/3047__Doous'
+                return Na__CloudflareHandler__ProjectAsset__HandleUpload(request, env, folderId, requestOrigin);
             }
 
             // ROUTE | POST /api/editor/projects/{folderId}

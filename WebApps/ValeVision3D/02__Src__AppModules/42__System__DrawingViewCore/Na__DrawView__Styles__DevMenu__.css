@@ -1,0 +1,58 @@
+/* ================================================================= */
+/* REGION  |  ValeVision3D - Drawing View Core Dev Menu Styles      */
+/* ================================================================= */
+/*
+ * FILE    : Na__DrawView__Styles__DevMenu__.css
+ * MODULE  : Drawing View Core - Dev Menu Shared Rows
+ * AUTHOR  : Adam Noble - Noble Architecture
+ * CREATED : 09-Sep-2026
+ *
+ * Styles the scene link row shared by the Floor Plans and Elevations Dev
+ * menu panels: the card status line and its Add to Scenes action.
+ */
+/* ================================================================= */
+/*
+ * PORT NOTE:
+ * - Ported from : TrueVision3D 02__Src__AppModules/45__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css (scene row rules)
+ * - Ported on   : 09-Sep-2026 for ValeVision3D v2.18.0 (port Phase 2)
+ * - Parity      : verbatim (relocated to the drawing core so Phase 2 has them before the elevation sheet exists)
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Scene Link Row                                         */
+/* ----------------------------------------------------------------- */
+
+.na-draw-dev__scene-row {
+    display                            : flex;
+    align-items                        : center;
+    justify-content                    : space-between;
+    gap                                : 8px;
+    margin-top                         : 4px;
+    padding-top                        : 7px;
+    border-top                         : 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+.na-draw-dev__scene-status {
+    flex                               : 1 1 auto;
+    min-width                          : 0;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+    font-family                        : ui-monospace, 'Cascadia Mono', 'Consolas', monospace;
+    font-size                          : 11px;
+}
+
+/* Linked is the ordinary state, so it is quiet. */
+.na-draw-dev__scene-status--linked {
+    color                              : #4a4a4a;
+}
+
+/* Missing is not an error, but it does mean nobody can reach the
+   drawing - so it is coloured to be noticed rather than skimmed. */
+.na-draw-dev__scene-status--missing {
+    color                              : #b1560f;
+    font-weight                        : 600;
+}
+
+/* endregion ------------------------------------------------------- */

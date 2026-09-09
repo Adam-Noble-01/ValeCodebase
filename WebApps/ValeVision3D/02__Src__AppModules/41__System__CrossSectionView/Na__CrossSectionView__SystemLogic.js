@@ -35,6 +35,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Drawing adapter exports (port Phase 2)
+// - Additive exports GetSectionById, SetSectionPositionMm and ReapplyClipping
+// - for Na__DrawView__SectionAdapter__; no existing behaviour changed.
+//
 // 14-Jul-2026 - Version 1.1.0
 // - Face-click placement (Elevation-style) replaces Plan/X/Z spawn buttons.
 // - Upright / Plan placement mode toggle.
@@ -1341,6 +1345,71 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Drawing Adapter Exports (port Phase 2)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Get a Live Section Record by Id
+    // ------------------------------------------------------------
+    // Additive export for Na__DrawView__SectionAdapter__, which names the
+    // drawing cut and checks it still exists before moving it.
+    // ------------------------------------------------------------
+    function Na__CrossSection__GetSectionById(sectionId) {
+        return Na__Sect__Sections.find((s) => s.id === sectionId) || null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Move a Section to an Absolute Position Along Its Normal (mm)
+    // ------------------------------------------------------------
+    // Exactly what the gizmo drag path does without the raycast: the plane
+    // constant moves, the back plane and transforms follow, and the caps are
+    // recomputed at the drag throttle while liveDrag is true and exactly when
+    // it is false. Clamped to the same model-bounds range as a gizmo drag.
+    // ------------------------------------------------------------
+    function Na__CrossSection__SetSectionPositionMm(sectionId, positionMm, liveDrag) {
+        const section = Na__CrossSection__GetSectionById(sectionId);
+        if (!section || !Number.isFinite(positionMm)) return false;
+
+        let newPlanePos = Na__Math__ConvertMmToUnits(positionMm);
+        newPlanePos = Math.max(section.boxMin, Math.min(section.boxMax, newPlanePos));   // <-- Clamp to model extents
+        section.plane.constant = -newPlanePos;                                   // <-- Shared plane instance: clips update everywhere
+        Na__Sect__UpdateBackPlane(section);                                      // <-- Keep slice depth locked to the primary
+        Na__Sect__UpdateSectionTransforms(section);
+
+        if (liveDrag === true) {
+            const now = performance.now();
+            if (now - Na__Sect__LastRecomputeMs >= Na__Sect__ThrottleMs()) {
+                Na__Sect__LastRecomputeMs = now;
+                Na__Sect__RecomputeSectionCaps(section);                         // <-- Throttled live caps
+            }
+        } else {
+            Na__Sect__RecomputeSectionCaps(section);                             // <-- Exact caps at the resting position
+            Na__Sect__DispatchStateChanged();
+        }
+        Na__RenderLoop__RequestRender();
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Re-Assign the Live Clip Planes to Whatever Materials the Model Holds
+    // ------------------------------------------------------------
+    // The drawing presets substitute materials after the cut is applied; the
+    // substitutes need the plane list written onto them or they render uncut.
+    // ------------------------------------------------------------
+    function Na__CrossSection__ReapplyClipping() {
+        if (!Na__Sect__Initialized) return false;
+        Na__Sect__SyncActivePlanes();
+        Na__Sect__InvalidateProfileCache();
+        Na__RenderLoop__RequestRender();
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Feature Gating and Project Config
 // -----------------------------------------------------------------------------
 
@@ -1674,7 +1743,10 @@
         Na__CrossSection__SetExportMode,
         Na__CrossSection__GetDebugInfo,
         Na__CrossSection__DebugPickAt,
-        Na__CrossSection__GetClippingDiagnostics
+        Na__CrossSection__GetClippingDiagnostics,
+        Na__CrossSection__GetSectionById,
+        Na__CrossSection__SetSectionPositionMm,
+        Na__CrossSection__ReapplyClipping
     };
     // ------------------------------------------------------------
 

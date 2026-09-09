@@ -39,6 +39,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Drawing approach scenes (port Phase 2)
+// - The scene-activated listener returns early when the synthetic approach
+// - scene of a 2D drawing flight is announced, so the drawing cut applied by
+// - Na__DrawView__SectionAdapter__ is not cleared a moment later.
+//
 // 15-Jul-2026 - Version 1.0.0
 // - Initial implementation (per-scene cross section persistence).
 //
@@ -393,6 +398,7 @@
         // SCENE ACTIVATION | Exact-swap restore when a bound scene is applied
         window.addEventListener(Na__SectSceneData__SCENE_EVENT, (event) => {
             const detail = event.detail || {};
+            if (detail.isDrawingApproach === true) return;                     // <-- A drawing flight: the drawing owns the cut (port Phase 2)
             Na__SectSceneData__RestoreForScene(detail.sceneName, detail.sceneId);
         });
 

@@ -31,10 +31,29 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.1.0 (port Phase 2)
+// - SetFrameRenderer lets the drawing composer preset render a capture the
+// - way the viewport shows it; the 3D path now draws the section overlay
+// - into the captured frame; CaptureAndUpload writes a scene thumbnail to R2
+// - through the asset route with a Flask mirror.
+//
 // 11-Jun-2026 - Version 1.0.0
 // - Initial implementation for Presentation Mode system.
 //
 // =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Section Overlay and R2 Asset Upload (port Phase 2)
+    // ------------------------------------------------------------
+    import { Na__SectionClipping__GetOverlayRenderer } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
+    import { Na__AppUtils__R2AssetUpload } from '../03__AppUtils/Na__AppUtils__R2AssetUpload__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
 
 
 // -----------------------------------------------------------------------------
@@ -60,6 +79,7 @@
     let Na__PmThumb__Scene            = null;  // <-- Three.js scene (direct render fallback)
     let Na__PmThumb__Camera           = null;  // <-- Active camera (direct render fallback)
     let Na__PmThumb__GetPipelineState = null;  // <-- () => pipeline state with composer + renderProfileNormals
+    let Na__PmThumb__FrameRenderer    = null;  // <-- Optional drawing-frame renderer registered by the composer preset (port Phase 2)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -160,11 +180,15 @@
                 ? Na__PmThumb__GetPipelineState()
                 : null;
 
-            if (pipelineState && pipelineState.composer) {
+            if (typeof Na__PmThumb__FrameRenderer === 'function' && Na__PmThumb__FrameRenderer() === true) {
+                // DRAWING FRAME | The composer preset renders the drawing exactly as the viewport shows it
+            } else if (pipelineState && pipelineState.composer) {
                 if (typeof pipelineState.renderProfileNormals === 'function') {
                     pipelineState.renderProfileNormals();                    // <-- Profile lines normals pre-pass
                 }
                 pipelineState.composer.render();                             // <-- Full post-processing pipeline
+                const drawOverlay = Na__SectionClipping__GetOverlayRenderer();
+                if (typeof drawOverlay === 'function') drawOverlay(Na__PmThumb__Camera); // <-- Cross-section caps into the same frame
             } else if (Na__PmThumb__Scene && Na__PmThumb__Camera) {
                 Na__PmThumb__Renderer.render(Na__PmThumb__Scene, Na__PmThumb__Camera); // <-- Direct render fallback
             }
@@ -183,6 +207,46 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Drawing Frame Hook and R2 Upload (port Phase 2)
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Register (or Clear) a Frame Renderer That Replaces the Composer Path
+    // ------------------------------------------------------------
+    // The drawing composer preset registers its own frame renderer while a 2D
+    // drawing owns the viewport, so a captured card shows the drawing as it is
+    // on screen. fn() returns true when it rendered; null clears the hook.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__Thumbnail__SetFrameRenderer(fn) {
+        Na__PmThumb__FrameRenderer = (typeof fn === 'function') ? fn : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Capture the Viewport and Upload It as a Scene's Thumbnail (R2-First)
+    // ------------------------------------------------------------
+    // Returns { ok, relUrl, publicUrl } or { ok: false, error }.
+    // ------------------------------------------------------------
+    async function Na__PresentationMode__Thumbnail__CaptureAndUpload(sceneId, projectCode, showToast) {
+        if (!sceneId || !projectCode) return { ok : false, error : 'missing scene id or project code' };
+
+        const blob = await Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp();
+        if (!blob) return { ok : false, error : 'render failed' };
+
+        const relUrl = 'PresentationMode/Thumbnails/' + sceneId + '.webp';
+        try {
+            const result = await Na__AppUtils__R2AssetUpload(blob, projectCode, relUrl, showToast);
+            return { ok : true, relUrl : relUrl, publicUrl : result.publicUrl || null };
+        } catch (error) {
+            console.error('[ValeVision3D] Thumbnail upload error:', error);
+            return { ok : false, error : error.message };
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
@@ -190,7 +254,9 @@
     // ------------------------------------------------------------
     export {
         Na__PresentationMode__Thumbnail__SetRenderContext,
-        Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp
+        Na__PresentationMode__Thumbnail__RenderCurrentViewportToWebp,
+        Na__PresentationMode__Thumbnail__SetFrameRenderer,
+        Na__PresentationMode__Thumbnail__CaptureAndUpload
     };
     // ------------------------------------------------------------
 

@@ -26,6 +26,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.3.0
+// - Exports na_write_build_manifest and na_format_build_date for the new
+// - CloudflareHandler__ProjectAsset__ handler.
+//
 // 08-Jul-2026 - Version 1.2.0
 // - na_write_project_json now sets cacheControl: 'no-cache, max-age=0' on the
 //   R2 object (matching the build manifest/masterConfig mirror pattern) so
@@ -260,7 +264,9 @@ import { na_build_cors_headers } from '../CloudflareHelper__Cors__.js';
     // MODULE EXPORTS | ProjectEditor Handler API
     // ------------------------------------------------------------
     export {
-        Na__CloudflareHandler__ProjectEditor__HandleSave
+        Na__CloudflareHandler__ProjectEditor__HandleSave,
+        na_write_build_manifest,                                          // <-- Shared with the asset handler
+        na_format_build_date
     };
     // ------------------------------------------------------------
 

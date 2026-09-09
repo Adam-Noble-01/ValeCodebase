@@ -76,11 +76,22 @@
     <!-- REGION  |  Three.js Import Map                                    -->
     <!-- ----------------------------------------------------------------- -->
     
+    <!-- Version-locked vendor set (three r184 + three-mesh-bvh 0.9.9 + three-edge-projection 0.0.10). -->
+    <!-- SSOT for these paths: 04__Lib__ThirdParty__VersionLocked/Vale__Dependencies__ImportMap__Index__.json -->
+    <!-- Keys match the Lantern Designer import map so the projected linework modules port unchanged. -->
     <script type="importmap">
     {
         "imports": {
-            "three": "./04__Lib__ThirdParty__Three/three.module.js",
-            "three/addons/": "./04__Lib__ThirdParty__Three/examples/jsm/"
+            "three"                        : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.module.js",
+            "three/addons/"                : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/examples/jsm/",
+            "three/webgpu"                 : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.webgpu.js",
+            "three/tsl"                    : "./04__Lib__ThirdParty__VersionLocked/01__Vendor__ThreeJs__v0.184.0/build/three.tsl.js",
+            "three-mesh-bvh"               : "./04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/index.js",
+            "three-mesh-bvh/worker"        : "./04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/workers/index.js",
+            "three-mesh-bvh/webgpu"        : "./04__Lib__ThirdParty__VersionLocked/02__Vendor__ThreeMeshBvh__v0.9.9/src/webgpu/index.js",
+            "three-edge-projection"        : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/index.js",
+            "three-edge-projection/worker" : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/index.js",
+            "three-edge-projection/webgpu" : "./04__Lib__ThirdParty__VersionLocked/04__Vendor__ThreeEdgeProjection__v0.0.10/src/webgpu/index.js"
         }
     }
     </script>
@@ -826,6 +837,34 @@
                     </div>
                 </li>
                 <!-- -------------------------------------------------------- -->
+                <!-- -------------------------------------------------------- -->
+                <!-- FLOOR PLANS (localhost dev only, port Phase 2)          -->
+                <!-- -------------------------------------------------------- -->
+                <!-- @delegate: ./02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naFloorPlanDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naFloorPlanDevToggle" aria-expanded="false">
+                        Floor Plans
+                        <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-pm-dev__panel" id="naFloorPlanDevPanel">
+                        <!-- Plan rows generated dynamically by Na__FloorPlan__DevMenu__Editor__.js -->
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
+                <!-- -------------------------------------------------------- -->
+                <!-- ELEVATIONS AND SECTIONS (localhost dev only, port Phase 3) -->
+                <!-- -------------------------------------------------------- -->
+                <!-- @delegate: ./02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naElevationDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naElevationDevToggle" aria-expanded="false">
+                        Elevations
+                        <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-pm-dev__panel" id="naElevationDevPanel">
+                        <!-- Elevation rows generated dynamically by Na__Elevation__DevMenu__Editor__.js -->
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
                 <li class="na-dropdown-menu__item">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naVisualSettingsToggle" aria-expanded="false">
                         Visual Settings
@@ -1233,14 +1272,35 @@
 
     // MODULE IMPORTS | Presentation Mode System
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js
+    // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js
     // @delegate: ./02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js
     // ------------------------------------------------------------
     import { Na__PresentationMode__UI__InitializeSceneCarousel, Na__PresentationMode__UI__ToggleSceneCarousel, Na__PresentationMode__UI__GoToNextScene, Na__PresentationMode__UI__GoToPreviousScene, Na__PresentationMode__UI__IsCarouselVisible } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js';
     import { Na__PresentationMode__DevMenu__InitializeSceneEditor } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneEditor.js';
+    import { Na__PresentationMode__UI__InitializeSceneGroupSelector } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneGroupSelector__.js';
     import { Na__PresentationMode__DevTools__InitializeCameraPathVisualizer, Na__PresentationMode__DevTools__ToggleCameraPathVisualizer } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevTools__CameraPathVisualizer.js';
     import { Na__PresentationMode__Thumbnail__SetRenderContext } from './02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js';
+
+    // MODULE IMPORTS | Drawing View Core, Floor Plans and Elevations (port Phases 2 and 3)
+    // @delegate: ./02__Src__AppModules/42__System__DrawingViewCore/
+    // @delegate: ./02__Src__AppModules/43__System__FloorPlanViews/
+    // @delegate: ./02__Src__AppModules/46__System__ElevationViews/
+    // ------------------------------------------------------------
+    import { Na__DrawCfg__SetAppConfig, Na__DrawCfg__Load } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ConfigState__.js';
+    import { Na__DrawView__ProjectData__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__DrawView__Transitions__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+    import { Na__DrawView__ComposerPreset__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
+    import { Na__DrawView__MaterialPreset__Initialize } from './02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__MaterialPreset__.js';
+    import { Na__FloorPlanMode__Initialize } from './02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+    import { Na__FloorPlan__DevMenu__Initialize } from './02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__DevMenu__Editor__.js';
+    import { Na__ElevGizmo__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__PlaneGizmo__.js';
+    import { Na__ElevPick__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__FacePick__.js';
+    import { Na__ElevGrip__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js';
+    import { Na__ElevationMode__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js';
+    import { Na__Elevation__DevMenu__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js';
+    // ------------------------------------------------------------
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Video Studio System (localhost dev only)
@@ -1955,6 +2015,9 @@
     // ------------------------------------------------------------
     Na__PresentationMode__UI__InitializeSceneCarousel(Na__Camera__Main, Na__Controls__Orbit);
 
+    Na__PresentationMode__UI__InitializeSceneGroupSelector()                    // <-- Group pill above the carousel; loads its own config and mounts inside #naPresentationCarousel
+        .catch((error) => console.warn('[ValeVision3D] Scene group selector failed to initialise.', error));
+
     Na__PresentationMode__Thumbnail__SetRenderContext(                          // <-- Register render context for WebP capture
         Na__Renderer__Main,
         Na__Scene__Main,
@@ -1969,6 +2032,53 @@
     );
 
     Na__PresentationMode__DevTools__InitializeCameraPathVisualizer(Na__Scene__Main); // <-- 3D path visualizer (localhost-only)
+
+    // DRAWING SYSTEMS | Drawings data, drawing view core presets, floor plans, elevations (port Phases 2 and 3)
+    // @delegate: ./02__Src__AppModules/42__System__DrawingViewCore/
+    // @delegate: ./02__Src__AppModules/43__System__FloorPlanViews/
+    // @delegate: ./02__Src__AppModules/46__System__ElevationViews/
+    // ------------------------------------------------------------
+    Na__DrawCfg__SetAppConfig(Na__AppConfig__Data);                             // <-- Main config overrides the system JSON
+    Na__DrawCfg__Load();                                                        // <-- Once; the presets and the adapter read through it
+    Na__DrawView__ProjectData__Initialize();                                    // <-- Listens for the drawings block from the loading sequence
+    Na__DrawView__Transitions__Initialize({ camera : Na__Camera__Main, controls : Na__Controls__Orbit });
+    Na__DrawView__ComposerPreset__Initialize({
+        renderer    : Na__Renderer__Main,
+        scene       : Na__Scene__Main,
+        camera      : Na__Camera__Main,
+        pipelineRef : Na__AppFlow__PipelineRef                                  // <-- Rebuilt on every engine switch; read lazily
+    });
+    Na__DrawView__MaterialPreset__Initialize({ modelRoot : Na__ModelGroup__Root });
+
+    Na__FloorPlanMode__Initialize({
+        camera    : Na__Camera__Main,
+        canvas    : Na__Renderer__Main.domElement,
+        modelRoot : Na__ModelGroup__Root
+    }).then((enabled) => {
+        if (!enabled) return;                                                   // <-- Feature off in config: no Dev section at all
+        Na__FloorPlan__DevMenu__Initialize({
+            modelRoot : Na__ModelGroup__Root,
+            camera    : Na__Camera__Main,
+            showToast : Na__UiFeature__ShowToast
+        });
+    });
+
+    Na__ElevGizmo__Initialize(Na__Scene__Main);                                 // <-- Setup marker for the elevation plane (localhost-only use)
+    Na__ElevPick__Initialize({ renderer : Na__Renderer__Main, camera : Na__Camera__Main, modelRoot : Na__ModelGroup__Root });
+    Na__ElevGrip__Initialize({ renderer : Na__Renderer__Main, camera : Na__Camera__Main, controls : Na__Controls__Orbit });
+    Na__ElevationMode__Initialize({
+        camera    : Na__Camera__Main,
+        canvas    : Na__Renderer__Main.domElement,
+        modelRoot : Na__ModelGroup__Root
+    }).then((enabled) => {
+        if (!enabled) return;                                                   // <-- Feature off in config: no Dev section at all
+        Na__Elevation__DevMenu__Initialize({
+            modelRoot : Na__ModelGroup__Root,
+            camera    : Na__Camera__Main,
+            showToast : Na__UiFeature__ShowToast
+        });
+    });
+    // ------------------------------------------------------------
 
     // VIDEO STUDIO | Initialize path overlay, preview playback and dev controls
     // @delegate: ./02__Src__AppModules/31__System__VideoStudio/

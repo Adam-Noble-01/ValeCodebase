@@ -50,6 +50,14 @@
 //   Same matching contract as Na__SketchUp__LoadSceneData__.js, so the
 //   explicit-scene and auto-built-scene paths resolve identically.
 //
+// 09-Sep-2026 - Version 1.2.0
+// - Scene groups (port Phase 1): GetSortedScenes and GetDefaultScene now use
+//   the group-aware playback order (Group Order, then Scene Order) through
+//   Na__PresentationMode__SceneGroups__Data__; an ungrouped project sorts
+//   exactly as before. Added GetActiveProjectCode and BroadcastScenesChanged
+//   (ported from TrueVision) for systems that change the scene set from
+//   outside the Presentation Scenes editor.
+//
 // =============================================================================
 
 
@@ -65,6 +73,15 @@
         Na__AppUtils__ResolveAssetUrl,
         Na__AppUtils__EmitFallbackToast
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Scene Group Data Layer (pure; it never imports back into this module)
+    // @delegate: ./Na__PresentationMode__SceneGroups__Data__.js
+    // ------------------------------------------------------------
+    import {
+        Na__PresentationMode__SceneGroups__IsEnabled,
+        Na__PresentationMode__SceneGroups__SortScenesForPlayback
+    } from './Na__PresentationMode__SceneGroups__Data__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -208,13 +225,30 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Sort Scenes Into Playback Order (group-aware)
+    // ------------------------------------------------------------
+    // With scene groups defined the order is (Group Order, Scene Order); the
+    // group data layer falls back to a plain Scene Order sort on an ungrouped
+    // project, so a pre-grouping project sorts exactly as it always did.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__ProjectJson__SortScenesForPlayback(scenes, config) {
+        if (!Array.isArray(scenes)) return [];
+        if (!Na__PresentationMode__SceneGroups__IsEnabled() || !config) {
+            return Na__PresentationMode__ProjectJson__SortScenesByOrder(scenes); // <-- Grouping unavailable: legacy sort
+        }
+        return Na__PresentationMode__SceneGroups__SortScenesForPlayback(scenes, config);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Get the Default Scene from the Active Config
     // ------------------------------------------------------------
     function Na__PresentationMode__ProjectJson__GetDefaultScene(config) {
         if (!config) return null;
 
-        const sorted = Na__PresentationMode__ProjectJson__SortScenesByOrder(
-            Na__PresentationMode__ProjectJson__FilterValidScenes(config[Na__PresentationMode__SCENES_KEY])
+        const sorted = Na__PresentationMode__ProjectJson__SortScenesForPlayback(
+            Na__PresentationMode__ProjectJson__FilterValidScenes(config[Na__PresentationMode__SCENES_KEY]),
+            config
         );
         if (sorted.length === 0) return null;
 
@@ -419,7 +453,43 @@
         const scenes = Na__PresentationMode__ProjectJson__FilterValidScenes(
             Na__PresentationMode__ActiveConfig[Na__PresentationMode__SCENES_KEY]
         );
-        return Na__PresentationMode__ProjectJson__SortScenesByOrder(scenes); // <-- Pre-sorted, pre-filtered
+        return Na__PresentationMode__ProjectJson__SortScenesForPlayback(scenes, Na__PresentationMode__ActiveConfig); // <-- Playback order: groups first when defined
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Project Code Registered With the Active Config
+    // ------------------------------------------------------------
+    function Na__PresentationMode__ProjectJson__GetActiveProjectCode() {
+        return Na__PresentationMode__ActiveProjectCode;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Re-Broadcast the Active Scene Set Without Moving the Camera
+    // ------------------------------------------------------------
+    // For anything that changes the scene set from OUTSIDE the Presentation
+    // Scenes editor (the drawing panels add, delete and rename scenes). The
+    // carousel keeps showing the strip it built on load, so a scene created
+    // elsewhere would otherwise stay invisible for the rest of the session.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__ProjectJson__BroadcastScenesChanged() {
+        const config = Na__PresentationMode__ActiveConfig;
+        if (!config) return;
+
+        const scenes = Na__PresentationMode__ProjectJson__FilterValidScenes(config[Na__PresentationMode__SCENES_KEY]);
+        if (scenes.length === 0) {
+            window.dispatchEvent(new CustomEvent('na-presentation-mode-scenes-cleared'));
+            return;
+        }
+
+        window.dispatchEvent(new CustomEvent('na-presentation-mode-scenes-loaded', {
+            detail : {
+                sceneConfig     : config,
+                projectCode     : Na__PresentationMode__ActiveProjectCode,
+                skipCameraApply : true                                       // <-- Refresh the strip, leave the camera alone
+            }
+        }));
     }
     // ------------------------------------------------------------
 
@@ -437,6 +507,7 @@
         Na__PresentationMode__ProjectJson__HasValidSavedScenes,
         Na__PresentationMode__ProjectJson__ShouldTrustSceneOrbitTarget,
         Na__PresentationMode__ProjectJson__SortScenesByOrder,
+        Na__PresentationMode__ProjectJson__SortScenesForPlayback,
         Na__PresentationMode__ProjectJson__GetDefaultScene,
         Na__PresentationMode__ProjectJson__GetSceneById,
         Na__PresentationMode__ProjectJson__ResolveThumbnailUrl,
@@ -446,7 +517,9 @@
         Na__PresentationMode__ProjectJson__GetActiveConfig,
         Na__PresentationMode__ProjectJson__SetActiveSceneId,
         Na__PresentationMode__ProjectJson__GetActiveSceneId,
-        Na__PresentationMode__ProjectJson__GetSortedScenes
+        Na__PresentationMode__ProjectJson__GetSortedScenes,
+        Na__PresentationMode__ProjectJson__GetActiveProjectCode,
+        Na__PresentationMode__ProjectJson__BroadcastScenesChanged
     };
     // ------------------------------------------------------------
 

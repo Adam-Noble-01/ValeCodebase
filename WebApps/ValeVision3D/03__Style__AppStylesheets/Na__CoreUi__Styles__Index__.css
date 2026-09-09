@@ -76,6 +76,18 @@
 /* ----------------------------------------------------------------- */
 @import url('Na__PresentationMode__Styles__SceneCarousel__.css');
 
+/* Presentation Mode - Scene Group Selector pill, grouped Dev rows (after the carousel sheet it extends) */
+/* ----------------------------------------------------------------- */
+@import url('../02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__Styles__SceneGroupSelector__.css');
+
+/* Drawing View Core, Floor Plans, Elevations, Plan Annotations, Plan Dimensions (port Phases 2 and 3, dependency order) */
+/* ----------------------------------------------------------------- */
+@import url('../02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__Styles__DevMenu__.css');
+@import url('../02__Src__AppModules/43__System__FloorPlanViews/Na__FloorPlan__Styles__DevMenu__.css');
+@import url('../02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css');
+@import url('../02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css');
+@import url('../02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css');
+
 /* Video Studio - Dev Tools camera path authoring panel */
 /* ----------------------------------------------------------------- */
 @import url('../02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Stylesheet__.css');

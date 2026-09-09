@@ -27,6 +27,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.2.0 (port Phase 2)
+// - Exports the memoised worker config fetch as Na__AppUtils__R2FetchWorkerConfig
+// - so the asset upload utility shares one config source.
+//
 // 26-Jun-2026 - Version 1.1.0
 // - Added green success toast after Phase 1 R2 write.
 // - Changed Phase 2 mirror failure toast to isError=true (red) — requires attention.
@@ -225,7 +229,8 @@
     // MODULE EXPORTS | R2 Save Utility API
     // ------------------------------------------------------------
     export {
-        Na__AppUtils__R2SaveProjectJson
+        Na__AppUtils__R2SaveProjectJson,
+        na_fetch_worker_config as Na__AppUtils__R2FetchWorkerConfig   // <-- Shared with Na__AppUtils__R2AssetUpload__ (port Phase 2)
     };
     // ------------------------------------------------------------
 

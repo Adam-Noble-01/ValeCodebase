@@ -98,6 +98,116 @@
             "Na__Hotkey__Advanced"    : true,
             "Na__Hotkey__Action"      : "ValeVision__FogPlane__ToggleFogAndBarrier",
             "Na__Hotkey__Description" : "Toggle fog effect and camera forcefield barrier planes"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_place_dimension",
+            "Na__Hotkey__Key"         : "D",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: start a two-click dimension (while a drawing is on screen)"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_ortho_toggle",
+            "Na__Hotkey__Key"         : "O",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: toggle ortho (axis-locked) dimension placement"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_axis_lock",
+            "Na__Hotkey__Key"         : "Arrows",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: lock the dimension to an axis while placing"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_free_axis",
+            "Na__Hotkey__Key"         : "Alt",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: hold to place a true aligned dimension"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_constrain",
+            "Na__Hotkey__Key"         : "Shift",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: hold to constrain a drag to an axis"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_undo",
+            "Na__Hotkey__Key"         : "Ctrl+Z",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: undo the focused markup layer"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_redo",
+            "Na__Hotkey__Key"         : "Ctrl+Y",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: redo the focused markup layer"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_copy_paste",
+            "Na__Hotkey__Key"         : "Ctrl+C / Ctrl+V",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: copy and paste the selected annotation"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_delete",
+            "Na__Hotkey__Key"         : "Delete",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: delete the selected annotation or dimension"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "drawing_markup_escape",
+            "Na__Hotkey__Key"         : "Escape",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__DrawingMarkup__Contextual",
+            "Na__Hotkey__Description" : "Drawing markup: cancel placement or revert an edit"
         }
 
     ]

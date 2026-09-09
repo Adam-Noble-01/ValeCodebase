@@ -38,6 +38,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Elevation resize hook (port Phase 3)
+// - Resize also corrects the elevation ortho camera and its markup layers.
+//
+// 09-Sep-2026 - Version 1.7.0 (port Phase 2)
+// - Dispatches na-layouteditor-drawingsdata-loaded with the project's
+// - LayoutEditor__DrawingsData block (null when absent).
+// - Render loop: a 2D drawing branch ahead of the 3D work, rendered by the
+// - drawing composer preset; resize hands off to the floor plan controller.
+//
 // 09-Jul-2026 - Version 1.5.2
 // - Single/zero-scene orbit pivot fix: boot camera apply now passes
 //   applyOrbitTarget: Na__SketchUp__AnimationScene__ShouldUseSceneOrbitTarget(...)
@@ -387,6 +396,19 @@
     import { Na__SectionClipping__GetOverlayRenderer } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Drawing View Core, Floor Plans and Elevations (2D drawings own the frame while active)
+    // @delegate: ../42__System__DrawingViewCore/
+    // @delegate: ../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js
+    // @delegate: ../46__System__ElevationViews/Na__Elevation__ModeController__.js
+    // ------------------------------------------------------------
+    import { Na__DrawView__GetCamera } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+    import { Na__DrawView__ComposerPreset__RenderFrame } from '../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js';
+    import { Na__DrawMarkup__SyncFrame } from '../42__System__DrawingViewCore/Na__DrawView__MarkupMount__.js';
+    import { Na__DrawData__LOADED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__FloorPlanMode__HandleResize } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
+    import { Na__ElevationMode__HandleResize } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Fog Plane System
     // @delegate: ../29__System__FogPlaneSystem/Na__FogPlaneSystem__SystemLogic.js
     // ------------------------------------------------------------
@@ -668,6 +690,12 @@
                         detail: { sceneData: projectData.CrossSection__SceneData }
                     }));
                 }
+
+                // LOAD DRAWINGS DATA (floor plans, elevations, sheets; absent block = empty skeleton)
+                // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js
+                window.dispatchEvent(new CustomEvent(Na__DrawData__LOADED_EVENT, {
+                    detail: { block: projectData.LayoutEditor__DrawingsData || null, projectCode: projectCode }
+                }));
 
                 // LOAD SKETCHUP-NATIVE SECTION PLANES (per-scene, captured by the cloud sync plugin)
                 // Key spelling "ValeVison3D" (one 'i') is the established plugin/web convention.
@@ -1165,6 +1193,22 @@
         });
 
         function Na__RenderLoop__RenderFrame(deltaMs) {
+            // 2D DRAWING MODE | A floor plan or elevation owns the viewport.
+            // Checked FIRST so none of the 3D per-frame work runs: walk/fly
+            // physics, orbit updates, door proximity, billboards, fog uniforms
+            // and distance culling are meaningless on a drawing. The composer
+            // preset renders the frame (2D normals pre-pass, composer, section
+            // overlay) through the ortho camera; the markup layers reproject.
+            // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js
+            const Na__Drawing__Camera = Na__DrawView__GetCamera();
+            if (Na__Drawing__Camera) {
+                if (!Na__DrawView__ComposerPreset__RenderFrame()) {
+                    Na__Renderer__Main.render(Na__Scene__Main, Na__Drawing__Camera); // <-- Preset not up yet: plain render
+                }
+                Na__DrawMarkup__SyncFrame();                                 // <-- Reproject the markup onto the new view
+                return Na__RenderLoop__ActiveReasons.size > 0;               // <-- Only pan/zoom keeps frames coming
+            }
+
             if (Na__VideoStudio__Preview__IsPlaying()) {
                 Na__VideoStudio__Preview__UpdateFrame(deltaMs);              // <-- Video Studio timeline owns the camera this frame
                 if (Na__VideoStudio__Preview__AreAnimationsEnabled()) {
@@ -1322,6 +1366,8 @@
             }
 
             Na__LineResolution__Screen.set(width, height);
+            Na__FloorPlanMode__HandleResize(width, height);                  // <-- Ortho frustum aspect + markup reprojection (port Phase 2)
+            Na__ElevationMode__HandleResize(width, height);                  // <-- Same for the elevation camera (port Phase 3)
             Na__RenderLoop__RequestRenderOnce();
         });
     }

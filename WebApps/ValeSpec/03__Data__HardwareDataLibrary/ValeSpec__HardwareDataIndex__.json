@@ -109,7 +109,11 @@
                 "ScaleX": null
             }
         },
-        "HardwareItem__AvailableFinishes": []
+        "HardwareItem__AvailableFinishes": [
+            "Unlacquered Brass",
+            "Satin Nickel",
+            "Bronze"
+        ]
     },
     "Standard Hinge with Urns": {
         "HardwareItem__Name": "Standard Hinge with Urns",
@@ -135,7 +139,11 @@
                 "ScaleX": null
             }
         },
-        "HardwareItem__AvailableFinishes": []
+        "HardwareItem__AvailableFinishes": [
+            "Unlacquered Brass",
+            "Satin Nickel",
+            "Bronze"
+        ]
     },
     "Vale Ghost Guy": {
         "HardwareItem__Name": "Vale Ghost Guy",

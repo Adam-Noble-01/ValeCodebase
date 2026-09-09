@@ -3208,20 +3208,68 @@
           "color": "na-shift-color-rose"
         },
         {
-          "id": "new-1788520002278",
-          "date": "2026-09-04",
-          "startTime": "12:15",
-          "endTime": "17:00",
-          "title": "Mordaunt |  MaxModel",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1788535569462",
           "date": "2026-09-05",
           "startTime": "13:00",
           "endTime": "18:30",
           "title": "R&D |  Photogrammetry Test",
           "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1788852390145",
+          "date": "2026-09-08",
+          "startTime": "08:00",
+          "endTime": "08:15",
+          "title": "Admin",
+          "color": "na-shift-color-blue"
+        },
+        {
+          "id": "new-1788852400915",
+          "date": "2026-09-08",
+          "startTime": "08:15",
+          "endTime": "08:30",
+          "title": "Meeting |  JM",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1788852346425",
+          "date": "2026-09-08",
+          "startTime": "08:30",
+          "endTime": "10:00",
+          "title": "Convert |  Hinkel - JpgToCad",
+          "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1788868987891",
+          "date": "2026-09-08",
+          "startTime": "10:00",
+          "endTime": "11:00",
+          "title": "Convert |  Hinkel - CadToDrawings",
+          "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1788869024801",
+          "date": "2026-09-08",
+          "startTime": "13:30",
+          "endTime": "15:00",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1788938268203",
+          "date": "2026-09-08",
+          "startTime": "15:00",
+          "endTime": "18:15",
+          "title": "Design |  HQ2 Side",
+          "color": "na-shift-color-lime"
+        },
+        {
+          "id": "new-1788938289812",
+          "date": "2026-09-09",
+          "startTime": "09:15",
+          "endTime": "14:30",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
         }
       ]
     }

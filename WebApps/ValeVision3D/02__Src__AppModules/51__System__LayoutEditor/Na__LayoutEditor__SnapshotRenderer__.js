@@ -40,6 +40,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Session-cached model fingerprints (no model walk per refresh); the profile lines pass state is restored after a 2D render.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -104,7 +107,8 @@
     import { Na__ModelToggle__CaptureVisibilityMap, Na__ModelToggle__ApplySceneLayerVisibility } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
     import { Na__CrossSection__SerializeSections, Na__CrossSection__ApplySerializedSections } from '../41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js';
     import { Na__StaticExport__RenderToCanvas } from '../30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js';
-    import { Na__PlView__KIND_PLAN } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
+    import { Na__PlView__KIND_PLAN, Na__PlView__Hash } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
+    import { Na__PlStage__Describe } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -129,6 +133,8 @@
     let Na__LeSnap__ModelRoot   = null;
     let Na__LeSnap__Ortho       = null;
     let Na__LeSnap__Chain       = Promise.resolve();
+    let Na__LeSnap__ModelFp     = null;    // <-- Visibility-free model fingerprint, cached until the model or its toggles change
+    let Na__LeSnap__PipelineFp  = null;    // <-- The projection pipeline's own fingerprint, cached the same way
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -233,10 +239,37 @@
         Na__LeSnap__Controls    = context.controls || null;
         Na__LeSnap__PipelineRef = context.pipelineRef || null;
         Na__LeSnap__ModelRoot   = context.modelRoot || null;
+        Na__LeSnap__ResetFingerprints();
+        window.addEventListener('na-model-visibility-changed', Na__LeSnap__ResetFingerprints);   // <-- Toggles change what a drawing shows
         return true;
     }
     function Na__LeSnap__IsReady() { return !!Na__LeSnap__Renderer; }
     function Na__LeSnap__GetModelRoot() { return Na__LeSnap__ModelRoot; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Model Fingerprints, Computed Once and Held Until the Model Changes
+    // ------------------------------------------------------------
+    // Describing the model walks every mesh, so the viewports must not ask
+    // for it on every refresh. The model one ignores category visibility
+    // (a snapshot re-reads the scene's own layer map); the pipeline one is
+    // exactly what the projection cache keys use.
+    // ------------------------------------------------------------
+    function Na__LeSnap__GetModelFingerprint() {
+        if (Na__LeSnap__ModelFp === null) {
+            const described = Na__PlStage__Describe(Na__LeSnap__ModelRoot);
+            Na__LeSnap__ModelFp = Na__PlView__Hash(JSON.stringify(described.Categories.map((c) => [ c.name, c.tris ])));
+        }
+        return Na__LeSnap__ModelFp;
+    }
+    function Na__LeSnap__GetPipelineFingerprint() {
+        if (Na__LeSnap__PipelineFp === null) Na__LeSnap__PipelineFp = Na__PlStage__Describe(Na__LeSnap__ModelRoot).Fingerprint;
+        return Na__LeSnap__PipelineFp;
+    }
+    function Na__LeSnap__ResetFingerprints() {
+        Na__LeSnap__ModelFp    = null;
+        Na__LeSnap__PipelineFp = null;
+    }
     // ------------------------------------------------------------
 
 
@@ -271,6 +304,9 @@
         if (!Na__LeSnap__IsReady() || !definition) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             const wasSuspended = Na__DrawView__Transitions__IsSuspended();
+            const pipeline     = Na__LeSnap__Pipeline();
+            const pass         = pipeline && pipeline.profileLinesPassRef ? pipeline.profileLinesPassRef : null;
+            const passWasOn    = pass ? pass.enabled : null;                       // <-- The preset's exit forces it on; the 3D toggle owns it
             let cutApplied = false;
             try {
                 Na__DrawView__SectionAdapter__SuspendLiveTool();
@@ -293,6 +329,7 @@
             } finally {
                 Na__DrawView__MaterialPreset__Exit();
                 Na__DrawView__ComposerPreset__Exit();
+                if (pass && passWasOn !== null) pass.enabled = passWasOn;
                 if (cutApplied) Na__DrawView__SectionAdapter__RemovePlane(Na__LeSnap__CUT_ID);
                 Na__DrawView__SectionAdapter__Release();
                 if (!wasSuspended) Na__DrawView__Transitions__ResumeThreeD();
@@ -367,6 +404,9 @@
         Na__LeSnap__Initialize,
         Na__LeSnap__IsReady,
         Na__LeSnap__GetModelRoot,
+        Na__LeSnap__GetModelFingerprint,
+        Na__LeSnap__GetPipelineFingerprint,
+        Na__LeSnap__ResetFingerprints,
         Na__LeSnap__DrawingCentreMm,
         Na__LeSnap__Render2d,
         Na__LeSnap__Render3d

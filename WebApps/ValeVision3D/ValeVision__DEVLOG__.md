@@ -2,6 +2,34 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.2 - 10-Sep-2026 - Engine pause on drawing tabs
+
+### Fixed
+- **GPU load with a sheet open, and a slow 3D view afterwards.** The 3D
+  render loop kept running behind the hidden canvas while a drawing tab
+  was open, and the sheet viewports could re-key themselves. The render
+  loop bus gains `Na__RenderLoop__Pause` and `Na__RenderLoop__Resume`
+  (reasons stack): the loading sequence's loop paints nothing while any
+  hold is in place, remembers that a frame was asked for, and paints once
+  on resume with a fresh timestamp so walk, fly and door physics see no
+  giant delta. The Layout Editor holds the loop for the whole time a sheet
+  is open and suspends 3D navigation and distance culling the way a
+  drawing does; leaving resumes both and paints one frame. Snapshot and
+  underlay renders go through the tiled renderer directly, so the hold
+  never blocks them.
+- **Viewport render triggers.** A 2D underlay or 3D snapshot is rendered
+  only when its key changes (scene, drawing, pan, frame or crop, scale,
+  style toggles), never during a drag, and 320 ms (2D) or 400 ms (3D)
+  after the last change. The model fingerprint behind those keys is now
+  computed once per editor session instead of walking every mesh on
+  every refresh, and the 3D key ignores layer visibility so applying a
+  scene's layer map for a snapshot cannot re-key the picture. Projection
+  pipeline events refresh the frames only when a render has finished.
+- **Profile lines pass.** A 2D underlay render left the profile lines
+  pass forced on (the composer preset's exit does that for the drawing
+  modes); the pass state is now restored after the render.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.1 - 10-Sep-2026 - clipper2-js vendored (app failed to load)
 
 ### Fixed

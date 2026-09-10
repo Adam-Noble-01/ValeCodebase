@@ -25,7 +25,12 @@
 }
 
 /* While the editor is on screen the 3D overlays stand aside. The canvas
-   itself stays in the DOM (visibility only) so snapshots can render. */
+   itself stays in the DOM (visibility only) so snapshots can render.
+   The two dropdown menus (Tools & Settings and the localhost Dev Tools
+   container) belong to the 3D Model tab only: they sit above the host at
+   z-index 1001 and would otherwise cover the sheet panels, so a drawing
+   tab hides them outright rather than letting them float over the paper. */
+body.na-layout-editor--active .na-dropdown-menu,
 body.na-layout-editor--active #naPresentationCarousel,
 body.na-layout-editor--active #naNavToolbar,
 body.na-layout-editor--active #naNavHelpPanel,

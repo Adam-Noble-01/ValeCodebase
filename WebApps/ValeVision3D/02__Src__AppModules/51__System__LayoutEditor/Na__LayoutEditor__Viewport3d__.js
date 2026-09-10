@@ -36,6 +36,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Snapshot keys use the session-cached, visibility-free model fingerprint, so applying a scene's layer map never re-keys the picture.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -50,7 +53,7 @@
     // ------------------------------------------------------------
     import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
-    import { Na__LeSnap__Render3d, Na__LeSnap__IsReady } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    import { Na__LeSnap__Render3d, Na__LeSnap__IsReady, Na__LeSnap__GetModelFingerprint } from './Na__LayoutEditor__SnapshotRenderer__.js';
     import {
         Na__LeAssets__CanvasToBlob,
         Na__LeAssets__BlobToDataUrl,
@@ -60,7 +63,6 @@
         Na__LeAssets__Upload,
         Na__LeAssets__Load
     } from './Na__LayoutEditor__Assets__.js';
-    import { Na__PlPipe__GetModelFingerprint } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -109,7 +111,7 @@
             JSON.stringify(scene.PresentationMode__Scene__ModelLayerVisibility || null),
             JSON.stringify(viewport.Viewport__Styles),
             Math.round((viewport.Viewport__ImageMm.WidthMm / viewport.Viewport__ImageMm.HeightMm) * 1000),
-            Na__PlPipe__GetModelFingerprint()
+            Na__LeSnap__GetModelFingerprint()
         ];
         return Na__LeVp3d__Hash(parts.join('|'));
     }

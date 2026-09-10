@@ -38,6 +38,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.1
+// - Fix: the left and right edge handles were both being drawn, and hit
+//   tested, at the centre of the frame, so a viewport could not be cropped
+//   or extended along x at all. Anchor was reading the handle key by
+//   character position, which only holds for the keys that spell the
+//   vertical edge first; 'lc' and 'rc' spell the horizontal edge first and
+//   both collapsed to the middle. It now reads the key by content.
+//   The drag arithmetic was already correct for both keys.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -78,9 +87,20 @@
 
     // HELPER FUNCTION | The Paper Position of a Handle
     // ------------------------------------------------------------
+    // The key names an edge per axis, and it is read by CONTENT rather than
+    // by character position. The corner and top and bottom keys spell the
+    // vertical edge first ('tl', 'bc') while the side keys spell the
+    // horizontal edge first ('lc', 'rc'), so reading key[0] and key[1] by
+    // position lands both side handles on the centre of the frame instead of
+    // on its left and right edges. A missing axis means the middle of that
+    // axis, which is what puts 'tc' half way across and 'lc' half way down.
     function Na__LeHandles__Anchor(rect, key) {
-        const x = key[1] === 'l' ? rect.X : (key[1] === 'r' ? rect.X + rect.WidthMm : rect.X + (rect.WidthMm / 2));
-        const y = key[0] === 't' ? rect.Y : (key[0] === 'b' ? rect.Y + rect.HeightMm : rect.Y + (rect.HeightMm / 2));
+        const left   = key.indexOf('l') >= 0;
+        const right  = key.indexOf('r') >= 0;
+        const top    = key.indexOf('t') >= 0;
+        const bottom = key.indexOf('b') >= 0;
+        const x = left ? rect.X : (right  ? rect.X + rect.WidthMm  : rect.X + (rect.WidthMm  / 2));
+        const y = top  ? rect.Y : (bottom ? rect.Y + rect.HeightMm : rect.Y + (rect.HeightMm / 2));
         return { x : x, y : y };
     }
     // ------------------------------------------------------------

@@ -390,7 +390,9 @@
     import {
         NA__REQUEST_RENDER_EVENT,
         NA__REQUEST_ACTIVE_RENDER_EVENT,
-        NA__STOP_ACTIVE_RENDER_EVENT
+        NA__STOP_ACTIVE_RENDER_EVENT,
+        NA__PAUSE_RENDER_LOOP_EVENT,
+        NA__RESUME_RENDER_LOOP_EVENT
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
@@ -1155,8 +1157,11 @@
         let Na__RenderLoop__PrevTimestamp = performance.now();               // <-- Previous frame timestamp for delta
         let Na__RenderLoop__FrameHandle = null;                              // <-- Active RAF handle (or null when idle)
         const Na__RenderLoop__ActiveReasons = new Set();                     // <-- Reasons that require continuous frames
+        const Na__RenderLoop__PauseReasons  = new Set();                     // <-- Holders of the engine (Layout Editor); no frame paints while any remain
+        let   Na__RenderLoop__PendingWhilePaused = false;                    // <-- A request arrived during a hold; one frame paints on resume
 
         function Na__RenderLoop__ScheduleFrame() {
+            if (Na__RenderLoop__PauseReasons.size > 0) { Na__RenderLoop__PendingWhilePaused = true; return; }  // <-- Held: remember, do not paint
             if (Na__RenderLoop__FrameHandle !== null) return;
             Na__RenderLoop__FrameHandle = requestAnimationFrame(Na__RenderLoop__Tick);
         }
@@ -1284,6 +1289,7 @@
 
         function Na__RenderLoop__Tick(timestamp) {
             Na__RenderLoop__FrameHandle = null;
+            if (Na__RenderLoop__PauseReasons.size > 0) { Na__RenderLoop__PendingWhilePaused = true; return; }  // <-- A frame scheduled before the hold began
 
             const now     = timestamp || performance.now();                  // <-- Current timestamp
             const deltaMs = now - Na__RenderLoop__PrevTimestamp;             // <-- Time since last frame
@@ -1301,6 +1307,19 @@
         });
         window.addEventListener(NA__STOP_ACTIVE_RENDER_EVENT, (event) => {
             Na__RenderLoop__DisableActiveRendering(event.detail && event.detail.reason ? event.detail.reason : 'general');
+        });
+        // ENGINE PAUSE | A 2D sheet owns the screen (port Phase 5): nothing paints until every holder resumes
+        window.addEventListener(NA__PAUSE_RENDER_LOOP_EVENT, (event) => {
+            Na__RenderLoop__PauseReasons.add(event.detail && event.detail.reason ? event.detail.reason : 'general');
+            if (Na__RenderLoop__FrameHandle !== null) { cancelAnimationFrame(Na__RenderLoop__FrameHandle); Na__RenderLoop__FrameHandle = null; Na__RenderLoop__PendingWhilePaused = true; }
+        });
+        window.addEventListener(NA__RESUME_RENDER_LOOP_EVENT, (event) => {
+            Na__RenderLoop__PauseReasons.delete(event.detail && event.detail.reason ? event.detail.reason : 'general');
+            if (Na__RenderLoop__PauseReasons.size > 0) return;
+            const pending = Na__RenderLoop__PendingWhilePaused || Na__RenderLoop__ActiveReasons.size > 0;
+            Na__RenderLoop__PendingWhilePaused = false;
+            Na__RenderLoop__PrevTimestamp = performance.now();                // <-- No giant delta for walk, fly or door physics
+            if (pending) Na__RenderLoop__RequestRenderOnce();
         });
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {

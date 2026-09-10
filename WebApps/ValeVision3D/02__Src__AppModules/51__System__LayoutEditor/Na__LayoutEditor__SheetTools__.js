@@ -52,7 +52,13 @@
 
     // MODULE IMPORTS | Config, Model, Surface, Handles, Markup, Viewports
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetTextSetup, Na__LeCfg__GetDimensionSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
+    import {
+        Na__LeCfg__GetTextSetup,
+        Na__LeCfg__GetDimensionSetup,
+        Na__LeCfg__GetLabel,
+        Na__LeCfg__GetKeyboardSetup,
+        Na__LeCfg__MatchKeyBinding
+    } from './Na__LayoutEditor__ConfigState__.js';
     import {
         Na__LeModel__KIND_2D,
         Na__LeModel__GetActiveSheet,
@@ -115,6 +121,7 @@
     let Na__LeTools__Editable  = false;
     let Na__LeTools__Tool      = Na__LeTools__TOOL_SELECT;
     let Na__LeTools__Drag      = null;    // <-- { kind, id, hit, start, startMm, moved, pointerId, mode }
+    let Na__LeTools__Suppressed = false;  // <-- Raised by the control modules while a navigation gesture owns the pointer
     let Na__LeTools__Placement = null;    // <-- { startMm } while a dimension waits for its second click
     let Na__LeTools__Preview   = null;    // <-- Rubber-band element for the dimension tool
     let Na__LeTools__Editor    = null;    // <-- { input, itemId }
@@ -240,6 +247,7 @@
     // HELPER FUNCTION | Pointer Down
     // ------------------------------------------------------------
     function Na__LeTools__OnDown(event) {
+        if (Na__LeTools__Suppressed) return;                                 // <-- A pan or a pinch owns this pointer
         if (!Na__LeTools__IsLeft(event)) return;
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
@@ -349,7 +357,22 @@
     function Na__LeTools__OnUp(event) {
         const drag = Na__LeTools__Drag;
         if (!drag || event.pointerId !== drag.pointerId) return;
-        try { Na__LeTools__Stage.releasePointerCapture(event.pointerId); } catch (e) { /* already released */ }
+        Na__LeTools__FinishDrag(event.pointerId);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Close a Drag Down and Commit What It Moved
+    // ------------------------------------------------------------
+    // Shared by the pointer release and by the suppression flag, so a
+    // navigation gesture that interrupts a drag still leaves the record
+    // committed rather than half moved.
+    function Na__LeTools__FinishDrag(pointerId) {
+        const drag = Na__LeTools__Drag;
+        if (!drag) return;
+        if (pointerId !== null && pointerId !== undefined && Na__LeTools__Stage) {
+            try { Na__LeTools__Stage.releasePointerCapture(pointerId); } catch (e) { /* already released */ }
+        }
         Na__LeTools__Drag = null;
         document.body.classList.remove('na-le-dragging');
         if (!drag.moved) return;
@@ -360,6 +383,24 @@
         if (drag.kind === 'viewport')        Na__LeModel__UpdateViewport(sheet, drag.id, {}, false);
         else if (drag.kind === 'annotation') Na__LeModel__UpdateAnnotation(sheet, drag.id, {}, false);
         else                                 Na__LeModel__UpdateDimension(sheet, drag.id, {}, false);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand the Pointer Over to a Navigation Gesture
+    // ------------------------------------------------------------
+    // The PC and touchscreen control modules raise this while a pan or a
+    // pinch owns the pointer. Any drag in flight is finished first, so a
+    // second finger landing on the stage can never leave a viewport stranded
+    // half way through a move.
+    function Na__LeTools__SetSuppressed(flag) {
+        const next = !!flag;
+        if (Na__LeTools__Suppressed === next) return;
+        Na__LeTools__Suppressed = next;
+        if (next) {
+            Na__LeTools__FinishDrag(Na__LeTools__Drag ? Na__LeTools__Drag.pointerId : null);
+            Na__LeTools__CancelPlacement();
+        }
     }
     // ------------------------------------------------------------
 
@@ -578,25 +619,34 @@
     // ------------------------------------------------------------
     function Na__LeTools__OnKey(event) {
         const target = event.target;
-        const typing = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
-        if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
-        const step = event.shiftKey ? 10 : 1;
-        switch (event.key) {
-            case 'Escape':
+        const typing = !!(target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable));
+        const keys   = Na__LeCfg__GetKeyboardSetup();
+        if (typing && keys.ignoreWhenTyping) return;
+
+        // The binding, not the key, decides what happens. Navigation actions
+        // are left alone here: the PC controls module owns those.
+        const match = Na__LeCfg__MatchKeyBinding(event.key, {
+            Ctrl : !!event.ctrlKey, Shift : !!event.shiftKey, Alt : !!event.altKey, Meta : !!event.metaKey, Space : false
+        });
+        if (!match || !match.action) return;
+        const step = match.coarse ? keys.nudgeCoarseStepMm : keys.nudgeStepMm;
+
+        switch (match.action) {
+            case 'Edit__Cancel':
                 if (Na__LeTools__Placement) Na__LeTools__CancelPlacement();
                 else if (Na__LeModel__GetSelection()) Na__LeModel__SetSelection(null);
                 else Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
                 event.preventDefault(); return;
-            case 'Delete': case 'Backspace':
+            case 'Edit__Delete':
                 if (Na__LeModel__GetSelection()) { event.preventDefault(); void Na__LeTools__DeleteSelection(); }
                 return;
-            case 'ArrowLeft':  if (Na__LeTools__Editable && Na__LeTools__Nudge(-step, 0)) event.preventDefault(); return;
-            case 'ArrowRight': if (Na__LeTools__Editable && Na__LeTools__Nudge(step, 0))  event.preventDefault(); return;
-            case 'ArrowUp':    if (Na__LeTools__Editable && Na__LeTools__Nudge(0, -step)) event.preventDefault(); return;
-            case 'ArrowDown':  if (Na__LeTools__Editable && Na__LeTools__Nudge(0, step))  event.preventDefault(); return;
-            case 'v': case 'V': Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT); return;
-            case 't': case 'T': Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT); return;
-            case 'd': case 'D': Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
+            case 'Edit__NudgeLeft':  if (Na__LeTools__Editable && Na__LeTools__Nudge(-step, 0)) event.preventDefault(); return;
+            case 'Edit__NudgeRight': if (Na__LeTools__Editable && Na__LeTools__Nudge(step, 0))  event.preventDefault(); return;
+            case 'Edit__NudgeUp':    if (Na__LeTools__Editable && Na__LeTools__Nudge(0, -step)) event.preventDefault(); return;
+            case 'Edit__NudgeDown':  if (Na__LeTools__Editable && Na__LeTools__Nudge(0, step))  event.preventDefault(); return;
+            case 'Tool__Select':     Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);    return;
+            case 'Tool__Text':       Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT);      return;
+            case 'Tool__Dimension':  Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
             default: return;
         }
     }
@@ -642,6 +692,7 @@
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
         window.removeEventListener('keydown', Na__LeTools__Handlers.keydown);
         Na__LeTools__Stage.style.cursor = '';
+        Na__LeTools__Suppressed = false;                                     // <-- Never leave the tools deaf for the next mount
         Na__LeTools__Stage = Na__LeTools__Handlers = Na__LeTools__Drag = null;
         document.body.classList.remove('na-le-dragging');
     }
@@ -670,7 +721,8 @@
         Na__LeTools__GetDimensionDefaults,
         Na__LeTools__SetDimensionDefaults,
         Na__LeTools__BeginTextEdit,
-        Na__LeTools__DeleteSelection
+        Na__LeTools__DeleteSelection,
+        Na__LeTools__SetSuppressed
     };
     // ------------------------------------------------------------
 

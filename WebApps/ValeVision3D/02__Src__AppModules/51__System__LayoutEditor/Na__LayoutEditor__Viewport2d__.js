@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Keys use the session-cached pipeline fingerprint instead of walking the model on every refresh.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -55,7 +58,7 @@
     import { Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeChrome__ToSvgMarkup } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeMarkup__BuildScenePrimitives } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeSnap__Render2d, Na__LeSnap__DrawingCentreMm } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    import { Na__LeSnap__Render2d, Na__LeSnap__DrawingCentreMm, Na__LeSnap__GetPipelineFingerprint } from './Na__LayoutEditor__SnapshotRenderer__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Projected Linework (definitions, pipeline, store, appearance)
@@ -69,7 +72,6 @@
     } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
     import {
         Na__PlPipe__GetCached,
-        Na__PlPipe__GetModelFingerprint,
         Na__PlPipe__RenderDefinition,
         Na__PlPipe__Remember
     } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
@@ -160,7 +162,7 @@
         if (!definition) return Promise.resolve(null);
         const cached = Na__PlPipe__GetCached(definition);
         if (cached) return Promise.resolve(cached);
-        const modelFp = Na__PlPipe__GetModelFingerprint();
+        const modelFp = Na__LeSnap__GetPipelineFingerprint();
         const key     = Na__PlView__CacheKey(definition, modelFp);
         if (Na__LeVp2d__Linework.has(key)) return Na__LeVp2d__Linework.get(key);
         const fingerprint = Na__PlView__Fingerprint(definition, modelFp);
@@ -343,7 +345,7 @@
 
         // UNDERLAY | Slide the last picture; render a new one once things settle
         const styles  = viewport.Viewport__Styles;
-        const modelFp = Na__PlPipe__GetModelFingerprint();
+        const modelFp = Na__LeSnap__GetPipelineFingerprint();
         const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
                       Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework ].join('|');
         Na__LeVp2d__PlaceUnderlay(state, win, ppm);

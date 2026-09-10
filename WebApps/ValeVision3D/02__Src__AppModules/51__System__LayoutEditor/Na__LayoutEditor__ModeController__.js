@@ -11,10 +11,13 @@
 //
 // DESCRIPTION:
 // - Entering: any drawing mode is exited first, the 3D overlays (carousel,
-//   nav toolbar, help, export frame) go behind a body class, the WebGL
-//   canvas stays alive but invisible so snapshots still render, and the
-//   host fills the space under the header and tab strip with the panels,
-//   toolbar and stage (D22 to D24). Leaving puts it all back.
+//   nav toolbar, help, export frame) and both dropdown menus (Tools &
+//   Settings and the localhost Dev Tools container) go behind a body class,
+//   the WebGL canvas stays alive but invisible so snapshots still render,
+//   and the host fills the space under the header and tab strip with the
+//   panels, toolbar and stage (D22 to D24). Leaving puts it all back.
+// - The menus are 3D Model tab furniture: they are also collapsed on entry
+//   so the 3D view is never handed back with a menu hanging open.
 // - The shell is built once, on the first entry, after the config and the
 //   model are ready. Editing is allowed on localhost, or anywhere when
 //   Main.json turns the web read-only flag off.
@@ -39,8 +42,17 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - The render loop is paused and 3D navigation suspended for the whole time a
+//   sheet is open; both come back on leaving. Projection events only refresh the
+//   frames once a render is finished; fingerprints are reset per session.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
+//
+// 10-Sep-2026 - Version 1.1.0
+// - Tools & Settings and Dev Tools menus hidden while a drawing tab is open,
+//   and collapsed on entry, so they are only ever used on the 3D Model tab.
 //
 // =============================================================================
 
@@ -61,7 +73,9 @@
         Na__LeModel__SetActiveSheetId
     } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__Mount, Na__LeSurface__SetSheet, Na__LeSurface__Refresh, Na__LeSurface__SetZoom, Na__LeSurface__GetZoom } from './Na__LayoutEditor__SheetSurface__.js';
-    import { Na__LeNav__Attach, Na__LeNav__Detach, Na__LeNav__Fit } from './Na__LayoutEditor__Navigation__.js';
+    import { Na__LeNav__Fit } from './Na__LayoutEditor__Navigation__.js';
+    import { Na__LePc__Attach, Na__LePc__Detach } from './Na__LayoutEditor__Controls__Pc__.js';
+    import { Na__LeTouch__Attach, Na__LeTouch__Detach } from './Na__LayoutEditor__Controls__TouchScreen__.js';
     import { Na__LeTools__Attach, Na__LeTools__Detach } from './Na__LayoutEditor__SheetTools__.js';
     import { Na__LePanels__Mount, Na__LePanels__Refresh } from './Na__LayoutEditor__PanelHost__.js';
     import { Na__LePanelLayers__Register } from './Na__LayoutEditor__Panel__Layers__.js';
@@ -71,15 +85,16 @@
     import { Na__LePanelDims__Register } from './Na__LayoutEditor__Panel__Dimensions__.js';
     import { Na__LePanelStyles__Register } from './Na__LayoutEditor__Panel__Styles__.js';
     import { Na__LeToolbar__Mount } from './Na__LayoutEditor__Toolbar__.js';
-    import { Na__LeSnap__Initialize } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from './Na__LayoutEditor__SnapshotRenderer__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing Modes, Render Loop, Projection Events, Localhost
     // ------------------------------------------------------------
     import { Na__FloorPlanMode__IsEngaged, Na__FloorPlanMode__ExitPlan, Na__FloorPlanMode__EnterPlan, Na__FloorPlanMode__SetEditMode } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
     import { Na__ElevationMode__IsEngaged, Na__ElevationMode__ExitElevation, Na__ElevationMode__EnterElevation, Na__ElevationMode__SetEditMode } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
-    import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
-    import { Na__PlPipe__CHANGED_EVENT } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
+    import { Na__RenderLoop__RequestRender, Na__RenderLoop__Pause, Na__RenderLoop__Resume } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    import { Na__DrawView__Transitions__SuspendThreeD, Na__DrawView__Transitions__ResumeThreeD } from '../42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
+    import { Na__PlPipe__CHANGED_EVENT, Na__PlPipe__STATUS_READY } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
     import { Na__AppUtils__IsRunningOnLocalhost } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
@@ -96,6 +111,7 @@
     const Na__LeMode__HOST_ID       = 'naLayoutEditorHost';
     const Na__LeMode__BODY_CLASS    = 'na-layout-editor--active';
     const Na__LeMode__CANVAS_ID     = 'renderCanvas';
+    const Na__LeMode__RENDER_HOLD   = 'layout-editor';   // <-- Render loop pause reason while a sheet is open
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Context, Shell and State
@@ -119,6 +135,21 @@
     // ------------------------------------------------------------
     function Na__LeMode__IsEditable() {
         return Na__AppUtils__IsRunningOnLocalhost() || !Na__LeCfg__IsReadOnlyOnWeb();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Close the 3D Menus Before the Sheet Takes Over
+    // ------------------------------------------------------------
+    // The stylesheet hides both dropdown containers while a drawing tab is
+    // open, so a menu left open would only reappear on the 3D Model tab.
+    // Collapsing the details and their submenu panels here means the 3D view
+    // always comes back with the menus shut.
+    // ------------------------------------------------------------
+    function Na__LeMode__CloseModelMenus() {
+        document.querySelectorAll('.na-dropdown-menu__details[open]').forEach((details) => { details.open = false; });
+        document.querySelectorAll('.na-dropdown-menu__panel.is-open').forEach((panel) => { panel.classList.remove('is-open'); });
+        document.querySelectorAll('.na-dropdown-menu__button[aria-expanded="true"]').forEach((button) => { button.setAttribute('aria-expanded', 'false'); });
     }
     // ------------------------------------------------------------
 
@@ -179,12 +210,17 @@
         if (!Na__LeMode__Active) {
             if (Na__FloorPlanMode__IsEngaged())  Na__FloorPlanMode__ExitPlan(null);          // <-- The editor starts from the 3D view
             if (Na__ElevationMode__IsEngaged())  Na__ElevationMode__ExitElevation(null);
+            Na__LeMode__CloseModelMenus();                                     // <-- The menus belong to the 3D Model tab
             document.body.classList.add(Na__LeMode__BODY_CLASS);
             const canvas = document.getElementById(Na__LeMode__CANVAS_ID);
             if (canvas) canvas.style.visibility = 'hidden';                     // <-- Alive for offscreen snapshots
             Na__LeMode__Host.hidden = false;
             Na__LeMode__Active = true;
-            Na__LeNav__Attach();
+            Na__RenderLoop__Pause(Na__LeMode__RENDER_HOLD);                  // <-- Engine idle: the sheet owns the screen; snapshots render offscreen on demand
+            Na__DrawView__Transitions__SuspendThreeD();                     // <-- Orbit and distance culling let go, as in a drawing
+            Na__LeSnap__ResetFingerprints();                                // <-- One model walk per session, not per refresh
+            Na__LePc__Attach();                                            // <-- Mouse, wheel and keyboard, before the tools
+            Na__LeTouch__Attach();                                         // <-- Touch, before the tools
             Na__LeTools__Attach({ editable : Na__LeMode__IsEditable() });
         }
         Na__LeModel__SetActiveSheetId(sheet.Sheet__Id);
@@ -202,7 +238,8 @@
     function Na__LeMode__Leave() {
         if (!Na__LeMode__Active) return false;
         Na__LeTools__Detach();
-        Na__LeNav__Detach();
+        Na__LeTouch__Detach();
+        Na__LePc__Detach();
         Na__LeSurface__SetSheet(null);
         Na__LeModel__SetActiveSheetId(null);
         Na__LeMode__Host.hidden = true;
@@ -210,6 +247,8 @@
         const canvas = document.getElementById(Na__LeMode__CANVAS_ID);
         if (canvas) canvas.style.visibility = '';
         Na__LeMode__Active = false;
+        Na__DrawView__Transitions__ResumeThreeD();                          // <-- Orbit and culling back before the first 3D frame
+        Na__RenderLoop__Resume(Na__LeMode__RENDER_HOLD);                    // <-- Engine runs again; one frame paints now
         Na__RenderLoop__RequestRender();
         Na__LeMode__Dispatch();
         return true;
@@ -283,7 +322,12 @@
             Na__LeSnap__Initialize(context);
             window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
             window.addEventListener(Na__LePanelViewport__EDIT_EVENT, Na__LeMode__OnRequestDrawing);
-            window.addEventListener(Na__PlPipe__CHANGED_EVENT, () => { if (Na__LeMode__Active) Na__LeSurface__Refresh('frames'); });
+            window.addEventListener(Na__PlPipe__CHANGED_EVENT, (event) => {
+                if (!Na__LeMode__Active) return;
+                const detail = event.detail || {};
+                if (detail.status && detail.status !== Na__PlPipe__STATUS_READY) return;   // <-- Only finished linework repaints the frames
+                Na__LeSurface__Refresh('frames');
+            });
             window.addEventListener('resize', () => { if (Na__LeMode__Active) Na__LeSurface__SetZoom(Na__LeSurface__GetZoom()); });
             console.log('[ValeVision3D] Layout Editor ready (' + (Na__LeMode__IsEditable() ? 'editable' : Na__LeCfg__GetLabel('ReadOnlyNote', 'read-only')) + ').');
             return true;

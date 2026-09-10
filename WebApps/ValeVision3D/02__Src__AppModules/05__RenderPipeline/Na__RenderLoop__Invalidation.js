@@ -16,6 +16,8 @@
 //     na-request-render        — schedule one render frame when the scene has changed.
 //     na-request-active-render — enable continuous rendering (e.g. orbit, fly mode).
 //     na-stop-active-render    — disable continuous rendering when interaction ends.
+//     na-pause-render-loop     — hold every frame (a 2D sheet owns the screen); requests queue.
+//     na-resume-render-loop    — lift a hold; one frame paints if anything asked meanwhile.
 //
 // INTEGRATION:
 // - Na__AppFlow__LoadingSequence.js registers window listeners for all three events.
@@ -24,6 +26,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Pause and resume added so the Layout Editor can idle the engine while a sheet is open.
+//
 // 10-Jun-2026 - Version 1.0.0
 // - Initial implementation as part of the invalidation-based render loop.
 //
@@ -39,6 +44,8 @@
     const NA__REQUEST_RENDER_EVENT        = 'na-request-render';         // <-- Single-frame invalidation
     const NA__REQUEST_ACTIVE_RENDER_EVENT = 'na-request-active-render';  // <-- Start continuous rendering
     const NA__STOP_ACTIVE_RENDER_EVENT    = 'na-stop-active-render';     // <-- Stop continuous rendering
+    const NA__PAUSE_RENDER_LOOP_EVENT     = 'na-pause-render-loop';      // <-- Hold every frame until resumed
+    const NA__RESUME_RENDER_LOOP_EVENT    = 'na-resume-render-loop';     // <-- Lift a hold by reason
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -75,6 +82,26 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Pause the Loop Entirely (reasons stack; every one must be lifted)
+    // ------------------------------------------------------------
+    function Na__RenderLoop__Pause(reason = 'general') {
+        window.dispatchEvent(new CustomEvent(NA__PAUSE_RENDER_LOOP_EVENT, {
+            detail: { reason }                                              // <-- Who is holding the engine
+        }));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resume After a Pause
+    // ------------------------------------------------------------
+    function Na__RenderLoop__Resume(reason = 'general') {
+        window.dispatchEvent(new CustomEvent(NA__RESUME_RENDER_LOOP_EVENT, {
+            detail: { reason }
+        }));
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -88,9 +115,13 @@
         NA__REQUEST_RENDER_EVENT,
         NA__REQUEST_ACTIVE_RENDER_EVENT,
         NA__STOP_ACTIVE_RENDER_EVENT,
+        NA__PAUSE_RENDER_LOOP_EVENT,
+        NA__RESUME_RENDER_LOOP_EVENT,
         Na__RenderLoop__RequestRender,
         Na__RenderLoop__RequestActiveRender,
-        Na__RenderLoop__StopActiveRender
+        Na__RenderLoop__StopActiveRender,
+        Na__RenderLoop__Pause,
+        Na__RenderLoop__Resume
     };
     // ------------------------------------------------------------
 

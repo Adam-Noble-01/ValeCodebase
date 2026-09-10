@@ -32,6 +32,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Owns Na__LayoutEditor__KeyMappings__.json as well, and answers what a
+//   button, a wheel turn or a key press means. The control modules and the
+//   sheet tools resolve every binding through here, so no input is written
+//   into code any more.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -45,6 +51,7 @@
     // MODULE CONSTANTS | Config Location and Key Shape
     // ------------------------------------------------------------
     const Na__LeCfg__ConfigUrl  = new URL('./Na__LayoutEditor__AppConfig__.json', import.meta.url);
+    const Na__LeCfg__KeyMapUrl  = new URL('./Na__LayoutEditor__KeyMappings__.json', import.meta.url);
     const Na__LeCfg__PREFIX     = 'LayoutEditor__';
     const Na__LeCfg__MAIN_BLOCK = 'LayoutEditor__Config';
     // ------------------------------------------------------------
@@ -62,10 +69,39 @@
     });
     // ------------------------------------------------------------
 
+    // MODULE CONSTANTS | Key Map Fallback (mirrors the enabled defaults in the shipped JSON)
+    // ------------------------------------------------------------
+    // Only the bindings that ship switched on are repeated here. A failed
+    // fetch therefore still leaves a sheet that zooms and pans exactly the
+    // way Lantern Designer does, rather than one that cannot be moved.
+    const Na__LeCfg__KEYMAP_FALLBACK = Object.freeze({
+        guards   : { pointerIgnoreSelector   : 'input, select, button, textarea, canvas, [contenteditable="true"]',
+                     wheelIgnoreSelector     : 'canvas',
+                     contextMenuKeepSelector : 'input, select, button, textarea, [contenteditable="true"]',
+                     paperSelector           : '.na-le-paper' },
+        pointer  : [ { Id : 'Pan__MiddleOrRightDrag', Action : 'Nav__Pan', Enabled : true, Buttons : [ 'Middle', 'Right' ], Modifiers : [], ModifierMatch : 'Any' } ],
+        wheel    : [ { Id : 'Zoom__Wheel', Action : 'Nav__ZoomAtCursor', Enabled : true, Modifiers : [], ModifierMatch : 'Any' } ],
+        keyboard : [ { Id : 'Edit__Cancel',      Action : 'Edit__Cancel',      Enabled : true, Keys : [ 'Escape' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Delete',      Action : 'Edit__Delete',      Enabled : true, Keys : [ 'Delete', 'Backspace' ],  Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__NudgeLeft',   Action : 'Edit__NudgeLeft',   Enabled : true, Keys : [ 'ArrowLeft' ],            Modifiers : [], ModifierMatch : 'CoarseOptional' },
+                     { Id : 'Edit__NudgeRight',  Action : 'Edit__NudgeRight',  Enabled : true, Keys : [ 'ArrowRight' ],           Modifiers : [], ModifierMatch : 'CoarseOptional' },
+                     { Id : 'Edit__NudgeUp',     Action : 'Edit__NudgeUp',     Enabled : true, Keys : [ 'ArrowUp' ],              Modifiers : [], ModifierMatch : 'CoarseOptional' },
+                     { Id : 'Edit__NudgeDown',   Action : 'Edit__NudgeDown',   Enabled : true, Keys : [ 'ArrowDown' ],            Modifiers : [], ModifierMatch : 'CoarseOptional' },
+                     { Id : 'Tool__Select',      Action : 'Tool__Select',      Enabled : true, Keys : [ 'v', 'V' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Tool__Text',        Action : 'Tool__Text',        Enabled : true, Keys : [ 't', 'T' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Tool__Dimension',   Action : 'Tool__Dimension',   Enabled : true, Keys : [ 'd', 'D' ],               Modifiers : [], ModifierMatch : 'Exact' } ],
+        keyboardSetup : { ignoreWhenTyping : true, coarseStepModifier : 'Shift', nudgeStepMm : 1, nudgeCoarseStepMm : 10,
+                          panStepPx : 60, panCoarseStepPx : 240, zoomKeyStep : 1.15 },
+        touch    : { oneFingerPanOnStage : true, oneFingerPanOnPaper : false, twoFingerPan : true, pinchZoom : true,
+                     doubleTapFit : true, doubleTapWindowMs : 320, doubleTapSlopPx : 24, panStartSlopPx : 6, pinchStartSlopPx : 8 }
+    });
+    // ------------------------------------------------------------
+
     // MODULE VARIABLES | Parsed Configs and Fetch Promise
     // ------------------------------------------------------------
     let Na__LeCfg__Config      = null;
     let Na__LeCfg__AppConfig   = null;
+    let Na__LeCfg__KeyMap      = null;
     let Na__LeCfg__LoadPromise = null;
     // ------------------------------------------------------------
 
@@ -113,6 +149,25 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Fetch the Key Map JSON Once
+    // ------------------------------------------------------------
+    async function Na__LeCfg__FetchKeyMap() {
+        try {
+            const response = await fetch(Na__LeCfg__KeyMapUrl, { cache : 'no-store' });
+            if (!response.ok) {
+                console.warn('[ValeVision3D LayoutEditor] Key map fetch failed (' + response.status + ') - using built-in bindings.');
+                return false;
+            }
+            Na__LeCfg__KeyMap = await response.json();
+            return true;
+        } catch (error) {
+            console.warn('[ValeVision3D LayoutEditor] Key map unreadable - using built-in bindings.', error);
+            return false;
+        }
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -131,7 +186,10 @@
     // FUNCTION | Load the System Config Exactly Once
     // ------------------------------------------------------------
     function Na__LeCfg__Ready() {
-        if (!Na__LeCfg__LoadPromise) Na__LeCfg__LoadPromise = Na__LeCfg__Fetch();
+        if (!Na__LeCfg__LoadPromise) {
+            Na__LeCfg__LoadPromise = Promise.all([ Na__LeCfg__Fetch(), Na__LeCfg__FetchKeyMap() ])
+                .then((results) => results[0]);                                // <-- The key map degrades to its own fallback
+        }
         return Na__LeCfg__LoadPromise;
     }
     // ------------------------------------------------------------
@@ -378,6 +436,205 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Public API - Key Map and Binding Resolution
+// -----------------------------------------------------------------------------
+//
+// The control modules never name a button or a key. They describe what the
+// user did and ask here what it means, so a binding is changed by editing
+// Na__LayoutEditor__KeyMappings__.json and nothing else. A user personalisation
+// screen can later write overrides in the same shape and hand them in through
+// SetKeyMap without a single control module changing.
+//
+
+    // MODULE CONSTANTS | The Modifiers a Binding May Name
+    // ------------------------------------------------------------
+    const Na__LeCfg__MODIFIERS = [ 'Ctrl', 'Shift', 'Alt', 'Meta', 'Space' ];
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read a Value From a Key Map Block
+    // ------------------------------------------------------------
+    function Na__LeCfg__KeyVal(blockName, keyName, fallback) {
+        const block = Na__LeCfg__KeyMap ? Na__LeCfg__KeyMap[Na__LeCfg__PREFIX + blockName + '__Config'] : null;
+        const value = block ? block[Na__LeCfg__PREFIX + blockName + '__' + keyName] : undefined;
+        return (value === undefined || value === null) ? fallback : value;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read a Binding List, or the Built-In One
+    // ------------------------------------------------------------
+    function Na__LeCfg__KeyList(blockName, fallbackList) {
+        const list = Na__LeCfg__KeyVal(blockName, 'List', null);
+        return Array.isArray(list) ? list : fallbackList;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Whether the Held Modifiers Satisfy One Binding
+    // ------------------------------------------------------------
+    // Exact means the named modifiers are the only ones held, which is what
+    // stops a ctrl binding from also firing the plain one. Any ignores
+    // modifiers entirely, which is the Lantern Designer behaviour and the
+    // shipped default for the wheel and the pan. CoarseOptional is Exact with
+    // the coarse step modifier forgiven, so shift can grow a nudge without
+    // needing a second binding for every arrow key.
+    function Na__LeCfg__ModifiersSatisfy(binding, held) {
+        const mode = binding.ModifierMatch || 'Exact';
+        if (mode === 'Any') return true;
+        const named   = Array.isArray(binding.Modifiers) ? binding.Modifiers : [];
+        const forgive = (mode === 'CoarseOptional') ? Na__LeCfg__KeyVal('KeyboardBindings', 'CoarseStepModifier', Na__LeCfg__KEYMAP_FALLBACK.keyboardSetup.coarseStepModifier) : null;
+        for (let i = 0; i < Na__LeCfg__MODIFIERS.length; i++) {
+            const name = Na__LeCfg__MODIFIERS[i];
+            if (name === forgive) continue;
+            if (!!held[name] !== (named.indexOf(name) !== -1)) return false;
+        }
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand a Key Map In (a saved user personalisation)
+    // ------------------------------------------------------------
+    function Na__LeCfg__SetKeyMap(keyMap) {
+        Na__LeCfg__KeyMap = (keyMap && typeof keyMap === 'object') ? keyMap : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Guard Selectors
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetGuards() {
+        const fallback = Na__LeCfg__KEYMAP_FALLBACK.guards;
+        return {
+            pointerIgnoreSelector   : Na__LeCfg__KeyVal('Guards', 'PointerIgnoreSelector',   fallback.pointerIgnoreSelector),
+            wheelIgnoreSelector     : Na__LeCfg__KeyVal('Guards', 'WheelIgnoreSelector',     fallback.wheelIgnoreSelector),
+            contextMenuKeepSelector : Na__LeCfg__KeyVal('Guards', 'ContextMenuKeepSelector', fallback.contextMenuKeepSelector),
+            paperSelector           : Na__LeCfg__KeyVal('Guards', 'PaperSelector',           fallback.paperSelector)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Keyboard Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetKeyboardSetup() {
+        const fallback = Na__LeCfg__KEYMAP_FALLBACK.keyboardSetup;
+        return {
+            ignoreWhenTyping   : Na__LeCfg__KeyVal('KeyboardBindings', 'IgnoreWhenTyping',   fallback.ignoreWhenTyping) !== false,
+            coarseStepModifier : Na__LeCfg__KeyVal('KeyboardBindings', 'CoarseStepModifier', fallback.coarseStepModifier),
+            nudgeStepMm        : Na__LeCfg__KeyVal('KeyboardBindings', 'NudgeStepMm',        fallback.nudgeStepMm),
+            nudgeCoarseStepMm  : Na__LeCfg__KeyVal('KeyboardBindings', 'NudgeCoarseStepMm',  fallback.nudgeCoarseStepMm),
+            panStepPx          : Na__LeCfg__KeyVal('KeyboardBindings', 'PanStepPx',          fallback.panStepPx),
+            panCoarseStepPx    : Na__LeCfg__KeyVal('KeyboardBindings', 'PanCoarseStepPx',    fallback.panCoarseStepPx),
+            zoomKeyStep        : Na__LeCfg__KeyVal('KeyboardBindings', 'ZoomKeyStep',        fallback.zoomKeyStep)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Touch Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetTouchSetup() {
+        const fallback = Na__LeCfg__KEYMAP_FALLBACK.touch;
+        return {
+            oneFingerPanOnStage : Na__LeCfg__KeyVal('TouchBindings', 'OneFingerPanOnStage', fallback.oneFingerPanOnStage) !== false,
+            oneFingerPanOnPaper : Na__LeCfg__KeyVal('TouchBindings', 'OneFingerPanOnPaper', fallback.oneFingerPanOnPaper) === true,
+            twoFingerPan        : Na__LeCfg__KeyVal('TouchBindings', 'TwoFingerPan',        fallback.twoFingerPan) !== false,
+            pinchZoom           : Na__LeCfg__KeyVal('TouchBindings', 'PinchZoom',           fallback.pinchZoom) !== false,
+            doubleTapFit        : Na__LeCfg__KeyVal('TouchBindings', 'DoubleTapFit',        fallback.doubleTapFit) !== false,
+            doubleTapWindowMs   : Na__LeCfg__KeyVal('TouchBindings', 'DoubleTapWindowMs',   fallback.doubleTapWindowMs),
+            doubleTapSlopPx     : Na__LeCfg__KeyVal('TouchBindings', 'DoubleTapSlopPx',     fallback.doubleTapSlopPx),
+            panStartSlopPx      : Na__LeCfg__KeyVal('TouchBindings', 'PanStartSlopPx',      fallback.panStartSlopPx),
+            pinchStartSlopPx    : Na__LeCfg__KeyVal('TouchBindings', 'PinchStartSlopPx',    fallback.pinchStartSlopPx)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What a Mouse or Pen Press Means (null when it means nothing)
+    // ------------------------------------------------------------
+    // input is { button : 'Left' | 'Middle' | 'Right', modifiers : {...}, emptyStage : bool }
+    function Na__LeCfg__MatchPointerBinding(input) {
+        if (!input || !input.button) return null;
+        const list = Na__LeCfg__KeyList('PointerBindings', Na__LeCfg__KEYMAP_FALLBACK.pointer);
+        for (let i = 0; i < list.length; i++) {
+            const binding = list[i];
+            if (!binding || binding.Enabled === false) continue;
+            if (!Array.isArray(binding.Buttons) || binding.Buttons.indexOf(input.button) === -1) continue;
+            if (binding.RequiresEmptyStage === true && !input.emptyStage) continue;
+            if (!Na__LeCfg__ModifiersSatisfy(binding, input.modifiers || {})) continue;
+            return binding.Action || null;
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What a Wheel Turn Means (null when it means nothing)
+    // ------------------------------------------------------------
+    function Na__LeCfg__MatchWheelBinding(held) {
+        const list = Na__LeCfg__KeyList('WheelBindings', Na__LeCfg__KEYMAP_FALLBACK.wheel);
+        for (let i = 0; i < list.length; i++) {
+            const binding = list[i];
+            if (!binding || binding.Enabled === false) continue;
+            if (!Na__LeCfg__ModifiersSatisfy(binding, held || {})) continue;
+            return binding.Action || null;
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What a Key Press Means (null when it means nothing)
+    // ------------------------------------------------------------
+    // Returns { id, action, coarse } so a caller can size its own step from the
+    // coarse modifier without having to know which modifier that is.
+    function Na__LeCfg__MatchKeyBinding(key, held) {
+        if (typeof key !== 'string' || !key) return null;
+        const list   = Na__LeCfg__KeyList('KeyboardBindings', Na__LeCfg__KEYMAP_FALLBACK.keyboard);
+        const coarse = !!(held && held[Na__LeCfg__GetKeyboardSetup().coarseStepModifier]);
+        for (let i = 0; i < list.length; i++) {
+            const binding = list[i];
+            if (!binding || binding.Enabled === false) continue;
+            if (!Array.isArray(binding.Keys) || binding.Keys.indexOf(key) === -1) continue;
+            if (!Na__LeCfg__ModifiersSatisfy(binding, held || {})) continue;
+            return { id : binding.Id || null, action : binding.Action || null, coarse : coarse };
+        }
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether Any Enabled Pointer Binding Wants a Given Modifier
+    // ------------------------------------------------------------
+    // The PC module asks this before it takes the space bar away from the
+    // browser, so space keeps scrolling the stage while no binding uses it.
+    function Na__LeCfg__IsPointerModifierBound(name) {
+        const list = Na__LeCfg__KeyList('PointerBindings', Na__LeCfg__KEYMAP_FALLBACK.pointer);
+        for (let i = 0; i < list.length; i++) {
+            const binding = list[i];
+            if (!binding || binding.Enabled === false) continue;
+            if ((binding.ModifierMatch || 'Exact') === 'Any') continue;
+            if (Array.isArray(binding.Modifiers) && binding.Modifiers.indexOf(name) !== -1) return true;
+        }
+        return false;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Bindable Action Catalogue (for a personalisation screen)
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetActionCatalogue() {
+        const list = Na__LeCfg__KeyVal('Actions', 'List', null);
+        return Array.isArray(list) ? list : [];
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
@@ -400,7 +657,16 @@
         Na__LeCfg__GetNavigationSetup,
         Na__LeCfg__GetPdfSetup,
         Na__LeCfg__GetLabel,
-        Na__LeCfg__FormatLabel
+        Na__LeCfg__FormatLabel,
+        Na__LeCfg__SetKeyMap,
+        Na__LeCfg__GetGuards,
+        Na__LeCfg__GetKeyboardSetup,
+        Na__LeCfg__GetTouchSetup,
+        Na__LeCfg__MatchPointerBinding,
+        Na__LeCfg__MatchWheelBinding,
+        Na__LeCfg__MatchKeyBinding,
+        Na__LeCfg__IsPointerModifierBound,
+        Na__LeCfg__GetActionCatalogue
     };
     // ------------------------------------------------------------
 

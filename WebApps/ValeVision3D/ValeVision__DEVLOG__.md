@@ -2,6 +2,21 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.6 - 10-Sep-2026 - Drawings project only when asked
+
+### Changed
+- **Record default.** A new floor plan, elevation or section starts with
+  Projected Linework off. The scene overlay already stayed idle for a
+  record with the toggle off; now nothing else computes for it either.
+- **Baking only what asks.** Save Floor Plans, Save Elevations and the two
+  Bake actions used to project every drawing in the project, which is
+  where a save could disappear for minutes on a house. Bake All and Bake
+  Before Save now skip any drawing whose record toggle is off unless a
+  caller names it (the Layout Editor names the drawings behind its
+  viewports that have Projected Linework on) or forces. The Dev counts
+  report how many were left off.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.5 - 10-Sep-2026 - Renaming a drawing
 
 ### Fixed

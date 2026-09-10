@@ -36,6 +36,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.1
+// - Base Image off: no snapshot is rendered, shown or exported; the picture already held comes straight back on.
+//
 // 10-Sep-2026 - Version 1.3.0
 // - The stored snapshot records the width it was rendered at, so a picture too small for the working level is re-rendered instead of shown blurred (a record written before that key reads as too small).
 // - Every render uploads, so the stored file and its record always agree; the PDF reuses it only when it is wide enough.
@@ -261,7 +264,15 @@
             state.empty.hidden = false; state.img.hidden = true; state.key = null;
             return;
         }
+        // BASE IMAGE OFF | An empty frame: nothing is rendered, and the last
+        // picture is kept in the state so switching back on is instant.
+        if (viewport.Viewport__Styles.baseImage === false) {
+            if (state.timer) { window.clearTimeout(state.timer); state.timer = null; }
+            state.empty.hidden = true; state.img.hidden = true;
+            return;
+        }
         state.empty.hidden = true;
+        if (state.dataUrl && state.img.hidden) state.img.hidden = false;          // <-- Back on: the picture it already has
         const key = Na__LeVp3d__Fingerprint(viewport, scene);
         if (state.key === key) {
             const wanted = Na__LeVp3d__PixelSize(viewport, Na__LeRaster__Working());
@@ -374,6 +385,7 @@
     async function Na__LeVp3d__RenderForExport(sheet, viewport) {
         const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
         if (!scene) return null;
+        if (viewport.Viewport__Styles.baseImage === false) return null;           // <-- An empty frame prints empty
         const key     = Na__LeVp3d__Fingerprint(viewport, scene);
         const profile = Na__LeVp3d__ExportProfile();
         const px      = Na__LeVp3d__PixelSize(viewport, profile);

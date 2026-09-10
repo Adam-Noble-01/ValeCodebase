@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.4.1
+// - Base Image off: no underlay is rendered, shown or exported; the frame keeps its linework alone.
+//
 // 10-Sep-2026 - Version 1.4.0
 // - Underlay pixels come from the global raster level (Low, Medium, High); the export render always uses the export level.
 //
@@ -362,15 +365,24 @@
         }
         state.empty.hidden = true;
 
-        // UNDERLAY | Slide the last picture; render a new one once things settle
+        // UNDERLAY | Slide the last picture; render a new one once things settle.
+        // With the base image off nothing is rendered at all: the frame keeps
+        // only its linework, which is what a vector drawing wants, and the
+        // costly render never runs.
         const styles  = viewport.Viewport__Styles;
         state.masterPt = sheet && sheet.Sheet__Lineweights ? sheet.Sheet__Lineweights.ViewportPt : null;   // <-- Printed points for the visible linework
         const modelFp = Na__LeSnap__GetPipelineFingerprint();
-        const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
-                      Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard, Na__LeRaster__Get() ].join('|');
-        Na__LeVp2d__PlaceUnderlay(state, win, ppm);
-        state.wantedKey = key;
-        if (key !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewport.Viewport__Id);
+        if (styles.baseImage === false) {
+            if (state.timer) { window.clearTimeout(state.timer); state.timer = null; }
+            state.underlay.hidden = true;
+            state.wantedKey = state.renderedKey;                                 // <-- Nothing outstanding while it is off
+        } else {
+            const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
+                          Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard, Na__LeRaster__Get() ].join('|');
+            Na__LeVp2d__PlaceUnderlay(state, win, ppm);
+            state.wantedKey = key;
+            if (key !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewport.Viewport__Id);
+        }
 
         // LINEWORK | Cached classes paint now; otherwise they arrive later
         if (styles.projectedLinework === false) {
@@ -480,6 +492,7 @@
     function Na__LeVp2d__RenderForExport(viewport) {
         const described = Na__LeVp2d__Describe(viewport);
         if (!described.definition) return Promise.resolve(null);
+        if (viewport.Viewport__Styles.baseImage === false) return Promise.resolve(null);   // <-- Vector only: the PDF carries the linework alone
         const frame = viewport.Viewport__FrameMm;
         const px    = Na__LeRaster__Fit(frame.WidthMm, frame.HeightMm, Na__LeRaster__Export());   // <-- Always the export level, whatever is on screen
         return Na__LeSnap__Render2d(described.definition, described.window, viewport.Viewport__Styles, px.w, px.h);

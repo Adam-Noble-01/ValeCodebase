@@ -394,6 +394,7 @@
         const b = (block && typeof block === 'object') ? block : {};
         const flag = (key, fallback) => (typeof b[key] === 'boolean' ? b[key] : fallback);
         return {
+            baseImage         : flag('BaseImage',         true),
             projectedLinework : flag('ProjectedLinework', false),
             profileLinework   : flag('ProfileLinework',   false),
             glassOpaque       : flag('GlassOpaque',       true),

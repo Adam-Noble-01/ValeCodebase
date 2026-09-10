@@ -2,6 +2,24 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.12 - 10-Sep-2026 - Layout Editor: the picture behind a viewport can be switched off
+
+### Added
+- **Base Image**, a viewport style, on by default. Off, the rendered
+  picture behind the viewport is not shown, not rendered and not
+  exported. On a 2D viewport that leaves the projected linework alone on
+  the paper, which is the vector drawing a technical sheet wants, and the
+  costly render never runs. On a 3D viewport it leaves an empty frame.
+  Switching it back on shows the picture the frame already had, with no
+  new render.
+
+### Note on Whitecard
+- The Whitecard style swaps every opaque material to flat white, but only
+  under MaxEngine. This project, and the shipped default, run PureEngine,
+  which already renders that look, so the toggle does nothing here. It is
+  left in place for MaxEngine projects.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.11 - 10-Sep-2026 - Layout Editor: 3D snapshots really do follow the raster level
 
 ### Fixed

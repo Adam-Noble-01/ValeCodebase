@@ -30,6 +30,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Base Image toggle: the rendered picture behind a viewport, off for vector-only 2D linework.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Enhance Whitecard toggle (levels and sharpen on the viewport render).
 //
@@ -67,6 +70,7 @@
     // ------------------------------------------------------------
     const Na__LePanelStyles__ID = 'styles';
     const Na__LePanelStyles__TOGGLES = [
+        { key : 'baseImage',         label : 'Base Image',              twoDOnly : false },
         { key : 'projectedLinework', label : 'Projected Linework',      twoDOnly : true },
         { key : 'profileLinework',   label : 'Profile Linework Effect', twoDOnly : false },
         { key : 'glassOpaque',       label : 'Glass Transparency Off',  twoDOnly : false },

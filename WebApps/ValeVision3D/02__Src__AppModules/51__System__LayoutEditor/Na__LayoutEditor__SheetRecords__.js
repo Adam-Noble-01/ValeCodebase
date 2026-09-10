@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.2
+// - The baseImage style (the rendered picture behind a viewport).
+//
 // 10-Sep-2026 - Version 1.1.1
 // - The snapshot asset carries Asset__PixelWidth (null when unknown).
 //
@@ -81,7 +84,7 @@
     const Na__LeRec__KIND_2D     = '2d';
     const Na__LeRec__KIND_3D     = '3d';
     const Na__LeRec__LAYER_TYPES = [ 'viewport', 'annotation', 'dimension', 'vector', 'mixed' ];
-    const Na__LeRec__STYLE_KEYS  = [ 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines', 'enhanceWhitecard' ];
+    const Na__LeRec__STYLE_KEYS  = [ 'baseImage', 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines', 'enhanceWhitecard' ];
     const Na__LeRec__ID_PAD      = 3;
     // ------------------------------------------------------------
 
@@ -177,6 +180,7 @@
         const defaults = setup.defaultStyles;
         const pick     = (key) => (typeof styles[key] === 'boolean' ? styles[key] : defaults[key]);
         viewport.Viewport__Styles = {
+            baseImage         : pick('baseImage'),
             projectedLinework : pick('projectedLinework'),
             profileLinework   : pick('profileLinework'),
             glassOpaque       : pick('glassOpaque'),

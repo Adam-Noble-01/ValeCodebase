@@ -118,6 +118,7 @@
         "LayoutEditor__Viewport__ShowScaleLabel": true,
         "LayoutEditor__Viewport__DefaultStylesNote": "What a new viewport starts with. Projected Linework is off so laying out a sheet never triggers a projection; switch it on per viewport when the layout is settled, the way a raster viewport becomes a vector one in SketchUp LayOut. The raster underlay renders either way.",
         "LayoutEditor__Viewport__DefaultStyles": {
+            "BaseImage": true,
             "ProjectedLinework": false,
             "ProfileLinework": false,
             "GlassOpaque": true,
@@ -315,6 +316,7 @@
         "LayoutEditor__Labels__ShapeDefaultsNote": "Nothing selected: these settings apply to new shapes.",
         "LayoutEditor__Labels__ShapeDrawNote": "Draw tool (L): click points, click the first point to close a polygon, Enter or double-click to finish a line, Esc to abandon.",
         "LayoutEditor__Labels__StyleEnhanceWhitecard": "Enhance Whitecard",
+        "LayoutEditor__Labels__StyleBaseImage": "Base Image",
         "LayoutEditor__Labels__Lineweights": "Lineweights (pt)",
         "LayoutEditor__Labels__ViewportLinesPt": "Viewport lines",
         "LayoutEditor__Labels__DimensionLinesPt": "Dimension lines",

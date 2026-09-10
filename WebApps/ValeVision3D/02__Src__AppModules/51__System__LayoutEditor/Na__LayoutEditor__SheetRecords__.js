@@ -178,6 +178,7 @@
         if (viewport.Viewport__MarkupMode !== 'sheet') viewport.Viewport__MarkupMode = 'scene';
         if (viewport.Viewport__ShowScaleLabel === undefined) viewport.Viewport__ShowScaleLabel = setup.showScaleLabel;
         if (viewport.Viewport__SnapshotAsset === undefined) viewport.Viewport__SnapshotAsset = null;
+        if (typeof viewport.Viewport__Locked !== 'boolean') viewport.Viewport__Locked = false;   // <-- A locked viewport cannot be entered, moved or resized
         return viewport;
     }
     // ------------------------------------------------------------

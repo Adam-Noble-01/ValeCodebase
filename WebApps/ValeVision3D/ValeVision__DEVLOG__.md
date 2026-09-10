@@ -2,6 +2,60 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.7 - 10-Sep-2026 - Layout Editor: undo, locks, context menu, roaming page, sheets that survive a reload
+
+### Fixed
+- **Blank sheet after a reload.** The editor shell is a CSS grid and its
+  centre column had no minimum height, so the stage grew to the height of
+  its own scroll content instead of scrolling. Once the page had more room
+  around it the paper sat thousands of pixels below the visible area. The
+  grid row is now pinned to the host and every column has min-height 0;
+  the room maths also measures the visible stage, never grown content.
+- **"Drawings save failed: Failed to fetch".** That toast meant nothing was
+  listening on the local server: the service worker keeps serving the app
+  from its cache, so the page looks alive while Flask is down. The toast
+  now says the local server is not running and names start_server.bat.
+
+### Added
+- **Undo and redo.** Ctrl+Z, Ctrl+Y (and Ctrl+Shift+Z), toolbar buttons and
+  the context menu step through the last fifty announced changes on the
+  active sheet (Na__LayoutEditor__History__). A drag is one step however
+  long it lasts. A save no longer wipes the history or the selection: the
+  model announces 'saved' instead of 'loaded' for it.
+- **Locked viewports.** Right-click, Lock viewport (or the Viewport panel
+  checkbox). A locked viewport cannot be entered, moved, resized, nudged
+  or deleted; the outline turns grey and carries a Locked tag.
+- **Context menu.** A right click that did not pan opens a menu in the
+  house style for what is under the cursor: edit or finish editing the
+  content, recentre the content, lock or unlock, delete; edit or delete
+  text; delete a dimension; on empty paper, zoom to fit and snapping;
+  undo and redo everywhere (Na__LayoutEditor__ContextMenu__).
+- **Sheets that survive a reload.** Every announced change is written to a
+  browser draft under the project code; a project load that differs from
+  the draft puts the draft back, marks the sheets unsaved and says so. A
+  sheet created, renamed, reordered or deleted (or its paper or title
+  block changed) saves the project of its own accord a moment later, on
+  localhost; content edits still wait for Save Sheets, so a drag session
+  never writes the project mid-move (Na__LayoutEditor__AutoSave__).
+
+### Changed
+- **Drag moves, double-click enters.** Dragging anywhere on a viewport
+  moves it, selected or not. Double-click enters the content: the outline
+  goes amber with a note, and a drag then repositions the drawing inside
+  the frame (2D pans the window, 3D slides the picture). Esc, a click
+  elsewhere, or the menu finishes it.
+- **Corners crop.** Every handle crops or extends the frame in the axes it
+  names; a corner does both, on 2D and 3D viewports alike. Shift on a 3D
+  corner scales the picture proportionally as before (plan D29 and D30
+  revised).
+- **Snap markers** are larger (18 px, heavier line) with a wider catch
+  radius.
+- **Room to roam.** The paper sits a full stage in from every edge of an
+  explicitly sized room, so it can be pushed clear of the window in any
+  direction the way a LayOut page can; Fit centres it in that room.
+- **Service worker token** 2026-09-10-3 (shell HTML and stylesheet changed).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.6 - 10-Sep-2026 - Drawings project only when asked
 
 ### Changed

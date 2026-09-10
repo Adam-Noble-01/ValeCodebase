@@ -46,6 +46,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.1
+// - A save that cannot reach the origin says the local server is not running instead of "Failed to fetch".
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 2.
 //
@@ -70,7 +73,7 @@
     // ------------------------------------------------------------
     // @delegate: ../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js
     // ------------------------------------------------------------
-    import { Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import { Na__AppUtils__GetProjectCodeFromUrl, Na__AppUtils__IsRunningOnLocalhost } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
@@ -329,7 +332,13 @@
 
         } catch (error) {
             console.error('[ValeVision3D] Drawings save error:', error);
-            toast(`Drawings save failed: ${error.message}`, true);
+            // A TypeError from fetch means nothing answered at the origin: the
+            // local Flask server is not running. The service worker keeps
+            // serving the app from its cache, so the page itself looks alive.
+            const unreachable = (error instanceof TypeError) && Na__AppUtils__IsRunningOnLocalhost();
+            toast(unreachable
+                ? `Local server not running at ${window.location.origin}. Start Whitecardopedia start_server.bat, then save again.`
+                : `Drawings save failed: ${error.message}`, true);
             return false;
         }
     }

@@ -29,6 +29,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Undo and Redo buttons, enabled by the history depth.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Snap toggle button.
 //
@@ -56,6 +59,7 @@
     } from './Na__LayoutEditor__SheetTools__.js';
     import { Na__LeNav__Fit, Na__LeNav__ZoomTo } from './Na__LayoutEditor__Navigation__.js';
     import { Na__LeOsnap__CHANGED_EVENT, Na__LeOsnap__IsEnabled, Na__LeOsnap__Toggle } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeHist__CHANGED_EVENT, Na__LeHist__CanUndo, Na__LeHist__CanRedo, Na__LeHist__Undo, Na__LeHist__Redo } from './Na__LayoutEditor__History__.js';
     import { Na__LeSurface__ZOOM_EVENT, Na__LeSurface__GetZoom } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LePdf__ExportSheet } from './Na__LayoutEditor__PdfExporter__.js';
     // ------------------------------------------------------------
@@ -115,6 +119,10 @@
         });
         const snap = Na__LeToolbar__Root.querySelector('[data-na-toolbar="snap"]');
         if (snap) { snap.classList.toggle('na-le-toolbar__btn--active', Na__LeOsnap__IsEnabled()); snap.setAttribute('aria-pressed', String(Na__LeOsnap__IsEnabled())); }
+        const undo = Na__LeToolbar__Root.querySelector('[data-na-toolbar="undo"]');
+        if (undo) undo.disabled = !Na__LeHist__CanUndo();
+        const redo = Na__LeToolbar__Root.querySelector('[data-na-toolbar="redo"]');
+        if (redo) redo.disabled = !Na__LeHist__CanRedo();
         const zoom = Na__LeToolbar__Root.querySelector('[data-na-toolbar="zoom"]');
         if (zoom) zoom.textContent = Math.round(Na__LeSurface__GetZoom() * 100) + '%';
         const sheet = Na__LeModel__GetActiveSheet();
@@ -171,6 +179,9 @@
             });
             root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SnapToggle', 'Snap'), 'snap', Na__LeCfg__GetLabel('SnapToggleTitle', 'Snap dimensions to the linework endpoints and midpoints (F3)'), () => Na__LeOsnap__Toggle()));
             root.appendChild(Na__LeToolbar__Gap());
+            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('Undo', 'Undo'), 'undo', 'Undo the last change to this sheet (Ctrl+Z)', () => Na__LeHist__Undo()));
+            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('Redo', 'Redo'), 'redo', 'Redo the change just undone (Ctrl+Y)', () => Na__LeHist__Redo()));
+            root.appendChild(Na__LeToolbar__Gap());
         }
 
         root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('ZoomFit', 'Fit'), 'fit', 'Zoom to fit the sheet', () => Na__LeNav__Fit()));
@@ -190,7 +201,7 @@
         container.appendChild(root);
         Na__LeToolbar__Root = root;
         Na__LeToolbar__Listeners = () => Na__LeToolbar__Sync();
-        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
+        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
         Na__LeToolbar__Sync();
         return true;
     }
@@ -201,7 +212,7 @@
     // ------------------------------------------------------------
     function Na__LeToolbar__Unmount() {
         if (Na__LeToolbar__Listeners) {
-            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
+            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
         }
         if (Na__LeToolbar__Root && Na__LeToolbar__Root.parentNode) Na__LeToolbar__Root.parentNode.removeChild(Na__LeToolbar__Root);
         Na__LeToolbar__Root = Na__LeToolbar__Listeners = null;

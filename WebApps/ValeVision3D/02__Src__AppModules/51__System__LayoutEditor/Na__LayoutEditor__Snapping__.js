@@ -278,7 +278,7 @@
         Na__LeOsnap__Marker.style.top    = ((hit.y * ppm) - (sizePx / 2)) + 'px';
         Na__LeOsnap__Marker.style.width  = sizePx + 'px';
         Na__LeOsnap__Marker.style.height = sizePx + 'px';
-        Na__LeOsnap__Marker.style.borderWidth = Math.max(1, 1.5 / Na__LeSurface__GetZoom()) + 'px';
+        Na__LeOsnap__Marker.style.borderWidth = Math.max(1.5, 2.5 / Na__LeSurface__GetZoom()) + 'px';
         Na__LeOsnap__Marker.hidden = false;
     }
     // ------------------------------------------------------------

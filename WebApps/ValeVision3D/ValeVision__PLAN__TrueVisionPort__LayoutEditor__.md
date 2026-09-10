@@ -34,7 +34,7 @@ Port three TrueVision systems into ValeVision so that Plan View and Elevation / 
 
 Then build one new tool:
 
-4. **Layout Editor** (menu label "Layout Editor"). Adds drawing tabs beside the 3D model ("3D Model | Drawing 1 | Drawing 2 ..."). A drawing is a paper sheet (A4 to A1) carrying scaled viewports (1:20, 1:50, 1:100) of plan, elevation, section and 3D scenes, a Photoshop-style layer stack on the left, and Viewport / Text / Dimension / Styles panels on the right. 2D viewports are locked to the recognised scales and only crop; 3D viewports scale from the corners and crop from the edges. The sheet exports to a true-size PDF with vector linework.
+4. **Layout Editor** (menu label "Layout Editor"). Adds drawing tabs beside the 3D model ("3D Model | Drawing 1 | Drawing 2 ..."). A drawing is a paper sheet (A4 to A1) carrying scaled viewports (1:20, 1:50, 1:100) of plan, elevation, section and 3D scenes, a Photoshop-style layer stack on the left, and Viewport / Text / Dimension / Styles panels on the right. 2D viewports are locked to the recognised scales and only crop; 3D viewports crop from every handle and scale with Shift on a corner. The sheet exports to a true-size PDF with vector linework.
 
 Underneath both the scenes and the editor sits the Lantern Designer's projected-edges engine (rebuilt 07-Aug-2026): a raster underlay with an exact hidden-line-removed vector linework layer in front, the same two-layer stack the lantern drawings use.
 
@@ -74,8 +74,8 @@ Out of scope for this plan: porting anything back into TrueVision (that is a lat
 | D26 | Two title block styles: "Modern" (vector primitives rendered to SVG and PDF from one list) and "Classic" (the scanned title block image stretched to the sheet; the existing A3 scan is used for every size until per-size scans are added). |
 | D27 | Scales: 1:20, 1:50, 1:100 as a three-way toggle. |
 | D28 | A section is an elevation record in Section mode, filed into the Cross Sections group. Elevation mode files into Elevations. |
-| D29 | 2D viewport: scale locked, edge handles crop or expand the window, dragging inside pans the drawing within the window, corner handles do nothing. |
-| D30 | 3D viewport: raster snapshot rendered from the scene camera through the live pipeline at export DPI with the viewport's style toggles applied; corner handles scale proportionally, edge handles crop; no live orbit in the first version. |
+| D29 | 2D viewport: scale locked; every handle crops or expands the window (a corner in both axes); a drag moves the frame; double-click enters the content, and a drag then pans the drawing within the window. Revised 10-Sep-2026 (v2.21.7) at Adam's request; the original read "corner handles do nothing, dragging inside pans". |
+| D30 | 3D viewport: raster snapshot rendered from the scene camera through the live pipeline at export DPI with the viewport's style toggles applied; every handle crops, Shift on a corner scales proportionally (revised 10-Sep-2026, v2.21.7; originally corners scaled); no live orbit in the first version. |
 | D31 | Layer type is a tag (Dimensions, Annotations, Viewports, General) used for filtering; any layer holds anything. Drag and arrows reorder; top of the list draws frontmost. |
 | D32 | Right panels top to bottom: Viewport Settings, Text, Dimensions, Styles. Every section folds; section heights and both column widths drag to resize. |
 | D33 | The four style toggles (Projected Linework, Profile Linework Effect, Glass Transparency Off, Whitecard) also exist per plan and elevation record so carousel drawings match sheet viewports. |
@@ -717,8 +717,8 @@ Fields default from project.json (`projectName`, `projectCode`, client name wher
 
 | File | Lines (est.) | Notes |
 |---|---|---|
-| `Na__LayoutEditor__Viewport2d__.js` | 560 | A window onto a plan, elevation or section at a locked scale: hosts the drawing's raster underlay (the scene rendered through the composer preset offscreen at the required pixels per paper mm, cached by fingerprint), the projected linework SVG (from the cached asset or on-device compute) with its viewBox spanning exactly `frame body mm x scale denominator` of model space, and the markup host. Edge handles crop or expand the window; drag inside pans `Viewport__PanMm`; corner handles disabled |
-| `Na__LayoutEditor__Viewport3d__.js` | 420 | Raster snapshot from the scene camera via `Na__UiFeature__RenderToDataUrl` (tiled renderer for export DPI) with the material preset applied; corner handles scale proportionally (`Viewport__ImageScale`), edge handles crop; snapshot cached by fingerprint and uploaded on localhost (D36) |
+| `Na__LayoutEditor__Viewport2d__.js` | 560 | A window onto a plan, elevation or section at a locked scale: hosts the drawing's raster underlay (the scene rendered through the composer preset offscreen at the required pixels per paper mm, cached by fingerprint), the projected linework SVG (from the cached asset or on-device compute) with its viewBox spanning exactly `frame body mm x scale denominator` of model space, and the markup host. Every handle crops or expands the window; a drag moves the frame; double-click enters the content and a drag then pans `Viewport__PanMm` (revised v2.21.7) |
+| `Na__LayoutEditor__Viewport3d__.js` | 420 | Raster snapshot from the scene camera via `Na__UiFeature__RenderToDataUrl` (tiled renderer for export DPI) with the material preset applied; every handle crops, Shift on a corner scales proportionally (`Viewport__ImageScale`) (revised v2.21.7); snapshot cached by fingerprint and uploaded on localhost (D36) |
 | `Na__LayoutEditor__ViewportHandles__.js` | 480 | Eight handles, hit test, drag state, cursor feedback, touch; lifted from `Na__PageLayoutSystem__Controls__Pc__.js` and `__TouchScreen__.js` conventions; body class carries `cursor` and `user-select` during a drag |
 | `Na__LayoutEditor__SnapshotRenderer__.js` | 360 | Offscreen rendering for both viewport kinds with the style toggles, using the existing pipeline state via the lazy getter; restores every renderer state it touches |
 | `Na__LayoutEditor__MarkupBridge__.js` | 520 | D34 both modes: "Scene" mounts the ported markup engines on the viewport with an adapter mapping paper px to drawing mm at the viewport scale (so annotations and dimensions edit the scene record); "Sheet" mounts them on the sheet's own layers; Import From Scene copies scene markup into the chosen layer |
@@ -745,11 +745,13 @@ Web viewers get the tab strip, pan and zoom, and a Download PDF button in the sh
 
 Built 09/10-Sep-2026 as v2.21.0, thirty-three files (the table above plus `SheetRecords__` split from the model for the line budget, `DimensionGeometry__`, `Assets__`, `Panel__Sheet__` and `Toolbar__`). Two deliberate departures from the tables: scene markup inside a viewport is drawn statically at scale rather than by mounting the live 44 and 45 engines on the sheet (editing a scene record happens in the drawing through Edit In Drawing, so one record never has two editors; Sheet mode and Import From Scene work as written), and the tab strip and host are created by their modules rather than authored in index.html. Sheet dimensions are stored as paper endpoints with the viewport they belong to and report paper length times that viewport's scale denominator. The 2D underlay is the composer render of the drawing window made offscreen through the section adapter and presets on the module's own orthographic camera; the 3D snapshot poses the main camera from the scene record and restores pose, layer visibility and cross sections afterwards.
 
+v2.21.7 (10-Sep-2026) added three files: `Na__LayoutEditor__History__.js` (undo and redo, fifty whole-sheet snapshots per sheet, Ctrl+Z and Ctrl+Y), `Na__LayoutEditor__ContextMenu__.js` (the right-click menu) and `Na__LayoutEditor__AutoSave__.js` (a browser draft of every change, restored on the next load while unsaved, and a project save of its own after a sheet is created, renamed, reordered or deleted). The same release revised D29 and D30 (every handle crops, a drag moves, double-click enters the content), added a per-viewport lock (`Viewport__Locked`) and gave the page a full stage of room on every side.
+
 ### 11.6 Hand-over test list
 
 1. New sheet from the Dev menu: a "Drawing 1" tab appears; A3 landscape with the Modern title block; switch to Classic: the scan stretches and the fields overlay.
 2. Add a plan viewport at 1:50: linework and underlay land at scale (a 10 m wall measures 200 mm on the paper at 100 percent zoom); toggle 1:100 and 1:20.
-3. Edge handles crop, dragging inside pans, corners do nothing; a 3D viewport scales from the corners and crops from the edges.
+3. Every handle crops (a corner in both axes); a drag moves the frame; double-click enters the content and a drag then pans; Shift on a 3D corner scales; a locked viewport (right-click, Lock viewport) refuses all of it; Ctrl+Z steps back through it all.
 4. Layers: reorder changes stacking; lock prevents selection; type filter.
 5. Text and dimension panels change new and selected items; sheet dimensions measure the model at scale.
 6. Markup mode Scene edits the plan's own labels; Sheet mode keeps them separate; Import From Scene copies.
@@ -850,9 +852,10 @@ Open items to settle during the build (not blocking):
 | `na-pm-scene-activated` | `{ sceneName, sceneId, isDrawingApproach }` | scene transition (edited) | cross section scene data (skips approaches) |
 | `na-projectedlinework-changed` | `{ drawingId, status }` | projection pipeline | overlay, dev section, layout editor viewports |
 | `na-layouteditor-mode-changed` | `{ isActive, sheetId }` | layout editor controller | carousel, toolbar, tab strip |
-| `na-layouteditor-sheets-changed` | `{ reason, sheetId, itemId }` | sheet model | mode controller, panels, toolbar, tab strip, Dev section |
+| `na-layouteditor-sheets-changed` | `{ reason, sheetId, itemId }` (reasons include `saved` from v2.21.7) | sheet model | mode controller, panels, toolbar, tab strip, Dev section, history, auto save |
 | `na-layouteditor-tool-changed` | `{ tool }` | sheet tools | toolbar |
 | `na-layouteditor-zoom-changed` | `{ zoom }` | sheet surface | toolbar |
+| `na-layouteditor-history-changed` | `{ sheetId, undoDepth, redoDepth }` | history | toolbar |
 | `na-layouteditor-request-drawing` | `{ viewportId, plan, elevation }` | viewport panel | mode controller (Edit In Drawing) |
 | `na-layouteditor-asset-loaded` | `{ path }` | sheet chrome | sheet surface (rebuild once a logo or scan arrives) |
 

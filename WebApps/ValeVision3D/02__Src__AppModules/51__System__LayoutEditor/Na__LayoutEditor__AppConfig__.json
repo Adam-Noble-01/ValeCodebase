@@ -159,11 +159,21 @@
     "LayoutEditor__Snapping__Config": {
         "LayoutEditor__Snapping__Description": "Object snaps on the projected linework inside 2D viewports, for placing and dragging sheet dimensions. RadiusPx is the pick radius on screen at any zoom. Endpoints and midpoints of every painted segment are candidates; an endpoint wins a near tie. HiddenLines adds the hidden class as a source. The toggle (toolbar button or the Snap__Toggle key binding) is remembered per browser.",
         "LayoutEditor__Snapping__Enabled": true,
-        "LayoutEditor__Snapping__RadiusPx": 10,
+        "LayoutEditor__Snapping__RadiusPx": 14,
         "LayoutEditor__Snapping__Endpoints": true,
         "LayoutEditor__Snapping__Midpoints": true,
         "LayoutEditor__Snapping__HiddenLines": false,
-        "LayoutEditor__Snapping__MarkerSizePx": 10
+        "LayoutEditor__Snapping__MarkerSizePx": 18
+    },
+    "LayoutEditor__History__Config": {
+        "LayoutEditor__History__Description": "Undo and redo per sheet. Every announced change is one step (a drag is one step); MaxSteps is how many are kept.",
+        "LayoutEditor__History__MaxSteps": 50
+    },
+    "LayoutEditor__AutoSave__Config": {
+        "LayoutEditor__AutoSave__Description": "A browser draft of every change, put back on the next load while unsaved, and a project save of its own DebounceMs after a sheet is created, renamed, reordered or deleted. Localhost only; the web build is read-only.",
+        "LayoutEditor__AutoSave__Enabled": true,
+        "LayoutEditor__AutoSave__DebounceMs": 1500,
+        "LayoutEditor__AutoSave__DraftEnabled": true
     },
     "LayoutEditor__Linework__Config": {
         "LayoutEditor__Linework__Description": "Paper-millimetre stroke widths for the projected linework inside sheet viewports (they print at these widths at any scale). Colours follow the Projected Linework appearance block so a sheet matches its scene.",
@@ -210,6 +220,24 @@
         "LayoutEditor__Labels__PdfFailedMessage": "PDF export failed - see console.",
         "LayoutEditor__Labels__SnapToggle": "Snap",
         "LayoutEditor__Labels__SnapToggleTitle": "Snap dimensions to the linework endpoints and midpoints (F3)",
-        "LayoutEditor__Labels__ProjectingLinework": "Projecting linework"
+        "LayoutEditor__Labels__ProjectingLinework": "Projecting linework",
+        "LayoutEditor__Labels__Undo": "Undo",
+        "LayoutEditor__Labels__Redo": "Redo",
+        "LayoutEditor__Labels__MenuEditView": "Edit viewport content",
+        "LayoutEditor__Labels__MenuFinishView": "Finish editing content",
+        "LayoutEditor__Labels__MenuLock": "Lock viewport",
+        "LayoutEditor__Labels__MenuUnlock": "Unlock viewport",
+        "LayoutEditor__Labels__MenuCentre": "Recentre content",
+        "LayoutEditor__Labels__MenuDeleteViewport": "Delete viewport",
+        "LayoutEditor__Labels__MenuEditText": "Edit text",
+        "LayoutEditor__Labels__MenuDeleteText": "Delete text",
+        "LayoutEditor__Labels__MenuDeleteDimension": "Delete dimension",
+        "LayoutEditor__Labels__MenuZoomFit": "Zoom to fit",
+        "LayoutEditor__Labels__MenuSnapOn": "Snapping on",
+        "LayoutEditor__Labels__MenuSnapOff": "Snapping off",
+        "LayoutEditor__Labels__EditingViewNote": "Editing viewport content: drag to reposition, Esc to finish",
+        "LayoutEditor__Labels__LockedLabel": "Locked",
+        "LayoutEditor__Labels__LockedNote": "Locked",
+        "LayoutEditor__Labels__DraftRestored": "Unsaved sheet changes from this browser were restored. Save Sheets keeps them."
     }
 }

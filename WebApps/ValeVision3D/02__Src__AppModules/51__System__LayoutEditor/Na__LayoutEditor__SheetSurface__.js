@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Editing and locked outline states; a full stage of margin on every side so the paper roams freely.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -81,6 +84,7 @@
     // MODULE CONSTANTS | Class Names and Events
     // ------------------------------------------------------------
     const Na__LeSurface__ZOOM_EVENT   = 'na-layouteditor-zoom-changed';
+    const Na__LeSurface__CLASS_ROOM   = 'na-le-room';
     const Na__LeSurface__CLASS_SCALER = 'na-le-scaler';
     const Na__LeSurface__CLASS_PAPER  = 'na-le-paper';
     const Na__LeSurface__CLASS_FRAME  = 'na-le-frame';
@@ -89,6 +93,7 @@
     // MODULE VARIABLES | Elements and Current Sheet
     // ------------------------------------------------------------
     let Na__LeSurface__Stage     = null;
+    let Na__LeSurface__Room      = null;    // <-- Paper plus a whole stage of room on every side
     let Na__LeSurface__Scaler    = null;
     let Na__LeSurface__Paper     = null;
     let Na__LeSurface__Frames    = null;    // <-- Container of viewport frames
@@ -100,6 +105,7 @@
     let Na__LeSurface__Zoom      = 1;
     let Na__LeSurface__Ppm       = 3.2;     // <-- Screen pixels per paper millimetre at zoom 1
     let Na__LeSurface__Editable  = false;
+    let Na__LeSurface__EditingId = null;    // <-- Viewport whose content is being repositioned (double-click)
     let Na__LeSurface__OnAsset   = null;
     // ------------------------------------------------------------
 
@@ -128,7 +134,8 @@
         Na__LeSurface__Unmount();
         Na__LeSurface__Stage    = stageElement;
         Na__LeSurface__Editable = !!(options && options.editable);
-        Na__LeSurface__Scaler   = Na__LeSurface__El('div', Na__LeSurface__CLASS_SCALER, stageElement);
+        Na__LeSurface__Room     = Na__LeSurface__El('div', Na__LeSurface__CLASS_ROOM, stageElement);
+        Na__LeSurface__Scaler   = Na__LeSurface__El('div', Na__LeSurface__CLASS_SCALER, Na__LeSurface__Room);
         Na__LeSurface__Paper    = Na__LeSurface__El('div', Na__LeSurface__CLASS_PAPER, Na__LeSurface__Scaler);
         Na__LeSurface__Frames   = Na__LeSurface__El('div', 'na-le-paper__viewports', Na__LeSurface__Paper);
         Na__LeSurface__Handles  = null;                                          // <-- Created after the SVG layers so it sits on top
@@ -145,8 +152,8 @@
         if (Na__LeSurface__OnAsset) window.removeEventListener(Na__LeChrome__ASSET_EVENT, Na__LeSurface__OnAsset);
         Na__LeSurface__OnAsset = null;
         if (Na__LeSurface__Sheet) Na__LeSurface__ReleaseFrames();
-        if (Na__LeSurface__Scaler && Na__LeSurface__Scaler.parentNode) Na__LeSurface__Scaler.parentNode.removeChild(Na__LeSurface__Scaler);
-        Na__LeSurface__Stage = Na__LeSurface__Scaler = Na__LeSurface__Paper = Na__LeSurface__Frames = null;
+        if (Na__LeSurface__Room && Na__LeSurface__Room.parentNode) Na__LeSurface__Room.parentNode.removeChild(Na__LeSurface__Room);
+        Na__LeSurface__Stage = Na__LeSurface__Room = Na__LeSurface__Scaler = Na__LeSurface__Paper = Na__LeSurface__Frames = null;
         Na__LeSurface__ChromeSvg = Na__LeSurface__MarkupSvg = Na__LeSurface__Handles = null;
         Na__LeSurface__Sheet = Na__LeSurface__Layout = null;
     }
@@ -219,15 +226,17 @@
         Na__LeSurface__Paper.style.transform = 'scale(' + Na__LeSurface__Zoom + ')';
         Na__LeSurface__Scaler.style.width    = widthPx  + 'px';
         Na__LeSurface__Scaler.style.height   = heightPx + 'px';
-        // CENTRE | A paper smaller than the stage floats in the middle; a
-        // larger one scrolls from its top-left with a constant margin.
-        const stageW = Na__LeSurface__Stage.clientWidth;
-        const stageH = Na__LeSurface__Stage.clientHeight;
-        const pad    = 32;
-        Na__LeSurface__Scaler.style.marginLeft = Math.max(pad, (stageW - widthPx)  / 2) + 'px';
-        Na__LeSurface__Scaler.style.marginTop  = Math.max(pad, (stageH - heightPx) / 2) + 'px';
-        Na__LeSurface__Scaler.style.marginRight  = pad + 'px';
-        Na__LeSurface__Scaler.style.marginBottom = pad + 'px';
+        // ROOM TO ROAM | The paper sits a whole stage in from every edge of an
+        // explicitly sized room, so it can be pushed clear of the window in any
+        // direction the way a LayOut page can; Fit centres it by scrolling into
+        // that room. Explicit sizes, because a scroll container does not
+        // reliably count an end margin as scrollable.
+        const stageW = Math.min(Na__LeSurface__Stage.clientWidth,  window.innerWidth);    // <-- The visible box, so a stage that ever grew with its content cannot feed back
+        const stageH = Math.min(Na__LeSurface__Stage.clientHeight, window.innerHeight);
+        Na__LeSurface__Room.style.width    = (widthPx  + (stageW * 2)) + 'px';
+        Na__LeSurface__Room.style.height   = (heightPx + (stageH * 2)) + 'px';
+        Na__LeSurface__Scaler.style.left   = stageW + 'px';
+        Na__LeSurface__Scaler.style.top    = stageH + 'px';
         if (Na__LeSurface__Handles) Na__LeSurface__RefreshSelection();          // <-- Handles are counter-scaled
     }
     // ------------------------------------------------------------
@@ -271,6 +280,8 @@
 
     // FUNCTION | Accessors
     // ------------------------------------------------------------
+    function Na__LeSurface__SetEditingViewport(viewportId) { Na__LeSurface__EditingId = viewportId || null; Na__LeSurface__RefreshSelection(); }
+    function Na__LeSurface__GetEditingViewport() { return Na__LeSurface__EditingId; }
     function Na__LeSurface__GetSheet()  { return Na__LeSurface__Sheet; }
     function Na__LeSurface__GetLayout() { return Na__LeSurface__Layout; }
     function Na__LeSurface__GetElements() {
@@ -399,9 +410,11 @@
         Na__LeSurface__Frames.querySelectorAll('.' + Na__LeSurface__CLASS_FRAME).forEach((frame) => {
             frame.classList.toggle(Na__LeSurface__CLASS_FRAME + '--selected', !!viewport && frame.getAttribute('data-na-viewport-id') === viewport.Viewport__Id);
         });
-        if (!viewport || !Na__LeModel__IsLayerVisible(sheet, viewport.Viewport__LayerId)) { Na__LeHandles__Clear(Na__LeSurface__Handles); return; }
-        const locked = Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId);
-        Na__LeHandles__Render(Na__LeSurface__Handles, viewport, Na__LeSurface__Ppm, Na__LeSurface__Zoom, Na__LeSurface__Editable && !locked);
+        if (!viewport || !Na__LeModel__IsLayerVisible(sheet, viewport.Viewport__LayerId)) { Na__LeSurface__EditingId = null; Na__LeHandles__Clear(Na__LeSurface__Handles); return; }
+        const locked = Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId) || viewport.Viewport__Locked === true;
+        if (Na__LeSurface__EditingId && (Na__LeSurface__EditingId !== viewport.Viewport__Id || locked)) Na__LeSurface__EditingId = null;   // <-- Content editing ends with the selection, or with a lock
+        Na__LeHandles__Render(Na__LeSurface__Handles, viewport, Na__LeSurface__Ppm, Na__LeSurface__Zoom, Na__LeSurface__Editable && !locked,
+            { editing : Na__LeSurface__EditingId === viewport.Viewport__Id, locked : locked });
     }
     // ------------------------------------------------------------
 
@@ -425,6 +438,8 @@
         Na__LeSurface__GetPixelsPerMm,
         Na__LeSurface__ClientToPaperMm,
         Na__LeSurface__PaperMmToClient,
+        Na__LeSurface__SetEditingViewport,
+        Na__LeSurface__GetEditingViewport,
         Na__LeSurface__GetSheet,
         Na__LeSurface__GetLayout,
         Na__LeSurface__GetElements,

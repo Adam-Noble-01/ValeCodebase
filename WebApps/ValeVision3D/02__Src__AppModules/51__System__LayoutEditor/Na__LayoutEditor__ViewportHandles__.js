@@ -38,6 +38,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Corners crop or extend both axes on either kind (Shift on a 3D corner scales); outline carries editing and locked states and hides the handles then.
+//
 // 10-Sep-2026 - Version 1.0.1
 // - Fix: the left and right edge handles were both being drawn, and hit
 //   tested, at the centre of the frame, so a viewport could not be cropped
@@ -59,7 +62,7 @@
 
     // MODULE IMPORTS | Config and Model Kinds
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetViewportSetup } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__KIND_3D } from './Na__LayoutEditor__SheetModel__.js';
     // ------------------------------------------------------------
 
@@ -109,8 +112,7 @@
     // HELPER FUNCTION | Is a Handle Active for This Viewport Kind
     // ------------------------------------------------------------
     function Na__LeHandles__IsEnabled(viewport, key) {
-        if (viewport.Viewport__Kind === Na__LeModel__KIND_3D) return true;
-        return Na__LeHandles__CORNERS.indexOf(key) < 0;                          // <-- 2D corners do nothing (D29)
+        return !!viewport && !!key;                                              // <-- Every handle crops or extends; corners do both axes
     }
     // ------------------------------------------------------------
 
@@ -134,22 +136,26 @@
 
     // FUNCTION | Draw the Outline and Handles Into the Selection Layer
     // ------------------------------------------------------------
-    function Na__LeHandles__Render(layer, viewport, ppm, zoom, editable) {
+    function Na__LeHandles__Render(layer, viewport, ppm, zoom, editable, options) {
         if (!layer) return;
         Na__LeHandles__Clear(layer);
+        const state = options || {};
         const rect   = viewport.Viewport__FrameMm;
         const setup  = Na__LeCfg__GetViewportSetup();
         const sizePx = setup.handleSizePx / zoom;                                // <-- Constant on screen at any zoom
 
         const outline = document.createElement('div');
-        outline.className = 'na-le-selection' + (editable ? '' : ' na-le-selection--readonly');
+        outline.className = 'na-le-selection' + (editable ? '' : ' na-le-selection--readonly') + (state.editing ? ' na-le-selection--editing' : '') + (state.locked ? ' na-le-selection--locked' : '');
         outline.style.left   = (rect.X * ppm) + 'px';
         outline.style.top    = (rect.Y * ppm) + 'px';
         outline.style.width  = (rect.WidthMm  * ppm) + 'px';
         outline.style.height = (rect.HeightMm * ppm) + 'px';
         outline.style.borderWidth = Math.max(1, 1.5 / zoom) + 'px';
+        if (state.editing)     outline.setAttribute('data-na-note', Na__LeCfg__GetLabel('EditingViewNote', 'Editing viewport content: drag to reposition, Esc to finish'));
+        else if (state.locked) outline.setAttribute('data-na-note', Na__LeCfg__GetLabel('LockedNote', 'Locked'));
+        outline.style.setProperty('--na-le-note-scale', String(1 / zoom));   // <-- The note reads the same at any zoom
         layer.appendChild(outline);
-        if (!editable) return;
+        if (!editable || state.editing || state.locked) return;                 // <-- No handles while the content is being edited, or when locked
 
         Na__LeHandles__KEYS.forEach((key) => {
             const anchor = Na__LeHandles__Anchor(rect, key);
@@ -251,15 +257,16 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Edge Drag on a 2D Viewport (window crops or extends, drawing stays put)
+    // HELPER FUNCTION | Crop or Extend a 2D Window From an Edge or a Corner (drawing stays put)
     // ------------------------------------------------------------
-    function Na__LeHandles__Edge2d(start, key, dMm, minSize, denominator) {
+    function Na__LeHandles__Resize2d(start, key, dMm, minSize, denominator) {
         const rect = Object.assign({}, start.rect);
-        if (key === 'lc' || key === 'rc') {
-            const r = Na__LeHandles__ResizeAxis(rect.X, rect.WidthMm, minSize, dMm.x, key === 'lc');
+        if (key.indexOf('l') >= 0 || key.indexOf('r') >= 0) {
+            const r = Na__LeHandles__ResizeAxis(rect.X, rect.WidthMm, minSize, dMm.x, key.indexOf('l') >= 0);
             rect.X = r.origin; rect.WidthMm = r.size;
-        } else {
-            const r = Na__LeHandles__ResizeAxis(rect.Y, rect.HeightMm, minSize, dMm.y, key === 'tc');
+        }
+        if (key.indexOf('t') >= 0 || key.indexOf('b') >= 0) {
+            const r = Na__LeHandles__ResizeAxis(rect.Y, rect.HeightMm, minSize, dMm.y, key.indexOf('t') >= 0);
             rect.Y = r.origin; rect.HeightMm = r.size;
         }
         // The drawing stays where it is on the paper: the window centre has
@@ -273,18 +280,19 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Edge Drag on a 3D Viewport (frame crops, image stays put)
+    // HELPER FUNCTION | Crop or Extend a 3D Frame From an Edge or a Corner (image stays put)
     // ------------------------------------------------------------
-    function Na__LeHandles__Edge3d(start, key, dMm, minSize) {
+    function Na__LeHandles__Resize3d(start, key, dMm, minSize) {
         const rect   = Object.assign({}, start.rect);
         const offset = Object.assign({}, start.offset);
-        if (key === 'lc' || key === 'rc') {
-            const r = Na__LeHandles__ResizeAxis(rect.X, rect.WidthMm, minSize, dMm.x, key === 'lc');
-            if (key === 'lc') offset.X = start.offset.X - (r.origin - start.rect.X);
+        if (key.indexOf('l') >= 0 || key.indexOf('r') >= 0) {
+            const r = Na__LeHandles__ResizeAxis(rect.X, rect.WidthMm, minSize, dMm.x, key.indexOf('l') >= 0);
+            if (key.indexOf('l') >= 0) offset.X = start.offset.X - (r.origin - start.rect.X);
             rect.X = r.origin; rect.WidthMm = r.size;
-        } else {
-            const r = Na__LeHandles__ResizeAxis(rect.Y, rect.HeightMm, minSize, dMm.y, key === 'tc');
-            if (key === 'tc') offset.Y = start.offset.Y - (r.origin - start.rect.Y);
+        }
+        if (key.indexOf('t') >= 0 || key.indexOf('b') >= 0) {
+            const r = Na__LeHandles__ResizeAxis(rect.Y, rect.HeightMm, minSize, dMm.y, key.indexOf('t') >= 0);
+            if (key.indexOf('t') >= 0) offset.Y = start.offset.Y - (r.origin - start.rect.Y);
             rect.Y = r.origin; rect.HeightMm = r.size;
         }
         return { rect : rect, imageOffset : offset };
@@ -326,9 +334,10 @@
     // dMm   : { x, y } pointer delta in paper millimetres
     // Returns a patch for Na__LeModel__UpdateViewport, or null for a no-op.
     // ------------------------------------------------------------
-    function Na__LeHandles__DragPatch(viewport, hit, start, dMm) {
+    function Na__LeHandles__DragPatch(viewport, hit, start, dMm, modifiers) {
         const is3d    = viewport.Viewport__Kind === Na__LeModel__KIND_3D;
         const minSize = Na__LeCfg__GetViewportSetup().minSizeMm;
+        const mods    = modifiers || {};
         if (!hit) return null;
 
         if (hit.mode === 'border') {
@@ -340,10 +349,11 @@
             return { pan : { X : start.pan.X - (dMm.x * denominator), Y : start.pan.Y - (dMm.y * denominator) } };
         }
         if (hit.mode === 'handle') {
+            // Every handle crops or extends the frame in the axes it names; a
+            // corner does both. Shift on a 3D corner scales the picture instead.
             const isCorner = Na__LeHandles__CORNERS.indexOf(hit.key) >= 0;
-            if (is3d) return isCorner ? Na__LeHandles__Corner3d(start, hit.key, dMm, minSize) : Na__LeHandles__Edge3d(start, hit.key, dMm, minSize);
-            if (isCorner) return null;                                           // <-- D29
-            return Na__LeHandles__Edge2d(start, hit.key, dMm, minSize, viewport.Viewport__ScaleDenominator);
+            if (is3d) return (isCorner && mods.shift) ? Na__LeHandles__Corner3d(start, hit.key, dMm, minSize) : Na__LeHandles__Resize3d(start, hit.key, dMm, minSize);
+            return Na__LeHandles__Resize2d(start, hit.key, dMm, minSize, viewport.Viewport__ScaleDenominator);
         }
         return null;
     }

@@ -34,6 +34,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Locked checkbox.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -215,6 +218,7 @@
         markup.appendChild(Na__LePanels__Button(Na__LeCfg__GetLabel('MarkupSheet', 'Sheet'), 'vp-markup', 'na-le-btn--toggle', 'sheet'));
         edit.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('MarkupMode', 'Markup'), markup));
         edit.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShowScaleLabel', 'Caption'), Na__LePanels__Input('checkbox', 'vp-caption')));
+        edit.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('LockedLabel', 'Locked'), Na__LePanels__Input('checkbox', 'vp-locked')));
 
         if (editable) {
             const actions = document.createElement('div');
@@ -262,6 +266,8 @@
         editBlock.querySelectorAll('[data-na-control="vp-markup"]').forEach((b) => b.classList.toggle('na-le-btn--active', b.getAttribute('data-na-role') === viewport.Viewport__MarkupMode));
         const caption = editBlock.querySelector('[data-na-control="vp-caption"]');
         if (caption) caption.checked = viewport.Viewport__ShowScaleLabel !== false;
+        const locked = editBlock.querySelector('[data-na-control="vp-locked"]');
+        if (locked) locked.checked = viewport.Viewport__Locked === true;
         const actions = editBlock.querySelector('[data-na-block="actions2d"]');
         if (actions) actions.hidden = !is2d;
     }
@@ -307,6 +313,7 @@
         Na__LePanels__OnControl('click', 'vp-centre', () => { const c = Na__LePanelViewport__Current(); if (c && Na__LeVp2d__CentreOnDrawing(c.sheet, c.viewport)) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, {}, false); });
         Na__LePanels__OnControl('click', 'vp-markup', (e, el, role) => { const c = Na__LePanelViewport__Current(); if (c) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { markupMode : role }); });
         Na__LePanels__OnControl('change', 'vp-caption', (e, el) => { const c = Na__LePanelViewport__Current(); if (c) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { showScaleLabel : el.checked }); });
+        Na__LePanels__OnControl('change', 'vp-locked',  (e, el) => { const c = Na__LePanelViewport__Current(); if (c) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { locked : el.checked }); });
         Na__LePanels__OnControl('click', 'vp-import', () => {
             const c = Na__LePanelViewport__Current();
             if (!c || c.viewport.Viewport__Kind !== Na__LeModel__KIND_2D) return;

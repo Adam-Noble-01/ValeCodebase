@@ -50,6 +50,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Viewport__Locked patch key. A save announces 'saved' instead of 'loaded', so the selection and the undo history survive it.
+// - RestoreSheets puts the browser draft back after a load.
+//
 // 10-Sep-2026 - Version 1.0.1
 // - Record helpers, normalisers and the title block fields moved to Na__LayoutEditor__SheetRecords__.js (line budget).
 // 09-Sep-2026 - Version 1.0.0
@@ -511,6 +515,7 @@
         if (patch.drawingId !== undefined) viewport.Viewport__DrawingId = patch.drawingId;
         if (patch.kind === Na__LeModel__KIND_2D || patch.kind === Na__LeModel__KIND_3D) viewport.Viewport__Kind = patch.kind;
         if (typeof patch.showScaleLabel === 'boolean') viewport.Viewport__ShowScaleLabel = patch.showScaleLabel;
+        if (typeof patch.locked === 'boolean') viewport.Viewport__Locked = patch.locked;
         if (patch.snapshotAsset !== undefined) viewport.Viewport__SnapshotAsset = patch.snapshotAsset;
 
         Na__LeRec__NormaliseViewport(viewport, viewport.Viewport__LayerId);
@@ -717,6 +722,27 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Put a Whole Sheet List Back (the browser draft after a load)
+    // ------------------------------------------------------------
+    // Replaces the live array's contents in place so the drawings block
+    // still owns it, normalises every record, keeps the active sheet when
+    // it survives, marks the model dirty and announces a load.
+    // ------------------------------------------------------------
+    function Na__LeModel__RestoreSheets(records) {
+        if (!Array.isArray(records)) return false;
+        const live = Na__LeModel__Array();
+        live.length = 0;
+        records.forEach((record) => { if (record && typeof record === 'object') live.push(JSON.parse(JSON.stringify(record))); });
+        Na__LeModel__GetSheets();                                                // <-- Normalises what arrived
+        if (Na__LeModel__ActiveSheetId && !Na__LeModel__GetSheetById(Na__LeModel__ActiveSheetId)) Na__LeModel__ActiveSheetId = null;
+        Na__LeModel__Selection = null;
+        Na__LeModel__Dirty = true;
+        Na__LeModel__Dispatch('loaded', Na__LeModel__ActiveSheetId);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Save the Drawings Block (sheets ride with plans and elevations)
     // ------------------------------------------------------------
     async function Na__LeModel__Save(showToast) {
@@ -732,9 +758,11 @@
     function Na__LeModel__Initialize() {
         if (Na__LeModel__Initialized) return true;
         Na__LeModel__Initialized = true;
-        const reload = () => {
+        const reload = (event) => {
+            const saved = !!(event && event.detail && event.detail.reason === 'saved');
             Na__LeModel__Dirty = false;
             if (Na__LeModel__ActiveSheetId && !Na__LeModel__GetSheetById(Na__LeModel__ActiveSheetId)) Na__LeModel__ActiveSheetId = null;
+            if (saved) { Na__LeModel__Dispatch('saved', Na__LeModel__ActiveSheetId); return; }   // <-- The same records, now on disk: selection and undo history stay
             Na__LeModel__Selection = null;
             Na__LeModel__Dispatch('loaded', Na__LeModel__ActiveSheetId);
         };
@@ -798,6 +826,7 @@
         Na__LeModel__GetSelectedViewport,
         Na__LeModel__IsDirty,
         Na__LeModel__MarkDirty,
+        Na__LeModel__RestoreSheets,
         Na__LeModel__Save
     };
     // ------------------------------------------------------------

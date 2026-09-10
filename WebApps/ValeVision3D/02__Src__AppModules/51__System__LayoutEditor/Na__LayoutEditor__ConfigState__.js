@@ -90,7 +90,10 @@
                      { Id : 'Tool__Select',      Action : 'Tool__Select',      Enabled : true, Keys : [ 'v', 'V' ],               Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Tool__Text',        Action : 'Tool__Text',        Enabled : true, Keys : [ 't', 'T' ],               Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Tool__Dimension',   Action : 'Tool__Dimension',   Enabled : true, Keys : [ 'd', 'D' ],               Modifiers : [], ModifierMatch : 'Exact' },
-                     { Id : 'Snap__Toggle',      Action : 'Snap__Toggle',      Enabled : true, Keys : [ 'F3' ],                   Modifiers : [], ModifierMatch : 'Exact' } ],
+                     { Id : 'Snap__Toggle',      Action : 'Snap__Toggle',      Enabled : true, Keys : [ 'F3' ],                   Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Undo',        Action : 'Edit__Undo',        Enabled : true, Keys : [ 'z', 'Z' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Redo',        Action : 'Edit__Redo',        Enabled : true, Keys : [ 'y', 'Y' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__RedoShift',   Action : 'Edit__Redo',        Enabled : true, Keys : [ 'z', 'Z' ],               Modifiers : [ 'Ctrl', 'Shift' ], ModifierMatch : 'Exact' } ],
         keyboardSetup : { ignoreWhenTyping : true, coarseStepModifier : 'Shift', nudgeStepMm : 1, nudgeCoarseStepMm : 10,
                           panStepPx : 60, panCoarseStepPx : 240, zoomKeyStep : 1.15 },
         touch    : { oneFingerPanOnStage : true, oneFingerPanOnPaper : false, twoFingerPan : true, pinchZoom : true,
@@ -374,6 +377,26 @@
             glassOpaque       : flag('GlassOpaque',       true),
             whitecard         : flag('Whitecard',         true),
             hiddenLines       : flag('HiddenLines',       false)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | History Depth
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetHistorySetup() {
+        return { maxSteps : Math.max(1, Math.round(Na__LeCfg__Num('History', 'MaxSteps', 50))) };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Auto Save and Browser Draft Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetAutoSaveSetup() {
+        return {
+            enabled      : Na__LeCfg__Val('AutoSave', 'Enabled', true) !== false,
+            debounceMs   : Math.max(200, Na__LeCfg__Num('AutoSave', 'DebounceMs', 1500)),
+            draftEnabled : Na__LeCfg__Val('AutoSave', 'DraftEnabled', true) !== false
         };
     }
     // ------------------------------------------------------------
@@ -690,6 +713,8 @@
         Na__LeCfg__GetDimensionSetup,
         Na__LeCfg__GetLineworkSetup,
         Na__LeCfg__GetSnappingSetup,
+        Na__LeCfg__GetHistorySetup,
+        Na__LeCfg__GetAutoSaveSetup,
         Na__LeCfg__GetPanelSetup,
         Na__LeCfg__GetNavigationSetup,
         Na__LeCfg__GetPdfSetup,

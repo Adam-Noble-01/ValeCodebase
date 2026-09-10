@@ -148,9 +148,15 @@ body.na-le-dragging * {
     display                            : none;
 }
 
+/* The one grid row is pinned to the host height and every item has
+   min-height 0: a grid item's default minimum is its content, so without
+   these the centre column would grow to the height of the stage's scroll
+   content (a page plus its roaming room) instead of the stage scrolling. */
+
 .na-le-shell {
     display                            : grid;
     grid-template-columns              : var(--Vale_LayoutLeftPanelWidth) minmax(0, 1fr) var(--Vale_LayoutRightPanelWidth);
+    grid-template-rows                 : minmax(0, 1fr);
     width                              : 100%;
     height                             : 100%;
 }
@@ -158,6 +164,7 @@ body.na-le-dragging * {
 .na-le-column {
     position                           : relative;
     min-width                          : 0;
+    min-height                         : 0;
     height                             : 100%;
 }
 
@@ -165,7 +172,9 @@ body.na-le-dragging * {
     display                            : flex;
     flex-direction                     : column;
     min-width                          : 0;
+    min-height                         : 0;
     height                             : 100%;
+    overflow                           : hidden;
 }
 
 .na-le-centre__toolbar {
@@ -264,8 +273,14 @@ body.na-le-dragging * {
 /* REGION  |  Paper and Its Layers                                   */
 /* ----------------------------------------------------------------- */
 
+.na-le-room {
+    position                           : relative;                    /* <-- Sized by the surface: paper plus a stage on every side */
+}
+
 .na-le-scaler {
-    position                           : relative;
+    position                           : absolute;
+    top                                : 0;
+    left                               : 0;
     display                            : block;
     box-sizing                         : content-box;
 }
@@ -519,6 +534,108 @@ body.na-le-dragging * {
 
 .na-le-frame__progress[hidden] {
     display                            : none;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Selection States, Notes and the Context Menu           */
+/* ----------------------------------------------------------------- */
+
+/* The outline is drawn inside the scaled paper, so its note is scaled
+   back by --na-le-note-scale (set by the handles) to read the same at
+   any zoom. */
+
+.na-le-selection--editing {
+    border-style                       : dashed;
+    border-color                       : #d97706;
+}
+
+.na-le-selection--locked {
+    border-style                       : solid;
+    border-color                       : #9aa5ad;
+}
+
+.na-le-selection[data-na-note]::after {
+    content                            : attr(data-na-note);
+    position                           : absolute;
+    left                               : 0;
+    bottom                             : 100%;
+    margin-bottom                      : 3px;
+    padding                            : 2px 8px;
+    border-radius                      : 3px;
+    background                         : #d97706;
+    color                              : #ffffff;
+    font-size                          : 11px;
+    line-height                        : 1.3;
+    white-space                        : nowrap;
+    transform                          : scale(var(--na-le-note-scale, 1));
+    transform-origin                   : left bottom;
+}
+
+.na-le-selection--locked[data-na-note]::after {
+    background                         : #6c757d;
+}
+
+.na-le-menu {
+    position                           : fixed;
+    z-index                            : 1200;                        /* <-- Above the header and the menus */
+    min-width                          : 190px;
+    padding                            : 4px 0;
+    border                             : 1px solid rgba(23, 43, 58, 0.18);
+    border-radius                      : 6px;
+    background                         : #ffffff;
+    box-shadow                         : 0 8px 24px rgba(0, 0, 0, 0.18);
+    font-size                          : 0.78rem;
+    color                              : #172b3a;
+}
+
+.na-le-menu__item {
+    display                            : block;
+    width                              : 100%;
+    padding                            : 6px 14px 6px 28px;
+    border                             : 0;
+    background                         : transparent;
+    color                              : inherit;
+    font                               : inherit;
+    text-align                         : left;
+    white-space                        : nowrap;
+    cursor                             : pointer;
+    position                           : relative;
+}
+
+.na-le-menu__item:hover:not(:disabled),
+.na-le-menu__item:focus-visible {
+    background                         : #eef2f6;
+    outline                            : none;
+}
+
+.na-le-menu__item:disabled {
+    opacity                            : 0.45;
+    cursor                             : default;
+}
+
+.na-le-menu__item--danger {
+    color                              : #b42318;
+}
+
+.na-le-menu__item--checked::before {
+    content                            : "";
+    position                           : absolute;
+    left                               : 11px;
+    top                                : 50%;
+    width                              : 8px;
+    height                             : 8px;
+    border-radius                      : 50%;
+    background                         : #1a7fc4;
+    transform                          : translateY(-50%);
+}
+
+.na-le-menu__separator {
+    height                             : 1px;
+    margin                             : 4px 0;
+    background                         : rgba(23, 43, 58, 0.14);
 }
 
 /* endregion ------------------------------------------------------- */

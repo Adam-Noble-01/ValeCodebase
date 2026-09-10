@@ -42,6 +42,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - The history module listens from initialisation; entering a sheet takes its undo baseline.
+// - Auto save and the browser draft are initialised with it.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - The render loop is paused and 3D navigation suspended for the whole time a
 //   sheet is open; both come back on leaving. Projection events only refresh the
@@ -87,6 +91,8 @@
     import { Na__LeToolbar__Mount } from './Na__LayoutEditor__Toolbar__.js';
     import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from './Na__LayoutEditor__SnapshotRenderer__.js';
     import { Na__LeOsnap__Clear } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeHist__Initialize, Na__LeHist__Track } from './Na__LayoutEditor__History__.js';
+    import { Na__LeAuto__Initialize } from './Na__LayoutEditor__AutoSave__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing Modes, Render Loop, Projection Events, Localhost
@@ -225,6 +231,7 @@
             Na__LeTools__Attach({ editable : Na__LeMode__IsEditable() });
         }
         Na__LeModel__SetActiveSheetId(sheet.Sheet__Id);
+        Na__LeHist__Track(sheet);                                          // <-- Undo baseline for this sheet
         Na__LeSurface__SetSheet(sheet);
         Na__LePanels__Refresh();
         window.requestAnimationFrame(() => { if (Na__LeMode__Active) Na__LeNav__Fit(); });   // <-- Stage has a size once shown
@@ -321,6 +328,8 @@
         Na__LeMode__ReadyOnce = Na__LeCfg__Ready().then(() => {
             if (!Na__LeCfg__IsEnabled()) return false;
             Na__LeModel__Initialize();
+            Na__LeHist__Initialize();                                        // <-- Undo and redo listen to the model from the start
+            Na__LeAuto__Initialize({ showToast : context.showToast || null, editable : Na__LeMode__IsEditable() });   // <-- Browser draft and structural auto save
             Na__LeSnap__Initialize(context);
             window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
             window.addEventListener(Na__LePanelViewport__EDIT_EVENT, Na__LeMode__OnRequestDrawing);

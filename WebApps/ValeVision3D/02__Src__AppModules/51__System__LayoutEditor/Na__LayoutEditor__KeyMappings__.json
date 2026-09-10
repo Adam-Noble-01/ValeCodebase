@@ -208,6 +208,33 @@
                 "ModifierMatch" : "Exact"
             },
             {
+                "Id"            : "Edit__Undo",
+                "Label"         : "Undo the last change on the sheet",
+                "Action"        : "Edit__Undo",
+                "Enabled"       : true,
+                "Keys"          : [ "z", "Z" ],
+                "Modifiers"     : [ "Ctrl" ],
+                "ModifierMatch" : "Exact"
+            },
+            {
+                "Id"            : "Edit__Redo",
+                "Label"         : "Redo the change just undone",
+                "Action"        : "Edit__Redo",
+                "Enabled"       : true,
+                "Keys"          : [ "y", "Y" ],
+                "Modifiers"     : [ "Ctrl" ],
+                "ModifierMatch" : "Exact"
+            },
+            {
+                "Id"            : "Edit__RedoShift",
+                "Label"         : "Redo (Ctrl+Shift+Z)",
+                "Action"        : "Edit__Redo",
+                "Enabled"       : true,
+                "Keys"          : [ "z", "Z" ],
+                "Modifiers"     : [ "Ctrl", "Shift" ],
+                "ModifierMatch" : "Exact"
+            },
+            {
                 "Id"            : "Edit__NudgeLeft",
                 "Label"         : "Nudge the selection left",
                 "Action"        : "Edit__NudgeLeft",

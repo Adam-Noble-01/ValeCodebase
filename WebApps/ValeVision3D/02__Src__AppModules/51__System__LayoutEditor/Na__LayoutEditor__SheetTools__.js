@@ -40,6 +40,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - A drag moves a viewport at once; every handle crops or extends; double-click enters the content (drag repositions the drawing).
+// - Locked viewports cannot be entered, moved, resized, nudged or deleted.
+// - Right-click opens the context menu (edit content, recentre, lock, delete, undo, redo, zoom, snapping).
+// - Ctrl+Z and Ctrl+Y through Na__LayoutEditor__History__.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - Dimension placement and endpoint drags snap to the linework through Na__LayoutEditor__Snapping__; F3 toggles it.
 //
@@ -60,7 +66,8 @@
         Na__LeCfg__GetDimensionSetup,
         Na__LeCfg__GetLabel,
         Na__LeCfg__GetKeyboardSetup,
-        Na__LeCfg__MatchKeyBinding
+        Na__LeCfg__MatchKeyBinding,
+        Na__LeCfg__GetGuards
     } from './Na__LayoutEditor__ConfigState__.js';
     import {
         Na__LeModel__KIND_2D,
@@ -85,7 +92,9 @@
         Na__LeSurface__GetElements,
         Na__LeSurface__GetPixelsPerMm,
         Na__LeSurface__GetZoom,
-        Na__LeSurface__Refresh
+        Na__LeSurface__Refresh,
+        Na__LeSurface__GetEditingViewport,
+        Na__LeSurface__SetEditingViewport
     } from './Na__LayoutEditor__SheetSurface__.js';
     import {
         Na__LeHandles__HitTest,
@@ -95,9 +104,12 @@
         Na__LeHandles__DragPatch
     } from './Na__LayoutEditor__ViewportHandles__.js';
     import { Na__LeMarkup__HitTest, Na__LeMarkup__AnnotationBounds, Na__LeMarkup__DimensionSkeleton } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeVp2d__SetInteracting } from './Na__LayoutEditor__Viewport2d__.js';
+    import { Na__LeVp2d__SetInteracting, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
-    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle, Na__LeOsnap__IsEnabled } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeNav__Fit } from './Na__LayoutEditor__Navigation__.js';
+    import { Na__LeHist__CanUndo, Na__LeHist__CanRedo, Na__LeHist__Undo, Na__LeHist__Redo } from './Na__LayoutEditor__History__.js';
+    import { Na__LeMenu__Open, Na__LeMenu__Close } from './Na__LayoutEditor__ContextMenu__.js';
     import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
     // ------------------------------------------------------------
 
@@ -116,6 +128,7 @@
     const Na__LeTools__CHANGED_EVENT  = 'na-layouteditor-tool-changed';
     const Na__LeTools__DRAG_THRESHOLD_MM = 0.5;
     const Na__LeTools__HIT_TOLERANCE_MM  = 1.5;
+    const Na__LeTools__MENU_SLOP_PX      = 4;      // <-- A right button that travelled further than this panned, so no menu
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Attachment and Interaction State
@@ -129,6 +142,7 @@
     let Na__LeTools__Placement = null;    // <-- { startMm } while a dimension waits for its second click
     let Na__LeTools__Preview   = null;    // <-- Rubber-band element for the dimension tool
     let Na__LeTools__Editor    = null;    // <-- { input, itemId }
+    let Na__LeTools__RightPress = null;   // <-- { x, y } of the last right-button press
     let Na__LeTools__TextDefaults = null;
     let Na__LeTools__DimDefaults  = null;
     // ------------------------------------------------------------
@@ -251,6 +265,8 @@
     // HELPER FUNCTION | Pointer Down
     // ------------------------------------------------------------
     function Na__LeTools__OnDown(event) {
+        Na__LeMenu__Close();
+        if (event.button === 2) { Na__LeTools__RightPress = { x : event.clientX, y : event.clientY }; return; }   // <-- Remembered so a right click that did not pan opens the menu
         if (Na__LeTools__Suppressed) return;                                 // <-- A pan or a pinch owns this pointer
         if (!Na__LeTools__IsLeft(event)) return;
         const sheet = Na__LeModel__GetActiveSheet();
@@ -261,14 +277,19 @@
         if (Na__LeTools__Tool === Na__LeTools__TOOL_TEXT && Na__LeTools__Editable) { Na__LeTools__PlaceText(sheet, point); return; }
         if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION && Na__LeTools__Editable) { Na__LeTools__PlaceDimension(sheet, point, event.shiftKey); return; }
 
-        const found = Na__LeTools__Resolve(sheet, point);
+        const found     = Na__LeTools__Resolve(sheet, point);
+        const editingId = Na__LeSurface__GetEditingViewport();
+        if (editingId && (!found || found.kind !== 'viewport' || found.id !== editingId)) Na__LeSurface__SetEditingViewport(null);   // <-- A press anywhere else finishes content editing
         if (!found) { Na__LeModel__SetSelection(null); return; }
-        const selection = Na__LeModel__GetSelection();
+        const selection   = Na__LeModel__GetSelection();
         const wasSelected = !!selection && selection.kind === found.kind && selection.id === found.id;
         if (!wasSelected) Na__LeModel__SetSelection({ kind : found.kind, id : found.id });
         if (!Na__LeTools__Editable) return;
 
-        // DRAG | Markup moves at once; a viewport must already be selected
+        // DRAG | Markup moves at once. So does a viewport, selected or not,
+        // unless it is locked: its handles crop or extend the frame, and while
+        // its content is being edited (double-click) a drag inside it moves
+        // the drawing instead of the frame.
         let drag = null;
         if (found.kind === 'annotation') {
             const item = sheet.Sheet__Annotations.find((a) => a.Annotation__Id === found.id);
@@ -279,9 +300,13 @@
                 drag = { kind : 'dimension', id : found.id, mode : Na__LeTools__DimensionGrab(dim, point),
                          start : { sx : dim.Dimension__StartXMm, sy : dim.Dimension__StartYMm, ex : dim.Dimension__EndXMm, ey : dim.Dimension__EndYMm, offset : dim.Dimension__OffsetMm } };
             }
-        } else if (found.kind === 'viewport' && wasSelected && found.hit) {
+        } else if (found.kind === 'viewport') {
             const viewport = Na__LeModel__GetViewportById(sheet, found.id);
-            if (viewport && !Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId)) drag = { kind : 'viewport', id : found.id, hit : found.hit, start : Na__LeHandles__CaptureStart(viewport) };
+            if (viewport && !Na__LeTools__IsViewportLocked(sheet, viewport)) {
+                const editing = Na__LeSurface__GetEditingViewport() === found.id;
+                const hit     = editing ? { mode : 'body' } : ((found.hit && found.hit.mode === 'handle') ? found.hit : { mode : 'border' });
+                drag = { kind : 'viewport', id : found.id, hit : hit, start : Na__LeHandles__CaptureStart(viewport) };
+            }
         }
         if (!drag) return;
         drag.startMm   = point;
@@ -307,8 +332,7 @@
         if (!drag || event.pointerId !== drag.pointerId) {
             if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeOsnap__Snap(sheet, point); return; }   // <-- Marker before the first click
             if (Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) return;
-            const found = Na__LeTools__Resolve(sheet, point);
-            Na__LeTools__Stage.style.cursor = found ? (found.kind === 'viewport' ? (found.hit ? Na__LeHandles__CursorFor(found.hit) : 'default') : 'move') : '';
+            Na__LeTools__Stage.style.cursor = Na__LeTools__HoverCursor(sheet, Na__LeTools__Resolve(sheet, point));
             return;
         }
         const dMm = { x : point.x - drag.startMm.x, y : point.y - drag.startMm.y };
@@ -330,7 +354,7 @@
         if (drag.kind === 'viewport') {
             const viewport = Na__LeModel__GetViewportById(sheet, drag.id);
             if (!viewport) return;
-            const patch = Na__LeHandles__DragPatch(viewport, drag.hit, drag.start, dMm);
+            const patch = Na__LeHandles__DragPatch(viewport, drag.hit, drag.start, dMm, { shift : shift });
             if (!patch) return;
             Na__LeModel__UpdateViewport(sheet, drag.id, patch, true);
             Na__LeSurface__Refresh('frames');
@@ -415,15 +439,147 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Double Click Opens the Inline Text Editor
+    // HELPER FUNCTION | Double Click: Edit a Text Item, or Enter a Viewport's Content
     // ------------------------------------------------------------
     function Na__LeTools__OnDoubleClick(event) {
-        if (!Na__LeTools__Editable) return;
+        if (!Na__LeTools__Editable || event.button !== 0) return;
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
-        const found = Na__LeMarkup__HitTest(sheet, point, Na__LeTools__HIT_TOLERANCE_MM / Na__LeSurface__GetZoom());
-        if (found && found.kind === 'annotation') Na__LeTools__BeginTextEdit(found.id);
+        const markup = Na__LeMarkup__HitTest(sheet, point, Na__LeTools__HIT_TOLERANCE_MM / Na__LeSurface__GetZoom());
+        if (markup) { if (markup.kind === 'annotation') Na__LeTools__BeginTextEdit(markup.id); return; }
+        const found = Na__LeTools__Resolve(sheet, point);
+        if (!found || found.kind !== 'viewport') return;
+        event.preventDefault();
+        Na__LeTools__SetEditingViewport(Na__LeSurface__GetEditingViewport() === found.id ? null : found.id);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Locks, Content Editing and the Context Menu
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | A Viewport Is Locked by Its Own Flag or by Its Layer
+    // ------------------------------------------------------------
+    function Na__LeTools__IsViewportLocked(sheet, viewport) {
+        return !!viewport && (viewport.Viewport__Locked === true || Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Cursor for What Is Under the Pointer
+    // ------------------------------------------------------------
+    function Na__LeTools__HoverCursor(sheet, found) {
+        if (!found) return '';
+        if (found.kind !== 'viewport') return 'move';
+        const viewport = Na__LeModel__GetViewportById(sheet, found.id);
+        if (!viewport || !Na__LeTools__Editable || Na__LeTools__IsViewportLocked(sheet, viewport)) return 'default';
+        if (Na__LeSurface__GetEditingViewport() === found.id) return 'grab';
+        if (found.hit && found.hit.mode === 'handle') return Na__LeHandles__CursorFor(found.hit);
+        return 'move';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Enter or Leave Content Editing on a Viewport (double-click)
+    // ------------------------------------------------------------
+    // While a viewport's content is being edited a drag inside it moves the
+    // drawing (2D: the window pans; 3D: the picture slides) and the frame
+    // stays where it is. Null leaves the mode.
+    // ------------------------------------------------------------
+    function Na__LeTools__SetEditingViewport(viewportId) {
+        const sheet    = Na__LeModel__GetActiveSheet();
+        const viewport = (sheet && viewportId) ? Na__LeModel__GetViewportById(sheet, viewportId) : null;
+        if (viewport && (!Na__LeTools__Editable || Na__LeTools__IsViewportLocked(sheet, viewport))) return false;
+        if (viewport) {
+            const selection = Na__LeModel__GetSelection();
+            if (!selection || selection.kind !== 'viewport' || selection.id !== viewportId) Na__LeModel__SetSelection({ kind : 'viewport', id : viewportId });
+        }
+        Na__LeSurface__SetEditingViewport(viewport ? viewportId : null);
+        if (Na__LeTools__Stage) Na__LeTools__Stage.style.cursor = viewport ? 'grab' : '';
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put the Drawing Back in the Middle of Its Frame
+    // ------------------------------------------------------------
+    function Na__LeTools__RecentreViewport(sheet, viewportId) {
+        const viewport = Na__LeModel__GetViewportById(sheet, viewportId);
+        if (!viewport || Na__LeTools__IsViewportLocked(sheet, viewport)) return false;
+        if (viewport.Viewport__Kind === Na__LeModel__KIND_2D) Na__LeVp2d__CentreOnDrawing(sheet, viewport);
+        else Na__LeModel__UpdateViewport(sheet, viewportId, { imageOffset : { X : 0, Y : 0 } }, true);
+        return Na__LeModel__UpdateViewport(sheet, viewportId, {}, false);      // <-- One announcement: one history step
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Menu for What Was Right-Clicked
+    // ------------------------------------------------------------
+    function Na__LeTools__MenuItems(sheet, found) {
+        const label   = (key, fallback) => Na__LeCfg__GetLabel(key, fallback);
+        const remove  = (key, fallback) => ({ label : label(key, fallback), danger : true, onSelect : () => { void Na__LeTools__DeleteSelection(); } });
+        const history = [
+            { label : label('Undo', 'Undo'), disabled : !Na__LeHist__CanUndo(), onSelect : () => Na__LeHist__Undo() },
+            { label : label('Redo', 'Redo'), disabled : !Na__LeHist__CanRedo(), onSelect : () => Na__LeHist__Redo() }
+        ];
+        if (!Na__LeTools__Editable) return [ { label : label('MenuZoomFit', 'Zoom to fit'), onSelect : () => Na__LeNav__Fit() } ];
+        if (!found) {
+            const snapping = Na__LeOsnap__IsEnabled();
+            return [
+                { label : label('MenuZoomFit', 'Zoom to fit'), onSelect : () => Na__LeNav__Fit() },
+                { label : snapping ? label('MenuSnapOff', 'Snapping off') : label('MenuSnapOn', 'Snapping on'), checked : snapping, onSelect : () => Na__LeOsnap__Toggle() },
+                { separator : true }
+            ].concat(history);
+        }
+        if (found.kind === 'annotation') {
+            return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeTools__BeginTextEdit(found.id) },
+                     remove('MenuDeleteText', 'Delete text'), { separator : true } ].concat(history);
+        }
+        if (found.kind === 'dimension') return [ remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ].concat(history);
+
+        const viewport = Na__LeModel__GetViewportById(sheet, found.id);
+        if (!viewport) return history;
+        const layerLocked = Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId);
+        const locked      = layerLocked || viewport.Viewport__Locked === true;
+        const editing     = Na__LeSurface__GetEditingViewport() === found.id;
+        const del         = remove('MenuDeleteViewport', 'Delete viewport');
+        del.disabled = locked;
+        return [
+            { label : editing ? label('MenuFinishView', 'Finish editing content') : label('MenuEditView', 'Edit viewport content'), disabled : locked, onSelect : () => Na__LeTools__SetEditingViewport(editing ? null : found.id) },
+            { label : label('MenuCentre', 'Recentre content'), disabled : locked, onSelect : () => Na__LeTools__RecentreViewport(sheet, found.id) },
+            { label : viewport.Viewport__Locked === true ? label('MenuUnlock', 'Unlock viewport') : label('MenuLock', 'Lock viewport'), disabled : layerLocked, checked : viewport.Viewport__Locked === true,
+              onSelect : () => Na__LeModel__UpdateViewport(sheet, found.id, { locked : viewport.Viewport__Locked !== true }) },
+            { separator : true }, del, { separator : true }
+        ].concat(history);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Right Click: Select What Is There and Open the Menu
+    // ------------------------------------------------------------
+    // The PC controls pan on a right drag, so the menu only opens when the
+    // button came up where it went down. A touch long-press arrives here
+    // with no press recorded and opens the menu too.
+    // ------------------------------------------------------------
+    function Na__LeTools__OnContextMenu(event) {
+        const target = event.target;
+        if (target && typeof target.closest === 'function' && target.closest(Na__LeCfg__GetGuards().contextMenuKeepSelector)) return;   // <-- The inline text field keeps the browser menu
+        event.preventDefault();
+        const press = Na__LeTools__RightPress;
+        Na__LeTools__RightPress = null;
+        if (press && Math.hypot(event.clientX - press.x, event.clientY - press.y) > Na__LeTools__MENU_SLOP_PX) return;   // <-- That right button panned
+        const sheet = Na__LeModel__GetActiveSheet();
+        const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
+        if (!sheet || !point) return;
+        Na__LeTools__CancelPlacement();
+        if (Na__LeTools__Editor) Na__LeTools__CommitTextEdit();
+        const found = Na__LeTools__Resolve(sheet, point);
+        Na__LeModel__SetSelection(found ? { kind : found.kind, id : found.id } : null);
+        Na__LeMenu__Open(event.clientX, event.clientY, Na__LeTools__MenuItems(sheet, found));
     }
     // ------------------------------------------------------------
 
@@ -603,7 +759,7 @@
         if (selection.kind === 'annotation') return Na__LeModel__DeleteAnnotation(sheet, selection.id);
         if (selection.kind === 'dimension')  return Na__LeModel__DeleteDimension(sheet, selection.id);
         const viewport = Na__LeModel__GetViewportById(sheet, selection.id);
-        if (!viewport) return false;
+        if (!viewport || Na__LeTools__IsViewportLocked(sheet, viewport)) return false;   // <-- Unlock first
         const ok = await Na__AppUtils__ConfirmDialog__Show({
             title : Na__LeCfg__GetLabel('DeleteViewportTitle', 'Delete viewport'),
             message : Na__LeCfg__GetLabel('DeleteViewportPrompt', 'Remove this viewport from the sheet? Sheet dimensions attached to it keep their paper length.'),
@@ -622,7 +778,7 @@
         if (!sheet || !selection) return false;
         if (selection.kind === 'viewport') {
             const v = Na__LeModel__GetViewportById(sheet, selection.id);
-            if (!v || Na__LeModel__IsLayerLocked(sheet, v.Viewport__LayerId)) return false;
+            if (!v || Na__LeTools__IsViewportLocked(sheet, v)) return false;
             return Na__LeModel__UpdateViewport(sheet, selection.id, { rect : { X : v.Viewport__FrameMm.X + dx, Y : v.Viewport__FrameMm.Y + dy } }, false);
         }
         if (selection.kind === 'annotation') {
@@ -656,6 +812,7 @@
         switch (match.action) {
             case 'Edit__Cancel':
                 if (Na__LeTools__Placement) Na__LeTools__CancelPlacement();
+                else if (Na__LeSurface__GetEditingViewport()) Na__LeTools__SetEditingViewport(null);
                 else if (Na__LeModel__GetSelection()) Na__LeModel__SetSelection(null);
                 else Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
                 event.preventDefault(); return;
@@ -670,6 +827,8 @@
             case 'Tool__Text':       Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT);      return;
             case 'Tool__Dimension':  Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
             case 'Snap__Toggle':     Na__LeOsnap__Toggle(); event.preventDefault(); return;
+            case 'Edit__Undo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Undo(); } return;
+            case 'Edit__Redo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Redo(); } return;
             default: return;
         }
     }
@@ -696,9 +855,10 @@
             pointerup     : (e) => Na__LeTools__OnUp(e),
             pointercancel : (e) => Na__LeTools__OnUp(e),
             dblclick      : (e) => Na__LeTools__OnDoubleClick(e),
+            contextmenu   : (e) => Na__LeTools__OnContextMenu(e),
             keydown       : (e) => Na__LeTools__OnKey(e)
         };
-        [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick' ].forEach((name) => Na__LeTools__Stage.addEventListener(name, Na__LeTools__Handlers[name]));
+        [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.addEventListener(name, Na__LeTools__Handlers[name]));
         window.addEventListener('keydown', Na__LeTools__Handlers.keydown);
         Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
         return true;
@@ -709,10 +869,12 @@
     // FUNCTION | Stop Listening and Drop Any Interaction
     // ------------------------------------------------------------
     function Na__LeTools__Detach() {
+        Na__LeMenu__Close();
+        Na__LeTools__RightPress = null;
         Na__LeTools__CancelTextEdit();
         Na__LeTools__CancelPlacement();
         if (!Na__LeTools__Stage || !Na__LeTools__Handlers) return;
-        [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
+        [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
         window.removeEventListener('keydown', Na__LeTools__Handlers.keydown);
         Na__LeTools__Stage.style.cursor = '';
         Na__LeTools__Suppressed = false;                                     // <-- Never leave the tools deaf for the next mount
@@ -745,6 +907,8 @@
         Na__LeTools__SetDimensionDefaults,
         Na__LeTools__BeginTextEdit,
         Na__LeTools__DeleteSelection,
+        Na__LeTools__SetEditingViewport,
+        Na__LeTools__RecentreViewport,
         Na__LeTools__SetSuppressed
     };
     // ------------------------------------------------------------

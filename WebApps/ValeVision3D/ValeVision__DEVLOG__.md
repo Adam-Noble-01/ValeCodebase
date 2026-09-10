@@ -2,6 +2,33 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.4 - 10-Sep-2026 - Raster viewports by default, help panel
+
+### Changed
+- **New viewport defaults.** A new viewport starts as a raster viewport:
+  Projected Linework off, Profile Linework Effect off, Glass Transparency
+  Off on, Whitecard on, Hidden Lines off, from the new
+  `LayoutEditor__Viewport__DefaultStyles` block. Nothing projects while a
+  sheet is being laid out; switching Projected Linework on for a viewport
+  is what asks for the vector linework, the way a raster viewport becomes
+  a vector one in SketchUp LayOut. A viewport with the toggle off keeps no
+  linework, offers no snap points and shows no progress badge. Stored
+  viewports keep the flags they were saved with.
+
+### Added
+- **Help panel.** A Drawing Markup subsection under Keyboard Shortcuts
+  lists the contextual keys for drawings and sheets (the last open item
+  from the plan's integration list).
+
+### Plan audit
+- Every file and feature in the plan's Phase 2 to 5 tables, the
+  cross-cutting list and Appendix C is present, with two notes: the
+  projection fingerprint is read from the live model root on every use,
+  so no separate invalidation hook was needed on a model group switch;
+  and per-size Classic title block scans (A4, A2, A1) still fall back to
+  the A3 scan, as the plan allowed.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.3 - 10-Sep-2026 - Linework projection budget and object snaps
 
 ### Fixed

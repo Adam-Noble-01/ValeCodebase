@@ -23,9 +23,10 @@
 // - Loaded once per project from the loading sequence event. An absent block
 //   becomes an empty skeleton in memory and is only written on the first save.
 // - ONE WRITER. Save fetches the live project.json, merges the presentation
-//   block (scene links and groups) and this block, and hands the document to
-//   the shared R2-first save utility. The Floor Plans, Elevations and Layout
-//   Editor panels all call this and nothing else writes drawing data.
+//   block (scene links and groups), the cross section bindings (a section
+//   drawing's cut) and this block, and hands the document to the shared
+//   R2-first save utility. The Floor Plans, Elevations and Layout Editor
+//   panels all call this and nothing else writes drawing data.
 //
 // INTEGRATION:
 // - Na__AppFlow__LoadingSequence.js dispatches na-layouteditor-drawingsdata-loaded.
@@ -73,6 +74,13 @@
     import { Na__AppUtils__R2SaveProjectJson } from '../03__AppUtils/Na__AppUtils__R2SaveProjectJson__.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Cross Section Scene Bindings (a section drawing's cut)
+    // ------------------------------------------------------------
+    // @delegate: ../41__System__CrossSectionView/Na__CrossSectionView__SceneData.js
+    // ------------------------------------------------------------
+    import { Na__SectSceneData__GetProjectBlock } from '../41__System__CrossSectionView/Na__CrossSectionView__SceneData.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -90,6 +98,7 @@
     const Na__DrawData__ELEVATIONS_KEY   = 'LayoutEditor__DrawingsData__Elevations';
     const Na__DrawData__SHEETS_KEY       = 'LayoutEditor__DrawingsData__Sheets';
     const Na__DrawData__PRESENTATION_KEY = 'PresentationMode__SavedCameraScenes';
+    const Na__DrawData__CROSSSECTION_KEY = 'CrossSection__SceneData';
     const Na__DrawData__VERSION          = 1;
     // ------------------------------------------------------------
 
@@ -301,6 +310,15 @@
 
             // DRAWINGS | The block this module owns
             projectData[Na__DrawData__BLOCK_KEY] = Na__DrawData__GetBlock();
+
+            // SECTION BINDINGS | A section drawing's cut is stored per scene
+            // in its own top-level block, keyed by scene name. Renaming a
+            // drawing re-keys that entry, so the block has to ride with the
+            // same save or the rename lands everywhere except the cut.
+            // GetProjectBlock returns null until something loads or captures
+            // one, so an untouched project never gains the key.
+            const crossSectionBlock = Na__SectSceneData__GetProjectBlock();
+            if (crossSectionBlock) projectData[Na__DrawData__CROSSSECTION_KEY] = crossSectionBlock;
 
             await Na__AppUtils__R2SaveProjectJson(projectData, projectCode, toast);
 

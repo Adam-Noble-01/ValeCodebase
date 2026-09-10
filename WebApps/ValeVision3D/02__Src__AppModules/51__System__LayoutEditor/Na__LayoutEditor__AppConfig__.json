@@ -95,6 +95,14 @@
         "LayoutEditor__Viewport__UnderlayPixelsPerMm": 6,
         "LayoutEditor__Viewport__MaxSnapshotPixels": 4096,
         "LayoutEditor__Viewport__ShowScaleLabel": true,
+        "LayoutEditor__Viewport__DefaultStylesNote": "What a new viewport starts with. Projected Linework is off so laying out a sheet never triggers a projection; switch it on per viewport when the layout is settled, the way a raster viewport becomes a vector one in SketchUp LayOut. The raster underlay renders either way.",
+        "LayoutEditor__Viewport__DefaultStyles": {
+            "ProjectedLinework": false,
+            "ProfileLinework": false,
+            "GlassOpaque": true,
+            "Whitecard": true,
+            "HiddenLines": false
+        },
         "LayoutEditor__Viewport__AssetFolder": "LayoutEditor/Snapshots"
     },
 

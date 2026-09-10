@@ -308,6 +308,7 @@
             underlayPixelsPerMm  : Na__LeCfg__Num('Viewport', 'UnderlayPixelsPerMm', 6),
             maxSnapshotPixels    : Na__LeCfg__Num('Viewport', 'MaxSnapshotPixels', 4096),
             showScaleLabel       : Na__LeCfg__Val('Viewport', 'ShowScaleLabel', true) !== false,
+            defaultStyles        : Na__LeCfg__DefaultStyles(Na__LeCfg__Val('Viewport', 'DefaultStyles', null)),
             assetFolder          : Na__LeCfg__Val('Viewport', 'AssetFolder', 'LayoutEditor/Snapshots')
         };
     }
@@ -354,6 +355,25 @@
             defaultPrecision  : Na__LeCfg__Num('Dimensions', 'DefaultPrecision', 0),
             defaultUnits      : Na__LeCfg__Val('Dimensions', 'DefaultUnitsSuffix', ' mm'),
             thousandsSep      : Na__LeCfg__Val('Dimensions', 'ThousandsSeparator', ',')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Style Toggles a New Viewport Starts With
+    // ------------------------------------------------------------
+    // Projected linework off by default: laying out a sheet must never cost
+    // a projection; it is switched on per viewport once the layout settles.
+    // ------------------------------------------------------------
+    function Na__LeCfg__DefaultStyles(block) {
+        const b = (block && typeof block === 'object') ? block : {};
+        const flag = (key, fallback) => (typeof b[key] === 'boolean' ? b[key] : fallback);
+        return {
+            projectedLinework : flag('ProjectedLinework', false),
+            profileLinework   : flag('ProfileLinework',   false),
+            glassOpaque       : flag('GlassOpaque',       true),
+            whitecard         : flag('Whitecard',         true),
+            hiddenLines       : flag('HiddenLines',       false)
         };
     }
     // ------------------------------------------------------------

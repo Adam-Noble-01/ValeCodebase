@@ -151,6 +151,36 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | The Key of a Scene's Binding Entry, or Null
+    // ------------------------------------------------------------
+    // SCENE ID FIRST, deliberately. The map is keyed by name, so a renamed
+    // scene finds nothing under its new name while its entry still sits
+    // unreachable under the old one, and two scenes sharing a name would
+    // otherwise hand one of them the other's cut. Every entry written since
+    // the binding was introduced stamps its scene id, so the id match is
+    // both the most specific answer and the one that repairs a project
+    // whose scene was renamed before this path existed. The name key is the
+    // fallback for entries captured without an id, and an id-shaped key is
+    // the last resort for a capture made against an unnamed scene.
+    // ------------------------------------------------------------
+    function Na__SectSceneData__FindEntryKey(scenes, sceneName, sceneId) {
+        if (!scenes || typeof scenes !== 'object') return null;
+
+        if (typeof sceneId === 'string' && sceneId.trim() !== '') {
+            const keys = Object.keys(scenes);
+            for (let i = 0; i < keys.length; i++) {
+                const entry = scenes[keys[i]];
+                if (entry && entry.CrossSection__SceneBinding__SceneId === sceneId) return keys[i];
+            }
+        }
+
+        if (typeof sceneName === 'string' && sceneName.trim() !== '' && scenes[sceneName]) return sceneName;
+        if (typeof sceneId === 'string' && sceneId.trim() !== '' && scenes[sceneId]) return sceneId;
+        return null;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -189,6 +219,13 @@
         const snapshot = Na__CrossSection__SerializeSections();
         const block    = Na__SectSceneData__EnsureBlock();
 
+        // ONE ENTRY PER SCENE | A scene renamed outside the drawing rename
+        // path leaves its old entry behind under the old name. Writing the
+        // canonical key without clearing that would give one scene two
+        // bindings, and the id-first lookup would keep finding the stale one.
+        const staleKey = Na__SectSceneData__FindEntryKey(block.CrossSection__SceneData__Scenes, sceneName, sceneId);
+        if (staleKey && staleKey !== key) delete block.CrossSection__SceneData__Scenes[staleKey];
+
         block.CrossSection__SceneData__Scenes[key] = {
             CrossSection__SceneBinding__SceneId       : sceneId || null,
             CrossSection__SceneBinding__UpdatedIso    : new Date().toISOString(),
@@ -209,6 +246,45 @@
 
         console.log(`[CrossSection] Captured ${snapshot.sections.length} section(s) for scene "${key}"`);
         return block.CrossSection__SceneData__Scenes[key];
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Move a Scene's Binding to Its New Name
+    // ------------------------------------------------------------
+    // The binding map is keyed by scene name, so a rename leaves the entry
+    // filed under a name nothing asks for any more. The id-first lookup
+    // still finds it, but the file then reads as though the binding belongs
+    // to a scene that no longer exists, and a later capture would write a
+    // second entry. Called by the drawing rename path before the project
+    // save. Returns true when an entry actually moved.
+    // ------------------------------------------------------------
+    function Na__SectSceneData__RenameSceneKey(previousName, nextName, sceneId) {
+        const block = Na__SectSceneData__Block;
+        if (!block || !block.CrossSection__SceneData__Scenes) return false;   // <-- Nothing loaded or captured: nothing to move
+
+        const scenes = block.CrossSection__SceneData__Scenes;
+        const oldKey = Na__SectSceneData__FindEntryKey(scenes, previousName, sceneId);
+        const newKey = Na__SectSceneData__ResolveKey(nextName, sceneId);
+        if (!oldKey || !newKey || oldKey === newKey) return false;
+
+        const entry = scenes[oldKey];
+        if (!entry) return false;
+        if (sceneId) entry.CrossSection__SceneBinding__SceneId = sceneId;     // <-- Stamped so the id lookup can always find it again
+
+        // NAME COLLISION | Another scene already answers to the new name.
+        // Leave both entries where they are rather than overwriting someone
+        // else's cut; the id stamped above keeps this one reachable.
+        const clash = scenes[newKey];
+        if (clash && clash !== entry) {
+            console.warn(`[CrossSection] "${nextName}" already carries a section binding, so "${oldKey}" stays where it is and is matched by scene id.`);
+            return false;
+        }
+
+        scenes[newKey] = entry;
+        delete scenes[oldKey];
+        console.log(`[CrossSection] Moved the section binding from "${oldKey}" to "${newKey}".`);
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -323,10 +399,8 @@
         const scenes = Na__SectSceneData__Block
             ? (Na__SectSceneData__Block.CrossSection__SceneData__Scenes || {})
             : {};
-        const key    = Na__SectSceneData__ResolveKey(sceneName, sceneId);
-        const entry  = (key && scenes[key])
-            || (sceneId && scenes[sceneId])                                    // <-- Fallback: entry keyed by id from an older capture
-            || null;
+        const key    = Na__SectSceneData__FindEntryKey(scenes, sceneName, sceneId);
+        const entry  = key ? scenes[key] : null;                              // <-- Matched by scene id first, so a rename cannot orphan it
         if (!entry) return Na__SectSceneData__ClearSections();                 // <-- No binding: clear so cuts don't leak between scenes
 
         const snapshot = {
@@ -421,6 +495,7 @@
         Na__SectSceneData__IsCaptureEnabled,
         Na__SectSceneData__CaptureForScene,
         Na__SectSceneData__RestoreForScene,
+        Na__SectSceneData__RenameSceneKey,
         Na__SectSceneData__GetProjectBlock
     };
     // ------------------------------------------------------------

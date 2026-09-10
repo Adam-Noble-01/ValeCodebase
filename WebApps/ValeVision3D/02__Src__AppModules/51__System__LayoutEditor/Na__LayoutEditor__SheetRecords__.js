@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.1
+// - New viewport style toggles come from LayoutEditor__Viewport__DefaultStyles (projected linework off until asked for).
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Split from the sheet model (record helpers, normalisers, fields).
 //
@@ -161,13 +164,16 @@
         const offset = viewport.Viewport__ImageOffsetMm || {};
         viewport.Viewport__ImageOffsetMm = { X : Na__LeRec__Num(offset.X, 0), Y : Na__LeRec__Num(offset.Y, 0) };
 
-        const styles = viewport.Viewport__Styles || {};
+        // STYLES | A stored flag stands; anything unset takes the configured default
+        const styles   = viewport.Viewport__Styles || {};
+        const defaults = setup.defaultStyles;
+        const pick     = (key) => (typeof styles[key] === 'boolean' ? styles[key] : defaults[key]);
         viewport.Viewport__Styles = {
-            projectedLinework : styles.projectedLinework !== false,
-            profileLinework   : styles.profileLinework !== false,
-            glassOpaque       : styles.glassOpaque === true,
-            whitecard         : styles.whitecard !== false,
-            hiddenLines       : styles.hiddenLines === true
+            projectedLinework : pick('projectedLinework'),
+            profileLinework   : pick('profileLinework'),
+            glassOpaque       : pick('glassOpaque'),
+            whitecard         : pick('whitecard'),
+            hiddenLines       : pick('hiddenLines')
         };
         if (viewport.Viewport__MarkupMode !== 'sheet') viewport.Viewport__MarkupMode = 'scene';
         if (viewport.Viewport__ShowScaleLabel === undefined) viewport.Viewport__ShowScaleLabel = setup.showScaleLabel;

@@ -52,7 +52,7 @@
     // MODULE IMPORTS | Config, Model, Snapshots and Assets
     // ------------------------------------------------------------
     import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
-    import { Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeModel__GetSheets, Na__LeModel__GetViewports, Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSnap__Render3d, Na__LeSnap__IsReady, Na__LeSnap__GetModelFingerprint } from './Na__LayoutEditor__SnapshotRenderer__.js';
     import {
         Na__LeAssets__CanvasToBlob,
@@ -267,6 +267,58 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Re-Stamp Snapshot References After Their Scene Was Renamed
+    // ------------------------------------------------------------
+    // The scene NAME is part of the snapshot fingerprint, so a rename makes
+    // every stored picture read as stale although not one pixel changed:
+    // the web build refuses the R2 asset and draws an empty frame, and the
+    // PDF export falls back to a live render it cannot do. The picture is
+    // still correct, so re-stamp the reference with the fingerprint the
+    // renamed scene now produces and leave Asset__Path exactly as it is.
+    // The path is only a handle, nothing reads the fingerprint back out of
+    // it, and writing a new path would orphan a good object on R2.
+    //
+    // Every sheet is walked, not just the open one: a scene can appear on
+    // as many sheets as the set has.
+    //
+    // Returns the number of viewports re-stamped.
+    // ------------------------------------------------------------
+    function Na__LeVp3d__RestampForScene(sceneId) {
+        if (!sceneId) return 0;
+        let restamped = 0;
+
+        Na__LeModel__GetSheets().forEach((sheet) => {
+            Na__LeModel__GetViewports(sheet).forEach((viewport) => {
+                if (viewport.Viewport__SceneId !== sceneId) return;
+
+                const slot = viewport.Viewport__SnapshotAsset;
+                if (!slot || !slot.Asset__Path || !slot.Asset__Fingerprint) return;   // <-- Never baked: nothing to keep
+
+                const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
+                if (!scene) return;
+
+                const key = Na__LeVp3d__Fingerprint(viewport, scene);
+                if (slot.Asset__Fingerprint === key) return;                         // <-- Already current
+
+                Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, {
+                    snapshotAsset : { Asset__Path : slot.Asset__Path, Asset__Fingerprint : key }
+                }, true);                                                            // <-- Silent: the rename saves once, at the end
+
+                // LIVE FRAME | What is on screen is the picture the new key
+                // describes, so carry its state across rather than let the
+                // frame re-fetch the image it is already showing.
+                const state = Na__LeVp3d__States.get(viewport.Viewport__Id);
+                if (state && state.key) { state.key = key; state.triedAsset = key; }
+
+                restamped++;
+            });
+        });
+
+        return restamped;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Render and Upload One 3D Viewport Without a Frame on Screen (Dev bake)
     // ------------------------------------------------------------
     // Returns 'baked' | 'skipped' (already referenced) | 'failed'.
@@ -314,6 +366,7 @@
     // ------------------------------------------------------------
     export {
         Na__LeVp3d__Fingerprint,
+        Na__LeVp3d__RestampForScene,
         Na__LeVp3d__Fill,
         Na__LeVp3d__Release,
         Na__LeVp3d__SetInteracting,

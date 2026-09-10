@@ -368,7 +368,11 @@
 
         // LINEWORK | Cached classes paint now; otherwise they arrive later
         if (styles.projectedLinework === false) {
+            // OFF | A raster viewport: no projection is ever asked for, nothing is
+            // painted and the snap index has no points to offer.
             state.linework.innerHTML = ''; state.lineworkKey = null; state.lineworkSvg = null;
+            state.classes = null; state.classesKey = null;
+            Na__LeVp2d__HideProgress(state);
         } else {
             const cacheKey = Na__PlView__CacheKey(described.definition, modelFp);
             const paintKey = cacheKey + '|' + (styles.hiddenLines === true) + '|' + win.Denominator;

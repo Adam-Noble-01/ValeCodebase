@@ -18,7 +18,7 @@
 // - RECORDS (three-stage keys, plan section 5)
 //     Sheet       Sheet__Id, Name, Order, PaperSize, Orientation,
 //                 TitleBlockStyle, Fields {...}, Layers [], Viewports [],
-//                 Annotations [], Dimensions []
+//                 Annotations [], Dimensions [], Shapes [], Lineweights {ViewportPt, DimensionPt}
 //     Layer       Layer__Id, Name, Type, Visible, Locked, Order
 //     Viewport    Viewport__Id, LayerId, Name, Kind ('2d' | '3d'), SceneId,
 //                 DrawingId, FrameMm {X, Y, WidthMm, HeightMm},
@@ -29,6 +29,8 @@
 //     Dimension   Dimension__Id, LayerId, ViewportId, StartXMm, StartYMm,
 //                 EndXMm, EndYMm, OffsetMm, TextSizeMm, Colour, Terminator,
 //                 Precision, UnitsSuffix, OverrideText
+//     Shape       Shape__Id, LayerId, Points [[x, y], ...], Closed, StrokeColour,
+//                 StrokePt, FillColour (null for none)
 //   Paper coordinates are millimetres from the sheet's top-left, y down.
 //
 // - The active sheet and the selection are session state, held here so the
@@ -50,6 +52,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Vector shapes: CreateShape, UpdateShape, DeleteShape ('shapes' and 'shape' reasons). CreateDimension takes silent. UpdateSheet takes lineweights.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Viewport__Locked patch key. A save announces 'saved' instead of 'loaded', so the selection and the undo history survive it.
 // - RestoreSheets puts the browser draft back after a load.
@@ -95,7 +100,8 @@
         Na__LeRec__NormaliseDimension,
         Na__LeRec__NormaliseSheet,
         Na__LeRec__DefaultLayerId,
-        Na__LeRec__BuildFields
+        Na__LeRec__BuildFields,
+        Na__LeRec__NormaliseShape
     } from './Na__LayoutEditor__SheetRecords__.js';
     import { Na__LeScale__Coerce } from './Na__LayoutEditor__ScaleManager__.js';
     // ------------------------------------------------------------
@@ -120,7 +126,7 @@
     // MODULE VARIABLES | Session State
     // ------------------------------------------------------------
     let Na__LeModel__ActiveSheetId = null;
-    let Na__LeModel__Selection     = null;     // <-- { kind : 'viewport' | 'annotation' | 'dimension', id }
+    let Na__LeModel__Selection     = null;     // <-- { kind : 'viewport' | 'annotation' | 'dimension' | 'shape', id }
     let Na__LeModel__Dirty         = false;
     let Na__LeModel__Initialized   = false;
     // ------------------------------------------------------------
@@ -224,7 +230,8 @@
             Sheet__Layers          : [],
             Sheet__Viewports       : [],
             Sheet__Annotations     : [],
-            Sheet__Dimensions      : []
+            Sheet__Dimensions      : [],
+            Sheet__Shapes          : []
         };
         list.push(sheet);
         Na__LeRec__NormaliseSheet(sheet, list.length - 1);
@@ -278,6 +285,11 @@
         if (typeof patch.paperSize === 'string') sheet.Sheet__PaperSize = patch.paperSize;
         if (typeof patch.orientation === 'string') sheet.Sheet__Orientation = patch.orientation;
         if (typeof patch.titleBlockStyle === 'string') sheet.Sheet__TitleBlockStyle = patch.titleBlockStyle;
+        if (patch.lineweights && typeof patch.lineweights === 'object') {
+            const lw = sheet.Sheet__Lineweights || (sheet.Sheet__Lineweights = {});
+            if (Number.isFinite(patch.lineweights.viewportPt))  lw.ViewportPt  = patch.lineweights.viewportPt;
+            if (Number.isFinite(patch.lineweights.dimensionPt)) lw.DimensionPt = patch.lineweights.dimensionPt;
+        }
         Na__LeRec__NormaliseSheet(sheet, sheet.Sheet__Order - 1);
         Na__LeModel__Touch('sheet-updated', sheet.Sheet__Id);
         return true;
@@ -648,7 +660,7 @@
             Dimension__LayerId      : opts.layerId
         }, Na__LeModel__DefaultLayerId(sheet, 'dimension'));
         sheet.Sheet__Dimensions.push(item);
-        Na__LeModel__Touch('dimensions', sheet.Sheet__Id, item.Dimension__Id);
+        if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('dimensions', sheet.Sheet__Id, item.Dimension__Id);   // <-- The dimension tool announces once, on the third click
         return item;
     }
     // ------------------------------------------------------------
@@ -681,6 +693,59 @@
         sheet.Sheet__Dimensions.splice(index, 1);
         if (Na__LeModel__Selection && Na__LeModel__Selection.id === itemId) Na__LeModel__Selection = null;
         Na__LeModel__Touch('dimensions', sheet.Sheet__Id, itemId);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Create, Update and Delete a Vector Shape
+    // ------------------------------------------------------------
+    // points: [[x, y], ...] paper mm. options: { strokeColour, strokePt,
+    // fillColour, closed, layerId, silent }. A sheet without a vector layer
+    // gets one the first time a shape lands.
+    // ------------------------------------------------------------
+    function Na__LeModel__CreateShape(sheet, points, options) {
+        if (!sheet || !Array.isArray(points)) return null;
+        const opts = options || {};
+        let layerId = opts.layerId || null;
+        if (!layerId) {
+            const layer = sheet.Sheet__Layers.find((l) => l.Layer__Type === 'vector') || Na__LeModel__CreateLayer(sheet, { name : 'Vectors', type : 'vector' });
+            layerId = layer ? layer.Layer__Id : Na__LeModel__DefaultLayerId(sheet, 'vector');
+        }
+        const item = Na__LeRec__NormaliseShape({
+            Shape__Id           : Na__LeRec__NextId(sheet.Sheet__Shapes, 'Shape_', 'Shape__Id'),
+            Shape__LayerId      : layerId,
+            Shape__Points       : points.map((p) => [ p[0], p[1] ]),
+            Shape__Closed       : opts.closed === true,
+            Shape__StrokeColour : opts.strokeColour,
+            Shape__StrokePt     : opts.strokePt,
+            Shape__FillColour   : (typeof opts.fillColour === 'string') ? opts.fillColour : null
+        }, layerId);
+        sheet.Sheet__Shapes.push(item);
+        if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('shapes', sheet.Sheet__Id, item.Shape__Id);   // <-- The draw tool announces once, on finishing
+        return item;
+    }
+    function Na__LeModel__UpdateShape(sheet, itemId, patch, silent) {
+        const item = sheet ? Na__LeRec__Find(sheet.Sheet__Shapes, 'Shape__Id', itemId) : null;
+        if (!item || !patch) return false;
+        if (Array.isArray(patch.points)) item.Shape__Points = patch.points.map((p) => [ p[0], p[1] ]);
+        if (typeof patch.closed === 'boolean') item.Shape__Closed = patch.closed;
+        if (typeof patch.strokeColour === 'string') item.Shape__StrokeColour = patch.strokeColour;
+        if (Number.isFinite(patch.strokePt)) item.Shape__StrokePt = patch.strokePt;
+        if (patch.fillColour !== undefined) item.Shape__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;
+        if (typeof patch.layerId === 'string') item.Shape__LayerId = patch.layerId;
+        Na__LeRec__NormaliseShape(item, item.Shape__LayerId);
+        if (silent) { Na__LeModel__Dirty = true; return true; }
+        Na__LeModel__Touch('shape', sheet.Sheet__Id, itemId);
+        return true;
+    }
+    function Na__LeModel__DeleteShape(sheet, itemId) {
+        if (!sheet) return false;
+        const index = sheet.Sheet__Shapes.findIndex((sh) => sh.Shape__Id === itemId);
+        if (index === -1) return false;
+        sheet.Sheet__Shapes.splice(index, 1);
+        if (Na__LeModel__Selection && Na__LeModel__Selection.id === itemId) Na__LeModel__Selection = null;
+        Na__LeModel__Touch('shapes', sheet.Sheet__Id, itemId);
         return true;
     }
     // ------------------------------------------------------------
@@ -821,6 +886,9 @@
         Na__LeModel__CreateDimension,
         Na__LeModel__UpdateDimension,
         Na__LeModel__DeleteDimension,
+        Na__LeModel__CreateShape,
+        Na__LeModel__UpdateShape,
+        Na__LeModel__DeleteShape,
         Na__LeModel__SetSelection,
         Na__LeModel__GetSelection,
         Na__LeModel__GetSelectedViewport,

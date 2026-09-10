@@ -36,6 +36,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.1
+// - Linework widths from the sheet's viewport lineweight; shapes arrive through the markup primitives.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -140,9 +143,9 @@
 
     // HELPER FUNCTION | Draw the Projected Linework of a 2D Viewport as Vector Lines
     // ------------------------------------------------------------
-    function Na__LePdf__DrawLinework(doc, viewport, described, classes) {
+    function Na__LePdf__DrawLinework(doc, sheet, viewport, described, classes) {
         const win   = described.window;
-        const rules = Na__LeVp2d__StrokeRules();
+        const rules = Na__LeVp2d__StrokeRules(sheet && sheet.Sheet__Lineweights ? sheet.Sheet__Lineweights.ViewportPt : null);
         const setup = Na__LeCfg__GetLineworkSetup();
         const D     = win.Denominator;
         const minLen = setup.minSegmentPaperMm;
@@ -186,7 +189,7 @@
                 if (underlay && underlay.dataUrl) doc.addImage(underlay.dataUrl, 'PNG', frame.X, frame.Y, frame.WidthMm, frame.HeightMm);
                 if (viewport.Viewport__Styles.projectedLinework !== false) {
                     const classes = await Na__LeVp2d__EnsureLinework(described.definition);
-                    if (classes) Na__LePdf__DrawLinework(doc, viewport, described, classes);
+                    if (classes) Na__LePdf__DrawLinework(doc, sheet, viewport, described, classes);
                 }
                 if (viewport.Viewport__MarkupMode === 'scene') {
                     Na__LeChrome__DrawToPdf(doc, Na__LePdf__Offset(Na__LeMarkup__BuildScenePrimitives(described), frame.X, frame.Y));

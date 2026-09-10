@@ -31,6 +31,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.1
+// - Vectors layer type.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -73,7 +76,7 @@
     // MODULE CONSTANTS | Section Id and Type Labels
     // ------------------------------------------------------------
     const Na__LePanelLayers__ID = 'layers';
-    const Na__LePanelLayers__TYPE_LABELS = { viewport : 'Viewports', annotation : 'Annotations', dimension : 'Dimensions', mixed : 'General' };
+    const Na__LePanelLayers__TYPE_LABELS = { viewport : 'Viewports', annotation : 'Annotations', dimension : 'Dimensions', vector : 'Vectors', mixed : 'General' };
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Filter and Drag State

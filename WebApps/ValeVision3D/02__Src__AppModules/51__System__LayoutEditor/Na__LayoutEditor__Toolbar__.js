@@ -29,6 +29,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - Draw tool button; the dimension tool is three clicks.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - Undo and Redo buttons, enabled by the history depth.
 //
@@ -53,6 +56,7 @@
         Na__LeTools__TOOL_SELECT,
         Na__LeTools__TOOL_TEXT,
         Na__LeTools__TOOL_DIMENSION,
+        Na__LeTools__TOOL_DRAW,
         Na__LeTools__CHANGED_EVENT,
         Na__LeTools__SetTool,
         Na__LeTools__GetTool
@@ -172,7 +176,8 @@
         if (Na__LeToolbar__Editable) {
             [ [ Na__LeTools__TOOL_SELECT, Na__LeCfg__GetLabel('ToolSelect', 'Select'), 'Select and move (V)' ],
               [ Na__LeTools__TOOL_TEXT, Na__LeCfg__GetLabel('ToolText', 'Text'), 'Place text (T)' ],
-              [ Na__LeTools__TOOL_DIMENSION, Na__LeCfg__GetLabel('ToolDimension', 'Dimension'), 'Place a dimension in two clicks (D)' ] ].forEach((entry) => {
+              [ Na__LeTools__TOOL_DIMENSION, Na__LeCfg__GetLabel('ToolDimension', 'Dimension'), 'Place a dimension in three clicks: start, end, then where the line sits (D)' ],
+              [ Na__LeTools__TOOL_DRAW, Na__LeCfg__GetLabel('ToolDraw', 'Draw'), 'Draw lines and polygons: click points, click the first point to close, Enter to finish (L)' ] ].forEach((entry) => {
                 const button = Na__LeToolbar__Button(entry[1], 'tool-' + entry[0], entry[2], () => Na__LeTools__SetTool(entry[0]));
                 button.setAttribute('data-na-tool', entry[0]);
                 root.appendChild(button);

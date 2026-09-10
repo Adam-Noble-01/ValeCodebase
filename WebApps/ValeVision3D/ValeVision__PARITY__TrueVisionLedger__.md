@@ -134,10 +134,15 @@ No TrueVision counterpart exists for this phase. Sources are pattern-level: the 
 | `51/Na__LayoutEditor__ViewportHandles__.js` 1.1.0 | VV `Controls__Pc__` | adapted | Millimetre space; every handle crops, corners both axes (D29, D30 revised) | 10-Sep-2026 |
 | `51/Na__LayoutEditor__Viewport2d__.js`, `Viewport3d__.js`, `SnapshotRenderer__.js`, `Assets__.js` | none | new | Underlay and snapshot pipeline; R2 snapshots (D36) | 10-Sep-2026 |
 | `51/Na__LayoutEditor__MarkupBridge__.js`, `DimensionGeometry__.js` | VV 44 and 45 (rules) | adapted | Static scene markup at scale; native sheet markup (D34) | 10-Sep-2026 |
-| `51/Na__LayoutEditor__SheetTools__.js` 1.3.0 | VV `Controls__Pc__` (pointer conventions) | new | Select, move, crop, content editing, locks, context menu, text, dimension, keys | 10-Sep-2026 |
+| `51/Na__LayoutEditor__SheetTools__.js` 1.4.0 | VV `Controls__Pc__` (pointer conventions) | new | Select, move, crop, content editing, locks, context menu, text, dimension, keys | 10-Sep-2026 |
 | `51/Na__LayoutEditor__History__.js` | VV 44 `PlanAnnotations__History__` (pattern) | adapted | Per-sheet undo and redo, fifty whole-sheet snapshots | 10-Sep-2026 |
 | `51/Na__LayoutEditor__ContextMenu__.js` | none | new | Right-click menu in the house style | 10-Sep-2026 |
 | `51/Na__LayoutEditor__AutoSave__.js` | none | new | Browser draft of every change; structural changes save the project | 10-Sep-2026 |
+| `51/Na__LayoutEditor__TextTool__.js` | VV 51 `SheetTools__` 1.3.0 (split) | new | Text placement, the inline field for text and dimension values | 10-Sep-2026 |
+| `51/Na__LayoutEditor__DimensionTool__.js` | VV 51 `SheetTools__` 1.3.0 (split) | new | Three-click placement, offset inference, inline value | 10-Sep-2026 |
+| `51/Na__LayoutEditor__Grips__.js` | VV 51 `ViewportHandles__` (pattern) | new | Dimension and shape grips, rubber band | 10-Sep-2026 |
+| `51/Na__LayoutEditor__ShapeGeometry__.js`, `ShapeTool__.js`, `Panel__Shapes__.js` | none | new | Vector lines, polylines and polygons; Vectors layer type; Vectors panel | 10-Sep-2026 |
+| `51/Na__LayoutEditor__Enhance__.js` | VV 30 `ImageExport__PostProcessEffects__Pipeline` | adapted | Levels and sharpen on a viewport render (Enhance Whitecard style) | 10-Sep-2026 |
 | `51/Na__LayoutEditor__PanelHost__.js`, `Panel__Sheet__`, `Panel__Layers__`, `Panel__ViewportSettings__`, `Panel__Text__`, `Panel__Dimensions__`, `Panel__Styles__` | LD panel columns (purpose) | new | D31, D32, D33 | 10-Sep-2026 |
 | `51/Na__LayoutEditor__Toolbar__.js`, `TabStrip__.js`, `ModeController__.js`, `DevMenu__Controls__.js` | LD mode tab, VV 43 mode pattern | new | D22 to D24 | 10-Sep-2026 |
 | `51/Na__LayoutEditor__PdfExporter__.js` | VV `PdfExport__A3__`, LD `DrawToPdf` | adapted | Any paper size, vector content (D35) | 10-Sep-2026 |

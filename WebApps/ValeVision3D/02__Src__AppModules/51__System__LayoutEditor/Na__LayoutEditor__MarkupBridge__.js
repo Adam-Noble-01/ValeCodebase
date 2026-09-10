@@ -38,6 +38,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Vector shapes drawn under the markup and hit tested after text. Hit order is dimensions (lines and value text), text, shapes. Dimension weight from the sheet's lineweights.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -53,7 +56,8 @@
     import {
         Na__LeCfg__GetStyleSetup,
         Na__LeCfg__GetTextSetup,
-        Na__LeCfg__GetDimensionSetup
+        Na__LeCfg__GetDimensionSetup,
+        Na__LeCfg__PtToMm
     } from './Na__LayoutEditor__ConfigState__.js';
     import {
         Na__LeChrome__MeasureTextMm,
@@ -65,8 +69,10 @@
     import {
         Na__LeDimGeo__Skeleton,
         Na__LeDimGeo__DistanceToSegment,
-        Na__LeDimGeo__Push
+        Na__LeDimGeo__Push,
+        Na__LeDimGeo__TextPlacement
     } from './Na__LayoutEditor__DimensionGeometry__.js';
+    import { Na__LeShapeGeo__Push, Na__LeShapeGeo__Bounds, Na__LeShapeGeo__Hit } from './Na__LayoutEditor__ShapeGeometry__.js';
     import {
         Na__LeModel__KIND_2D,
         Na__LeModel__GetViewportById,
@@ -261,6 +267,15 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The Dimension Line Weight: the Sheet's Points, Else the Config Millimetres
+    // ------------------------------------------------------------
+    function Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup) {
+        const pt = sheet && sheet.Sheet__Lineweights ? sheet.Sheet__Lineweights.DimensionPt : null;
+        return Number.isFinite(pt) ? Na__LeCfg__PtToMm(pt) : dimSetup.strokeMm;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Skeleton of a Sheet Dimension (paper millimetres)
     // ------------------------------------------------------------
     function Na__LeMarkup__DimensionSkeleton(dim) {
@@ -310,6 +325,13 @@
         const style     = Na__LeCfg__GetStyleSetup();
         let highlight   = null;
 
+        // SHAPES | Under the text and the dimensions
+        sheet.Sheet__Shapes.forEach((shape) => {
+            if (!Na__LeModel__IsLayerVisible(sheet, shape.Shape__LayerId)) return;
+            Na__LeShapeGeo__Push(list, shape);
+            if (selection && selection.kind === 'shape' && selection.id === shape.Shape__Id) highlight = Na__LeShapeGeo__Bounds(shape);
+        });
+
         sheet.Sheet__Annotations.forEach((item) => {
             if (!Na__LeModel__IsLayerVisible(sheet, item.Annotation__LayerId)) return;
             Na__LeMarkup__PushAnnotation(list, item, textSetup);
@@ -322,7 +344,7 @@
                 start : { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
                 end   : { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
                 offsetMm : dim.Dimension__OffsetMm, gapMm : dimSetup.extGapMm, overshootMm : dimSetup.overshootMm,
-                tickMm : dimSetup.tickLengthMm, strokeMm : dimSetup.strokeMm, colour : dim.Dimension__Colour,
+                tickMm : dimSetup.tickLengthMm, strokeMm : Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup), colour : dim.Dimension__Colour,
                 terminator : dim.Dimension__Terminator,
                 text : Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim)),
                 fontMm : dim.Dimension__TextSizeMm, weight : 400, liftMm : dimSetup.textGapMm, fontFamily : textSetup.fontFamily
@@ -346,14 +368,32 @@
 
     // FUNCTION | Which Sheet Markup Item Is Under a Paper Point
     // ------------------------------------------------------------
-    // Returns { kind : 'annotation' | 'dimension', id } or null. Locked and
-    // hidden layers are skipped; later items win, as they draw on top.
+    // Returns { kind : 'dimension' | 'annotation' | 'shape', id } or null, in
+    // that order of priority. Locked and hidden layers are skipped; later
+    // items of a kind win, as they draw on top.
     // ------------------------------------------------------------
     function Na__LeMarkup__HitTest(sheet, pointMm, toleranceMm) {
         if (!sheet) return null;
         const tol = Number.isFinite(toleranceMm) ? toleranceMm : 1.5;
         const editable = (layerId) => Na__LeModel__IsLayerVisible(sheet, layerId) && !Na__LeModel__IsLayerLocked(sheet, layerId);
 
+        // DIMENSIONS FIRST | Thin lines are hard to hit, so the lines take a
+        // wider tolerance and the value text counts as part of the dimension.
+        const dimSetup = Na__LeCfg__GetDimensionSetup();
+        const lineTol  = tol * 1.5;
+        for (let i = sheet.Sheet__Dimensions.length - 1; i >= 0; i--) {
+            const dim = sheet.Sheet__Dimensions[i];
+            if (!editable(dim.Dimension__LayerId)) continue;
+            const sk = Na__LeMarkup__DimensionSkeleton(dim);
+            if (!sk) continue;
+            if (Na__LeDimGeo__DistanceToSegment(pointMm, sk.DS, sk.DE) <= lineTol ||
+                Na__LeDimGeo__DistanceToSegment(pointMm, sk.X1, sk.T1) <= lineTol ||
+                Na__LeDimGeo__DistanceToSegment(pointMm, sk.X2, sk.T2) <= lineTol) return { kind : 'dimension', id : dim.Dimension__Id };
+            const text  = Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim));
+            const place = Na__LeDimGeo__TextPlacement(sk, dimSetup.textGapMm);
+            const reach = Math.max(dim.Dimension__TextSizeMm, Na__LeChrome__MeasureTextMm(text, dim.Dimension__TextSizeMm, 400) / 2) + tol;
+            if (Math.hypot(pointMm.x - place.x, pointMm.y - place.y) <= reach) return { kind : 'dimension', id : dim.Dimension__Id };
+        }
         for (let i = sheet.Sheet__Annotations.length - 1; i >= 0; i--) {
             const item = sheet.Sheet__Annotations[i];
             if (!editable(item.Annotation__LayerId)) continue;
@@ -362,16 +402,10 @@
                 return { kind : 'annotation', id : item.Annotation__Id };
             }
         }
-        for (let i = sheet.Sheet__Dimensions.length - 1; i >= 0; i--) {
-            const dim = sheet.Sheet__Dimensions[i];
-            if (!editable(dim.Dimension__LayerId)) continue;
-            const sk = Na__LeMarkup__DimensionSkeleton(dim);
-            if (!sk) continue;
-            if (Na__LeDimGeo__DistanceToSegment(pointMm, sk.DS, sk.DE) <= tol ||
-                Na__LeDimGeo__DistanceToSegment(pointMm, sk.X1, sk.T1) <= tol ||
-                Na__LeDimGeo__DistanceToSegment(pointMm, sk.X2, sk.T2) <= tol) {
-                return { kind : 'dimension', id : dim.Dimension__Id };
-            }
+        for (let i = sheet.Sheet__Shapes.length - 1; i >= 0; i--) {
+            const shape = sheet.Sheet__Shapes[i];
+            if (!editable(shape.Shape__LayerId)) continue;
+            if (Na__LeShapeGeo__Hit(shape, pointMm, tol)) return { kind : 'shape', id : shape.Shape__Id };
         }
         return null;
     }

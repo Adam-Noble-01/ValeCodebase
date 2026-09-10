@@ -2,6 +2,49 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.8 - 10-Sep-2026 - Layout Editor: dimensions you can edit, lineweights in points, Enhance Whitecard, a Draw tool
+
+### Added
+- **Three-click dimensions.** Start, end, then a third click for where
+  the line sits, as in CAD. The dimension appears after the second click
+  and its line follows the cursor; a parallel dimension nearby pulls it
+  onto its own line (an open circle marks the inference), so a run of
+  dimensions lines up. The same inference works when the round grip of an
+  existing dimension is dragged (Na__LayoutEditor__DimensionTool__).
+- **Dimension grips and inline values.** A selected dimension shows a
+  square grip at each measured point (they re-pick and snap) and a round
+  grip on the line. Double-click a dimension, or use the menu, to type an
+  override; typing the measured value back clears it. The value text now
+  counts as part of the dimension for selection (Na__LayoutEditor__Grips__).
+- **Draw tool (L).** Lines, polylines and polygons: click points (snapping
+  to the linework, Shift for an axis), click the first point to close a
+  polygon, Enter, a double-click or a right click to finish, Esc to
+  abandon. Shapes select, move, nudge, delete, drag by the vertex, and
+  open or close from the menu. A Vectors panel sets edge colour, edge
+  weight in points (0.20 by default), fill and closure, for the selection
+  or for new shapes. New sheets get a Vectors layer; older sheets get one
+  the first time a shape lands. Shapes print as vectors in the PDF
+  (Na__LayoutEditor__ShapeTool__, __ShapeGeometry__, __Panel__Shapes__).
+- **Lineweights in points.** The Sheet panel carries the sheet's viewport
+  line weight (0.30 pt by default, the visible projected linework; the
+  hidden, authored and section classes keep their ratios) and its
+  dimension line weight (0.35 pt), on screen and in the PDF.
+- **Enhance Whitecard.** A viewport style, on by default for new
+  viewports, that runs the image export's levels and high-pass sharpen on
+  the viewport's render so the shaded whitecard faces print white
+  (Na__LayoutEditor__Enhance__, parameters in the Layout Editor config).
+- **Space** clears the selection and abandons any placement.
+
+### Changed
+- **Selection order** is dimensions first, then text, then shapes, then
+  viewports, for a click and for the right-click menu alike; dimension
+  lines take a wider tolerance.
+- **Sheet tools split.** Text placement and inline editing moved to
+  Na__LayoutEditor__TextTool__; dimension placement to the dimension
+  tool; the sheet tools keep selection, dragging, keys and the menu.
+- **Service worker token** 2026-09-10-4 (shell HTML and stylesheet changed).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.7 - 10-Sep-2026 - Layout Editor: undo, locks, context menu, roaming page, sheets that survive a reload
 
 ### Fixed

@@ -6,22 +6,27 @@
 // NAMESPACE  : Na__LeTools
 // MODULE     : Layout Editor - Sheet Tools
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Select, move, resize, place text and dimensions on the paper with the left button and the keyboard
+// PURPOSE    : Select, move, resize and edit what is on the paper with the left button and the keyboard; hand placement to the text, dimension and draw tools
 // CREATED    : 09-Sep-2026
 //
 // DESCRIPTION:
 // - One pointer state machine over the stage: a press resolves what is
-//   under the cursor (sheet markup first, then the selected viewport's
-//   handles and border, then any viewport), a drag past a small threshold
-//   moves or resizes it through the model in silent updates, and the
-//   release announces the change once.
-// - Tools: Select, Text (click places a text item and opens the inline
-//   editor), Dimension (two clicks; Shift constrains to an axis; the
-//   dimension joins the frontmost 2D viewport under it so it measures the
-//   model at that scale).
+//   under the cursor (dimensions first, then text, then shapes, then the
+//   selected viewport's handles and border, then any viewport), a drag
+//   past a small threshold moves or resizes it through the model in silent
+//   updates, and the release announces the change once.
+// - Tools: Select; Text, Dimension and Draw live in their own modules and
+//   are called from here with the panel defaults.
+// - Viewports: a drag moves one (selected or not), a handle crops or
+//   extends the frame, double-click enters the content, a lock refuses all
+//   of it. Dimensions: grips re-pick the points and slide the line (with
+//   inference); double-click edits the value. Shapes: grips move vertices.
 // - Keys: Delete removes the selection (a viewport asks first), Escape
-//   backs out, arrows nudge by a millimetre (ten with Shift), V T D pick a
-//   tool. Nothing fires while typing in a field.
+//   backs out, Space clears the selection, Enter finishes a shape, arrows
+//   nudge by a millimetre (ten with Shift), V T D L pick a tool, Ctrl+Z
+//   and Ctrl+Y step the history. Nothing fires while typing in a field.
+// - A right click that did not pan opens the context menu for what is
+//   under the cursor, in the same order as selection.
 // - Read-only sessions (the web build) still select and inspect; every
 //   mutation is gated on the editable flag.
 //
@@ -40,6 +45,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.4.0
+// - Placement and inline editing moved out to Na__LayoutEditor__TextTool__, __DimensionTool__ and __ShapeTool__.
+// - Selection order is dimensions, then text, then shapes, then viewports; the context menu follows it.
+// - Space clears the selection; Enter finishes a shape; L picks the Draw tool.
+// - Dimension grips through Na__LayoutEditor__Grips__; the round grip slides the line with inference; double-click edits the value.
+// - Shapes select, move, nudge, delete, and drag by the vertex.
+//
 // 10-Sep-2026 - Version 1.3.0
 // - A drag moves a viewport at once; every handle crops or extends; double-click enters the content (drag repositions the drawing).
 // - Locked viewports cannot be entered, moved, resized, nudged or deleted.
@@ -59,11 +71,13 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | Config, Model, Surface, Handles, Markup, Viewports
+    // MODULE IMPORTS | Config, Model, Surface, Handles, Markup, Grips, Tools, Viewports
     // ------------------------------------------------------------
     import {
         Na__LeCfg__GetTextSetup,
         Na__LeCfg__GetDimensionSetup,
+        Na__LeCfg__GetShapeSetup,
+        Na__LeCfg__GetSelectionSetup,
         Na__LeCfg__GetLabel,
         Na__LeCfg__GetKeyboardSetup,
         Na__LeCfg__MatchKeyBinding,
@@ -72,18 +86,17 @@
     import {
         Na__LeModel__KIND_2D,
         Na__LeModel__GetActiveSheet,
-        Na__LeModel__GetLayers,
         Na__LeModel__GetViewportById,
         Na__LeModel__IsLayerVisible,
         Na__LeModel__IsLayerLocked,
         Na__LeModel__UpdateViewport,
         Na__LeModel__DeleteViewport,
-        Na__LeModel__CreateAnnotation,
         Na__LeModel__UpdateAnnotation,
         Na__LeModel__DeleteAnnotation,
-        Na__LeModel__CreateDimension,
         Na__LeModel__UpdateDimension,
         Na__LeModel__DeleteDimension,
+        Na__LeModel__UpdateShape,
+        Na__LeModel__DeleteShape,
         Na__LeModel__SetSelection,
         Na__LeModel__GetSelection
     } from './Na__LayoutEditor__SheetModel__.js';
@@ -101,9 +114,15 @@
         Na__LeHandles__Contains,
         Na__LeHandles__CursorFor,
         Na__LeHandles__CaptureStart,
-        Na__LeHandles__DragPatch
+        Na__LeHandles__DragPatch,
+        Na__LeHandles__FrontToBack
     } from './Na__LayoutEditor__ViewportHandles__.js';
-    import { Na__LeMarkup__HitTest, Na__LeMarkup__AnnotationBounds, Na__LeMarkup__DimensionSkeleton } from './Na__LayoutEditor__MarkupBridge__.js';
+    import { Na__LeMarkup__HitTest } from './Na__LayoutEditor__MarkupBridge__.js';
+    import { Na__LeGrips__DimensionGrab, Na__LeGrips__ShapeGrab } from './Na__LayoutEditor__Grips__.js';
+    import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Translated } from './Na__LayoutEditor__ShapeGeometry__.js';
+    import { Na__LeText__Place, Na__LeText__BeginEdit, Na__LeText__Commit, Na__LeText__Cancel, Na__LeText__IsEditing } from './Na__LayoutEditor__TextTool__.js';
+    import { Na__LeDim__Click, Na__LeDim__Move, Na__LeDim__Cancel, Na__LeDim__IsPlacing, Na__LeDim__OffsetFor, Na__LeDim__ShowInference, Na__LeDim__BeginTextEdit } from './Na__LayoutEditor__DimensionTool__.js';
+    import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing } from './Na__LayoutEditor__ShapeTool__.js';
     import { Na__LeVp2d__SetInteracting, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
     import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle, Na__LeOsnap__IsEnabled } from './Na__LayoutEditor__Snapping__.js';
@@ -120,31 +139,29 @@
 // REGION | Module Constants and State
 // -----------------------------------------------------------------------------
 
-    // MODULE CONSTANTS | Tools, Events and Thresholds
+    // MODULE CONSTANTS | Tools and Events
     // ------------------------------------------------------------
     const Na__LeTools__TOOL_SELECT    = 'select';
     const Na__LeTools__TOOL_TEXT      = 'text';
     const Na__LeTools__TOOL_DIMENSION = 'dimension';
+    const Na__LeTools__TOOL_DRAW      = 'draw';
+    const Na__LeTools__TOOLS          = [ Na__LeTools__TOOL_SELECT, Na__LeTools__TOOL_TEXT, Na__LeTools__TOOL_DIMENSION, Na__LeTools__TOOL_DRAW ];
     const Na__LeTools__CHANGED_EVENT  = 'na-layouteditor-tool-changed';
-    const Na__LeTools__DRAG_THRESHOLD_MM = 0.5;
-    const Na__LeTools__HIT_TOLERANCE_MM  = 1.5;
-    const Na__LeTools__MENU_SLOP_PX      = 4;      // <-- A right button that travelled further than this panned, so no menu
+    const Na__LeTools__MENU_SLOP_PX   = 4;      // <-- A right button that travelled further than this panned, so no menu
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Attachment and Interaction State
     // ------------------------------------------------------------
-    let Na__LeTools__Stage     = null;
-    let Na__LeTools__Handlers  = null;
-    let Na__LeTools__Editable  = false;
-    let Na__LeTools__Tool      = Na__LeTools__TOOL_SELECT;
-    let Na__LeTools__Drag      = null;    // <-- { kind, id, hit, start, startMm, moved, pointerId, mode }
-    let Na__LeTools__Suppressed = false;  // <-- Raised by the control modules while a navigation gesture owns the pointer
-    let Na__LeTools__Placement = null;    // <-- { startMm } while a dimension waits for its second click
-    let Na__LeTools__Preview   = null;    // <-- Rubber-band element for the dimension tool
-    let Na__LeTools__Editor    = null;    // <-- { input, itemId }
-    let Na__LeTools__RightPress = null;   // <-- { x, y } of the last right-button press
-    let Na__LeTools__TextDefaults = null;
-    let Na__LeTools__DimDefaults  = null;
+    let Na__LeTools__Stage      = null;
+    let Na__LeTools__Handlers   = null;
+    let Na__LeTools__Editable   = false;
+    let Na__LeTools__Tool       = Na__LeTools__TOOL_SELECT;
+    let Na__LeTools__Drag       = null;    // <-- { kind, id, hit, mode, index, start, startMm, moved, pointerId }
+    let Na__LeTools__Suppressed = false;   // <-- Raised by the control modules while a navigation gesture owns the pointer
+    let Na__LeTools__RightPress = null;    // <-- { x, y } of the last right-button press
+    let Na__LeTools__TextDefaults  = null;
+    let Na__LeTools__DimDefaults   = null;
+    let Na__LeTools__ShapeDefaults = null;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -154,7 +171,7 @@
 // REGION | Defaults and Tool State
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | Settings Applied to New Text and New Dimensions (panels edit these)
+    // FUNCTION | Settings Applied to New Text, Dimensions and Shapes (the panels edit these)
     // ------------------------------------------------------------
     function Na__LeTools__GetTextDefaults() {
         if (!Na__LeTools__TextDefaults) {
@@ -172,13 +189,37 @@
         return Na__LeTools__DimDefaults;
     }
     function Na__LeTools__SetDimensionDefaults(patch) { Object.assign(Na__LeTools__GetDimensionDefaults(), patch || {}); }
+    function Na__LeTools__GetShapeDefaults() {
+        if (!Na__LeTools__ShapeDefaults) {
+            const s = Na__LeCfg__GetShapeSetup();
+            Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled };
+        }
+        return Na__LeTools__ShapeDefaults;
+    }
+    function Na__LeTools__SetShapeDefaults(patch) { Object.assign(Na__LeTools__GetShapeDefaults(), patch || {}); }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Hit Tolerance in Paper Millimetres at the Current Zoom
+    // ------------------------------------------------------------
+    function Na__LeTools__Tolerance() { return Na__LeCfg__GetSelectionSetup().hitToleranceMm / Na__LeSurface__GetZoom(); }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Abandon Whatever a Placing Tool Has Half Done
+    // ------------------------------------------------------------
+    function Na__LeTools__CancelPlacement() {
+        const sheet = Na__LeModel__GetActiveSheet();
+        Na__LeDim__Cancel(sheet);
+        Na__LeShape__Cancel(sheet);
+    }
     // ------------------------------------------------------------
 
 
     // FUNCTION | The Active Tool
     // ------------------------------------------------------------
     function Na__LeTools__SetTool(tool) {
-        const next = [ Na__LeTools__TOOL_SELECT, Na__LeTools__TOOL_TEXT, Na__LeTools__TOOL_DIMENSION ].indexOf(tool) === -1 ? Na__LeTools__TOOL_SELECT : tool;
+        const next = Na__LeTools__TOOLS.indexOf(tool) === -1 ? Na__LeTools__TOOL_SELECT : tool;
         if (!Na__LeTools__Editable && next !== Na__LeTools__TOOL_SELECT) return Na__LeTools__Tool;
         Na__LeTools__CancelPlacement();
         Na__LeTools__Tool = next;
@@ -196,24 +237,14 @@
 // REGION | Hit Resolution
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Viewports Front to Back (top of the layer list first)
-    // ------------------------------------------------------------
-    function Na__LeTools__ViewportsFrontToBack(sheet) {
-        const layers = Na__LeModel__GetLayers(sheet).map((l) => l.Layer__Id);
-        return sheet.Sheet__Viewports.map((v, i) => ({ v : v, rank : layers.indexOf(v.Viewport__LayerId), i : i }))
-            .filter((e) => Na__LeModel__IsLayerVisible(sheet, e.v.Viewport__LayerId))
-            .sort((a, b) => (a.rank - b.rank) || (b.i - a.i))
-            .map((e) => e.v);
-    }
-    // ------------------------------------------------------------
-
-
     // HELPER FUNCTION | What the Select Tool Finds Under a Point
     // ------------------------------------------------------------
-    // Returns { kind : 'annotation'|'dimension'|'viewport', id, hit } or null.
+    // Returns { kind : 'dimension'|'annotation'|'shape'|'viewport', id, hit }
+    // or null. Markup wins over viewports, and the markup bridge orders it
+    // dimensions, text, shapes.
     // ------------------------------------------------------------
     function Na__LeTools__Resolve(sheet, pointMm) {
-        const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__HIT_TOLERANCE_MM / Na__LeSurface__GetZoom());
+        const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__Tolerance());
         if (markup) return { kind : markup.kind, id : markup.id, hit : null };
         const ppm  = Na__LeSurface__GetPixelsPerMm();
         const zoom = Na__LeSurface__GetZoom();
@@ -223,7 +254,7 @@
             const hit = Na__LeHandles__HitTest(selected, pointMm, ppm, zoom, true);
             if (hit) return { kind : 'viewport', id : selected.Viewport__Id, hit : hit };
         }
-        const ordered = Na__LeTools__ViewportsFrontToBack(sheet);
+        const ordered = Na__LeHandles__FrontToBack(sheet);
         for (let i = 0; i < ordered.length; i++) {
             if (Na__LeHandles__Contains(ordered[i], pointMm)) return { kind : 'viewport', id : ordered[i].Viewport__Id, hit : null };
         }
@@ -232,20 +263,46 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Which Part of a Dimension a Press Grabs
+    // HELPER FUNCTION | The Records Behind a Resolved Hit
     // ------------------------------------------------------------
-    function Na__LeTools__DimensionGrab(dim, pointMm) {
-        const tol = Na__LeTools__HIT_TOLERANCE_MM / Na__LeSurface__GetZoom();
-        if (Math.hypot(pointMm.x - dim.Dimension__StartXMm, pointMm.y - dim.Dimension__StartYMm) <= tol * 2) return 'start';
-        if (Math.hypot(pointMm.x - dim.Dimension__EndXMm,   pointMm.y - dim.Dimension__EndYMm)   <= tol * 2) return 'end';
-        const sk = Na__LeMarkup__DimensionSkeleton(dim);
-        if (sk) {
-            const abx = sk.DE.x - sk.DS.x, aby = sk.DE.y - sk.DS.y, len2 = (abx * abx) + (aby * aby);
-            const t = len2 > 0 ? (((pointMm.x - sk.DS.x) * abx) + ((pointMm.y - sk.DS.y) * aby)) / len2 : 0;
-            const cx = sk.DS.x + (abx * Math.max(0, Math.min(1, t))), cy = sk.DS.y + (aby * Math.max(0, Math.min(1, t)));
-            if (Math.hypot(pointMm.x - cx, pointMm.y - cy) <= tol) return 'offset';
+    function Na__LeTools__Record(sheet, found) {
+        if (!found) return null;
+        if (found.kind === 'annotation') return sheet.Sheet__Annotations.find((a) => a.Annotation__Id === found.id) || null;
+        if (found.kind === 'dimension')  return sheet.Sheet__Dimensions.find((d) => d.Dimension__Id === found.id) || null;
+        if (found.kind === 'shape')      return sheet.Sheet__Shapes.find((s) => s.Shape__Id === found.id) || null;
+        return Na__LeModel__GetViewportById(sheet, found.id);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Viewport Is Locked by Its Own Flag or by Its Layer
+    // ------------------------------------------------------------
+    function Na__LeTools__IsViewportLocked(sheet, viewport) {
+        return !!viewport && (viewport.Viewport__Locked === true || Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Cursor for What Is Under the Pointer
+    // ------------------------------------------------------------
+    function Na__LeTools__HoverCursor(sheet, found, pointMm) {
+        if (!found) return '';
+        const record = Na__LeTools__Record(sheet, found);
+        if (!record || !Na__LeTools__Editable) return 'default';
+        const tol = Na__LeTools__Tolerance();
+        if (found.kind === 'annotation') return Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId) ? 'default' : 'move';
+        if (found.kind === 'dimension') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Dimension__LayerId)) return 'default';
+            return Na__LeGrips__DimensionGrab(record, pointMm, tol) === 'whole' ? 'move' : 'crosshair';
         }
-        return 'whole';
+        if (found.kind === 'shape') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Shape__LayerId)) return 'default';
+            return Na__LeGrips__ShapeGrab(record, pointMm, tol).mode === 'whole' ? 'move' : 'crosshair';
+        }
+        if (Na__LeTools__IsViewportLocked(sheet, record)) return 'default';
+        if (Na__LeSurface__GetEditingViewport() === found.id) return 'grab';
+        if (found.hit && found.hit.mode === 'handle') return Na__LeHandles__CursorFor(found.hit);
+        return 'move';
     }
     // ------------------------------------------------------------
 
@@ -262,6 +319,36 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Drag a Press on a Resolved Item Starts (null when it cannot move)
+    // ------------------------------------------------------------
+    function Na__LeTools__DragFor(sheet, found, pointMm) {
+        const record = Na__LeTools__Record(sheet, found);
+        if (!record) return null;
+        const tol = Na__LeTools__Tolerance();
+        if (found.kind === 'annotation') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId)) return null;
+            return { kind : 'annotation', id : found.id, start : { x : record.Annotation__PosXMm, y : record.Annotation__PosYMm } };
+        }
+        if (found.kind === 'dimension') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Dimension__LayerId)) return null;
+            return { kind : 'dimension', id : found.id, mode : Na__LeGrips__DimensionGrab(record, pointMm, tol),
+                     start : { sx : record.Dimension__StartXMm, sy : record.Dimension__StartYMm, ex : record.Dimension__EndXMm, ey : record.Dimension__EndYMm, offset : record.Dimension__OffsetMm } };
+        }
+        if (found.kind === 'shape') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Shape__LayerId)) return null;
+            const grab = Na__LeGrips__ShapeGrab(record, pointMm, tol);
+            return { kind : 'shape', id : found.id, mode : grab.mode, index : grab.index, start : Na__LeShapeGeo__Points(record).map((p) => [ p[0], p[1] ]) };
+        }
+        // VIEWPORT | A drag moves it, a handle crops it, and while its content
+        // is being edited (double-click) a drag inside moves the drawing instead.
+        if (Na__LeTools__IsViewportLocked(sheet, record)) return null;
+        const editing = Na__LeSurface__GetEditingViewport() === found.id;
+        const hit     = editing ? { mode : 'body' } : ((found.hit && found.hit.mode === 'handle') ? found.hit : { mode : 'border' });
+        return { kind : 'viewport', id : found.id, hit : hit, start : Na__LeHandles__CaptureStart(record) };
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Pointer Down
     // ------------------------------------------------------------
     function Na__LeTools__OnDown(event) {
@@ -272,10 +359,13 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
-        if (Na__LeTools__Editor) Na__LeTools__CommitTextEdit();
+        if (Na__LeText__IsEditing()) Na__LeText__Commit();
 
-        if (Na__LeTools__Tool === Na__LeTools__TOOL_TEXT && Na__LeTools__Editable) { Na__LeTools__PlaceText(sheet, point); return; }
-        if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION && Na__LeTools__Editable) { Na__LeTools__PlaceDimension(sheet, point, event.shiftKey); return; }
+        if (Na__LeTools__Editable) {
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_TEXT)      { Na__LeText__Place(sheet, point, Na__LeTools__GetTextDefaults()); return; }
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Click(sheet, point, event.shiftKey, Na__LeTools__GetDimensionDefaults()); return; }
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Click(sheet, point, event.shiftKey, Na__LeTools__GetShapeDefaults()); return; }
+        }
 
         const found     = Na__LeTools__Resolve(sheet, point);
         const editingId = Na__LeSurface__GetEditingViewport();
@@ -286,28 +376,7 @@
         if (!wasSelected) Na__LeModel__SetSelection({ kind : found.kind, id : found.id });
         if (!Na__LeTools__Editable) return;
 
-        // DRAG | Markup moves at once. So does a viewport, selected or not,
-        // unless it is locked: its handles crop or extend the frame, and while
-        // its content is being edited (double-click) a drag inside it moves
-        // the drawing instead of the frame.
-        let drag = null;
-        if (found.kind === 'annotation') {
-            const item = sheet.Sheet__Annotations.find((a) => a.Annotation__Id === found.id);
-            if (item && !Na__LeModel__IsLayerLocked(sheet, item.Annotation__LayerId)) drag = { kind : 'annotation', id : found.id, start : { x : item.Annotation__PosXMm, y : item.Annotation__PosYMm } };
-        } else if (found.kind === 'dimension') {
-            const dim = sheet.Sheet__Dimensions.find((d) => d.Dimension__Id === found.id);
-            if (dim && !Na__LeModel__IsLayerLocked(sheet, dim.Dimension__LayerId)) {
-                drag = { kind : 'dimension', id : found.id, mode : Na__LeTools__DimensionGrab(dim, point),
-                         start : { sx : dim.Dimension__StartXMm, sy : dim.Dimension__StartYMm, ex : dim.Dimension__EndXMm, ey : dim.Dimension__EndYMm, offset : dim.Dimension__OffsetMm } };
-            }
-        } else if (found.kind === 'viewport') {
-            const viewport = Na__LeModel__GetViewportById(sheet, found.id);
-            if (viewport && !Na__LeTools__IsViewportLocked(sheet, viewport)) {
-                const editing = Na__LeSurface__GetEditingViewport() === found.id;
-                const hit     = editing ? { mode : 'body' } : ((found.hit && found.hit.mode === 'handle') ? found.hit : { mode : 'border' });
-                drag = { kind : 'viewport', id : found.id, hit : hit, start : Na__LeHandles__CaptureStart(viewport) };
-            }
-        }
+        const drag = Na__LeTools__DragFor(sheet, found, point);
         if (!drag) return;
         drag.startMm   = point;
         drag.moved     = false;
@@ -319,25 +388,24 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Pointer Move: Drag or Hover Cursor
+    // HELPER FUNCTION | Pointer Move: Placement Preview, Drag, or Hover Cursor
     // ------------------------------------------------------------
     function Na__LeTools__OnMove(event) {
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
 
-        if (Na__LeTools__Placement) { Na__LeTools__DrawPreview(Na__LeTools__Placement.startMm, Na__LeTools__SnapOrConstrain(sheet, Na__LeTools__Placement.startMm, point, event.shiftKey)); return; }
-
         const drag = Na__LeTools__Drag;
         if (!drag || event.pointerId !== drag.pointerId) {
-            if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeOsnap__Snap(sheet, point); return; }   // <-- Marker before the first click
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Move(sheet, point, event.shiftKey); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Move(sheet, point, event.shiftKey); return; }
             if (Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) return;
-            Na__LeTools__Stage.style.cursor = Na__LeTools__HoverCursor(sheet, Na__LeTools__Resolve(sheet, point));
+            Na__LeTools__Stage.style.cursor = Na__LeTools__HoverCursor(sheet, Na__LeTools__Resolve(sheet, point), point);
             return;
         }
         const dMm = { x : point.x - drag.startMm.x, y : point.y - drag.startMm.y };
         if (!drag.moved) {
-            if (Math.hypot(dMm.x, dMm.y) < Na__LeTools__DRAG_THRESHOLD_MM / Na__LeSurface__GetZoom()) return;
+            if (Math.hypot(dMm.x, dMm.y) < Na__LeCfg__GetSelectionSetup().dragThresholdMm / Na__LeSurface__GetZoom()) return;
             drag.moved = true;
             Na__LeVp2d__SetInteracting(true);
             Na__LeVp3d__SetInteracting(true);
@@ -351,6 +419,8 @@
     // HELPER FUNCTION | Apply a Drag Delta Through the Model (silent)
     // ------------------------------------------------------------
     function Na__LeTools__ApplyDrag(sheet, drag, dMm, shift) {
+        const cursor = { x : drag.startMm.x + dMm.x, y : drag.startMm.y + dMm.y };
+        const d = shift ? (Math.abs(dMm.x) >= Math.abs(dMm.y) ? { x : dMm.x, y : 0 } : { x : 0, y : dMm.y }) : dMm;
         if (drag.kind === 'viewport') {
             const viewport = Na__LeModel__GetViewportById(sheet, drag.id);
             if (!viewport) return;
@@ -361,23 +431,35 @@
             return;
         }
         if (drag.kind === 'annotation') {
-            Na__LeModel__UpdateAnnotation(sheet, drag.id, { posXMm : drag.start.x + dMm.x, posYMm : drag.start.y + dMm.y }, true);
+            Na__LeModel__UpdateAnnotation(sheet, drag.id, { posXMm : drag.start.x + d.x, posYMm : drag.start.y + d.y }, true);
+            Na__LeSurface__Refresh('markup');
+            return;
+        }
+        if (drag.kind === 'shape') {
+            let points;
+            if (drag.mode === 'vertex') {
+                const snap  = Na__LeOsnap__Snap(sheet, cursor);                       // <-- A vertex jumps to a corner or a midpoint
+                const p0    = drag.start[drag.index];
+                const moved = snap.snapped ? [ snap.x, snap.y ] : [ p0[0] + d.x, p0[1] + d.y ];
+                points = drag.start.map((p, i) => (i === drag.index ? moved : [ p[0], p[1] ]));
+            } else points = Na__LeShapeGeo__Translated(drag.start, d.x, d.y);
+            Na__LeModel__UpdateShape(sheet, drag.id, { points : points }, true);
             Na__LeSurface__Refresh('markup');
             return;
         }
         const s = drag.start;
-        const d = shift ? (Math.abs(dMm.x) >= Math.abs(dMm.y) ? { x : dMm.x, y : 0 } : { x : 0, y : dMm.y }) : dMm;
         let patch = null;
         if (drag.mode === 'start' || drag.mode === 'end') {
-            const snap = Na__LeOsnap__Snap(sheet, { x : drag.startMm.x + dMm.x, y : drag.startMm.y + dMm.y });   // <-- The grip jumps to a corner or a midpoint
+            const snap = Na__LeOsnap__Snap(sheet, cursor);                            // <-- The grip jumps to a corner or a midpoint
             const px = snap.snapped ? snap.x : (drag.mode === 'start' ? s.sx : s.ex) + d.x;
             const py = snap.snapped ? snap.y : (drag.mode === 'start' ? s.sy : s.ey) + d.y;
             patch = drag.mode === 'start' ? { startXMm : px, startYMm : py } : { endXMm : px, endYMm : py };
-        }
-        else if (drag.mode === 'offset') {
-            const len = Math.hypot(s.ex - s.sx, s.ey - s.sy) || 1;
-            const perpX = -(s.ey - s.sy) / len, perpY = (s.ex - s.sx) / len;
-            patch = { offsetMm : s.offset + ((dMm.x * perpX) + (dMm.y * perpY)) };
+        } else if (drag.mode === 'offset') {
+            const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === drag.id);
+            if (!dim) return;
+            const result = Na__LeDim__OffsetFor(sheet, dim, cursor);                  // <-- The line lands on a parallel dimension's line when near it
+            Na__LeDim__ShowInference(result);
+            patch = { offsetMm : result.offsetMm };
         } else patch = { startXMm : s.sx + d.x, startYMm : s.sy + d.y, endXMm : s.ex + d.x, endYMm : s.ey + d.y };
         Na__LeModel__UpdateDimension(sheet, drag.id, patch, true);
         Na__LeSurface__Refresh('markup');
@@ -416,6 +498,7 @@
         if (!sheet) return;
         if (drag.kind === 'viewport')        Na__LeModel__UpdateViewport(sheet, drag.id, {}, false);
         else if (drag.kind === 'annotation') Na__LeModel__UpdateAnnotation(sheet, drag.id, {}, false);
+        else if (drag.kind === 'shape')      Na__LeModel__UpdateShape(sheet, drag.id, {}, false);
         else                                 Na__LeModel__UpdateDimension(sheet, drag.id, {}, false);
     }
     // ------------------------------------------------------------
@@ -439,15 +522,21 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Double Click: Edit a Text Item, or Enter a Viewport's Content
+    // HELPER FUNCTION | Double Click: Finish a Shape, Edit Text or a Value, or Enter a Viewport's Content
     // ------------------------------------------------------------
     function Na__LeTools__OnDoubleClick(event) {
         if (!Na__LeTools__Editable || event.button !== 0) return;
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
-        const markup = Na__LeMarkup__HitTest(sheet, point, Na__LeTools__HIT_TOLERANCE_MM / Na__LeSurface__GetZoom());
-        if (markup) { if (markup.kind === 'annotation') Na__LeTools__BeginTextEdit(markup.id); return; }
+        if (Na__LeTools__Tool === Na__LeTools__TOOL_DRAW) { if (Na__LeShape__IsDrawing()) { event.preventDefault(); Na__LeShape__Finish(sheet, false); } return; }
+        if (Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) return;
+        const markup = Na__LeMarkup__HitTest(sheet, point, Na__LeTools__Tolerance());
+        if (markup) {
+            if (markup.kind === 'annotation')     Na__LeText__BeginEdit(markup.id);
+            else if (markup.kind === 'dimension') Na__LeDim__BeginTextEdit(markup.id);
+            return;
+        }
         const found = Na__LeTools__Resolve(sheet, point);
         if (!found || found.kind !== 'viewport') return;
         event.preventDefault();
@@ -459,30 +548,8 @@
 
 
 // -----------------------------------------------------------------------------
-// REGION | Locks, Content Editing and the Context Menu
+// REGION | Content Editing and the Context Menu
 // -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | A Viewport Is Locked by Its Own Flag or by Its Layer
-    // ------------------------------------------------------------
-    function Na__LeTools__IsViewportLocked(sheet, viewport) {
-        return !!viewport && (viewport.Viewport__Locked === true || Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId));
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | The Cursor for What Is Under the Pointer
-    // ------------------------------------------------------------
-    function Na__LeTools__HoverCursor(sheet, found) {
-        if (!found) return '';
-        if (found.kind !== 'viewport') return 'move';
-        const viewport = Na__LeModel__GetViewportById(sheet, found.id);
-        if (!viewport || !Na__LeTools__Editable || Na__LeTools__IsViewportLocked(sheet, viewport)) return 'default';
-        if (Na__LeSurface__GetEditingViewport() === found.id) return 'grab';
-        if (found.hit && found.hit.mode === 'handle') return Na__LeHandles__CursorFor(found.hit);
-        return 'move';
-    }
-    // ------------------------------------------------------------
-
 
     // FUNCTION | Enter or Leave Content Editing on a Viewport (double-click)
     // ------------------------------------------------------------
@@ -536,10 +603,20 @@
             ].concat(history);
         }
         if (found.kind === 'annotation') {
-            return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeTools__BeginTextEdit(found.id) },
+            return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeText__BeginEdit(found.id) },
                      remove('MenuDeleteText', 'Delete text'), { separator : true } ].concat(history);
         }
-        if (found.kind === 'dimension') return [ remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ].concat(history);
+        if (found.kind === 'dimension') {
+            return [ { label : label('MenuEditDimText', 'Edit dimension value'), onSelect : () => Na__LeDim__BeginTextEdit(found.id) },
+                     remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ].concat(history);
+        }
+        if (found.kind === 'shape') {
+            const shape  = Na__LeTools__Record(sheet, found);
+            const closed = !!shape && shape.Shape__Closed === true;
+            return [ { label : closed ? label('MenuOpenShape', 'Open shape') : label('MenuCloseShape', 'Close shape'), disabled : !shape || Na__LeShapeGeo__Points(shape).length < 3,
+                       onSelect : () => Na__LeModel__UpdateShape(sheet, found.id, { closed : !closed }) },
+                     remove('MenuDeleteShape', 'Delete shape'), { separator : true } ].concat(history);
+        }
 
         const viewport = Na__LeModel__GetViewportById(sheet, found.id);
         if (!viewport) return history;
@@ -559,7 +636,7 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Right Click: Select What Is There and Open the Menu
+    // HELPER FUNCTION | Right Click: Finish or Cancel a Placement, Else Select and Open the Menu
     // ------------------------------------------------------------
     // The PC controls pan on a right drag, so the menu only opens when the
     // button came up where it went down. A touch long-press arrives here
@@ -575,171 +652,12 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
-        Na__LeTools__CancelPlacement();
-        if (Na__LeTools__Editor) Na__LeTools__CommitTextEdit();
+        if (Na__LeShape__IsDrawing()) { Na__LeShape__Finish(sheet, false); return; }   // <-- As in CAD, a right click ends the line
+        if (Na__LeDim__IsPlacing())   { Na__LeDim__Cancel(sheet); return; }
+        if (Na__LeText__IsEditing()) Na__LeText__Commit();
         const found = Na__LeTools__Resolve(sheet, point);
         Na__LeModel__SetSelection(found ? { kind : found.kind, id : found.id } : null);
         Na__LeMenu__Open(event.clientX, event.clientY, Na__LeTools__MenuItems(sheet, found));
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Placement Tools
-// -----------------------------------------------------------------------------
-
-    // HELPER FUNCTION | Constrain a Second Point to an Axis When Shift Is Down
-    // ------------------------------------------------------------
-    function Na__LeTools__Constrain(start, point, shift) {
-        if (!shift) return point;
-        return Math.abs(point.x - start.x) >= Math.abs(point.y - start.y) ? { x : point.x, y : start.y } : { x : start.x, y : point.y };
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | A Snap Beats the Axis Constraint, as in AutoCAD
-    // ------------------------------------------------------------
-    function Na__LeTools__SnapOrConstrain(sheet, start, point, shift) {
-        const snap = Na__LeOsnap__Snap(sheet, point);
-        if (snap.snapped) return { x : snap.x, y : snap.y };
-        return Na__LeTools__Constrain(start, point, shift);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Place a Text Item and Start Editing It
-    // ------------------------------------------------------------
-    function Na__LeTools__PlaceText(sheet, point) {
-        const d = Na__LeTools__GetTextDefaults();
-        const item = Na__LeModel__CreateAnnotation(sheet, point.x, point.y + (d.sizeMm * 0.72), {
-            text : d.text, sizeMm : d.sizeMm, fontWeight : d.fontWeight, colour : d.colour, align : d.align,
-            leaderXMm : d.leader ? point.x - 15 : null, leaderYMm : d.leader ? point.y + 10 : null
-        });
-        if (!item) return;
-        Na__LeModel__SetSelection({ kind : 'annotation', id : item.Annotation__Id });
-        Na__LeTools__BeginTextEdit(item.Annotation__Id);
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Two-Click Dimension Placement
-    // ------------------------------------------------------------
-    function Na__LeTools__PlaceDimension(sheet, point, shift) {
-        if (!Na__LeTools__Placement) {
-            const first = Na__LeOsnap__Snap(sheet, point);
-            Na__LeTools__Placement = { startMm : { x : first.x, y : first.y } };
-            Na__LeTools__DrawPreview(Na__LeTools__Placement.startMm, Na__LeTools__Placement.startMm);
-            return;
-        }
-        const start = Na__LeTools__Placement.startMm;
-        const end   = Na__LeTools__SnapOrConstrain(sheet, start, point, shift);
-        Na__LeTools__CancelPlacement();
-        if (Math.hypot(end.x - start.x, end.y - start.y) < Na__LeTools__DRAG_THRESHOLD_MM) return;
-        const mid = { x : (start.x + end.x) / 2, y : (start.y + end.y) / 2 };
-        const host = Na__LeTools__ViewportsFrontToBack(sheet).find((v) => v.Viewport__Kind === Na__LeModel__KIND_2D && Na__LeHandles__Contains(v, mid)) || null;
-        const d = Na__LeTools__GetDimensionDefaults();
-        const item = Na__LeModel__CreateDimension(sheet, start, end, {
-            viewportId : host ? host.Viewport__Id : null, offsetMm : d.offsetMm, textSizeMm : d.textSizeMm,
-            colour : d.colour, terminator : d.terminator, precision : d.precision, unitsSuffix : d.unitsSuffix
-        });
-        if (item) Na__LeModel__SetSelection({ kind : 'dimension', id : item.Dimension__Id });
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | Rubber Band for the Dimension Tool
-    // ------------------------------------------------------------
-    function Na__LeTools__DrawPreview(start, end) {
-        const layer = Na__LeSurface__GetElements().handles;
-        if (!layer) return;
-        if (!Na__LeTools__Preview) {
-            Na__LeTools__Preview = document.createElement('div');
-            Na__LeTools__Preview.className = 'na-le-rubber-band';
-        }
-        if (!Na__LeTools__Preview.parentNode) layer.appendChild(Na__LeTools__Preview);
-        const ppm = Na__LeSurface__GetPixelsPerMm();
-        const len = Math.hypot(end.x - start.x, end.y - start.y);
-        const ang = Math.atan2(end.y - start.y, end.x - start.x) * (180 / Math.PI);
-        Na__LeTools__Preview.style.left      = (start.x * ppm) + 'px';
-        Na__LeTools__Preview.style.top       = (start.y * ppm) + 'px';
-        Na__LeTools__Preview.style.width     = (len * ppm) + 'px';
-        Na__LeTools__Preview.style.transform = 'rotate(' + ang + 'deg)';
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Abandon a Half-Placed Dimension
-    // ------------------------------------------------------------
-    function Na__LeTools__CancelPlacement() {
-        Na__LeTools__Placement = null;
-        Na__LeOsnap__HideMarker();
-        if (Na__LeTools__Preview && Na__LeTools__Preview.parentNode) Na__LeTools__Preview.parentNode.removeChild(Na__LeTools__Preview);
-    }
-    // ------------------------------------------------------------
-
-// endregion -------------------------------------------------------------------
-
-
-// -----------------------------------------------------------------------------
-// REGION | Inline Text Editing
-// -----------------------------------------------------------------------------
-
-    // FUNCTION | Open a Field Over a Text Item
-    // ------------------------------------------------------------
-    function Na__LeTools__BeginTextEdit(itemId) {
-        const sheet = Na__LeModel__GetActiveSheet();
-        const layer = Na__LeSurface__GetElements().handles;
-        const item  = sheet ? sheet.Sheet__Annotations.find((a) => a.Annotation__Id === itemId) : null;
-        if (!item || !layer || !Na__LeTools__Editable) return false;
-        Na__LeTools__CommitTextEdit();
-        const ppm    = Na__LeSurface__GetPixelsPerMm();
-        const bounds = Na__LeMarkup__AnnotationBounds(item);
-        const input  = document.createElement('input');
-        input.type      = 'text';
-        input.className = 'na-le-text-editor';
-        input.value     = item.Annotation__Text;
-        input.style.left       = (bounds.X * ppm) + 'px';
-        input.style.top        = (bounds.Y * ppm) + 'px';
-        input.style.width      = (Math.max(bounds.WidthMm + 4, 30) * ppm) + 'px';
-        input.style.fontSize   = (item.Annotation__SizeMm * ppm) + 'px';
-        input.style.fontWeight = String(item.Annotation__FontWeight);
-        input.style.color      = item.Annotation__Colour;
-        input.style.textAlign  = item.Annotation__Align;
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter')  { e.preventDefault(); Na__LeTools__CommitTextEdit(); }
-            if (e.key === 'Escape') { e.preventDefault(); Na__LeTools__CancelTextEdit(); }
-            e.stopPropagation();
-        });
-        input.addEventListener('blur', () => Na__LeTools__CommitTextEdit());
-        layer.appendChild(input);
-        Na__LeTools__Editor = { input : input, itemId : itemId };
-        input.focus();
-        input.select();
-        return true;
-    }
-    // ------------------------------------------------------------
-
-
-    // FUNCTION | Commit or Cancel the Open Field
-    // ------------------------------------------------------------
-    function Na__LeTools__CommitTextEdit() {
-        const editor = Na__LeTools__Editor;
-        if (!editor) return;
-        Na__LeTools__Editor = null;
-        const sheet = Na__LeModel__GetActiveSheet();
-        const text  = editor.input.value.trim();
-        if (editor.input.parentNode) editor.input.parentNode.removeChild(editor.input);
-        if (!sheet) return;
-        if (text === '') Na__LeModel__DeleteAnnotation(sheet, editor.itemId);              // <-- An emptied label is a deleted label
-        else Na__LeModel__UpdateAnnotation(sheet, editor.itemId, { text : text }, false);
-    }
-    function Na__LeTools__CancelTextEdit() {
-        const editor = Na__LeTools__Editor;
-        if (!editor) return;
-        Na__LeTools__Editor = null;
-        if (editor.input.parentNode) editor.input.parentNode.removeChild(editor.input);
     }
     // ------------------------------------------------------------
 
@@ -758,6 +676,7 @@
         if (!sheet || !selection || !Na__LeTools__Editable) return false;
         if (selection.kind === 'annotation') return Na__LeModel__DeleteAnnotation(sheet, selection.id);
         if (selection.kind === 'dimension')  return Na__LeModel__DeleteDimension(sheet, selection.id);
+        if (selection.kind === 'shape')      return Na__LeModel__DeleteShape(sheet, selection.id);
         const viewport = Na__LeModel__GetViewportById(sheet, selection.id);
         if (!viewport || Na__LeTools__IsViewportLocked(sheet, viewport)) return false;   // <-- Unlock first
         const ok = await Na__AppUtils__ConfirmDialog__Show({
@@ -776,19 +695,22 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const selection = Na__LeModel__GetSelection();
         if (!sheet || !selection) return false;
+        const record = Na__LeTools__Record(sheet, selection);
+        if (!record) return false;
         if (selection.kind === 'viewport') {
-            const v = Na__LeModel__GetViewportById(sheet, selection.id);
-            if (!v || Na__LeTools__IsViewportLocked(sheet, v)) return false;
-            return Na__LeModel__UpdateViewport(sheet, selection.id, { rect : { X : v.Viewport__FrameMm.X + dx, Y : v.Viewport__FrameMm.Y + dy } }, false);
+            if (Na__LeTools__IsViewportLocked(sheet, record)) return false;
+            return Na__LeModel__UpdateViewport(sheet, selection.id, { rect : { X : record.Viewport__FrameMm.X + dx, Y : record.Viewport__FrameMm.Y + dy } }, false);
         }
         if (selection.kind === 'annotation') {
-            const a = sheet.Sheet__Annotations.find((i) => i.Annotation__Id === selection.id);
-            if (!a || Na__LeModel__IsLayerLocked(sheet, a.Annotation__LayerId)) return false;
-            return Na__LeModel__UpdateAnnotation(sheet, selection.id, { posXMm : a.Annotation__PosXMm + dx, posYMm : a.Annotation__PosYMm + dy }, false);
+            if (Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId)) return false;
+            return Na__LeModel__UpdateAnnotation(sheet, selection.id, { posXMm : record.Annotation__PosXMm + dx, posYMm : record.Annotation__PosYMm + dy }, false);
         }
-        const d = sheet.Sheet__Dimensions.find((i) => i.Dimension__Id === selection.id);
-        if (!d || Na__LeModel__IsLayerLocked(sheet, d.Dimension__LayerId)) return false;
-        return Na__LeModel__UpdateDimension(sheet, selection.id, { startXMm : d.Dimension__StartXMm + dx, startYMm : d.Dimension__StartYMm + dy, endXMm : d.Dimension__EndXMm + dx, endYMm : d.Dimension__EndYMm + dy }, false);
+        if (selection.kind === 'shape') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Shape__LayerId)) return false;
+            return Na__LeModel__UpdateShape(sheet, selection.id, { points : Na__LeShapeGeo__Translated(Na__LeShapeGeo__Points(record), dx, dy) }, false);
+        }
+        if (Na__LeModel__IsLayerLocked(sheet, record.Dimension__LayerId)) return false;
+        return Na__LeModel__UpdateDimension(sheet, selection.id, { startXMm : record.Dimension__StartXMm + dx, startYMm : record.Dimension__StartYMm + dy, endXMm : record.Dimension__EndXMm + dx, endYMm : record.Dimension__EndYMm + dy }, false);
     }
     // ------------------------------------------------------------
 
@@ -807,15 +729,25 @@
             Ctrl : !!event.ctrlKey, Shift : !!event.shiftKey, Alt : !!event.altKey, Meta : !!event.metaKey, Space : false
         });
         if (!match || !match.action) return;
-        const step = match.coarse ? keys.nudgeCoarseStepMm : keys.nudgeStepMm;
+        const step  = match.coarse ? keys.nudgeCoarseStepMm : keys.nudgeStepMm;
+        const sheet = Na__LeModel__GetActiveSheet();
 
         switch (match.action) {
             case 'Edit__Cancel':
-                if (Na__LeTools__Placement) Na__LeTools__CancelPlacement();
+                if (Na__LeDim__IsPlacing() || Na__LeShape__IsDrawing()) Na__LeTools__CancelPlacement();
                 else if (Na__LeSurface__GetEditingViewport()) Na__LeTools__SetEditingViewport(null);
                 else if (Na__LeModel__GetSelection()) Na__LeModel__SetSelection(null);
                 else Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
                 event.preventDefault(); return;
+            case 'Edit__Deselect':                                                   // <-- Space: a clean slate, whatever was going on
+                event.preventDefault();
+                Na__LeTools__CancelPlacement();
+                if (Na__LeSurface__GetEditingViewport()) Na__LeTools__SetEditingViewport(null);
+                Na__LeModel__SetSelection(null);
+                return;
+            case 'Edit__Finish':
+                if (Na__LeShape__IsDrawing() && sheet) { event.preventDefault(); Na__LeShape__Finish(sheet, false); }
+                return;
             case 'Edit__Delete':
                 if (Na__LeModel__GetSelection()) { event.preventDefault(); void Na__LeTools__DeleteSelection(); }
                 return;
@@ -826,6 +758,7 @@
             case 'Tool__Select':     Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);    return;
             case 'Tool__Text':       Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT);      return;
             case 'Tool__Dimension':  Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
+            case 'Tool__Draw':       Na__LeTools__SetTool(Na__LeTools__TOOL_DRAW);      return;
             case 'Snap__Toggle':     Na__LeOsnap__Toggle(); event.preventDefault(); return;
             case 'Edit__Undo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Undo(); } return;
             case 'Edit__Redo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Redo(); } return;
@@ -871,7 +804,7 @@
     function Na__LeTools__Detach() {
         Na__LeMenu__Close();
         Na__LeTools__RightPress = null;
-        Na__LeTools__CancelTextEdit();
+        Na__LeText__Cancel();
         Na__LeTools__CancelPlacement();
         if (!Na__LeTools__Stage || !Na__LeTools__Handlers) return;
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
@@ -896,6 +829,7 @@
         Na__LeTools__TOOL_SELECT,
         Na__LeTools__TOOL_TEXT,
         Na__LeTools__TOOL_DIMENSION,
+        Na__LeTools__TOOL_DRAW,
         Na__LeTools__CHANGED_EVENT,
         Na__LeTools__Attach,
         Na__LeTools__Detach,
@@ -905,7 +839,9 @@
         Na__LeTools__SetTextDefaults,
         Na__LeTools__GetDimensionDefaults,
         Na__LeTools__SetDimensionDefaults,
-        Na__LeTools__BeginTextEdit,
+        Na__LeTools__GetShapeDefaults,
+        Na__LeTools__SetShapeDefaults,
+        Na__LeText__BeginEdit as Na__LeTools__BeginTextEdit,
         Na__LeTools__DeleteSelection,
         Na__LeTools__SetEditingViewport,
         Na__LeTools__RecentreViewport,

@@ -93,7 +93,10 @@
                      { Id : 'Snap__Toggle',      Action : 'Snap__Toggle',      Enabled : true, Keys : [ 'F3' ],                   Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Edit__Undo',        Action : 'Edit__Undo',        Enabled : true, Keys : [ 'z', 'Z' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
                      { Id : 'Edit__Redo',        Action : 'Edit__Redo',        Enabled : true, Keys : [ 'y', 'Y' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
-                     { Id : 'Edit__RedoShift',   Action : 'Edit__Redo',        Enabled : true, Keys : [ 'z', 'Z' ],               Modifiers : [ 'Ctrl', 'Shift' ], ModifierMatch : 'Exact' } ],
+                     { Id : 'Edit__RedoShift',   Action : 'Edit__Redo',        Enabled : true, Keys : [ 'z', 'Z' ],               Modifiers : [ 'Ctrl', 'Shift' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Deselect',    Action : 'Edit__Deselect',    Enabled : true, Keys : [ ' ' ],                    Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Finish',      Action : 'Edit__Finish',      Enabled : true, Keys : [ 'Enter' ],                Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Tool__Draw',        Action : 'Tool__Draw',        Enabled : true, Keys : [ 'l', 'L' ],               Modifiers : [], ModifierMatch : 'Exact' } ],
         keyboardSetup : { ignoreWhenTyping : true, coarseStepModifier : 'Shift', nudgeStepMm : 1, nudgeCoarseStepMm : 10,
                           panStepPx : 60, panCoarseStepPx : 240, zoomKeyStep : 1.15 },
         touch    : { oneFingerPanOnStage : true, oneFingerPanOnPaper : false, twoFingerPan : true, pinchZoom : true,
@@ -343,6 +346,7 @@
     function Na__LeCfg__GetDimensionSetup() {
         const terms = Na__LeCfg__Val('Dimensions', 'AllowedTerminators', null);
         return {
+            inferenceRadiusPx : Na__LeCfg__Num('Dimensions', 'InferenceRadiusPx', 10),
             defaultTextSizeMm : Na__LeCfg__Num('Dimensions', 'DefaultTextSizeMm', 2.5),
             minTextSizeMm     : Na__LeCfg__Num('Dimensions', 'MinTextSizeMm', 1.5),
             maxTextSizeMm     : Na__LeCfg__Num('Dimensions', 'MaxTextSizeMm', 8),
@@ -376,7 +380,8 @@
             profileLinework   : flag('ProfileLinework',   false),
             glassOpaque       : flag('GlassOpaque',       true),
             whitecard         : flag('Whitecard',         true),
-            hiddenLines       : flag('HiddenLines',       false)
+            hiddenLines       : flag('HiddenLines',       false),
+            enhanceWhitecard  : flag('EnhanceWhitecard',  true)
         };
     }
     // ------------------------------------------------------------
@@ -397,6 +402,68 @@
             enabled      : Na__LeCfg__Val('AutoSave', 'Enabled', true) !== false,
             debounceMs   : Math.max(200, Na__LeCfg__Num('AutoSave', 'DebounceMs', 1500)),
             draftEnabled : Na__LeCfg__Val('AutoSave', 'DraftEnabled', true) !== false
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Points to Paper Millimetres (1 pt = 1/72 inch)
+    // ------------------------------------------------------------
+    function Na__LeCfg__PtToMm(pt) { return (Number.isFinite(pt) ? pt : 0) * 25.4 / 72; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Selection Setup (hit tolerance, drag threshold, grip size)
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetSelectionSetup() {
+        return {
+            hitToleranceMm  : Na__LeCfg__Num('Selection', 'HitToleranceMm', 1.5),
+            dragThresholdMm : Na__LeCfg__Num('Selection', 'DragThresholdMm', 0.5),
+            gripSizePx      : Na__LeCfg__Num('Selection', 'GripSizePx', 9)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Printed Line Weights in Points
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetLineweightSetup() {
+        return {
+            viewportPt  : Na__LeCfg__Num('Lineweights', 'ViewportPt', 0.30),
+            dimensionPt : Na__LeCfg__Num('Lineweights', 'DimensionPt', 0.35),
+            minPt       : Na__LeCfg__Num('Lineweights', 'MinPt', 0.05),
+            maxPt       : Na__LeCfg__Num('Lineweights', 'MaxPt', 3),
+            stepPt      : Na__LeCfg__Num('Lineweights', 'StepPt', 0.05)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Vector Shape Defaults
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetShapeSetup() {
+        return {
+            defaultStrokeColour : Na__LeCfg__Val('Shapes', 'DefaultStrokeColour', '#172b3a'),
+            defaultStrokePt     : Na__LeCfg__Num('Shapes', 'DefaultStrokePt', 0.20),
+            defaultFillColour   : Na__LeCfg__Val('Shapes', 'DefaultFillColour', '#e4e8ec'),
+            defaultFilled       : Na__LeCfg__Val('Shapes', 'DefaultFilled', false) === true,
+            closeRadiusPx       : Na__LeCfg__Num('Shapes', 'CloseRadiusPx', 10)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Enhance Whitecard Pass Parameters
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetEnhanceSetup() {
+        return {
+            levelsBlack      : Na__LeCfg__Num('Enhance', 'LevelsBlack', 0),
+            levelsWhite      : Na__LeCfg__Num('Enhance', 'LevelsWhite', 205),
+            levelsGamma      : Na__LeCfg__Num('Enhance', 'LevelsGamma', 1.0),
+            sharpenEnabled   : Na__LeCfg__Val('Enhance', 'SharpenEnabled', true) !== false,
+            sharpenRadius    : Na__LeCfg__Num('Enhance', 'SharpenRadius', 2.0),
+            sharpenBlendMode : Na__LeCfg__Val('Enhance', 'SharpenBlendMode', 'Overlay'),
+            sharpenOpacity   : Na__LeCfg__Num('Enhance', 'SharpenOpacity', 1.0)
         };
     }
     // ------------------------------------------------------------
@@ -715,6 +782,11 @@
         Na__LeCfg__GetSnappingSetup,
         Na__LeCfg__GetHistorySetup,
         Na__LeCfg__GetAutoSaveSetup,
+        Na__LeCfg__PtToMm,
+        Na__LeCfg__GetSelectionSetup,
+        Na__LeCfg__GetLineweightSetup,
+        Na__LeCfg__GetShapeSetup,
+        Na__LeCfg__GetEnhanceSetup,
         Na__LeCfg__GetPanelSetup,
         Na__LeCfg__GetNavigationSetup,
         Na__LeCfg__GetPdfSetup,

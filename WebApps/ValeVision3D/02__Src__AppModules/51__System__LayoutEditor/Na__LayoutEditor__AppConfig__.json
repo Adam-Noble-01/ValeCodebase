@@ -101,7 +101,8 @@
             "ProfileLinework": false,
             "GlassOpaque": true,
             "Whitecard": true,
-            "HiddenLines": false
+            "HiddenLines": false,
+            "EnhanceWhitecard": true
         },
         "LayoutEditor__Viewport__AssetFolder": "LayoutEditor/Snapshots"
     },
@@ -129,6 +130,7 @@
         "LayoutEditor__Dimensions__AllowedTerminators": ["tick", "arrow", "dot"],
         "LayoutEditor__Dimensions__DefaultTerminator": "tick",
         "LayoutEditor__Dimensions__DefaultOffsetMm": 8,
+        "LayoutEditor__Dimensions__InferenceRadiusPx": 10,
         "LayoutEditor__Dimensions__ExtensionGapMm": 1.5,
         "LayoutEditor__Dimensions__ExtensionOvershootMm": 1.5,
         "LayoutEditor__Dimensions__TickLengthMm": 1.5,
@@ -168,6 +170,38 @@
     "LayoutEditor__History__Config": {
         "LayoutEditor__History__Description": "Undo and redo per sheet. Every announced change is one step (a drag is one step); MaxSteps is how many are kept.",
         "LayoutEditor__History__MaxSteps": 50
+    },
+    "LayoutEditor__Selection__Config": {
+        "LayoutEditor__Selection__Description": "How a press finds things on the paper. HitToleranceMm is paper millimetres at 100 percent (it shrinks as you zoom in); a drag starts past DragThresholdMm; grips are drawn GripSizePx square on screen at any zoom.",
+        "LayoutEditor__Selection__HitToleranceMm": 1.5,
+        "LayoutEditor__Selection__DragThresholdMm": 0.5,
+        "LayoutEditor__Selection__GripSizePx": 9
+    },
+    "LayoutEditor__Lineweights__Config": {
+        "LayoutEditor__Lineweights__Description": "Printed line weights in points (1 pt = 0.3528 mm), the unit a drawing office reads. These are the defaults a new sheet starts with; the Sheet panel edits them per sheet. ViewportPt is the visible projected linework; the hidden, authored and section classes keep their ratios from the Linework block.",
+        "LayoutEditor__Lineweights__ViewportPt": 0.30,
+        "LayoutEditor__Lineweights__DimensionPt": 0.35,
+        "LayoutEditor__Lineweights__MinPt": 0.05,
+        "LayoutEditor__Lineweights__MaxPt": 3,
+        "LayoutEditor__Lineweights__StepPt": 0.05
+    },
+    "LayoutEditor__Shapes__Config": {
+        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons). Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon.",
+        "LayoutEditor__Shapes__DefaultStrokeColour": "#172b3a",
+        "LayoutEditor__Shapes__DefaultStrokePt": 0.20,
+        "LayoutEditor__Shapes__DefaultFillColour": "#e4e8ec",
+        "LayoutEditor__Shapes__DefaultFilled": false,
+        "LayoutEditor__Shapes__CloseRadiusPx": 10
+    },
+    "LayoutEditor__Enhance__Config": {
+        "LayoutEditor__Enhance__Description": "The Enhance Whitecard viewport style: the image export's levels and high-pass sharpen, applied to a viewport's render. A white point of 205 sends the shaded whitecard faces to paper white while the linework stays dark.",
+        "LayoutEditor__Enhance__LevelsBlack": 0,
+        "LayoutEditor__Enhance__LevelsWhite": 205,
+        "LayoutEditor__Enhance__LevelsGamma": 1.0,
+        "LayoutEditor__Enhance__SharpenEnabled": true,
+        "LayoutEditor__Enhance__SharpenRadius": 2.0,
+        "LayoutEditor__Enhance__SharpenBlendMode": "Overlay",
+        "LayoutEditor__Enhance__SharpenOpacity": 1.0
     },
     "LayoutEditor__AutoSave__Config": {
         "LayoutEditor__AutoSave__Description": "A browser draft of every change, put back on the next load while unsaved, and a project save of its own DebounceMs after a sheet is created, renamed, reordered or deleted. Localhost only; the web build is read-only.",
@@ -238,6 +272,24 @@
         "LayoutEditor__Labels__EditingViewNote": "Editing viewport content: drag to reposition, Esc to finish",
         "LayoutEditor__Labels__LockedLabel": "Locked",
         "LayoutEditor__Labels__LockedNote": "Locked",
-        "LayoutEditor__Labels__DraftRestored": "Unsaved sheet changes from this browser were restored. Save Sheets keeps them."
+        "LayoutEditor__Labels__DraftRestored": "Unsaved sheet changes from this browser were restored. Save Sheets keeps them.",
+        "LayoutEditor__Labels__ToolDraw": "Draw",
+        "LayoutEditor__Labels__ShapesTitle": "Vectors",
+        "LayoutEditor__Labels__ShapeStroke": "Edge colour",
+        "LayoutEditor__Labels__ShapeStrokePt": "Edge pt",
+        "LayoutEditor__Labels__ShapeFill": "Fill",
+        "LayoutEditor__Labels__ShapeFillColour": "Fill colour",
+        "LayoutEditor__Labels__ShapeClosed": "Closed",
+        "LayoutEditor__Labels__ShapeSelectedNote": "Editing the selected shape.",
+        "LayoutEditor__Labels__ShapeDefaultsNote": "Nothing selected: these settings apply to new shapes.",
+        "LayoutEditor__Labels__ShapeDrawNote": "Draw tool (L): click points, click the first point to close a polygon, Enter or double-click to finish a line, Esc to abandon.",
+        "LayoutEditor__Labels__StyleEnhanceWhitecard": "Enhance Whitecard",
+        "LayoutEditor__Labels__Lineweights": "Lineweights (pt)",
+        "LayoutEditor__Labels__ViewportLinesPt": "Viewport lines",
+        "LayoutEditor__Labels__DimensionLinesPt": "Dimension lines",
+        "LayoutEditor__Labels__MenuEditDimText": "Edit dimension value",
+        "LayoutEditor__Labels__MenuDeleteShape": "Delete shape",
+        "LayoutEditor__Labels__MenuCloseShape": "Close shape",
+        "LayoutEditor__Labels__MenuOpenShape": "Open shape"
     }
 }

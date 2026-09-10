@@ -38,6 +38,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Clear leaves the snap marker, the rubber band and an open text field in place. FrontToBack lifted from the sheet tools.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Corners crop or extend both axes on either kind (Shift on a 3D corner scales); outline carries editing and locked states and hides the handles then.
 //
@@ -63,7 +66,7 @@
     // MODULE IMPORTS | Config and Model Kinds
     // ------------------------------------------------------------
     import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
-    import { Na__LeModel__KIND_3D } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeModel__KIND_3D, Na__LeModel__GetLayers, Na__LeModel__IsLayerVisible } from './Na__LayoutEditor__SheetModel__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -175,7 +178,20 @@
     // FUNCTION | Empty the Selection Layer
     // ------------------------------------------------------------
     function Na__LeHandles__Clear(layer) {
-        if (layer) layer.innerHTML = '';
+        if (!layer) return;
+        layer.querySelectorAll('.na-le-selection, .na-le-handle, .na-le-grip').forEach((el) => el.remove());   // <-- The snap marker, the band and an open text field stay
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Visible Viewports Front to Back (top of the layer list first)
+    // ------------------------------------------------------------
+    function Na__LeHandles__FrontToBack(sheet) {
+        const layers = Na__LeModel__GetLayers(sheet).map((l) => l.Layer__Id);
+        return sheet.Sheet__Viewports.map((v, i) => ({ v : v, rank : layers.indexOf(v.Viewport__LayerId), i : i }))
+            .filter((e) => Na__LeModel__IsLayerVisible(sheet, e.v.Viewport__LayerId))
+            .sort((a, b) => (a.rank - b.rank) || (b.i - a.i))
+            .map((e) => e.v);
     }
     // ------------------------------------------------------------
 
@@ -370,6 +386,7 @@
     // ------------------------------------------------------------
     export {
         Na__LeHandles__Render,
+        Na__LeHandles__FrontToBack,
         Na__LeHandles__Clear,
         Na__LeHandles__HitTest,
         Na__LeHandles__Contains,

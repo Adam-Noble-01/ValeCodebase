@@ -235,6 +235,33 @@
                 "ModifierMatch" : "Exact"
             },
             {
+                "Id"            : "Edit__Deselect",
+                "Label"         : "Clear the selection and abandon any placement (space bar)",
+                "Action"        : "Edit__Deselect",
+                "Enabled"       : true,
+                "Keys"          : [ " " ],
+                "Modifiers"     : [],
+                "ModifierMatch" : "Exact"
+            },
+            {
+                "Id"            : "Edit__Finish",
+                "Label"         : "Finish the shape being drawn",
+                "Action"        : "Edit__Finish",
+                "Enabled"       : true,
+                "Keys"          : [ "Enter" ],
+                "Modifiers"     : [],
+                "ModifierMatch" : "Exact"
+            },
+            {
+                "Id"            : "Tool__Draw",
+                "Label"         : "Draw tool: lines and polygons",
+                "Action"        : "Tool__Draw",
+                "Enabled"       : true,
+                "Keys"          : [ "l", "L" ],
+                "Modifiers"     : [],
+                "ModifierMatch" : "Exact"
+            },
+            {
                 "Id"            : "Edit__NudgeLeft",
                 "Label"         : "Nudge the selection left",
                 "Action"        : "Edit__NudgeLeft",

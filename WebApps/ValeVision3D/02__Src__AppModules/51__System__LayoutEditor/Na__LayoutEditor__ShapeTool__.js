@@ -1,0 +1,220 @@
+// =============================================================================
+// VALEVISION3D - LAYOUT EDITOR - SHAPE TOOL
+// =============================================================================
+//
+// FILE       : Na__LayoutEditor__ShapeTool__.js
+// NAMESPACE  : Na__LeShape
+// MODULE     : Layout Editor - Shape Tool
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Draw lines, polylines and polygons on the paper, point by point, with snapping to the linework and axis lock
+// CREATED    : 10-Sep-2026
+//
+// DESCRIPTION:
+// - Click to add a point (it snaps to the linework; Shift locks the new
+//   edge to an axis). The shape draws as it grows, with a rubber band
+//   from the last point to the cursor.
+// - Click the first point again to close a polygon. Enter, a double-click
+//   or a right click finishes an open line or polyline. Escape abandons
+//   the shape.
+// - The shape is created silently on the first click and announced once
+//   on finishing, so a whole shape is one undo step.
+// - Edge colour, edge weight (points) and fill come from the Vectors
+//   panel's defaults; the panel edits them afterwards.
+//
+// INTEGRATION:
+// - Na__LayoutEditor__SheetTools__ owns the pointer and delegates here.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : none
+// - Ported on     : 10-Sep-2026 for ValeVision3D v2.21.8 (port Phase 5)
+// - Parity        : new
+// - Divergences   : n/a
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.0
+// - Initial implementation.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Config, Model, Surface, Snapping and the Band
+    // ------------------------------------------------------------
+    import { Na__LeCfg__GetShapeSetup, Na__LeCfg__GetSelectionSetup } from './Na__LayoutEditor__ConfigState__.js';
+    import {
+        Na__LeModel__CreateShape,
+        Na__LeModel__UpdateShape,
+        Na__LeModel__DeleteShape,
+        Na__LeModel__SetSelection
+    } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeSurface__GetPixelsPerMm, Na__LeSurface__GetZoom, Na__LeSurface__Refresh } from './Na__LayoutEditor__SheetSurface__.js';
+    import { Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeGrips__ShowBand, Na__LeGrips__HideBand } from './Na__LayoutEditor__Grips__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module State
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | The Shape Being Drawn
+    // ------------------------------------------------------------
+    let Na__LeShape__Draft = null;     // <-- { id, points : [[x, y], ...] }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Helpers
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Constrain the New Edge to an Axis When Shift Is Down
+    // ------------------------------------------------------------
+    function Na__LeShape__Constrain(last, point, shift) {
+        if (!shift || !last) return point;
+        return Math.abs(point.x - last[0]) >= Math.abs(point.y - last[1]) ? { x : point.x, y : last[1] } : { x : last[0], y : point.y };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Snap Beats the Axis Constraint
+    // ------------------------------------------------------------
+    function Na__LeShape__SnapOrConstrain(sheet, last, point, shift) {
+        const snap = Na__LeOsnap__Snap(sheet, point);
+        if (snap.snapped) return { x : snap.x, y : snap.y };
+        return Na__LeShape__Constrain(last, point, shift);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Is the Cursor Back on the First Point (a polygon closes there)
+    // ------------------------------------------------------------
+    function Na__LeShape__NearFirst(pointMm) {
+        const draft = Na__LeShape__Draft;
+        if (!draft || draft.points.length < 3) return false;
+        const radiusMm = Na__LeCfg__GetShapeSetup().closeRadiusPx / (Na__LeSurface__GetPixelsPerMm() * Na__LeSurface__GetZoom());
+        return Math.hypot(pointMm.x - draft.points[0][0], pointMm.y - draft.points[0][1]) <= radiusMm;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Drawing
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | A Click With the Draw Tool
+    // ------------------------------------------------------------
+    // defaults: { strokeColour, strokePt, fillColour, filled }
+    // ------------------------------------------------------------
+    function Na__LeShape__Click(sheet, pointMm, shift, defaults) {
+        const draft = Na__LeShape__Draft;
+        if (draft && Na__LeShape__NearFirst(pointMm)) return Na__LeShape__Finish(sheet, true);   // <-- Back on the first point: a polygon
+        const last = draft ? draft.points[draft.points.length - 1] : null;
+        const p    = last ? Na__LeShape__SnapOrConstrain(sheet, last, pointMm, shift) : Na__LeOsnap__Snap(sheet, pointMm);
+        const pt   = [ p.x, p.y ];
+        if (!draft) {
+            const d    = defaults || {};
+            const item = Na__LeModel__CreateShape(sheet, [ pt ], {
+                strokeColour : d.strokeColour, strokePt : d.strokePt, fillColour : d.filled ? d.fillColour : null, closed : false, silent : true
+            });
+            if (!item) return false;
+            Na__LeShape__Draft = { id : item.Shape__Id, points : [ pt ] };
+            Na__LeGrips__ShowBand(pt, pt);
+            return true;
+        }
+        if (Math.hypot(pt[0] - last[0], pt[1] - last[1]) < Na__LeCfg__GetSelectionSetup().dragThresholdMm) return false;   // <-- A doubled point is not a vertex
+        draft.points.push(pt);
+        Na__LeModel__UpdateShape(sheet, draft.id, { points : draft.points.slice() }, true);
+        Na__LeSurface__Refresh('markup');
+        Na__LeGrips__ShowBand(pt, pt);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Cursor Moves With the Draw Tool
+    // ------------------------------------------------------------
+    function Na__LeShape__Move(sheet, pointMm, shift) {
+        const draft = Na__LeShape__Draft;
+        if (!draft) { Na__LeOsnap__Snap(sheet, pointMm); return false; }   // <-- Marker before the first click
+        const last = draft.points[draft.points.length - 1];
+        if (Na__LeShape__NearFirst(pointMm)) {
+            Na__LeOsnap__ShowMarker({ x : draft.points[0][0], y : draft.points[0][1], kind : 'end' });   // <-- Closing is on offer
+            Na__LeGrips__ShowBand(last, draft.points[0]);
+            return true;
+        }
+        const p = Na__LeShape__SnapOrConstrain(sheet, last, pointMm, shift);
+        Na__LeGrips__ShowBand(last, [ p.x, p.y ]);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Finish the Shape (closed as a polygon, or open)
+    // ------------------------------------------------------------
+    function Na__LeShape__Finish(sheet, close) {
+        const draft = Na__LeShape__Draft;
+        if (!draft) return false;
+        Na__LeShape__Draft = null;
+        Na__LeGrips__HideBand();
+        Na__LeOsnap__HideMarker();
+        if (!sheet) return false;
+        if (draft.points.length < 2) { Na__LeModel__DeleteShape(sheet, draft.id); return false; }   // <-- One point is not a shape
+        const closed = close === true && draft.points.length > 2;
+        Na__LeModel__UpdateShape(sheet, draft.id, { points : draft.points.slice(), closed : closed }, false);   // <-- One announcement: one history step
+        Na__LeModel__SetSelection({ kind : 'shape', id : draft.id });
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Abandon the Shape Being Drawn
+    // ------------------------------------------------------------
+    function Na__LeShape__Cancel(sheet) {
+        const draft = Na__LeShape__Draft;
+        Na__LeShape__Draft = null;
+        Na__LeGrips__HideBand();
+        Na__LeOsnap__HideMarker();
+        if (draft && sheet) Na__LeModel__DeleteShape(sheet, draft.id);      // <-- Never announced as created, so nothing to undo
+        return !!draft;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Is a Shape Being Drawn
+    // ------------------------------------------------------------
+    function Na__LeShape__IsDrawing() { return !!Na__LeShape__Draft; }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Layout Editor Shape Tool API
+    // ------------------------------------------------------------
+    export {
+        Na__LeShape__Click,
+        Na__LeShape__Move,
+        Na__LeShape__Finish,
+        Na__LeShape__Cancel,
+        Na__LeShape__IsDrawing
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

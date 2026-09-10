@@ -38,6 +38,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.1
+// - Shape changes are steps.
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -71,7 +74,7 @@
     // MODULE CONSTANTS | Event and the Reasons That Count as a Step
     // ------------------------------------------------------------
     const Na__LeHist__CHANGED_EVENT = 'na-layouteditor-history-changed';
-    const Na__LeHist__STEP_REASONS  = [ 'sheet-updated', 'fields', 'layers', 'viewports', 'viewport', 'annotations', 'annotation', 'dimensions', 'dimension' ];
+    const Na__LeHist__STEP_REASONS  = [ 'sheet-updated', 'fields', 'layers', 'viewports', 'viewport', 'annotations', 'annotation', 'dimensions', 'dimension', 'shapes', 'shape' ];
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Per-Sheet Stacks

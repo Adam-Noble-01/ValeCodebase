@@ -42,6 +42,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.4.0
+// - Vectors panel registered.
+//
 // 10-Sep-2026 - Version 1.3.0
 // - The history module listens from initialisation; entering a sheet takes its undo baseline.
 // - Auto save and the browser draft are initialised with it.
@@ -87,6 +90,7 @@
     import { Na__LePanelViewport__EDIT_EVENT, Na__LePanelViewport__Register } from './Na__LayoutEditor__Panel__ViewportSettings__.js';
     import { Na__LePanelText__Register } from './Na__LayoutEditor__Panel__Text__.js';
     import { Na__LePanelDims__Register } from './Na__LayoutEditor__Panel__Dimensions__.js';
+    import { Na__LePanelShapes__Register } from './Na__LayoutEditor__Panel__Shapes__.js';
     import { Na__LePanelStyles__Register } from './Na__LayoutEditor__Panel__Styles__.js';
     import { Na__LeToolbar__Mount } from './Na__LayoutEditor__Toolbar__.js';
     import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from './Na__LayoutEditor__SnapshotRenderer__.js';
@@ -184,6 +188,7 @@
         Na__LePanelViewport__Register();
         Na__LePanelText__Register();
         Na__LePanelDims__Register();
+        Na__LePanelShapes__Register();
         Na__LePanelStyles__Register();
         Na__LeToolbar__Mount(host.querySelector('.na-le-centre__toolbar'), { editable : editable, showToast : toast });
     }

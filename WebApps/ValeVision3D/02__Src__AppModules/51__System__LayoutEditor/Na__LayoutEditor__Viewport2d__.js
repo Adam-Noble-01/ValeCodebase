@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - Linework widths scale from the sheet's viewport lineweight (points); the underlay key carries the Enhance Whitecard style.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - Progress badge while linework computes, render timing in the console, fresh renders kept in the browser store, snap source for the snapping module.
 //
@@ -57,7 +60,7 @@
 
     // MODULE IMPORTS | Config, Model, Chrome, Markup, Snapshots
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel, Na__LeCfg__PtToMm } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeChrome__ToSvgMarkup } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeMarkup__BuildScenePrimitives } from './Na__LayoutEditor__MarkupBridge__.js';
@@ -213,13 +216,14 @@
 
     // FUNCTION | Paper Stroke Rules per Class
     // ------------------------------------------------------------
-    function Na__LeVp2d__StrokeRules() {
+    function Na__LeVp2d__StrokeRules(masterPt) {
         const setup = Na__LeCfg__GetLineworkSetup();
+        const scale = Number.isFinite(masterPt) ? Na__LeCfg__PtToMm(masterPt) / setup.visibleWidthMm : 1;   // <-- The sheet's viewport weight sets the visible width; the classes keep their ratios
         return {
-            visible  : { colour : Na__PlCfg__GetAppearance('visible').StrokeColour,  widthMm : setup.visibleWidthMm,  dashMm : 0 },
-            hidden   : { colour : Na__PlCfg__GetAppearance('hidden').StrokeColour,   widthMm : setup.hiddenWidthMm,   dashMm : setup.hiddenDashMm },
-            authored : { colour : Na__PlCfg__GetAppearance('authored').StrokeColour, widthMm : setup.authoredWidthMm, dashMm : 0 },
-            section  : { colour : Na__PlCfg__GetAppearance('section').StrokeColour,  widthMm : setup.sectionWidthMm,  dashMm : 0 }
+            visible  : { colour : Na__PlCfg__GetAppearance('visible').StrokeColour,  widthMm : setup.visibleWidthMm  * scale, dashMm : 0 },
+            hidden   : { colour : Na__PlCfg__GetAppearance('hidden').StrokeColour,   widthMm : setup.hiddenWidthMm   * scale, dashMm : setup.hiddenDashMm },
+            authored : { colour : Na__PlCfg__GetAppearance('authored').StrokeColour, widthMm : setup.authoredWidthMm * scale, dashMm : 0 },
+            section  : { colour : Na__PlCfg__GetAppearance('section').StrokeColour,  widthMm : setup.sectionWidthMm  * scale, dashMm : 0 }
         };
     }
     // ------------------------------------------------------------
@@ -230,7 +234,7 @@
     function Na__LeVp2d__PaintLinework(state, viewport, key, classes, ppm) {
         const win = Na__LeVp2d__Window(viewport);
         const D      = win.Denominator;
-        const rules  = Na__LeVp2d__StrokeRules();
+        const rules  = Na__LeVp2d__StrokeRules(state.masterPt);
         const paths  = Na__LeVp2d__PathsFor(key, classes);
         const showHidden = viewport.Viewport__Styles.hiddenLines === true;
         let body = '';
@@ -243,7 +247,7 @@
         });
         state.linework.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="na-le-frame__linework-svg" viewBox="' +
             win.OriginX + ' ' + win.OriginY + ' ' + win.WidthMm + ' ' + win.HeightMm + '" preserveAspectRatio="none" focusable="false" aria-hidden="true">' + body + '</svg>';
-        state.lineworkKey  = key + '|' + showHidden + '|' + D;
+        state.lineworkKey  = key + '|' + showHidden + '|' + D + '|' + state.masterPt;
         state.lineworkSvg  = state.linework.firstElementChild;
         state.classes      = classes;                                             // <-- Snap source
         state.classesKey   = key;
@@ -359,9 +363,10 @@
 
         // UNDERLAY | Slide the last picture; render a new one once things settle
         const styles  = viewport.Viewport__Styles;
+        state.masterPt = sheet && sheet.Sheet__Lineweights ? sheet.Sheet__Lineweights.ViewportPt : null;   // <-- Printed points for the visible linework
         const modelFp = Na__LeSnap__GetPipelineFingerprint();
         const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
-                      Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework ].join('|');
+                      Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard ].join('|');
         Na__LeVp2d__PlaceUnderlay(state, win, ppm);
         state.wantedKey = key;
         if (key !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewport.Viewport__Id);
@@ -375,7 +380,7 @@
             Na__LeVp2d__HideProgress(state);
         } else {
             const cacheKey = Na__PlView__CacheKey(described.definition, modelFp);
-            const paintKey = cacheKey + '|' + (styles.hiddenLines === true) + '|' + win.Denominator;
+            const paintKey = cacheKey + '|' + (styles.hiddenLines === true) + '|' + win.Denominator + '|' + state.masterPt;
             if (state.lineworkKey === paintKey && state.lineworkSvg) {
                 state.lineworkSvg.setAttribute('viewBox', win.OriginX + ' ' + win.OriginY + ' ' + win.WidthMm + ' ' + win.HeightMm);
                 Na__LeVp2d__SizeLayer(state.lineworkSvg, viewport, ppm);

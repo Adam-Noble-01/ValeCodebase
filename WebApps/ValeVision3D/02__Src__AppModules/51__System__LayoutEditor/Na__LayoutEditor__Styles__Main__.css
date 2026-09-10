@@ -639,3 +639,32 @@ body.na-le-dragging * {
 }
 
 /* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Grips and Inference                                    */
+/* ----------------------------------------------------------------- */
+
+.na-le-grip {
+    position                           : absolute;
+    box-sizing                         : border-box;
+    background                         : #ffffff;
+    border                             : 1px solid #336699;
+    border-radius                      : 1px;
+    pointer-events                     : none;
+    z-index                            : 5;
+}
+
+.na-le-grip--offset {
+    border-radius                      : 50%;
+    background                         : #d97706;
+    border-color                       : #b45309;
+}
+
+.na-le-osnap--infer {
+    border-radius                      : 50%;
+    border-style                       : solid;
+    background                         : transparent;
+}
+
+/* endregion ------------------------------------------------------- */

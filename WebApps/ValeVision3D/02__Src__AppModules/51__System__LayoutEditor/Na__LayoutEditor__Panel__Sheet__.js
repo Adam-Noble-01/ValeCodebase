@@ -30,6 +30,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Lineweights in points for the viewport linework and the dimensions.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -42,7 +45,7 @@
 
     // MODULE IMPORTS | Config, Layout, Model and Panel Host
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetLabel, Na__LeCfg__GetTitleBlockSetup } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetLabel, Na__LeCfg__GetTitleBlockSetup, Na__LeCfg__GetLineweightSetup } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeLayout__ListPaperSizes } from './Na__LayoutEditor__SheetLayout__.js';
     import {
         Na__LeModel__GetActiveSheet,
@@ -79,6 +82,13 @@
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('PaperSize', 'Paper'), Na__LePanels__Select('sheet-paper', Na__LeLayout__ListPaperSizes().map((p) => ({ value : p.Key, label : p.Label })))));
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('Orientation', 'Orientation'), Na__LePanels__Select('sheet-orientation', [ { value : 'landscape', label : 'Landscape' }, { value : 'portrait', label : 'Portrait' } ])));
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('TitleBlockStyle', 'Title block'), Na__LePanels__Select('sheet-titleblock', [ { value : 'modern', label : 'Modern' }, { value : 'classic', label : 'Classic' } ])));
+        const lw = Na__LeCfg__GetLineweightSetup();
+        const lwHeading = document.createElement('div');
+        lwHeading.className   = 'na-le-subheading';
+        lwHeading.textContent = Na__LeCfg__GetLabel('Lineweights', 'Lineweights (pt)');
+        body.appendChild(lwHeading);
+        body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ViewportLinesPt', 'Viewport lines'), Na__LePanels__Input('number', 'sheet-lw-viewport', { min : lw.minPt, max : lw.maxPt, step : lw.stepPt })));
+        body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('DimensionLinesPt', 'Dimension lines'), Na__LePanels__Input('number', 'sheet-lw-dimension', { min : lw.minPt, max : lw.maxPt, step : lw.stepPt })));
 
         const heading = document.createElement('div');
         heading.className   = 'na-le-subheading';
@@ -104,6 +114,8 @@
         set('sheet-paper', sheet.Sheet__PaperSize);
         set('sheet-orientation', sheet.Sheet__Orientation);
         set('sheet-titleblock', sheet.Sheet__TitleBlockStyle);
+        set('sheet-lw-viewport', sheet.Sheet__Lineweights ? String(sheet.Sheet__Lineweights.ViewportPt) : '');
+        set('sheet-lw-dimension', sheet.Sheet__Lineweights ? String(sheet.Sheet__Lineweights.DimensionPt) : '');
         const fields = Na__LeModel__GetFields(sheet);
         body.querySelectorAll('[data-na-control="sheet-field"]').forEach((input) => {
             const key    = input.getAttribute('data-na-role');
@@ -122,6 +134,8 @@
         Na__LePanels__OnControl('change', 'sheet-paper',       (e, el) => { const s = Na__LeModel__GetActiveSheet(); if (s) Na__LeModel__UpdateSheet(s, { paperSize : el.value }); });
         Na__LePanels__OnControl('change', 'sheet-orientation', (e, el) => { const s = Na__LeModel__GetActiveSheet(); if (s) Na__LeModel__UpdateSheet(s, { orientation : el.value }); });
         Na__LePanels__OnControl('change', 'sheet-titleblock',  (e, el) => { const s = Na__LeModel__GetActiveSheet(); if (s) Na__LeModel__UpdateSheet(s, { titleBlockStyle : el.value }); });
+        Na__LePanels__OnControl('change', 'sheet-lw-viewport',  (e, el) => { const s = Na__LeModel__GetActiveSheet(); const v = parseFloat(el.value); if (s && Number.isFinite(v)) Na__LeModel__UpdateSheet(s, { lineweights : { viewportPt : v } }); });
+        Na__LePanels__OnControl('change', 'sheet-lw-dimension', (e, el) => { const s = Na__LeModel__GetActiveSheet(); const v = parseFloat(el.value); if (s && Number.isFinite(v)) Na__LeModel__UpdateSheet(s, { lineweights : { dimensionPt : v } }); });
         Na__LePanels__OnControl('change', 'sheet-field', (e, el, key) => {
             const s = Na__LeModel__GetActiveSheet();
             if (s) Na__LeModel__SetField(s, key, el.value.trim() === '' ? null : el.value);

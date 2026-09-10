@@ -732,7 +732,8 @@ Fields default from project.json (`projectName`, `projectCode`, client name wher
 | `Na__LayoutEditor__Panel__ViewportSettings__.js` | 400 | Scene dropdown grouped by scene group (plans, elevations, sections, 3D), three-way scale toggle (2D only) showing the active scale, crop readouts, name, markup mode toggle, Import From Scene |
 | `Na__LayoutEditor__Panel__Text__.js` | 340 | Font (Open Sans), size in paper mm, weight 300/400/600, colour, alignment, leader on or off; applies to the selection and to new text |
 | `Na__LayoutEditor__Panel__Dimensions__.js` | 340 | Text size mm, colour, terminator tick/arrow/dot, extension offset, precision, units suffix; applies to the selection and to new dimensions |
-| `Na__LayoutEditor__Panel__Styles__.js` | 280 | Per-viewport toggles: Projected Linework, Profile Linework Effect, Glass Transparency Off, Whitecard, plus Hidden Lines |
+| `Na__LayoutEditor__Panel__Styles__.js` | 280 | Per-viewport toggles: Projected Linework, Profile Linework Effect, Glass Transparency Off, Whitecard, plus Hidden Lines; Enhance Whitecard from v2.21.8 |
+| `Na__LayoutEditor__Panel__Shapes__.js` (v2.21.8) | 160 | Vectors: edge colour, edge weight in points, fill, closure; the selection or the Draw tool's defaults |
 
 ### 11.5 Export and persistence (D35)
 
@@ -747,13 +748,16 @@ Built 09/10-Sep-2026 as v2.21.0, thirty-three files (the table above plus `Sheet
 
 v2.21.7 (10-Sep-2026) added three files: `Na__LayoutEditor__History__.js` (undo and redo, fifty whole-sheet snapshots per sheet, Ctrl+Z and Ctrl+Y), `Na__LayoutEditor__ContextMenu__.js` (the right-click menu) and `Na__LayoutEditor__AutoSave__.js` (a browser draft of every change, restored on the next load while unsaved, and a project save of its own after a sheet is created, renamed, reordered or deleted). The same release revised D29 and D30 (every handle crops, a drag moves, double-click enters the content), added a per-viewport lock (`Viewport__Locked`) and gave the page a full stage of room on every side.
 
+v2.21.8 (10-Sep-2026) split the sheet tools into `Na__LayoutEditor__TextTool__.js` and `Na__LayoutEditor__DimensionTool__.js` (three-click placement with offset inference to parallel dimensions, inline value override), added `Na__LayoutEditor__Grips__.js` (dimension and shape grips), a vector Draw tool (`Na__LayoutEditor__ShapeGeometry__.js`, `Na__LayoutEditor__ShapeTool__.js`, `Na__LayoutEditor__Panel__Shapes__.js`, records `Sheet__Shapes`, layer type `vector`), sheet lineweights in points (`Sheet__Lineweights`, the Sheet panel), the Enhance Whitecard viewport style (`Na__LayoutEditor__Enhance__.js` over the image export's levels and sharpen), Space to clear the selection, and the selection order dimensions, text, shapes, viewports.
+
 ### 11.6 Hand-over test list
 
 1. New sheet from the Dev menu: a "Drawing 1" tab appears; A3 landscape with the Modern title block; switch to Classic: the scan stretches and the fields overlay.
 2. Add a plan viewport at 1:50: linework and underlay land at scale (a 10 m wall measures 200 mm on the paper at 100 percent zoom); toggle 1:100 and 1:20.
 3. Every handle crops (a corner in both axes); a drag moves the frame; double-click enters the content and a drag then pans; Shift on a 3D corner scales; a locked viewport (right-click, Lock viewport) refuses all of it; Ctrl+Z steps back through it all.
 4. Layers: reorder changes stacking; lock prevents selection; type filter.
-5. Text and dimension panels change new and selected items; sheet dimensions measure the model at scale.
+5. Text and dimension panels change new and selected items; sheet dimensions measure the model at scale. A dimension takes three clicks and lines up with a parallel neighbour on the third; its grips re-pick the points; double-click overrides the value; Space clears the selection.
+5a. Draw (L): a polygon closes on its first point and fills from the Vectors panel; a line finishes on Enter; vertices drag; the PDF carries the shapes as vectors; the Sheet panel's lineweights in points change the linework and the dimensions on screen and in the PDF; Enhance Whitecard turns the grey faces white.
 6. Markup mode Scene edits the plan's own labels; Sheet mode keeps them separate; Import From Scene copies.
 7. Styles per viewport: whitecard and opaque glass in a 3D viewport, hidden lines on a plan viewport.
 8. Save, reload, tabs and content return; web build shows the tabs read-only with PDF download.

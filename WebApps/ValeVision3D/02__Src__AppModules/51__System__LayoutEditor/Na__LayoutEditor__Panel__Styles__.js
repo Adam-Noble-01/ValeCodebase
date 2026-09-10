@@ -30,6 +30,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Enhance Whitecard toggle (levels and sharpen on the viewport render).
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -68,6 +71,7 @@
         { key : 'profileLinework',   label : 'Profile Linework Effect', twoDOnly : false },
         { key : 'glassOpaque',       label : 'Glass Transparency Off',  twoDOnly : false },
         { key : 'whitecard',         label : 'Whitecard',               twoDOnly : false },
+        { key : 'enhanceWhitecard',  label : 'Enhance Whitecard',       twoDOnly : false },
         { key : 'hiddenLines',       label : 'Hidden Lines',            twoDOnly : true }
     ];
     // ------------------------------------------------------------

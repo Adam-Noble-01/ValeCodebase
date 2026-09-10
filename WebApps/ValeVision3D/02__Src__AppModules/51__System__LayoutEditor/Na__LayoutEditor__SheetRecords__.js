@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Vector shapes (Sheet__Shapes, layer type 'vector', a Vectors layer on new sheets), Sheet__Lineweights in points, the enhanceWhitecard style.
+//
 // 10-Sep-2026 - Version 1.0.1
 // - New viewport style toggles come from LayoutEditor__Viewport__DefaultStyles (projected linework off until asked for).
 //
@@ -54,7 +57,9 @@
         Na__LeCfg__GetViewportSetup,
         Na__LeCfg__GetTextSetup,
         Na__LeCfg__GetDimensionSetup,
-        Na__LeCfg__FormatLabel
+        Na__LeCfg__FormatLabel,
+        Na__LeCfg__GetLineweightSetup,
+        Na__LeCfg__GetShapeSetup
     } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__Coerce, Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
     import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
@@ -72,8 +77,8 @@
     // ------------------------------------------------------------
     const Na__LeRec__KIND_2D     = '2d';
     const Na__LeRec__KIND_3D     = '3d';
-    const Na__LeRec__LAYER_TYPES = [ 'viewport', 'annotation', 'dimension', 'mixed' ];
-    const Na__LeRec__STYLE_KEYS  = [ 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines' ];
+    const Na__LeRec__LAYER_TYPES = [ 'viewport', 'annotation', 'dimension', 'vector', 'mixed' ];
+    const Na__LeRec__STYLE_KEYS  = [ 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines', 'enhanceWhitecard' ];
     const Na__LeRec__ID_PAD      = 3;
     // ------------------------------------------------------------
 
@@ -173,7 +178,8 @@
             profileLinework   : pick('profileLinework'),
             glassOpaque       : pick('glassOpaque'),
             whitecard         : pick('whitecard'),
-            hiddenLines       : pick('hiddenLines')
+            hiddenLines       : pick('hiddenLines'),
+            enhanceWhitecard  : pick('enhanceWhitecard')
         };
         if (viewport.Viewport__MarkupMode !== 'sheet') viewport.Viewport__MarkupMode = 'scene';
         if (viewport.Viewport__ShowScaleLabel === undefined) viewport.Viewport__ShowScaleLabel = setup.showScaleLabel;
@@ -225,6 +231,22 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Fill In a Vector Shape (points [[x, y], ...] paper mm, weight in points)
+    // ------------------------------------------------------------
+    function Na__LeRec__NormaliseShape(item, defaultLayerId) {
+        const setup = Na__LeCfg__GetShapeSetup();
+        if (!item.Shape__LayerId) item.Shape__LayerId = defaultLayerId;
+        const raw = Array.isArray(item.Shape__Points) ? item.Shape__Points : [];
+        item.Shape__Points = raw.filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])).map((p) => [ p[0], p[1] ]);
+        item.Shape__Closed = item.Shape__Closed === true;
+        if (typeof item.Shape__StrokeColour !== 'string') item.Shape__StrokeColour = setup.defaultStrokeColour;
+        item.Shape__StrokePt = Na__LeRec__Num(item.Shape__StrokePt, setup.defaultStrokePt);
+        if (typeof item.Shape__FillColour !== 'string') item.Shape__FillColour = null;
+        return item;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Fill a Sheet Record's Defaults (mutates in place)
     // ------------------------------------------------------------
     function Na__LeRec__NormaliseSheet(sheet, index) {
@@ -244,7 +266,8 @@
             sheet.Sheet__Layers = [
                 { Layer__Id : 'Layer_001', Layer__Name : 'Viewports',  Layer__Type : 'viewport',   Layer__Visible : true, Layer__Locked : false, Layer__Order : 1 },
                 { Layer__Id : 'Layer_002', Layer__Name : 'Text',       Layer__Type : 'annotation', Layer__Visible : true, Layer__Locked : false, Layer__Order : 2 },
-                { Layer__Id : 'Layer_003', Layer__Name : 'Dimensions', Layer__Type : 'dimension',  Layer__Visible : true, Layer__Locked : false, Layer__Order : 3 }
+                { Layer__Id : 'Layer_003', Layer__Name : 'Dimensions', Layer__Type : 'dimension',  Layer__Visible : true, Layer__Locked : false, Layer__Order : 3 },
+                { Layer__Id : 'Layer_004', Layer__Name : 'Vectors',    Layer__Type : 'vector',     Layer__Visible : true, Layer__Locked : false, Layer__Order : 4 }
             ];
         }
         sheet.Sheet__Layers.forEach(Na__LeRec__NormaliseLayer);
@@ -253,10 +276,17 @@
         if (!Array.isArray(sheet.Sheet__Viewports))   sheet.Sheet__Viewports   = [];
         if (!Array.isArray(sheet.Sheet__Annotations)) sheet.Sheet__Annotations = [];
         if (!Array.isArray(sheet.Sheet__Dimensions))  sheet.Sheet__Dimensions  = [];
+        if (!Array.isArray(sheet.Sheet__Shapes))      sheet.Sheet__Shapes      = [];
+
+        // LINEWEIGHTS | Printed points per sheet, seeded from the config
+        const lwSetup = Na__LeCfg__GetLineweightSetup();
+        const lw = (sheet.Sheet__Lineweights && typeof sheet.Sheet__Lineweights === 'object') ? sheet.Sheet__Lineweights : {};
+        sheet.Sheet__Lineweights = { ViewportPt : Na__LeRec__Num(lw.ViewportPt, lwSetup.viewportPt), DimensionPt : Na__LeRec__Num(lw.DimensionPt, lwSetup.dimensionPt) };
 
         sheet.Sheet__Viewports.forEach((v)   => Na__LeRec__NormaliseViewport(v,   Na__LeRec__DefaultLayerId(sheet, 'viewport')));
         sheet.Sheet__Annotations.forEach((a) => Na__LeRec__NormaliseAnnotation(a, Na__LeRec__DefaultLayerId(sheet, 'annotation')));
         sheet.Sheet__Dimensions.forEach((d)  => Na__LeRec__NormaliseDimension(d,  Na__LeRec__DefaultLayerId(sheet, 'dimension')));
+        sheet.Sheet__Shapes.forEach((sh)     => Na__LeRec__NormaliseShape(sh,     Na__LeRec__DefaultLayerId(sheet, 'vector')));
         return sheet;
     }
     // ------------------------------------------------------------
@@ -327,6 +357,7 @@
         Na__LeRec__KIND_3D,
         Na__LeRec__LAYER_TYPES,
         Na__LeRec__STYLE_KEYS,
+        Na__LeRec__NormaliseShape,
         Na__LeRec__NextId,
         Na__LeRec__Num,
         Na__LeRec__Find,

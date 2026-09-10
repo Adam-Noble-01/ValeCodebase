@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Grips for a selected dimension or shape in the handles layer.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Editing and locked outline states; a full stage of margin on every side so the paper roams freely.
 //
@@ -72,6 +75,7 @@
     import { Na__LeVp2d__Fill, Na__LeVp2d__Release } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__Fill, Na__LeVp3d__Release } from './Na__LayoutEditor__Viewport3d__.js';
     import { Na__LeHandles__Render, Na__LeHandles__Clear } from './Na__LayoutEditor__ViewportHandles__.js';
+    import { Na__LeGrips__Render } from './Na__LayoutEditor__Grips__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -410,7 +414,13 @@
         Na__LeSurface__Frames.querySelectorAll('.' + Na__LeSurface__CLASS_FRAME).forEach((frame) => {
             frame.classList.toggle(Na__LeSurface__CLASS_FRAME + '--selected', !!viewport && frame.getAttribute('data-na-viewport-id') === viewport.Viewport__Id);
         });
-        if (!viewport || !Na__LeModel__IsLayerVisible(sheet, viewport.Viewport__LayerId)) { Na__LeSurface__EditingId = null; Na__LeHandles__Clear(Na__LeSurface__Handles); return; }
+        if (!viewport) {
+            Na__LeSurface__EditingId = null;
+            Na__LeHandles__Clear(Na__LeSurface__Handles);
+            if (selection && Na__LeSurface__Editable) Na__LeGrips__Render(Na__LeSurface__Handles, sheet, selection, Na__LeSurface__Ppm, Na__LeSurface__Zoom);   // <-- Dimension and shape grips
+            return;
+        }
+        if (!Na__LeModel__IsLayerVisible(sheet, viewport.Viewport__LayerId)) { Na__LeSurface__EditingId = null; Na__LeHandles__Clear(Na__LeSurface__Handles); return; }
         const locked = Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId) || viewport.Viewport__Locked === true;
         if (Na__LeSurface__EditingId && (Na__LeSurface__EditingId !== viewport.Viewport__Id || locked)) Na__LeSurface__EditingId = null;   // <-- Content editing ends with the selection, or with a lock
         Na__LeHandles__Render(Na__LeSurface__Handles, viewport, Na__LeSurface__Ppm, Na__LeSurface__Zoom, Na__LeSurface__Editable && !locked,

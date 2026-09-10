@@ -40,6 +40,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - The Enhance Whitecard pass runs on the render canvas when the viewport style asks for it.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Session-cached model fingerprints (no model walk per refresh); the profile lines pass state is restored after a 2D render.
 //
@@ -52,6 +55,11 @@
 // -----------------------------------------------------------------------------
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Enhance Whitecard Pass
+    // ------------------------------------------------------------
+    import { Na__LeEnhance__Apply } from './Na__LayoutEditor__Enhance__.js';
+    // ------------------------------------------------------------
 
     // MODULE IMPORTS | Three, Units, Render Loop
     // ------------------------------------------------------------
@@ -322,6 +330,7 @@
                     elevationOverrides     : Na__DrawView__ComposerPreset__GetExportOverrides(),
                     targetWidth : Math.max(16, Math.round(widthPx)), targetHeight : Math.max(16, Math.round(heightPx))
                 });
+                if (styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas);   // <-- Levels and sharpen: the whitecard greys go to paper white
                 return { dataUrl : result.canvas.toDataURL('image/png'), widthPx : result.width, heightPx : result.height };
             } catch (renderError) {
                 console.warn('[ValeVision3D LayoutEditor] 2D underlay render failed:', renderError);
@@ -370,6 +379,7 @@
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
                     targetWidth : Math.max(16, Math.round(widthPx)), targetHeight : Math.max(16, Math.round(heightPx))
                 });
+                if (styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas);
                 return { canvas : result.canvas, widthPx : result.width, heightPx : result.height };
             } catch (renderError) {
                 console.warn('[ValeVision3D LayoutEditor] 3D snapshot render failed:', renderError);

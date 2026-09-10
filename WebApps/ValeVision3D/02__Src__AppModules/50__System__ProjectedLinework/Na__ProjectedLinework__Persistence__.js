@@ -50,6 +50,7 @@
 // DEVELOPMENT LOG:
 // 10-Sep-2026 - Version 1.1.0
 // - RememberRender keeps a fresh render in IndexedDB so a reload paints without computing.
+// - BakeAll and BakeBeforeSave skip drawings with Projected Linework off unless a caller names them (sheet viewports) or forces.
 //
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
@@ -453,15 +454,20 @@
     // ------------------------------------------------------------
     async function Na__PlStore__BakeAll(options) {
         const settings = options || {};
-        const counts   = { baked : 0, skipped : 0, refused : 0, failed : 0 };
+        const counts   = { baked : 0, skipped : 0, refused : 0, failed : 0, off : 0 };
         if (!Na__PlCfg__IsEnabled() || !Na__PlCfg__GetPersistenceSetup().enabled) return counts;
 
         const definitions      = Na__PlView__FromAllDrawings();
         const modelFingerprint = Na__PlPipe__GetModelFingerprint();
         if (modelFingerprint === 'no-model') return counts;                      // <-- Nothing loaded: nothing to bake
 
+        // ONLY WHAT ASKS | A drawing with Projected Linework off is never
+        // computed; a sheet viewport that wants it names the drawing in
+        // includeDrawingIds. force bakes everything regardless.
+        const wanted = new Set(Array.isArray(settings.includeDrawingIds) ? settings.includeDrawingIds : (settings.includeDrawingIds instanceof Set ? Array.from(settings.includeDrawingIds) : []));
         for (let i = 0; i < definitions.length; i++) {
             const definition = definitions[i];
+            if (settings.force !== true && !definition.Styles.projectedLinework && !wanted.has(definition.DrawingId)) { counts.off++; continue; }
             if (typeof settings.onProgress === 'function') settings.onProgress({ index : i + 1, total : definitions.length, name : definition.DrawingName });
             try {
                 const outcome = await Na__PlStore__BakeOne(definition, modelFingerprint, settings.showToast, settings.force === true);
@@ -481,12 +487,12 @@
     // Never throws and never blocks a save: a failed bake costs a compute on
     // the web build, not a lost project.json.
     // ------------------------------------------------------------
-    async function Na__PlStore__BakeBeforeSave(showToast) {
+    async function Na__PlStore__BakeBeforeSave(showToast, includeDrawingIds) {
         if (!Na__AppUtils__IsRunningOnLocalhost()) return null;
         if (!Na__PlCfg__IsEnabled() || !Na__PlCfg__GetPersistenceSetup().bakeOnSave) return null;
 
         try {
-            const counts = await Na__PlStore__BakeAll({ showToast : showToast });
+            const counts = await Na__PlStore__BakeAll({ showToast : showToast, includeDrawingIds : includeDrawingIds });
             if (counts.baked > 0 && typeof showToast === 'function') {
                 showToast(Na__PlCfg__GetLabel('BakedMessage', 'Linework baked to R2.') + ' (' + counts.baked + ')', false);
             }

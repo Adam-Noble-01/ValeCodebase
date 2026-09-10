@@ -247,8 +247,22 @@
                 input.value = plan.FloorPlan__Name;                              // <-- Never let a plan lose its name
                 return;
             }
-            plan.FloorPlan__Name = next;
-            onRename();
+
+            // NO "SAME NAME" SHORT CUT HERE. A record whose card has drifted
+            // out of step is repaired by asking for the name it already
+            // appears to have, and only the rename path can see both.
+
+            // THE HANDLER OWNS THE WRITE. A name lives in more than the
+            // record: the scene card carries it and the sheet viewports'
+            // snapshot fingerprints include it, so the field ASKS for the new
+            // name rather than setting it and leaving the rest to catch up.
+            // Disabled until the save answers, because a second rename
+            // starting on top of the first would race the project document.
+            input.disabled = true;
+            Promise.resolve(onRename(next)).then(() => {
+                input.value    = plan.FloorPlan__Name;                           // <-- Whatever landed: the new name, or the old one restored
+                input.disabled = false;
+            });
         });
         return input;
     }

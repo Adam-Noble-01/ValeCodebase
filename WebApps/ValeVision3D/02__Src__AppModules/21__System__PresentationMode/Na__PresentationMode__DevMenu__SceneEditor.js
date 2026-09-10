@@ -588,6 +588,7 @@
 
         const handlers = {
             camera           : Na__PmDev__Camera,
+            showToast        : Na__PmDev__ShowToast,                         // <-- A drawing card's rename saves and confirms on the spot
             onMoveByOffset   : Na__PmDev__MoveSceneByOffset,
             onMoveToPosition : Na__PmDev__MoveSceneToPosition,
             onMutate         : Na__PmDev__HandleRowMutation

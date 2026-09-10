@@ -359,15 +359,12 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Push a Renamed Elevation Through to Its Scene Card
-    // ------------------------------------------------------------
-    function Na__ElevLink__SyncSceneName(sceneConfig, elevation) {
-        const scene = Na__ElevData__FindSceneFor(sceneConfig, elevation);
-        if (!scene) return false;
-        scene[Na__ElevLink__SCENE_NAME] = elevation.Elevation__Name;
-        return true;
-    }
-    // ------------------------------------------------------------
+    // NOT HERE | RENAME. Pushing the name to the card is only a quarter of a
+    // rename: the section binding is KEYED by the old name and the sheet
+    // viewports carry it inside their snapshot fingerprints, and none of it
+    // is saved by the caller. A function here that did the easy quarter is
+    // what let the record and the card drift apart, so renaming belongs to
+    // Na__DrawView__RenameDrawing__ and only to it.
 
 
     // FUNCTION | Update an Elevation Scene's Stored Camera Block
@@ -420,7 +417,6 @@
         Na__ElevLink__CreateSceneForElevation,
         Na__ElevLink__SyncSceneGroup,
         Na__ElevLink__RemoveSceneForElevation,
-        Na__ElevLink__SyncSceneName,
         Na__ElevLink__SyncSceneCamera,
         Na__ElevLink__SetSceneThumbnail,
         Na__ElevLink__GetSceneId

@@ -2,6 +2,78 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.5 - 10-Sep-2026 - Renaming a drawing
+
+### Fixed
+- **Renaming a drawing broke its sheet viewports.** The 3D snapshot
+  fingerprint in `Na__LayoutEditor__Viewport3d__.js` included
+  `PresentationMode__Scene__Name`. A name has no effect on the picture, but
+  it was part of the key that guards it, so a pure rename made every stored
+  snapshot read as stale: the web build refused the R2 asset and drew an
+  empty frame, the PDF export lost the image, and localhost quietly
+  re-rendered and uploaded under a new path, orphaning a perfectly good
+  object. `Na__LeVp3d__RestampForScene` now re-stamps the reference across
+  every sheet with the fingerprint the renamed scene produces and leaves
+  `Asset__Path` alone, so the picture that was already correct stays in use.
+- **Renaming a drawing was never saved.** The name field wrote
+  `Elevation__Name` / `FloorPlan__Name` in memory, pushed the name to the
+  scene card, and stopped. Nothing persisted it. The Presentation Scenes
+  editor auto-saves on add, delete and Save All, and its save writes the
+  presentation block but not `LayoutEditor__DrawingsData` - so renaming a
+  drawing and then touching the Scenes editor persisted the new name on the
+  card and reverted the record on reload. The two then disagreed for good,
+  and every later rename synced from a record that was already wrong.
+- **A section drawing lost its cut when renamed.** `CrossSection__SceneData
+  __Scenes` is a map keyed by scene NAME. A rename left the entry filed
+  under a name nothing asks for, so the drawing opened with no section and
+  the stale entry sat unreachable. The entry now moves with the rename, and
+  `Na__SectSceneData__FindEntryKey` matches on scene id before scene name,
+  which also finds bindings orphaned by renames made before this existed.
+- **Renaming a drawing's card in the Scenes editor did not reach the
+  drawing.** That name input wrote `PresentationMode__Scene__Name` directly
+  with no write-back, the desync from the other direction, and it auto-saved.
+  A drawing card now commits through the rename path; an ordinary 3D card
+  keeps the live in-place edit it always had.
+
+### Added
+- **`42/Na__DrawView__RenameDrawing__.js`.** One rename path for every
+  surface that offers one. It writes the record and the scene card, re-keys
+  the section binding, re-stamps the sheet viewports, saves the whole
+  document once through `Na__DrawData__Save`, and confirms what it touched:
+  `Renamed to "West Elevation", saved to R2 with its scene card, 2 sheet
+  viewports and its section binding.` A rename is atomic - if the save
+  fails, every in-memory change is put back and the drawing keeps its old
+  name - and one at a time, because two in flight would race the project
+  document. The name fields now ASK for a name rather than setting it and
+  hoping the rest catches up, and are held until the save answers.
+- **`Na__DrawData__Save` carries `CrossSection__SceneData`.** A section
+  drawing's cut is drawing data, and the block has to ride with the same
+  save or a rename lands everywhere except the cut. `GetProjectBlock`
+  returns null until something loads or captures one, so an untouched
+  project never gains the key.
+
+### Removed
+- **`Na__FpLink__SyncSceneName` and `Na__ElevLink__SyncSceneName`.** Pushing
+  the name to the card is a quarter of a rename with none of the save. A
+  helper that does the easy quarter is how the record and the card came to
+  drift apart, so both are gone rather than left for someone to call.
+
+### Testing notes
+- Rename an elevation from the Elevations panel: the toast should name the
+  scene card, the viewport count and the section binding, and project.json
+  should show the new name in `Elevation__Name`, in the scene, and as the
+  `CrossSection__SceneData__Scenes` key, in one save.
+- A sheet with a 3D viewport on that scene should keep its picture, and
+  `Viewport__SnapshotAsset.Asset__Path` should be unchanged with a new
+  `Asset__Fingerprint`. The published build should still paint that frame.
+- Rename the same drawing's card from the Presentation Scenes editor and
+  check `Elevation__Name` follows it.
+- Duplicate names still share one section binding entry, as they always
+  have; a rename into an existing name leaves both entries where they are
+  and reports it in the console, and the id-first lookup keeps each scene on
+  its own cut.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.4 - 10-Sep-2026 - Raster viewports by default, help panel
 
 ### Changed

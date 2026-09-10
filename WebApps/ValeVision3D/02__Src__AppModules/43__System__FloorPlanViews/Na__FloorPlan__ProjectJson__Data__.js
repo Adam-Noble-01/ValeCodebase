@@ -49,6 +49,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.1
+// - Projected Linework defaults to off on a new plan: the projection only runs when a record asks for it.
+//
 // 09-Sep-2026 - Version 1.1.0
 // - Ported to ValeVision3D: drawings block, styles, exclusions, asset slot.
 //
@@ -131,7 +134,7 @@
         hiddenLines       : 'Styles__HiddenLines'
     });
     const Na__FpData__STYLE_DEFAULTS = Object.freeze({
-        projectedLinework : true,
+        projectedLinework : false,                                          // <-- Off until asked for: the projection is the slow part
         profileLinework   : true,
         glassOpaque       : false,
         whitecard         : true,

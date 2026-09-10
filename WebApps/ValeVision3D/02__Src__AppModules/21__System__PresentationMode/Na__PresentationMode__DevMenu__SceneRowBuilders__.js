@@ -90,6 +90,16 @@
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Drawing Rename (a drawing card's name is not ours)
+    // ------------------------------------------------------------
+    // @delegate: ../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
+    // ------------------------------------------------------------
+    import {
+        Na__DrawRename__OwnsScene,
+        Na__DrawRename__RenameSceneCard
+    } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -436,16 +446,45 @@
         // HEADER STRIP
         const titleEl = Na__PmRows__BuildHeader(wrapper, scene, indexInGroup, countInGroup, safeHandlers);
 
-        // NAME INPUT
+        // NAME INPUT | A DRAWING CARD'S NAME IS NOT THIS EDITOR'S TO KEEP.
+        // A floor plan or elevation card is a view of a drawing record that
+        // holds the same name inside LayoutEditor__DrawingsData, a block this
+        // editor's save never writes. Editing the card in place and saving
+        // would persist the new name here and leave the record on the old one
+        // for good. So a drawing card commits through the drawing rename
+        // path, which writes both blocks and the section binding in one save;
+        // an ordinary 3D card keeps the live in-place edit it always had.
+        const ownedByDrawing = Na__DrawRename__OwnsScene(scene);
+
         const nameRow   = Na__PmRows__BuildLabelledRow('Name');
         const nameInput = document.createElement('input');
         nameInput.type      = 'text';
         nameInput.className = 'na-pm-dev__input';
         nameInput.value     = scene.PresentationMode__Scene__Name || '';
+        if (ownedByDrawing) nameInput.title = 'This card belongs to a drawing. Renaming it renames the drawing and saves both.';
+
+        const showTitle = () => { titleEl.textContent = `#${indexInGroup + 1} - ${nameInput.value || sceneId}`; };
+
         nameInput.addEventListener('input', () => {
+            showTitle();
+            if (ownedByDrawing) return;                                      // <-- Committed on change, not per keystroke
             scene.PresentationMode__Scene__Name = nameInput.value;           // <-- Update working copy directly
-            titleEl.textContent = `#${indexInGroup + 1} - ${nameInput.value || sceneId}`;
         });
+
+        nameInput.addEventListener('change', () => {
+            if (!ownedByDrawing) return;
+            const next = nameInput.value.trim();
+            const settle = () => {
+                nameInput.value    = scene.PresentationMode__Scene__Name || '';
+                nameInput.disabled = false;
+                showTitle();
+            };
+            if (next.length === 0 || next === scene.PresentationMode__Scene__Name) { settle(); return; }
+
+            nameInput.disabled = true;
+            Promise.resolve(Na__DrawRename__RenameSceneCard(scene, next, safeHandlers.showToast)).then(settle);
+        });
+
         nameRow.appendChild(nameInput);
         wrapper.appendChild(nameRow);
 

@@ -154,9 +154,9 @@
         Na__ElevLink__CreateSceneForElevation,
         Na__ElevLink__SyncSceneGroup,
         Na__ElevLink__RemoveSceneForElevation,
-        Na__ElevLink__SyncSceneName,
         Na__ElevLink__SyncSceneCamera
     } from './Na__Elevation__SceneLink__.js';
+    import { Na__DrawRename__RenameElevation } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
     import {
         Na__ElevationMode__EnterElevation,
         Na__ElevationMode__ExitElevation,
@@ -413,7 +413,6 @@
     // changes state is assembled here and handed to it.
     // ------------------------------------------------------------
     function Na__ElevDev__BuildRow(elevation) {
-        const config   = Na__ElevDev__GetConfig();
         const isActive = Na__ElevationMode__IsActive()
                       && Na__ElevationMode__GetActiveElevation() === elevation;
 
@@ -422,10 +421,10 @@
             isEditMode : isActive && Na__ElevationMode__IsEditMode(),
             isPicking  : Na__ElevPick__IsActive() && Na__ElevDev__PickTarget === elevation,
 
-            onRename : () => {
-                if (config) Na__ElevLink__SyncSceneName(config, elevation);
-                Na__PresentationMode__ProjectJson__BroadcastScenesChanged();     // <-- The card carries the elevation name
-            },
+            // A name is held by the record, its scene card, the section
+            // binding's key and every sheet viewport's snapshot fingerprint.
+            // One path writes all four, saves the document once and says so.
+            onRename : (nextName) => Na__DrawRename__RenameElevation(elevation, nextName, Na__ElevDev__ShowToast),
 
             // A new bearing changes the camera basis outright, so the drawing
             // has to be rebuilt rather than nudged.

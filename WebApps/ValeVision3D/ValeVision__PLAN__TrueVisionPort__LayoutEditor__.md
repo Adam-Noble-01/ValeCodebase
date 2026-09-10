@@ -355,9 +355,26 @@ Client utility, new: `03__AppUtils/Na__AppUtils__R2AssetUpload__.js` (about 200 
 
 ### 5.7 Save path (all phases)
 
-One writer for drawings: `42__System__DrawingViewCore/Na__DrawView__ProjectData__.js`, which owns the in-memory `LayoutEditor__DrawingsData` block. Loaded by `Na__AppFlow__LoadingSequence.js` after project.json resolves (dispatching `na-layouteditor-drawingsdata-loaded` with the raw block; absent block means an empty skeleton). Save = `GET ${origin}/api/projects/${code}` (as the scene editor does) then merge `PresentationMode__SavedCameraScenes` (scene links and groups) and `LayoutEditor__DrawingsData` and hand the whole document to `Na__AppUtils__R2SaveProjectJson`. The Floor Plans, Elevations and Layout Editor dev panels all call this one function; the group editor never saves for itself (it raises `na-presentation-groups-changed` and the scene editor writes, as TrueVision does).
+One writer for drawings: `42__System__DrawingViewCore/Na__DrawView__ProjectData__.js`, which owns the in-memory `LayoutEditor__DrawingsData` block. Loaded by `Na__AppFlow__LoadingSequence.js` after project.json resolves (dispatching `na-layouteditor-drawingsdata-loaded` with the raw block; absent block means an empty skeleton). Save = `GET ${origin}/api/projects/${code}` (as the scene editor does) then merge `PresentationMode__SavedCameraScenes` (scene links and groups), `CrossSection__SceneData` (a section drawing's cut, null until something loads or captures one) and `LayoutEditor__DrawingsData`, and hand the whole document to `Na__AppUtils__R2SaveProjectJson`. The Floor Plans, Elevations and Layout Editor dev panels all call this one function; the group editor never saves for itself (it raises `na-presentation-groups-changed` and the scene editor writes, as TrueVision does).
 
 Read-only web viewers never write; the drawings block and assets are read through the normal R2-first project fetch.
+
+### 5.8 Renaming a drawing (10-Sep-2026)
+
+A drawing's name is held in four places, and only the first is obvious:
+
+| Holder | Where | What a stale copy does |
+|---|---|---|
+| The drawing record | `FloorPlan__Name` / `Elevation__Name` in the drawings block | The panel and every viewport caption read the old name |
+| Its carousel scene card | `PresentationMode__Scene__Name` in the presentation block | The card and the drawing disagree, and the two blocks are written by different panels |
+| The section binding's KEY | `CrossSection__SceneData__Scenes` is a map keyed by scene name | The cut is orphaned; the drawing opens with no section |
+| Every 3D viewport's snapshot fingerprint | `Viewport__SnapshotAsset.Asset__Fingerprint` includes the scene name | The stored R2 picture reads as stale, so the web build draws an empty frame and the PDF loses the image |
+
+`42/Na__DrawView__RenameDrawing__.js` is the one path that writes all four. It sets the record and the card, re-keys the section binding, re-stamps the affected viewports' fingerprints (keeping `Asset__Path`, since the picture has not changed and a new path would orphan a good object), saves the whole document once through `Na__DrawData__Save`, and toasts what it touched. A failed save reverts every in-memory change, so a rename is all or nothing.
+
+Every rename surface routes here: the Floor Plans and Elevations name fields, and the Presentation Scenes editor when the card belongs to a drawing. `Na__FpLink__SyncSceneName` and `Na__ElevLink__SyncSceneName` were deleted rather than left in place, because a helper that does the easy quarter of a rename is how the record and the card drifted apart in the first place.
+
+Cross section bindings are also looked up by scene id before scene name (`Na__SectSceneData__FindEntryKey`), so a binding orphaned by a rename made before this existed is found again on load.
 
 ---
 
@@ -811,6 +828,7 @@ Open items to settle during the build (not blocking):
 | `42/Na__DrawView__ComposerPreset__.js` | TV `Na__DrawView__ProfileLines__.js` (purpose only) | diverged (D12) |
 | `42/Na__DrawView__MaterialPreset__.js` | none | new |
 | `42/Na__DrawView__ProjectData__.js` | none | new (D08) |
+| `42/Na__DrawView__RenameDrawing__.js` | none | new (10-Sep-2026, see 5.8) |
 | `42/Na__DrawView__Transitions__.js` | TV mode controllers (shared parts) | adapted (split) |
 | `43/Na__FloorPlan__*` (10 files) | TV `42__System__FloorPlanViews` | adapted (data block, seams, styles) |
 | `44/Na__PlanAnnotations__*` (8 files) | TV `43__System__PlanAnnotations` | verbatim (imports) |

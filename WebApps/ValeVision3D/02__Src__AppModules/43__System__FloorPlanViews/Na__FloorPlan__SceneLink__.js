@@ -297,15 +297,12 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Push a Renamed Plan Through to Its Scene Card
-    // ------------------------------------------------------------
-    function Na__FpLink__SyncSceneName(sceneConfig, plan) {
-        const scene = Na__FpData__FindSceneForPlan(sceneConfig, plan);
-        if (!scene) return false;
-        scene[Na__FpLink__SCENE_NAME] = plan.FloorPlan__Name;
-        return true;
-    }
-    // ------------------------------------------------------------
+    // NOT HERE | RENAME. Pushing the name to the card is only part of a
+    // rename: the sheet viewports carry the name inside their snapshot
+    // fingerprints, and none of it is saved by the caller. A function here
+    // that did the easy part is what let the record and the card drift
+    // apart, so renaming belongs to Na__DrawView__RenameDrawing__ and only
+    // to it.
 
 
     // FUNCTION | Update a Plan Scene's Stored Camera Block
@@ -337,7 +334,6 @@
         Na__FpLink__ResolveTargetGroupId,
         Na__FpLink__CreateSceneForPlan,
         Na__FpLink__RemoveSceneForPlan,
-        Na__FpLink__SyncSceneName,
         Na__FpLink__SyncSceneCamera
     };
     // ------------------------------------------------------------

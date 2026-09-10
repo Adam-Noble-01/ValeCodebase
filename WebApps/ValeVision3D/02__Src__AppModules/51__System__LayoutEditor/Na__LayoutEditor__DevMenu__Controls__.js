@@ -31,6 +31,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Bake names the drawings that sheet viewports want linework for; readable progress and counts.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -46,6 +49,7 @@
     import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel } from './Na__LayoutEditor__ConfigState__.js';
     import {
         Na__LeModel__CHANGED_EVENT,
+        Na__LeModel__KIND_2D,
         Na__LeModel__KIND_3D,
         Na__LeModel__GetSheets,
         Na__LeModel__GetActiveSheet,
@@ -155,8 +159,17 @@
                 Na__LeDev__Render();
             }
         }
-        const linework = await Na__PlStore__BakeAll({ showToast : Na__LeDev__ShowToast, force : false, onProgress : (message) => { Na__LeDev__Note = message; Na__LeDev__Render(); } });
-        Na__LeDev__Note = 'Snapshots: ' + baked + ' baked, ' + skipped + ' up to date, ' + failed + ' failed. Linework: ' + (typeof linework === 'string' ? linework : JSON.stringify(linework || {}));
+        // LINEWORK | Only drawings that ask for it: the record toggle, or a sheet viewport with Projected Linework on
+        const wanted = [];
+        sheets.forEach((sheet) => sheet.Sheet__Viewports.forEach((v) => {
+            if (v.Viewport__Kind === Na__LeModel__KIND_2D && v.Viewport__Styles.projectedLinework && v.Viewport__DrawingId) wanted.push(v.Viewport__DrawingId);
+        }));
+        const linework = await Na__PlStore__BakeAll({
+            showToast : Na__LeDev__ShowToast, force : false, includeDrawingIds : wanted,
+            onProgress : (p) => { Na__LeDev__Note = 'Linework ' + p.index + ' of ' + p.total + ': ' + p.name; Na__LeDev__Render(); }
+        });
+        const l = linework || {};
+        Na__LeDev__Note = 'Snapshots: ' + baked + ' baked, ' + skipped + ' up to date, ' + failed + ' failed. Linework: ' + (l.baked || 0) + ' baked, ' + (l.skipped || 0) + ' up to date, ' + (l.off || 0) + ' off, ' + (l.refused || 0) + ' refused, ' + (l.failed || 0) + ' failed.';
         if (baked > 0) await Na__LeModel__Save(Na__LeDev__ShowToast);              // <-- Snapshot references live on the records
         Na__LeDev__Toast(Na__LeDev__Note, failed > 0);
     }

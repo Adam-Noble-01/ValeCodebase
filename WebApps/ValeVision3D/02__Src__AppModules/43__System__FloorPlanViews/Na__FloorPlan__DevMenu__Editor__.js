@@ -141,9 +141,9 @@
     import {
         Na__FpLink__CreateSceneForPlan,
         Na__FpLink__RemoveSceneForPlan,
-        Na__FpLink__SyncSceneName,
         Na__FpLink__SyncSceneCamera
     } from './Na__FloorPlan__SceneLink__.js';
+    import { Na__DrawRename__RenameFloorPlan } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
     import {
         Na__FloorPlanMode__EnterPlan,
         Na__FloorPlanMode__ExitPlan,
@@ -352,10 +352,10 @@
             isActive   : isActive,
             isEditMode : isActive && Na__FloorPlanMode__IsEditMode(),
 
-            onRename : () => {
-                if (config) Na__FpLink__SyncSceneName(config, plan);
-                Na__PresentationMode__ProjectJson__BroadcastScenesChanged();     // <-- The card carries the plan name
-            },
+            // A name is held by the record, its scene card and every sheet
+            // viewport's snapshot fingerprint. One path writes all three,
+            // saves the document once and says so.
+            onRename : (nextName) => Na__DrawRename__RenameFloorPlan(plan, nextName, Na__FpDev__ShowToast),
 
             onDatumLive   : () => Na__FpDev__PushLiveCut(plan, true),
             onDatumCommit : () => {

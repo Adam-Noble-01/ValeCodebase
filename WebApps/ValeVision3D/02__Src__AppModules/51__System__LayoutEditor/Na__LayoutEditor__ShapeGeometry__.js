@@ -11,8 +11,13 @@
 //
 // DESCRIPTION:
 // - A shape is a run of paper points (millimetres, y down) with an edge
-//   colour, an edge weight in points and an optional fill. Closed shapes
-//   are polygons and may fill; open ones are lines and polylines.
+//   colour, an edge weight in points, a flag saying whether the edges draw
+//   at all, and an optional fill. Closed shapes are polygons; open ones
+//   are lines and polylines.
+// - A fill treats the run as if the last point joined the first, which is
+//   what SVG and PDF both do, so Closed only decides whether the closing
+//   edge is drawn. With the edges off the shape is its fill alone; the
+//   record never allows both to be off at once.
 // - Nothing here touches the model or the DOM: the markup bridge draws
 //   through Push, the tools hit test through Hit and VertexAt, and the
 //   grips read Points.
@@ -34,6 +39,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Shape__Stroked: the edges can be switched off, leaving the fill.
+// - A fill no longer needs the shape to be closed, on the paper or in the
+//   PDF, and hit testing follows it.
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -131,11 +141,11 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Is a Point Inside a Closed Shape (ray casting)
+    // FUNCTION | Is a Point Inside a Shape (ray casting, the run treated as closed)
     // ------------------------------------------------------------
     function Na__LeShapeGeo__Contains(shape, point) {
         const pts = Na__LeShapeGeo__Points(shape);
-        if (shape.Shape__Closed !== true || pts.length < 3) return false;
+        if (pts.length < 3) return false;
         let inside = false;
         for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
             const xi = pts[i][0], yi = pts[i][1], xj = pts[j][0], yj = pts[j][1];
@@ -173,22 +183,25 @@
 // REGION | Primitive
 // -----------------------------------------------------------------------------
 
-    // FUNCTION | The Edge Weight in Paper Millimetres
+    // FUNCTION | The Edge Weight in Paper Millimetres (nothing when the edges are off)
     // ------------------------------------------------------------
     function Na__LeShapeGeo__StrokeMm(shape) {
+        if (shape.Shape__Stroked === false) return 0;
         return Math.max(0.02, Na__LeCfg__PtToMm(shape.Shape__StrokePt));
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | Push the Shape as One Polyline Primitive (stroke and optional fill)
+    // FUNCTION | Push the Shape as One Polyline Primitive (edges, fill, or both)
     // ------------------------------------------------------------
     function Na__LeShapeGeo__Push(list, shape) {
         const pts = Na__LeShapeGeo__Points(shape);
         if (pts.length < 2) return false;
-        const closed = shape.Shape__Closed === true && pts.length > 2;
-        const fill   = closed && typeof shape.Shape__FillColour === 'string' ? shape.Shape__FillColour : null;
-        Na__LeChrome__PushPolyline(list, pts.map((p) => [ p[0], p[1] ]), shape.Shape__StrokeColour, Na__LeShapeGeo__StrokeMm(shape), fill, closed);
+        const closed  = shape.Shape__Closed === true && pts.length > 2;
+        const stroked = shape.Shape__Stroked !== false;
+        const fill    = (pts.length > 2 && typeof shape.Shape__FillColour === 'string') ? shape.Shape__FillColour : null;
+        if (!stroked && !fill) return false;                                 // <-- Nothing to paint
+        Na__LeChrome__PushPolyline(list, pts.map((p) => [ p[0], p[1] ]), stroked ? shape.Shape__StrokeColour : null, Na__LeShapeGeo__StrokeMm(shape), fill, closed);
         return true;
     }
     // ------------------------------------------------------------

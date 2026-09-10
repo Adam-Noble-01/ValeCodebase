@@ -145,6 +145,11 @@
     } from './Na__FloorPlan__SceneLink__.js';
     import { Na__DrawRename__RenameFloorPlan } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
     import {
+        Na__DrawFold__Wrap,
+        Na__DrawFold__SetOpenId,
+        Na__DrawFold__CloseIfOpen
+    } from '../42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js';
+    import {
         Na__FloorPlanMode__EnterPlan,
         Na__FloorPlanMode__ExitPlan,
         Na__FloorPlanMode__SetEditMode,
@@ -383,6 +388,7 @@
                 if (isActive) {
                     Na__FloorPlanMode__ExitPlan(null);
                 } else {
+                    Na__DrawFold__SetOpenId(plan.FloorPlan__Id);                 // <-- The drawing on screen is the row left unfolded
                     Na__FloorPlanMode__EnterPlan(plan);
                 }
             },
@@ -417,6 +423,8 @@
         } else {
             Na__FpDev__Toast('Plan created. Add a Presentation scene first so it can have a carousel card.', true);
         }
+
+        Na__DrawFold__SetOpenId(plan.FloorPlan__Id);                             // <-- Open the one just made, and fold whatever was open
         Na__FpDev__Render();
         return plan;
     }
@@ -453,6 +461,11 @@
                 floorDatumMm : storeys[i].floorDatumMm
             });
         }
+        // A WHOLE SET AT ONCE MEANS NO ONE OF THEM IS "THE" ONE. Each Add
+        // opened its own row, so the last would be left open arbitrarily; fold
+        // the lot and let the choice be made deliberately.
+        Na__DrawFold__SetOpenId(null);                                           // <-- Applies to the rows already on screen; no rebuild needed
+
         Na__FpDev__Toast('Created ' + storeys.length + ' floor plan(s) from the model storeys.');
         return storeys.length;
     }
@@ -477,6 +490,8 @@
         if (Na__FloorPlanMode__IsActive() && Na__FloorPlanMode__GetActivePlan() === plan) {
             Na__FloorPlanMode__ExitPlan(null);                                   // <-- Never leave a deleted plan on screen
         }
+
+        Na__DrawFold__CloseIfOpen(plan.FloorPlan__Id);                           // <-- Never leave the slot pointing at a deleted record
 
         const orphanedSceneId = Na__FpData__DeletePlan(null, plan.FloorPlan__Id);
         const config          = Na__FpDev__GetConfig();
@@ -604,9 +619,17 @@
 
         const plans = Na__FpData__GetFloorPlans();
 
+        // ONE ROW OPEN AT A TIME. The scene link row goes into the fold's body
+        // rather than onto the card, or it would stay visible under a folded
+        // header. The open slot is shared with the Elevations panel.
         for (let i = 0; i < plans.length; i++) {
-            const planRow = Na__FpDev__BuildRow(plans[i]);
-            planRow.appendChild(Na__FpDev__BuildSceneLinkRow(plans[i]));
+            const plan    = plans[i];
+            const planRow = Na__FpDev__BuildRow(plan);
+            const fold    = Na__DrawFold__Wrap(planRow, {
+                id    : plan.FloorPlan__Id,
+                title : plan.FloorPlan__Name
+            });
+            fold.body.appendChild(Na__FpDev__BuildSceneLinkRow(plan));
             Na__FpDev__Panel.appendChild(planRow);
         }
 
@@ -692,7 +715,14 @@
             const isOpen = panel.classList.contains('is-open');
             panel.classList.toggle('is-open', !isOpen);
             toggle.setAttribute('aria-expanded', String(!isOpen));
-            if (!isOpen) Na__FpDev__Render();                                    // <-- Rebuild on each open so data is fresh
+            if (!isOpen) {
+                // WHAT IS ON SCREEN IS WHAT IS UNFOLDED. Coming into the panel
+                // with a drawing previewed opens that row and no other; with
+                // none previewed the panel starts fully folded.
+                const active = Na__FloorPlanMode__IsActive() ? Na__FloorPlanMode__GetActivePlan() : null;
+                Na__DrawFold__SetOpenId(active ? active.FloorPlan__Id : null);
+                Na__FpDev__Render();                                             // <-- Rebuild on each open so data is fresh
+            }
         });
 
         // Preview and Annotate button states are derived from mode, so the

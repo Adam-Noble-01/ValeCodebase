@@ -25,6 +25,9 @@
 //   backs out, Space clears the selection, Enter finishes a shape, arrows
 //   nudge by a millimetre (ten with Shift), V T D L pick a tool, Ctrl+Z
 //   and Ctrl+Y step the history. Nothing fires while typing in a field.
+// - While the Draw or Dimension tool is placing a point the arrows lock
+//   the axis instead of nudging: left or right the X, up or down the Y,
+//   the same key again to release, as in SketchUp LayOut.
 // - A right click that did not pan opens the context menu for what is
 //   under the cursor, in the same order as selection.
 // - Read-only sessions (the web build) still select and inspect; every
@@ -45,6 +48,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.5.0
+// - The arrow keys lock the drawing axis while a tool is placing a point
+//   (Na__LayoutEditor__AxisLock__), and nudge the selection otherwise.
+// - The shape defaults carry the edges-on flag.
+//
 // 10-Sep-2026 - Version 1.4.0
 // - Placement and inline editing moved out to Na__LayoutEditor__TextTool__, __DimensionTool__ and __ShapeTool__.
 // - Selection order is dimensions, then text, then shapes, then viewports; the context menu follows it.
@@ -121,8 +129,9 @@
     import { Na__LeGrips__DimensionGrab, Na__LeGrips__ShapeGrab } from './Na__LayoutEditor__Grips__.js';
     import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Translated } from './Na__LayoutEditor__ShapeGeometry__.js';
     import { Na__LeText__Place, Na__LeText__BeginEdit, Na__LeText__Commit, Na__LeText__Cancel, Na__LeText__IsEditing } from './Na__LayoutEditor__TextTool__.js';
-    import { Na__LeDim__Click, Na__LeDim__Move, Na__LeDim__Cancel, Na__LeDim__IsPlacing, Na__LeDim__OffsetFor, Na__LeDim__ShowInference, Na__LeDim__BeginTextEdit } from './Na__LayoutEditor__DimensionTool__.js';
+    import { Na__LeDim__Click, Na__LeDim__Move, Na__LeDim__Cancel, Na__LeDim__IsPlacing, Na__LeDim__IsSpanning, Na__LeDim__OffsetFor, Na__LeDim__ShowInference, Na__LeDim__BeginTextEdit } from './Na__LayoutEditor__DimensionTool__.js';
     import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing } from './Na__LayoutEditor__ShapeTool__.js';
+    import { Na__LeAxis__AXIS_X, Na__LeAxis__AXIS_Y, Na__LeAxis__Toggle, Na__LeAxis__Clear } from './Na__LayoutEditor__AxisLock__.js';
     import { Na__LeVp2d__SetInteracting, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
     import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle, Na__LeOsnap__IsEnabled } from './Na__LayoutEditor__Snapping__.js';
@@ -159,6 +168,7 @@
     let Na__LeTools__Drag       = null;    // <-- { kind, id, hit, mode, index, start, startMm, moved, pointerId }
     let Na__LeTools__Suppressed = false;   // <-- Raised by the control modules while a navigation gesture owns the pointer
     let Na__LeTools__RightPress = null;    // <-- { x, y } of the last right-button press
+    let Na__LeTools__LastPointMm = null;   // <-- Where the cursor last sat on the paper, so a key can restretch the band
     let Na__LeTools__TextDefaults  = null;
     let Na__LeTools__DimDefaults   = null;
     let Na__LeTools__ShapeDefaults = null;
@@ -192,7 +202,7 @@
     function Na__LeTools__GetShapeDefaults() {
         if (!Na__LeTools__ShapeDefaults) {
             const s = Na__LeCfg__GetShapeSetup();
-            Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled };
+            Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled, stroked : s.defaultStroked };
         }
         return Na__LeTools__ShapeDefaults;
     }
@@ -212,6 +222,7 @@
         const sheet = Na__LeModel__GetActiveSheet();
         Na__LeDim__Cancel(sheet);
         Na__LeShape__Cancel(sheet);
+        Na__LeAxis__Clear();
     }
     // ------------------------------------------------------------
 
@@ -394,6 +405,7 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
+        Na__LeTools__LastPointMm = point;                                    // <-- An arrow key restretches the band from here
 
         const drag = Na__LeTools__Drag;
         if (!drag || event.pointerId !== drag.pointerId) {
@@ -715,6 +727,31 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | An Arrow Key Locks the Axis While a Tool Is Placing
+    // ------------------------------------------------------------
+    // Left and right lock the X axis, up and down the Y, as in SketchUp
+    // LayOut; the same key again releases it. The lock belongs to the
+    // segment being drawn and the tool spends it the moment the point
+    // lands. Returns false when nothing is being placed, which leaves the
+    // arrow keys nudging the selection as before.
+    // ------------------------------------------------------------
+    function Na__LeTools__AxisKey(axis, shift) {
+        if (!Na__LeTools__Editable) return false;
+        const drawing  = Na__LeShape__IsDrawing();
+        const spanning = Na__LeDim__IsSpanning();                            // <-- Only the span phase: the offset phase has no axis to lock
+        if (!drawing && !spanning) return false;
+        Na__LeAxis__Toggle(axis);
+        const sheet = Na__LeModel__GetActiveSheet();
+        const point = Na__LeTools__LastPointMm;
+        if (sheet && point) {                                                // <-- Show the lock at once rather than on the next move
+            if (drawing) Na__LeShape__Move(sheet, point, shift);
+            else Na__LeDim__Move(sheet, point, shift);
+        }
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Key Handling While the Editor Is on Screen
     // ------------------------------------------------------------
     function Na__LeTools__OnKey(event) {
@@ -751,10 +788,18 @@
             case 'Edit__Delete':
                 if (Na__LeModel__GetSelection()) { event.preventDefault(); void Na__LeTools__DeleteSelection(); }
                 return;
-            case 'Edit__NudgeLeft':  if (Na__LeTools__Editable && Na__LeTools__Nudge(-step, 0)) event.preventDefault(); return;
-            case 'Edit__NudgeRight': if (Na__LeTools__Editable && Na__LeTools__Nudge(step, 0))  event.preventDefault(); return;
-            case 'Edit__NudgeUp':    if (Na__LeTools__Editable && Na__LeTools__Nudge(0, -step)) event.preventDefault(); return;
-            case 'Edit__NudgeDown':  if (Na__LeTools__Editable && Na__LeTools__Nudge(0, step))  event.preventDefault(); return;
+            case 'Edit__NudgeLeft':
+            case 'Edit__NudgeRight': {
+                const dx = match.action === 'Edit__NudgeLeft' ? -step : step;
+                if (Na__LeTools__AxisKey(Na__LeAxis__AXIS_X, !!event.shiftKey) || (Na__LeTools__Editable && Na__LeTools__Nudge(dx, 0))) event.preventDefault();
+                return;
+            }
+            case 'Edit__NudgeUp':
+            case 'Edit__NudgeDown': {
+                const dy = match.action === 'Edit__NudgeUp' ? -step : step;
+                if (Na__LeTools__AxisKey(Na__LeAxis__AXIS_Y, !!event.shiftKey) || (Na__LeTools__Editable && Na__LeTools__Nudge(0, dy))) event.preventDefault();
+                return;
+            }
             case 'Tool__Select':     Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);    return;
             case 'Tool__Text':       Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT);      return;
             case 'Tool__Dimension':  Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
@@ -803,7 +848,8 @@
     // ------------------------------------------------------------
     function Na__LeTools__Detach() {
         Na__LeMenu__Close();
-        Na__LeTools__RightPress = null;
+        Na__LeTools__RightPress  = null;
+        Na__LeTools__LastPointMm = null;
         Na__LeText__Cancel();
         Na__LeTools__CancelPlacement();
         if (!Na__LeTools__Stage || !Na__LeTools__Handlers) return;

@@ -486,6 +486,7 @@
         return {
             defaultStrokeColour : Na__LeCfg__Val('Shapes', 'DefaultStrokeColour', '#172b3a'),
             defaultStrokePt     : Na__LeCfg__Num('Shapes', 'DefaultStrokePt', 0.20),
+            defaultStroked      : Na__LeCfg__Val('Shapes', 'DefaultStroked', true) !== false,
             defaultFillColour   : Na__LeCfg__Val('Shapes', 'DefaultFillColour', '#e4e8ec'),
             defaultFilled       : Na__LeCfg__Val('Shapes', 'DefaultFilled', false) === true,
             closeRadiusPx       : Na__LeCfg__Num('Shapes', 'CloseRadiusPx', 10)

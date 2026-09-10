@@ -2,6 +2,81 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.14 - 10-Sep-2026 - Dev menu: drawing rows fold, one open at a time
+
+### Changed
+- **Every floor plan and elevation row folds down to its name.** Click the
+  name to open that drawing's controls; click it again to fold it. A
+  panel with six drawings in it is now six lines rather than six screens
+  of near-identical sliders.
+
+- **Only one drawing is open at a time, across both panels.** Opening a
+  floor plan folds whichever elevation was open, and the other way
+  round, because only one drawing can be previewed at a time and the
+  open row is meant to be that drawing. This is the point of the change
+  rather than a side effect of it: a row you have scrolled to and the
+  drawing on screen are different things, and once they drift apart a
+  slider drag edits the wrong drawing silently. The viewport does not
+  move, because the drawing being edited is not the one being shown, so
+  nothing tells you until the sheet comes out wrong.
+
+- **The open row follows what you are working on.** Opening the panel
+  unfolds whichever drawing is previewed, and nothing at all if none is.
+  Pressing Preview on a row opens it. Creating a drawing, including one
+  made by picking a wall, opens the new one. Seeding a whole set at once
+  folds everything, since no one of four is the one you meant. Deleting
+  the open drawing folds the panel.
+
+- **Opening a row does not preview it.** Unfolding shows the controls
+  and nothing else, so glancing at a drawing's settings never triggers a
+  rebuild of the view.
+
+### Files
+- `02__Src__AppModules/42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js` (new) holds the single open slot and wraps a built row card behind its header.
+- `Na__DrawView__Styles__DevMenu__.css` gains the header, arrow and folded body rules.
+- `Na__FloorPlan__DevMenu__Editor__.js` and `Na__Elevation__DevMenu__Editor__.js` wrap their rows and move the open slot on create, preview, seed and delete. The row builders are unchanged.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.13 - 10-Sep-2026 - Layout Editor: a vector can be a fill, and the arrow keys lock the axis
+
+### Added
+- **Edges, a Vectors panel toggle.** Switching it off leaves the shape as
+  its fill alone, which gives a drawing the three states it wants: an
+  outline, a filled outline, or a solid (a mask, a block of tone, a
+  hatched area yet to come). Edges and fill are either-or at the least:
+  switching one off switches the other on, in the panel and in the
+  record's normaliser, so no shape can be made invisible. Everything else
+  about a shape is unchanged, which is the point: a fill-only shape still
+  selects, still drags, and still takes its vertices by the grips.
+- **The arrow keys lock the drawing axis**, as in SketchUp LayOut. Left or
+  right holds the next edge across the page, up or down holds it down the
+  page, and the same key again releases it. The lock belongs to the
+  segment being drawn: the moment its point lands, the next segment starts
+  free. The rubber band turns red for X and green for Y while it holds.
+  It works on the Draw tool and on the span of the Dimension tool, and the
+  arrows go back to nudging the selection whenever no tool is placing.
+- **A lock and a snap work together.** The lock takes the locked
+  coordinate from the point it started at and the free one from whatever
+  the cursor snapped to, so locking an axis and then hovering a vertex
+  somewhere else on the drawing lines the new edge up with that vertex.
+  That pairing is the reason the lock is worth having.
+- `Na__LayoutEditor__AxisLock__.js`, which holds the lock and the axis
+  maths Shift used to carry, so the Draw and Dimension tools constrain
+  through one place.
+
+### Changed
+- **A fill no longer needs the shape to be closed.** The fill treats the
+  run of points as if the last joined the first, which is what SVG and
+  PDF both do anyway, so Closed now only decides whether the closing edge
+  is drawn. An open shape that already had Fill ticked showed nothing
+  before; it shows its fill now.
+- `Shape__Stroked` on the shape record, defaulting on, so drawings made
+  before this release open exactly as they were.
+
+### Notes
+- **Service worker token** 2026-09-10-7.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.12 - 10-Sep-2026 - Layout Editor: Render Composites (Base Image, Context Layer)
 
 ### Added

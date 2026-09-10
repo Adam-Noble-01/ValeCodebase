@@ -18,7 +18,8 @@
 // - Grips are counter-scaled so they stay the same size on screen at any
 //   zoom, like the viewport handles.
 // - The rubber band is one dashed line in the handles layer, shared by the
-//   dimension and the shape tools.
+//   dimension and the shape tools. It takes the locked axis's colour
+//   while an arrow key holds the edge to an axis.
 //
 // INTEGRATION:
 // - Na__LayoutEditor__SheetSurface__ renders the grips into the handles
@@ -37,6 +38,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - ShowBand takes the locked axis and colours the band by it.
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -124,15 +128,18 @@
 
     // FUNCTION | Stretch the Band Between Two Paper Points ({ x, y } or [x, y])
     // ------------------------------------------------------------
-    function Na__LeGrips__ShowBand(start, end) {
+    // axis is the locked axis, if any: the band takes that axis's colour
+    // so the lock is visible without reading anything.
+    // ------------------------------------------------------------
+    function Na__LeGrips__ShowBand(start, end, axis) {
         const layer = Na__LeSurface__GetElements().handles;
         if (!layer) return false;
         const sx = Array.isArray(start) ? start[0] : start.x, sy = Array.isArray(start) ? start[1] : start.y;
         const ex = Array.isArray(end)   ? end[0]   : end.x,   ey = Array.isArray(end)   ? end[1]   : end.y;
         if (!Na__LeGrips__Band) {
             Na__LeGrips__Band = document.createElement('div');
-            Na__LeGrips__Band.className = 'na-le-rubber-band';
         }
+        Na__LeGrips__Band.className = 'na-le-rubber-band' + (axis ? ' na-le-rubber-band--' + axis : '');
         if (Na__LeGrips__Band.parentNode !== layer) layer.appendChild(Na__LeGrips__Band);
         const ppm = Na__LeSurface__GetPixelsPerMm();
         const len = Math.hypot(ex - sx, ey - sy);

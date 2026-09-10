@@ -11,9 +11,10 @@
 //
 // DESCRIPTION:
 // - THREE CLICKS, as in CAD. The first picks the start, the second the
-//   end (both snap to the linework; Shift locks the span to an axis), and
-//   the dimension appears at once with its line following the cursor. The
-//   third click fixes how far the line sits from what it measures.
+//   end (both snap to the linework; Shift holds the span to the nearer
+//   axis and an arrow key locks it to one outright), and the dimension
+//   appears at once with its line following the cursor. The third click
+//   fixes how far the line sits from what it measures.
 // - INFERENCE. While the line moves, a parallel dimension nearby pulls it
 //   onto its own line, so a run of dimensions lines up. The same happens
 //   when the round grip of an existing dimension is dragged.
@@ -37,6 +38,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Arrow key axis lock on the span (Na__LayoutEditor__AxisLock__), which
+//   beats a snap by taking the snapped point's free coordinate, and
+//   releases as soon as the point lands.
+//
 // 10-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -66,6 +72,7 @@
     import { Na__LeChrome__MeasureTextMm } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeGrips__ShowBand, Na__LeGrips__HideBand } from './Na__LayoutEditor__Grips__.js';
+    import { Na__LeAxis__Get, Na__LeAxis__Clear, Na__LeAxis__Apply, Na__LeAxis__Constrain } from './Na__LayoutEditor__AxisLock__.js';
     import { Na__LeText__OpenField } from './Na__LayoutEditor__TextTool__.js';
     // ------------------------------------------------------------
 
@@ -94,21 +101,19 @@
 // REGION | Helpers
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Constrain a Second Point to an Axis When Shift Is Down
+    // HELPER FUNCTION | Where the Span Ends: a Lock, Then a Snap, Then Shift
     // ------------------------------------------------------------
-    function Na__LeDim__Constrain(start, point, shift) {
-        if (!shift) return point;
-        return Math.abs(point.x - start.x) >= Math.abs(point.y - start.y) ? { x : point.x, y : start.y } : { x : start.x, y : point.y };
-    }
-    // ------------------------------------------------------------
-
-
-    // HELPER FUNCTION | A Snap Beats the Axis Constraint, as in AutoCAD
+    // An arrow key lock wins outright, but takes the free coordinate from
+    // whatever the cursor snapped to, so a span locked across the paper
+    // still measures to the vertex under the cursor. With no lock a snap
+    // beats Shift, as in AutoCAD.
     // ------------------------------------------------------------
     function Na__LeDim__SnapOrConstrain(sheet, start, point, shift) {
         const snap = Na__LeOsnap__Snap(sheet, point);
-        if (snap.snapped) return { x : snap.x, y : snap.y };
-        return Na__LeDim__Constrain(start, point, shift);
+        const at   = snap.snapped ? { x : snap.x, y : snap.y } : point;
+        if (Na__LeAxis__Get()) return Na__LeAxis__Apply(start, at);
+        if (snap.snapped) return at;
+        return Na__LeAxis__Constrain(start, point, shift);
     }
     // ------------------------------------------------------------
 
@@ -170,7 +175,8 @@
         if (!p) {
             const first = Na__LeOsnap__Snap(sheet, pointMm);
             Na__LeDim__Placement = { phase : 1, startMm : { x : first.x, y : first.y }, endMm : null, id : null };
-            Na__LeGrips__ShowBand(Na__LeDim__Placement.startMm, Na__LeDim__Placement.startMm);
+            Na__LeAxis__Clear();                                              // <-- The point landed: the lock is spent
+            Na__LeGrips__ShowBand(Na__LeDim__Placement.startMm, Na__LeDim__Placement.startMm, null);
             return true;
         }
         if (p.phase === 1) {
@@ -183,6 +189,7 @@
                 viewportId : host ? host.Viewport__Id : null, offsetMm : d.offsetMm, textSizeMm : d.textSizeMm,
                 colour : d.colour, terminator : d.terminator, precision : d.precision, unitsSuffix : d.unitsSuffix, silent : true
             });
+            Na__LeAxis__Clear();
             Na__LeGrips__HideBand();
             Na__LeOsnap__HideMarker();
             if (!item) { Na__LeDim__Placement = null; return false; }
@@ -193,6 +200,7 @@
         // THIRD CLICK | The line stays where the cursor put it
         const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
         Na__LeDim__Placement = null;
+        Na__LeAxis__Clear();
         Na__LeOsnap__HideMarker();
         if (!dim) return false;
         const result = Na__LeDim__OffsetFor(sheet, dim, pointMm);
@@ -208,7 +216,7 @@
     function Na__LeDim__Move(sheet, pointMm, shift) {
         const p = Na__LeDim__Placement;
         if (!p) { Na__LeOsnap__Snap(sheet, pointMm); return false; }        // <-- Marker before the first click
-        if (p.phase === 1) { Na__LeGrips__ShowBand(p.startMm, Na__LeDim__SnapOrConstrain(sheet, p.startMm, pointMm, shift)); return true; }
+        if (p.phase === 1) { Na__LeGrips__ShowBand(p.startMm, Na__LeDim__SnapOrConstrain(sheet, p.startMm, pointMm, shift), Na__LeAxis__Get()); return true; }
         const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
         if (!dim) { Na__LeDim__Placement = null; return false; }
         const result = Na__LeDim__OffsetFor(sheet, dim, pointMm);
@@ -225,6 +233,7 @@
     function Na__LeDim__Cancel(sheet) {
         const p = Na__LeDim__Placement;
         Na__LeDim__Placement = null;
+        Na__LeAxis__Clear();
         Na__LeGrips__HideBand();
         Na__LeOsnap__HideMarker();
         if (p && p.phase === 2 && sheet) Na__LeModel__DeleteDimension(sheet, p.id);   // <-- Never announced as created, so nothing to undo
@@ -236,6 +245,12 @@
     // FUNCTION | Is a Placement in Progress
     // ------------------------------------------------------------
     function Na__LeDim__IsPlacing() { return !!Na__LeDim__Placement; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Is the Span Being Picked (the phase an axis lock applies to)
+    // ------------------------------------------------------------
+    function Na__LeDim__IsSpanning() { return !!Na__LeDim__Placement && Na__LeDim__Placement.phase === 1; }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -285,6 +300,7 @@
         Na__LeDim__Move,
         Na__LeDim__Cancel,
         Na__LeDim__IsPlacing,
+        Na__LeDim__IsSpanning,
         Na__LeDim__OffsetFor,
         Na__LeDim__ShowInference,
         Na__LeDim__BeginTextEdit

@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "03-Sep-2026 at 16:06",
+    "generatedAt": "10-Sep-2026 at 18:03",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -2047,6 +2047,20 @@
             "hasGlb_R2": true,
             "imageCount": 1,
             "lastSynced": "03-Sep-2026 at 16:06"
+        },
+        {
+            "folderId": "2026/57994__Harris__Scheme-02",
+            "year": "2026",
+            "projectCode": "57994",
+            "name": "Harris__Scheme-02",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 1,
+            "lastSynced": "10-Sep-2026 at 18:03"
         }
     ]
 }

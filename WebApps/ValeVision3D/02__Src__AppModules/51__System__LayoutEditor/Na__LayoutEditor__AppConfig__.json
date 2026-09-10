@@ -220,9 +220,10 @@
         "LayoutEditor__Lineweights__StepPt": 0.05
     },
     "LayoutEditor__Shapes__Config": {
-        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons). Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon.",
+        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons). Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon. DefaultStroked draws the edges; with it off a new shape is its fill alone, so DefaultFilled must be on as well or the shape would have nothing to show.",
         "LayoutEditor__Shapes__DefaultStrokeColour": "#172b3a",
         "LayoutEditor__Shapes__DefaultStrokePt": 0.20,
+        "LayoutEditor__Shapes__DefaultStroked": true,
         "LayoutEditor__Shapes__DefaultFillColour": "#e4e8ec",
         "LayoutEditor__Shapes__DefaultFilled": false,
         "LayoutEditor__Shapes__CloseRadiusPx": 10
@@ -308,6 +309,7 @@
         "LayoutEditor__Labels__DraftRestored": "Unsaved sheet changes from this browser were restored. Save Sheets keeps them.",
         "LayoutEditor__Labels__ToolDraw": "Draw",
         "LayoutEditor__Labels__ShapesTitle": "Vectors",
+        "LayoutEditor__Labels__ShapeStroked": "Edges",
         "LayoutEditor__Labels__ShapeStroke": "Edge colour",
         "LayoutEditor__Labels__ShapeStrokePt": "Edge pt",
         "LayoutEditor__Labels__ShapeFill": "Fill",
@@ -315,7 +317,9 @@
         "LayoutEditor__Labels__ShapeClosed": "Closed",
         "LayoutEditor__Labels__ShapeSelectedNote": "Editing the selected shape.",
         "LayoutEditor__Labels__ShapeDefaultsNote": "Nothing selected: these settings apply to new shapes.",
+        "LayoutEditor__Labels__ShapeEitherNote": "Edges and fill are either or: switching one off switches the other on, so a shape always shows.",
         "LayoutEditor__Labels__ShapeDrawNote": "Draw tool (L): click points, click the first point to close a polygon, Enter or double-click to finish a line, Esc to abandon.",
+        "LayoutEditor__Labels__ShapeAxisNote": "Arrow keys lock the axis for the next point (left or right locks across, up or down locks down the page); press the same key again to release. A snap still gives the free coordinate, so lock an axis and hover a vertex to line up with it.",
         "LayoutEditor__Labels__StyleEnhanceWhitecard": "Enhance Whitecard",
         "LayoutEditor__Labels__StyleBaseImage": "Base Image",
         "LayoutEditor__Labels__StyleContextLayer": "Context Layer",

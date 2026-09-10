@@ -97,7 +97,7 @@
     },
 
     "LayoutEditor__KeyboardBindings__Config" : {
-        "LayoutEditor__KeyboardBindings__Description"       : "Keys read while the editor is on screen. The navigation keys are shipped off so the bare arrow keys keep nudging the selection, which is the behaviour the editor already had. Switch them on here and the PC controls module picks them up with no code change.",
+        "LayoutEditor__KeyboardBindings__Description"       : "Keys read while the editor is on screen. The navigation keys are shipped off so the bare arrow keys keep nudging the selection, which is the behaviour the editor already had. Switch them on here and the PC controls module picks them up with no code change. While the Draw or Dimension tool is placing a point the arrows lock the drawing axis instead of nudging, as in SketchUp LayOut; they go back to nudging the moment the point lands.",
         "LayoutEditor__KeyboardBindings__IgnoreWhenTyping"   : true,
         "LayoutEditor__KeyboardBindings__CoarseStepModifier" : "Shift",
         "LayoutEditor__KeyboardBindings__NudgeStepMm"        : 1,
@@ -263,7 +263,7 @@
             },
             {
                 "Id"            : "Edit__NudgeLeft",
-                "Label"         : "Nudge the selection left",
+                "Label"         : "Nudge the selection left, or lock the X axis while a tool is placing a point",
                 "Action"        : "Edit__NudgeLeft",
                 "Enabled"       : true,
                 "Keys"          : [ "ArrowLeft" ],
@@ -272,7 +272,7 @@
             },
             {
                 "Id"            : "Edit__NudgeRight",
-                "Label"         : "Nudge the selection right",
+                "Label"         : "Nudge the selection right, or lock the X axis while a tool is placing a point",
                 "Action"        : "Edit__NudgeRight",
                 "Enabled"       : true,
                 "Keys"          : [ "ArrowRight" ],
@@ -281,7 +281,7 @@
             },
             {
                 "Id"            : "Edit__NudgeUp",
-                "Label"         : "Nudge the selection up",
+                "Label"         : "Nudge the selection up, or lock the Y axis while a tool is placing a point",
                 "Action"        : "Edit__NudgeUp",
                 "Enabled"       : true,
                 "Keys"          : [ "ArrowUp" ],
@@ -290,7 +290,7 @@
             },
             {
                 "Id"            : "Edit__NudgeDown",
-                "Label"         : "Nudge the selection down",
+                "Label"         : "Nudge the selection down, or lock the Y axis while a tool is placing a point",
                 "Action"        : "Edit__NudgeDown",
                 "Enabled"       : true,
                 "Keys"          : [ "ArrowDown" ],

@@ -3278,6 +3278,38 @@
           "endTime": "15:15",
           "title": "Mordaunt |  MaxModel",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1789030552456",
+          "date": "2026-09-10",
+          "startTime": "11:00",
+          "endTime": "15:30",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1789055525530",
+          "date": "2026-09-10",
+          "startTime": "15:30",
+          "endTime": "16:30",
+          "title": "Meeting |  Jo",
+          "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1789055541701",
+          "date": "2026-09-10",
+          "startTime": "16:30",
+          "endTime": "16:45",
+          "title": "Meeting |  NF",
+          "color": "na-shift-color-orange"
+        },
+        {
+          "id": "new-1789055567637",
+          "date": "2026-09-10",
+          "startTime": "17:00",
+          "endTime": "18:30",
+          "title": "Mordaunt |  MaxModel",
+          "color": "na-shift-color-rose"
         }
       ]
     }

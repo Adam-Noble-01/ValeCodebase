@@ -31,6 +31,8 @@
 // - Token bumped again (2026-09-10-3) for the ValeVision Layout Editor context menu styles and help text (index.html, Styles__Main).
 // - Token bumped again (2026-09-10-4) for the ValeVision Layout Editor grips, draw tool and help text (index.html, Styles__Main).
 // - Token bumped again (2026-09-10-5) for the ValeVision Layout Editor raster select styles (Styles__Main).
+// - Token bumped again (2026-09-10-6) for the ValeVision Layout Editor title block rebuild (title block, sheet chrome, layout, config).
+// - Token bumped again (2026-09-10-7) for the ValeVision Layout Editor vector fills and the arrow key axis lock (index.html, Styles__Main, new AxisLock module).
 // - Token bumped again (2026-09-10-1) for the ValeVision port Phase 5 shell edits (index.html, CSS index, header offsets).
 // 09-Sep-2026 - Version 1.0.4
 // - Token bumped again (2026-09-09-4) for the ValeVision port Phase 4 shell edits (index.html, CSS index).
@@ -136,7 +138,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-10-5';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-10-7';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

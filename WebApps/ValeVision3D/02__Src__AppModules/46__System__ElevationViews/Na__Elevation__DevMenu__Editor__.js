@@ -158,6 +158,11 @@
     } from './Na__Elevation__SceneLink__.js';
     import { Na__DrawRename__RenameElevation } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
     import {
+        Na__DrawFold__Wrap,
+        Na__DrawFold__SetOpenId,
+        Na__DrawFold__CloseIfOpen
+    } from '../42__System__DrawingViewCore/Na__DrawView__RowAccordion__.js';
+    import {
         Na__ElevationMode__EnterElevation,
         Na__ElevationMode__ExitElevation,
         Na__ElevationMode__SetEditMode,
@@ -476,6 +481,7 @@
                 } else {
                     Na__ElevPick__Cancel();
                     Na__ElevDev__HideGizmo();                                    // <-- Never leave the setup marker on the drawing
+                    Na__DrawFold__SetOpenId(elevation.Elevation__Id);            // <-- The drawing on screen is the row left unfolded
                     Na__ElevationMode__EnterElevation(elevation);
                 }
             },
@@ -509,6 +515,8 @@
         } else {
             Na__ElevDev__Toast('Elevation created. Add a Presentation scene first so it can have a carousel card.', true);
         }
+
+        Na__DrawFold__SetOpenId(elevation.Elevation__Id);                        // <-- Open the one just made, and fold whatever was open
         Na__ElevDev__Render();
         return elevation;
     }
@@ -542,6 +550,11 @@
             });
         }
 
+        // FOUR AT ONCE MEANS NO ONE OF THEM IS "THE" ONE. Each Add opened its
+        // own row, so the last one would be left open arbitrarily; fold the lot
+        // and let the choice be made deliberately.
+        Na__DrawFold__SetOpenId(null);                                           // <-- Applies to the rows already on screen; no rebuild needed
+
         Na__ElevDev__Toast('Created ' + presets.length + ' elevation(s) around the model.');
         return presets.length;
     }
@@ -568,6 +581,8 @@
         }
         Na__ElevPick__Cancel();
         Na__ElevDev__HideGizmo();
+
+        Na__DrawFold__CloseIfOpen(elevation.Elevation__Id);                      // <-- Never leave the slot pointing at a deleted record
 
         const orphanedSceneId = Na__ElevData__DeleteElevation(null, elevation.Elevation__Id);
         const config          = Na__ElevDev__GetConfig();
@@ -717,9 +732,17 @@
 
         const elevations = Na__ElevData__GetElevations();
 
+        // ONE ROW OPEN AT A TIME. The scene link row goes into the fold's body
+        // rather than onto the card, or it would stay visible under a folded
+        // header. The open slot is shared with the Floor Plans panel.
         for (let i = 0; i < elevations.length; i++) {
-            const elevationRow = Na__ElevDev__BuildRow(elevations[i]);
-            elevationRow.appendChild(Na__ElevDev__BuildSceneLinkRow(elevations[i]));
+            const elevation    = elevations[i];
+            const elevationRow = Na__ElevDev__BuildRow(elevation);
+            const fold         = Na__DrawFold__Wrap(elevationRow, {
+                id    : elevation.Elevation__Id,
+                title : elevation.Elevation__Name
+            });
+            fold.body.appendChild(Na__ElevDev__BuildSceneLinkRow(elevation));
             Na__ElevDev__Panel.appendChild(elevationRow);
         }
 
@@ -779,6 +802,11 @@
             panel.classList.toggle('is-open', !isOpen);
             toggle.setAttribute('aria-expanded', String(!isOpen));
             if (!isOpen) {
+                // WHAT IS ON SCREEN IS WHAT IS UNFOLDED. Coming into the panel
+                // with a drawing previewed opens that row and no other; with
+                // none previewed the panel starts fully folded.
+                const active = Na__ElevationMode__IsActive() ? Na__ElevationMode__GetActiveElevation() : null;
+                Na__DrawFold__SetOpenId(active ? active.Elevation__Id : null);
                 Na__ElevDev__Render();                                           // <-- Rebuild on each open so data is fresh
             } else {
                 Na__ElevPick__Cancel();

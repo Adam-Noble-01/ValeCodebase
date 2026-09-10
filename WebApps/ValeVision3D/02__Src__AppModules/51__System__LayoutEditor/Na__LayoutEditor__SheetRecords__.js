@@ -33,6 +33,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.4
+// - Shape__Stroked on the shape record, defaulting on, with the guard that
+//   a shape with no fill keeps its edges.
+//
 // 10-Sep-2026 - Version 1.1.3
 // - The contextLayer style (the existing building and its surroundings in a viewport's render).
 //
@@ -260,6 +264,9 @@
         if (typeof item.Shape__StrokeColour !== 'string') item.Shape__StrokeColour = setup.defaultStrokeColour;
         item.Shape__StrokePt = Na__LeRec__Num(item.Shape__StrokePt, setup.defaultStrokePt);
         if (typeof item.Shape__FillColour !== 'string') item.Shape__FillColour = null;
+        item.Shape__Stroked = item.Shape__Stroked !== false;                             // <-- A record written before the flag existed drew its edges
+        const canFill = item.Shape__FillColour !== null && item.Shape__Points.length > 2;  // <-- Two points enclose nothing, so they cannot be a fill
+        if (!item.Shape__Stroked && !canFill) item.Shape__Stroked = true;                   // <-- Edges or fill, never neither: an invisible shape is a lost shape
         return item;
     }
     // ------------------------------------------------------------

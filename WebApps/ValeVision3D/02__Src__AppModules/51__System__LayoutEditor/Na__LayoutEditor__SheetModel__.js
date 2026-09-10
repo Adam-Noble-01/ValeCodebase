@@ -30,7 +30,7 @@
 //     Dimension   Dimension__Id, LayerId, ViewportId, StartXMm, StartYMm,
 //                 EndXMm, EndYMm, OffsetMm, TextSizeMm, Colour, Terminator,
 //                 Precision, UnitsSuffix, OverrideText
-//     Shape       Shape__Id, LayerId, Points [[x, y], ...], Closed, StrokeColour,
+//     Shape       Shape__Id, LayerId, Points [[x, y], ...], Closed, Stroked, StrokeColour,
 //                 StrokePt, FillColour (null for none)
 //   Paper coordinates are millimetres from the sheet's top-left, y down.
 //
@@ -53,6 +53,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.1
+// - CreateShape and UpdateShape carry Shape__Stroked (the edges toggle).
+//
 // 10-Sep-2026 - Version 1.2.0
 // - Vector shapes: CreateShape, UpdateShape, DeleteShape ('shapes' and 'shape' reasons). CreateDimension takes silent. UpdateSheet takes lineweights.
 //
@@ -702,8 +705,10 @@
     // FUNCTION | Create, Update and Delete a Vector Shape
     // ------------------------------------------------------------
     // points: [[x, y], ...] paper mm. options: { strokeColour, strokePt,
-    // fillColour, closed, layerId, silent }. A sheet without a vector layer
-    // gets one the first time a shape lands.
+    // fillColour, closed, stroked, layerId, silent }. A sheet without a
+    // vector layer gets one the first time a shape lands. Edges and fill
+    // are either-or at the least: the normaliser puts the edges back on a
+    // shape that would otherwise have nothing to show.
     // ------------------------------------------------------------
     function Na__LeModel__CreateShape(sheet, points, options) {
         if (!sheet || !Array.isArray(points)) return null;
@@ -720,7 +725,8 @@
             Shape__Closed       : opts.closed === true,
             Shape__StrokeColour : opts.strokeColour,
             Shape__StrokePt     : opts.strokePt,
-            Shape__FillColour   : (typeof opts.fillColour === 'string') ? opts.fillColour : null
+            Shape__FillColour   : (typeof opts.fillColour === 'string') ? opts.fillColour : null,
+            Shape__Stroked      : opts.stroked !== false
         }, layerId);
         sheet.Sheet__Shapes.push(item);
         if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('shapes', sheet.Sheet__Id, item.Shape__Id);   // <-- The draw tool announces once, on finishing
@@ -734,6 +740,7 @@
         if (typeof patch.strokeColour === 'string') item.Shape__StrokeColour = patch.strokeColour;
         if (Number.isFinite(patch.strokePt)) item.Shape__StrokePt = patch.strokePt;
         if (patch.fillColour !== undefined) item.Shape__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;
+        if (typeof patch.stroked === 'boolean') item.Shape__Stroked = patch.stroked;
         if (typeof patch.layerId === 'string') item.Shape__LayerId = patch.layerId;
         Na__LeRec__NormaliseShape(item, item.Shape__LayerId);
         if (silent) { Na__LeModel__Dirty = true; return true; }

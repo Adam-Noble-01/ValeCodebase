@@ -460,6 +460,20 @@ body.na-le-dragging * {
     pointer-events                     : none;
 }
 
+/* An arrow key has locked the edge to an axis: red across, green down,   */
+/* the colours a SketchUp user already reads, and solid so a locked edge  */
+/* is never mistaken for a free one.                                      */
+
+.na-le-rubber-band--x {
+    border-top-style                   : solid;
+    border-top-color                   : #c0392b;
+}
+
+.na-le-rubber-band--y {
+    border-top-style                   : solid;
+    border-top-color                   : #2e7d32;
+}
+
 .na-le-text-editor {
     position                           : absolute;
     box-sizing                         : content-box;

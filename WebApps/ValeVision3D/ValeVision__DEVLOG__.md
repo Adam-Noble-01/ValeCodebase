@@ -2,6 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.9 - 10-Sep-2026 - Layout Editor raster quality: Low, Medium, High
+
+### Added
+- **Raster select on the sheet toolbar.** One global working resolution
+  for the viewport pictures (the 2D underlay and the 3D snapshot),
+  remembered per browser, starting at Medium: Low 4, Medium 8, High 12
+  pixels per paper millimetre with longest-side caps of 2048, 4096 and
+  6144, scaled by the screen density up to 2x. Changing it re-renders the
+  frames (Na__LayoutEditor__RasterQuality__, the Raster config block).
+- **The PDF always exports at High**, whatever the working level, and so
+  do the Dev bakes. Only export-level renders are uploaded, so a stored
+  snapshot asset is always the export picture; an asset loaded from
+  storage is treated as size unknown and the PDF renders afresh.
+
+### Changed
+- The Viewport keys SnapshotPixelsPerMm, UnderlayPixelsPerMm and
+  MaxSnapshotPixels and the Pdf key RasterPixelsPerMm are gone; the Raster
+  block replaces them.
+- **Service worker token** 2026-09-10-5 (stylesheet changed).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.8 - 10-Sep-2026 - Layout Editor: dimensions you can edit, lineweights in points, Enhance Whitecard, a Draw tool
 
 ### Added

@@ -91,9 +91,6 @@
         "LayoutEditor__Viewport__MinSizeMm": 20,
         "LayoutEditor__Viewport__HandleSizePx": 9,
         "LayoutEditor__Viewport__HandleHitRadiusPx": 10,
-        "LayoutEditor__Viewport__SnapshotPixelsPerMm": 6,
-        "LayoutEditor__Viewport__UnderlayPixelsPerMm": 6,
-        "LayoutEditor__Viewport__MaxSnapshotPixels": 4096,
         "LayoutEditor__Viewport__ShowScaleLabel": true,
         "LayoutEditor__Viewport__DefaultStylesNote": "What a new viewport starts with. Projected Linework is off so laying out a sheet never triggers a projection; switch it on per viewport when the layout is settled, the way a raster viewport becomes a vector one in SketchUp LayOut. The raster underlay renders either way.",
         "LayoutEditor__Viewport__DefaultStyles": {
@@ -107,6 +104,17 @@
         "LayoutEditor__Viewport__AssetFolder": "LayoutEditor/Snapshots"
     },
 
+    "LayoutEditor__Raster__Config": {
+        "LayoutEditor__Raster__Description": "Resolution of the viewport pictures (the 2D underlay and the 3D snapshot) in pixels per paper millimetre, with a longest-side cap per level. The working level is global, remembered per browser and starts at DefaultLevel; the PDF and the Dev bakes always use ExportLevel. ScaleWithDevicePixelRatio multiplies the working levels by the screen density (up to 2x) so a high-density screen stays sharp.",
+        "LayoutEditor__Raster__DefaultLevel": "medium",
+        "LayoutEditor__Raster__ExportLevel": "high",
+        "LayoutEditor__Raster__ScaleWithDevicePixelRatio": true,
+        "LayoutEditor__Raster__Levels": {
+            "low":    { "PixelsPerMm": 4,  "MaxPixels": 2048 },
+            "medium": { "PixelsPerMm": 8,  "MaxPixels": 4096 },
+            "high":   { "PixelsPerMm": 12, "MaxPixels": 6144 }
+        }
+    },
     "LayoutEditor__Text__Config": {
         "LayoutEditor__Text__Description": "Sheet text (D31). Sizes are paper millimetres. Weights are the Open Sans cuts the app loads.",
         "LayoutEditor__Text__FontFamily": "'Open Sans', Helvetica, Arial, sans-serif",
@@ -219,9 +227,8 @@
         "LayoutEditor__Linework__MinSegmentPaperMm": 0.05
     },
     "LayoutEditor__Pdf__Config": {
-        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at RasterPixelsPerMm. The vendored UMD build is injected as a classic script on first use.",
+        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at the Raster block's export level. The vendored UMD build is injected as a classic script on first use.",
         "LayoutEditor__Pdf__FilenamePattern": "Na__{projectCode}__{sheetName}__{paperSize}.pdf",
-        "LayoutEditor__Pdf__RasterPixelsPerMm": 12,
         "LayoutEditor__Pdf__Author": "Vale Garden Houses Limited",
         "LayoutEditor__Pdf__Creator": "ValeVision3D Layout Editor",
         "LayoutEditor__Pdf__JsPdfScriptPath": "./02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js"
@@ -290,6 +297,11 @@
         "LayoutEditor__Labels__MenuEditDimText": "Edit dimension value",
         "LayoutEditor__Labels__MenuDeleteShape": "Delete shape",
         "LayoutEditor__Labels__MenuCloseShape": "Close shape",
-        "LayoutEditor__Labels__MenuOpenShape": "Open shape"
+        "LayoutEditor__Labels__MenuOpenShape": "Open shape",
+        "LayoutEditor__Labels__RasterLabel": "Raster",
+        "LayoutEditor__Labels__RasterLow": "Low",
+        "LayoutEditor__Labels__RasterMedium": "Medium",
+        "LayoutEditor__Labels__RasterHigh": "High",
+        "LayoutEditor__Labels__RasterTitle": "Working resolution of the viewport pictures on screen. The PDF always exports at High."
     }
 }

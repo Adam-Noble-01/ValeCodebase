@@ -29,6 +29,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.4.0
+// - Raster select: the working resolution of the viewport pictures (Low, Medium, High).
+//
 // 10-Sep-2026 - Version 1.3.0
 // - Draw tool button; the dimension tool is three clicks.
 //
@@ -66,6 +69,7 @@
     import { Na__LeHist__CHANGED_EVENT, Na__LeHist__CanUndo, Na__LeHist__CanRedo, Na__LeHist__Undo, Na__LeHist__Redo } from './Na__LayoutEditor__History__.js';
     import { Na__LeSurface__ZOOM_EVENT, Na__LeSurface__GetZoom } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LePdf__ExportSheet } from './Na__LayoutEditor__PdfExporter__.js';
+    import { Na__LeRaster__LEVELS, Na__LeRaster__CHANGED_EVENT, Na__LeRaster__Get, Na__LeRaster__Set } from './Na__LayoutEditor__RasterQuality__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -127,6 +131,8 @@
         if (undo) undo.disabled = !Na__LeHist__CanUndo();
         const redo = Na__LeToolbar__Root.querySelector('[data-na-toolbar="redo"]');
         if (redo) redo.disabled = !Na__LeHist__CanRedo();
+        const raster = Na__LeToolbar__Root.querySelector('[data-na-toolbar="raster"]');
+        if (raster && raster.value !== Na__LeRaster__Get()) raster.value = Na__LeRaster__Get();
         const zoom = Na__LeToolbar__Root.querySelector('[data-na-toolbar="zoom"]');
         if (zoom) zoom.textContent = Math.round(Na__LeSurface__GetZoom() * 100) + '%';
         const sheet = Na__LeModel__GetActiveSheet();
@@ -193,6 +199,26 @@
         root.appendChild(Na__LeToolbar__Button('100%', 'zoom', 'Zoom to 100 percent (one paper millimetre per screen unit)', () => Na__LeNav__ZoomTo(1)));
         root.appendChild(Na__LeToolbar__Gap());
 
+        // RASTER | The working resolution of the viewport pictures; the PDF ignores it
+        const rasterLabel = document.createElement('span');
+        rasterLabel.className   = 'na-le-toolbar__label';
+        rasterLabel.textContent = Na__LeCfg__GetLabel('RasterLabel', 'Raster');
+        root.appendChild(rasterLabel);
+        const raster = document.createElement('select');
+        raster.className = 'na-le-toolbar__select';
+        raster.title     = Na__LeCfg__GetLabel('RasterTitle', 'Working resolution of the viewport pictures on screen. The PDF always exports at High.');
+        raster.setAttribute('data-na-toolbar', 'raster');
+        Na__LeRaster__LEVELS.forEach((level) => {
+            const option = document.createElement('option');
+            option.value       = level;
+            option.textContent = Na__LeCfg__GetLabel('Raster' + level.charAt(0).toUpperCase() + level.slice(1), level.charAt(0).toUpperCase() + level.slice(1));
+            raster.appendChild(option);
+        });
+        raster.value = Na__LeRaster__Get();
+        raster.addEventListener('change', () => Na__LeRaster__Set(raster.value));
+        root.appendChild(raster);
+        root.appendChild(Na__LeToolbar__Gap());
+
         if (Na__LeToolbar__Editable) {
             root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SaveSheets', 'Save Sheets'), 'save', 'Save every sheet to the project', () => { void Na__LeToolbar__Save(); }));
         } else {
@@ -206,7 +232,7 @@
         container.appendChild(root);
         Na__LeToolbar__Root = root;
         Na__LeToolbar__Listeners = () => Na__LeToolbar__Sync();
-        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
+        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
         Na__LeToolbar__Sync();
         return true;
     }
@@ -217,7 +243,7 @@
     // ------------------------------------------------------------
     function Na__LeToolbar__Unmount() {
         if (Na__LeToolbar__Listeners) {
-            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
+            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
         }
         if (Na__LeToolbar__Root && Na__LeToolbar__Root.parentNode) Na__LeToolbar__Root.parentNode.removeChild(Na__LeToolbar__Root);
         Na__LeToolbar__Root = Na__LeToolbar__Listeners = null;

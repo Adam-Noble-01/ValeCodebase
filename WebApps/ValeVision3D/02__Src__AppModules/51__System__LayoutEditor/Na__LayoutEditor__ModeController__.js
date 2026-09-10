@@ -42,6 +42,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.5.0
+// - A raster level change refreshes the frames.
+//
 // 10-Sep-2026 - Version 1.4.0
 // - Vectors panel registered.
 //
@@ -97,6 +100,7 @@
     import { Na__LeOsnap__Clear } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeHist__Initialize, Na__LeHist__Track } from './Na__LayoutEditor__History__.js';
     import { Na__LeAuto__Initialize } from './Na__LayoutEditor__AutoSave__.js';
+    import { Na__LeRaster__CHANGED_EVENT } from './Na__LayoutEditor__RasterQuality__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing Modes, Render Loop, Projection Events, Localhost
@@ -345,6 +349,7 @@
                 Na__LeSurface__Refresh('frames');
             });
             window.addEventListener('resize', () => { if (Na__LeMode__Active) Na__LeSurface__SetZoom(Na__LeSurface__GetZoom()); });
+            window.addEventListener(Na__LeRaster__CHANGED_EVENT, () => { if (Na__LeMode__Active) Na__LeSurface__Refresh('frames'); });   // <-- A new working level re-renders the pictures
             console.log('[ValeVision3D] Layout Editor ready (' + (Na__LeMode__IsEditable() ? 'editable' : Na__LeCfg__GetLabel('ReadOnlyNote', 'read-only')) + ').');
             return true;
         }).catch((error) => {

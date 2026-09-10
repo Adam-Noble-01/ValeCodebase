@@ -36,6 +36,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.2
+// - Viewport pictures at the raster export level (High), whatever the working level on screen.
+//
 // 10-Sep-2026 - Version 1.0.1
 // - Linework widths from the sheet's viewport lineweight; shapes arrive through the markup primitives.
 //
@@ -178,14 +181,14 @@
 
     // HELPER FUNCTION | Draw One Viewport
     // ------------------------------------------------------------
-    async function Na__LePdf__DrawViewport(doc, sheet, viewport, rasterPpm) {
+    async function Na__LePdf__DrawViewport(doc, sheet, viewport) {
         const frame   = viewport.Viewport__FrameMm;
         const clipped = Na__LePdf__BeginClip(doc, frame);
         try {
             if (viewport.Viewport__Kind === Na__LeModel__KIND_2D) {
                 const described = Na__LeVp2d__Describe(viewport);
                 if (!described.definition) return;
-                const underlay = await Na__LeVp2d__RenderForExport(viewport, rasterPpm);
+                const underlay = await Na__LeVp2d__RenderForExport(viewport);
                 if (underlay && underlay.dataUrl) doc.addImage(underlay.dataUrl, 'PNG', frame.X, frame.Y, frame.WidthMm, frame.HeightMm);
                 if (viewport.Viewport__Styles.projectedLinework !== false) {
                     const classes = await Na__LeVp2d__EnsureLinework(described.definition);
@@ -196,7 +199,7 @@
                 }
                 return;
             }
-            const dataUrl = await Na__LeVp3d__RenderForExport(sheet, viewport, rasterPpm);
+            const dataUrl = await Na__LeVp3d__RenderForExport(sheet, viewport);
             if (dataUrl) {
                 const offset = viewport.Viewport__ImageOffsetMm, image = viewport.Viewport__ImageMm;
                 doc.addImage(dataUrl, 'PNG', frame.X + offset.X, frame.Y + offset.Y, image.WidthMm, image.HeightMm);
@@ -253,7 +256,7 @@
             .filter((e) => Na__LeModel__IsLayerVisible(sheet, e.v.Viewport__LayerId))
             .sort((a, b) => (b.rank - a.rank) || (a.i - b.i))
             .map((e) => e.v);
-        for (let i = 0; i < ordered.length; i++) await Na__LePdf__DrawViewport(doc, sheet, ordered[i], setup.rasterPixelsPerMm);
+        for (let i = 0; i < ordered.length; i++) await Na__LePdf__DrawViewport(doc, sheet, ordered[i]);   // <-- Pictures at the raster export level
 
         // SHEET MARKUP AND CHROME
         Na__LeChrome__DrawToPdf(doc, Na__LeMarkup__BuildSheetPrimitives(sheet, layout, null));

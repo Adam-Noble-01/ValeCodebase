@@ -36,6 +36,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - The growth ratio is 1.1 so a higher raster level renders again. Snapshot pixels come from the global raster level; only export-level renders are uploaded, so a stored asset is always the export picture; the PDF renders at the export level unless an export-size render is already on screen.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Snapshot keys use the session-cached, visibility-free model fingerprint, so applying a scene's layer map never re-keys the picture.
 //
@@ -51,9 +54,10 @@
 
     // MODULE IMPORTS | Config, Model, Snapshots and Assets
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__GetSheets, Na__LeModel__GetViewports, Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSnap__Render3d, Na__LeSnap__IsReady, Na__LeSnap__GetModelFingerprint } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    import { Na__LeRaster__Working, Na__LeRaster__Export, Na__LeRaster__Fit } from './Na__LayoutEditor__RasterQuality__.js';
     import {
         Na__LeAssets__CanvasToBlob,
         Na__LeAssets__BlobToDataUrl,
@@ -75,7 +79,7 @@
     // MODULE CONSTANTS | Debounce and Re-render Threshold
     // ------------------------------------------------------------
     const Na__LeVp3d__RENDER_DELAY_MS = 400;
-    const Na__LeVp3d__GROWTH_RATIO    = 1.25;   // <-- Re-render only when the needed pixels outgrow the picture by this
+    const Na__LeVp3d__GROWTH_RATIO    = 1.1;   // <-- A picture more than a tenth short of the size asked for (a bigger frame, a higher raster level) renders again
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Per-Viewport State
@@ -120,13 +124,15 @@
 
     // HELPER FUNCTION | Pixel Size for a Paper Size
     // ------------------------------------------------------------
-    function Na__LeVp3d__PixelSize(viewport, pixelsPerMm) {
-        const setup = Na__LeCfg__GetViewportSetup();
-        let w = viewport.Viewport__ImageMm.WidthMm * pixelsPerMm, h = viewport.Viewport__ImageMm.HeightMm * pixelsPerMm;
-        const longest = Math.max(w, h);
-        if (longest > setup.maxSnapshotPixels) { w *= setup.maxSnapshotPixels / longest; h *= setup.maxSnapshotPixels / longest; }
-        return { w : Math.max(16, Math.round(w)), h : Math.max(16, Math.round(h)) };
+    function Na__LeVp3d__PixelSize(viewport, profile) {
+        return Na__LeRaster__Fit(viewport.Viewport__ImageMm.WidthMm, viewport.Viewport__ImageMm.HeightMm, profile);
     }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Export Profile, Which Also Refreshes the Stored Asset
+    // ------------------------------------------------------------
+    function Na__LeVp3d__ExportProfile() { return Object.assign({ upload : true }, Na__LeRaster__Export()); }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -160,8 +166,11 @@
 
     // HELPER FUNCTION | Render, Show, and on Localhost Upload and Reference
     // ------------------------------------------------------------
-    async function Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key) {
-        const px = Na__LeVp3d__PixelSize(viewport, Na__LeCfg__GetViewportSetup().snapshotPixelsPerMm);
+    // profile: { pixelsPerMm, maxPixels, upload }. Only an export-level render
+    // is uploaded, so the stored asset is always the export picture.
+    // ------------------------------------------------------------
+    async function Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile) {
+        const px = Na__LeVp3d__PixelSize(viewport, profile);
         state.inFlight = true;
         try {
             const result = await Na__LeSnap__Render3d(scene, viewport.Viewport__Styles, px.w, px.h);
@@ -171,7 +180,7 @@
             if (!dataUrl) return;
             state.img.src = dataUrl; state.img.hidden = false;
             state.key = key; state.px = px; state.dataUrl = dataUrl;
-            if (blob && Na__LeAssets__CanUpload()) {
+            if (blob && profile.upload === true && Na__LeAssets__CanUpload()) {
                 const path = Na__LeAssets__SnapshotPath(sheet.Sheet__Id, viewport.Viewport__Id, key);
                 const uploaded = await Na__LeAssets__Upload(blob, path, null);
                 if (uploaded) Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key } }, true);
@@ -204,12 +213,12 @@
                 if (Na__LeVp3d__States.get(viewportId) !== state) return;
                 if (dataUrl) {
                     state.img.src = dataUrl; state.img.hidden = false;
-                    state.key = key; state.dataUrl = dataUrl; state.px = { w : Infinity, h : Infinity };
+                    state.key = key; state.dataUrl = dataUrl; state.px = null;   // <-- Size unknown: the PDF renders afresh rather than trust it
                     return;
                 }
             }
             if (!Na__LeSnap__IsReady()) return;
-            await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key);
+            await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeRaster__Working());   // <-- The global working level
         }, Na__LeVp3d__RENDER_DELAY_MS);
     }
     // ------------------------------------------------------------
@@ -235,7 +244,7 @@
         state.empty.hidden = true;
         const key = Na__LeVp3d__Fingerprint(viewport, scene);
         if (state.key === key) {
-            const wanted = Na__LeVp3d__PixelSize(viewport, Na__LeCfg__GetViewportSetup().snapshotPixelsPerMm);
+            const wanted = Na__LeVp3d__PixelSize(viewport, Na__LeRaster__Working());
             if (state.px && wanted.w > state.px.w * Na__LeVp3d__GROWTH_RATIO && Na__LeSnap__IsReady()) { state.key = null; Na__LeVp3d__Schedule(state, viewport.Viewport__Id); }
             return;
         }
@@ -330,7 +339,7 @@
         const slot = viewport.Viewport__SnapshotAsset;
         if (!force && slot && slot.Asset__Fingerprint === key) return 'skipped';
         const state = { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
-        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key);
+        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeVp3d__ExportProfile());
         const live = Na__LeVp3d__States.get(viewport.Viewport__Id);
         if (live && state.dataUrl) { live.img.src = state.dataUrl; live.img.hidden = false; live.key = key; live.px = state.px; live.dataUrl = state.dataUrl; }
         const after = viewport.Viewport__SnapshotAsset;
@@ -341,17 +350,19 @@
 
     // FUNCTION | The Picture for the PDF (png data URL at export resolution)
     // ------------------------------------------------------------
-    async function Na__LeVp3d__RenderForExport(sheet, viewport, pixelsPerMm) {
+    async function Na__LeVp3d__RenderForExport(sheet, viewport) {
         const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
         if (!scene) return null;
-        const key   = Na__LeVp3d__Fingerprint(viewport, scene);
-        const state = Na__LeVp3d__States.get(viewport.Viewport__Id);
-        const px    = Na__LeVp3d__PixelSize(viewport, pixelsPerMm);
-        if (state && state.key === key && state.dataUrl && (!state.px || state.px.w >= px.w * 0.8)) return Na__LeAssets__ToPngDataUrl(state.dataUrl);
+        const key     = Na__LeVp3d__Fingerprint(viewport, scene);
+        const profile = Na__LeVp3d__ExportProfile();
+        const px      = Na__LeVp3d__PixelSize(viewport, profile);
+        const live    = Na__LeVp3d__States.get(viewport.Viewport__Id);
+        if (live && live.key === key && live.dataUrl && live.px && live.px.w >= px.w * 0.8) return Na__LeAssets__ToPngDataUrl(live.dataUrl);   // <-- An export-size render is already on screen
         const slot = viewport.Viewport__SnapshotAsset;
-        if (!Na__LeSnap__IsReady() && slot && slot.Asset__Fingerprint === key) return Na__LeAssets__ToPngDataUrl(await Na__LeAssets__Load(slot.Asset__Path));
-        const result = await Na__LeSnap__Render3d(scene, viewport.Viewport__Styles, px.w, px.h);
-        return result ? result.canvas.toDataURL('image/png') : null;
+        if (!Na__LeSnap__IsReady()) return (slot && slot.Asset__Fingerprint === key) ? Na__LeAssets__ToPngDataUrl(await Na__LeAssets__Load(slot.Asset__Path)) : null;   // <-- The web build has only the stored picture
+        const state = live || { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
+        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile);   // <-- Export size; on localhost the stored asset is refreshed too
+        return state.dataUrl ? Na__LeAssets__ToPngDataUrl(state.dataUrl) : null;
     }
     // ------------------------------------------------------------
 

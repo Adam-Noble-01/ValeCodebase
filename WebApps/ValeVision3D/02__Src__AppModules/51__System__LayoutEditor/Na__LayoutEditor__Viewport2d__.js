@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.4.0
+// - Underlay pixels come from the global raster level (Low, Medium, High); the export render always uses the export level.
+//
 // 10-Sep-2026 - Version 1.3.0
 // - Linework widths scale from the sheet's viewport lineweight (points); the underlay key carries the Enhance Whitecard style.
 //
@@ -60,11 +63,12 @@
 
     // MODULE IMPORTS | Config, Model, Chrome, Markup, Snapshots
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel, Na__LeCfg__PtToMm } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel, Na__LeCfg__PtToMm } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeChrome__ToSvgMarkup } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeMarkup__BuildScenePrimitives } from './Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeSnap__Render2d, Na__LeSnap__DrawingCentreMm, Na__LeSnap__GetPipelineFingerprint } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    import { Na__LeRaster__Get, Na__LeRaster__Working, Na__LeRaster__Export, Na__LeRaster__Fit } from './Na__LayoutEditor__RasterQuality__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Projected Linework (definitions, pipeline, store, appearance)
@@ -320,14 +324,11 @@
             const described = Na__LeVp2d__Describe(args.viewport);
             if (!described.definition) return;
             const key = state.wantedKey;
-            const setup   = Na__LeCfg__GetViewportSetup();
             const frame   = args.viewport.Viewport__FrameMm;
-            let   widthPx = frame.WidthMm * setup.underlayPixelsPerMm, heightPx = frame.HeightMm * setup.underlayPixelsPerMm;
-            const longest = Math.max(widthPx, heightPx);
-            if (longest > setup.maxSnapshotPixels) { widthPx *= setup.maxSnapshotPixels / longest; heightPx *= setup.maxSnapshotPixels / longest; }
+            const px      = Na__LeRaster__Fit(frame.WidthMm, frame.HeightMm, Na__LeRaster__Working());   // <-- The global working level
             const windowSnapshot = described.window;
             state.inFlight = true;
-            Na__LeSnap__Render2d(described.definition, windowSnapshot, args.viewport.Viewport__Styles, widthPx, heightPx).then((result) => {
+            Na__LeSnap__Render2d(described.definition, windowSnapshot, args.viewport.Viewport__Styles, px.w, px.h).then((result) => {
                 state.inFlight = false;
                 if (!Na__LeVp2d__States.has(viewportId) || Na__LeVp2d__States.get(viewportId) !== state) return;
                 if (result) {
@@ -366,7 +367,7 @@
         state.masterPt = sheet && sheet.Sheet__Lineweights ? sheet.Sheet__Lineweights.ViewportPt : null;   // <-- Printed points for the visible linework
         const modelFp = Na__LeSnap__GetPipelineFingerprint();
         const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
-                      Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard ].join('|');
+                      Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard, Na__LeRaster__Get() ].join('|');
         Na__LeVp2d__PlaceUnderlay(state, win, ppm);
         state.wantedKey = key;
         if (key !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewport.Viewport__Id);
@@ -476,15 +477,12 @@
 
     // FUNCTION | A Fresh Underlay at Export Resolution (not cached)
     // ------------------------------------------------------------
-    function Na__LeVp2d__RenderForExport(viewport, pixelsPerMm) {
+    function Na__LeVp2d__RenderForExport(viewport) {
         const described = Na__LeVp2d__Describe(viewport);
         if (!described.definition) return Promise.resolve(null);
-        const setup = Na__LeCfg__GetViewportSetup();
         const frame = viewport.Viewport__FrameMm;
-        let widthPx = frame.WidthMm * pixelsPerMm, heightPx = frame.HeightMm * pixelsPerMm;
-        const longest = Math.max(widthPx, heightPx);
-        if (longest > setup.maxSnapshotPixels) { widthPx *= setup.maxSnapshotPixels / longest; heightPx *= setup.maxSnapshotPixels / longest; }
-        return Na__LeSnap__Render2d(described.definition, described.window, viewport.Viewport__Styles, widthPx, heightPx);
+        const px    = Na__LeRaster__Fit(frame.WidthMm, frame.HeightMm, Na__LeRaster__Export());   // <-- Always the export level, whatever is on screen
+        return Na__LeSnap__Render2d(described.definition, described.window, viewport.Viewport__Styles, px.w, px.h);
     }
     // ------------------------------------------------------------
 

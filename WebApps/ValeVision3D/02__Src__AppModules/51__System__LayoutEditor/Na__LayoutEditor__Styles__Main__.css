@@ -259,6 +259,20 @@ body.na-le-dragging * {
     background                         : #fff6e3;
 }
 
+.na-le-toolbar__label {
+    font-size                          : 0.74rem;
+    color                              : #6c757d;
+    white-space                        : nowrap;
+}
+.na-le-toolbar__select {
+    padding                            : 3px 6px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 5px;
+    background                         : #f4f6f8;
+    color                              : #172b3a;
+    font-size                          : 0.76rem;
+    cursor                             : pointer;
+}
 .na-le-toolbar__note {
     margin-left                        : auto;
     font-size                          : 0.74rem;

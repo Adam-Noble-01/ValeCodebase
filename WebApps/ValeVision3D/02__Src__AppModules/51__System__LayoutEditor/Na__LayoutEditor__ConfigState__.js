@@ -310,9 +310,6 @@
             minSizeMm            : Na__LeCfg__Num('Viewport', 'MinSizeMm', 20),
             handleSizePx         : Na__LeCfg__Num('Viewport', 'HandleSizePx', 9),
             handleHitRadiusPx    : Na__LeCfg__Num('Viewport', 'HandleHitRadiusPx', 10),
-            snapshotPixelsPerMm  : Na__LeCfg__Num('Viewport', 'SnapshotPixelsPerMm', 6),
-            underlayPixelsPerMm  : Na__LeCfg__Num('Viewport', 'UnderlayPixelsPerMm', 6),
-            maxSnapshotPixels    : Na__LeCfg__Num('Viewport', 'MaxSnapshotPixels', 4096),
             showScaleLabel       : Na__LeCfg__Val('Viewport', 'ShowScaleLabel', true) !== false,
             defaultStyles        : Na__LeCfg__DefaultStyles(Na__LeCfg__Val('Viewport', 'DefaultStyles', null)),
             assetFolder          : Na__LeCfg__Val('Viewport', 'AssetFolder', 'LayoutEditor/Snapshots')
@@ -402,6 +399,27 @@
             enabled      : Na__LeCfg__Val('AutoSave', 'Enabled', true) !== false,
             debounceMs   : Math.max(200, Na__LeCfg__Num('AutoSave', 'DebounceMs', 1500)),
             draftEnabled : Na__LeCfg__Val('AutoSave', 'DraftEnabled', true) !== false
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Raster Levels for the Viewport Pictures
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetRasterSetup() {
+        const block = Na__LeCfg__Val('Raster', 'Levels', null);
+        const level = (name, ppm, maxPx) => {
+            const spec = (block && typeof block === 'object' && block[name] && typeof block[name] === 'object') ? block[name] : {};
+            return {
+                pixelsPerMm : Number.isFinite(spec.PixelsPerMm) && spec.PixelsPerMm > 0 ? spec.PixelsPerMm : ppm,
+                maxPixels   : Number.isFinite(spec.MaxPixels)   && spec.MaxPixels   > 0 ? spec.MaxPixels   : maxPx
+            };
+        };
+        return {
+            defaultLevel : Na__LeCfg__Val('Raster', 'DefaultLevel', 'medium'),
+            exportLevel  : Na__LeCfg__Val('Raster', 'ExportLevel', 'high'),
+            scaleWithDpr : Na__LeCfg__Val('Raster', 'ScaleWithDevicePixelRatio', true) !== false,
+            levels       : { low : level('low', 4, 2048), medium : level('medium', 8, 4096), high : level('high', 12, 6144) }
         };
     }
     // ------------------------------------------------------------
@@ -531,7 +549,6 @@
     function Na__LeCfg__GetPdfSetup() {
         return {
             filenamePattern   : Na__LeCfg__Val('Pdf', 'FilenamePattern', 'Na__{projectCode}__{sheetName}__{paperSize}.pdf'),
-            rasterPixelsPerMm : Na__LeCfg__Num('Pdf', 'RasterPixelsPerMm', 12),
             author            : Na__LeCfg__Val('Pdf', 'Author', 'Vale Garden Houses Limited'),
             creator           : Na__LeCfg__Val('Pdf', 'Creator', 'ValeVision3D Layout Editor'),
             jsPdfScriptPath   : Na__LeCfg__Val('Pdf', 'JsPdfScriptPath', './02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js')
@@ -783,6 +800,7 @@
         Na__LeCfg__GetHistorySetup,
         Na__LeCfg__GetAutoSaveSetup,
         Na__LeCfg__PtToMm,
+        Na__LeCfg__GetRasterSetup,
         Na__LeCfg__GetSelectionSetup,
         Na__LeCfg__GetLineweightSetup,
         Na__LeCfg__GetShapeSetup,

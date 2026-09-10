@@ -1,6 +1,6 @@
 {
     "CrossSection__SceneData": {
-        "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision — the SketchUp cloud sync plugin must never write this object.",
+        "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision \u2014 the SketchUp cloud sync plugin must never write this object.",
         "CrossSection__SceneData__Version": 1,
         "CrossSection__SceneData__Scenes": {
             "Main View": {

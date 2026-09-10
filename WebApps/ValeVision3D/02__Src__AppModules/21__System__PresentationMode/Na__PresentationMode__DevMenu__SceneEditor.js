@@ -36,7 +36,7 @@
 //   same project JSON block, can never disagree about what was written.
 // - Saving and thumbnail upload are delegated to
 //   Na__PresentationMode__DevMenu__ScenePersistence__ (R2-first project.json
-//   write, Flask presentation-thumbnail endpoint); per-group array moves and
+//   write, R2-first thumbnail upload); per-group array moves and
 //   drag-and-drop wiring to Na__PresentationMode__DevMenu__SceneReorder__.
 //
 // INTEGRATION:
@@ -58,8 +58,8 @@
 // - Divergences   :
 //   - Save path is ValeVision's GET-merge then Na__AppUtils__R2SaveProjectJson (the whole project.json),
 //     which also carries the CrossSection__SceneData block; TrueVision merges one key through its worker.
-//   - Thumbnails go to the Flask presentation-thumbnail endpoint (local mirror) until the asset upload
-//     route lands in port Phase 2; TrueVision uploads to R2 directly.
+//   - Thumbnails go to R2 first through the shared asset route, then mirror to the local project
+//     folder through Flask; TrueVision uploads to R2 directly.
 //   - Row builders, reorder helpers and persistence live in their own modules
 //     (SceneRowBuilders__, SceneReorder__, ScenePersistence__) to keep this file in budget.
 //   - Update Camera, Regen Thumb and Save Scene stay separate buttons (TrueVision folds them into Update Scene).

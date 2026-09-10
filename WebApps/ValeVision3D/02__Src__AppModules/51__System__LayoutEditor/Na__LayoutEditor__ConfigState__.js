@@ -32,6 +32,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Sheet setup carries BlockGapMm; style setup carries the frame caption and
+//   title block weights, tracking and uppercasing; title block setup carries
+//   the logo's printed width, height cap, aspect and paddings and the field
+//   paddings. The old LogoPaddingMm and ValueOffsetBottomMm keys are gone.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Owns Na__LayoutEditor__KeyMappings__.json as well, and answers what a
 //   button, a wheel turn or a key press means. The control modules and the
@@ -233,7 +239,8 @@
         return {
             defaultPaperSize   : Na__LeCfg__Val('Sheet', 'DefaultPaperSize', 'A3'),
             defaultOrientation : Na__LeCfg__Val('Sheet', 'DefaultOrientation', 'landscape'),
-            marginMm           : Na__LeCfg__Num('Sheet', 'MarginMm', 10),
+            marginMm           : Na__LeCfg__Num('Sheet', 'MarginMm', 5),
+            blockGapMm         : Na__LeCfg__Num('Sheet', 'BlockGapMm', 3),
             borderStrokeMm     : Na__LeCfg__Num('Sheet', 'BorderStrokeMm', 0.5),
             screenPixelsPerMm  : Na__LeCfg__Num('Sheet', 'ScreenPixelsPerMm', 3.2),
             defaultNameFormat  : Na__LeCfg__Val('Sheet', 'DefaultNameFormat', 'Drawing {index}'),
@@ -256,7 +263,15 @@
             frameStrokeMm     : Na__LeCfg__Num('Style', 'FrameStrokeMm', 0.25),
             frameLabelFontMm  : Na__LeCfg__Num('Style', 'FrameLabelFontMm', 2.4),
             frameLabelHeightMm: Na__LeCfg__Num('Style', 'FrameLabelHeightMm', 5),
-            cellPaddingMm     : Na__LeCfg__Num('Style', 'CellPaddingMm', 1.6)
+            cellPaddingMm     : Na__LeCfg__Num('Style', 'CellPaddingMm', 1.9),
+
+            frameLabelWeight    : Na__LeCfg__Val('Style', 'FrameLabelWeight', 'bold'),
+            frameLabelTrackingMm: Na__LeCfg__Num('Style', 'FrameLabelTrackingMm', 0.16),
+            frameLabelUppercase : Na__LeCfg__Val('Style', 'FrameLabelUppercase', true) !== false,
+            titleLabelWeight    : Na__LeCfg__Val('Style', 'TitleLabelWeight', 'normal'),
+            titleLabelTrackingMm: Na__LeCfg__Num('Style', 'TitleLabelTrackingMm', 0.05),
+            titleLabelUppercase : Na__LeCfg__Val('Style', 'TitleLabelUppercase', true) !== false,
+            titleValueWeight    : Na__LeCfg__Val('Style', 'TitleValueWeight', 'normal')
         };
     }
     // ------------------------------------------------------------
@@ -270,14 +285,20 @@
         const anchors = Na__LeCfg__Val('TitleBlock', 'ClassicFieldAnchors', null);
         return {
             defaultStyle        : Na__LeCfg__Val('TitleBlock', 'DefaultStyle', 'modern'),
-            heightMm            : Na__LeCfg__Num('TitleBlock', 'HeightMm', 16),
+            heightMm            : Na__LeCfg__Num('TitleBlock', 'HeightMm', 10),
             logoAssetPath       : Na__LeCfg__Val('TitleBlock', 'LogoAssetPath', '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png'),
-            logoCellWidthMm     : Na__LeCfg__Num('TitleBlock', 'LogoCellWidthMm', 40),
-            logoPaddingMm       : Na__LeCfg__Num('TitleBlock', 'LogoPaddingMm', 2),
-            fontSizeLabelMm     : Na__LeCfg__Num('TitleBlock', 'FontSizeLabelMm', 1.7),
-            fontSizeValueMm     : Na__LeCfg__Num('TitleBlock', 'FontSizeValueMm', 2.4),
-            labelOffsetTopMm    : Na__LeCfg__Num('TitleBlock', 'LabelOffsetTopMm', 1.4),
-            valueOffsetBottomMm : Na__LeCfg__Num('TitleBlock', 'ValueOffsetBottomMm', 1.4),
+            logoCellWidthMm     : Na__LeCfg__Num('TitleBlock', 'LogoCellWidthMm', 34),
+            logoWidthMm         : Na__LeCfg__Num('TitleBlock', 'LogoWidthMm', 33),
+            logoMaxHeightMm     : Na__LeCfg__Num('TitleBlock', 'LogoMaxHeightMm', 5.5),
+            logoAspect          : Na__LeCfg__Num('TitleBlock', 'LogoAspectWidthOverHeight', 4.5),
+            logoPaddingVMm      : Na__LeCfg__Num('TitleBlock', 'LogoPaddingVMm', 1.8),
+            logoPaddingHMm      : Na__LeCfg__Num('TitleBlock', 'LogoPaddingHMm', 2.5),
+            fontSizeLabelMm     : Na__LeCfg__Num('TitleBlock', 'FontSizeLabelMm', 1.6),
+            fontSizeValueMm     : Na__LeCfg__Num('TitleBlock', 'FontSizeValueMm', 2.2),
+            fieldPaddingHMm     : Na__LeCfg__Num('TitleBlock', 'FieldPaddingHMm', 1.4),
+            fieldPaddingTopMm   : Na__LeCfg__Num('TitleBlock', 'FieldPaddingTopMm', 2.4),
+            fieldPaddingBottomMm: Na__LeCfg__Num('TitleBlock', 'FieldPaddingBottomMm', 0.8),
+            labelOffsetTopMm    : Na__LeCfg__Num('TitleBlock', 'FieldLabelOffsetTopMm', 1.5),
             drawnByDefault      : Na__LeCfg__Val('TitleBlock', 'DrawnByDefault', 'Vale Garden Houses'),
             rows                : Array.isArray(rows) ? rows : Na__LeCfg__FALLBACKS.rows,
             classicScanAssets   : (scans && typeof scans === 'object') ? scans : {},

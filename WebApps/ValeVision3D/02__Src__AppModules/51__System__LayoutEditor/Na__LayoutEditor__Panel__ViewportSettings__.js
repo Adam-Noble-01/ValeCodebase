@@ -34,6 +34,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - The global raster level (Low, Medium, High) sits above the viewport settings, where it is looked for.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Locked checkbox.
 //
@@ -77,6 +80,7 @@
         Na__LePanels__Note
     } from './Na__LayoutEditor__PanelHost__.js';
     import { Na__LeVp2d__Describe, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
+    import { Na__LeRaster__LEVELS, Na__LeRaster__Get, Na__LeRaster__Set } from './Na__LayoutEditor__RasterQuality__.js';
     import { Na__LeMarkup__ImportFromScene } from './Na__LayoutEditor__MarkupBridge__.js';
     // ------------------------------------------------------------
 
@@ -181,6 +185,15 @@
         add.appendChild(Na__LePanels__Note(Na__LeCfg__GetLabel('NoSelection', 'Select a viewport on the sheet.')));
         body.appendChild(add);
 
+        // RASTER | Not a property of this viewport: one working resolution for
+        // every picture on every sheet, so it sits outside the edit block and
+        // shows whether or not something is selected.
+        const raster = Na__LePanels__Select('vp-raster', Na__LeRaster__LEVELS.map((level) => ({
+            value : level, label : Na__LeCfg__GetLabel('Raster' + level.charAt(0).toUpperCase() + level.slice(1), level.charAt(0).toUpperCase() + level.slice(1))
+        })), Na__LeRaster__Get());
+        body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('RasterGlobal', 'Raster (all sheets)'), raster));
+        body.appendChild(Na__LePanels__Note(Na__LeCfg__GetLabel('RasterNote', 'Global working resolution of every viewport picture. The PDF always exports at High.')));
+
         const edit = document.createElement('div');
         edit.className = 'na-le-block';
         edit.setAttribute('data-na-block', 'edit');
@@ -236,6 +249,8 @@
     // HELPER FUNCTION | Reflect the Selected Viewport
     // ------------------------------------------------------------
     function Na__LePanelViewport__Refresh(body) {
+        const rasterSelect = body.querySelector('[data-na-control="vp-raster"]');
+        if (rasterSelect && document.activeElement !== rasterSelect) rasterSelect.value = Na__LeRaster__Get();
         const sheet    = Na__LeModel__GetActiveSheet();
         const viewport = Na__LeModel__GetSelectedViewport();
         const addBlock = body.querySelector('[data-na-block="add"]');
@@ -287,6 +302,7 @@
     // FUNCTION | Register the Section and Its Controls
     // ------------------------------------------------------------
     function Na__LePanelViewport__Register() {
+        Na__LePanels__OnControl('change', 'vp-raster', (e, el) => Na__LeRaster__Set(el.value));
         Na__LePanels__OnControl('click', 'vp-add', (e, el) => {
             const select = el.parentNode.querySelector('[data-na-control="vp-add-scene"]');
             const sheet  = Na__LeModel__GetActiveSheet();

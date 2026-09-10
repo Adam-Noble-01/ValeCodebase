@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.1
+// - The snapshot asset carries Asset__PixelWidth (null when unknown).
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Vector shapes (Sheet__Shapes, layer type 'vector', a Vectors layer on new sheets), Sheet__Lineweights in points, the enhanceWhitecard style.
 //
@@ -183,7 +186,14 @@
         };
         if (viewport.Viewport__MarkupMode !== 'sheet') viewport.Viewport__MarkupMode = 'scene';
         if (viewport.Viewport__ShowScaleLabel === undefined) viewport.Viewport__ShowScaleLabel = setup.showScaleLabel;
-        if (viewport.Viewport__SnapshotAsset === undefined) viewport.Viewport__SnapshotAsset = null;
+        // SNAPSHOT ASSET | { Asset__Path, Asset__Fingerprint, Asset__PixelWidth }.
+        // The width says how big the stored picture is, so a stored picture
+        // that is too small for the working level is re-rendered instead of
+        // being shown blurred. An asset written before this key existed reads
+        // as unknown and is treated as too small.
+        const slot = viewport.Viewport__SnapshotAsset;
+        if (!slot || typeof slot !== 'object' || typeof slot.Asset__Path !== 'string') viewport.Viewport__SnapshotAsset = null;
+        else if (!Number.isFinite(slot.Asset__PixelWidth)) slot.Asset__PixelWidth = null;
         if (typeof viewport.Viewport__Locked !== 'boolean') viewport.Viewport__Locked = false;   // <-- A locked viewport cannot be entered, moved or resized
         return viewport;
     }

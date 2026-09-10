@@ -36,6 +36,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - The stored snapshot records the width it was rendered at, so a picture too small for the working level is re-rendered instead of shown blurred (a record written before that key reads as too small).
+// - Every render uploads, so the stored file and its record always agree; the PDF reuses it only when it is wide enough.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - The growth ratio is 1.1 so a higher raster level renders again. Snapshot pixels come from the global raster level; only export-level renders are uploaded, so a stored asset is always the export picture; the PDF renders at the export level unless an export-size render is already on screen.
 //
@@ -130,9 +134,20 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | The Export Profile, Which Also Refreshes the Stored Asset
+    // HELPER FUNCTION | The Export Profile
     // ------------------------------------------------------------
-    function Na__LeVp3d__ExportProfile() { return Object.assign({ upload : true }, Na__LeRaster__Export()); }
+    function Na__LeVp3d__ExportProfile() { return Na__LeRaster__Export(); }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Is a Stored Picture Big Enough for the Size Asked For
+    // ------------------------------------------------------------
+    // A picture within a tenth of the wanted width is close enough to show;
+    // anything smaller (or a width this record never wrote down) is stale.
+    // ------------------------------------------------------------
+    function Na__LeVp3d__WideEnough(pixelWidth, wantedWidth) {
+        return Number.isFinite(pixelWidth) && pixelWidth > 0 && pixelWidth >= wantedWidth / Na__LeVp3d__GROWTH_RATIO;
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -166,8 +181,9 @@
 
     // HELPER FUNCTION | Render, Show, and on Localhost Upload and Reference
     // ------------------------------------------------------------
-    // profile: { pixelsPerMm, maxPixels, upload }. Only an export-level render
-    // is uploaded, so the stored asset is always the export picture.
+    // profile: { pixelsPerMm, maxPixels }. Every render is uploaded with the
+    // width it was made at, so the record always describes the stored file
+    // and a later request can tell whether it is big enough.
     // ------------------------------------------------------------
     async function Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile) {
         const px = Na__LeVp3d__PixelSize(viewport, profile);
@@ -180,10 +196,10 @@
             if (!dataUrl) return;
             state.img.src = dataUrl; state.img.hidden = false;
             state.key = key; state.px = px; state.dataUrl = dataUrl;
-            if (blob && profile.upload === true && Na__LeAssets__CanUpload()) {
+            if (blob && sheet && Na__LeAssets__CanUpload()) {
                 const path = Na__LeAssets__SnapshotPath(sheet.Sheet__Id, viewport.Viewport__Id, key);
                 const uploaded = await Na__LeAssets__Upload(blob, path, null);
-                if (uploaded) Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key } }, true);
+                if (uploaded) Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key, Asset__PixelWidth : px.w } }, true);
             }
         } finally {
             state.inFlight = false;
@@ -202,10 +218,14 @@
             const { sheet, viewport } = state.lastArgs;
             const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
             if (!scene) return;
-            const key = Na__LeVp3d__Fingerprint(viewport, scene);
+            const key     = Na__LeVp3d__Fingerprint(viewport, scene);
             if (state.key === key) return;
-            const slot = viewport.Viewport__SnapshotAsset;
-            if (slot && slot.Asset__Fingerprint === key && state.triedAsset !== key) {
+            const profile = Na__LeRaster__Working();                              // <-- The global working level
+            const wanted  = Na__LeVp3d__PixelSize(viewport, profile);
+            const slot    = viewport.Viewport__SnapshotAsset;
+            // The stored picture is only worth fetching when it is the same
+            // view and was rendered at least as large as this level asks for.
+            if (slot && slot.Asset__Fingerprint === key && Na__LeVp3d__WideEnough(slot.Asset__PixelWidth, wanted.w) && state.triedAsset !== key) {
                 state.triedAsset = key;
                 state.inFlight = true;
                 const dataUrl = await Na__LeAssets__Load(slot.Asset__Path);
@@ -213,12 +233,12 @@
                 if (Na__LeVp3d__States.get(viewportId) !== state) return;
                 if (dataUrl) {
                     state.img.src = dataUrl; state.img.hidden = false;
-                    state.key = key; state.dataUrl = dataUrl; state.px = null;   // <-- Size unknown: the PDF renders afresh rather than trust it
+                    state.key = key; state.dataUrl = dataUrl; state.px = { w : slot.Asset__PixelWidth, h : Math.round(slot.Asset__PixelWidth * (wanted.h / wanted.w)) };
                     return;
                 }
             }
             if (!Na__LeSnap__IsReady()) return;
-            await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeRaster__Working());   // <-- The global working level
+            await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile);
         }, Na__LeVp3d__RENDER_DELAY_MS);
     }
     // ------------------------------------------------------------
@@ -335,9 +355,10 @@
     async function Na__LeVp3d__Bake(sheet, viewport, force) {
         const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
         if (!scene || !Na__LeSnap__IsReady()) return 'failed';
-        const key  = Na__LeVp3d__Fingerprint(viewport, scene);
-        const slot = viewport.Viewport__SnapshotAsset;
-        if (!force && slot && slot.Asset__Fingerprint === key) return 'skipped';
+        const key     = Na__LeVp3d__Fingerprint(viewport, scene);
+        const wanted  = Na__LeVp3d__PixelSize(viewport, Na__LeVp3d__ExportProfile());
+        const slot    = viewport.Viewport__SnapshotAsset;
+        if (!force && slot && slot.Asset__Fingerprint === key && Na__LeVp3d__WideEnough(slot.Asset__PixelWidth, wanted.w)) return 'skipped';
         const state = { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
         await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeVp3d__ExportProfile());
         const live = Na__LeVp3d__States.get(viewport.Viewport__Id);
@@ -357,11 +378,13 @@
         const profile = Na__LeVp3d__ExportProfile();
         const px      = Na__LeVp3d__PixelSize(viewport, profile);
         const live    = Na__LeVp3d__States.get(viewport.Viewport__Id);
-        if (live && live.key === key && live.dataUrl && live.px && live.px.w >= px.w * 0.8) return Na__LeAssets__ToPngDataUrl(live.dataUrl);   // <-- An export-size render is already on screen
+        if (live && live.key === key && live.dataUrl && Na__LeVp3d__WideEnough(live.px ? live.px.w : null, px.w)) return Na__LeAssets__ToPngDataUrl(live.dataUrl);   // <-- An export-size render is already on screen
         const slot = viewport.Viewport__SnapshotAsset;
-        if (!Na__LeSnap__IsReady()) return (slot && slot.Asset__Fingerprint === key) ? Na__LeAssets__ToPngDataUrl(await Na__LeAssets__Load(slot.Asset__Path)) : null;   // <-- The web build has only the stored picture
+        const stored = slot && slot.Asset__Fingerprint === key;
+        if (!Na__LeSnap__IsReady()) return stored ? Na__LeAssets__ToPngDataUrl(await Na__LeAssets__Load(slot.Asset__Path)) : null;   // <-- The web build has only the stored picture
+        if (stored && Na__LeVp3d__WideEnough(slot.Asset__PixelWidth, px.w)) return Na__LeAssets__ToPngDataUrl(await Na__LeAssets__Load(slot.Asset__Path));
         const state = live || { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
-        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile);   // <-- Export size; on localhost the stored asset is refreshed too
+        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile);   // <-- Export size; the stored asset is refreshed with it
         return state.dataUrl ? Na__LeAssets__ToPngDataUrl(state.dataUrl) : null;
     }
     // ------------------------------------------------------------

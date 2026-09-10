@@ -2,6 +2,83 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.11 - 10-Sep-2026 - Layout Editor: 3D snapshots really do follow the raster level
+
+### Fixed
+- **A 3D viewport stayed low resolution whatever the raster level.** The
+  stored snapshot is keyed by what the picture shows (scene, styles,
+  model) and said nothing about how big it was rendered, so a picture
+  baked at the old six pixels per millimetre (1080 x 720 for a 180 mm
+  viewport) matched the key forever and was loaded back on every visit in
+  place of a fresh render. The record now carries Asset__PixelWidth: a
+  stored picture is used only when it was rendered at least as wide as
+  the working level asks for, and a record written before that key
+  existed counts as too small. Every render uploads with its width, so
+  the file and the record always agree, and the PDF reuses a stored
+  picture only when it is wide enough.
+
+### Changed
+- **The levels are print resolutions now**, because the old ones were
+  soft once the page was zoomed in: Low 6 pixels per millimetre (152
+  dpi), Medium 12 (305 dpi, print quality at paper size) and High 20 (508
+  dpi), with longest-side caps of 3072, 5120 and 8192. The PDF still
+  exports at High.
+- **The raster level is in the Viewport panel too**, above the viewport
+  settings where it was looked for, marked as global and paired with the
+  toolbar control.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.10 - 10-Sep-2026 - Layout Editor: the modern title block set like a Lantern drawing
+
+### Changed
+- **The title block strip is 10 mm, not 16 mm.** No arrangement of a
+  label and a value fills 16 mm of band, so the strip read as an empty
+  box with writing in its corners. 10 mm is the height a Lantern
+  Designer drawing prints.
+- **One pair of baselines across the strip.** The label hangs from the
+  top of the band and the value is optically centred in what is left
+  below it, on Lantern's paddings (2.4 mm top, 0.8 mm bottom, 1.4 mm
+  sides, label 1.5 mm from the top). The value used to be pinned to the
+  foot of the band, about 10 mm below its own label.
+- **Labels 1.6 mm over values 2.2 mm**, down from 1.7 over 2.4, with
+  0.05 mm of letter spacing on the uppercase labels.
+- **The Vale logo prints at its own size.** 33 mm wide, capped at 5.5 mm
+  high, in a 34 mm cell, rather than being blown up to fill a 40 mm one.
+- **The logo is no longer squashed.** Its aspect was hardcoded at 4.2:1
+  against an asset that is 4.5:1, so the mark printed 7 percent too tall
+  on every sheet and every PDF. It is a config value now
+  (TitleBlock.LogoAspectWidthOverHeight); re-measure it if the file is
+  ever replaced.
+- **Sheet margin 5 mm, not 10 mm**, and the drawing area stops 3 mm short
+  of the title block (Sheet.BlockGapMm) instead of running into it.
+  Placed viewports keep their own positions; only where a new one lands
+  changes.
+- **Viewport captions** are bold uppercase with 0.16 mm of letter
+  spacing, from the style config rather than a hardcoded weight, so the
+  sheet reads as one piece of typesetting.
+
+### Added
+- **Letter spacing on a chrome text primitive** (TrackingMm), in paper
+  millimetres because a PDF content stream sets character spacing in the
+  page unit. The SVG painter writes letter-spacing, the PDF painter
+  jsPDF's charSpace, and the measurer counts it, so a tracked caption
+  truncates at the same character on screen as on paper.
+- Style config keys FrameLabelWeight / FrameLabelTrackingMm /
+  FrameLabelUppercase and TitleLabelWeight / TitleLabelTrackingMm /
+  TitleLabelUppercase / TitleValueWeight.
+
+### Removed
+- TitleBlock config keys LogoPaddingMm, LabelOffsetTopMm and
+  ValueOffsetBottomMm, replaced by LogoPaddingVMm / LogoPaddingHMm,
+  FieldLabelOffsetTopMm and FieldPaddingTopMm / FieldPaddingBottomMm.
+
+### Notes
+- Two Lantern touches were deliberately left out: the scale value does
+  not carry the paper size ("1:50 @ A3") and the date has no small
+  raised ordinal suffix.
+- **Service worker token** 2026-09-10-6.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.9 - 10-Sep-2026 - Layout Editor raster quality: Low, Medium, High
 
 ### Added

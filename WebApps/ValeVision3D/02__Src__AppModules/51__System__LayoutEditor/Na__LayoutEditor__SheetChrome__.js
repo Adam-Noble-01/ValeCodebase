@@ -19,6 +19,11 @@
 // - Text is measured through jsPDF's Helvetica metrics when the library has
 //   loaded, so a value truncated on paper is truncated in the same place on
 //   screen; before that an average-advance estimate keeps layouts sane.
+// - A text run may carry TrackingMm, letter spacing in paper millimetres
+//   rather than ems, because a PDF content stream sets character spacing in
+//   the page unit. The SVG painter writes it as letter-spacing, the PDF
+//   painter as jsPDF's charSpace, and the measurer counts it, so a tracked
+//   caption runs out of its cell at the same character on both surfaces.
 // - Image assets (the Vale logo, the classic title block scan) are loaded
 //   once as data URLs and announced, so a sheet built before the asset
 //   arrived can rebuild.
@@ -38,6 +43,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Letter spacing carried on a text primitive and honoured by both painters
+//   and the measurer, which the title block labels and the frame captions now
+//   use (Lantern's TrackingMm, back-ported).
+// - Frame captions read their weight, tracking and uppercasing from the style
+//   config instead of a hardcoded 600.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -117,17 +129,21 @@
 
     // FUNCTION | Measure a Text Run in Paper Millimetres
     // ------------------------------------------------------------
-    function Na__LeChrome__MeasureTextMm(text, fontMm, weight) {
+    // trackingMm is counted here as well as painted, so a tracked run runs out of
+    // its cell at the same character on screen as it does on paper.
+    // ------------------------------------------------------------
+    function Na__LeChrome__MeasureTextMm(text, fontMm, weight, trackingMm) {
         const value = String(text === undefined || text === null ? '' : text);
         if (value === '') return 0;
+        const tracking = (typeof trackingMm === 'number' && trackingMm > 0) ? trackingMm * value.length : 0;
         const doc = Na__LeChrome__MeasuringDoc();
-        if (!doc) return value.length * fontMm * 0.52;
+        if (!doc) return (value.length * fontMm * 0.52) + tracking;
         try {
             doc.setFont('helvetica', Na__LeChrome__PdfWeight(weight));
             doc.setFontSize(fontMm / Na__LeChrome__MM_PER_POINT);
-            return doc.getTextWidth(value);
+            return doc.getTextWidth(value) + tracking;
         } catch (e) {
-            return value.length * fontMm * 0.52;
+            return (value.length * fontMm * 0.52) + tracking;
         }
     }
     // ------------------------------------------------------------
@@ -135,14 +151,16 @@
 
     // FUNCTION | Truncate a Text Run to a Maximum Paper Width
     // ------------------------------------------------------------
-    function Na__LeChrome__FitText(text, fontMm, weight, maxWidthMm) {
+    // trackingMm is optional and last, so every untracked caller is unchanged.
+    // ------------------------------------------------------------
+    function Na__LeChrome__FitText(text, fontMm, weight, maxWidthMm, trackingMm) {
         const value = String(text === undefined || text === null ? '' : text);
         if (value === '' || !(maxWidthMm > 0)) return value;
-        if (Na__LeChrome__MeasureTextMm(value, fontMm, weight) <= maxWidthMm) return value;
+        if (Na__LeChrome__MeasureTextMm(value, fontMm, weight, trackingMm) <= maxWidthMm) return value;
         let trimmed = value;
         while (trimmed.length > 0) {
             trimmed = trimmed.slice(0, -1);
-            if (Na__LeChrome__MeasureTextMm(trimmed + Na__LeChrome__TRUNCATION, fontMm, weight) <= maxWidthMm) {
+            if (Na__LeChrome__MeasureTextMm(trimmed + Na__LeChrome__TRUNCATION, fontMm, weight, trackingMm) <= maxWidthMm) {
                 return trimmed.replace(/\s+$/, '') + Na__LeChrome__TRUNCATION;
             }
         }
@@ -199,14 +217,15 @@
 
     // FUNCTION | Push a Text Run at an Absolute Baseline
     // ------------------------------------------------------------
-    // spec: { X, BaselineY, Text, FontMm, Weight, Colour, Align, RotateDeg, FontFamily }
+    // spec: { X, BaselineY, Text, FontMm, Weight, Colour, Align, RotateDeg, FontFamily, TrackingMm }
     // ------------------------------------------------------------
     function Na__LeChrome__PushText(list, spec) {
         const value = String(spec.Text === undefined || spec.Text === null ? '' : spec.Text);
         if (value === '') return;
         list.push({ Kind : Na__LeChrome__KIND_TEXT, X : spec.X, BaselineY : spec.BaselineY, Text : value,
                     FontMm : spec.FontMm, Weight : spec.Weight || 'normal', Colour : spec.Colour,
-                    Align : spec.Align || 'left', RotateDeg : spec.RotateDeg || 0, FontFamily : spec.FontFamily || null });
+                    Align : spec.Align || 'left', RotateDeg : spec.RotateDeg || 0, FontFamily : spec.FontFamily || null,
+                    TrackingMm : (typeof spec.TrackingMm === 'number' && spec.TrackingMm > 0) ? spec.TrackingMm : 0 });
     }
     // ------------------------------------------------------------
 
@@ -253,12 +272,16 @@
         Na__LeChrome__PushRect(list, frame.X, frame.Y, frame.WidthMm, frame.HeightMm, style.frameLineColour, style.frameStrokeMm, null);
 
         if (viewport.Viewport__ShowScaleLabel === false) return;
-        const caption = source.label + (viewport.Viewport__Kind === Na__LeModel__KIND_2D
+        let   caption = source.label + (viewport.Viewport__Kind === Na__LeModel__KIND_2D
             ? '   ' + Na__LeScale__FormatLabel(viewport.Viewport__ScaleDenominator)
             : '');
+        if (style.frameLabelUppercase) caption = caption.toUpperCase();
+
         const fontMm  = style.frameLabelFontMm;
+        const weight  = style.frameLabelWeight;
+        const track   = style.frameLabelTrackingMm;
         const pad     = style.cellPaddingMm;
-        const textMm  = Na__LeChrome__MeasureTextMm(caption, fontMm, 600);
+        const textMm  = Na__LeChrome__MeasureTextMm(caption, fontMm, weight, track);
         const boxW    = Math.min(frame.WidthMm, textMm + (pad * 2));
         const boxH    = style.frameLabelHeightMm;
         const boxY    = frame.Y + frame.HeightMm - boxH;
@@ -266,8 +289,8 @@
         Na__LeChrome__PushRect(list, frame.X, boxY, boxW, boxH, style.frameLineColour, style.frameStrokeMm, style.paperColour);
         Na__LeChrome__PushText(list, {
             X : frame.X + pad, BaselineY : Na__LeChrome__BaselineCentred(boxY, boxH, fontMm),
-            Text : Na__LeChrome__FitText(caption, fontMm, 600, boxW - (pad * 2)),
-            FontMm : fontMm, Weight : 600, Colour : style.inkColour, Align : 'left'
+            Text : Na__LeChrome__FitText(caption, fontMm, weight, boxW - (pad * 2), track),
+            FontMm : fontMm, Weight : weight, Colour : style.inkColour, Align : 'left', TrackingMm : track
         });
     }
     // ------------------------------------------------------------
@@ -349,9 +372,10 @@
             const anchor = primitive.Align === 'right' ? 'end' : (primitive.Align === 'center' ? 'middle' : 'start');
             const weight = (primitive.Weight === 'bold') ? 700 : (typeof primitive.Weight === 'number' ? primitive.Weight : 400);
             const rotate = primitive.RotateDeg ? ' transform="rotate(' + R(primitive.RotateDeg) + ' ' + R(primitive.X) + ' ' + R(primitive.BaselineY) + ')"' : '';
+            const track  = primitive.TrackingMm ? ' letter-spacing="' + R(primitive.TrackingMm) + '"' : '';
             return '<text x="' + R(primitive.X) + '" y="' + R(primitive.BaselineY) + '" font-family="' + Na__LeChrome__Escape(primitive.FontFamily || style.fontFamily) +
                    '" font-size="' + R(primitive.FontMm) + '" font-weight="' + weight + '" fill="' + primitive.Colour + '" text-anchor="' + anchor + '"' +
-                   rotate + ' xml:space="preserve">' + Na__LeChrome__Escape(primitive.Text) + '</text>';
+                   track + rotate + ' xml:space="preserve">' + Na__LeChrome__Escape(primitive.Text) + '</text>';
         }
         if (primitive.Kind === Na__LeChrome__KIND_IMAGE) {
             return '<image x="' + R(primitive.X) + '" y="' + R(primitive.Y) + '" width="' + R(primitive.WidthMm) + '" height="' + R(primitive.HeightMm) +
@@ -437,6 +461,7 @@
             doc.setFontSize(primitive.FontMm / Na__LeChrome__MM_PER_POINT);
             doc.setTextColor(ink.R, ink.G, ink.B);
             const options = { align : primitive.Align === 'center' ? 'center' : (primitive.Align === 'right' ? 'right' : 'left'), baseline : 'alphabetic' };
+            if (primitive.TrackingMm) options.charSpace = primitive.TrackingMm;  // <-- jsPDF sets character spacing in the page unit, which is mm here
             if (primitive.RotateDeg) options.angle = -primitive.RotateDeg;     // <-- jsPDF rotates counter-clockwise
             doc.text(primitive.Text, primitive.X, primitive.BaselineY, options);
             return;

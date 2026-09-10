@@ -23,7 +23,8 @@
 //     Viewport    Viewport__Id, LayerId, Name, Kind ('2d' | '3d'), SceneId,
 //                 DrawingId, FrameMm {X, Y, WidthMm, HeightMm},
 //                 ScaleDenominator, PanMm {X, Y}, ImageMm {WidthMm, HeightMm},
-//                 ImageOffsetMm {X, Y}, Styles {...}, MarkupMode, SnapshotAsset
+//                 ImageOffsetMm {X, Y}, Styles {...}, MarkupMode, Locked,
+//                 SnapshotAsset {Asset__Path, Asset__Fingerprint, Asset__PixelWidth}
 //     Annotation  Annotation__Id, LayerId, Text, PosXMm, PosYMm, SizeMm,
 //                 FontWeight, Colour, Align, LeaderXMm, LeaderYMm
 //     Dimension   Dimension__Id, LayerId, ViewportId, StartXMm, StartYMm,

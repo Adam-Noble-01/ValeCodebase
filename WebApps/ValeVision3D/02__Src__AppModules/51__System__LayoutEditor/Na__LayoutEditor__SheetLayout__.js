@@ -35,6 +35,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - The drawing area stops Sheet.BlockGapMm short of the title block, as a
+//   Lantern Designer sheet does. Only where a NEW viewport lands is affected;
+//   placed viewports keep their own rectangles and are clamped to the page.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -124,11 +129,14 @@
             HeightMm : titleMm
         };
 
+        // The drawing area stops a clear gap short of the title block. Without it the
+        // strip reads as the bottom row of the drawing rather than as the sheet's own
+        // footer, which is how a Lantern Designer sheet has always been set out.
         const drawing = {
             X        : content.X,
             Y        : content.Y,
             WidthMm  : content.WidthMm,
-            HeightMm : Math.max(1, titleBlock.Y - content.Y)
+            HeightMm : Math.max(1, titleBlock.Y - sheetSetup.blockGapMm - content.Y)
         };
 
         return {

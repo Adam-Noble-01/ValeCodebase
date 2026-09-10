@@ -4,10 +4,13 @@
     "LayoutEditor__Enabled": true,
 
     "LayoutEditor__Sheet__Config": {
-        "LayoutEditor__Sheet__Description": "Paper. Sizes are listed landscape (long edge first); portrait swaps them. MarginMm is the border inset; the title block band sits inside the margin at the foot of the sheet. ScreenPixelsPerMm is the base on-screen size at zoom 1; printed output is driven by the PDF exporter, never by this value.",
+        "LayoutEditor__Sheet__Description": "Paper. Sizes are listed landscape (long edge first); portrait swaps them. MarginMm is the border inset; the title block band sits inside the margin at the foot of the sheet, with BlockGapMm of clear paper between it and the drawing area above. ScreenPixelsPerMm is the base on-screen size at zoom 1; printed output is driven by the PDF exporter, never by this value.",
         "LayoutEditor__Sheet__DefaultPaperSize": "A3",
         "LayoutEditor__Sheet__DefaultOrientation": "landscape",
-        "LayoutEditor__Sheet__MarginMm": 10,
+        "LayoutEditor__Sheet__MarginMm": 5,
+        "LayoutEditor__Sheet__MarginMmNote": "5 mm, matching a Lantern Designer drawing. A sheet from either app trims to the same border, so the two sit together in one pack rather than reading as output from two different offices.",
+        "LayoutEditor__Sheet__BlockGapMm": 3,
+        "LayoutEditor__Sheet__BlockGapMmNote": "Clear paper between the drawing area and the title block strip. Without it the strip reads as a row of the drawing rather than as the sheet own footer. Screen sheet and PDF both honour this value.",
         "LayoutEditor__Sheet__BorderStrokeMm": 0.5,
         "LayoutEditor__Sheet__ScreenPixelsPerMm": 3.2,
         "LayoutEditor__Sheet__DefaultNameFormat": "Drawing {index}",
@@ -30,20 +33,41 @@
         "LayoutEditor__Style__FrameStrokeMm": 0.25,
         "LayoutEditor__Style__FrameLabelFontMm": 2.4,
         "LayoutEditor__Style__FrameLabelHeightMm": 5,
-        "LayoutEditor__Style__CellPaddingMm": 1.6
+        "LayoutEditor__Style__CellPaddingMm": 1.9,
+
+        "LayoutEditor__Style__FrameLabelWeight": "bold",
+        "LayoutEditor__Style__FrameLabelTrackingMm": 0.16,
+        "LayoutEditor__Style__FrameLabelUppercase": true,
+
+        "LayoutEditor__Style__TitleLabelWeight": "normal",
+        "LayoutEditor__Style__TitleLabelTrackingMm": 0.05,
+        "LayoutEditor__Style__TitleLabelUppercase": true,
+        "LayoutEditor__Style__TitleValueWeight": "normal",
+        "LayoutEditor__Style__TitleValueWeightNote": "Regular, not bold. jsPDF standard Helvetica only embeds regular and bold by reference - there is no semi-bold cut available without shipping a font file - so regular is the lighter of the two weights this title block can actually offer on both screen and PDF.",
+
+        "LayoutEditor__Style__TrackingNote": "Letter spacing in millimetres, not ems, because a PDF content stream sets character spacing in the page unit. Both painters add it after every glyph and the text measurer counts it, so a tracked run truncates in the same place on screen as on paper."
     },
 
     "LayoutEditor__TitleBlock__Config": {
-        "LayoutEditor__TitleBlock__Description": "Two styles (D26). Modern is a vector strip: the Vale logo and one row of fields from Rows. Classic is the office's scanned title block stretched to the full sheet with the text fields overlaid at the anchors below; A4, A2 and A1 fall back to the A3 scan until their scans are added. Fields default from the project and are editable per sheet.",
+        "LayoutEditor__TitleBlock__Description": "Two styles (D26). Modern is a vector strip: the Vale logo and one row of fields from Rows, sized and typeset to match a Lantern Designer drawing so the two apps issue the same title block. Classic is the office's scanned title block stretched to the full sheet with the text fields overlaid at the anchors below; A4, A2 and A1 fall back to the A3 scan until their scans are added. Fields default from the project and are editable per sheet.",
         "LayoutEditor__TitleBlock__DefaultStyle": "modern",
-        "LayoutEditor__TitleBlock__HeightMm": 16,
+        "LayoutEditor__TitleBlock__HeightMm": 10,
+        "LayoutEditor__TitleBlock__HeightMmNote": "The printed height of a Lantern Designer title block strip. It was 16 mm, and no arrangement of a label and a value fills that much band - the strip read as an empty box with writing in its corners rather than as a title block.",
         "LayoutEditor__TitleBlock__LogoAssetPath": "../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png",
-        "LayoutEditor__TitleBlock__LogoCellWidthMm": 40,
-        "LayoutEditor__TitleBlock__LogoPaddingMm": 2,
-        "LayoutEditor__TitleBlock__FontSizeLabelMm": 1.7,
-        "LayoutEditor__TitleBlock__FontSizeValueMm": 2.4,
-        "LayoutEditor__TitleBlock__LabelOffsetTopMm": 1.4,
-        "LayoutEditor__TitleBlock__ValueOffsetBottomMm": 1.4,
+        "LayoutEditor__TitleBlock__LogoCellWidthMm": 34,
+        "LayoutEditor__TitleBlock__LogoWidthMm": 33,
+        "LayoutEditor__TitleBlock__LogoMaxHeightMm": 5.5,
+        "LayoutEditor__TitleBlock__LogoAspectWidthOverHeight": 4.5,
+        "LayoutEditor__TitleBlock__LogoAspectWidthOverHeightNote": "The asset is 2000 x 444 px. The asset cache hands the chrome a data URL and no dimensions, and both painters stretch an image to whatever rectangle they are given, so the aspect has to be stated here rather than measured. It was assumed to be 4.2, which printed the Vale mark 7 percent too tall on every sheet. Re-measure this if the logo file is ever replaced.",
+        "LayoutEditor__TitleBlock__LogoPaddingVMm": 1.8,
+        "LayoutEditor__TitleBlock__LogoPaddingHMm": 2.5,
+        "LayoutEditor__TitleBlock__FontSizeLabelMm": 1.6,
+        "LayoutEditor__TitleBlock__FontSizeValueMm": 2.2,
+        "LayoutEditor__TitleBlock__FieldPaddingHMm": 1.4,
+        "LayoutEditor__TitleBlock__FieldPaddingTopMm": 2.4,
+        "LayoutEditor__TitleBlock__FieldPaddingBottomMm": 0.8,
+        "LayoutEditor__TitleBlock__FieldLabelOffsetTopMm": 1.5,
+        "LayoutEditor__TitleBlock__FieldPaddingNote": "The label hangs from the top of the strip at FieldLabelOffsetTopMm; the value is optically centred in the band left between FieldPaddingTopMm and FieldPaddingBottomMm. That is what makes a cell read as a small caption over a value, rather than as two runs pinned to opposite edges of a box - which is what pinning the value to the foot of the strip used to give.",
         "LayoutEditor__TitleBlock__DrawnByDefault": "Vale Garden Houses",
         "LayoutEditor__TitleBlock__Rows": [
             { "Key": "Client",        "Label": "Client",        "WidthMm": 30 },
@@ -105,14 +129,14 @@
     },
 
     "LayoutEditor__Raster__Config": {
-        "LayoutEditor__Raster__Description": "Resolution of the viewport pictures (the 2D underlay and the 3D snapshot) in pixels per paper millimetre, with a longest-side cap per level. The working level is global, remembered per browser and starts at DefaultLevel; the PDF and the Dev bakes always use ExportLevel. ScaleWithDevicePixelRatio multiplies the working levels by the screen density (up to 2x) so a high-density screen stays sharp.",
+        "LayoutEditor__Raster__Description": "Resolution of the viewport pictures (the 2D underlay and the 3D snapshot) in pixels per paper millimetre, with a longest-side cap per level. Low is 152 dpi, Medium 305 dpi (print quality at paper size) and High 508 dpi, so a picture stays sharp zoomed in. The working level is global, remembered per browser and starts at DefaultLevel; the PDF and the Dev bakes always use ExportLevel. ScaleWithDevicePixelRatio multiplies the working levels by the screen density (up to 2x) so a high-density screen stays sharp.",
         "LayoutEditor__Raster__DefaultLevel": "medium",
         "LayoutEditor__Raster__ExportLevel": "high",
         "LayoutEditor__Raster__ScaleWithDevicePixelRatio": true,
         "LayoutEditor__Raster__Levels": {
-            "low":    { "PixelsPerMm": 4,  "MaxPixels": 2048 },
-            "medium": { "PixelsPerMm": 8,  "MaxPixels": 4096 },
-            "high":   { "PixelsPerMm": 12, "MaxPixels": 6144 }
+            "low":    { "PixelsPerMm": 6,  "MaxPixels": 3072 },
+            "medium": { "PixelsPerMm": 12, "MaxPixels": 5120 },
+            "high":   { "PixelsPerMm": 20, "MaxPixels": 8192 }
         }
     },
     "LayoutEditor__Text__Config": {
@@ -302,6 +326,8 @@
         "LayoutEditor__Labels__RasterLow": "Low",
         "LayoutEditor__Labels__RasterMedium": "Medium",
         "LayoutEditor__Labels__RasterHigh": "High",
-        "LayoutEditor__Labels__RasterTitle": "Working resolution of the viewport pictures on screen. The PDF always exports at High."
+        "LayoutEditor__Labels__RasterTitle": "Working resolution of the viewport pictures on screen. The PDF always exports at High.",
+        "LayoutEditor__Labels__RasterGlobal": "Raster (all sheets)",
+        "LayoutEditor__Labels__RasterNote": "Global working resolution of every viewport picture. The PDF always exports at High."
     }
 }

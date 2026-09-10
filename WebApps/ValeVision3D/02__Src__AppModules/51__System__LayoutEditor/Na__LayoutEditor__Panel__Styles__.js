@@ -6,7 +6,7 @@
 // NAMESPACE  : Na__LePanelStyles
 // MODULE     : Layout Editor - Panel Styles
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : The per-viewport style toggles: projected linework, profile linework, opaque glass, whitecard, hidden lines
+// PURPOSE    : The per-viewport render composites: which layers and effects go into the picture a viewport shows
 // CREATED    : 09-Sep-2026
 //
 // DESCRIPTION:
@@ -30,6 +30,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - Context Layer toggle, last in the list. The section is called Render Composites.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - Base Image toggle: the rendered picture behind a viewport, off for vector-only 2D linework.
 //
@@ -76,7 +79,8 @@
         { key : 'glassOpaque',       label : 'Glass Transparency Off',  twoDOnly : false },
         { key : 'whitecard',         label : 'Whitecard',               twoDOnly : false },
         { key : 'enhanceWhitecard',  label : 'Enhance Whitecard',       twoDOnly : false },
-        { key : 'hiddenLines',       label : 'Hidden Lines',            twoDOnly : true }
+        { key : 'hiddenLines',       label : 'Hidden Lines',            twoDOnly : true },
+        { key : 'contextLayer',      label : 'Context Layer',           twoDOnly : false }
     ];
     // ------------------------------------------------------------
 
@@ -125,7 +129,7 @@
             Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { styles : styles });
         });
         return Na__LePanels__RegisterSection('right', {
-            id : Na__LePanelStyles__ID, title : Na__LeCfg__GetLabel('StylesTitle', 'Styles'),
+            id : Na__LePanelStyles__ID, title : Na__LeCfg__GetLabel('StylesTitle', 'Render Composites'),
             build : Na__LePanelStyles__Build, refresh : Na__LePanelStyles__Refresh
         });
     }

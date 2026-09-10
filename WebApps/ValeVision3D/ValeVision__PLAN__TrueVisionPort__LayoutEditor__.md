@@ -732,7 +732,7 @@ Fields default from project.json (`projectName`, `projectCode`, client name wher
 | `Na__LayoutEditor__Panel__ViewportSettings__.js` | 400 | Scene dropdown grouped by scene group (plans, elevations, sections, 3D), three-way scale toggle (2D only) showing the active scale, crop readouts, name, markup mode toggle, Import From Scene |
 | `Na__LayoutEditor__Panel__Text__.js` | 340 | Font (Open Sans), size in paper mm, weight 300/400/600, colour, alignment, leader on or off; applies to the selection and to new text |
 | `Na__LayoutEditor__Panel__Dimensions__.js` | 340 | Text size mm, colour, terminator tick/arrow/dot, extension offset, precision, units suffix; applies to the selection and to new dimensions |
-| `Na__LayoutEditor__Panel__Styles__.js` | 280 | Per-viewport toggles: Projected Linework, Profile Linework Effect, Glass Transparency Off, Whitecard, plus Hidden Lines; Enhance Whitecard from v2.21.8 |
+| `Na__LayoutEditor__Panel__Styles__.js` | 280 | Per-viewport toggles: Projected Linework, Profile Linework Effect, Glass Transparency Off, Whitecard, plus Hidden Lines; Enhance Whitecard from v2.21.8; Base Image and Context Layer from v2.21.12, when the section became Render Composites |
 | `Na__LayoutEditor__Panel__Shapes__.js` (v2.21.8) | 160 | Vectors: edge colour, edge weight in points, fill, closure; the selection or the Draw tool's defaults |
 
 ### 11.5 Export and persistence (D35)

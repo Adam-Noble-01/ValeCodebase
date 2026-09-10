@@ -400,7 +400,8 @@
             glassOpaque       : flag('GlassOpaque',       true),
             whitecard         : flag('Whitecard',         true),
             hiddenLines       : flag('HiddenLines',       false),
-            enhanceWhitecard  : flag('EnhanceWhitecard',  true)
+            enhanceWhitecard  : flag('EnhanceWhitecard',  true),
+            contextLayer      : flag('ContextLayer',      true)
         };
     }
     // ------------------------------------------------------------

@@ -378,7 +378,7 @@
             state.wantedKey = state.renderedKey;                                 // <-- Nothing outstanding while it is off
         } else {
             const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
-                          Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard, Na__LeRaster__Get() ].join('|');
+                          Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework, styles.enhanceWhitecard, styles.contextLayer, Na__LeRaster__Get() ].join('|');
             Na__LeVp2d__PlaceUnderlay(state, win, ppm);
             state.wantedKey = key;
             if (key !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewport.Viewport__Id);

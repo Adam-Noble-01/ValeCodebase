@@ -124,6 +124,7 @@
             "GlassOpaque": true,
             "Whitecard": true,
             "HiddenLines": false,
+            "ContextLayer": true,
             "EnhanceWhitecard": true
         },
         "LayoutEditor__Viewport__AssetFolder": "LayoutEditor/Snapshots"
@@ -268,7 +269,7 @@
         "LayoutEditor__Labels__ViewportTitle": "Viewport",
         "LayoutEditor__Labels__TextTitle": "Text",
         "LayoutEditor__Labels__DimensionsTitle": "Dimensions",
-        "LayoutEditor__Labels__StylesTitle": "Styles",
+        "LayoutEditor__Labels__StylesTitle": "Render Composites",
         "LayoutEditor__Labels__SheetTitle": "Sheet",
         "LayoutEditor__Labels__NoSelection": "Select a viewport on the sheet.",
         "LayoutEditor__Labels__NoSheets": "No sheets yet. Add one from the Dev menu or the + tab.",
@@ -317,6 +318,7 @@
         "LayoutEditor__Labels__ShapeDrawNote": "Draw tool (L): click points, click the first point to close a polygon, Enter or double-click to finish a line, Esc to abandon.",
         "LayoutEditor__Labels__StyleEnhanceWhitecard": "Enhance Whitecard",
         "LayoutEditor__Labels__StyleBaseImage": "Base Image",
+        "LayoutEditor__Labels__StyleContextLayer": "Context Layer",
         "LayoutEditor__Labels__Lineweights": "Lineweights (pt)",
         "LayoutEditor__Labels__ViewportLinesPt": "Viewport lines",
         "LayoutEditor__Labels__DimensionLinesPt": "Dimension lines",

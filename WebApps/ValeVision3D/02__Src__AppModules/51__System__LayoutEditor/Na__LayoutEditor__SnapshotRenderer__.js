@@ -40,6 +40,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.3.0
+// - Context Layer off takes the existing building and its surroundings out of the picture; the visibility is put back afterwards.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - The Enhance Whitecard pass runs on the render canvas when the viewport style asks for it.
 //
@@ -112,7 +115,7 @@
     // MODULE IMPORTS | Scene Pose, Visibility, Sections, Tiled Renderer
     // ------------------------------------------------------------
     import { Na__PresentationMode__Camera__ApplySceneCameraState } from '../21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js';
-    import { Na__ModelToggle__CaptureVisibilityMap, Na__ModelToggle__ApplySceneLayerVisibility } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
+    import { Na__ModelToggle__CaptureVisibilityMap, Na__ModelToggle__ApplySceneLayerVisibility, Na__ModelToggle__SetCategoryVisibility } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
     import { Na__CrossSection__SerializeSections, Na__CrossSection__ApplySerializedSections } from '../41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js';
     import { Na__StaticExport__RenderToCanvas } from '../30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js';
     import { Na__PlView__KIND_PLAN, Na__PlView__Hash } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
@@ -304,6 +307,38 @@
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | The Model Categories a Drawing Calls Context
+    // ------------------------------------------------------------
+    // Everything that is not the design itself: what the proposal stands in
+    // and against. The proposal, its doors and the interior dressing are
+    // never touched.
+    // ------------------------------------------------------------
+    const Na__LeSnap__CONTEXT_CATEGORIES = [
+        'ValeVision__MainBuildingModel__Existing',
+        'ValeVision__SiteBoundaries',
+        'ValeVision__LandscapeEnvironment',
+        'ValeVision__Vegetation',
+        'ValeVision__SiteVegetation2D',
+        'ValeVision__SceneEntourage2D',
+        'ValeVision__SceneContextual'
+    ];
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Take the Context Out of the Picture, or Leave It Alone
+    // ------------------------------------------------------------
+    // Returns the visibility map to put back afterwards, or null when the
+    // style leaves the context in and nothing was touched.
+    // ------------------------------------------------------------
+    function Na__LeSnap__HideContext(styles) {
+        if (!styles || styles.contextLayer !== false) return null;
+        const saved = Na__ModelToggle__CaptureVisibilityMap();
+        Na__LeSnap__CONTEXT_CATEGORIES.forEach((key) => Na__ModelToggle__SetCategoryVisibility(key, false));
+        return saved;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Render a 2D Drawing Window Offscreen
     // ------------------------------------------------------------
     // Returns { dataUrl, widthPx, heightPx } (png), or null.
@@ -316,6 +351,7 @@
             const pass         = pipeline && pipeline.profileLinesPassRef ? pipeline.profileLinesPassRef : null;
             const passWasOn    = pass ? pass.enabled : null;                       // <-- The preset's exit forces it on; the 3D toggle owns it
             let cutApplied = false;
+            let contextSaved = null;                                               // <-- Visibility to put back when the context was hidden
             try {
                 Na__DrawView__SectionAdapter__SuspendLiveTool();
                 cutApplied = Na__LeSnap__ApplyCut(definition);
@@ -323,6 +359,7 @@
                 if (!wasSuspended) Na__DrawView__Transitions__SuspendThreeD();     // <-- Distance culling off for the picture
                 Na__DrawView__ComposerPreset__Enter({ camera : camera, styles : styles || {} });
                 Na__DrawView__MaterialPreset__Enter(styles || {});
+                contextSaved = Na__LeSnap__HideContext(styles);
                 Na__DrawView__SectionAdapter__ReapplyClipping();
                 const result = await Na__StaticExport__RenderToCanvas({
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : Na__LeSnap__Camera,
@@ -336,6 +373,7 @@
                 console.warn('[ValeVision3D LayoutEditor] 2D underlay render failed:', renderError);
                 return null;
             } finally {
+                if (contextSaved) Na__ModelToggle__ApplySceneLayerVisibility(contextSaved);
                 Na__DrawView__MaterialPreset__Exit();
                 Na__DrawView__ComposerPreset__Exit();
                 if (pass && passWasOn !== null) pass.enabled = passWasOn;
@@ -373,6 +411,7 @@
             try {
                 Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, sceneRecord);
                 Na__DrawView__MaterialPreset__Enter(styles || {});
+                Na__LeSnap__HideContext(styles);                                   // <-- The saved map above already puts it back
                 if (pass) pass.enabled = !(styles && styles.profileLinework === false);
                 const result = await Na__StaticExport__RenderToCanvas({
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : camera,

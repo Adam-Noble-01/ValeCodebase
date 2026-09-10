@@ -33,6 +33,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.3
+// - The contextLayer style (the existing building and its surroundings in a viewport's render).
+//
 // 10-Sep-2026 - Version 1.1.2
 // - The baseImage style (the rendered picture behind a viewport).
 //
@@ -84,7 +87,7 @@
     const Na__LeRec__KIND_2D     = '2d';
     const Na__LeRec__KIND_3D     = '3d';
     const Na__LeRec__LAYER_TYPES = [ 'viewport', 'annotation', 'dimension', 'vector', 'mixed' ];
-    const Na__LeRec__STYLE_KEYS  = [ 'baseImage', 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines', 'enhanceWhitecard' ];
+    const Na__LeRec__STYLE_KEYS  = [ 'baseImage', 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines', 'enhanceWhitecard', 'contextLayer' ];
     const Na__LeRec__ID_PAD      = 3;
     // ------------------------------------------------------------
 
@@ -186,7 +189,8 @@
             glassOpaque       : pick('glassOpaque'),
             whitecard         : pick('whitecard'),
             hiddenLines       : pick('hiddenLines'),
-            enhanceWhitecard  : pick('enhanceWhitecard')
+            enhanceWhitecard  : pick('enhanceWhitecard'),
+            contextLayer      : pick('contextLayer')
         };
         if (viewport.Viewport__MarkupMode !== 'sheet') viewport.Viewport__MarkupMode = 'scene';
         if (viewport.Viewport__ShowScaleLabel === undefined) viewport.Viewport__ShowScaleLabel = setup.showScaleLabel;

@@ -23,6 +23,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - SetCategoryVisibility exported, so the Layout Editor can take the context out of a viewport's render and put it straight back.
+//
 // 09-Sep-2026 - Visibility event (port Phase 4)
 // - SetCategoryVisibility dispatches na-model-visibility-changed so the projected linework refreshes.
 //
@@ -334,6 +337,7 @@
     export {
         Na__UiFeature__InitializeModelToggleControls,
         Na__ModelToggle__ApplySceneLayerVisibility,
+        Na__ModelToggle__SetCategoryVisibility,
         Na__ModelToggle__GetCategories,
         Na__ModelToggle__CaptureVisibilityMap
     };

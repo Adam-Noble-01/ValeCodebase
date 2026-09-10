@@ -2,7 +2,7 @@
 # =========================================================
 
 # ---------------------------------------------------------
-## ValeVision3D v2.21.12 - 10-Sep-2026 - Layout Editor: the picture behind a viewport can be switched off
+## ValeVision3D v2.21.12 - 10-Sep-2026 - Layout Editor: Render Composites (Base Image, Context Layer)
 
 ### Added
 - **Base Image**, a viewport style, on by default. Off, the rendered
@@ -12,6 +12,15 @@
   costly render never runs. On a 3D viewport it leaves an empty frame.
   Switching it back on shows the picture the frame already had, with no
   new render.
+
+- **Context Layer**, last in the list, on by default. Off, the existing
+  building, the site boundaries, the landscape, the vegetation and the
+  entourage are taken out of that viewport's render, leaving the design
+  proposal on its own. The visibility is put back the moment the picture
+  is made, so the 3D model is untouched.
+- **The Styles section is now called Render Composites**, since that is
+  what the toggles decide: which layers and effects go into the picture a
+  viewport shows.
 
 ### Note on Whitecard
 - The Whitecard style swaps every opaque material to flat white, but only

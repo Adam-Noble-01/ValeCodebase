@@ -52,6 +52,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Intersection budget passed through to the edge extractor.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -167,11 +170,12 @@
 
     // FUNCTION | Find the Cut Lines Between Solids, Once per Collection
     // ------------------------------------------------------------
-    async function Na__PlCpu__PrepareIntersections(collected, slicer) {
+    async function Na__PlCpu__PrepareIntersections(collected, slicer, options) {
         if (collected.HasIntersections) return collected;
 
         const startedAt = performance.now();
-        collected.IntersectionEdges = await Na__PlEdges__ExtractIntersectionEdges(collected.Instances, slicer, collected.Report);
+        const limits    = { MaxPairs : options ? options.IntersectionMaxPairs : 0, SelfMaxTriangles : options ? options.IntersectionSelfMaxTriangles : 0 };
+        collected.IntersectionEdges = await Na__PlEdges__ExtractIntersectionEdges(collected.Instances, slicer, collected.Report, limits);
         collected.Report.IntersectionMs    = Math.round(performance.now() - startedAt);
         collected.Report.IntersectionCount = Math.floor(collected.IntersectionEdges.length / 6);
         collected.HasIntersections         = true;

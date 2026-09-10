@@ -61,6 +61,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - Intersection pass takes a pair budget and a self-test triangle cap; over budget it is skipped and reported.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -371,6 +374,17 @@
 
 
     // HELPER FUNCTION | The Bounds Tree a Geometry Already Has, or a New One
+    // HELPER FUNCTION | Triangles in a Geometry (indexed or not)
+    // ------------------------------------------------------------
+    function Na__PlEdges__TriangleCount(geometry) {
+        if (!geometry) return 0;
+        if (geometry.index) return Math.floor(geometry.index.count / 3);
+        const position = geometry.getAttribute ? geometry.getAttribute('position') : null;
+        return position ? Math.floor(position.count / 3) : 0;
+    }
+    // ------------------------------------------------------------
+
+
     // ------------------------------------------------------------
     function Na__PlEdges__BoundsTree(geometry) {
         if (geometry.boundsTree) return geometry.boundsTree;
@@ -387,27 +401,41 @@
     // slicer, when supplied, is awaited between pairs so a large model does
     // not hold the interface for the whole pass.
     // ------------------------------------------------------------
-    async function Na__PlEdges__ExtractIntersectionEdges(instances, slicer, report) {
+    async function Na__PlEdges__ExtractIntersectionEdges(instances, slicer, report, limits) {
         const collected = [];
         const boxes     = [];
-
+        const maxPairs  = (limits && Number.isFinite(limits.MaxPairs) && limits.MaxPairs > 0) ? limits.MaxPairs : Infinity;
+        const selfCap   = (limits && Number.isFinite(limits.SelfMaxTriangles) && limits.SelfMaxTriangles > 0) ? limits.SelfMaxTriangles : Infinity;
         for (let i = 0; i < instances.length; i++) boxes.push(Na__PlEdges__WorldBox(instances[i]));
 
-        let pairsTested = 0, pairsSkipped = 0, selfReused = 0;
+        // BUDGET | Count the overlapping pairs first (a box test each); a
+        // model over the budget skips the whole pass rather than running it
+        // for minutes, and the report says so.
+        let overlapping = 0;
+        for (let i = 0; i < instances.length && overlapping <= maxPairs; i++) {
+            for (let j = i + 1; j < instances.length; j++) if (Na__PlEdges__BoxesOverlap(boxes[i], boxes[j])) overlapping++;
+        }
+        if (overlapping > maxPairs) {
+            console.info('[ValeVision3D ProjectedLinework] Intersection edges skipped: over ' + maxPairs + ' overlapping instance pairs (ProjectedLinework__Projection__IntersectionMaxPairs).');
+            if (report) { report.PairsTested = 0; report.PairsSkipped = overlapping; report.SelfReused = 0; report.IntersectionSkipped = 'pairs'; }
+            return new Float64Array(0);
+        }
 
+        let pairsTested = 0, pairsSkipped = 0, selfReused = 0, selfSkipped = 0;
         for (let i = 0; i < instances.length; i++) {
             const instanceA = instances[i];
             const bvhA      = Na__PlEdges__BoundsTree(instanceA.geometry);
-
             if (slicer) await slicer.Tick();
-
             let selfLocal = Na__PlEdges__SelfIntersections.get(instanceA.geometry);
             if (selfLocal) {
                 selfReused++;
+            } else if (Na__PlEdges__TriangleCount(instanceA.geometry) > selfCap) {
+                selfLocal = new Float64Array(0);                                 // <-- A terrain or a wall shell: too large to fold-test
+                Na__PlEdges__SelfIntersections.set(instanceA.geometry, selfLocal);
+                selfSkipped++;
             } else {
                 Na__PlEdges__Identity.identity();
                 const found = generateIntersectionEdges(bvhA, bvhA, Na__PlEdges__Identity, []);
-
                 selfLocal = new Float64Array(found.length * 6);
                 for (let k = 0; k < found.length; k++) {
                     const line = found[k];
@@ -421,25 +449,18 @@
                 Na__PlEdges__SelfIntersections.set(instanceA.geometry, selfLocal);
                 pairsTested++;
             }
-
             for (let s = 0; s < selfLocal.length; s += 6) {
                 Na__PlEdges__PushWorld(collected, instanceA.matrixWorld.elements, selfLocal, s);
             }
-
             for (let j = i + 1; j < instances.length; j++) {
                 if (!Na__PlEdges__BoxesOverlap(boxes[i], boxes[j])) { pairsSkipped++; continue; }
-
                 if (slicer) await slicer.Tick();
                 pairsTested++;
-
                 const instanceB = instances[j];
                 const bvhB      = Na__PlEdges__BoundsTree(instanceB.geometry);
-
                 Na__PlEdges__BToA.copy(instanceA.matrixWorld).invert().multiply(instanceB.matrixWorld);
-
                 const found = generateIntersectionEdges(bvhA, bvhB, Na__PlEdges__BToA, []);
                 if (found.length === 0) continue;
-
                 const e = instanceA.matrixWorld.elements;
                 for (let k = 0; k < found.length; k++) {
                     const line = found[k];
@@ -449,13 +470,12 @@
                 }
             }
         }
-
         if (report) {
             report.PairsTested  = pairsTested;
             report.PairsSkipped = pairsSkipped;
             report.SelfReused   = selfReused;
+            report.SelfSkipped  = selfSkipped;
         }
-
         return new Float64Array(collected);
     }
     // ------------------------------------------------------------

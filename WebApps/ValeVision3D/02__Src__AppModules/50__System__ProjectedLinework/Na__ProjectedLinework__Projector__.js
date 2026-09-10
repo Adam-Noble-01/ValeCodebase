@@ -164,6 +164,9 @@
             YieldEveryMs             : performance.yieldEveryMs,
             MaxTriangles             : performance.maxTriangles,
             IncludeHiddenEdges       : !!(definition && definition.Styles && definition.Styles.hiddenLines),
+            IntersectionMaxInstances : projection.intersectionMaxInstances,
+            IntersectionMaxPairs     : projection.intersectionMaxPairs,
+            IntersectionSelfMaxTriangles : projection.intersectionSelfMaxTriangles,
             NeedsIntersectionEdges   : backend === Na__PlProjector__BACKEND_CPU && projection.includeIntersectionEdges
         };
     }
@@ -196,7 +199,7 @@
         collected.HasIntersections  = false;
         collected.Report            = { CollectMs : 0, BvhCount : 0, BvhMs : 0, IntersectionMs : 0, IntersectionCount : 0, PairsTested : 0, PairsSkipped : 0, SelfReused : 0 };
 
-        if (options.NeedsIntersectionEdges) {
+        if (options.NeedsIntersectionEdges && collected.Instances.length <= options.IntersectionMaxInstances) {   // <-- Trees only for a pass that will run
             const primedAt = performance.now();
             collected.Report.BvhCount = await Na__PlStage__PrimeBoundsTrees(collected.Instances, options.YieldEveryMs);
             collected.Report.BvhMs    = Math.round(performance.now() - primedAt);
@@ -227,8 +230,17 @@
     // ------------------------------------------------------------
     async function Na__PlProjector__PrepareIntersections(collected, options, slicer, onPhase) {
         if (!options.NeedsIntersectionEdges || collected.HasIntersections) return collected;
+        if (collected.Instances.length > options.IntersectionMaxInstances) {
+            // A house-scale model: the pairwise search would run for minutes.
+            // The junction lines come from the authored linework instead.
+            console.info('[ValeVision3D ProjectedLinework] Intersection edges skipped: ' + collected.Instances.length +
+                         ' instances, over the ' + options.IntersectionMaxInstances + ' ceiling (ProjectedLinework__Projection__IntersectionMaxInstances).');
+            collected.Report.IntersectionSkipped = 'instances';
+            collected.HasIntersections = true;
+            return collected;
+        }
         if (typeof onPhase === 'function') onPhase(Na__PlProjector__PHASE_INTERSECTING);
-        return Na__PlCpu__PrepareIntersections(collected, slicer);
+        return Na__PlCpu__PrepareIntersections(collected, slicer, options);
     }
     // ------------------------------------------------------------
 

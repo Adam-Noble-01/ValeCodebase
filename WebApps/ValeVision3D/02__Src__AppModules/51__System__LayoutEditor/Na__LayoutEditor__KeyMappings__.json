@@ -199,6 +199,15 @@
                 "ModifierMatch" : "Exact"
             },
             {
+                "Id"            : "Snap__Toggle",
+                "Label"         : "Toggle object snapping to the linework (AutoCAD F3)",
+                "Action"        : "Snap__Toggle",
+                "Enabled"       : true,
+                "Keys"          : [ "F3" ],
+                "Modifiers"     : [],
+                "ModifierMatch" : "Exact"
+            },
+            {
                 "Id"            : "Edit__NudgeLeft",
                 "Label"         : "Nudge the selection left",
                 "Action"        : "Edit__NudgeLeft",

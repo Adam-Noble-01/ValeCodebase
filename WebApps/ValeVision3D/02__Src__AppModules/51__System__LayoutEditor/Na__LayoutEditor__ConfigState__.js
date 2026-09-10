@@ -89,7 +89,8 @@
                      { Id : 'Edit__NudgeDown',   Action : 'Edit__NudgeDown',   Enabled : true, Keys : [ 'ArrowDown' ],            Modifiers : [], ModifierMatch : 'CoarseOptional' },
                      { Id : 'Tool__Select',      Action : 'Tool__Select',      Enabled : true, Keys : [ 'v', 'V' ],               Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Tool__Text',        Action : 'Tool__Text',        Enabled : true, Keys : [ 't', 'T' ],               Modifiers : [], ModifierMatch : 'Exact' },
-                     { Id : 'Tool__Dimension',   Action : 'Tool__Dimension',   Enabled : true, Keys : [ 'd', 'D' ],               Modifiers : [], ModifierMatch : 'Exact' } ],
+                     { Id : 'Tool__Dimension',   Action : 'Tool__Dimension',   Enabled : true, Keys : [ 'd', 'D' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Snap__Toggle',      Action : 'Snap__Toggle',      Enabled : true, Keys : [ 'F3' ],                   Modifiers : [], ModifierMatch : 'Exact' } ],
         keyboardSetup : { ignoreWhenTyping : true, coarseStepModifier : 'Shift', nudgeStepMm : 1, nudgeCoarseStepMm : 10,
                           panStepPx : 60, panCoarseStepPx : 240, zoomKeyStep : 1.15 },
         touch    : { oneFingerPanOnStage : true, oneFingerPanOnPaper : false, twoFingerPan : true, pinchZoom : true,
@@ -353,6 +354,21 @@
             defaultPrecision  : Na__LeCfg__Num('Dimensions', 'DefaultPrecision', 0),
             defaultUnits      : Na__LeCfg__Val('Dimensions', 'DefaultUnitsSuffix', ' mm'),
             thousandsSep      : Na__LeCfg__Val('Dimensions', 'ThousandsSeparator', ',')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Object Snap Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetSnappingSetup() {
+        return {
+            enabled      : Na__LeCfg__Val('Snapping', 'Enabled', true) !== false,
+            radiusPx     : Na__LeCfg__Num('Snapping', 'RadiusPx', 10),
+            endpoints    : Na__LeCfg__Val('Snapping', 'Endpoints', true) !== false,
+            midpoints    : Na__LeCfg__Val('Snapping', 'Midpoints', true) !== false,
+            hiddenLines  : Na__LeCfg__Val('Snapping', 'HiddenLines', false) === true,
+            markerSizePx : Na__LeCfg__Num('Snapping', 'MarkerSizePx', 10)
         };
     }
     // ------------------------------------------------------------
@@ -653,6 +669,7 @@
         Na__LeCfg__GetTextSetup,
         Na__LeCfg__GetDimensionSetup,
         Na__LeCfg__GetLineworkSetup,
+        Na__LeCfg__GetSnappingSetup,
         Na__LeCfg__GetPanelSetup,
         Na__LeCfg__GetNavigationSetup,
         Na__LeCfg__GetPdfSetup,

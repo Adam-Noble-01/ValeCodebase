@@ -29,8 +29,14 @@
    The two dropdown menus (Tools & Settings and the localhost Dev Tools
    container) belong to the 3D Model tab only: they sit above the host at
    z-index 1001 and would otherwise cover the sheet panels, so a drawing
-   tab hides them outright rather than letting them float over the paper. */
+   tab hides them outright rather than letting them float over the paper.
+   The breadcrumb trail goes with them: it is fixed to the top left, which
+   on a drawing tab is the sheet panel column, and it navigates away from
+   the model rather than around the drawing, so it has nothing to say while
+   a sheet is open. It returns with the 3D Model tab, folded or unfolded
+   exactly as it was left. */
 body.na-layout-editor--active .na-dropdown-menu,
+body.na-layout-editor--active #naBreadcrumbNav,
 body.na-layout-editor--active #naPresentationCarousel,
 body.na-layout-editor--active #naNavToolbar,
 body.na-layout-editor--active #naNavHelpPanel,
@@ -465,6 +471,54 @@ body.na-le-dragging * {
 .na-le-dev__sheet-name {
     flex                               : 1 1 100%;
     min-width                          : 0;
+}
+
+/* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Snap Marker and Linework Progress                      */
+/* ----------------------------------------------------------------- */
+
+/* Square for an endpoint, triangle for a midpoint (the AutoCAD glyphs);
+   size and border are written inline, counter-scaled by the zoom. */
+.na-le-osnap {
+    position                           : absolute;
+    box-sizing                         : border-box;
+    border                             : 1.5px solid #d97706;
+    background                         : rgba(217, 119, 6, 0.12);
+    pointer-events                     : none;
+    z-index                            : 6;
+}
+
+.na-le-osnap[hidden] {
+    display                            : none;
+}
+
+.na-le-osnap--mid {
+    border-radius                      : 0;
+    clip-path                          : polygon(50% 0, 100% 100%, 0 100%);
+    background                         : rgba(217, 119, 6, 0.55);
+    border                             : none;
+}
+
+.na-le-frame__progress {
+    position                           : absolute;
+    left                               : 6px;
+    top                                : 6px;
+    padding                            : 3px 8px;
+    border-radius                      : 4px;
+    background                         : rgba(23, 43, 58, 0.82);
+    color                              : #ffffff;
+    font-size                          : 10px;
+    line-height                        : 1.3;
+    white-space                        : nowrap;
+    pointer-events                     : none;
+    z-index                            : 4;
+}
+
+.na-le-frame__progress[hidden] {
+    display                            : none;
 }
 
 /* endregion ------------------------------------------------------- */

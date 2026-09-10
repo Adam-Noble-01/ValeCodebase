@@ -12,9 +12,12 @@
     },
 
     "ProjectedLinework__Projection__Config": {
-        "ProjectedLinework__Projection__Description": "What counts as a line, and how finely it is drawn. AngleThresholdDegrees is the dihedral angle above which a shared triangle edge counts as a hard edge. IncludeIntersectionEdges adds the lines where two solids cut through one another; it is view-invariant and computed once per model state. EdgeLiftWorldUnits nudges every edge a hair towards the viewer so a line lying exactly in its own surface is not judged hidden by it; it is in scene units (metres). IterationTimeMs applies to the legacy backend only.",
+        "ProjectedLinework__Projection__Description": "What counts as a line, and how finely it is drawn. AngleThresholdDegrees is the dihedral angle above which a shared triangle edge counts as a hard edge. IncludeIntersectionEdges adds the lines where two solids cut through one another; it is view-invariant and computed once per model state. EdgeLiftWorldUnits nudges every edge a hair towards the viewer so a line lying exactly in its own surface is not judged hidden by it; it is in scene units (metres). IterationTimeMs applies to the legacy backend only. The intersection pass is a mesh-against-mesh BVH search that grows with the square of the overlapping pairs, so it is skipped (and the bounds trees it needs are never built) when the model has more than IntersectionMaxInstances instances or more than IntersectionMaxPairs overlapping pairs, and a single geometry over IntersectionSelfMaxTriangles is not tested against itself. A house-scale SketchUp model normally exceeds these and draws its junctions from the authored linework instead.",
         "ProjectedLinework__Projection__AngleThresholdDegrees": 50,
         "ProjectedLinework__Projection__IncludeIntersectionEdges": true,
+        "ProjectedLinework__Projection__IntersectionMaxInstances": 400,
+        "ProjectedLinework__Projection__IntersectionMaxPairs": 20000,
+        "ProjectedLinework__Projection__IntersectionSelfMaxTriangles": 60000,
         "ProjectedLinework__Projection__IterationTimeMs": 30,
         "ProjectedLinework__Projection__MinimumSegmentLengthMm": 1.0,
         "ProjectedLinework__Projection__EdgeLiftWorldUnits": 0.000001

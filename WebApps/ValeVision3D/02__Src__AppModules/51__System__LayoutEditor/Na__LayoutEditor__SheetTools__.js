@@ -40,6 +40,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Dimension placement and endpoint drags snap to the linework through Na__LayoutEditor__Snapping__; F3 toggles it.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -94,6 +97,7 @@
     import { Na__LeMarkup__HitTest, Na__LeMarkup__AnnotationBounds, Na__LeMarkup__DimensionSkeleton } from './Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeVp2d__SetInteracting } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
+    import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle } from './Na__LayoutEditor__Snapping__.js';
     import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
     // ------------------------------------------------------------
 
@@ -297,10 +301,11 @@
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
 
-        if (Na__LeTools__Placement) { Na__LeTools__DrawPreview(Na__LeTools__Placement.startMm, Na__LeTools__Constrain(Na__LeTools__Placement.startMm, point, event.shiftKey)); return; }
+        if (Na__LeTools__Placement) { Na__LeTools__DrawPreview(Na__LeTools__Placement.startMm, Na__LeTools__SnapOrConstrain(sheet, Na__LeTools__Placement.startMm, point, event.shiftKey)); return; }
 
         const drag = Na__LeTools__Drag;
         if (!drag || event.pointerId !== drag.pointerId) {
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeOsnap__Snap(sheet, point); return; }   // <-- Marker before the first click
             if (Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) return;
             const found = Na__LeTools__Resolve(sheet, point);
             Na__LeTools__Stage.style.cursor = found ? (found.kind === 'viewport' ? (found.hit ? Na__LeHandles__CursorFor(found.hit) : 'default') : 'move') : '';
@@ -339,8 +344,12 @@
         const s = drag.start;
         const d = shift ? (Math.abs(dMm.x) >= Math.abs(dMm.y) ? { x : dMm.x, y : 0 } : { x : 0, y : dMm.y }) : dMm;
         let patch = null;
-        if (drag.mode === 'start')       patch = { startXMm : s.sx + d.x, startYMm : s.sy + d.y };
-        else if (drag.mode === 'end')    patch = { endXMm : s.ex + d.x, endYMm : s.ey + d.y };
+        if (drag.mode === 'start' || drag.mode === 'end') {
+            const snap = Na__LeOsnap__Snap(sheet, { x : drag.startMm.x + dMm.x, y : drag.startMm.y + dMm.y });   // <-- The grip jumps to a corner or a midpoint
+            const px = snap.snapped ? snap.x : (drag.mode === 'start' ? s.sx : s.ex) + d.x;
+            const py = snap.snapped ? snap.y : (drag.mode === 'start' ? s.sy : s.ey) + d.y;
+            patch = drag.mode === 'start' ? { startXMm : px, startYMm : py } : { endXMm : px, endYMm : py };
+        }
         else if (drag.mode === 'offset') {
             const len = Math.hypot(s.ex - s.sx, s.ey - s.sy) || 1;
             const perpX = -(s.ey - s.sy) / len, perpY = (s.ex - s.sx) / len;
@@ -368,6 +377,7 @@
     // navigation gesture that interrupts a drag still leaves the record
     // committed rather than half moved.
     function Na__LeTools__FinishDrag(pointerId) {
+        Na__LeOsnap__HideMarker();
         const drag = Na__LeTools__Drag;
         if (!drag) return;
         if (pointerId !== null && pointerId !== undefined && Na__LeTools__Stage) {
@@ -433,6 +443,16 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | A Snap Beats the Axis Constraint, as in AutoCAD
+    // ------------------------------------------------------------
+    function Na__LeTools__SnapOrConstrain(sheet, start, point, shift) {
+        const snap = Na__LeOsnap__Snap(sheet, point);
+        if (snap.snapped) return { x : snap.x, y : snap.y };
+        return Na__LeTools__Constrain(start, point, shift);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Place a Text Item and Start Editing It
     // ------------------------------------------------------------
     function Na__LeTools__PlaceText(sheet, point) {
@@ -452,12 +472,13 @@
     // ------------------------------------------------------------
     function Na__LeTools__PlaceDimension(sheet, point, shift) {
         if (!Na__LeTools__Placement) {
-            Na__LeTools__Placement = { startMm : point };
-            Na__LeTools__DrawPreview(point, point);
+            const first = Na__LeOsnap__Snap(sheet, point);
+            Na__LeTools__Placement = { startMm : { x : first.x, y : first.y } };
+            Na__LeTools__DrawPreview(Na__LeTools__Placement.startMm, Na__LeTools__Placement.startMm);
             return;
         }
         const start = Na__LeTools__Placement.startMm;
-        const end   = Na__LeTools__Constrain(start, point, shift);
+        const end   = Na__LeTools__SnapOrConstrain(sheet, start, point, shift);
         Na__LeTools__CancelPlacement();
         if (Math.hypot(end.x - start.x, end.y - start.y) < Na__LeTools__DRAG_THRESHOLD_MM) return;
         const mid = { x : (start.x + end.x) / 2, y : (start.y + end.y) / 2 };
@@ -497,6 +518,7 @@
     // ------------------------------------------------------------
     function Na__LeTools__CancelPlacement() {
         Na__LeTools__Placement = null;
+        Na__LeOsnap__HideMarker();
         if (Na__LeTools__Preview && Na__LeTools__Preview.parentNode) Na__LeTools__Preview.parentNode.removeChild(Na__LeTools__Preview);
     }
     // ------------------------------------------------------------
@@ -647,6 +669,7 @@
             case 'Tool__Select':     Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);    return;
             case 'Tool__Text':       Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT);      return;
             case 'Tool__Dimension':  Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
+            case 'Snap__Toggle':     Na__LeOsnap__Toggle(); event.preventDefault(); return;
             default: return;
         }
     }

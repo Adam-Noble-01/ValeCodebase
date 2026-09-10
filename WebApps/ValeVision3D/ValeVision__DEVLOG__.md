@@ -2,6 +2,45 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.3 - 10-Sep-2026 - Linework projection budget and object snaps
+
+### Fixed
+- **Minutes to project an elevation.** The Lantern Designer runs the same
+  engine on lantern-scale models with a few hundred instances; a house
+  scale SketchUp export has thousands, and the mesh-against-mesh
+  intersection pass (BVH pairs, square in the overlapping pair count) was
+  where the time went, with the bounds trees it needs built first. The
+  pass now has a budget: skipped when the model has more than
+  `IntersectionMaxInstances` (400) instances or more than
+  `IntersectionMaxPairs` (20000) overlapping pairs, no self-test on a
+  geometry over `IntersectionSelfMaxTriangles` (60000), the bounds trees
+  only built when the pass will run, and the report says what was
+  skipped. Junction lines on a large model come from the authored
+  SketchUp linework instead. All three limits live in
+  `ProjectedLinework__Projection__Config`.
+- **Recomputing after a reload.** A finished render is now written to the
+  browser store (IndexedDB) as well as held in memory, for the scene
+  overlay and for sheet viewports alike, so the next load of the drawing
+  paints from the store. Bake All to R2 remains the way to give the web
+  build a drawing without any computation.
+- **Nothing to look at while it computes.** A sheet viewport shows a
+  progress badge with the current phase and elapsed seconds while its
+  linework is projected, and the console logs the timing report (collect,
+  intersections, triangles, edges, segments, phases) when it lands.
+
+### Added
+- **Object snaps on the linework.** `Na__LayoutEditor__Snapping__.js`:
+  dimension placement and endpoint drags snap to the endpoints and
+  midpoints of the projected linework inside 2D viewports, AutoCAD
+  style, with a square marker for an endpoint and a triangle for a
+  midpoint. Points are indexed per viewport in a paper millimetre grid
+  hash from the painted segments and rebuilt automatically when the
+  linework, pan, crop or scale changes. A snap beats the Shift axis
+  constraint. Toolbar Snap button and F3 toggle it (remembered per
+  browser); `LayoutEditor__Snapping__Config` holds the radius, the point
+  kinds and the marker size.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.2 - 10-Sep-2026 - Engine pause on drawing tabs
 
 ### Fixed

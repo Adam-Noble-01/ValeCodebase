@@ -39,6 +39,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.2.0
+// - Progress badge while linework computes, render timing in the console, fresh renders kept in the browser store, snap source for the snapping module.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Keys use the session-cached pipeline fingerprint instead of walking the model on every refresh.
 //
@@ -75,7 +78,7 @@
         Na__PlPipe__RenderDefinition,
         Na__PlPipe__Remember
     } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
-    import { Na__PlStore__LoadForDefinition } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js';
+    import { Na__PlStore__LoadForDefinition, Na__PlStore__RememberRender } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js';
     import { Na__PlOverlay__BuildPathData } from '../50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js';
     // ------------------------------------------------------------
 
@@ -158,7 +161,7 @@
 
     // FUNCTION | The Four Classes for a Definition: Cache, Baked Asset, Then Render
     // ------------------------------------------------------------
-    function Na__LeVp2d__EnsureLinework(definition) {
+    function Na__LeVp2d__EnsureLinework(definition, onPhase) {
         if (!definition) return Promise.resolve(null);
         const cached = Na__PlPipe__GetCached(definition);
         if (cached) return Promise.resolve(cached);
@@ -170,8 +173,16 @@
             try {
                 const stored = await Na__PlStore__LoadForDefinition(definition, fingerprint, key);
                 if (stored) { Na__PlPipe__Remember(key, definition, stored, fingerprint, 'asset'); return stored; }
-                const result = await Na__PlPipe__RenderDefinition(definition);
-                if (result && result.Classes) { Na__PlPipe__Remember(result.CacheKey, definition, result.Classes, result.Fingerprint, 'render'); return result.Classes; }
+                const startedAt = performance.now();
+                const result = await Na__PlPipe__RenderDefinition(definition, null, null, onPhase);
+                if (result && result.Classes) {
+                    Na__PlPipe__Remember(result.CacheKey, definition, result.Classes, result.Fingerprint, 'render');
+                    void Na__PlStore__RememberRender(definition, result);                          // <-- A reload paints from IndexedDB
+                    const report = result.Report || {};
+                    console.log('[ValeVision3D LayoutEditor] Linework ' + definition.ViewKey + ' rendered in ' + Math.round(performance.now() - startedAt) + ' ms',
+                        { collectMs : report.CollectMs, intersections : report.IntersectionCount, intersectionSkipped : report.IntersectionSkipped || null, triangles : report.TriangleTotal, edges : report.EdgeCount, segments : report.SegmentCount, phases : report.Phases });
+                    return result.Classes;
+                }
                 return null;
             } catch (lineworkError) {
                 console.warn('[ValeVision3D LayoutEditor] Linework unavailable for ' + definition.ViewKey + ':', lineworkError);
@@ -234,6 +245,8 @@
             win.OriginX + ' ' + win.OriginY + ' ' + win.WidthMm + ' ' + win.HeightMm + '" preserveAspectRatio="none" focusable="false" aria-hidden="true">' + body + '</svg>';
         state.lineworkKey  = key + '|' + showHidden + '|' + D;
         state.lineworkSvg  = state.linework.firstElementChild;
+        state.classes      = classes;                                             // <-- Snap source
+        state.classesKey   = key;
         Na__LeVp2d__SizeLayer(state.lineworkSvg, viewport, ppm);
     }
     // ------------------------------------------------------------
@@ -264,10 +277,11 @@
         const make = (tag, cls) => { const el = document.createElement(tag); el.className = cls; body.appendChild(el); return el; };
         state = {
             body : body, underlay : make('img', 'na-le-frame__underlay'), linework : make('div', 'na-le-frame__linework'),
-            markup : make('div', 'na-le-frame__markup'), empty : make('div', 'na-le-frame__empty'),
+            markup : make('div', 'na-le-frame__markup'), empty : make('div', 'na-le-frame__empty'), progress : make('div', 'na-le-frame__progress'),
             renderedKey : null, renderedWindow : null, wantedKey : null, timer : null, inFlight : false,
-            lineworkKey : null, lineworkSvg : null, markupKey : null, lastArgs : null
+            lineworkKey : null, lineworkSvg : null, markupKey : null, lastArgs : null, classes : null, classesKey : null, progressTimer : null
         };
+        state.progress.hidden = true;
         state.underlay.draggable = false;
         state.underlay.alt = '';
         Na__LeVp2d__States.set(viewportId, state);
@@ -364,10 +378,14 @@
             } else {
                 const classes = Na__PlPipe__GetCached(described.definition);
                 if (classes) Na__LeVp2d__PaintLinework(state, viewport, cacheKey, classes, ppm);
-                else Na__LeVp2d__EnsureLinework(described.definition).then((loaded) => {
-                    if (!loaded || Na__LeVp2d__States.get(viewport.Viewport__Id) !== state || !state.lastArgs) return;
-                    Na__LeVp2d__PaintLinework(state, state.lastArgs.viewport, cacheKey, loaded, state.lastArgs.ppm);
-                });
+                else {
+                    Na__LeVp2d__ShowProgress(state, '');
+                    Na__LeVp2d__EnsureLinework(described.definition, (phase) => Na__LeVp2d__ShowProgress(state, phase)).then((loaded) => {
+                        Na__LeVp2d__HideProgress(state);
+                        if (!loaded || Na__LeVp2d__States.get(viewport.Viewport__Id) !== state || !state.lastArgs) return;
+                        Na__LeVp2d__PaintLinework(state, state.lastArgs.viewport, cacheKey, loaded, state.lastArgs.ppm);
+                    });
+                }
             }
         }
 
@@ -384,12 +402,52 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | A Badge in the Frame While the Linework Is Computed
+    // ------------------------------------------------------------
+    function Na__LeVp2d__ShowProgress(state, phase) {
+        if (!state.progress) return;
+        if (!state.progressTimer) {
+            state.progressStarted = performance.now();
+            state.progressTimer   = window.setInterval(() => Na__LeVp2d__ShowProgress(state, state.progressPhase || ''), 1000);
+        }
+        state.progressPhase = phase || state.progressPhase || '';
+        const seconds = Math.round((performance.now() - state.progressStarted) / 1000);
+        state.progress.textContent = Na__LeCfg__GetLabel('ProjectingLinework', 'Projecting linework') + (state.progressPhase ? ': ' + state.progressPhase : '') + (seconds > 0 ? ' (' + seconds + ' s)' : '');
+        state.progress.hidden = false;
+    }
+    function Na__LeVp2d__HideProgress(state) {
+        if (state.progressTimer) { window.clearInterval(state.progressTimer); state.progressTimer = null; }
+        state.progressPhase = '';
+        if (state.progress) state.progress.hidden = true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What the Snapping Module Reads: Painted Classes and the Window
+    // ------------------------------------------------------------
+    // The key changes whenever the linework, pan, crop or scale changes, so
+    // the snap index knows when to rebuild without being told.
+    // ------------------------------------------------------------
+    function Na__LeVp2d__GetSnapSource(viewportId) {
+        const state = Na__LeVp2d__States.get(viewportId);
+        if (!state || !state.classes || !state.lastArgs) return null;
+        const win = Na__LeVp2d__Window(state.lastArgs.viewport);
+        return {
+            classes : state.classes,
+            window  : win,
+            key     : state.classesKey + '|' + Math.round(win.OriginX) + '|' + Math.round(win.OriginY) + '|' + Math.round(win.WidthMm) + '|' + Math.round(win.HeightMm) + '|' + win.Frame.X + '|' + win.Frame.Y
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Drop a Viewport's State
     // ------------------------------------------------------------
     function Na__LeVp2d__Release(viewportId) {
         const state = Na__LeVp2d__States.get(viewportId);
         if (!state) return;
         if (state.timer) window.clearTimeout(state.timer);
+        Na__LeVp2d__HideProgress(state);
         Na__LeVp2d__States.delete(viewportId);
     }
     // ------------------------------------------------------------
@@ -440,7 +498,8 @@
         Na__LeVp2d__Fill,
         Na__LeVp2d__Release,
         Na__LeVp2d__SetInteracting,
-        Na__LeVp2d__RenderForExport
+        Na__LeVp2d__RenderForExport,
+        Na__LeVp2d__GetSnapSource
     };
     // ------------------------------------------------------------
 

@@ -148,6 +148,15 @@
         "LayoutEditor__Navigation__FitPaddingPx": 32
     },
 
+    "LayoutEditor__Snapping__Config": {
+        "LayoutEditor__Snapping__Description": "Object snaps on the projected linework inside 2D viewports, for placing and dragging sheet dimensions. RadiusPx is the pick radius on screen at any zoom. Endpoints and midpoints of every painted segment are candidates; an endpoint wins a near tie. HiddenLines adds the hidden class as a source. The toggle (toolbar button or the Snap__Toggle key binding) is remembered per browser.",
+        "LayoutEditor__Snapping__Enabled": true,
+        "LayoutEditor__Snapping__RadiusPx": 10,
+        "LayoutEditor__Snapping__Endpoints": true,
+        "LayoutEditor__Snapping__Midpoints": true,
+        "LayoutEditor__Snapping__HiddenLines": false,
+        "LayoutEditor__Snapping__MarkerSizePx": 10
+    },
     "LayoutEditor__Linework__Config": {
         "LayoutEditor__Linework__Description": "Paper-millimetre stroke widths for the projected linework inside sheet viewports (they print at these widths at any scale). Colours follow the Projected Linework appearance block so a sheet matches its scene.",
         "LayoutEditor__Linework__VisibleWidthMm": 0.25,
@@ -190,6 +199,9 @@
         "LayoutEditor__Labels__SaveFailedMessage": "Sheet save failed - see console.",
         "LayoutEditor__Labels__DeleteSheetPrompt": "Delete the sheet \"{name}\"? Its viewports, text and dimensions go with it.",
         "LayoutEditor__Labels__PdfReadyMessage": "PDF downloaded.",
-        "LayoutEditor__Labels__PdfFailedMessage": "PDF export failed - see console."
+        "LayoutEditor__Labels__PdfFailedMessage": "PDF export failed - see console.",
+        "LayoutEditor__Labels__SnapToggle": "Snap",
+        "LayoutEditor__Labels__SnapToggleTitle": "Snap dimensions to the linework endpoints and midpoints (F3)",
+        "LayoutEditor__Labels__ProjectingLinework": "Projecting linework"
     }
 }

@@ -48,6 +48,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - RememberRender keeps a fresh render in IndexedDB so a reload paints without computing.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -383,6 +386,21 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Keep a Fresh Render in the Browser So a Reload Never Recomputes It
+    // ------------------------------------------------------------
+    // result: { Classes, Fingerprint, CacheKey, Report } from the pipeline.
+    // Over the storage ceiling nothing is written (Serialise refuses).
+    // ------------------------------------------------------------
+    async function Na__PlStore__RememberRender(definition, result) {
+        if (!definition || !result || !result.Classes || !result.CacheKey) return false;
+        if (!Na__PlCfg__GetPersistenceSetup().enabled) return false;
+        const block = Na__PlStore__Serialise(definition, result.Classes, { Fingerprint : result.Fingerprint, Backend : result.Report ? result.Report.Backend : 'cpu' });
+        if (!block) return false;
+        return Na__PlStore__StoreInBrowser(result.CacheKey, block);
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -500,6 +518,7 @@
         Na__PlStore__SetSlot,
         Na__PlStore__AssetStatus,
         Na__PlStore__LoadForDefinition,
+        Na__PlStore__RememberRender,
         Na__PlStore__BakeOne,
         Na__PlStore__BakeAll,
         Na__PlStore__BakeBeforeSave

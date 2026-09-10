@@ -60,6 +60,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.1.0
+// - A finished render is kept in the browser store as well as in memory.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -98,7 +101,7 @@
         Na__PlOverlay__Clear,
         Na__PlOverlay__SetShown
     } from './Na__ProjectedLinework__SvgOverlay__.js';
-    import { Na__PlStore__LoadForDefinition } from './Na__ProjectedLinework__Persistence__.js';
+    import { Na__PlStore__LoadForDefinition, Na__PlStore__RememberRender } from './Na__ProjectedLinework__Persistence__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Events From the Drawing Systems
@@ -419,6 +422,7 @@
             Na__PlPipe__LastReport = result.Report;
             Na__PlPipe__LogCost(definition, result.Report);
             Na__PlPipe__Remember(result.CacheKey, definition, result.Classes, result.Fingerprint, 'render');
+            void Na__PlStore__RememberRender(definition, result);                 // <-- A reload paints from IndexedDB
             settle();
             Na__PlPipe__PaintCurrent();
             Na__PlPipe__Dispatch(Na__PlPipe__STATUS_READY, definition, { cacheKey : result.CacheKey, report : result.Report });

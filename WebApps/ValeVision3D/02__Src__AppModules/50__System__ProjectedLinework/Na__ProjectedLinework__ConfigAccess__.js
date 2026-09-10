@@ -68,6 +68,9 @@
         logTimings              : true,
         angleThresholdDegrees   : 50,
         includeIntersections    : true,
+        intersectionMaxInstances : 400,
+        intersectionMaxPairs     : 20000,
+        intersectionSelfMaxTriangles : 60000,
         iterationTimeMs         : 30,
         minimumSegmentLengthMm  : 1.0,
         edgeLiftWorldUnits      : 0.000001,
@@ -247,6 +250,9 @@
         return {
             angleThresholdDegrees    : Na__PlCfg__Num('Projection', 'AngleThresholdDegrees',    F.angleThresholdDegrees),
             includeIntersectionEdges : Na__PlCfg__Val('Projection', 'IncludeIntersectionEdges', F.includeIntersections) === true,
+            intersectionMaxInstances : Na__PlCfg__Num('Projection', 'IntersectionMaxInstances',     F.intersectionMaxInstances),
+            intersectionMaxPairs     : Na__PlCfg__Num('Projection', 'IntersectionMaxPairs',         F.intersectionMaxPairs),
+            intersectionSelfMaxTriangles : Na__PlCfg__Num('Projection', 'IntersectionSelfMaxTriangles', F.intersectionSelfMaxTriangles),
             iterationTimeMs          : Na__PlCfg__Num('Projection', 'IterationTimeMs',          F.iterationTimeMs),
             minimumSegmentLengthMm   : Na__PlCfg__Num('Projection', 'MinimumSegmentLengthMm',   F.minimumSegmentLengthMm),
             edgeLiftWorldUnits       : Na__PlCfg__Num('Projection', 'EdgeLiftWorldUnits',       F.edgeLiftWorldUnits)

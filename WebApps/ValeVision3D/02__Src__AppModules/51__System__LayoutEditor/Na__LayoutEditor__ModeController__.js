@@ -86,6 +86,7 @@
     import { Na__LePanelStyles__Register } from './Na__LayoutEditor__Panel__Styles__.js';
     import { Na__LeToolbar__Mount } from './Na__LayoutEditor__Toolbar__.js';
     import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    import { Na__LeOsnap__Clear } from './Na__LayoutEditor__Snapping__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Drawing Modes, Render Loop, Projection Events, Localhost
@@ -241,6 +242,7 @@
         Na__LeTouch__Detach();
         Na__LePc__Detach();
         Na__LeSurface__SetSheet(null);
+        Na__LeOsnap__Clear();
         Na__LeModel__SetActiveSheetId(null);
         Na__LeMode__Host.hidden = true;
         document.body.classList.remove(Na__LeMode__BODY_CLASS);

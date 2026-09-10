@@ -175,7 +175,7 @@
        The carousel at the bottom fills the vacated area.                     */
     body.na-presentation-mode-active .na-nav-toolbar {
         bottom                             : auto;
-        top                                : calc(var(--Vale_HeaderHeight, 54px) + 14px);  /* below header */
+        top                                : calc((var(--Vale_HeaderHeight, 54px) + var(--Vale_LayoutTabStripHeight, 0px)) + 14px);  /* below header */
         left                               : 50%;
         transform                          : translateX(-50%);
     }

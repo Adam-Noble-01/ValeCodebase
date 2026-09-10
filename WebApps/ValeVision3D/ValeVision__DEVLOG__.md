@@ -2,6 +2,180 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.1 - 10-Sep-2026 - clipper2-js vendored (app failed to load)
+
+### Fixed
+- **Module graph.** The app stopped at `Failed to resolve module specifier
+  "clipper2-js"`. The Phase 0 vendoring left folder 03 out on the reading
+  that no ValeVision3D module needs it, but three-edge-projection's
+  SilhouetteGenerator imports clipper2-js at module load and the Phase 4
+  projection modules import three-edge-projection, so the bare specifier
+  broke every module on the page. `03__Vendor__Clipper2Js__v0.9.0` is now a
+  byte-identical copy of the Lantern Designer's vendor folder (22 files,
+  checksums matched) under `04__Lib__ThirdParty__VersionLocked/`, the
+  import map in `index.html` and the JSON index map `clipper2-js` to
+  `fesm2020/clipper2-js.mjs`, and the README, plan and ledger notes are
+  corrected. The vendor set is now the full coordinated four (01 to 04).
+- **Service workers** bumped to `2026-09-10-2` so cached shells refetch the
+  import map.
+- **2D viewport fill.** `ReferenceError: win is not defined` on adding a
+  viewport: the local-name rename in `Na__LayoutEditor__Viewport2d__.js`
+  missed an aligned declaration, so the fill read a variable it never
+  declared and the frame stayed empty. Declared. The same pass dropped two
+  unused imports in the PDF exporter and one in the sheet model.
+
+### Verification
+- A static walk of the browser module graph from `index.html` (relative
+  imports and import map keys, including the vendor internals) resolves
+  every specifier to a file on disk; this walk joins the port's verify
+  scripts so a bare specifier cannot pass again.
+- A scope-aware lint (ESLint no-undef, no-redeclare, no-dupe-keys,
+  no-unreachable) over folders 42 to 46, 50 and 51 reports no undefined
+  identifier; `node --check` alone cannot see that class of fault.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.0 - 10-Sep-2026 - Layout Editor (Port Phase 5)
+
+### Overview
+Drawing sheets. A tab strip under the header lists the 3D model and one
+tab per sheet; a sheet is paper on screen (A4 to A1, landscape or portrait)
+with a title block in the Modern vector style or the Classic scanned style,
+free viewports onto any saved scene, and the sheet's own text and
+dimensions. A 2D viewport is a window onto a plan, elevation or section at
+1:20, 1:50 or 1:100: the composer render of the drawing sits underneath, the
+projected linework of Phase 4 lies over it as true vector SVG, and the
+drawing's own markup is shown at scale. A 3D viewport is a snapshot of the
+scene rendered through the live pipeline with the viewport's style
+toggles. Download PDF writes the sheet at true paper size with vector
+linework, dimensions, text and chrome (D22 to D35). Authoring is
+localhost-only; the web build reads, pans, zooms and downloads.
+
+### Added
+- **51__System__LayoutEditor**, thirty-three files, all new (patterns from
+  the Lantern Designer's DrawingEditorMode and the Page Layout System):
+  config and config state; scale manager (D27) and paper layout solver;
+  sheet model and sheet records (sheets, layers, viewports, annotations,
+  dimensions in `LayoutEditor__DrawingsData__Sheets`, ids, defaults, title
+  block fields from the project); sheet chrome (one primitive list drawn to
+  SVG and to jsPDF, text measured through jsPDF metrics) with the Modern
+  and Classic title blocks (D26); sheet surface (paper at
+  ScreenPixelsPerMm, CSS-transform zoom, frames, chrome, markup and
+  selection layers); navigation (wheel zoom about the cursor, middle or
+  right drag, pinch, fit); viewport handles (2D edges crop or extend while
+  the drawing stays put and the inside pans, corners inert, D29; 3D corners
+  scale proportionally, edges crop, inside moves the picture, D30); the 2D
+  viewport (window maths, underlay cache with a slide-while-dragging
+  picture, linework from cache, baked asset or on-device render, paper
+  stroke widths from the new `LayoutEditor__Linework__Config`); the 3D
+  viewport (fingerprinted snapshot, uploaded to
+  `LayoutEditor/Snapshots/` on localhost and referenced on the record,
+  D36); snapshot renderer (offscreen 2D through the section adapter and
+  presets on a private ortho camera, offscreen 3D from the scene pose with
+  visibility, sections and camera restored); assets; markup bridge (scene
+  markup at scale, Import From Scene, sheet markup with leaders and
+  measured sheet dimensions, hit testing, D34); dimension geometry; sheet
+  tools (select, move, resize, text placement with an inline editor,
+  two-click dimensions, keyboard); panel host (foldable sections, height
+  and width grips, delegated controls, D32) with the Sheet, Layers (D31),
+  Viewport, Text, Dimensions and Styles (D33 plus Hidden Lines) panels;
+  toolbar; PDF exporter (D35); tab strip (D22 to D24); mode controller;
+  Dev menu section (sheets, New, Duplicate, Delete, Save, Bake Snapshots
+  and Linework, Export PDF, Leave); two stylesheets.
+- **Shell.** index.html gains the Layout Editor Dev item, imports and
+  initialisation; the CSS index imports the two sheets; every rule anchored
+  to the header height now adds `--Vale_LayoutTabStripHeight`, which the
+  tab strip publishes, so the canvas, breadcrumb, carousel, menus and help
+  panel shift down together while sheets exist.
+
+### Changed
+- **Whitecardopedia service worker** token bumped to `2026-09-10-1` for the
+  shell edits.
+
+### Notes
+- Scene markup in a viewport is drawn statically; editing it is done in
+  the drawing (Edit In Drawing), which keeps one editor per record. Sheet
+  mode holds the sheet's own layers; Import From Scene copies across.
+- A sheet dimension attached to a 2D viewport reports paper length times
+  the scale denominator, so it measures the model.
+- Hand-over test list: plan document section 11.6. Purge the localhost
+  service worker and caches before testing.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.20.0 - 09-Sep-2026 - Projected Linework on Drawings (Port Phase 4)
+
+### Overview
+Exact vector linework over every plan, elevation and section. The live model
+is read out into plain numbers, cut at the drawing's plane, turned to face
+the drawing and clipped for occlusion by the Lantern Designer's projection
+engine, off the main thread where workers are available. The result is
+painted in an SVG layer over the composer render, registered to the drawing
+camera with one transform per frame, drawn into exported images, baked to R2
+on localhost so the web build never computes it, and kept in the browser so
+a reload does not refetch. Ported from the Lantern Designer's
+27__System__ProjectedEdges2d with the kernel set verbatim.
+
+### Added
+- **50__System__ProjectedLinework**, twenty-three files. Verbatim (headers
+  restyled, identifiers renamed): the clip kernel, the flat BVH, the clip
+  worker and worker pool (both now carry hidden line segments back), the
+  scheduler, the Diff harness, the raster preview and the WebGPU backend.
+  Adapted: the soup builder (signed permutation fast path or a 3x3 rotation
+  for free bearings, D40), the edge extractor (instances rather than
+  meshes, a viewer vector for the silhouette test, edges split at the cut),
+  the stage sampler (samples the live model root, honours visibility and
+  helper flags, expands InstancedMesh, applies the exclusion tokens D19,
+  treats transparent material as non-occluding unless Glass Transparency
+  Off is set, clips triangles at the cut and the view depth, collects the
+  section outline), the model stage (fingerprint and bounds tree priming),
+  the projector (three backends behind one entry point), the CPU backend
+  (four line classes), the pipeline (one drawing at a time, realtime
+  debounce, cache, asset before compute, triangle ceiling), persistence
+  (R2 asset per drawing with a reference in the record, IndexedDB copy,
+  bake before save D20), the SVG overlay and config access. New: the view
+  definition (record to basis, cut and fingerprint), authored edges from
+  the SketchUp linework GLBs (D18), the export compositor and the Dev menu
+  section (enabled, backend, Force Render, Bake All, Clear Cache, Diff,
+  timings, per-drawing asset status).
+- **Line classes.** visible, hidden (dashed: what the occluders cover plus
+  everything between the viewer and the cut, only with the record's Hidden
+  Lines toggle, D21), authored, and section (the outline of cut material,
+  Doous dark grey). Widths are true drawing millimetres and scale with the
+  drawing.
+- **Config.** `Na__ProjectedLinework__AppConfig__.json` with render,
+  projection, performance, preview, persistence, appearance, exclusions,
+  model and label blocks; the Main.json exclusion tokens override.
+
+### Changed
+- **Section adapter.** FIX: a vertical drawing plane kept the viewer's side
+  of the model, so a section showed the near facade instead of the cut. The
+  tool's normal now points away from the viewer and live distance updates
+  carry the same sign. `GetPlaneDefinition` added.
+- **Composer preset** offers image export overrides for drawings (ortho
+  camera, 2D profile pre-pass, frustum widened to the export aspect keeping
+  the visible height); **index.html** chains them after the legacy
+  Elevation View's.
+- **Image export** draws the projected linework over the finished image
+  when a drawing is on screen.
+- **Floor plan and elevation controllers** announce a style change; the
+  **editors** bake linework assets before the drawings save; **Toggle
+  Model Elements** announces a visibility change; the **loading sequence**
+  registers the overlay every frame in the drawing branch. **index.html**
+  gains the Projected Linework dev section, imports and initialisation;
+  the **CSS index** imports the sheet.
+
+### Before testing
+- Purge the shared service worker on localhost (token 2026-09-09-4).
+- Workers load `Na__ProjectedLinework__ClipWorker__.js` by relative URL;
+  Flask serves it as a module like any other file. If the pool cannot
+  start the kernel runs inline on the main thread and says so.
+- The hand-over test list is section 10.4 of the plan document.
+
+### Note
+- Not run in a browser. Every module passes a syntax check and every import
+  resolves to an export. The kernel files are diff-able against the Lantern
+  Designer originals apart from the header block and the identifier rename.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.19.0 - 09-Sep-2026 - Elevations and Sections (Port Phase 3)
 
 ### Overview

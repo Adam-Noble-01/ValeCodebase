@@ -1,0 +1,195 @@
+{
+    "LayoutEditor__Description": "Layout Editor (port Phase 5): sheets of drawings. A sheet is a paper size with a title block, free-placed viewports onto the project's plans, elevations, sections and 3D scenes at locked scales, and its own text and dimensions. Sheets live in LayoutEditor__DrawingsData.__Sheets in project.json; snapshots and projected linework are R2 assets. Every value here is a built-in default; LayoutEditor__Config in Na__AppConfig__Main.json carries the web read-only guard. Paper distances are millimetres.",
+
+    "LayoutEditor__Enabled": true,
+
+    "LayoutEditor__Sheet__Config": {
+        "LayoutEditor__Sheet__Description": "Paper. Sizes are listed landscape (long edge first); portrait swaps them. MarginMm is the border inset; the title block band sits inside the margin at the foot of the sheet. ScreenPixelsPerMm is the base on-screen size at zoom 1; printed output is driven by the PDF exporter, never by this value.",
+        "LayoutEditor__Sheet__DefaultPaperSize": "A3",
+        "LayoutEditor__Sheet__DefaultOrientation": "landscape",
+        "LayoutEditor__Sheet__MarginMm": 10,
+        "LayoutEditor__Sheet__BorderStrokeMm": 0.5,
+        "LayoutEditor__Sheet__ScreenPixelsPerMm": 3.2,
+        "LayoutEditor__Sheet__DefaultNameFormat": "Drawing {index}",
+        "LayoutEditor__Sheet__PaperSizes": {
+            "A4": { "Label": "A4", "WidthMm": 297, "HeightMm": 210 },
+            "A3": { "Label": "A3", "WidthMm": 420, "HeightMm": 297 },
+            "A2": { "Label": "A2", "WidthMm": 594, "HeightMm": 420 },
+            "A1": { "Label": "A1", "WidthMm": 841, "HeightMm": 594 }
+        }
+    },
+
+    "LayoutEditor__Style__Config": {
+        "LayoutEditor__Style__Description": "How everything printed on a sheet that is not a view is painted. Read by the chrome module, which draws the on-screen sheet and the PDF from one primitive list. FontFamily leads with Helvetica because that is what jsPDF embeds; Open Sans is the app face and metrically close enough for labels.",
+        "LayoutEditor__Style__FontFamily": "Helvetica, Arial, 'Open Sans', sans-serif",
+        "LayoutEditor__Style__PaperColour": "#ffffff",
+        "LayoutEditor__Style__InkColour": "#172b3a",
+        "LayoutEditor__Style__FrameLineColour": "#8a949c",
+        "LayoutEditor__Style__MutedTextColour": "#6c757d",
+        "LayoutEditor__Style__SelectionColour": "#336699",
+        "LayoutEditor__Style__FrameStrokeMm": 0.25,
+        "LayoutEditor__Style__FrameLabelFontMm": 2.4,
+        "LayoutEditor__Style__FrameLabelHeightMm": 5,
+        "LayoutEditor__Style__CellPaddingMm": 1.6
+    },
+
+    "LayoutEditor__TitleBlock__Config": {
+        "LayoutEditor__TitleBlock__Description": "Two styles (D26). Modern is a vector strip: the Vale logo and one row of fields from Rows. Classic is the office's scanned title block stretched to the full sheet with the text fields overlaid at the anchors below; A4, A2 and A1 fall back to the A3 scan until their scans are added. Fields default from the project and are editable per sheet.",
+        "LayoutEditor__TitleBlock__DefaultStyle": "modern",
+        "LayoutEditor__TitleBlock__HeightMm": 16,
+        "LayoutEditor__TitleBlock__LogoAssetPath": "../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png",
+        "LayoutEditor__TitleBlock__LogoCellWidthMm": 40,
+        "LayoutEditor__TitleBlock__LogoPaddingMm": 2,
+        "LayoutEditor__TitleBlock__FontSizeLabelMm": 1.7,
+        "LayoutEditor__TitleBlock__FontSizeValueMm": 2.4,
+        "LayoutEditor__TitleBlock__LabelOffsetTopMm": 1.4,
+        "LayoutEditor__TitleBlock__ValueOffsetBottomMm": 1.4,
+        "LayoutEditor__TitleBlock__DrawnByDefault": "Vale Garden Houses",
+        "LayoutEditor__TitleBlock__Rows": [
+            { "Key": "Client",        "Label": "Client",        "WidthMm": 30 },
+            { "Key": "SiteAddress",   "Label": "Site Address",  "WidthMm": 50 },
+            { "Key": "Title",         "Label": "Drawing Title", "WidthMm": 40 },
+            { "Key": "DrawingNumber", "Label": "Drawing No.",   "WidthMm": 18 },
+            { "Key": "Revision",      "Label": "Rev",           "WidthMm": 8  },
+            { "Key": "Scale",         "Label": "Scale",         "WidthMm": 20 },
+            { "Key": "Date",          "Label": "Date",          "WidthMm": 16 },
+            { "Key": "DrawnBy",       "Label": "Drawn By",      "WidthMm": 20 }
+        ],
+        "LayoutEditor__TitleBlock__ClassicScanAssets": {
+            "A3": "./02__Src__AppModules/35__System__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png",
+            "A4": "./02__Src__AppModules/35__System__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png",
+            "A2": "./02__Src__AppModules/35__System__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png",
+            "A1": "./02__Src__AppModules/35__System__PageLayoutSystem/PageLayoutSystem__TitleBlock__A3__.png"
+        },
+        "LayoutEditor__TitleBlock__ClassicFieldAnchorsNote": "Paper-mm anchors per paper size, measured from the top-left of the sheet, for the text overlaid on the scan. FontMm is the value size. Adjust once against the scan and every sheet follows.",
+        "LayoutEditor__TitleBlock__ClassicFieldAnchors": {
+            "A3": {
+                "Client":        { "X": 292, "Y": 262, "FontMm": 2.4, "Align": "left" },
+                "SiteAddress":   { "X": 292, "Y": 268, "FontMm": 2.2, "Align": "left" },
+                "Title":         { "X": 292, "Y": 276, "FontMm": 2.6, "Align": "left" },
+                "DrawingNumber": { "X": 330, "Y": 289, "FontMm": 2.4, "Align": "left" },
+                "Revision":      { "X": 372, "Y": 289, "FontMm": 2.4, "Align": "left" },
+                "Scale":         { "X": 292, "Y": 283, "FontMm": 2.2, "Align": "left" },
+                "Date":          { "X": 330, "Y": 283, "FontMm": 2.2, "Align": "left" },
+                "DrawnBy":       { "X": 372, "Y": 283, "FontMm": 2.2, "Align": "left" }
+            }
+        }
+    },
+
+    "LayoutEditor__Scales__Config": {
+        "LayoutEditor__Scales__Description": "Locked scales for 2D viewports (D27). A viewport quotes one of these; the three-way toggle on the Viewport Settings panel steps through them.",
+        "LayoutEditor__Scales__AvailableScaleDenominators": [20, 50, 100],
+        "LayoutEditor__Scales__DefaultScaleDenominator": 50,
+        "LayoutEditor__Scales__ScaleLabelPrefix": "1:",
+        "LayoutEditor__Scales__NotToScaleLabel": "NTS"
+    },
+
+    "LayoutEditor__Viewport__Config": {
+        "LayoutEditor__Viewport__Description": "Viewports are free rectangles in paper millimetres (D29). A 2D viewport is a window onto a drawing at its scale: edge handles crop or extend the window, dragging inside pans it, corners do nothing. A 3D viewport is a raster snapshot: corners scale it proportionally, edges crop. Snapshot densities are pixels per paper millimetre on screen; the PDF exporter has its own.",
+        "LayoutEditor__Viewport__DefaultWidthMm": 180,
+        "LayoutEditor__Viewport__DefaultHeightMm": 120,
+        "LayoutEditor__Viewport__MinSizeMm": 20,
+        "LayoutEditor__Viewport__HandleSizePx": 9,
+        "LayoutEditor__Viewport__HandleHitRadiusPx": 10,
+        "LayoutEditor__Viewport__SnapshotPixelsPerMm": 6,
+        "LayoutEditor__Viewport__UnderlayPixelsPerMm": 6,
+        "LayoutEditor__Viewport__MaxSnapshotPixels": 4096,
+        "LayoutEditor__Viewport__ShowScaleLabel": true,
+        "LayoutEditor__Viewport__AssetFolder": "LayoutEditor/Snapshots"
+    },
+
+    "LayoutEditor__Text__Config": {
+        "LayoutEditor__Text__Description": "Sheet text (D31). Sizes are paper millimetres. Weights are the Open Sans cuts the app loads.",
+        "LayoutEditor__Text__FontFamily": "'Open Sans', Helvetica, Arial, sans-serif",
+        "LayoutEditor__Text__DefaultSizeMm": 3,
+        "LayoutEditor__Text__MinSizeMm": 1.5,
+        "LayoutEditor__Text__MaxSizeMm": 14,
+        "LayoutEditor__Text__SizeStepMm": 0.5,
+        "LayoutEditor__Text__AllowedWeights": [300, 400, 600],
+        "LayoutEditor__Text__DefaultWeight": 400,
+        "LayoutEditor__Text__DefaultColour": "#172b3a",
+        "LayoutEditor__Text__DefaultText": "Text",
+        "LayoutEditor__Text__LeaderStrokeMm": 0.2
+    },
+
+    "LayoutEditor__Dimensions__Config": {
+        "LayoutEditor__Dimensions__Description": "Sheet dimensions (D32) drawn in paper millimetres. A dimension placed over a 2D viewport reports paper length times the viewport's scale denominator, so it measures the model; elsewhere it reports paper millimetres. Precision is decimal places; the units suffix follows the figure.",
+        "LayoutEditor__Dimensions__DefaultTextSizeMm": 2.5,
+        "LayoutEditor__Dimensions__MinTextSizeMm": 1.5,
+        "LayoutEditor__Dimensions__MaxTextSizeMm": 8,
+        "LayoutEditor__Dimensions__DefaultColour": "#172b3a",
+        "LayoutEditor__Dimensions__AllowedTerminators": ["tick", "arrow", "dot"],
+        "LayoutEditor__Dimensions__DefaultTerminator": "tick",
+        "LayoutEditor__Dimensions__DefaultOffsetMm": 8,
+        "LayoutEditor__Dimensions__ExtensionGapMm": 1.5,
+        "LayoutEditor__Dimensions__ExtensionOvershootMm": 1.5,
+        "LayoutEditor__Dimensions__TickLengthMm": 1.5,
+        "LayoutEditor__Dimensions__StrokeMm": 0.25,
+        "LayoutEditor__Dimensions__TextGapMm": 0.8,
+        "LayoutEditor__Dimensions__DefaultPrecision": 0,
+        "LayoutEditor__Dimensions__DefaultUnitsSuffix": " mm",
+        "LayoutEditor__Dimensions__ThousandsSeparator": ","
+    },
+
+    "LayoutEditor__Panels__Config": {
+        "LayoutEditor__Panels__Description": "The two side columns (Layers on the left; Viewport, Text, Dimensions and Styles on the right). Widths are seeded from here on first use and then remembered for the session.",
+        "LayoutEditor__Panels__LeftWidthPx": 250,
+        "LayoutEditor__Panels__RightWidthPx": 300,
+        "LayoutEditor__Panels__MinWidthPx": 190,
+        "LayoutEditor__Panels__MaxWidthPx": 520,
+        "LayoutEditor__Panels__CollapseOthersOnOpen": false
+    },
+
+    "LayoutEditor__Navigation__Config": {
+        "LayoutEditor__Navigation__Description": "Wheel zooms about the cursor; middle or right drag pans; touch pinches. Left click is for editing.",
+        "LayoutEditor__Navigation__ZoomMin": 0.15,
+        "LayoutEditor__Navigation__ZoomMax": 8,
+        "LayoutEditor__Navigation__ZoomWheelStep": 0.0016,
+        "LayoutEditor__Navigation__FitPaddingPx": 32
+    },
+
+    "LayoutEditor__Linework__Config": {
+        "LayoutEditor__Linework__Description": "Paper-millimetre stroke widths for the projected linework inside sheet viewports (they print at these widths at any scale). Colours follow the Projected Linework appearance block so a sheet matches its scene.",
+        "LayoutEditor__Linework__VisibleWidthMm": 0.25,
+        "LayoutEditor__Linework__HiddenWidthMm": 0.18,
+        "LayoutEditor__Linework__HiddenDashMm": 1.2,
+        "LayoutEditor__Linework__AuthoredWidthMm": 0.2,
+        "LayoutEditor__Linework__SectionWidthMm": 0.5,
+        "LayoutEditor__Linework__MinSegmentPaperMm": 0.05
+    },
+    "LayoutEditor__Pdf__Config": {
+        "LayoutEditor__Pdf__Description": "jsPDF at true paper size. 2D viewports write the projected linework, dimensions and text as vectors; underlays and 3D viewports are placed as raster images at RasterPixelsPerMm. The vendored UMD build is injected as a classic script on first use.",
+        "LayoutEditor__Pdf__FilenamePattern": "Na__{projectCode}__{sheetName}__{paperSize}.pdf",
+        "LayoutEditor__Pdf__RasterPixelsPerMm": 12,
+        "LayoutEditor__Pdf__Author": "Vale Garden Houses Limited",
+        "LayoutEditor__Pdf__Creator": "ValeVision3D Layout Editor",
+        "LayoutEditor__Pdf__JsPdfScriptPath": "./02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js"
+    },
+
+    "LayoutEditor__Labels__Config": {
+        "LayoutEditor__Labels__Description": "User-facing wording.",
+        "LayoutEditor__Labels__ModelTab": "3D Model",
+        "LayoutEditor__Labels__AddSheetTab": "+",
+        "LayoutEditor__Labels__AddSheetTitle": "New sheet",
+        "LayoutEditor__Labels__LayersTitle": "Layers",
+        "LayoutEditor__Labels__ViewportTitle": "Viewport",
+        "LayoutEditor__Labels__TextTitle": "Text",
+        "LayoutEditor__Labels__DimensionsTitle": "Dimensions",
+        "LayoutEditor__Labels__StylesTitle": "Styles",
+        "LayoutEditor__Labels__SheetTitle": "Sheet",
+        "LayoutEditor__Labels__NoSelection": "Select a viewport on the sheet.",
+        "LayoutEditor__Labels__NoSheets": "No sheets yet. Add one from the Dev menu or the + tab.",
+        "LayoutEditor__Labels__ReadOnlyNote": "Read-only on the web build.",
+        "LayoutEditor__Labels__DownloadPdf": "Download PDF",
+        "LayoutEditor__Labels__AddViewport": "Add Viewport",
+        "LayoutEditor__Labels__AddText": "Add Text",
+        "LayoutEditor__Labels__AddDimension": "Add Dimension",
+        "LayoutEditor__Labels__ImportFromScene": "Import From Scene",
+        "LayoutEditor__Labels__EditInDrawing": "Edit In Drawing",
+        "LayoutEditor__Labels__SavedMessage": "Sheets saved to R2.",
+        "LayoutEditor__Labels__SaveFailedMessage": "Sheet save failed - see console.",
+        "LayoutEditor__Labels__DeleteSheetPrompt": "Delete the sheet \"{name}\"? Its viewports, text and dimensions go with it.",
+        "LayoutEditor__Labels__PdfReadyMessage": "PDF downloaded.",
+        "LayoutEditor__Labels__PdfFailedMessage": "PDF export failed - see console."
+    }
+}

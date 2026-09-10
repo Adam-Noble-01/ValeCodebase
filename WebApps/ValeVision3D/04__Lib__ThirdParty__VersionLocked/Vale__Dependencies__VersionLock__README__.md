@@ -1,7 +1,7 @@
 # ValeVision3D - Version-Locked Vendor Dependencies
 
 Pinned coordinated set (09-Sep-2026). Do not upgrade these packages independently.
-The three vendor folders are byte-identical copies of the Vale Lantern Designer set at
+The four vendor folders are byte-identical copies of the Vale Lantern Designer set at
 `WebApps/Vale__LanternDesigner/04__Src__Dependencies__VersionLocked`, so both apps run
 the same libraries and the projected linework engine ports between them unchanged.
 
@@ -9,9 +9,12 @@ the same libraries and the projected linework engine ports between them unchange
 |---|--------|---------|---------|---------------|
 | 01 | `01__Vendor__ThreeJs__v0.184.0` | three | 0.184.0 | `build/three.module.js` (imports `build/three.core.js`) |
 | 02 | `02__Vendor__ThreeMeshBvh__v0.9.9` | three-mesh-bvh | 0.9.9 | `src/index.js` |
+| 03 | `03__Vendor__Clipper2Js__v0.9.0` | clipper2-js | 0.9.0 | `fesm2020/clipper2-js.mjs` |
 | 04 | `04__Vendor__ThreeEdgeProjection__v0.0.10` | three-edge-projection | 0.0.10 at f794481 | `src/index.js` |
 
-Folder 03 (clipper2-js) from the Lantern Designer set is not needed here and is not copied.
+Folder 03 (clipper2-js) was left out on 09-Sep-2026 and added on 10-Sep-2026 (v2.21.1): no ValeVision3D
+module calls it, but three-edge-projection's SilhouetteGenerator imports it at module load, so without
+the import map entry the whole module graph fails to resolve.
 jsPDF (UMD classic script) is vendored separately under
 `02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked` and is
 independent of this set.
@@ -26,6 +29,7 @@ independent of this set.
 
 ## Upgrade history
 
+- 10-Sep-2026: clipper2-js 0.9.0 (`03__Vendor__Clipper2Js__v0.9.0`) copied from the Lantern Designer set and mapped, for ValeVision3D v2.21.1.
 - 09-Sep-2026: three r160 (`04__Lib__ThirdParty__Three`, trimmed addons) replaced by this set for
   ValeVision3D v2.16.0. The old folder is retained until the r184 checklist in
   `ValeVision__PLAN__TrueVisionPort__LayoutEditor__.md` section 6 is signed off, then deleted.

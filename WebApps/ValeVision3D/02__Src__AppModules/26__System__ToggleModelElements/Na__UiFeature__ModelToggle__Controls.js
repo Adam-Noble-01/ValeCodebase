@@ -23,6 +23,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Visibility event (port Phase 4)
+// - SetCategoryVisibility dispatches na-model-visibility-changed so the projected linework refreshes.
+//
 // 10-Feb-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -137,6 +140,10 @@
 
         state.visible       = visible;                                   // <-- Update internal state
         state.group.visible = visible;                                   // <-- Set THREE.Group visibility
+
+        window.dispatchEvent(new CustomEvent('na-model-visibility-changed', {  // <-- Drawings re-read the model state (port Phase 4)
+            detail : { categoryKey : categoryKey, visible : visible }
+        }));
     }
     // ---------------------------------------------------------------
 

@@ -376,7 +376,7 @@ New folder `04__Lib__ThirdParty__VersionLocked/` mirroring the Lantern Designer:
     Vale__Dependencies__VersionLock__README__.md
 ```
 
-Folder numbers 03 (clipper2-js) and 05 (jsPDF) are skipped: clipper is not needed and jsPDF is already vendored under `35__System__PageLayoutSystem/01__Dependencies__VersionLocked`. The three vendor folders are copied from `WebApps/Vale__LanternDesigner/04__Src__Dependencies__VersionLocked/` so both apps run byte-identical libraries. `index.html` import map becomes:
+Folder numbers 03 (clipper2-js) and 05 (jsPDF) are skipped: clipper is not needed and jsPDF is already vendored under `35__System__PageLayoutSystem/01__Dependencies__VersionLocked`. (Corrected 10-Sep-2026, v2.21.1: three-edge-projection imports clipper2-js at module load, so folder 03 is vendored after all and the import map carries `clipper2-js`; only 05 is skipped.) The three vendor folders are copied from `WebApps/Vale__LanternDesigner/04__Src__Dependencies__VersionLocked/` so both apps run byte-identical libraries. `index.html` import map becomes:
 
 ```json
 { "imports": {
@@ -636,10 +636,14 @@ The adapter also gained `SuspendLiveTool` (park and hold, with or without a plan
 | `Na__ProjectedLinework__SvgOverlay__.js` | 340 | LD SvgLayer | An `<svg id="naProjectedLineworkLayer">` above the canvas and below the markup layers (z 38), positioned from the canvas offset box, re-projected every frame through the DrawView broker; four line classes as presentation attributes: `visible`, `hidden` (dashed), `authored`, `section` (cap outline weight) |
 | `Na__ProjectedLinework__ConfigAccess__.js` | 170 | LD ConfigAccess | Path and prefix changes |
 | `Na__ProjectedLinework__DevMenu__Controls__.js` | 380 | LD ToolbarButton + new | Dev Tools section: enabled, backend, force render, bake to R2, clear cache, run Diff harness, timings table |
+| `Na__ProjectedLinework__ViewDefinition__.js` | 330 | New | A drawing record read into a view: basis (identity for plans, derived from the azimuth for elevations), viewer vector, cut plane and depth (kept side away from the viewer), style flags, exclusion tokens, record hash and fingerprint |
+| `Na__ProjectedLinework__ExportCompositor__.js` | 120 | New | Rasterises the overlay SVG at export size and draws it over the exported image |
 | `Na__ProjectedLinework__AppConfig__.json` | 140 | LD config | Render, Performance, Preview, Persistence, Appearance per class, `Exclusions__DefaultCategoryTokens`, `Model__BuildToken` |
 | `Na__ProjectedLinework__Styles__Main__.css` | 120 | LD css | Layer and preview rules only |
 
 Units: ValeVision scene units are metres with +Y up, which is the lantern engine's stage space; `ScaleDivisor = 0.001` yields drawing millimetres. The kernel epsilons are absolute and correct at metre scale.
+
+Built 09-Sep-2026 as v2.20.0. Hidden Lines (D21) means two things on a drawing: the parts of the model edges the occluders cover, and every edge between the viewer and the cut (above a plan's datum, in front of a section plane), both dashed. The section class is the outline where cut material meets the cut plane, never occlusion-tested because the cut is by definition the nearest thing to the viewer; crossings of transparent material join the visible class as thin lines. The legacy and WebGPU backends ignore the cut, so the Diff harness compares the CPU backend against the vendored generator on the uncut model. The worker file is loaded by relative URL from the worker pool, so the clip kernel chain stays import-free of three.js as the Lantern Designer requires.
 
 ### 10.2 Integration with plan and elevation scenes
 
@@ -721,6 +725,8 @@ Fields default from project.json (`projectName`, `projectCode`, client name wher
 | `Na__LayoutEditor__DevMenu__Controls__.js` | 380 | Dev Tools section: sheet list, New Sheet, Duplicate, Delete, Save Sheets (through `DrawView__ProjectData__`), Bake Snapshots and Linework, Export PDF |
 
 Web viewers get the tab strip, pan and zoom, and a Download PDF button in the sheet toolbar; every editing affordance is created only on localhost (the same reveal pattern as the dev menu).
+
+Built 09/10-Sep-2026 as v2.21.0, thirty-three files (the table above plus `SheetRecords__` split from the model for the line budget, `DimensionGeometry__`, `Assets__`, `Panel__Sheet__` and `Toolbar__`). Two deliberate departures from the tables: scene markup inside a viewport is drawn statically at scale rather than by mounting the live 44 and 45 engines on the sheet (editing a scene record happens in the drawing through Edit In Drawing, so one record never has two editors; Sheet mode and Import From Scene work as written), and the tab strip and host are created by their modules rather than authored in index.html. Sheet dimensions are stored as paper endpoints with the viewport they belong to and report paper length times that viewport's scale denominator. The 2D underlay is the composer render of the drawing window made offscreen through the section adapter and presets on the module's own orthographic camera; the 3D snapshot poses the main camera from the scene record and restores pose, layer visibility and cross sections afterwards.
 
 ### 11.6 Hand-over test list
 
@@ -810,8 +816,8 @@ Open items to settle during the build (not blocking):
 | `44/Na__PlanAnnotations__*` (8 files) | TV `43__System__PlanAnnotations` | verbatim (imports) |
 | `45/Na__PlanDimensions__*` (15 files after splits) | TV `44__System__PlanDimensions` | verbatim (imports, splits) |
 | `46/Na__Elevation__*` (13 files) | TV `45__System__ElevationViews` | adapted (face pick, gizmo grip, group by mode) |
-| `50/Na__ProjectedLinework__*` (21 files) | LD `27__System__ProjectedEdges2d` | verbatim kernel set; adapted sampler, projector, pipeline, persistence, overlay |
-| `51/Na__LayoutEditor__*` (23 files) | LD `30__System__DrawingEditorMode`, `05__Env2d`, VV `35__System__PageLayoutSystem` (patterns) | new (back-port candidate) |
+| `50/Na__ProjectedLinework__*` (23 files) | LD `27__System__ProjectedEdges2d` | verbatim kernel set; adapted sampler, projector, pipeline, persistence, overlay |
+| `51/Na__LayoutEditor__*` (33 files) | LD `30__System__DrawingEditorMode`, `05__Env2d`, VV `35__System__PageLayoutSystem` (patterns) | new (back-port candidate) |
 
 ## Appendix B - Event catalogue (new)
 
@@ -826,6 +832,11 @@ Open items to settle during the build (not blocking):
 | `na-pm-scene-activated` | `{ sceneName, sceneId, isDrawingApproach }` | scene transition (edited) | cross section scene data (skips approaches) |
 | `na-projectedlinework-changed` | `{ drawingId, status }` | projection pipeline | overlay, dev section, layout editor viewports |
 | `na-layouteditor-mode-changed` | `{ isActive, sheetId }` | layout editor controller | carousel, toolbar, tab strip |
+| `na-layouteditor-sheets-changed` | `{ reason, sheetId, itemId }` | sheet model | mode controller, panels, toolbar, tab strip, Dev section |
+| `na-layouteditor-tool-changed` | `{ tool }` | sheet tools | toolbar |
+| `na-layouteditor-zoom-changed` | `{ zoom }` | sheet surface | toolbar |
+| `na-layouteditor-request-drawing` | `{ viewportId, plan, elevation }` | viewport panel | mode controller (Edit In Drawing) |
+| `na-layouteditor-asset-loaded` | `{ path }` | sheet chrome | sheet surface (rebuild once a logo or scan arrives) |
 
 ## Appendix C - Config keys added to `Na__AppConfig__Main.json`
 

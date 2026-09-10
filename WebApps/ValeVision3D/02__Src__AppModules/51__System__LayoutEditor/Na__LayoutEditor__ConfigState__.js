@@ -1,0 +1,407 @@
+// =============================================================================
+// VALEVISION3D - LAYOUT EDITOR - CONFIG STATE
+// =============================================================================
+//
+// FILE       : Na__LayoutEditor__ConfigState__.js
+// NAMESPACE  : Na__LeCfg
+// MODULE     : Layout Editor - Config State
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : Own the Layout Editor config fetch and expose every tuned value
+// CREATED    : 09-Sep-2026
+//
+// DESCRIPTION:
+// - Fetches Na__LayoutEditor__AppConfig__.json exactly once and answers every
+//   setting the sheet, the panels, the viewports and the PDF exporter ask
+//   for. Na__AppConfig__Main.json supplies the web read-only guard.
+// - The fallbacks mirror the shipped JSON, so a failed fetch degrades to a
+//   working editor rather than a broken one.
+//
+// INTEGRATION:
+// - index.html calls SetAppConfig then Ready before the mode controller
+//   initialises; every other module in this folder reads through the getters.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : Lantern Designer 30__System__DrawingEditorMode/Na__DrawingEditor__Config.json (blocks, purpose)
+// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
+// - Parity        : new
+// - Divergences   : own fetch and typed getters, the ValeVision ConfigState pattern.
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.0.0
+// - Initial implementation for port Phase 5.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants and State
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Config Location and Key Shape
+    // ------------------------------------------------------------
+    const Na__LeCfg__ConfigUrl  = new URL('./Na__LayoutEditor__AppConfig__.json', import.meta.url);
+    const Na__LeCfg__PREFIX     = 'LayoutEditor__';
+    const Na__LeCfg__MAIN_BLOCK = 'LayoutEditor__Config';
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Fallbacks (mirror the shipped JSON)
+    // ------------------------------------------------------------
+    const Na__LeCfg__FALLBACKS = Object.freeze({
+        paperSizes : { A4 : { Label : 'A4', WidthMm : 297, HeightMm : 210 }, A3 : { Label : 'A3', WidthMm : 420, HeightMm : 297 },
+                       A2 : { Label : 'A2', WidthMm : 594, HeightMm : 420 }, A1 : { Label : 'A1', WidthMm : 841, HeightMm : 594 } },
+        rows       : [ { Key : 'Client', Label : 'Client', WidthMm : 30 }, { Key : 'SiteAddress', Label : 'Site Address', WidthMm : 50 },
+                       { Key : 'Title', Label : 'Drawing Title', WidthMm : 40 }, { Key : 'DrawingNumber', Label : 'Drawing No.', WidthMm : 18 },
+                       { Key : 'Revision', Label : 'Rev', WidthMm : 8 }, { Key : 'Scale', Label : 'Scale', WidthMm : 20 },
+                       { Key : 'Date', Label : 'Date', WidthMm : 16 }, { Key : 'DrawnBy', Label : 'Drawn By', WidthMm : 20 } ],
+        scales     : [ 20, 50, 100 ]
+    });
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Parsed Configs and Fetch Promise
+    // ------------------------------------------------------------
+    let Na__LeCfg__Config      = null;
+    let Na__LeCfg__AppConfig   = null;
+    let Na__LeCfg__LoadPromise = null;
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Private Config Reading
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Read One Value From a Block (fallback when absent)
+    // ------------------------------------------------------------
+    function Na__LeCfg__Val(blockName, keyName, fallback) {
+        const block = Na__LeCfg__Config ? Na__LeCfg__Config[Na__LeCfg__PREFIX + blockName + '__Config'] : null;
+        const value = block ? block[Na__LeCfg__PREFIX + blockName + '__' + keyName] : undefined;
+        return (value === undefined || value === null) ? fallback : value;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Read a Finite Number, or the Fallback
+    // ------------------------------------------------------------
+    function Na__LeCfg__Num(blockName, keyName, fallback) {
+        const value = Na__LeCfg__Val(blockName, keyName, undefined);
+        return (typeof value === 'number' && Number.isFinite(value)) ? value : fallback;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Fetch the System JSON Once
+    // ------------------------------------------------------------
+    async function Na__LeCfg__Fetch() {
+        try {
+            const response = await fetch(Na__LeCfg__ConfigUrl, { cache : 'no-store' });
+            if (!response.ok) {
+                console.warn('[ValeVision3D LayoutEditor] Config fetch failed (' + response.status + ') - using built-in defaults.');
+                return false;
+            }
+            Na__LeCfg__Config = await response.json();
+            return true;
+        } catch (error) {
+            console.warn('[ValeVision3D LayoutEditor] Config unreadable - using built-in defaults.', error);
+            return false;
+        }
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public API - Loading and Guards
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Hand the Main App Config In
+    // ------------------------------------------------------------
+    function Na__LeCfg__SetAppConfig(appConfig) {
+        Na__LeCfg__AppConfig = (appConfig && typeof appConfig === 'object') ? appConfig : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Load the System Config Exactly Once
+    // ------------------------------------------------------------
+    function Na__LeCfg__Ready() {
+        if (!Na__LeCfg__LoadPromise) Na__LeCfg__LoadPromise = Na__LeCfg__Fetch();
+        return Na__LeCfg__LoadPromise;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether the Layout Editor Is Switched On
+    // ------------------------------------------------------------
+    function Na__LeCfg__IsEnabled() {
+        if (!Na__LeCfg__Config) return true;
+        return Na__LeCfg__Config[Na__LeCfg__PREFIX + 'Enabled'] !== false;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether the Web Build Is Read-Only (Main.json guard)
+    // ------------------------------------------------------------
+    function Na__LeCfg__IsReadOnlyOnWeb() {
+        const main = Na__LeCfg__AppConfig ? Na__LeCfg__AppConfig[Na__LeCfg__MAIN_BLOCK] : null;
+        return !main || main['LayoutEditor__Config__ReadOnlyOnWeb'] !== false;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Public API - Setup Blocks
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Get the Paper Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetSheetSetup() {
+        const sizes = Na__LeCfg__Val('Sheet', 'PaperSizes', null);
+        return {
+            defaultPaperSize   : Na__LeCfg__Val('Sheet', 'DefaultPaperSize', 'A3'),
+            defaultOrientation : Na__LeCfg__Val('Sheet', 'DefaultOrientation', 'landscape'),
+            marginMm           : Na__LeCfg__Num('Sheet', 'MarginMm', 10),
+            borderStrokeMm     : Na__LeCfg__Num('Sheet', 'BorderStrokeMm', 0.5),
+            screenPixelsPerMm  : Na__LeCfg__Num('Sheet', 'ScreenPixelsPerMm', 3.2),
+            defaultNameFormat  : Na__LeCfg__Val('Sheet', 'DefaultNameFormat', 'Drawing {index}'),
+            paperSizes         : (sizes && typeof sizes === 'object') ? sizes : Na__LeCfg__FALLBACKS.paperSizes
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Sheet Style (chrome painting)
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetStyleSetup() {
+        return {
+            fontFamily        : Na__LeCfg__Val('Style', 'FontFamily', "Helvetica, Arial, 'Open Sans', sans-serif"),
+            paperColour       : Na__LeCfg__Val('Style', 'PaperColour', '#ffffff'),
+            inkColour         : Na__LeCfg__Val('Style', 'InkColour', '#172b3a'),
+            frameLineColour   : Na__LeCfg__Val('Style', 'FrameLineColour', '#8a949c'),
+            mutedTextColour   : Na__LeCfg__Val('Style', 'MutedTextColour', '#6c757d'),
+            selectionColour   : Na__LeCfg__Val('Style', 'SelectionColour', '#336699'),
+            frameStrokeMm     : Na__LeCfg__Num('Style', 'FrameStrokeMm', 0.25),
+            frameLabelFontMm  : Na__LeCfg__Num('Style', 'FrameLabelFontMm', 2.4),
+            frameLabelHeightMm: Na__LeCfg__Num('Style', 'FrameLabelHeightMm', 5),
+            cellPaddingMm     : Na__LeCfg__Num('Style', 'CellPaddingMm', 1.6)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Title Block Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetTitleBlockSetup() {
+        const rows    = Na__LeCfg__Val('TitleBlock', 'Rows', null);
+        const scans   = Na__LeCfg__Val('TitleBlock', 'ClassicScanAssets', null);
+        const anchors = Na__LeCfg__Val('TitleBlock', 'ClassicFieldAnchors', null);
+        return {
+            defaultStyle        : Na__LeCfg__Val('TitleBlock', 'DefaultStyle', 'modern'),
+            heightMm            : Na__LeCfg__Num('TitleBlock', 'HeightMm', 16),
+            logoAssetPath       : Na__LeCfg__Val('TitleBlock', 'LogoAssetPath', '../assets__CommonApplicationAssets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png'),
+            logoCellWidthMm     : Na__LeCfg__Num('TitleBlock', 'LogoCellWidthMm', 40),
+            logoPaddingMm       : Na__LeCfg__Num('TitleBlock', 'LogoPaddingMm', 2),
+            fontSizeLabelMm     : Na__LeCfg__Num('TitleBlock', 'FontSizeLabelMm', 1.7),
+            fontSizeValueMm     : Na__LeCfg__Num('TitleBlock', 'FontSizeValueMm', 2.4),
+            labelOffsetTopMm    : Na__LeCfg__Num('TitleBlock', 'LabelOffsetTopMm', 1.4),
+            valueOffsetBottomMm : Na__LeCfg__Num('TitleBlock', 'ValueOffsetBottomMm', 1.4),
+            drawnByDefault      : Na__LeCfg__Val('TitleBlock', 'DrawnByDefault', 'Vale Garden Houses'),
+            rows                : Array.isArray(rows) ? rows : Na__LeCfg__FALLBACKS.rows,
+            classicScanAssets   : (scans && typeof scans === 'object') ? scans : {},
+            classicFieldAnchors : (anchors && typeof anchors === 'object') ? anchors : {}
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Scale Setup (D27)
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetScaleSetup() {
+        const list = Na__LeCfg__Val('Scales', 'AvailableScaleDenominators', null);
+        return {
+            denominators : Array.isArray(list) && list.length ? list.slice().sort((a, b) => a - b) : Na__LeCfg__FALLBACKS.scales.slice(),
+            defaultDenominator : Na__LeCfg__Num('Scales', 'DefaultScaleDenominator', 50),
+            labelPrefix        : Na__LeCfg__Val('Scales', 'ScaleLabelPrefix', '1:'),
+            notToScaleLabel    : Na__LeCfg__Val('Scales', 'NotToScaleLabel', 'NTS')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Viewport Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetViewportSetup() {
+        return {
+            defaultWidthMm       : Na__LeCfg__Num('Viewport', 'DefaultWidthMm', 180),
+            defaultHeightMm      : Na__LeCfg__Num('Viewport', 'DefaultHeightMm', 120),
+            minSizeMm            : Na__LeCfg__Num('Viewport', 'MinSizeMm', 20),
+            handleSizePx         : Na__LeCfg__Num('Viewport', 'HandleSizePx', 9),
+            handleHitRadiusPx    : Na__LeCfg__Num('Viewport', 'HandleHitRadiusPx', 10),
+            snapshotPixelsPerMm  : Na__LeCfg__Num('Viewport', 'SnapshotPixelsPerMm', 6),
+            underlayPixelsPerMm  : Na__LeCfg__Num('Viewport', 'UnderlayPixelsPerMm', 6),
+            maxSnapshotPixels    : Na__LeCfg__Num('Viewport', 'MaxSnapshotPixels', 4096),
+            showScaleLabel       : Na__LeCfg__Val('Viewport', 'ShowScaleLabel', true) !== false,
+            assetFolder          : Na__LeCfg__Val('Viewport', 'AssetFolder', 'LayoutEditor/Snapshots')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Sheet Text Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetTextSetup() {
+        const weights = Na__LeCfg__Val('Text', 'AllowedWeights', null);
+        return {
+            fontFamily     : Na__LeCfg__Val('Text', 'FontFamily', "'Open Sans', Helvetica, Arial, sans-serif"),
+            defaultSizeMm  : Na__LeCfg__Num('Text', 'DefaultSizeMm', 3),
+            minSizeMm      : Na__LeCfg__Num('Text', 'MinSizeMm', 1.5),
+            maxSizeMm      : Na__LeCfg__Num('Text', 'MaxSizeMm', 14),
+            sizeStepMm     : Na__LeCfg__Num('Text', 'SizeStepMm', 0.5),
+            allowedWeights : Array.isArray(weights) ? weights : [ 300, 400, 600 ],
+            defaultWeight  : Na__LeCfg__Num('Text', 'DefaultWeight', 400),
+            defaultColour  : Na__LeCfg__Val('Text', 'DefaultColour', '#172b3a'),
+            defaultText    : Na__LeCfg__Val('Text', 'DefaultText', 'Text'),
+            leaderStrokeMm : Na__LeCfg__Num('Text', 'LeaderStrokeMm', 0.2)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Sheet Dimension Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetDimensionSetup() {
+        const terms = Na__LeCfg__Val('Dimensions', 'AllowedTerminators', null);
+        return {
+            defaultTextSizeMm : Na__LeCfg__Num('Dimensions', 'DefaultTextSizeMm', 2.5),
+            minTextSizeMm     : Na__LeCfg__Num('Dimensions', 'MinTextSizeMm', 1.5),
+            maxTextSizeMm     : Na__LeCfg__Num('Dimensions', 'MaxTextSizeMm', 8),
+            defaultColour     : Na__LeCfg__Val('Dimensions', 'DefaultColour', '#172b3a'),
+            terminators       : Array.isArray(terms) ? terms : [ 'tick', 'arrow', 'dot' ],
+            defaultTerminator : Na__LeCfg__Val('Dimensions', 'DefaultTerminator', 'tick'),
+            defaultOffsetMm   : Na__LeCfg__Num('Dimensions', 'DefaultOffsetMm', 8),
+            extGapMm          : Na__LeCfg__Num('Dimensions', 'ExtensionGapMm', 1.5),
+            overshootMm       : Na__LeCfg__Num('Dimensions', 'ExtensionOvershootMm', 1.5),
+            tickLengthMm      : Na__LeCfg__Num('Dimensions', 'TickLengthMm', 1.5),
+            strokeMm          : Na__LeCfg__Num('Dimensions', 'StrokeMm', 0.25),
+            textGapMm         : Na__LeCfg__Num('Dimensions', 'TextGapMm', 0.8),
+            defaultPrecision  : Na__LeCfg__Num('Dimensions', 'DefaultPrecision', 0),
+            defaultUnits      : Na__LeCfg__Val('Dimensions', 'DefaultUnitsSuffix', ' mm'),
+            thousandsSep      : Na__LeCfg__Val('Dimensions', 'ThousandsSeparator', ',')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Sheet Linework Widths (paper millimetres)
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetLineworkSetup() {
+        return {
+            visibleWidthMm    : Na__LeCfg__Num('Linework', 'VisibleWidthMm', 0.25),
+            hiddenWidthMm     : Na__LeCfg__Num('Linework', 'HiddenWidthMm', 0.18),
+            hiddenDashMm      : Na__LeCfg__Num('Linework', 'HiddenDashMm', 1.2),
+            authoredWidthMm   : Na__LeCfg__Num('Linework', 'AuthoredWidthMm', 0.2),
+            sectionWidthMm    : Na__LeCfg__Num('Linework', 'SectionWidthMm', 0.5),
+            minSegmentPaperMm : Na__LeCfg__Num('Linework', 'MinSegmentPaperMm', 0.05)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Panel Column Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetPanelSetup() {
+        return {
+            leftWidthPx  : Na__LeCfg__Num('Panels', 'LeftWidthPx', 250),
+            rightWidthPx : Na__LeCfg__Num('Panels', 'RightWidthPx', 300),
+            minWidthPx   : Na__LeCfg__Num('Panels', 'MinWidthPx', 190),
+            maxWidthPx   : Na__LeCfg__Num('Panels', 'MaxWidthPx', 520),
+            collapseOthers : Na__LeCfg__Val('Panels', 'CollapseOthersOnOpen', false) === true
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the Navigation Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetNavigationSetup() {
+        return {
+            zoomMin       : Na__LeCfg__Num('Navigation', 'ZoomMin', 0.15),
+            zoomMax       : Na__LeCfg__Num('Navigation', 'ZoomMax', 8),
+            zoomWheelStep : Na__LeCfg__Num('Navigation', 'ZoomWheelStep', 0.0016),
+            fitPaddingPx  : Na__LeCfg__Num('Navigation', 'FitPaddingPx', 32)
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get the PDF Setup
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetPdfSetup() {
+        return {
+            filenamePattern   : Na__LeCfg__Val('Pdf', 'FilenamePattern', 'Na__{projectCode}__{sheetName}__{paperSize}.pdf'),
+            rasterPixelsPerMm : Na__LeCfg__Num('Pdf', 'RasterPixelsPerMm', 12),
+            author            : Na__LeCfg__Val('Pdf', 'Author', 'Vale Garden Houses Limited'),
+            creator           : Na__LeCfg__Val('Pdf', 'Creator', 'ValeVision3D Layout Editor'),
+            jsPdfScriptPath   : Na__LeCfg__Val('Pdf', 'JsPdfScriptPath', './02__Src__AppModules/35__System__PageLayoutSystem/01__Dependencies__VersionLocked/jspdf.umd.js')
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get a Label
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetLabel(keySuffix, fallback) {
+        const value = Na__LeCfg__Val('Labels', keySuffix, undefined);
+        return (typeof value === 'string') ? value : fallback;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Get a Label With {tokens} Filled In
+    // ------------------------------------------------------------
+    function Na__LeCfg__FormatLabel(keySuffix, fallback, tokens) {
+        let text = Na__LeCfg__GetLabel(keySuffix, fallback);
+        Object.keys(tokens || {}).forEach((key) => { text = text.split('{' + key + '}').join(String(tokens[key])); });
+        return text;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Layout Editor Config State API
+    // ------------------------------------------------------------
+    export {
+        Na__LeCfg__SetAppConfig,
+        Na__LeCfg__Ready,
+        Na__LeCfg__IsEnabled,
+        Na__LeCfg__IsReadOnlyOnWeb,
+        Na__LeCfg__GetSheetSetup,
+        Na__LeCfg__GetStyleSetup,
+        Na__LeCfg__GetTitleBlockSetup,
+        Na__LeCfg__GetScaleSetup,
+        Na__LeCfg__GetViewportSetup,
+        Na__LeCfg__GetTextSetup,
+        Na__LeCfg__GetDimensionSetup,
+        Na__LeCfg__GetLineworkSetup,
+        Na__LeCfg__GetPanelSetup,
+        Na__LeCfg__GetNavigationSetup,
+        Na__LeCfg__GetPdfSetup,
+        Na__LeCfg__GetLabel,
+        Na__LeCfg__FormatLabel
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

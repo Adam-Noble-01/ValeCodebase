@@ -38,6 +38,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Projected linework overlay sync (port Phase 4)
+// - The drawing branch registers the linework overlay to the drawing camera every frame.
+//
 // 09-Sep-2026 - Elevation resize hook (port Phase 3)
 // - Resize also corrects the elevation ortho camera and its markup layers.
 //
@@ -407,6 +410,12 @@
     import { Na__DrawData__LOADED_EVENT } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__FloorPlanMode__HandleResize } from '../43__System__FloorPlanViews/Na__FloorPlan__ModeController__.js';
     import { Na__ElevationMode__HandleResize } from '../46__System__ElevationViews/Na__Elevation__ModeController__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Projected Linework Overlay (registered to the drawing camera per frame)
+    // @delegate: ../50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js
+    // ------------------------------------------------------------
+    import { Na__PlOverlay__SyncFrame } from '../50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Fog Plane System
@@ -1206,6 +1215,7 @@
                     Na__Renderer__Main.render(Na__Scene__Main, Na__Drawing__Camera); // <-- Preset not up yet: plain render
                 }
                 Na__DrawMarkup__SyncFrame();                                 // <-- Reproject the markup onto the new view
+                Na__PlOverlay__SyncFrame();                                  // <-- Register the projected linework overlay (port Phase 4)
                 return Na__RenderLoop__ActiveReasons.size > 0;               // <-- Only pan/zoom keeps frames coming
             }
 

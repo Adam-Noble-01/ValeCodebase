@@ -56,6 +56,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.2.0
+// - GetExportOverrides: the image export renders a drawing through the ortho
+//   camera with the 2D profile pre-pass, keeping the visible height and
+//   fitting the width to the export aspect (port Phase 4).
+//
 // 09-Sep-2026 - Version 1.1.0
 // - Config reading moved to Na__DrawView__ConfigState__ (port Phase 3); the
 //   preset no longer fetches the system JSON itself.
@@ -417,6 +422,42 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Image Export Overrides While a Drawing Is on Screen (null in 3D)
+    // ------------------------------------------------------------
+    // The same contract the legacy Elevation View offers the tiled renderer:
+    // the ortho camera, the 2D profile normals pass, and a frustum that keeps
+    // the visible HEIGHT while fitting the width to the export aspect, so the
+    // drawing is cropped or extended sideways rather than rescaled.
+    // ------------------------------------------------------------
+    function Na__DrawView__ComposerPreset__GetExportOverrides() {
+        if (!Na__DrawPreset__Active || !Na__DrawPreset__Camera || !Na__DrawPreset__Camera.isOrthographicCamera) return null;
+        const camera = Na__DrawPreset__Camera;
+        let   saved  = null;
+
+        return {
+            camera               : camera,
+            renderProfileNormals : Na__DrawPreset__RenderProfileNormals,
+            resizeFrustum        : (outputWidth, outputHeight) => {
+                saved = { left : camera.left, right : camera.right, top : camera.top, bottom : camera.bottom };
+                const halfWidth = ((camera.top - camera.bottom) / 2) * (outputWidth / outputHeight);
+                camera.left  = -halfWidth;
+                camera.right =  halfWidth;
+                camera.updateProjectionMatrix();
+            },
+            restoreFrustum       : () => {
+                if (!saved) return;
+                camera.left   = saved.left;
+                camera.right  = saved.right;
+                camera.top    = saved.top;
+                camera.bottom = saved.bottom;
+                camera.updateProjectionMatrix();
+                saved = null;
+            }
+        };
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -471,7 +512,8 @@
         Na__DrawView__ComposerPreset__ApplyStyles,
         Na__DrawView__ComposerPreset__RenderFrame,
         Na__DrawView__ComposerPreset__IsActive,
-        Na__DrawView__ComposerPreset__GetCamera
+        Na__DrawView__ComposerPreset__GetCamera,
+        Na__DrawView__ComposerPreset__GetExportOverrides
     };
     // ------------------------------------------------------------
 

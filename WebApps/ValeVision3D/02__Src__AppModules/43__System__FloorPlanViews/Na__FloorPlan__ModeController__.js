@@ -60,6 +60,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.2.2
+// - ApplyStyles announces the mode change so the projected linework overlay
+//   follows the toggles (port Phase 4).
+//
 // 09-Sep-2026 - Version 1.2.1
 // - Holds the live Cross Sections tool through the section adapter on entry
 //   and releases it on exit (port Phase 3), so a plan and an elevation hand
@@ -625,6 +629,7 @@
         Na__DrawView__MaterialPreset__ApplyStyles(styles);
         Na__DrawView__SectionAdapter__ReapplyClipping();                          // <-- Fresh substitutes need the cut planes again
         Na__RenderLoop__RequestRender();
+        Na__FpMode__DispatchChanged();                                           // <-- The projected linework re-reads the toggles
         return true;
     }
     // ------------------------------------------------------------

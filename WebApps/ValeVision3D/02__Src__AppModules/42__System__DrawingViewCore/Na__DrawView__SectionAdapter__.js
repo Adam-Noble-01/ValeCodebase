@@ -67,6 +67,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.2.0
+// - FIX: a vertical drawing plane kept the viewer's side of the model, so a
+//   section showed the near facade instead of the cut. The tool's normal now
+//   points AWAY from the viewer (the kept side) and live distance updates
+//   carry the same sign (port Phase 4). GetPlaneDefinition added.
+//
 // 09-Sep-2026 - Version 1.1.0
 // - Drawing cut colours applied from the drawing config while parked (port
 //   Phase 3, the Doous section look); SuspendLiveTool and Release added so a
@@ -90,7 +96,10 @@
 
     // MODULE IMPORTS | Math Utilities
     // ------------------------------------------------------------
-    import { Na__Math__ConvertMmToUnits } from '../04__MathUtils/Na__Math__Units.js';
+    import {
+        Na__Math__ConvertMmToUnits,
+        Na__Math__ConvertUnitsToMm
+    } from '../04__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | The Cross Sections Tool (the engine being driven)
@@ -227,7 +236,7 @@
     // normal points toward the KEPT side, matching the tool's own convention;
     // distanceMm is the plane's position along that normal.
     // ------------------------------------------------------------
-    function Na__DrawSection__Create(planeId, normal, distanceMm, depthMm, mode) {
+    function Na__DrawSection__Create(planeId, normal, distanceMm, depthMm, mode, distanceSign) {
         Na__DrawSection__Park();
         Na__DrawSection__ApplyDepth(depthMm);
 
@@ -242,7 +251,12 @@
         if (record) record.name = Na__DrawCfg__GetSectionSetup().planeNamePrefix + planeId; // <-- Recognisable in the tool's own panel
         Na__CrossSection__SetSectionGizmoVisible(sectionId, false);              // <-- The slider is the handle
 
-        Na__DrawSection__Planes.set(planeId, { sectionId : sectionId, normal : normal.clone(), depthMm : depthMm });
+        Na__DrawSection__Planes.set(planeId, {
+            sectionId    : sectionId,
+            normal       : normal.clone(),
+            depthMm      : depthMm,
+            distanceSign : (distanceSign === -1) ? -1 : 1                       // <-- Caller's distance to the tool's position along its normal
+        });
         Na__DrawSection__ActiveId = planeId;
         return true;
     }
@@ -251,7 +265,7 @@
 
     // HELPER FUNCTION | Create, or Update in Place, One Plane
     // ------------------------------------------------------------
-    function Na__DrawSection__Upsert(planeId, normal, distanceMm, depthMm, mode) {
+    function Na__DrawSection__Upsert(planeId, normal, distanceMm, depthMm, mode, distanceSign) {
         if (!planeId || !Number.isFinite(distanceMm)) return false;
 
         const existing = Na__DrawSection__Planes.get(planeId);
@@ -265,7 +279,7 @@
             Na__CrossSection__RemoveSection(existing.sectionId);                 // <-- Orientation changed: rebuild
             Na__DrawSection__Planes.delete(planeId);
         }
-        return Na__DrawSection__Create(planeId, normal, distanceMm, depthMm, mode);
+        return Na__DrawSection__Create(planeId, normal, distanceMm, depthMm, mode, distanceSign);
     }
     // ------------------------------------------------------------
 
@@ -291,15 +305,17 @@
     // FUNCTION | Create or Update a Vertical Cut Plane (Sections)
     // ------------------------------------------------------------
     // viewNormalX/Z points from the building TOWARD the viewer, the direction
-    // the elevation camera sits along, and need not arrive normalised. The
-    // kept side is the viewer's, so the tool's normal is the same direction
-    // and distanceMm is the plane's offset along it from the world origin.
+    // the elevation camera sits along, and need not arrive normalised.
+    // distanceMm is the plane's offset along that direction from the world
+    // origin. The tool keeps the side its normal points at, and a section
+    // must keep what lies BEYOND the plane, so the tool's normal is the view
+    // normal reversed and the position along it is the distance negated.
     // ------------------------------------------------------------
     function Na__DrawView__SectionAdapter__UpsertVerticalPlane(planeId, viewNormalX, viewNormalZ, distanceMm, depthMm) {
-        const normal = new THREE.Vector3(viewNormalX, 0, viewNormalZ);
+        const normal = new THREE.Vector3(-viewNormalX, 0, -viewNormalZ);         // <-- Kept side: away from the viewer
         if (normal.lengthSq() < 1e-9) return false;
         normal.normalize();
-        return Na__DrawSection__Upsert(planeId, normal, distanceMm, depthMm, Na__DrawSection__MODE_UPRIGHT);
+        return Na__DrawSection__Upsert(planeId, normal, -distanceMm, depthMm, Na__DrawSection__MODE_UPRIGHT, -1);
     }
     // ------------------------------------------------------------
 
@@ -311,7 +327,7 @@
     function Na__DrawView__SectionAdapter__SetPlaneDistanceMm(planeId, distanceMm, liveDrag) {
         const record = Na__DrawSection__Planes.get(planeId);
         if (!record || !Number.isFinite(distanceMm)) return false;
-        return Na__CrossSection__SetSectionPositionMm(record.sectionId, distanceMm, liveDrag === true);
+        return Na__CrossSection__SetSectionPositionMm(record.sectionId, record.distanceSign * distanceMm, liveDrag === true);
     }
     // ------------------------------------------------------------
 
@@ -396,6 +412,24 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Describe a Registered Plane (null When Absent)
+    // ------------------------------------------------------------
+    // Returns { normal : [x, y, z] (kept side), positionMm (along it), depthMm }
+    // read back from the tool, so a consumer sees the plane as it is cutting.
+    // ------------------------------------------------------------
+    function Na__DrawView__SectionAdapter__GetPlaneDefinition(planeId) {
+        const record  = Na__DrawSection__Planes.get(planeId);
+        const section = record ? Na__CrossSection__GetSectionById(record.sectionId) : null;
+        if (!section || !section.plane) return null;
+        return {
+            normal     : [ section.plane.normal.x, section.plane.normal.y, section.plane.normal.z ],
+            positionMm : Na__Math__ConvertUnitsToMm(-section.plane.constant),
+            depthMm    : record.depthMm
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Re-Assign the Clip Planes After a Material Swap
     // ------------------------------------------------------------
     // The tool writes its clipping planes onto whatever material each mesh
@@ -453,6 +487,7 @@
         Na__DrawView__SectionAdapter__SuspendLiveTool,
         Na__DrawView__SectionAdapter__Release,
         Na__DrawView__SectionAdapter__ReapplyClipping,
+        Na__DrawView__SectionAdapter__GetPlaneDefinition,
         Na__DrawView__SectionAdapter__RenderOverlay,
         Na__DrawView__SectionAdapter__IsCutting,
         Na__DrawView__SectionAdapter__GetActivePlaneId

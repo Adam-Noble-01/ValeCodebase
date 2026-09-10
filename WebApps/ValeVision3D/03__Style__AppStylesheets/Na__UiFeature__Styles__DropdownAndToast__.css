@@ -37,7 +37,7 @@
 /* ----------------------------------------------------------------- */
 .na-dropdown-menu {
     position                           : fixed;
-    top                                : calc(var(--Vale_HeaderHeight) + 10px);
+    top                                : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 10px);
     right                              : 20px;
     z-index                            : 1001;
     font-family                        : 'Open Sans', sans-serif;
@@ -63,7 +63,7 @@
 }
 
 .na-dropdown-menu--dev-localhost {
-    top                                : calc(var(--Vale_HeaderHeight) + 64px); /* <-- Below the breadcrumb row (14px + 40px card + 10px gap) */
+    top                                : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 64px); /* <-- Below the breadcrumb row (14px + 40px card + 10px gap) */
     right                              : unset;                                 /* <-- Override base right positioning */
     left                               : 20px;                                 /* <-- Pin to the left side of the viewport */
     transform-origin                   : top left;                              /* <-- Scale from top-left corner */
@@ -72,7 +72,7 @@
 }
 
 .na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
-    max-height                         : calc((100vh - var(--Vale_HeaderHeight) - 64px) / 1.2); /* <-- Deeper offset: menu sits below the breadcrumb row */
+    max-height                         : calc((100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) - 64px) / 1.2); /* <-- Deeper offset: menu sits below the breadcrumb row */
 }
 
 .na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
@@ -111,7 +111,7 @@
     box-shadow                          : 0 4px 16px rgba(0, 0, 0, 0);          /* <-- Shadow hidden while idle */
     transition                          : box-shadow 0.3s ease;                 /* <-- Shadow fades with the menu opacity */
     min-width                           : 220px;
-    max-height                          : calc((100vh - var(--Vale_HeaderHeight) - 10px) / 1.2); /* <-- Scale-aware viewport clamp (scroll lives here so the shadow is never clipped) */
+    max-height                          : calc((100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) - 10px) / 1.2); /* <-- Scale-aware viewport clamp (scroll lives here so the shadow is never clipped) */
     overflow-y                          : auto;                                 /* <-- Scroll open content on small screens */
 }
 
@@ -426,7 +426,7 @@
 /* ----------------------------------------------------------------- */
 .debug-info {
     position                           : absolute;
-    top                                : calc(var(--Vale_HeaderHeight) + 10px);  /* <-- Position below header */
+    top                                : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 10px);  /* <-- Position below header */
     left                               : 10px;
     background-color                   : rgba(0, 0, 0, 0.7);
     color                              : #00ff00;
@@ -469,7 +469,7 @@
 /* ----------------------------------------------------------------- */
 .camera-position-overlay {
     position                           : absolute;
-    top                                : calc(var(--Vale_HeaderHeight) + 120px);  /* <-- Position below debug info */
+    top                                : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 120px);  /* <-- Position below debug info */
     left                               : 20px;
     background-color                   : rgba(0, 0, 0, 0.7);
     color                              : #ffffff;
@@ -572,7 +572,7 @@
 /* ----------------------------------------------------------------- */
 .camera-position-download-button {
     position                            : absolute;
-    top                                 : calc(var(--Vale_HeaderHeight) + 450px);  /* <-- Position below lens section at bottom of stats */
+    top                                 : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 450px);  /* <-- Position below lens section at bottom of stats */
     left                                : 20px;
     background-color                    : #172b3a;
     color                               : #ffffff;
@@ -625,7 +625,7 @@
 /* ----------------------------------------------------------------- */
 .download-screenshot-button {
     position                           : absolute;
-    top                                : calc(var(--Vale_HeaderHeight) + 700px);  /* <-- Position below navigation controls */
+    top                                : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 700px);  /* <-- Position below navigation controls */
     right                              : 20px;
     background-color                   : #172b3a;
     color                              : #ffffff;
@@ -985,7 +985,7 @@
 /* Tree Container - Scrollable */
 /* ----------------------------------------------------------------- */
 .na-scene-inspector__tree {
-    max-height                          : calc((100vh - var(--Vale_HeaderHeight) - 64px) / 1.2 - 280px); /* <-- Fill remaining panel height after header controls, scaled (64px = dev menu top offset) */
+    max-height                          : calc((100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) - 64px) / 1.2 - 280px); /* <-- Fill remaining panel height after header controls, scaled (64px = dev menu top offset) */
     overflow-y                          : auto;
     overflow-x                          : hidden;
     border-top                          : 1px solid rgba(23, 43, 58, 0.08);

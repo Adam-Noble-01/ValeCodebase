@@ -1,0 +1,445 @@
+// =============================================================================
+// VALEVISION3D - LAYOUT EDITOR - VIEWPORT 2D
+// =============================================================================
+//
+// FILE       : Na__LayoutEditor__Viewport2d__.js
+// NAMESPACE  : Na__LeVp2d
+// MODULE     : Layout Editor - Viewport 2D
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : A window onto a plan, elevation or section at a locked scale
+// CREATED    : 09-Sep-2026
+//
+// DESCRIPTION:
+// - The window: the frame's paper size times the scale denominator, in
+//   drawing millimetres, centred on the viewport's pan. Everything in the
+//   frame is placed from that one rectangle.
+// - Three layers inside the frame body: the raster underlay (the composer
+//   render of the drawing, rendered offscreen at UnderlayPixelsPerMm and
+//   cached by fingerprint; the last picture is slid under the cursor while
+//   a pan is in progress and re-rendered once it settles), the projected
+//   linework SVG (viewBox spanning exactly the window in drawing
+//   millimetres, strokes at the configured paper widths times the
+//   denominator so they print true), and the scene markup at scale.
+// - Linework comes from the projection pipeline's cache, else the baked
+//   R2 asset, else an on-device render, in that order.
+//
+// INTEGRATION:
+// - The sheet surface calls Fill for every visible 2D frame; the tools
+//   flag interaction so renders wait for the drag to end.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (drawing view slots) and ValeVision3D 50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js
+// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
+// - Parity        : adapted
+// - Divergences   : free window with a pan instead of a fitted view; underlay from the composer preset; paper-width strokes.
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.0.0
+// - Initial implementation for port Phase 5.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | Config, Model, Chrome, Markup, Snapshots
+    // ------------------------------------------------------------
+    import { Na__LeCfg__GetViewportSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeChrome__ToSvgMarkup } from './Na__LayoutEditor__SheetChrome__.js';
+    import { Na__LeMarkup__BuildScenePrimitives } from './Na__LayoutEditor__MarkupBridge__.js';
+    import { Na__LeSnap__Render2d, Na__LeSnap__DrawingCentreMm } from './Na__LayoutEditor__SnapshotRenderer__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Projected Linework (definitions, pipeline, store, appearance)
+    // ------------------------------------------------------------
+    import { Na__PlCfg__GetAppearance } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js';
+    import {
+        Na__PlView__FromPlan,
+        Na__PlView__FromElevation,
+        Na__PlView__Fingerprint,
+        Na__PlView__CacheKey
+    } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
+    import {
+        Na__PlPipe__GetCached,
+        Na__PlPipe__GetModelFingerprint,
+        Na__PlPipe__RenderDefinition,
+        Na__PlPipe__Remember
+    } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
+    import { Na__PlStore__LoadForDefinition } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js';
+    import { Na__PlOverlay__BuildPathData } from '../50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants and State
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Debounce and Class Order
+    // ------------------------------------------------------------
+    const Na__LeVp2d__RENDER_DELAY_MS = 320;
+    const Na__LeVp2d__CLASS_ORDER     = [ 'hidden', 'visible', 'authored', 'section' ];
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Per-Viewport State and Shared Caches
+    // ------------------------------------------------------------
+    const Na__LeVp2d__States    = new Map();   // <-- viewportId -> state
+    const Na__LeVp2d__Linework  = new Map();   // <-- cacheKey -> Promise<classes|null>
+    const Na__LeVp2d__PathCache = new Map();   // <-- cacheKey -> { className : pathData }
+    let   Na__LeVp2d__Interacting = false;
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Window and Definition
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Model Window of a Viewport, With Its Paper Mappings
+    // ------------------------------------------------------------
+    function Na__LeVp2d__Window(viewport) {
+        const frame = viewport.Viewport__FrameMm;
+        const D     = viewport.Viewport__ScaleDenominator;
+        const w     = frame.WidthMm  * D;
+        const h     = frame.HeightMm * D;
+        const cx    = viewport.Viewport__PanMm.X;
+        const cy    = viewport.Viewport__PanMm.Y;
+        const ox    = cx - (w / 2);
+        const oy    = cy - (h / 2);
+        const win = {
+            CentreX : cx, CentreY : cy, WidthMm : w, HeightMm : h, OriginX : ox, OriginY : oy, Denominator : D, Frame : frame,
+            ToLocal   : (dx, dy) => ({ x : (dx - ox) / D, y : (dy - oy) / D }),
+            ToPaper   : (dx, dy) => ({ x : frame.X + ((dx - ox) / D), y : frame.Y + ((dy - oy) / D) }),
+            FromPaper : (px, py) => ({ x : ox + ((px - frame.X) * D), y : oy + ((py - frame.Y) * D) })
+        };
+        return win;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Source Records, Projection Definition and Window in One Go
+    // ------------------------------------------------------------
+    function Na__LeVp2d__Describe(viewport) {
+        const source = Na__LeModel__ResolveViewportSource(viewport);
+        const definition = source.plan ? Na__PlView__FromPlan(source.plan) : (source.elevation ? Na__PlView__FromElevation(source.elevation) : null);
+        return { source : source, definition : definition, window : Na__LeVp2d__Window(viewport) };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Centre the Window on the Drawing's Content
+    // ------------------------------------------------------------
+    function Na__LeVp2d__CentreOnDrawing(sheet, viewport) {
+        const described = Na__LeVp2d__Describe(viewport);
+        if (!described.definition) return false;
+        const centre = Na__LeSnap__DrawingCentreMm(described.definition);
+        return Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { pan : { X : centre.x, Y : centre.y } }, true);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Linework
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Four Classes for a Definition: Cache, Baked Asset, Then Render
+    // ------------------------------------------------------------
+    function Na__LeVp2d__EnsureLinework(definition) {
+        if (!definition) return Promise.resolve(null);
+        const cached = Na__PlPipe__GetCached(definition);
+        if (cached) return Promise.resolve(cached);
+        const modelFp = Na__PlPipe__GetModelFingerprint();
+        const key     = Na__PlView__CacheKey(definition, modelFp);
+        if (Na__LeVp2d__Linework.has(key)) return Na__LeVp2d__Linework.get(key);
+        const fingerprint = Na__PlView__Fingerprint(definition, modelFp);
+        const promise = (async () => {
+            try {
+                const stored = await Na__PlStore__LoadForDefinition(definition, fingerprint, key);
+                if (stored) { Na__PlPipe__Remember(key, definition, stored, fingerprint, 'asset'); return stored; }
+                const result = await Na__PlPipe__RenderDefinition(definition);
+                if (result && result.Classes) { Na__PlPipe__Remember(result.CacheKey, definition, result.Classes, result.Fingerprint, 'render'); return result.Classes; }
+                return null;
+            } catch (lineworkError) {
+                console.warn('[ValeVision3D LayoutEditor] Linework unavailable for ' + definition.ViewKey + ':', lineworkError);
+                return null;
+            } finally {
+                Na__LeVp2d__Linework.delete(key);
+            }
+        })();
+        Na__LeVp2d__Linework.set(key, promise);
+        return promise;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Path Data per Class, Built Once per Result
+    // ------------------------------------------------------------
+    function Na__LeVp2d__PathsFor(key, classes) {
+        let paths = Na__LeVp2d__PathCache.get(key);
+        if (paths) return paths;
+        paths = {};
+        Na__LeVp2d__CLASS_ORDER.forEach((name) => { paths[name] = Na__PlOverlay__BuildPathData(classes ? classes[name] : null); });
+        Na__LeVp2d__PathCache.set(key, paths);
+        if (Na__LeVp2d__PathCache.size > 16) Na__LeVp2d__PathCache.delete(Na__LeVp2d__PathCache.keys().next().value);
+        return paths;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Paper Stroke Rules per Class
+    // ------------------------------------------------------------
+    function Na__LeVp2d__StrokeRules() {
+        const setup = Na__LeCfg__GetLineworkSetup();
+        return {
+            visible  : { colour : Na__PlCfg__GetAppearance('visible').StrokeColour,  widthMm : setup.visibleWidthMm,  dashMm : 0 },
+            hidden   : { colour : Na__PlCfg__GetAppearance('hidden').StrokeColour,   widthMm : setup.hiddenWidthMm,   dashMm : setup.hiddenDashMm },
+            authored : { colour : Na__PlCfg__GetAppearance('authored').StrokeColour, widthMm : setup.authoredWidthMm, dashMm : 0 },
+            section  : { colour : Na__PlCfg__GetAppearance('section').StrokeColour,  widthMm : setup.sectionWidthMm,  dashMm : 0 }
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Write the Linework SVG for a Window
+    // ------------------------------------------------------------
+    function Na__LeVp2d__PaintLinework(state, viewport, key, classes, ppm) {
+        const win = Na__LeVp2d__Window(viewport);
+        const D      = win.Denominator;
+        const rules  = Na__LeVp2d__StrokeRules();
+        const paths  = Na__LeVp2d__PathsFor(key, classes);
+        const showHidden = viewport.Viewport__Styles.hiddenLines === true;
+        let body = '';
+        Na__LeVp2d__CLASS_ORDER.forEach((name) => {
+            if (name === 'hidden' && !showHidden) return;
+            if (!paths[name]) return;
+            const rule = rules[name];
+            body += '<path d="' + paths[name] + '" fill="none" stroke="' + rule.colour + '" stroke-width="' + (rule.widthMm * D) +
+                    '" stroke-linecap="round" stroke-linejoin="round"' + (rule.dashMm > 0 ? ' stroke-dasharray="' + (rule.dashMm * D) + ' ' + (rule.dashMm * D) + '"' : '') + '/>';
+        });
+        state.linework.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="na-le-frame__linework-svg" viewBox="' +
+            win.OriginX + ' ' + win.OriginY + ' ' + win.WidthMm + ' ' + win.HeightMm + '" preserveAspectRatio="none" focusable="false" aria-hidden="true">' + body + '</svg>';
+        state.lineworkKey  = key + '|' + showHidden + '|' + D;
+        state.lineworkSvg  = state.linework.firstElementChild;
+        Na__LeVp2d__SizeLayer(state.lineworkSvg, viewport, ppm);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Fill
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Size an Absolutely Placed Layer to the Frame
+    // ------------------------------------------------------------
+    function Na__LeVp2d__SizeLayer(el, viewport, ppm) {
+        if (!el) return;
+        el.style.width  = (viewport.Viewport__FrameMm.WidthMm  * ppm) + 'px';
+        el.style.height = (viewport.Viewport__FrameMm.HeightMm * ppm) + 'px';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Per-Viewport State, Creating the Layers on First Use
+    // ------------------------------------------------------------
+    function Na__LeVp2d__State(body, viewportId) {
+        let state = Na__LeVp2d__States.get(viewportId);
+        if (state && state.body === body) return state;
+        body.innerHTML = '';
+        const make = (tag, cls) => { const el = document.createElement(tag); el.className = cls; body.appendChild(el); return el; };
+        state = {
+            body : body, underlay : make('img', 'na-le-frame__underlay'), linework : make('div', 'na-le-frame__linework'),
+            markup : make('div', 'na-le-frame__markup'), empty : make('div', 'na-le-frame__empty'),
+            renderedKey : null, renderedWindow : null, wantedKey : null, timer : null, inFlight : false,
+            lineworkKey : null, lineworkSvg : null, markupKey : null, lastArgs : null
+        };
+        state.underlay.draggable = false;
+        state.underlay.alt = '';
+        Na__LeVp2d__States.set(viewportId, state);
+        return state;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Place the Last Rendered Underlay Under the Current Window
+    // ------------------------------------------------------------
+    function Na__LeVp2d__PlaceUnderlay(state, win, ppm) {
+        const rw = state.renderedWindow;
+        if (!rw) { state.underlay.hidden = true; return; }
+        const D = win.Denominator;
+        state.underlay.hidden = false;
+        state.underlay.style.left   = (((rw.OriginX - win.OriginX) / D) * ppm) + 'px';
+        state.underlay.style.top    = (((rw.OriginY - win.OriginY) / D) * ppm) + 'px';
+        state.underlay.style.width  = ((rw.WidthMm  / D) * ppm) + 'px';
+        state.underlay.style.height = ((rw.HeightMm / D) * ppm) + 'px';
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Render the Underlay for the Wanted Window (debounced)
+    // ------------------------------------------------------------
+    function Na__LeVp2d__ScheduleUnderlay(state, viewportId) {
+        if (state.timer) window.clearTimeout(state.timer);
+        state.timer = window.setTimeout(() => {
+            state.timer = null;
+            if (Na__LeVp2d__Interacting || state.inFlight || !state.lastArgs) return;
+            const args = state.lastArgs;
+            const described = Na__LeVp2d__Describe(args.viewport);
+            if (!described.definition) return;
+            const key = state.wantedKey;
+            const setup   = Na__LeCfg__GetViewportSetup();
+            const frame   = args.viewport.Viewport__FrameMm;
+            let   widthPx = frame.WidthMm * setup.underlayPixelsPerMm, heightPx = frame.HeightMm * setup.underlayPixelsPerMm;
+            const longest = Math.max(widthPx, heightPx);
+            if (longest > setup.maxSnapshotPixels) { widthPx *= setup.maxSnapshotPixels / longest; heightPx *= setup.maxSnapshotPixels / longest; }
+            const windowSnapshot = described.window;
+            state.inFlight = true;
+            Na__LeSnap__Render2d(described.definition, windowSnapshot, args.viewport.Viewport__Styles, widthPx, heightPx).then((result) => {
+                state.inFlight = false;
+                if (!Na__LeVp2d__States.has(viewportId) || Na__LeVp2d__States.get(viewportId) !== state) return;
+                if (result) {
+                    state.underlay.src   = result.dataUrl;
+                    state.renderedKey    = key;
+                    state.renderedWindow = { OriginX : windowSnapshot.OriginX, OriginY : windowSnapshot.OriginY, WidthMm : windowSnapshot.WidthMm, HeightMm : windowSnapshot.HeightMm };
+                    Na__LeVp2d__PlaceUnderlay(state, Na__LeVp2d__Window(state.lastArgs.viewport), state.lastArgs.ppm);
+                }
+                if (state.wantedKey !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewportId);   // <-- Moved on meanwhile
+            });
+        }, Na__LeVp2d__RENDER_DELAY_MS);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fill (or Refresh) the Body of a 2D Frame
+    // ------------------------------------------------------------
+    function Na__LeVp2d__Fill(body, sheet, viewport, ppm) {
+        const state     = Na__LeVp2d__State(body, viewport.Viewport__Id);
+        const described = Na__LeVp2d__Describe(viewport);
+        const win       = described.window;
+        state.lastArgs  = { sheet : sheet, viewport : viewport, ppm : ppm };
+
+        if (!described.definition) {
+            state.empty.textContent = Na__LeCfg__GetLabel('NoDrawingLinked', 'No drawing linked to this viewport.');
+            state.empty.hidden = false;
+            state.underlay.hidden = true;
+            state.linework.innerHTML = ''; state.markup.innerHTML = '';
+            state.lineworkKey = null; state.markupKey = null;
+            return;
+        }
+        state.empty.hidden = true;
+
+        // UNDERLAY | Slide the last picture; render a new one once things settle
+        const styles  = viewport.Viewport__Styles;
+        const modelFp = Na__PlPipe__GetModelFingerprint();
+        const key = [ described.definition.RecordHash, modelFp, Math.round(win.CentreX), Math.round(win.CentreY),
+                      Math.round(win.WidthMm), Math.round(win.HeightMm), styles.whitecard, styles.glassOpaque, styles.profileLinework ].join('|');
+        Na__LeVp2d__PlaceUnderlay(state, win, ppm);
+        state.wantedKey = key;
+        if (key !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewport.Viewport__Id);
+
+        // LINEWORK | Cached classes paint now; otherwise they arrive later
+        if (styles.projectedLinework === false) {
+            state.linework.innerHTML = ''; state.lineworkKey = null; state.lineworkSvg = null;
+        } else {
+            const cacheKey = Na__PlView__CacheKey(described.definition, modelFp);
+            const paintKey = cacheKey + '|' + (styles.hiddenLines === true) + '|' + win.Denominator;
+            if (state.lineworkKey === paintKey && state.lineworkSvg) {
+                state.lineworkSvg.setAttribute('viewBox', win.OriginX + ' ' + win.OriginY + ' ' + win.WidthMm + ' ' + win.HeightMm);
+                Na__LeVp2d__SizeLayer(state.lineworkSvg, viewport, ppm);
+            } else {
+                const classes = Na__PlPipe__GetCached(described.definition);
+                if (classes) Na__LeVp2d__PaintLinework(state, viewport, cacheKey, classes, ppm);
+                else Na__LeVp2d__EnsureLinework(described.definition).then((loaded) => {
+                    if (!loaded || Na__LeVp2d__States.get(viewport.Viewport__Id) !== state || !state.lastArgs) return;
+                    Na__LeVp2d__PaintLinework(state, state.lastArgs.viewport, cacheKey, loaded, state.lastArgs.ppm);
+                });
+            }
+        }
+
+        // SCENE MARKUP | Static, at scale
+        if (viewport.Viewport__MarkupMode === 'scene') {
+            const primitives = Na__LeMarkup__BuildScenePrimitives(described);
+            const frame = viewport.Viewport__FrameMm;
+            state.markup.innerHTML = Na__LeChrome__ToSvgMarkup(primitives, frame.WidthMm, frame.HeightMm, 'na-le-frame__markup-svg');
+            Na__LeVp2d__SizeLayer(state.markup.firstElementChild, viewport, ppm);
+        } else {
+            state.markup.innerHTML = '';
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Drop a Viewport's State
+    // ------------------------------------------------------------
+    function Na__LeVp2d__Release(viewportId) {
+        const state = Na__LeVp2d__States.get(viewportId);
+        if (!state) return;
+        if (state.timer) window.clearTimeout(state.timer);
+        Na__LeVp2d__States.delete(viewportId);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hold Renders While the Pointer Is Down, Flush When It Lifts
+    // ------------------------------------------------------------
+    function Na__LeVp2d__SetInteracting(flag) {
+        Na__LeVp2d__Interacting = flag === true;
+        if (Na__LeVp2d__Interacting) return;
+        Na__LeVp2d__States.forEach((state, viewportId) => {
+            if (state.wantedKey !== state.renderedKey) Na__LeVp2d__ScheduleUnderlay(state, viewportId);
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Fresh Underlay at Export Resolution (not cached)
+    // ------------------------------------------------------------
+    function Na__LeVp2d__RenderForExport(viewport, pixelsPerMm) {
+        const described = Na__LeVp2d__Describe(viewport);
+        if (!described.definition) return Promise.resolve(null);
+        const setup = Na__LeCfg__GetViewportSetup();
+        const frame = viewport.Viewport__FrameMm;
+        let widthPx = frame.WidthMm * pixelsPerMm, heightPx = frame.HeightMm * pixelsPerMm;
+        const longest = Math.max(widthPx, heightPx);
+        if (longest > setup.maxSnapshotPixels) { widthPx *= setup.maxSnapshotPixels / longest; heightPx *= setup.maxSnapshotPixels / longest; }
+        return Na__LeSnap__Render2d(described.definition, described.window, viewport.Viewport__Styles, widthPx, heightPx);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Layout Editor Viewport 2D API
+    // ------------------------------------------------------------
+    export {
+        Na__LeVp2d__CLASS_ORDER,
+        Na__LeVp2d__Window,
+        Na__LeVp2d__Describe,
+        Na__LeVp2d__CentreOnDrawing,
+        Na__LeVp2d__EnsureLinework,
+        Na__LeVp2d__StrokeRules,
+        Na__LeVp2d__Fill,
+        Na__LeVp2d__Release,
+        Na__LeVp2d__SetInteracting,
+        Na__LeVp2d__RenderForExport
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

@@ -46,6 +46,12 @@
     // @delegate: ../03__AppUtils/Na__AppUtils__LoadingOverlay__.js
     // ------------------------------------------------------------
     import { Na__AppUtils__LoadingOverlay__Create } from '../03__AppUtils/Na__AppUtils__LoadingOverlay__.js';
+
+    // MODULE IMPORTS | Projected Linework Compositor (port Phase 4)
+    // @delegate: ../50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js
+    // ------------------------------------------------------------
+    import { Na__PlExport__Apply } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ExportCompositor__.js';
+    // ------------------------------------------------------------
     // ------------------------------------------------------------
 
 
@@ -251,6 +257,8 @@
                 await Na__PostProcess__RunPipeline(captureCanvas, postProcessConfig, progress); // <-- Strip-based, mutates captureCanvas
             }
 
+            await Na__PlExport__Apply(captureCanvas, elevOverrides ? elevOverrides.camera : null); // <-- Projected linework over a drawing (port Phase 4)
+
             return {
                 canvas      : captureCanvas,               // <-- Final 2D canvas with rendered image
                 width       : captureCanvas.width,         // <-- Rendered width in pixels
@@ -282,6 +290,8 @@
         if (isEnhanceEnabled && postProcessConfig) {
             await Na__PostProcess__RunPipeline(result.canvas, postProcessConfig, progress); // <-- Strip-based, mutates result canvas
         }
+
+        await Na__PlExport__Apply(result.canvas, elevOverrides ? elevOverrides.camera : null); // <-- Projected linework over a drawing (port Phase 4)
 
         return {
             canvas      : result.canvas,                          // <-- Final 2D canvas with rendered image

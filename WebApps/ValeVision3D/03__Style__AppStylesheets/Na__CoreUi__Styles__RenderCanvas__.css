@@ -6,12 +6,12 @@
 /* ----------------------------------------------------------------- */
 #renderCanvas {
     width                              : 100vw;                                   /* <-- Full viewport width */
-    height                             : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Viewport height minus header */
+    height                             : calc(100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)));  /* <-- Viewport height minus header */
     touch-action                       : none;
     outline                            : none;
     display                            : block;
     position                           : absolute;                    /* <-- Absolute positioning */
-    top                                : var(--Vale_HeaderHeight);    /* <-- Start below header */
+    top                                : calc(var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px));    /* <-- Start below header */
     left                               : 0;                           /* <-- Align to left edge */
 }
 

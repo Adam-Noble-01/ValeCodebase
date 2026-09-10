@@ -27,7 +27,7 @@
     /* ------------------------------------------------------------ */
     .na-breadcrumb {
         position                           : fixed;
-        top                                : calc(var(--Vale_HeaderHeight, 54px) + 14px);  /* <-- Same row as top toolbar */
+        top                                : calc((var(--Vale_HeaderHeight, 54px) + var(--Vale_LayoutTabStripHeight, 0px)) + 14px);  /* <-- Same row as top toolbar */
         left                               : 20px;
         display                            : flex;
         align-items                        : center;

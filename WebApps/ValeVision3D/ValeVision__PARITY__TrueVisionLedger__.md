@@ -17,7 +17,7 @@ ValeVision root: `WebApps/ValeVision3D`.
 
 | ValeVision | TrueVision | Parity | Notes | Checked |
 |---|---|---|---|---|
-| `04__Lib__ThirdParty__VersionLocked/` (three r184, three-mesh-bvh 0.9.9, three-edge-projection 0.0.10) | esm.sh three r160 import map | diverged | ValeVision runs the Lantern Designer's locked set; TrueVision stays on r160 until it adopts the projection engine | 09-Sep-2026 |
+| `04__Lib__ThirdParty__VersionLocked/` (three r184, three-mesh-bvh 0.9.9, clipper2-js 0.9.0, three-edge-projection 0.0.10) | esm.sh three r160 import map | diverged | ValeVision runs the Lantern Designer's locked set; TrueVision stays on r160 until it adopts the projection engine. clipper2-js added 10-Sep-2026 (v2.21.1): three-edge-projection imports it at module load | 10-Sep-2026 |
 
 ## Phase 1 - Scene Groups (v2.17.0, 09-Sep-2026)
 
@@ -44,8 +44,8 @@ ValeVision root: `WebApps/ValeVision3D`.
 | `42/Na__DrawView__MarkupMount__.js` 1.0.0 | `40/Na__DrawView__MarkupMount__.js` 1.0.0 | verbatim | Dimension config getters imported from the split ConfigState module | 09-Sep-2026 |
 | `42/Na__DrawView__MarkupFocus__.js` 1.1.0 | `42/Na__FloorPlan__MarkupFocus__.js` 1.1.0 | verbatim (relocated) | Namespace Na__DrawFocus__ | 09-Sep-2026 |
 | `42/Na__DrawView__SceneLinkRow__.js` 1.0.0 | `40/Na__DrawView__SceneLinkRow__.js` 1.0.0 | verbatim | | 09-Sep-2026 |
-| `42/Na__DrawView__SectionAdapter__.js` 1.1.0 | `41/Na__SectionCut__Engine__.js` (surface only) | diverged (D07) | Drives Na__CrossSectionView__SystemLogic; snapshots and restores the live tool; drawing colours, SuspendLiveTool and Release (Phase 3) | 09-Sep-2026 |
-| `42/Na__DrawView__ComposerPreset__.js` 1.1.0 | `40/Na__DrawView__ProfileLines__.js` (purpose only) | diverged (D12) | Composer route; reuses the legacy 2D profile pre-pass; config through ConfigState (Phase 3) | 09-Sep-2026 |
+| `42/Na__DrawView__SectionAdapter__.js` 1.2.0 | `41/Na__SectionCut__Engine__.js` (surface only) | diverged (D07) | Drives Na__CrossSectionView__SystemLogic; snapshots and restores the live tool; drawing colours, SuspendLiveTool and Release (Phase 3); vertical plane sign fix and GetPlaneDefinition (Phase 4) | 09-Sep-2026 |
+| `42/Na__DrawView__ComposerPreset__.js` 1.2.0 | `40/Na__DrawView__ProfileLines__.js` (purpose only) | diverged (D12) | Composer route; reuses the legacy 2D profile pre-pass; config through ConfigState (Phase 3); export overrides (Phase 4) | 09-Sep-2026 |
 | `42/Na__DrawView__MaterialPreset__.js` 1.1.0 | none | new | Self-contained stash and restore, not the MaterialsSystem whitecard pass; config through ConfigState (Phase 3) | 09-Sep-2026 |
 | `42/Na__DrawView__ProjectData__.js` 1.0.0 | none | new (D08) | Owns LayoutEditor__DrawingsData and the one drawings save | 09-Sep-2026 |
 | `42/Na__DrawView__Transitions__.js` 1.0.0 | mode controllers (shared parts) | adapted (split) | Walk and fly returned to orbit through the toolbar | 09-Sep-2026 |
@@ -86,9 +86,60 @@ ValeVision root: `WebApps/ValeVision3D`.
 | `46/Na__Elevation__AppConfig__.json`, `Styles__DevMenu__.css` | `45/` same | adapted | Section group, FacePick and Grip blocks, extra labels; scene row rules live in 42 | 09-Sep-2026 |
 | `43/Na__FloorPlan__DevMenu__RowBuilders__.js`, `ModeController__.js` (edited) | `42/` same | adapted | Shared style rows; hold and release of the live tool | 09-Sep-2026 |
 
-## Phase 4 to Phase 5
+## Phase 4 - Projected Linework (v2.20.0, 09-Sep-2026)
 
-Rows are added as each phase lands. Planned pairs are listed in Appendix A of the plan document.
+Source root for this phase: `WebApps/Vale__LanternDesigner/02__Src__AppModules/27__System__ProjectedEdges2d` (Lantern Designer, LD).
+
+| ValeVision | Lantern Designer | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `50/Na__ProjectedLinework__ClipKernel__.js` | LD `ClipKernel__.mjs` | verbatim | Header restyled, identifiers renamed; zero imports kept | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__FlatBvh__.js` | LD `FlatBvh__.mjs` | verbatim | | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__ClipWorker__.js` | LD `ClipWorker__.mjs` | adapted | Done reply carries HiddenSegments | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__WorkerPool__.js` | LD `WorkerPool__.mjs` | adapted | Run resolves { Segments, HiddenSegments } | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__Scheduler__.js`, `DiffHarness__.js`, `RasterPreview__.js`, `WebGpuBackend__.js` | LD same | verbatim | Identifiers and console prefix | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__SoupBuilder__.js` | LD `SoupBuilder__.mjs` | adapted | ViewMapFromBasis: permutation or rotation (D40); TurnPoint shared | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__EdgeExtractor__.js` | LD `EdgeExtractor__.mjs` | adapted | Instances, viewer vector, SplitByCut, ToDrawingSegments; authored key Na__AuthoredEdges | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__StageSampler__.js` | LD `StageSampler__.mjs` | adapted | Live model root, helper flags, InstancedMesh, exclusions (D19), transparency rule, cut clipping, section outline | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__ModelStage__.js` | LD `ModelStage__.mjs` | adapted | Fingerprint and BVH priming only; clone group for the vendored backends | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__Projector__.js` | LD `Projector__.mjs` | adapted | Basis from the view definition; collection and sample split; hidden edges option | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__CpuBackend__.js` | LD `CpuBackend__.mjs` | adapted | Four classes; cut split; authored pass | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__Pipeline__.js` | LD `Pipeline__.mjs` | adapted (split) | One drawing; model fingerprint; asset before compute; triangle ceiling | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__Persistence__.js` | LD `LineworkStore__.mjs` | adapted | R2 asset per drawing, record reference, IndexedDB, bake before save (D20) | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__SvgOverlay__.js` | LD `SvgLayer__.mjs` | adapted | Standalone SVG over the canvas; per-frame transform; export markup | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__ConfigAccess__.js` | LD `ConfigAccess__.mjs` | adapted | Typed getters; Main.json override for exclusions | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__ViewDefinition__.js` | LD `Projector__.mjs` (basis table) | new | Record to basis, cut, fingerprint | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__AuthoredEdges__.js` | none | new (D18) | SketchUp linework GLBs as the authored class | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__ExportCompositor__.js` | none | new | Overlay onto exported images | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__DevMenu__Controls__.js` | LD `ToolbarButton__.mjs` (purpose) | new | Dev menu section with the console helpers as buttons | 09-Sep-2026 |
+| `50/Na__ProjectedLinework__AppConfig__.json`, `Styles__Main__.css` | LD config and stylesheet | adapted | ValeVision keys and blocks; layer and dev rules only | 09-Sep-2026 |
+| `43/Na__FloorPlan__ModeController__.js` 1.2.2, `46/Na__Elevation__ModeController__.js` 1.1.1 (edited) | TV same | adapted | ApplyStyles announces the change | 09-Sep-2026 |
+| `43/Na__FloorPlan__DevMenu__Editor__.js`, `46/Na__Elevation__DevMenu__Editor__.js` (edited) | TV same | adapted | Bake before save | 09-Sep-2026 |
+| `26/Na__UiFeature__ModelToggle__Controls.js`, `30/Na__UiFeature__ImageExport__Controls.js`, `01/Na__AppFlow__LoadingSequence.js` (edited) | n/a | n/a | Visibility event; export compositing; overlay sync | 09-Sep-2026 |
+
+## Phase 5 - Layout Editor (v2.21.0, 10-Sep-2026)
+
+No TrueVision counterpart exists for this phase. Sources are pattern-level: the Lantern Designer's `30__System__DrawingEditorMode` (LD) and ValeVision's own `35__System__PageLayoutSystem` (VV). Every module is a back-port candidate.
+
+| ValeVision | Source | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `51/Na__LayoutEditor__AppConfig__.json`, `ConfigState__.js` | LD config access | adapted | Sheet, style, title block, scales, viewport, text, dimensions, linework, panels, navigation, PDF, labels | 10-Sep-2026 |
+| `51/Na__LayoutEditor__ScaleManager__.js` | LD `ScaleManager__` | adapted | 20, 50, 100 only (D27) | 10-Sep-2026 |
+| `51/Na__LayoutEditor__SheetLayout__.js` | LD `SheetPdfLayout__` | adapted | Free viewports, no view grid | 10-Sep-2026 |
+| `51/Na__LayoutEditor__SheetModel__.js` 1.0.1, `SheetRecords__.js` | none | new | Records in `LayoutEditor__DrawingsData__Sheets`; split for the line budget | 10-Sep-2026 |
+| `51/Na__LayoutEditor__SheetChrome__.js` | LD `SheetChrome__` | adapted | Polyline, rotated text, clipped groups; title blocks split out | 10-Sep-2026 |
+| `51/Na__LayoutEditor__TitleBlock__Modern__.js` | LD `SheetChrome__` (title block region) | adapted | ValeVision fields | 10-Sep-2026 |
+| `51/Na__LayoutEditor__TitleBlock__Classic__.js` | VV title block scan | new | Scan stretched to the sheet, anchored fields (D26) | 10-Sep-2026 |
+| `51/Na__LayoutEditor__SheetSurface__.js` | LD `SheetSurface__` | adapted | Frames, selection layer, per-frame content by the viewport modules | 10-Sep-2026 |
+| `51/Na__LayoutEditor__Navigation__.js` | LD `SheetManager__` (navigation) | adapted | Scroll-based pan, pinch | 10-Sep-2026 |
+| `51/Na__LayoutEditor__ViewportHandles__.js` | VV `Controls__Pc__` | adapted | Millimetre space; 2D and 3D rules (D29, D30) | 10-Sep-2026 |
+| `51/Na__LayoutEditor__Viewport2d__.js`, `Viewport3d__.js`, `SnapshotRenderer__.js`, `Assets__.js` | none | new | Underlay and snapshot pipeline; R2 snapshots (D36) | 10-Sep-2026 |
+| `51/Na__LayoutEditor__MarkupBridge__.js`, `DimensionGeometry__.js` | VV 44 and 45 (rules) | adapted | Static scene markup at scale; native sheet markup (D34) | 10-Sep-2026 |
+| `51/Na__LayoutEditor__SheetTools__.js` | VV `Controls__Pc__` (pointer conventions) | new | Select, move, resize, text, dimension, keys | 10-Sep-2026 |
+| `51/Na__LayoutEditor__PanelHost__.js`, `Panel__Sheet__`, `Panel__Layers__`, `Panel__ViewportSettings__`, `Panel__Text__`, `Panel__Dimensions__`, `Panel__Styles__` | LD panel columns (purpose) | new | D31, D32, D33 | 10-Sep-2026 |
+| `51/Na__LayoutEditor__Toolbar__.js`, `TabStrip__.js`, `ModeController__.js`, `DevMenu__Controls__.js` | LD mode tab, VV 43 mode pattern | new | D22 to D24 | 10-Sep-2026 |
+| `51/Na__LayoutEditor__PdfExporter__.js` | VV `PdfExport__A3__`, LD `DrawToPdf` | adapted | Any paper size, vector content (D35) | 10-Sep-2026 |
+| `51/Na__LayoutEditor__Styles__Main__.css`, `Styles__Panels__.css` | LD stylesheet | adapted | | 10-Sep-2026 |
+| `index.html`, `03/Na__CoreUi__Styles__Index__.css`, seven header-anchored stylesheets (edited) | n/a | n/a | Dev item, imports, init; CSS imports; tab strip offset | 10-Sep-2026 |
 
 ---
 
@@ -104,3 +155,6 @@ Rows are added as each phase lands. Planned pairs are listed in Appendix A of th
 | Pick Face, Re-pick and the gizmo grip | `46/Na__Elevation__FacePick__.js`, `46/Na__Elevation__GizmoGrip__.js`, editor wiring | Loose editing of the drawing plane in the 3D view; the sliders stay the precise path |
 | Sections filed by drawing type | `46/Na__Elevation__SceneLink__.js`, config section group keys | The Elevations and Cross Sections groups hold what their names say |
 | Shared drawing style rows and config state | `42/Na__DrawView__StyleRows__.js`, `42/Na__DrawView__ConfigState__.js` | One row builder and one config reader for every drawing kind |
+| Rotation path in the soup builder and edge extractor (Lantern Designer) | `50/Na__ProjectedLinework__SoupBuilder__.js`, `EdgeExtractor__.js` | A free-bearing view without a fourth basis table entry |
+| Hidden segments through the worker pool (Lantern Designer) | `50/Na__ProjectedLinework__ClipWorker__.js`, `WorkerPool__.js` | The kernel already computes them; the pool now returns them |
+| The whole Layout Editor (sheets, viewports at scale, PDF) | `51/Na__LayoutEditor__*` | TrueVision has no sheet output; the module set only depends on the drawing records and the projection pipeline |

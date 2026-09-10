@@ -63,6 +63,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Version 1.1.1
+// - ApplyStyles announces the mode change so the projected linework overlay
+//   follows the toggles (port Phase 4).
+//
 // 09-Sep-2026 - Version 1.1.0
 // - Ported to ValeVision3D: section adapter, composer and material presets,
 //   shared transitions, live style application.
@@ -713,6 +717,7 @@
         Na__DrawView__MaterialPreset__ApplyStyles(styles);
         Na__DrawView__SectionAdapter__ReapplyClipping();                          // <-- Fresh substitutes need the cut planes again
         Na__RenderLoop__RequestRender();
+        Na__ElevMode__Dispatch();                                                // <-- The projected linework re-reads the toggles
         return true;
     }
     // ------------------------------------------------------------

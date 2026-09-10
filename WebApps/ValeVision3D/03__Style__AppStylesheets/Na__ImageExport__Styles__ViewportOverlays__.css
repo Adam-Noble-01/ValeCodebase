@@ -26,10 +26,10 @@
     /* ------------------------------------------------------------ */
     .na-export-overlay {
         position                           : absolute;                    /* <-- Absolute positioning */
-        top                                : var(--Vale_HeaderHeight);    /* <-- Start below header */
+        top                                : calc(var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px));    /* <-- Start below header */
         left                               : 0;                           /* <-- Align to left edge */
         width                              : 100vw;                       /* <-- Full viewport width */
-        height                             : calc(100vh - var(--Vale_HeaderHeight));  /* <-- Viewport height minus header */
+        height                             : calc(100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)));  /* <-- Viewport height minus header */
         z-index                            : 500;                         /* <-- Between canvas and menu */
         pointer-events                     : none;                        /* <-- Allow interaction through overlay */
         opacity                            : 0;                           /* <-- Hidden by default */

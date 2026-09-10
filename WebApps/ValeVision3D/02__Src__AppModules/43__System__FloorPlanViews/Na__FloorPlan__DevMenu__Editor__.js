@@ -52,6 +52,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 09-Sep-2026 - Bake before save (port Phase 4)
+// - Save bakes every drawing's projected linework asset that is missing or stale before the project save.
+//
 // 09-Sep-2026 - Version 1.1.0
 // - Ported to ValeVision3D: drawings block save path, section adapter, R2
 //   asset thumbnails, Ground Floor Plan quick action, style handlers.
@@ -97,6 +100,13 @@
     } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__DrawView__SectionAdapter__SetPlaneHeightMm } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
     import { Na__DrawSceneRow__Build } from '../42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Projected Linework Baking (port Phase 4)
+    // ------------------------------------------------------------
+    // @delegate: ../50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js
+    // ------------------------------------------------------------
+    import { Na__PlStore__BakeBeforeSave } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Floor Plan Data, Config, Scene Link and Mode
@@ -483,6 +493,8 @@
     // ------------------------------------------------------------
     async function Na__FpDev__Save() {
         Na__FloorPlanMode__StoreActiveFraming();                                 // <-- Save what is on screen, not the last gesture
+
+        await Na__PlStore__BakeBeforeSave(Na__FpDev__ShowToast);                       // <-- Linework assets first, so the records carry their references (D20)
 
         const saved = await Na__DrawData__Save(Na__FpDev__ShowToast);
         if (saved) {

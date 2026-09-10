@@ -26,7 +26,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 10-Sep-2026 - Version 1.0.5
+// - Token bumped again (2026-09-10-2) for the ValeVision clipper2-js vendoring (import map in index.html).
+// - Token bumped again (2026-09-10-1) for the ValeVision port Phase 5 shell edits (index.html, CSS index, header offsets).
 // 09-Sep-2026 - Version 1.0.4
+// - Token bumped again (2026-09-09-4) for the ValeVision port Phase 4 shell edits (index.html, CSS index).
 // - Token bumped again (2026-09-09-3) for the ValeVision port Phase 3 shell edits (index.html, CSS index).
 // - Token bumped again (2026-09-09-2) for the ValeVision port Phase 2 shell edits (index.html, CSS index).
 // - PWA_SW_VERSION_TOKEN bumped to 2026-09-09-1 (ValeVision3D v2.16.0: three r184
@@ -129,7 +133,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-09-3';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-10-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

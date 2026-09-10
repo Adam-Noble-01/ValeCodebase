@@ -87,6 +87,9 @@
 @import url('../02__Src__AppModules/46__System__ElevationViews/Na__Elevation__Styles__DevMenu__.css');
 @import url('../02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css');
 @import url('../02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css');
+@import url('../02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css');
+@import url('../02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__Styles__Main__.css');
+@import url('../02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__Styles__Panels__.css');
 
 /* Video Studio - Dev Tools camera path authoring panel */
 /* ----------------------------------------------------------------- */

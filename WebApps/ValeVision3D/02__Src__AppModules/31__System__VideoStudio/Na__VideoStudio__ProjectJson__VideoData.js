@@ -30,7 +30,7 @@
 //       VideoStudio__Video__Order        {number}
 //       VideoStudio__Video__Export       {object}   width/height/fps/bitrate
 //         VideoStudio__Export__AntiAliasEnabled {boolean} supersample exports; absent: on
-//         VideoStudio__Export__AntiAliasSamples {number}  4, 8 or 16 per frame; absent: 8
+//         VideoStudio__Export__AntiAliasSamples {number}  4, 8 or 16 per frame; absent: 16
 //       VideoStudio__Video__Playback     {object}   speed/defaults/easing/loop
 //       VideoStudio__Video__ModelLayers  {object}   per-path model layer overrides
 //         VideoStudio__ModelLayers__Enabled    {boolean}
@@ -92,6 +92,10 @@
 // - VideoStudio__Export__AntiAliasEnabled and __AntiAliasSamples: per-path
 //   supersampled anti-aliasing for MP4 exports. Absent reads as on at 8x;
 //   GetExportOptions returns antiAliasEnabled and antiAliasSamples.
+//
+// 11-Sep-2026 - Version 1.4.1
+// - Default sample count raised from 8 to 16, the clear winner in side by
+//   side exports. Paths with a count already saved keep it.
 //
 // =============================================================================
 
@@ -177,12 +181,14 @@
     // camera shifted by a fraction of a pixel and averages them (see
     // Na__VideoStudio__Export__Supersampler.js, which has a sample pattern for
     // each count listed here). On by default, because FXAA alone leaves long
-    // shallow lines stepped in a 4K frame. The switch and the count are stored
-    // separately, so switching back on returns to the count the path had.
+    // shallow lines stepped in a 4K frame, and at 16 samples, which came out
+    // clearly the best in side by side exports and is worth the render time.
+    // The switch and the count are stored separately, so switching back on
+    // returns to the count the path had.
     // ------------------------------------------------------------
     const Na__VideoStudio__ANTIALIAS_SAMPLE_COUNTS   = [4, 8, 16];   // <-- The Samples switch, left to right
     const Na__VideoStudio__DEFAULT_ANTIALIAS_ENABLED = true;
-    const Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES = 8;
+    const Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES = 16;
     // ------------------------------------------------------------
 
 
@@ -763,7 +769,7 @@
             fps         : Number.isFinite(raw.VideoStudio__Export__Fps)         ? raw.VideoStudio__Export__Fps         : Na__VideoStudio__DEFAULT_FPS,
             bitrateMbps : Number.isFinite(raw.VideoStudio__Export__BitrateMbps) ? raw.VideoStudio__Export__BitrateMbps : Na__VideoStudio__DEFAULT_BITRATE_MBPS,
 
-            // ANTI-ALIASING | Absent means the default (on, 8x), so a path
+            // ANTI-ALIASING | Absent means the default (on, 16x), so a path
             // saved before the setting existed exports smooth as well. Only an
             // explicit false renders the single FXAA pass.
             antiAliasEnabled : (typeof raw.VideoStudio__Export__AntiAliasEnabled === 'boolean')

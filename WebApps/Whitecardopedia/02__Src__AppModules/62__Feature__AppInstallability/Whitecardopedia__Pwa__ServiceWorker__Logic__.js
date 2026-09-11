@@ -31,6 +31,7 @@
 // - Token bumped again (2026-09-11-2) for ValeVision per-keyframe door animation (Video Studio, door proximity and door animation modules).
 // - Token bumped again (2026-09-11-3) for ValeVision supersampled video export anti-aliasing (Video Studio, new Supersampler module, both render engines).
 // - Token bumped again (2026-09-11-4) for the ValeVision Layout Mode switch (Layout Editor tab strip, mode controller, Dev section, drawings data).
+// - Token bumped again (2026-09-11-5) for the ValeVision Video Studio anti-aliasing default raised to 16x (VideoData module).
 //
 // 10-Sep-2026 - Version 1.0.5
 // - Token bumped again (2026-09-10-2) for the ValeVision clipper2-js vendoring (import map in index.html).
@@ -144,7 +145,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-11-4';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-11-5';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

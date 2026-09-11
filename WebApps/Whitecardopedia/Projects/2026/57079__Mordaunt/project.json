@@ -1559,7 +1559,8 @@
                         "VideoStudio__Keyframe__Label": "Inserted Frame 1",
                         "VideoStudio__Keyframe__LensMm": 25,
                         "VideoStudio__Keyframe__Order": 7,
-                        "VideoStudio__Keyframe__SegmentMs": 5000
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__DoorAnimation": true
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {
@@ -1583,7 +1584,8 @@
                         "VideoStudio__Keyframe__Label": "Inserted Frame 2",
                         "VideoStudio__Keyframe__LensMm": 26,
                         "VideoStudio__Keyframe__Order": 8,
-                        "VideoStudio__Keyframe__SegmentMs": 3000
+                        "VideoStudio__Keyframe__SegmentMs": 3000,
+                        "VideoStudio__Keyframe__DoorAnimation": true
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {
@@ -1606,7 +1608,8 @@
                         "VideoStudio__Keyframe__Id": "Key_005",
                         "VideoStudio__Keyframe__LensMm": 22,
                         "VideoStudio__Keyframe__Order": 9,
-                        "VideoStudio__Keyframe__SegmentMs": 4000
+                        "VideoStudio__Keyframe__SegmentMs": 4000,
+                        "VideoStudio__Keyframe__DoorAnimation": true
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {
@@ -1630,7 +1633,8 @@
                         "VideoStudio__Keyframe__Label": "Inserted Frame 3",
                         "VideoStudio__Keyframe__LensMm": 22,
                         "VideoStudio__Keyframe__Order": 10,
-                        "VideoStudio__Keyframe__SegmentMs": 5000
+                        "VideoStudio__Keyframe__SegmentMs": 5000,
+                        "VideoStudio__Keyframe__DoorAnimation": true
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {

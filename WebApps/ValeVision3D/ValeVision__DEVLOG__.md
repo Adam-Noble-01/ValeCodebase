@@ -2,6 +2,27 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.21 - 11-Sep-2026 - Video Studio: 16x anti-aliasing by default
+
+### Changed
+- **MP4 exports anti-alias at 16x by default** (was 8x). In side by side
+  exports 16x was clearly the best: the smoothest shallow lines and the
+  least shimmer in motion. It takes about twice as long as 8x, and the
+  export confirmation still states the multiple.
+
+### Notes
+- Paths with a sample count already saved keep it; only an absent key reads
+  as the new default. Of the local projects, only 57079 Mordaunt has one
+  saved, and it is already 16x.
+- 4x and 8x stay on the switch for quicker drafts, and unticking Enabled
+  still gives the single FXAA pass.
+
+### Files
+- `31__System__VideoStudio/Na__VideoStudio__ProjectJson__VideoData.js`
+  1.4.1: `Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES` is 16.
+- Shared PWA service worker token bumped to `2026-09-11-5`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.20 - 11-Sep-2026 - Layout Editor: tabs only where a project uses them
 
 ### Added

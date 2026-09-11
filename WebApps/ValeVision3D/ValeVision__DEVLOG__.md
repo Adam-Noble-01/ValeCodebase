@@ -2,6 +2,38 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.16 - 11-Sep-2026 - Camera-follow billboards really face the camera
+
+### Fixed
+- **Billboards face the camera, not a fixed angle off it.** People,
+  pets, silhouettes and 2D trees turned as the camera moved but kept
+  whatever angle they had to the camera when the model loaded, so a
+  figure could stay edge-on no matter where you stood. The turn was
+  measured from the camera's direction at load, which only works if every
+  billboard happened to be exported already facing the launch camera. In
+  practice SketchUp exports them facing wherever they were placed (the
+  Mordaunt silhouettes all came out at yaw -179 deg, the Gordon bushes at
+  38 deg), so each one carried its own fixed error.
+
+- **The turn is now measured from the billboard's own front.** The front
+  is local +Z: the face drawn towards SketchUp's -green axis, which is the
+  side you see in SketchUp's Front view and the side SketchUp's own
+  "Always face camera" turns to you. Every exported billboard checked
+  (4 Mordaunt silhouettes, 34 Gordon bushes) has its faces on that axis.
+  Replaying the edited module against their real exported matrices from
+  five camera positions, including one looking down, gave 0 deg off the
+  camera for every one, where the old maths was 145-161 deg off
+  throughout.
+
+- **Nothing to re-export.** The fix reads the billboards' existing GLB
+  transforms, so current projects are corrected on reload. 2D trees are
+  fixed along with the entourage, so they will sit slightly differently
+  from before.
+
+### Files
+- `25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__CameraFollowBillboards__.js` 1.0.1 - front yaw captured per billboard at scan; the per-frame yaw is camera yaw minus front yaw. The launch-camera reference (`CaptureInitialReferenceYaw`) is gone; `Na__CameraFollow__Initialize` still accepts the camera, so callers are unchanged.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.15 - 11-Sep-2026 - Entourage silhouettes switch on and off on their own
 
 ### Added

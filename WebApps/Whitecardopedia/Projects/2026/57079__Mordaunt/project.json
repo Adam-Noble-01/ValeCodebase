@@ -1,0 +1,1443 @@
+{
+    "FogPlane__Config": {
+        "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
+        "FogPlane__Config__Enabled": true,
+        "FogPlane__Config__FalloffDistanceMm": 2000,
+        "FogPlane__Config__PlaneA": {
+            "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__NormalX": 1,
+            "FogPlane__Config__PlaneA__NormalZ": 0,
+            "FogPlane__Config__PlaneA__PositionMm": 80
+        },
+        "FogPlane__Config__PlaneB": {
+            "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__NormalX": 0,
+            "FogPlane__Config__PlaneB__NormalZ": 1,
+            "FogPlane__Config__PlaneB__PositionMm": -28421
+        }
+    },
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__Source": "SketchUpCameraData",
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "su_scene_1",
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__Id": "su_scene_1",
+                "PresentationMode__Scene__Name": "Exterior 01",
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG01__3dView__MainShot____WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 41676,
+                        "Camera__DefaultPos__PosY": 2700,
+                        "Camera__DefaultPos__PosZ": -1732
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0092,
+                        "Camera__DefaultRotation__RotY": 1.0346,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 7157,
+                    "OrbitHelperCube__Position__PosY": 2330,
+                    "OrbitHelperCube__Position__PosZ": -22248
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_2",
+                "PresentationMode__Scene__Name": "Exterior 02",
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG02__3dView__Shot-02____WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 40439,
+                        "Camera__DefaultPos__PosY": 1000,
+                        "Camera__DefaultPos__PosZ": -22900
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": 2.053,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 19892,
+                    "OrbitHelperCube__Position__PosY": 1000,
+                    "OrbitHelperCube__Position__PosZ": -12146
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_3",
+                "PresentationMode__Scene__Name": "Exterior 03",
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG03__3dView__FrontView____WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 46089,
+                        "Camera__DefaultPos__PosY": 1700,
+                        "Camera__DefaultPos__PosZ": -17431
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": 1.6034,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 19607,
+                    "OrbitHelperCube__Position__PosY": 1700,
+                    "OrbitHelperCube__Position__PosZ": -16568
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_4",
+                "PresentationMode__Scene__Name": "Exterior 04",
+                "PresentationMode__Scene__Order": 4,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG04__3dView__SideView____WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 14845,
+                        "Camera__DefaultPos__PosY": 3041,
+                        "Camera__DefaultPos__PosZ": 1699
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0326,
+                        "Camera__DefaultRotation__RotY": 0.0043,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 36.2437
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 14796,
+                    "OrbitHelperCube__Position__PosY": 2667,
+                    "OrbitHelperCube__Position__PosZ": -9767
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_5",
+                "PresentationMode__Scene__Name": "Top Down View",
+                "PresentationMode__Scene__Order": 5,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG05__3dView__TopDown____WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 44120,
+                        "Camera__DefaultPos__PosY": 22858,
+                        "Camera__DefaultPos__PosZ": 10078
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.5502,
+                        "Camera__DefaultRotation__RotY": 0.8188,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 26.9915
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 36978,
+                    "OrbitHelperCube__Position__PosY": 16860,
+                    "OrbitHelperCube__Position__PosZ": 3397
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_11",
+                "PresentationMode__Scene__Name": "Orangery Interior 01",
+                "PresentationMode__Scene__Order": 6,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG11__3dView__InternalShot-01__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 10075,
+                        "Camera__DefaultPos__PosY": 1400,
+                        "Camera__DefaultPos__PosZ": -10973
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0121,
+                        "Camera__DefaultRotation__RotY": -1.0125,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 26701,
+                    "OrbitHelperCube__Position__PosY": 1163,
+                    "OrbitHelperCube__Position__PosZ": -21358
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_12",
+                "PresentationMode__Scene__Name": "Orangery Interior 02",
+                "PresentationMode__Scene__Order": 7,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG12__3dView__InternalShot-02__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 9985,
+                        "Camera__DefaultPos__PosY": 1400,
+                        "Camera__DefaultPos__PosZ": -16725
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": -2.2888,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 24749,
+                    "OrbitHelperCube__Position__PosY": 1400,
+                    "OrbitHelperCube__Position__PosZ": -3828
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_13",
+                "PresentationMode__Scene__Name": "Orangery Interior 03",
+                "PresentationMode__Scene__Order": 8,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG13__3dView__InternalShot-03__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 12926,
+                        "Camera__DefaultPos__PosY": 960,
+                        "Camera__DefaultPos__PosZ": -12927
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0024,
+                        "Camera__DefaultRotation__RotY": -0.5941,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 23900,
+                    "OrbitHelperCube__Position__PosY": 913,
+                    "OrbitHelperCube__Position__PosZ": -29172
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_14",
+                "PresentationMode__Scene__Name": "Orangery Interior 04",
+                "PresentationMode__Scene__Order": 9,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG14__3dView__InternalShot-04__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 19400,
+                        "Camera__DefaultPos__PosY": 1400,
+                        "Camera__DefaultPos__PosZ": -10515
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": 0.922,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 10756,
+                    "OrbitHelperCube__Position__PosY": 1400,
+                    "OrbitHelperCube__Position__PosZ": -17070
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_15",
+                "PresentationMode__Scene__Name": "Reading Area",
+                "PresentationMode__Scene__Order": 10,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG15__3dView__InternalShot-15__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 17883,
+                        "Camera__DefaultPos__PosY": 1377,
+                        "Camera__DefaultPos__PosZ": -12159
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.017,
+                        "Camera__DefaultRotation__RotY": 0.0455,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 17375,
+                    "OrbitHelperCube__Position__PosY": 1187,
+                    "OrbitHelperCube__Position__PosZ": -23315
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_21",
+                "PresentationMode__Scene__Name": "Hallway",
+                "PresentationMode__Scene__Order": 11,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG21__3dView__Hallway-01__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 14753,
+                        "Camera__DefaultPos__PosY": 669,
+                        "Camera__DefaultPos__PosZ": -23904
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0319,
+                        "Camera__DefaultRotation__RotY": -3.1042,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 43.6028
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 14943,
+                    "OrbitHelperCube__Position__PosY": 508,
+                    "OrbitHelperCube__Position__PosZ": -18845
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_22",
+                "PresentationMode__Scene__Name": "Basement-01",
+                "PresentationMode__Scene__Order": 12,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/su_scene_22.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 15696,
+                        "Camera__DefaultPos__PosY": -1470,
+                        "Camera__DefaultPos__PosZ": -15284
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -3.1377,
+                        "Camera__DefaultRotation__RotY": -0.0275,
+                        "Camera__DefaultRotation__RotZ": -3.1415
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 16186,
+                    "OrbitHelperCube__Position__PosY": -1470,
+                    "OrbitHelperCube__Position__PosZ": 4313
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "su_scene_23",
+                "PresentationMode__Scene__Name": "Basement-02",
+                "PresentationMode__Scene__Order": 13,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG23__3dView__Basement-02__WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 15723,
+                        "Camera__DefaultPos__PosY": -1005,
+                        "Camera__DefaultPos__PosZ": -11359
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0142,
+                        "Camera__DefaultRotation__RotY": -3.1252,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 61.9275
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 15805,
+                    "OrbitHelperCube__Position__PosY": -1076,
+                    "OrbitHelperCube__Position__PosZ": -6374
+                },
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "PresentationMode__Scene__GroupId": "Group_001"
+            }
+        ],
+        "PresentationMode__SavedCameraScenes__Groups": [
+            {
+                "PresentationMode__Group__Id": "Group_001",
+                "PresentationMode__Group__Name": "Exterior 3D Views",
+                "PresentationMode__Group__Order": 1,
+                "PresentationMode__Group__Enabled": true
+            },
+            {
+                "PresentationMode__Group__Id": "Group_002",
+                "PresentationMode__Group__Name": "Interior 3D Views",
+                "PresentationMode__Group__Order": 2,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_003",
+                "PresentationMode__Group__Name": "Dollhouse View",
+                "PresentationMode__Group__Order": 3,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_004",
+                "PresentationMode__Group__Name": "Floor Plans",
+                "PresentationMode__Group__Order": 4,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_005",
+                "PresentationMode__Group__Name": "Elevations",
+                "PresentationMode__Group__Order": 5,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_006",
+                "PresentationMode__Group__Name": "Cross Sections",
+                "PresentationMode__Group__Order": 6,
+                "PresentationMode__Group__Enabled": false
+            }
+        ]
+    },
+    "ProjectType": "MaxModel",
+    "RenderEngine__Config": {
+        "RenderEngine__Active": "MaxEngine"
+    },
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "11-Sep-2026 at 15:44",
+        "coordinate_system": "SketchUp_Z_up",
+        "model_name": "Mordaunt__MaxModel__0.6.0__",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.859599,
+                        "y": 0.510885,
+                        "z": -0.009216
+                    },
+                    "eye": {
+                        "x": 41676.2772,
+                        "y": 1731.9098,
+                        "z": 2700
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 7156.67,
+                        "y": 22247.9399,
+                        "z": 2329.9222
+                    },
+                    "up": {
+                        "x": -0.007922,
+                        "y": 0.004708,
+                        "z": 0.999958
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Exterior 01",
+                "scene_name": "IMG01__3dView__MainShot__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.885991,
+                        "y": -0.463703,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 40438.7633,
+                        "y": 22899.5087,
+                        "z": 1000
+                    },
+                    "fov_degrees": 45.1145,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 19892.007,
+                        "y": 12145.8955,
+                        "z": 1000
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Exterior 02",
+                "scene_name": "IMG02__3dView__Shot-02__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": -0.999469,
+                        "y": -0.032587,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 46088.7649,
+                        "y": 17431.2411,
+                        "z": 1700
+                    },
+                    "fov_degrees": 45.1145,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 19607.3594,
+                        "y": 16567.8202,
+                        "z": 1700
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Exterior 03",
+                "scene_name": "IMG03__3dView__FrontView__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.004264,
+                        "y": 0.999458,
+                        "z": -0.032644
+                    },
+                    "eye": {
+                        "x": 14845.1054,
+                        "y": -1699.0908,
+                        "z": 3041.1136
+                    },
+                    "fov_degrees": 36.2437,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 14796.1862,
+                        "y": 9766.8851,
+                        "z": 2666.6208
+                    },
+                    "up": {
+                        "x": -0.000139,
+                        "y": 0.032643,
+                        "z": 0.999467
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Exterior 04",
+                "scene_name": "IMG04__3dView__SideView__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.622554,
+                        "y": 0.582311,
+                        "z": -0.52282
+                    },
+                    "eye": {
+                        "x": 44119.5602,
+                        "y": -10077.7258,
+                        "z": 22858.0481
+                    },
+                    "fov_degrees": 26.9915,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 36977.5037,
+                        "y": -3397.3449,
+                        "z": 16860.1498
+                    },
+                    "up": {
+                        "x": -0.381825,
+                        "y": 0.357143,
+                        "z": 0.852443
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Top Down View",
+                "scene_name": "IMG05__3dView__TopDown__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.84808,
+                        "y": 0.52973,
+                        "z": -0.012098
+                    },
+                    "eye": {
+                        "x": 10075.3487,
+                        "y": 10973.2396,
+                        "z": 1400
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 26701.0876,
+                        "y": 21358.0503,
+                        "z": 1162.8369
+                    },
+                    "up": {
+                        "x": 0.010261,
+                        "y": 0.006409,
+                        "z": 0.999927
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Orangery Interior 01",
+                "scene_name": "IMG11__3dView__InternalShot-01",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.753102,
+                        "y": -0.657904,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 9985.4401,
+                        "y": 16725.0582,
+                        "z": 1400
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 24749.2318,
+                        "y": 3827.5317,
+                        "z": 1400
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Orangery Interior 02",
+                "scene_name": "IMG12__3dView__InternalShot-02",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.559786,
+                        "y": 0.828634,
+                        "z": -0.002401
+                    },
+                    "eye": {
+                        "x": 12925.5347,
+                        "y": 12927.0932,
+                        "z": 960.2096
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 23899.558,
+                        "y": 29171.6101,
+                        "z": 913.1434
+                    },
+                    "up": {
+                        "x": 0.001344,
+                        "y": 0.001989,
+                        "z": 0.999997
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Orangery Interior 03",
+                "scene_name": "IMG13__3dView__InternalShot-03",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.796829,
+                        "y": 0.604205,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 19400.4249,
+                        "y": 10514.8491,
+                        "z": 1400
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 10755.8289,
+                        "y": 17069.7214,
+                        "z": 1400
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Orangery Interior 04",
+                "scene_name": "IMG14__3dView__InternalShot-04",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": -0.045492,
+                        "y": 0.99882,
+                        "z": -0.01703
+                    },
+                    "eye": {
+                        "x": 17883.3199,
+                        "y": 12158.8796,
+                        "z": 1377.4904
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 17375.2216,
+                        "y": 23314.542,
+                        "z": 1187.2807
+                    },
+                    "up": {
+                        "x": -0.000775,
+                        "y": 0.017013,
+                        "z": 0.999855
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Reading Area",
+                "scene_name": "IMG15__3dView__InternalShot-15",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0.037377,
+                        "y": -0.998791,
+                        "z": -0.031939
+                    },
+                    "eye": {
+                        "x": 14753.3459,
+                        "y": 23904.329,
+                        "z": 669.3382
+                    },
+                    "fov_degrees": 61.9275,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 14942.6691,
+                        "y": 18845.2377,
+                        "z": 507.5604
+                    },
+                    "up": {
+                        "x": 0.001194,
+                        "y": -0.031917,
+                        "z": 0.99949
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Hallway",
+                "scene_name": "IMG21__3dView__Hallway-01",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0.024986,
+                        "y": -0.999688,
+                        "z": 0
+                    },
+                    "eye": {
+                        "x": 15695.6932,
+                        "y": 15284.374,
+                        "z": -1470
+                    },
+                    "fov_degrees": 83.9744,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 16185.5146,
+                        "y": -4313.4781,
+                        "z": -1470
+                    },
+                    "up": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 1
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Basement-01",
+                "scene_name": "IMG22__3dView__Basement-01",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 1.5,
+                    "direction": {
+                        "x": 0.016422,
+                        "y": -0.999764,
+                        "z": -0.014245
+                    },
+                    "eye": {
+                        "x": 15722.9072,
+                        "y": 11359.152,
+                        "z": -1005.286
+                    },
+                    "fov_degrees": 83.9744,
+                    "fov_is_height": false,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 15804.7862,
+                        "y": 6374.3554,
+                        "z": -1076.3136
+                    },
+                    "up": {
+                        "x": 0.000234,
+                        "y": -0.014244,
+                        "z": 0.999899
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": true,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__MainBuildingModel__ProposedDoors": true,
+                    "ValeVision__MainBuildingModel__ProposedFixtures": true,
+                    "ValeVision__MainBuildingModel__ProposedFloors": true,
+                    "ValeVision__MainBuildingModel__ProposedFurniture": true,
+                    "ValeVision__MainBuildingModel__ProposedInteriorDecor": true,
+                    "ValeVision__MainBuildingModel__ProposedRoofs": true,
+                    "ValeVision__MainBuildingModel__ProposedStairs": true,
+                    "ValeVision__MainBuildingModel__ProposedWalls": true,
+                    "ValeVision__MainBuildingModel__ProposedWindows": true,
+                    "ValeVision__SceneEntourageSilhouette": true,
+                    "ValeVision__SiteBoundaries": true,
+                    "ValeVision__SiteVegetation2D": true
+                },
+                "scene_description": "Basement-02",
+                "scene_name": "IMG23__3dView__Basement-02",
+                "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__11-Sep-2026.png",
+        "IMG02__3dView__Shot-02____WhitecardImage__11-Sep-2026.png",
+        "IMG03__3dView__FrontView____WhitecardImage__11-Sep-2026.png",
+        "IMG04__3dView__SideView____WhitecardImage__11-Sep-2026.png",
+        "IMG05__3dView__TopDown____WhitecardImage__11-Sep-2026.png",
+        "IMG11__3dView__InternalShot-01__WhitecardImage__11-Sep-2026.png",
+        "IMG12__3dView__InternalShot-02__WhitecardImage__11-Sep-2026.png",
+        "IMG13__3dView__InternalShot-03__WhitecardImage__11-Sep-2026.png",
+        "IMG14__3dView__InternalShot-04__WhitecardImage__11-Sep-2026.png",
+        "IMG15__3dView__InternalShot-15__WhitecardImage__11-Sep-2026.png",
+        "IMG21__3dView__Hallway-01__WhitecardImage__11-Sep-2026.png",
+        "IMG22__3dView__Basement-01__WhitecardImage__11-Sep-2026.png",
+        "IMG23__3dView__Basement-02__WhitecardImage__11-Sep-2026.png"
+    ],
+    "basePath": "Projects/2026/57079__Mordaunt",
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__11-Sep-2026.png",
+        "IMG02__3dView__Shot-02____WhitecardImage__11-Sep-2026.png",
+        "IMG03__3dView__FrontView____WhitecardImage__11-Sep-2026.png",
+        "IMG04__3dView__SideView____WhitecardImage__11-Sep-2026.png",
+        "IMG05__3dView__TopDown____WhitecardImage__11-Sep-2026.png",
+        "IMG11__3dView__InternalShot-01__WhitecardImage__11-Sep-2026.png",
+        "IMG12__3dView__InternalShot-02__WhitecardImage__11-Sep-2026.png",
+        "IMG13__3dView__InternalShot-03__WhitecardImage__11-Sep-2026.png",
+        "IMG14__3dView__InternalShot-04__WhitecardImage__11-Sep-2026.png",
+        "IMG15__3dView__InternalShot-15__WhitecardImage__11-Sep-2026.png",
+        "IMG21__3dView__Hallway-01__WhitecardImage__11-Sep-2026.png",
+        "IMG22__3dView__Basement-01__WhitecardImage__11-Sep-2026.png",
+        "IMG23__3dView__Basement-02__WhitecardImage__11-Sep-2026.png"
+    ],
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__11-Sep-2026.png",
+        "IMG02__3dView__Shot-02____WhitecardImage__11-Sep-2026.png",
+        "IMG03__3dView__FrontView____WhitecardImage__11-Sep-2026.png",
+        "IMG04__3dView__SideView____WhitecardImage__11-Sep-2026.png",
+        "IMG05__3dView__TopDown____WhitecardImage__11-Sep-2026.png",
+        "IMG11__3dView__InternalShot-01__WhitecardImage__11-Sep-2026.png",
+        "IMG12__3dView__InternalShot-02__WhitecardImage__11-Sep-2026.png",
+        "IMG13__3dView__InternalShot-03__WhitecardImage__11-Sep-2026.png",
+        "IMG14__3dView__InternalShot-04__WhitecardImage__11-Sep-2026.png",
+        "IMG15__3dView__InternalShot-15__WhitecardImage__11-Sep-2026.png",
+        "IMG21__3dView__Hallway-01__WhitecardImage__11-Sep-2026.png",
+        "IMG22__3dView__Basement-01__WhitecardImage__11-Sep-2026.png",
+        "IMG23__3dView__Basement-02__WhitecardImage__11-Sep-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Jo",
+        "designer": "Jo",
+        "input": "NOT YET REVIEWED"
+    },
+    "projectCode": "57079",
+    "projectName": "Mordaunt",
+    "scheduleData": {
+        "dateFulfilled": "11-Sep-2026",
+        "dateReceived": "NOT YET REVIEWED",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__11-Sep-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedDoors__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedDoors__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedFixtures__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedFixtures__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedFloors__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedFloors__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedFurniture__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedFurniture__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedRoofs__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedRoofs__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedWalls__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedWalls__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedWindows__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__MainBuildingModel__ProposedWindows__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/57079__Mordaunt/Mordaunt__TrueVision__SceneContextual__MeshModel__.glb"
+    ]
+}

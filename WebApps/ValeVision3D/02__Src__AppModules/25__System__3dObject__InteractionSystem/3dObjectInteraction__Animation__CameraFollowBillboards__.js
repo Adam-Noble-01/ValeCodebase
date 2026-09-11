@@ -13,7 +13,21 @@
 // - Scans loaded GLB scene graphs for nodes exported with CameraFollowBillboard extras.
 // - Reads pivotLocal from baked glTF node extras (00__OriginPoint capture at export).
 // - Applies yaw-only rotation around the pivot each rendered frame (PureEngine + MaxEngine).
+// - Faces each billboard's front at the camera: local +Z, which is the face drawn
+//   toward SketchUp's -green axis (the side seen in SketchUp's Front view, and the
+//   side SketchUp's own "Always face camera" turns to the viewer).
 // - Dual model support: rotates both mesh and linework roots simultaneously.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.0.1
+// - Facing is absolute. The yaw used to be measured from the camera direction at
+//   load, so a billboard only faced the camera if it had been exported already
+//   facing the launch camera; any other exported orientation stayed as a fixed
+//   offset while it turned (entourage silhouettes read edge-on). The yaw is now
+//   measured from the billboard's own front (local +Z in world space), so it faces
+//   the camera whatever orientation it was exported in, and from any camera.
 //
 // =============================================================================
 
@@ -33,6 +47,7 @@
 
     const Na__CameraFollow__TYPE_BILLBOARD       = 'CameraFollowBillboard';      // <-- glTF extras.type token
     const Na__CameraFollow__Y_AXIS               = new THREE.Vector3(0, 1, 0);   // <-- Y-up rotation axis
+    const Na__CameraFollow__FRONT_AXIS           = new THREE.Vector3(0, 0, 1);   // <-- Billboard front in node-local space (SketchUp -green)
 
     let Na__CameraFollow__Initialized           = false;                         // <-- Init flag
     let Na__CameraFollow__Enabled               = true;                          // <-- Feature enabled flag
@@ -190,6 +205,20 @@
     }
     // ------------------------------------------------------------
 
+    // SUB HELPER FUNCTION | Compute the World Yaw a Billboard's Front Faces
+    // ------------------------------------------------------------
+    // The exporter writes each billboard in its component's own axes converted
+    // to Y-up, so the front (SketchUp -green) is local +Z whatever orientation
+    // the instance was exported in. Measured in world space with the same
+    // atan2(x, z) convention as the camera yaw, so the difference between the
+    // two is exactly the turn that points the front at the camera.
+    function Na__CameraFollow__ComputeFrontYaw(object) {
+        object.updateMatrixWorld(true);                                          // <-- Ensure world matrix current
+        const front = Na__CameraFollow__FRONT_AXIS.clone().transformDirection(object.matrixWorld);  // <-- Local +Z in world (normalised)
+        return Math.atan2(front.x, front.z);                                     // <-- World yaw of the front
+    }
+    // ------------------------------------------------------------
+
     // FUNCTION | Scan Scene Graph and Build Billboard Registry
     // ------------------------------------------------------------
     function Na__CameraFollow__ScanForBillboards() {
@@ -211,7 +240,7 @@
                     pivotParentPosition : Na__CameraFollow__ComputePivotParent(object, pivotLocal),
                     initialPosition     : object.position.clone(),
                     initialQuaternion   : object.quaternion.clone(),
-                    initialReferenceYaw : 0
+                    frontYaw            : Na__CameraFollow__ComputeFrontYaw(object)   // <-- World yaw of the front in the initial pose
                 };
 
                 Na__CameraFollow__Registry.set(object.uuid, record);            // <-- Key by UUID (always unique)
@@ -273,8 +302,10 @@
     }
     // ------------------------------------------------------------
 
-    // HELPER FUNCTION | Compute Camera Yaw Relative to Initial Reference
+    // HELPER FUNCTION | Compute the Yaw That Turns the Front to the Camera
     // ------------------------------------------------------------
+    // Camera yaw about the pivot minus the front's yaw in the initial pose.
+    // Applied to the initial pose, this points the front straight at the camera.
     function Na__CameraFollow__ComputeCameraYawDelta(record, camera) {
         const rootObject = record.rootObjectMesh;
         if (!rootObject) return 0;
@@ -287,7 +318,7 @@
         const dz = camera.position.z - Na__CameraFollow__ScratchPivotWorld.z;
         const cameraYaw = Math.atan2(dx, dz);
 
-        return cameraYaw - record.initialReferenceYaw;
+        return cameraYaw - record.frontYaw;
     }
     // ------------------------------------------------------------
 
@@ -304,15 +335,6 @@
     }
     // ------------------------------------------------------------
 
-    // FUNCTION | Capture Initial Camera Yaw Reference for All Billboards
-    // ------------------------------------------------------------
-    function Na__CameraFollow__CaptureInitialReferenceYaw(camera) {
-        Na__CameraFollow__Registry.forEach((record) => {
-            record.initialReferenceYaw = Na__CameraFollow__ComputeCameraYawDelta(record, camera);
-        });
-    }
-    // ------------------------------------------------------------
-
 // endregion -------------------------------------------------------------------
 
 
@@ -322,13 +344,12 @@
 
     // FUNCTION | Initialize Camera Follow Billboard System
     // ------------------------------------------------------------
+    // camera is still accepted so existing callers need no change, but facing
+    // no longer depends on it: each billboard's front yaw is read from the model.
     function Na__CameraFollow__Initialize(meshGroups, lineworkGroups, config, camera) {
         if (Na__CameraFollow__Initialized) {
             console.warn('[CameraFollow] Already initialized, re-scanning');
             Na__CameraFollow__ScanForBillboards();
-            if (camera && Na__CameraFollow__Registry.size > 0) {
-                Na__CameraFollow__CaptureInitialReferenceYaw(camera);
-            }
             return Na__CameraFollow__Registry.size;
         }
 
@@ -346,10 +367,6 @@
         }
 
         Na__CameraFollow__ScanForBillboards();
-
-        if (camera && Na__CameraFollow__Registry.size > 0) {
-            Na__CameraFollow__CaptureInitialReferenceYaw(camera);
-        }
 
         Na__CameraFollow__Initialized = true;
         console.log('[CameraFollow] Camera-follow billboard system initialized');

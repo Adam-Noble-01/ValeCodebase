@@ -2,6 +2,35 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.15 - 11-Sep-2026 - Entourage silhouettes switch on and off on their own
+
+### Added
+- **Entourage silhouettes are their own model layer.** The fill-only grey
+  camera-follow silhouettes now sit on their own SketchUp tag
+  (`61__Scene__Entourage__Silhouette`, Na__DataLib Tags SSOT v2.2.2) and
+  export to their own GLB, so the Tools toggle list shows
+  **Scene Entourage Silhouettes** as a separate button from
+  **Scene Entourage 2D** (the detailed linework entourage, tag 60).
+
+- **Scenes and videos can show one without the other.** Presentation Mode
+  scene visibility (captured per SketchUp scene by Cloud Sync) and Video
+  Studio layer overrides are both keyed by category, so they pick up the
+  new layer with no new logic: hide tag 61 in a SketchUp scene and that
+  scene hides the silhouettes here.
+
+- **Silhouettes are context in the Layout Editor.** Context Layer off takes
+  them out of a viewport's picture along with the rest of the context.
+
+### Changed
+- Scene Context is tags 62-70 now that 61 is carved out (comments only).
+
+### Files
+- `26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js` 1.2.1 - display name for `ValeVision__SceneEntourageSilhouette`.
+- `51__System__LayoutEditor/Na__LayoutEditor__SnapshotRenderer__.js` 1.3.1 - joins `Na__LeSnap__CONTEXT_CATEGORIES`.
+- `15__ModelLoader/Na__ModelLoader__MultiModel.js` - load-order comment only; the category loads unordered after the priority list, like Scene Entourage 2D.
+- Upstream (SketchUp Plugins repo): Tags SSOT v2.2.2, Components SSOT v1.4.5, TrueVision GLB Builder 2.6.1. The exporter reads the Tags SSOT from GitHub, so the SSOT must be pushed before a sync produces the new GLB.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.14 - 10-Sep-2026 - Dev menu: drawing rows fold, one open at a time
 
 ### Changed

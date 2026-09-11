@@ -23,6 +23,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.2.1
+// - Display name for ValeVision__SceneEntourageSilhouette (tag 61, fill-only entourage silhouettes), now its own GLB segment so it toggles separately from Scene Entourage 2D. Scene Context comment narrowed to tags 62-70.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - SetCategoryVisibility exported, so the Layout Editor can take the context out of a viewport's render and put it straight back.
 //
@@ -85,7 +88,8 @@
         "ValeVision__Vegetation"                       : "Vegetation",             // <-- Tag 50-59
         "ValeVision__SiteVegetation2D"                 : "Site Vegetation 2D",     // <-- Tag 09 camera-follow billboards
         "ValeVision__SceneEntourage2D"                 : "Scene Entourage 2D",     // <-- Tag 60 camera-follow billboards
-        "ValeVision__SceneContextual"                  : "Scene Entourage",        // <-- Tag 61-70
+        "ValeVision__SceneEntourageSilhouette"         : "Scene Entourage Silhouettes",  // <-- Tag 61 camera-follow fill-only silhouettes
+        "ValeVision__SceneContextual"                  : "Scene Entourage",        // <-- Tag 62-70
         "ValeVision__LegacyModel"                      : "Model"                   // <-- Legacy fallback
     };
     // ------------------------------------------------------------

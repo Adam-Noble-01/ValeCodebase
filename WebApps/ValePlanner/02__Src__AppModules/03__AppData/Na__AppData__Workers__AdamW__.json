@@ -3310,6 +3310,22 @@
           "endTime": "18:30",
           "title": "Mordaunt |  MaxModel",
           "color": "na-shift-color-rose"
+        },
+        {
+          "id": "new-1789116409254",
+          "date": "2026-09-11",
+          "startTime": "08:30",
+          "endTime": "13:15",
+          "title": "New Shift",
+          "color": "na-shift-color-emerald"
+        },
+        {
+          "id": "new-1789116419872",
+          "date": "2026-09-11",
+          "startTime": "13:45",
+          "endTime": "18:15",
+          "title": "W/C",
+          "color": "na-shift-color-amber"
         }
       ]
     }

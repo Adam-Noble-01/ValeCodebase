@@ -1,49 +1,49 @@
 {
     "CrossSection__SceneData": {
-        "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision \u2014 the SketchUp cloud sync plugin must never write this object.",
-        "CrossSection__SceneData__Version": 1,
+        "CrossSection__SceneData__Description": "Per-scene ValeVision cross section bindings. Keyed by Presentation Mode scene NAME (stable across SketchUp cloud re-syncs). Owned by ValeVision — the SketchUp cloud sync plugin must never write this object.",
         "CrossSection__SceneData__Scenes": {
-            "Main View": {
-                "CrossSection__SceneBinding__SceneId": "Scene_001",
-                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:11:19.156Z",
-                "CrossSection__SceneBinding__GizmosVisible": true,
-                "CrossSection__SceneBinding__SliceDepthM": null,
-                "CrossSection__SceneBinding__FillColor": "#f0f0f0",
-                "CrossSection__SceneBinding__LineColor": "#323232",
-                "CrossSection__SceneBinding__LineWidthPx": 2,
-                "CrossSection__SceneBinding__Sections": []
-            },
-            "View 02": {
-                "CrossSection__SceneBinding__SceneId": "Scene_002",
-                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:10:51.756Z",
-                "CrossSection__SceneBinding__GizmosVisible": true,
-                "CrossSection__SceneBinding__SliceDepthM": null,
-                "CrossSection__SceneBinding__FillColor": "#f0f0f0",
-                "CrossSection__SceneBinding__LineColor": "#323232",
-                "CrossSection__SceneBinding__LineWidthPx": 2,
-                "CrossSection__SceneBinding__Sections": []
-            },
             "Detail 01": {
-                "CrossSection__SceneBinding__SceneId": "Scene_003",
-                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:11:01.416Z",
-                "CrossSection__SceneBinding__GizmosVisible": true,
-                "CrossSection__SceneBinding__SliceDepthM": null,
                 "CrossSection__SceneBinding__FillColor": "#f0f0f0",
+                "CrossSection__SceneBinding__GizmosVisible": true,
                 "CrossSection__SceneBinding__LineColor": "#323232",
                 "CrossSection__SceneBinding__LineWidthPx": 2,
-                "CrossSection__SceneBinding__Sections": []
+                "CrossSection__SceneBinding__SceneId": "Scene_003",
+                "CrossSection__SceneBinding__Sections": [],
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:11:01.416Z"
             },
             "Detail 02": {
-                "CrossSection__SceneBinding__SceneId": "Scene_004",
-                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:11:06.134Z",
-                "CrossSection__SceneBinding__GizmosVisible": true,
-                "CrossSection__SceneBinding__SliceDepthM": null,
                 "CrossSection__SceneBinding__FillColor": "#f0f0f0",
+                "CrossSection__SceneBinding__GizmosVisible": true,
                 "CrossSection__SceneBinding__LineColor": "#323232",
                 "CrossSection__SceneBinding__LineWidthPx": 2,
-                "CrossSection__SceneBinding__Sections": []
+                "CrossSection__SceneBinding__SceneId": "Scene_004",
+                "CrossSection__SceneBinding__Sections": [],
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:11:06.134Z"
+            },
+            "Main View": {
+                "CrossSection__SceneBinding__FillColor": "#f0f0f0",
+                "CrossSection__SceneBinding__GizmosVisible": true,
+                "CrossSection__SceneBinding__LineColor": "#323232",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
+                "CrossSection__SceneBinding__SceneId": "Scene_001",
+                "CrossSection__SceneBinding__Sections": [],
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:11:19.156Z"
+            },
+            "View 02": {
+                "CrossSection__SceneBinding__FillColor": "#f0f0f0",
+                "CrossSection__SceneBinding__GizmosVisible": true,
+                "CrossSection__SceneBinding__LineColor": "#323232",
+                "CrossSection__SceneBinding__LineWidthPx": 2,
+                "CrossSection__SceneBinding__SceneId": "Scene_002",
+                "CrossSection__SceneBinding__Sections": [],
+                "CrossSection__SceneBinding__SliceDepthM": null,
+                "CrossSection__SceneBinding__UpdatedIso": "2026-09-10T17:10:51.756Z"
             }
-        }
+        },
+        "CrossSection__SceneData__Version": 1
     },
     "FogPlane__Config": {
         "FogPlane__Config__Description": "Per-project fog plane positions and fall-off settings.",
@@ -67,76 +67,58 @@
         "LayoutEditor__DrawingsData__Description": "ValeVision-owned drawing definitions: floor plans, elevations and sections with their markup, and Layout Editor sheets. Distances are integer millimetres. The SketchUp cloud sync never writes this key.",
         "LayoutEditor__DrawingsData__Elevations": [],
         "LayoutEditor__DrawingsData__FloorPlans": [],
-        "LayoutEditor__DrawingsData__Sheets": [
-            {
-                "Sheet__Annotations": [],
-                "Sheet__Dimensions": [],
-                "Sheet__Fields": {},
-                "Sheet__Id": "Sheet_001",
-                "Sheet__Layers": [
-                    {
-                        "Layer__Id": "Layer_001",
-                        "Layer__Locked": false,
-                        "Layer__Name": "Viewports",
-                        "Layer__Order": 1,
-                        "Layer__Type": "viewport",
-                        "Layer__Visible": true
-                    },
-                    {
-                        "Layer__Id": "Layer_002",
-                        "Layer__Locked": false,
-                        "Layer__Name": "Text",
-                        "Layer__Order": 2,
-                        "Layer__Type": "annotation",
-                        "Layer__Visible": true
-                    },
-                    {
-                        "Layer__Id": "Layer_003",
-                        "Layer__Locked": false,
-                        "Layer__Name": "Dimensions",
-                        "Layer__Order": 3,
-                        "Layer__Type": "dimension",
-                        "Layer__Visible": true
-                    },
-                    {
-                        "Layer__Id": "Layer_004",
-                        "Layer__Locked": false,
-                        "Layer__Name": "Vectors",
-                        "Layer__Order": 4,
-                        "Layer__Type": "vector",
-                        "Layer__Visible": true
-                    }
-                ],
-                "Sheet__Lineweights": {
-                    "DimensionPt": 0.35,
-                    "ViewportPt": 0.3
-                },
-                "Sheet__Name": "Drawing 1",
-                "Sheet__Order": 1,
-                "Sheet__Orientation": "landscape",
-                "Sheet__PaperSize": "A3",
-                "Sheet__Shapes": [],
-                "Sheet__TitleBlockStyle": "modern",
-                "Sheet__Viewports": []
-            }
-        ],
+        "LayoutEditor__DrawingsData__Sheets": [],
         "LayoutEditor__DrawingsData__Version": 1
     },
     "PresentationMode__SavedCameraScenes": {
-        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
-        "PresentationMode__SavedCameraScenes__Enabled": true,
-        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
         "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
         "PresentationMode__SavedCameraScenes__DefaultSceneId": "Scene_001",
+        "PresentationMode__SavedCameraScenes__Description": "Optional per-project saved camera scenes for Presentation Mode. Camera position and orbit target values are integer millimetres; rotations and FOV use the same format as Camera__DefaultPosition.",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__Groups": [
+            {
+                "PresentationMode__Group__Enabled": true,
+                "PresentationMode__Group__Id": "Group_001",
+                "PresentationMode__Group__Name": "Exterior 3D Views",
+                "PresentationMode__Group__Order": 1
+            },
+            {
+                "PresentationMode__Group__Enabled": false,
+                "PresentationMode__Group__Id": "Group_002",
+                "PresentationMode__Group__Name": "Interior 3D Views",
+                "PresentationMode__Group__Order": 2
+            },
+            {
+                "PresentationMode__Group__Enabled": false,
+                "PresentationMode__Group__Id": "Group_003",
+                "PresentationMode__Group__Name": "Dollhouse View",
+                "PresentationMode__Group__Order": 3
+            },
+            {
+                "PresentationMode__Group__Enabled": false,
+                "PresentationMode__Group__Id": "Group_004",
+                "PresentationMode__Group__Name": "Floor Plans",
+                "PresentationMode__Group__Order": 4
+            },
+            {
+                "PresentationMode__Group__Enabled": false,
+                "PresentationMode__Group__Id": "Group_005",
+                "PresentationMode__Group__Name": "Elevations",
+                "PresentationMode__Group__Order": 5
+            },
+            {
+                "PresentationMode__Group__Enabled": false,
+                "PresentationMode__Group__Id": "Group_006",
+                "PresentationMode__Group__Name": "Cross Sections",
+                "PresentationMode__Group__Order": 6
+            }
+        ],
         "PresentationMode__SavedCameraScenes__Scenes": [
             {
-                "PresentationMode__Scene__Id": "Scene_001",
-                "PresentationMode__Scene__Name": "Main View",
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
-                "PresentationMode__Scene__LensMm": 52,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 25.9937
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 40442,
                         "Camera__DefaultPos__PosY": 3000,
@@ -146,11 +128,12 @@
                         "Camera__DefaultRotation__RotX": 0,
                         "Camera__DefaultRotation__RotY": 0.5931,
                         "Camera__DefaultRotation__RotZ": 0
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 25.9937
                     }
                 },
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__Id": "Scene_001",
+                "PresentationMode__Scene__LensMm": 52,
+                "PresentationMode__Scene__Name": "Main View",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 17276,
@@ -158,16 +141,15 @@
                     "OrbitHelperCube__Position__PosZ": -12994
                 },
                 "PresentationMode__Scene__Order": 1,
-                "PresentationMode__Scene__GroupId": "Group_001"
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             },
             {
-                "PresentationMode__Scene__Id": "Scene_002",
-                "PresentationMode__Scene__Name": "View 02",
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
-                "PresentationMode__Scene__LensMm": 52,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 25.9937
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": -4943,
                         "Camera__DefaultPos__PosY": 1926,
@@ -177,28 +159,28 @@
                         "Camera__DefaultRotation__RotX": -0.0231,
                         "Camera__DefaultRotation__RotY": -0.6775,
                         "Camera__DefaultRotation__RotZ": -0.0145
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 25.9937
                     }
                 },
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__LensMm": 52,
+                "PresentationMode__Scene__Name": "View 02",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 8024,
                     "OrbitHelperCube__Position__PosY": 1553,
                     "OrbitHelperCube__Position__PosZ": -7327
                 },
-                "PresentationMode__Scene__GroupId": "Group_001",
-                "PresentationMode__Scene__Order": 2
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             },
             {
-                "PresentationMode__Scene__Id": "Scene_003",
-                "PresentationMode__Scene__Name": "Detail 01",
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
-                "PresentationMode__Scene__LensMm": 52,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 25.9937
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 7346,
                         "Camera__DefaultPos__PosY": 5446,
@@ -208,28 +190,28 @@
                         "Camera__DefaultRotation__RotX": -2.6231,
                         "Camera__DefaultRotation__RotY": -0.5367,
                         "Camera__DefaultRotation__RotZ": -2.8577
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 25.9937
                     }
                 },
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__Id": "Scene_003",
+                "PresentationMode__Scene__LensMm": 52,
+                "PresentationMode__Scene__Name": "Detail 01",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 8843,
                     "OrbitHelperCube__Position__PosY": 4199,
                     "OrbitHelperCube__Position__PosZ": -18670
                 },
-                "PresentationMode__Scene__GroupId": "Group_001",
-                "PresentationMode__Scene__Order": 3
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             },
             {
-                "PresentationMode__Scene__Id": "Scene_004",
-                "PresentationMode__Scene__Name": "Detail 02",
-                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_004.webp",
-                "PresentationMode__Scene__LensMm": 52,
-                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800,
-                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
                 "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 25.9937
+                    },
                     "Camera__DefaultPos": {
                         "Camera__DefaultPos__PosX": 14520,
                         "Camera__DefaultPos__PosY": 8873,
@@ -239,59 +221,25 @@
                         "Camera__DefaultRotation__RotX": -0.8381,
                         "Camera__DefaultRotation__RotY": 0.4447,
                         "Camera__DefaultRotation__RotZ": 0.446
-                    },
-                    "Camera__DefaultMisc": {
-                        "Camera__DefaultMisc__Fov": 25.9937
                     }
                 },
+                "PresentationMode__Scene__GroupId": "Group_001",
+                "PresentationMode__Scene__Id": "Scene_004",
+                "PresentationMode__Scene__LensMm": 52,
+                "PresentationMode__Scene__Name": "Detail 02",
                 "PresentationMode__Scene__OrbitHelperCubePosition": {
                     "OrbitHelperCube__Position__Description": "Scene orbit target position. Values are integer millimetres; convert to 3D units in code.",
                     "OrbitHelperCube__Position__PosX": 10982,
                     "OrbitHelperCube__Position__PosY": 3354,
                     "OrbitHelperCube__Position__PosZ": -14751
                 },
-                "PresentationMode__Scene__GroupId": "Group_001",
-                "PresentationMode__Scene__Order": 4
+                "PresentationMode__Scene__Order": 4,
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_004.webp",
+                "PresentationMode__Scene__TransitionEasing": "easeInOutCubic",
+                "PresentationMode__Scene__TransitionTimeToNextSceneMs": 1800
             }
         ],
-        "PresentationMode__SavedCameraScenes__Groups": [
-            {
-                "PresentationMode__Group__Id": "Group_001",
-                "PresentationMode__Group__Name": "Exterior 3D Views",
-                "PresentationMode__Group__Order": 1,
-                "PresentationMode__Group__Enabled": true
-            },
-            {
-                "PresentationMode__Group__Id": "Group_002",
-                "PresentationMode__Group__Name": "Interior 3D Views",
-                "PresentationMode__Group__Order": 2,
-                "PresentationMode__Group__Enabled": false
-            },
-            {
-                "PresentationMode__Group__Id": "Group_003",
-                "PresentationMode__Group__Name": "Dollhouse View",
-                "PresentationMode__Group__Order": 3,
-                "PresentationMode__Group__Enabled": false
-            },
-            {
-                "PresentationMode__Group__Id": "Group_004",
-                "PresentationMode__Group__Name": "Floor Plans",
-                "PresentationMode__Group__Order": 4,
-                "PresentationMode__Group__Enabled": false
-            },
-            {
-                "PresentationMode__Group__Id": "Group_005",
-                "PresentationMode__Group__Name": "Elevations",
-                "PresentationMode__Group__Order": 5,
-                "PresentationMode__Group__Enabled": false
-            },
-            {
-                "PresentationMode__Group__Id": "Group_006",
-                "PresentationMode__Group__Name": "Cross Sections",
-                "PresentationMode__Group__Order": 6,
-                "PresentationMode__Group__Enabled": false
-            }
-        ]
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true
     },
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {

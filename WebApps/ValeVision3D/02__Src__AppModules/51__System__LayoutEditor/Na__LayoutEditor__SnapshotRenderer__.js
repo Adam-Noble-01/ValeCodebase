@@ -40,6 +40,9 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.3.1
+// - Entourage silhouettes (ValeVision__SceneEntourageSilhouette, tag 61) are context too: Context Layer off takes them out with the rest.
+//
 // 10-Sep-2026 - Version 1.3.0
 // - Context Layer off takes the existing building and its surroundings out of the picture; the visibility is put back afterwards.
 //
@@ -320,6 +323,7 @@
         'ValeVision__Vegetation',
         'ValeVision__SiteVegetation2D',
         'ValeVision__SceneEntourage2D',
+        'ValeVision__SceneEntourageSilhouette',
         'ValeVision__SceneContextual'
     ];
     // ------------------------------------------------------------

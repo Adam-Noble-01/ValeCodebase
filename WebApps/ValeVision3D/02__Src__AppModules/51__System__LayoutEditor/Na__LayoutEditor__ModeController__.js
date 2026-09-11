@@ -21,6 +21,11 @@
 // - The shell is built once, on the first entry, after the config and the
 //   model are ready. Editing is allowed on localhost, or anywhere when
 //   Main.json turns the web read-only flag off.
+// - IsAvailable is the one rule for showing the tab strip and entering a
+//   sheet. The live site offers the editor only when the project's data
+//   file has sheets. Localhost offers it only while the project's Layout
+//   Mode switch is on (LayoutEditor__DrawingsData__LayoutModeEnabled, set
+//   from the Dev menu and off by default), sheets or not.
 // - Sheet model changes are routed to the surface by reason so a pan does
 //   not rebuild the chrome and a rename does not re-render a viewport.
 // - Answers the panels' Edit In Drawing request by leaving and opening the
@@ -42,6 +47,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.6.0
+// - IsAvailable: the live site offers the editor only when the project has
+//   sheets; localhost only while the project's Layout Mode switch is on.
+//   Enter refuses otherwise, and a load that makes it unavailable leaves.
+// - IsLayoutModeOn and SetLayoutMode for the Dev menu switch; off leaves an
+//   open sheet first.
+//
 // 10-Sep-2026 - Version 1.5.0
 // - A raster level change refreshes the frames.
 //
@@ -111,6 +123,7 @@
     import { Na__DrawView__Transitions__SuspendThreeD, Na__DrawView__Transitions__ResumeThreeD } from '../42__System__DrawingViewCore/Na__DrawView__Transitions__.js';
     import { Na__PlPipe__CHANGED_EVENT, Na__PlPipe__STATUS_READY } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
     import { Na__AppUtils__IsRunningOnLocalhost } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import { Na__DrawData__GetLayoutModeEnabled, Na__DrawData__SetLayoutModeEnabled } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -150,6 +163,45 @@
     // ------------------------------------------------------------
     function Na__LeMode__IsEditable() {
         return Na__AppUtils__IsRunningOnLocalhost() || !Na__LeCfg__IsReadOnlyOnWeb();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Is the Editor Offered in This Session (tab strip and sheet entry)
+    // ------------------------------------------------------------
+    // Live site: only when the project's data file has sheets, so a project
+    // without any never shows the strip. Localhost: only while the project's
+    // Layout Mode switch is on, sheets or not, so the 3D view carries no tabs
+    // until the project is being laid out.
+    // ------------------------------------------------------------
+    function Na__LeMode__IsAvailable() {
+        if (!Na__LeCfg__IsEnabled()) return false;
+        if (Na__AppUtils__IsRunningOnLocalhost()) return Na__DrawData__GetLayoutModeEnabled();
+        return Na__LeModel__GetSheets().length > 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Localhost Layout Mode Switch (per project, in the drawings block)
+    // ------------------------------------------------------------
+    function Na__LeMode__IsLayoutModeOn() {
+        return Na__DrawData__GetLayoutModeEnabled();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Switch Layout Mode On or Off (the Dev menu saves the project after)
+    // ------------------------------------------------------------
+    // Off leaves an open sheet first, so the 3D view is never stranded with
+    // no tabs to get back to it.
+    // ------------------------------------------------------------
+    function Na__LeMode__SetLayoutMode(enabled) {
+        const next = enabled === true;
+        if (next === Na__DrawData__GetLayoutModeEnabled()) return next;
+        Na__DrawData__SetLayoutModeEnabled(next);
+        const left = !next && Na__LeMode__Leave();
+        if (!left) Na__LeMode__Dispatch();                                  // <-- Leave has already announced
+        return next;
     }
     // ------------------------------------------------------------
 
@@ -217,7 +269,7 @@
     // FUNCTION | Open the Editor on a Sheet (the first sheet when none is named)
     // ------------------------------------------------------------
     function Na__LeMode__Enter(sheetId) {
-        if (!Na__LeMode__Context || !Na__LeCfg__IsEnabled()) return false;
+        if (!Na__LeMode__Context || !Na__LeMode__IsAvailable()) return false;   // <-- No tabs, no way back: never open a sheet without them
         const sheets = Na__LeModel__GetSheets();
         const sheet  = (sheetId && Na__LeModel__GetSheetById(sheetId)) || sheets[0] || null;
         if (!sheet) return false;
@@ -294,6 +346,7 @@
         const reason = event.detail ? event.detail.reason : 'all';
         const active = Na__LeModel__GetActiveSheet();
         if (reason === 'loaded' || reason === 'sheet-deleted') {
+            if (!Na__LeMode__IsAvailable()) { Na__LeMode__Leave(); return; }   // <-- A project loaded with Layout Mode off gets its 3D view back
             if (!active) { const first = Na__LeModel__GetSheets()[0]; if (first) Na__LeMode__Enter(first.Sheet__Id); else Na__LeMode__Leave(); return; }
             Na__LeSurface__SetSheet(active);
         } else if (reason === 'sheet-updated' || reason === 'fields') Na__LeSurface__Refresh(reason === 'fields' ? 'chrome' : 'sheet');
@@ -376,7 +429,10 @@
         Na__LeMode__Enter,
         Na__LeMode__Leave,
         Na__LeMode__IsActive,
-        Na__LeMode__IsEditable
+        Na__LeMode__IsEditable,
+        Na__LeMode__IsAvailable,
+        Na__LeMode__IsLayoutModeOn,
+        Na__LeMode__SetLayoutMode
     };
     // ------------------------------------------------------------
 

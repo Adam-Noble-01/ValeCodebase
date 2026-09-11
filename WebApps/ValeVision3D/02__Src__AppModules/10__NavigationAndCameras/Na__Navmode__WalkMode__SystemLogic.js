@@ -34,6 +34,12 @@
 // - Added Na__WalkMode__CollisionExemptNames and Na__WalkMode__IsCollisionExempt.
 // - Dev__DefaultCube and OrbitHelperCube are permanently ghostable in walk mode.
 //
+// 11-Sep-2026 - Version 1.1.0
+// - Added Na__WalkMode__SyncFromCamera: moves the capsule under a camera pose
+//   placed from outside (saved scenes and video keyframes viewed in walk) and
+//   takes the look angles from it, so walk carries on from that view instead
+//   of rebuilding the camera from the old capsule on the next frame.
+//
 // =============================================================================
 
 
@@ -696,6 +702,60 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Re-Seat Walk Mode on Wherever the Camera Now Is
+    // ------------------------------------------------------------
+    // For callers that place the camera themselves while walk is active: a
+    // saved scene or video keyframe that is viewed in walk.  Walk rebuilds the
+    // camera from its capsule every frame, so a pose written straight onto the
+    // camera would be undone on the next frame.  This moves the capsule under
+    // the camera, drops it onto the floor exactly as Activate does, and takes
+    // the look angles from the camera.
+    //
+    // Activate's entry pitch clamp and forward nudge are deliberately not
+    // applied here: they exist for a view inherited from orbit, and this pose
+    // was chosen.  A pose captured in walk lands where it was taken; one from
+    // higher up drops to eye height above the floor below it, which is what
+    // walking there means.
+    //
+    // Returns false when walk mode is not active.
+    // ------------------------------------------------------------
+    function Na__WalkMode__SyncFromCamera() {
+        if (!Na__WalkMode__Active || !Na__WalkMode__Camera) return false;
+
+        Na__WalkMode__CapsulePosition.set(
+            Na__WalkMode__Camera.position.x,
+            Na__WalkMode__Camera.position.y - Na__WalkMode__Units__EyeHeight,
+            Na__WalkMode__Camera.position.z
+        );
+
+        const groundY = Na__WalkMode__DetectGroundHeight(
+            Na__WalkMode__CapsulePosition.x,
+            Na__WalkMode__CapsulePosition.z,
+            Na__WalkMode__CapsulePosition.y
+        );
+
+        if (groundY !== null) {
+            Na__WalkMode__CapsulePosition.y = groundY;
+        }
+
+        const euler = new THREE.Euler().setFromQuaternion(Na__WalkMode__Camera.quaternion, 'YXZ');
+        Na__WalkMode__CameraYaw   = euler.y;
+        Na__WalkMode__CameraPitch = Math.max(
+            -Na__WalkMode__PITCH_CLAMP_RAD,
+            Math.min(Na__WalkMode__PITCH_CLAMP_RAD, euler.x)
+        );
+
+        Na__WalkMode__VelocityY       = 0;                                   // <-- No fall carried over from the old spot
+        Na__WalkMode__IsGrounded      = false;
+        Na__WalkMode__InputYawDelta   = 0;                                   // <-- Unapplied mouse look would turn away from the pose
+        Na__WalkMode__InputPitchDelta = 0;
+
+        Na__WalkMode__UpdateCameraFromCapsule();
+        return true;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -847,6 +907,7 @@
         Na__WalkMode__SetCollisionMeshes,
         Na__WalkMode__Activate,
         Na__WalkMode__Deactivate,
+        Na__WalkMode__SyncFromCamera,
         Na__WalkMode__Update,
         Na__WalkMode__IsActive,
         Na__WalkMode__GetCapsulePosition,

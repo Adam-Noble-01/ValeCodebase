@@ -18,9 +18,12 @@
 //   Walk and Fly modes do.  The render loop routes to UpdateFrame instead of
 //   the orbit navigation update, so OrbitControls never gets a chance to
 //   overwrite the sampled orientation with its own lookAt.
-// - Stop restores the camera and the orbit target to where they were before
-//   playback began.  Pause leaves the camera where it is and re-aims the orbit
-//   target ahead of it, so orbiting from a paused frame behaves sensibly.
+// - Stop restores the camera, the orbit target and the navigation mode to
+//   what they were before playback began.  Pause leaves the camera where it
+//   is and re-aims the orbit target ahead of it, so orbiting from a paused
+//   frame behaves sensibly.
+// - Jumping to a keyframe lands in that keyframe's own navigation mode, so a
+//   shot framed in fly is picked up again in fly.
 // - A path's saved model layer state is applied for the run and put back by
 //   Stop, not by Pause: a paused frame has to look like the video, so anything
 //   this path hides stays hidden until playback is actually ended.
@@ -44,6 +47,23 @@
 // - Play and Seek now open a model layers session for the video being watched,
 //   and Stop closes it, so a preview shows the same model the export renders.
 //
+// 11-Sep-2026 - Version 1.2.0
+// - JumpToKeyframe enters the keyframe's saved navigation mode instead of
+//   forcing orbit, so Go To, a tile double click and every menu edit that
+//   previews live leave the camera in the mode the shot was framed in.
+// - Play and Seek release walk or fly in place (Na__NavigationModes__Switcher)
+//   rather than through the toolbar's orbit button, which jumped the camera
+//   to an orbit vantage point first. Seek never released at all, so scrubbing
+//   in walk or fly fought the mode for the camera.
+// - The pre-play snapshot records the navigation mode, and Stop puts it back.
+//
+// 11-Sep-2026 - Version 1.3.0
+// - Per-keyframe Door Animation. Each preview frame hands the tick of the
+//   keyframe in charge (its hold and the travel on to the next) to the scene
+//   animations session, which holds doors shut where it is off. A run from
+//   the top starts with every door snapped shut. Jumping to a keyframe shows
+//   its doors the same way while editing.
+//
 // =============================================================================
 
 
@@ -62,8 +82,8 @@
     import {
         Na__VideoStudio__PathSampler__BuildTimeline,
         Na__VideoStudio__PathSampler__SampleAtTime,
+        Na__VideoStudio__Camera__ParseKeyframeState,
         Na__VideoStudio__Camera__ApplyCameraState,
-        Na__VideoStudio__Camera__ApplyKeyframe,
         Na__VideoStudio__Camera__AnnounceFovChange
     } from './Na__VideoStudio__Camera__PathSampler.js';
     // ------------------------------------------------------------
@@ -78,11 +98,16 @@
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Navigation Mode Switching
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
     // ------------------------------------------------------------
     import {
-        Na__NavToolbar__GetActiveMode,
-        Na__NavToolbar__SetOrbitMode
-    } from '../10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js';
+        Na__NavigationModes__ResolveMode,
+        Na__NavigationModes__IsFreeLookMode,
+        Na__NavigationModes__GetActiveMode,
+        Na__NavigationModes__PlaceLookAheadTarget,
+        Na__NavigationModes__ReleaseToOrbit,
+        Na__NavigationModes__EnterModeAtPose
+    } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Playback Options and Scene Animations
@@ -90,11 +115,18 @@
     // ------------------------------------------------------------
     import {
         Na__VideoStudio__ProjectJson__GetPlaybackOptions,
-        Na__VideoStudio__ProjectJson__GetModelLayerOptions
+        Na__VideoStudio__ProjectJson__GetModelLayerOptions,
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation,
+        Na__VideoStudio__ProjectJson__GetActiveVideoId,
+        Na__VideoStudio__ProjectJson__GetVideoById
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     import {
         Na__VideoStudio__SceneAnimations__Begin,
-        Na__VideoStudio__SceneAnimations__End
+        Na__VideoStudio__SceneAnimations__End,
+        Na__VideoStudio__SceneAnimations__SetDoorsLive,
+        Na__VideoStudio__SceneAnimations__ResetDoorsClosed,
+        Na__VideoStudio__SceneAnimations__ApplyLandingDoors,
+        Na__VideoStudio__SceneAnimations__ReleaseLandingDoors
     } from './Na__VideoStudio__Playback__SceneAnimations.js';
     // ------------------------------------------------------------
 
@@ -187,10 +219,11 @@
 
     // MODULE VARIABLES | Saved Pre-Preview Camera State
     // ------------------------------------------------------------
-    let Na__VsPreview__SavedPosition   = null;   // <-- Camera position before playback
-    let Na__VsPreview__SavedQuaternion = null;   // <-- Camera orientation before playback
-    let Na__VsPreview__SavedFov        = null;   // <-- Camera FOV before playback
-    let Na__VsPreview__SavedTarget     = null;   // <-- Orbit target before playback
+    let Na__VsPreview__SavedPosition   = null;     // <-- Camera position before playback
+    let Na__VsPreview__SavedQuaternion = null;     // <-- Camera orientation before playback
+    let Na__VsPreview__SavedFov        = null;     // <-- Camera FOV before playback
+    let Na__VsPreview__SavedTarget     = null;     // <-- Orbit target before playback
+    let Na__VsPreview__SavedMode       = 'orbit';  // <-- Navigation mode before playback, put back by Stop
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -202,23 +235,49 @@
 
     // HELPER FUNCTION | Snapshot the Live Camera Before Playback Begins
     // ------------------------------------------------------------
+    // Taken while walk or fly still has the camera, so Stop can hand back the
+    // mode as well as the view. In those modes controls.target is left
+    // wherever orbit last had it, which is not where the camera is looking;
+    // restoring it would swing the view round to face that point, so the
+    // snapshot keeps a target on the camera's own axis instead.
+    // ------------------------------------------------------------
     function Na__VsPreview__SaveCameraState() {
         if (!Na__VsPreview__Camera || Na__VsPreview__SavedPosition) return;   // <-- Never overwrite an existing snapshot
 
         Na__VsPreview__SavedPosition   = Na__VsPreview__Camera.position.clone();
         Na__VsPreview__SavedQuaternion = Na__VsPreview__Camera.quaternion.clone();
         Na__VsPreview__SavedFov        = Na__VsPreview__Camera.fov;
-        Na__VsPreview__SavedTarget     = Na__VsPreview__Controls
-            ? Na__VsPreview__Controls.target.clone()
-            : null;
+        Na__VsPreview__SavedMode       = Na__NavigationModes__GetActiveMode();
+
+        if (!Na__VsPreview__Controls) {
+            Na__VsPreview__SavedTarget = null;
+        } else if (Na__NavigationModes__IsFreeLookMode(Na__VsPreview__SavedMode)) {
+            Na__VsPreview__SavedTarget = Na__NavigationModes__PlaceLookAheadTarget(
+                Na__VsPreview__SavedPosition, Na__VsPreview__SavedQuaternion, new THREE.Vector3()
+            );
+        } else {
+            Na__VsPreview__SavedTarget = Na__VsPreview__Controls.target.clone();
+        }
     }
     // ------------------------------------------------------------
 
 
     // HELPER FUNCTION | Restore the Camera Snapshot and Clear It
     // ------------------------------------------------------------
+    // Puts back the view, then the navigation mode Play was pressed from, so a
+    // run started while flying ends back in fly at the same spot.
+    // ------------------------------------------------------------
     function Na__VsPreview__RestoreCameraState() {
         if (!Na__VsPreview__Camera || !Na__VsPreview__SavedPosition) return;
+
+        const savedMode = Na__VsPreview__SavedMode;
+
+        // TAKEN OVER WHILE PAUSED | Walk or fly switched on since Play would
+        // rebuild the camera from its own state next frame, so it lets go
+        // first unless it is the very mode being restored.
+        if (Na__NavigationModes__GetActiveMode() !== savedMode) {
+            Na__NavigationModes__ReleaseToOrbit(Na__VsPreview__Camera, Na__VsPreview__Controls);
+        }
 
         Na__VsPreview__Camera.position.copy(Na__VsPreview__SavedPosition);
         Na__VsPreview__Camera.quaternion.copy(Na__VsPreview__SavedQuaternion);
@@ -233,6 +292,8 @@
         window.dispatchEvent(new CustomEvent('na-camera-fov-changed'));      // <-- Stop puts the original lens back
 
         Na__VsPreview__ClearCameraSnapshot();
+
+        Na__NavigationModes__EnterModeAtPose(savedMode, Na__VsPreview__Camera, Na__VsPreview__Controls);  // <-- Orbit: nothing to do
     }
     // ------------------------------------------------------------
 
@@ -244,6 +305,7 @@
         Na__VsPreview__SavedQuaternion = null;
         Na__VsPreview__SavedFov        = null;
         Na__VsPreview__SavedTarget     = null;
+        Na__VsPreview__SavedMode       = 'orbit';
     }
     // ------------------------------------------------------------
 
@@ -373,12 +435,6 @@
         if (!Na__VsPreview__Camera) return 'Preview is not initialised yet.';
         if (!video)                 return 'No video selected.';
 
-        // NAVIGATION MODE | Walk and Fly drive the camera themselves, so hand
-        // control back to orbit before the timeline takes over.
-        if (Na__NavToolbar__GetActiveMode && Na__NavToolbar__GetActiveMode() !== 'orbit') {
-            Na__NavToolbar__SetOrbitMode();
-        }
-
         // RESUMING | Same video, already loaded and merely paused partway
         const isResume = Na__VsPreview__IsLoaded
             && Na__VsPreview__VideoId === video.VideoStudio__Video__Id
@@ -396,7 +452,12 @@
             Na__VsPreview__CurrentMs = 0;
         }
 
+        // SNAPSHOT, THEN RELEASE | The snapshot is taken while walk or fly
+        // still has the camera, so Stop can hand back the mode as well as the
+        // view. Walk and fly drive the camera themselves, so they then let go
+        // to orbit, in place, before the timeline takes over.
         Na__VsPreview__SaveCameraState();                                    // <-- No-op when a snapshot already exists
+        Na__NavigationModes__ReleaseToOrbit(Na__VsPreview__Camera, Na__VsPreview__Controls);
 
         // LAYERS | Hide whatever this path says gets in the way of its camera,
         // so the preview shows the same model the export will render.
@@ -415,6 +476,10 @@
                 }
             );
         }
+
+        // FROM THE TOP | Every door starts shut, as the export does, so the
+        // preview never opens on a door editing left swinging
+        if (!isResume) Na__VideoStudio__SceneAnimations__ResetDoorsClosed();
 
         // OVERLAY | The path runs THROUGH the waypoints, so a marker sitting on
         // the lens would fill the frame. Hide it while the camera is flying.
@@ -510,6 +575,7 @@
         }
 
         Na__VsPreview__SaveCameraState();                                    // <-- So Stop can still put the view back
+        Na__NavigationModes__ReleaseToOrbit(Na__VsPreview__Camera, Na__VsPreview__Controls);   // <-- Walk or fly would undo every scrubbed frame
         Na__VsPreview__ApplyModelLayers();                                   // <-- Scrubbing shows the path's own layer state
 
         Na__VsPreview__CurrentMs = Math.max(0, Math.min(Na__VsPreview__Timeline.totalDurationMs, timeMs));
@@ -531,21 +597,67 @@
     // ------------------------------------------------------------
     // Used by the Dev menu when a keyframe row is clicked, so the authoring
     // workflow can hop between shots without scrubbing.
+    //
+    // The camera lands in the keyframe's own navigation mode
+    // (VideoStudio__Keyframe__CapturedInMode), so a shot framed in fly is
+    // picked up again in fly and Update records it as fly. It used to drop
+    // every jump into orbit, which quietly turned a fly shot into an orbit
+    // one the next time it was updated. A mode the model has switched off,
+    // or an inserted waypoint's old 'Inserted' marker, lands in orbit.
     // ------------------------------------------------------------
     function Na__VideoStudio__Preview__JumpToKeyframe(keyframe) {
         if (!Na__VsPreview__Camera || !keyframe) return false;
 
-        if (Na__NavToolbar__GetActiveMode && Na__NavToolbar__GetActiveMode() !== 'orbit') {
-            Na__NavToolbar__SetOrbitMode();
+        const state = Na__VideoStudio__Camera__ParseKeyframeState(keyframe);
+        if (!state) return false;                                            // <-- Malformed: leave the mode alone too
+
+        const targetMode = Na__NavigationModes__ResolveMode(keyframe.VideoStudio__Keyframe__CapturedInMode);
+
+        // LEAVING WALK OR FLY | Unless the keyframe is in the very mode that is
+        // on, which is simply re-seated on the new pose below.
+        if (Na__NavigationModes__GetActiveMode() !== targetMode) {
+            Na__NavigationModes__ReleaseToOrbit(Na__VsPreview__Camera, Na__VsPreview__Controls);
         }
 
-        const applied = Na__VideoStudio__Camera__ApplyKeyframe(Na__VsPreview__Camera, keyframe);
-        if (!applied) return false;
+        Na__VideoStudio__Camera__ApplyCameraState(Na__VsPreview__Camera, state);
 
-        Na__VsPreview__ReseatOrbitTarget();
+        if (Na__NavigationModes__GetActiveMode() === 'orbit') {
+            Na__VsPreview__ReseatOrbitTarget();                              // <-- Orbit pivots on what the shot looks at
+        }
+
+        Na__NavigationModes__EnterModeAtPose(targetMode, Na__VsPreview__Camera, Na__VsPreview__Controls);  // <-- Orbit: nothing; same mode: re-seat
+
+        Na__VsPreview__ApplyLandingDoors(keyframe);                          // <-- Doors as the video shows them here
+
         Na__VideoStudio__Camera__AnnounceFovChange();                        // <-- Go To adopts the keyframe's lens
         Na__RenderLoop__RequestRender();
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Show the Doors the Way the Video Has Them at a Keyframe
+    // ------------------------------------------------------------
+    // The keyframe's Door Animation tick. Unticked: open doors swing shut and
+    // walk or fly cannot open them again until the camera moves about a metre
+    // away. Ticked: they are left to open as walk and fly always open them.
+    // With the video's Animations switched off, Video Studio leaves the doors
+    // alone altogether, here as in playback. Keyframes belong to the path open
+    // in the panel, which is the active video.
+    // ------------------------------------------------------------
+    function Na__VsPreview__ApplyLandingDoors(keyframe) {
+        const video        = Na__VideoStudio__ProjectJson__GetVideoById(Na__VideoStudio__ProjectJson__GetActiveVideoId());
+        const animationsOn = !!video && Na__VideoStudio__ProjectJson__GetPlaybackOptions(video).animationsEnabled;
+
+        if (!animationsOn) {
+            Na__VideoStudio__SceneAnimations__ReleaseLandingDoors();         // <-- Nothing held; walk and fly as ever
+            return;
+        }
+
+        Na__VideoStudio__SceneAnimations__ApplyLandingDoors(
+            Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(keyframe),
+            Na__VsPreview__Camera.position
+        );
     }
     // ------------------------------------------------------------
 
@@ -600,6 +712,14 @@
         const state = Na__VideoStudio__PathSampler__SampleAtTime(Na__VsPreview__Timeline, Na__VsPreview__CurrentMs);
         if (state) {
             Na__VideoStudio__Camera__ApplyCameraState(Na__VsPreview__Camera, state);
+
+            // DOORS | The keyframe in charge of this moment decides whether
+            // the render loop's proximity pass may open them or holds them shut
+            if (Na__VsPreview__AnimationSession) {
+                Na__VideoStudio__SceneAnimations__SetDoorsLive(
+                    Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(Na__VsPreview__Timeline.keyframes[state.keyIndex])
+                );
+            }
         }
 
         Na__VsPreview__DispatchTick();

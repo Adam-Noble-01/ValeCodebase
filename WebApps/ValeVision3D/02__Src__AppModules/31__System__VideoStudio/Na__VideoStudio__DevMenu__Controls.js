@@ -56,6 +56,22 @@
 //   slider. This panel keeps the authoring controls and hands the strip its
 //   active path; the strip owns playback.
 //
+// 11-Sep-2026 - Version 1.2.1
+// - Capture Keyframe, Update and the Space hotkey guard read the navigation
+//   mode from Na__NavigationModes__Switcher (the walk and fly systems
+//   themselves) rather than the toolbar highlight. Go To now lands in the
+//   keyframe's saved mode; see the preview controller.
+//
+// 11-Sep-2026 - Version 1.2.2
+// - The Animations switch is now the master over per-keyframe Door Animation
+//   ticks, and says so. Closing the panel or opening another path releases
+//   any door hold left by the last keyframe landed on.
+//
+// 11-Sep-2026 - Version 1.3.0
+// - Added the Anti-Aliasing section between Model Layers and Export: an
+//   Enabled tick and, while it is on, a 4x | 8x | 16x Samples switch (8x by
+//   default). The export confirmation says how much longer it will take.
+//
 // =============================================================================
 
 
@@ -108,6 +124,7 @@
         Na__VideoStudio__MAX_DOOR_DISTANCE_M,
         Na__VideoStudio__ASPECT_RATIOS,
         Na__VideoStudio__HEIGHT_STANDARDS,
+        Na__VideoStudio__ANTIALIAS_SAMPLE_COUNTS,
         Na__VideoStudio__ProjectJson__SetExportFraming,
         Na__VideoStudio__ClampDoorSeconds,
         Na__VideoStudio__ClampDoorDistanceM,
@@ -184,7 +201,8 @@
     // ------------------------------------------------------------
     import {
         Na__VideoStudio__SceneAnimations__SetConfig,
-        Na__VideoStudio__SceneAnimations__GetThresholdMm
+        Na__VideoStudio__SceneAnimations__GetThresholdMm,
+        Na__VideoStudio__SceneAnimations__ReleaseLandingDoors
     } from './Na__VideoStudio__Playback__SceneAnimations.js';
     // ------------------------------------------------------------
 
@@ -279,8 +297,12 @@
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Navigation Mode Reporting
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
     // ------------------------------------------------------------
-    import { Na__NavToolbar__GetActiveMode } from '../10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js';
+    import {
+        Na__NavigationModes__GetActiveMode,
+        Na__NavigationModes__GetModeLabel
+    } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Walk and Fly Look Mode
@@ -630,14 +652,14 @@
         const header = Na__VsDev__El('div', 'na-vs-dev__key-header');
         header.appendChild(Na__VsDev__El('span', 'na-vs-dev__key-index', String(index + 1)));
         // A waypoint inserted along the path carries its own name; everything
-        // else is identified by the mode it was captured in.
+        // else is identified by the mode it is viewed in, which Go To lands in.
         const rowLabel = keyframe.VideoStudio__Keyframe__Label
                       || keyframe.VideoStudio__Keyframe__CapturedInMode
                       || 'Orbit';
         const labelSpan = Na__VsDev__El('span', 'na-vs-dev__key-mode', rowLabel);
         labelSpan.title = keyframe.VideoStudio__Keyframe__Label
             ? 'Inserted along the path, aim interpolated from its neighbours'
-            : `Captured in ${rowLabel} mode`;
+            : `Viewed in ${rowLabel} mode. Go To lands here in ${rowLabel}; change it from the timeline menu.`;
         header.appendChild(labelSpan);
 
         const goButton = Na__VsDev__Button('Go To', null, 'Snap the camera to this keyframe');
@@ -663,13 +685,9 @@
                 return;
             }
 
-            const activeMode = (typeof Na__NavToolbar__GetActiveMode === 'function')
-                ? Na__NavToolbar__GetActiveMode()
-                : 'orbit';
-
             keyframe.VideoStudio__Keyframe__CameraPosition = cameraPosition;
             keyframe.VideoStudio__Keyframe__LensMm         = Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(captureFov));
-            keyframe.VideoStudio__Keyframe__CapturedInMode = activeMode.charAt(0).toUpperCase() + activeMode.slice(1);
+            keyframe.VideoStudio__Keyframe__CapturedInMode = Na__NavigationModes__GetModeLabel(Na__NavigationModes__GetActiveMode());
 
             Na__VideoStudio__UndoHistory__Record({
                 videoId,
@@ -928,9 +946,11 @@
 
     // HELPER FUNCTION | Build the Animations Section for a Video
     // ------------------------------------------------------------
-    // Whole-video settings, not per keyframe. Proximity doors are owned by Walk
-    // and Fly, so Video Studio has to switch them on for the run; this section
-    // decides whether it does, and at what pace.
+    // Whole-video settings. Proximity doors are owned by Walk and Fly, so
+    // Video Studio has to switch them on for the run; this section decides
+    // whether it does, and at what pace. Which stretches of the path actually
+    // open doors is per keyframe: the Door Animation tick in the timeline
+    // menu's Advanced Object Animation section.
     // ------------------------------------------------------------
     function Na__VsDev__BuildAnimationsSection(video) {
         const videoId  = video.VideoStudio__Video__Id;
@@ -944,14 +964,21 @@
         const animCheckbox = Na__VsDev__El('input', 'na-vs-dev__checkbox');
         animCheckbox.type    = 'checkbox';
         animCheckbox.checked = playback.animationsEnabled;
-        animCheckbox.title   = 'Open doors as the camera approaches them, the same way Walk and Fly modes do. '
-                             + 'Applies to preview and export.';
+        animCheckbox.title   = 'Master switch for door animation in this video, preview and export. Doors only open '
+                             + 'on keyframes ticked for Door Animation (right click a keyframe tile, Advanced Object '
+                             + 'Animation); everywhere else they stay shut.';
         animCheckbox.addEventListener('change', () => {
             Na__VideoStudio__ProjectJson__SetPlaybackOption(videoId, 'VideoStudio__Playback__AnimationsEnabled', animCheckbox.checked);
             Na__VideoStudio__Preview__InvalidateTimeline(videoId);            // <-- Reload so preview picks the new setting up
         });
         animRow.appendChild(animCheckbox);
         section.appendChild(animRow);
+
+        // WHERE DOORS OPEN | Said here as well as in the menu, because the
+        // master switch alone no longer opens anything
+        section.appendChild(Na__VsDev__El('div', 'na-vs-dev__note',
+            'Doors only open on keyframes ticked for Door Animation: right click a keyframe on the timeline, '
+          + 'Advanced Object Animation. A tick covers that keyframe and the travel on to the next.'));
 
         // ADVANCED | Collapsible, so the common case stays a single checkbox
         const advancedToggle = Na__VsDev__Button(
@@ -1191,6 +1218,90 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build the Anti-Aliasing Section for a Video
+    // ------------------------------------------------------------
+    // Exports only: the viewport and the preview keep their single FXAA pass.
+    // Switched on, each exported frame is rendered several times with the
+    // camera shifted by a fraction of a pixel and the results are averaged,
+    // which is what takes the steps out of long shallow lines. The Samples
+    // switch only shows while the section is on, and the count stays saved
+    // while it is off, so switching back on returns to the same count.
+    // ------------------------------------------------------------
+    function Na__VsDev__BuildAntiAliasSection(video) {
+        const videoId       = video.VideoStudio__Video__Id;
+        const exportOptions = Na__VideoStudio__ProjectJson__GetExportOptions(video);
+        const section       = Na__VsDev__El('div', 'na-vs-dev__section');
+
+        section.appendChild(Na__VsDev__El('div', 'na-vs-dev__section-title', 'Anti-Aliasing'));
+
+        // ENABLED | Off exports each frame once, smoothed by FXAA alone
+        const enabledRow      = Na__VsDev__Row('Enabled');
+        const enabledCheckbox = Na__VsDev__El('input', 'na-vs-dev__checkbox');
+        enabledCheckbox.type    = 'checkbox';
+        enabledCheckbox.checked = exportOptions.antiAliasEnabled;
+        enabledCheckbox.title   = 'Supersample every exported frame so shallow linework comes out smooth rather than '
+                                + 'stepped. Off exports each frame once with FXAA only, as the viewport draws it.';
+        enabledRow.appendChild(enabledCheckbox);
+        section.appendChild(enabledRow);
+
+        // SAMPLES | 4x, 8x and 16x as one switch
+        const samplesRow   = Na__VsDev__Row('Samples');
+        const samplesGroup = Na__VsDev__El('div', 'na-vs-dev__segmented');
+        samplesGroup.setAttribute('role', 'group');
+        samplesGroup.setAttribute('aria-label', 'Anti-aliasing samples per frame');
+
+        const note    = Na__VsDev__El('div', 'na-vs-dev__note');
+        const buttons = [];
+
+        // HELPER | Light the chosen count and say what it costs
+        const showSamples = (count) => {
+            buttons.forEach((button) => {
+                const isActive = (Number(button.dataset.samples) === count);
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-pressed', String(isActive));
+            });
+            note.textContent = `Each exported frame is rendered ${count} times with the camera shifted by a fraction `
+                             + `of a pixel, then averaged. Allow roughly ${count} times as long to export. `
+                             + 'The viewport and preview are unchanged.';
+        };
+
+        Na__VideoStudio__ANTIALIAS_SAMPLE_COUNTS.forEach((count) => {
+            const button = Na__VsDev__El('button', 'na-vs-dev__segment', `${count}x`);
+            button.type            = 'button';
+            button.title           = `Render each exported frame ${count} times and average them`;
+            button.dataset.samples = String(count);
+            button.addEventListener('click', () => {
+                if (button.classList.contains('is-active')) return;          // <-- Already this count
+                Na__VideoStudio__ProjectJson__SetExportOption(videoId, 'VideoStudio__Export__AntiAliasSamples', count);
+                showSamples(count);
+            });
+            buttons.push(button);
+            samplesGroup.appendChild(button);
+        });
+
+        samplesRow.appendChild(samplesGroup);
+        section.appendChild(samplesRow);
+        section.appendChild(note);
+
+        // HELPER | The switch and its note only mean anything while this is on
+        const showEnabled = (enabled) => {
+            samplesRow.style.display = enabled ? '' : 'none';
+            note.style.display       = enabled ? '' : 'none';
+        };
+
+        enabledCheckbox.addEventListener('change', () => {
+            Na__VideoStudio__ProjectJson__SetExportOption(videoId, 'VideoStudio__Export__AntiAliasEnabled', enabledCheckbox.checked);
+            showEnabled(enabledCheckbox.checked);
+        });
+
+        showSamples(exportOptions.antiAliasSamples);
+        showEnabled(exportOptions.antiAliasEnabled);
+
+        return section;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Export Settings Section for a Video
     // ------------------------------------------------------------
     function Na__VsDev__BuildExportSection(video) {
@@ -1370,12 +1481,16 @@
 
         const exportOptions = Na__VideoStudio__ProjectJson__GetExportOptions(video);
         const isHeavy       = (exportOptions.width * exportOptions.height) > Na__VsDev__HEAVY_EXPORT_PIXELS;
+        const samples       = exportOptions.antiAliasSamples;
 
         const confirmed = await Na__AppUtils__ConfirmDialog__Show({
             title         : 'Export MP4?',
             message       : `"${video.VideoStudio__Video__Name}" is ${Na__VideoStudio__PathSampler__FormatDuration(summary.durationMs)} `
                           + `and ${summary.frameCount} frames at ${exportOptions.width} x ${exportOptions.height}. `
                           + 'Rendering runs frame by frame, so it will take longer than the clip itself.'
+                          + (exportOptions.antiAliasEnabled
+                              ? ` With ${samples}x anti-aliasing every frame is rendered ${samples} times, so the export takes roughly ${samples} times as long.`
+                              : '')
                           + (isHeavy
                               ? ' At this resolution the render targets are large and not every machine has an H.264 encoder '
                                 + 'that goes above 4K, so drop to 4K if the export refuses to start.'
@@ -1477,6 +1592,7 @@
         expandButton.classList.add('na-vs-dev__expand');
         expandButton.addEventListener('click', () => {
             Na__VideoStudio__Preview__ReleaseModelLayers();                  // <-- This path's hidden layers do not follow the next one
+            Na__VideoStudio__SceneAnimations__ReleaseLandingDoors();         // <-- Nor does a door hold from one of its keyframes
             Na__VsDev__ExpandedVideoId = isExpanded ? null : videoId;
             Na__VideoStudio__ProjectJson__SetActiveVideoId(Na__VsDev__ExpandedVideoId);
             Na__VideoStudio__ProjectJson__SetActiveKeyframeId(null);
@@ -1556,6 +1672,7 @@
         block.appendChild(Na__VsDev__BuildPlaybackSection(video));
         block.appendChild(Na__VsDev__BuildAnimationsSection(video));
         block.appendChild(Na__VsDev__BuildModelLayersSection(video));
+        block.appendChild(Na__VsDev__BuildAntiAliasSection(video));
         block.appendChild(Na__VsDev__BuildExportSection(video));
 
         return block;
@@ -1716,13 +1833,9 @@
             return;
         }
 
-        const activeMode = (typeof Na__NavToolbar__GetActiveMode === 'function')
-            ? Na__NavToolbar__GetActiveMode()
-            : 'orbit';
-
         const keyframe = Na__VideoStudio__ProjectJson__AddKeyframe(videoId, cameraPosition, {
             lensMm         : Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(captureFov)),
-            capturedInMode : activeMode.charAt(0).toUpperCase() + activeMode.slice(1)
+            capturedInMode : Na__NavigationModes__GetModeLabel(Na__NavigationModes__GetActiveMode())
         });
         if (!keyframe) return;
 
@@ -1802,8 +1915,7 @@
         // activated by the browser, which would otherwise toggle twice.
         if (event.key === Na__VsDev__PLAY_HOTKEY) {
             if (target && target.tagName === 'BUTTON') return;
-            if (typeof Na__NavToolbar__GetActiveMode === 'function'
-                && Na__NavToolbar__GetActiveMode() !== 'orbit') return;
+            if (Na__NavigationModes__GetActiveMode() !== 'orbit') return;
 
             event.preventDefault();
             Na__VsDev__TogglePreviewPlayback();
@@ -2097,6 +2209,7 @@
                 if (isOpen) {
                     Na__VideoStudio__UndoHistory__Clear('panel closed');      // <-- Editing session ended
                     Na__VideoStudio__Preview__ReleaseModelLayers();           // <-- Never leave the viewport missing a model
+                    Na__VideoStudio__SceneAnimations__ReleaseLandingDoors();  // <-- Doors back to walk and fly proximity
                 }
 
                 Na__VsDev__SyncTimeline();                                   // <-- Bottom strip follows the panel up and down

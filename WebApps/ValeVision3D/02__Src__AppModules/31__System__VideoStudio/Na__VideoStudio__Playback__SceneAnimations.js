@@ -33,16 +33,36 @@
 //   door opens at the same distance in a video as it does when you walk
 //   through the model yourself.
 //
+// PER-KEYFRAME DOOR ANIMATION:
+// - Doors only move where a keyframe is ticked for Door Animation
+//   (VideoStudio__Keyframe__DoorAnimation). The tick covers that keyframe's
+//   hold and the travel on to the next keyframe; everywhere else doors are
+//   held shut, and one left open swings shut as the clip arrives at an
+//   unticked keyframe. The video's Animations switch remains the master: off,
+//   no session opens and nothing here runs.
+// - A run from the top starts with every door snapped shut, so the first
+//   frames never show a door closing that the path never went near.
+// - Landing on a keyframe while editing shows the same state: unticked holds
+//   the doors shut until the camera moves about a metre away.
+//
 // INTEGRATION:
 // - SetConfig is called once by the Dev menu with the navmode config block.
 // - Begin / End wrap preview playback and each export session.
 // - IsActive gates the per-frame proximity call in the render loop.
+// - SetDoorsLive runs every preview and export frame; ResetDoorsClosed at the
+//   start of a run; ApplyLandingDoors on a keyframe jump; ReleaseLandingDoors
+//   when the Video Studio panel closes or another path is opened.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
 // 14-Aug-2026 - Version 1.0.0
 // - Initial implementation. Doors now animate during preview and export.
+//
+// 11-Sep-2026 - Version 1.1.0
+// - Per-keyframe door animation: SetDoorsLive, ResetDoorsClosed,
+//   ApplyLandingDoors and ReleaseLandingDoors, on top of the proximity
+//   system's new hold-closed state.
 //
 // =============================================================================
 
@@ -55,17 +75,26 @@
     // ------------------------------------------------------------
     import {
         Na__DoorProximity__Initialize,
-        Na__DoorProximity__SetEnabled
+        Na__DoorProximity__SetEnabled,
+        Na__DoorProximity__SetHoldClosed,
+        Na__DoorProximity__HoldClosedAt,
+        Na__DoorProximity__CloseAllDoors
     } from '../25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js';
     // ------------------------------------------------------------
 
-    // MODULE IMPORTS | Door Animation Speed Scale
+    // MODULE IMPORTS | Door Animation Speed Scale and Reset
     // ------------------------------------------------------------
     import {
         Na__DoorAnimation__SetSpeedScale,
         Na__DoorAnimation__GetSpeedScale,
-        Na__DoorAnimation__GetBaseDurationMs
+        Na__DoorAnimation__GetBaseDurationMs,
+        Na__DoorAnimation__SnapAllClosed
     } from '../25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Unit Conversion
+    // ------------------------------------------------------------
+    import { Na__Math__ConvertMmToUnits } from '../04__MathUtils/Na__Math__Units.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -78,6 +107,15 @@
     // MODULE CONSTANTS | Fallback Proximity Threshold
     // ------------------------------------------------------------
     const Na__VsAnim__FALLBACK_THRESHOLD_MM = 6500;   // <-- Matches the shipped Walk and Fly defaults
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Landing Hold Release Distance
+    // ------------------------------------------------------------
+    // Moving this far across the floor from a keyframe the camera landed on
+    // hands its doors back to walk and fly proximity. Far enough that looking
+    // round or nudging the shot keeps the doors as the keyframe says.
+    // ------------------------------------------------------------
+    const Na__VsAnim__LANDING_RELEASE_MM = 1000;
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -180,6 +218,7 @@
 
             Na__DoorProximity__Initialize(thresholdMm);
             Na__DoorProximity__SetEnabled(true);
+            Na__DoorProximity__SetHoldClosed(false);                         // <-- A landing hold ends here; frames decide from now on
 
             // SPEED | Snapshot whatever the app was using so interactive Walk
             // and Fly get their own pace back when the session closes.
@@ -208,6 +247,7 @@
 
         if (Na__VsAnim__SessionCount === 0) {
             Na__DoorProximity__SetEnabled(false);                        // <-- Back to orbit behaviour
+            Na__DoorProximity__SetHoldClosed(false);                     // <-- The last frame's keyframe no longer decides
             Na__DoorAnimation__SetSpeedScale(Na__VsAnim__RestoreSpeed);   // <-- Interactive pace restored
 
             // A video with its own detection distance rewrote the shared
@@ -232,6 +272,76 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Per-Keyframe Door Animation
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Let Doors Open, or Hold Them Shut, for the Frame Being Drawn
+    // ------------------------------------------------------------
+    // Called every preview and export frame with the Door Animation tick of
+    // the keyframe the clip is passing through: its hold and the travel on to
+    // the next keyframe. Unticked, open doors swing shut and none open however
+    // close the camera comes. No-op outside a session, where walk and fly own
+    // the doors.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__SceneAnimations__SetDoorsLive(live) {
+        if (!Na__VsAnim__IsActive) return;
+        Na__DoorProximity__SetHoldClosed(live !== true);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Start a Clip With Every Door Shut
+    // ------------------------------------------------------------
+    // For a run from the top: whatever editing left open is closed at once,
+    // not animated, so the first frames never show a door swinging shut that
+    // the path never went near. No-op outside a session, so a video with its
+    // Animations switched off keeps its doors exactly as they are.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__SceneAnimations__ResetDoorsClosed() {
+        if (!Na__VsAnim__IsActive) return;
+        Na__DoorAnimation__SnapAllClosed();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Make the Doors Match a Keyframe the Camera Has Landed On
+    // ------------------------------------------------------------
+    // Editing rather than playback: Go To, a tile double click, a live menu
+    // preview. live false: open doors swing shut, and walk or fly proximity
+    // cannot open them again until the camera moves about a metre across the
+    // floor from the keyframe. live true: any such hold is let go, so walk and
+    // fly open the doors round the keyframe as they always do, as the clip
+    // will. Ignored while a session runs, because playback decides per frame.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__SceneAnimations__ApplyLandingDoors(live, anchorPositionUnits) {
+        if (Na__VsAnim__IsActive) return;
+
+        if (live === true) {
+            Na__DoorProximity__SetHoldClosed(false);
+            return;
+        }
+
+        Na__DoorProximity__HoldClosedAt(anchorPositionUnits, Na__Math__ConvertMmToUnits(Na__VsAnim__LANDING_RELEASE_MM));
+        Na__DoorProximity__CloseAllDoors();                                  // <-- Animated; works in orbit too
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hand the Doors Back When Editing Stops
+    // ------------------------------------------------------------
+    // Called when the Video Studio panel closes or another path is opened, so
+    // a hold left by the last keyframe landed on never outlives the edit.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__SceneAnimations__ReleaseLandingDoors() {
+        if (Na__VsAnim__IsActive) return;
+        Na__DoorProximity__SetHoldClosed(false);
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Module Exports
 // -----------------------------------------------------------------------------
 
@@ -242,7 +352,11 @@
         Na__VideoStudio__SceneAnimations__GetThresholdMm,
         Na__VideoStudio__SceneAnimations__Begin,
         Na__VideoStudio__SceneAnimations__End,
-        Na__VideoStudio__SceneAnimations__IsActive
+        Na__VideoStudio__SceneAnimations__IsActive,
+        Na__VideoStudio__SceneAnimations__SetDoorsLive,
+        Na__VideoStudio__SceneAnimations__ResetDoorsClosed,
+        Na__VideoStudio__SceneAnimations__ApplyLandingDoors,
+        Na__VideoStudio__SceneAnimations__ReleaseLandingDoors
     };
     // ------------------------------------------------------------
 

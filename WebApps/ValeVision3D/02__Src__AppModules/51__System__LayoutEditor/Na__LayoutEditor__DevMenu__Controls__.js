@@ -15,6 +15,10 @@
 //   first), Save Sheets, Bake Snapshots and Linework (every 3D viewport's
 //   picture and every drawing's linework to R2, so the web build renders
 //   nothing), Export PDF of the open sheet, and Leave Editor.
+// - An Enable Layout Mode switch heads the section, off by default and
+//   saved with the project the moment it changes. While it is off the
+//   project shows no drawing tabs on localhost and the section holds only
+//   the switch, so a sheet can never open without tabs to leave it by.
 //
 // INTEGRATION:
 // - Initialized from index.html alongside the other localhost-only tools.
@@ -31,6 +35,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.2.0
+// - Enable Layout Mode switch (per project, saved at once, off by default);
+//   the sheet list and actions only appear while it is on.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Bake names the drawings that sheet viewports want linework for; readable progress and counts.
 //
@@ -59,7 +67,14 @@
         Na__LeModel__IsDirty,
         Na__LeModel__Save
     } from './Na__LayoutEditor__SheetModel__.js';
-    import { Na__LeMode__CHANGED_EVENT, Na__LeMode__Enter, Na__LeMode__Leave, Na__LeMode__IsActive } from './Na__LayoutEditor__ModeController__.js';
+    import {
+        Na__LeMode__CHANGED_EVENT,
+        Na__LeMode__Enter,
+        Na__LeMode__Leave,
+        Na__LeMode__IsActive,
+        Na__LeMode__IsLayoutModeOn,
+        Na__LeMode__SetLayoutMode
+    } from './Na__LayoutEditor__ModeController__.js';
     import { Na__LeVp3d__Bake } from './Na__LayoutEditor__Viewport3d__.js';
     import { Na__LePdf__ExportSheet } from './Na__LayoutEditor__PdfExporter__.js';
     import { Na__PlStore__BakeAll } from '../50__System__ProjectedLinework/Na__ProjectedLinework__Persistence__.js';
@@ -182,6 +197,38 @@
 // REGION | Rendering
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | The Layout Mode Switch (per project, saved at once)
+    // ------------------------------------------------------------
+    // The choice lives in the drawings block, so it is saved the moment it
+    // changes: switched off, the Save Sheets button goes with the rest of
+    // the section and nothing else would ever write it.
+    // ------------------------------------------------------------
+    function Na__LeDev__BuildLayoutModeSwitch() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'na-fp-dev__styles';
+
+        const label = document.createElement('label');
+        label.className = 'na-fp-dev__style';
+        label.title     = Na__LeCfg__GetLabel('LayoutModeHint', 'Shows the drawing tabs on localhost for this project. Saved with the project.');
+        const check = document.createElement('input');
+        check.type      = 'checkbox';
+        check.className = 'na-pm-dev__checkbox';
+        check.checked   = Na__LeMode__IsLayoutModeOn();
+        check.disabled  = Na__LeDev__Busy;
+        check.addEventListener('change', () => {
+            Na__LeMode__SetLayoutMode(check.checked);                          // <-- Off leaves an open sheet first
+            void Na__LeDev__Run(() => Na__LeModel__Save(Na__LeDev__ShowToast));
+        });
+        const text = document.createElement('span');
+        text.textContent = Na__LeCfg__GetLabel('LayoutModeLabel', 'Enable Layout Mode');
+        label.appendChild(check);
+        label.appendChild(text);
+        wrapper.appendChild(label);
+        return wrapper;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | The Sheet Rows
     // ------------------------------------------------------------
     function Na__LeDev__BuildSheets() {
@@ -223,6 +270,17 @@
         title.className   = 'na-dropdown-menu__panel-title';
         title.textContent = Na__LeCfg__GetLabel('DevSectionTitle', 'Layout Editor') + (Na__LeModel__IsDirty() ? ' (unsaved changes)' : '');
         Na__LeDev__Panel.appendChild(title);
+        Na__LeDev__Panel.appendChild(Na__LeDev__BuildLayoutModeSwitch());
+
+        // LAYOUT MODE OFF | The switch and one line on what it does; no sheet can be opened
+        if (!Na__LeMode__IsLayoutModeOn()) {
+            const off = document.createElement('p');
+            off.className   = 'na-fp-dev__empty';
+            off.textContent = Na__LeCfg__GetLabel('LayoutModeOffNote', 'Off for this project: no drawing tabs on localhost. The live site shows them only when the project has sheets.');
+            Na__LeDev__Panel.appendChild(off);
+            return;
+        }
+
         Na__LeDev__Panel.appendChild(Na__LeDev__BuildSheets());
 
         const actions = document.createElement('div');

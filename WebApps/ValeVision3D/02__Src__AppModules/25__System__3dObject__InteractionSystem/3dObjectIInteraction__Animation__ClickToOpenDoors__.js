@@ -41,6 +41,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.7.1
+// - Added Na__DoorAnimation__SnapAllClosed: every door and independent leaf
+//   back to fully closed in one step, no animation. Video Studio uses it so an
+//   export or a preview from the top starts with every door shut.
+//
 // 10-Jul-2026 - Version 1.7.0
 // - Backported the complete multi-panel engine from the current TrueVision
 //   reference while retaining ValeVision imports, bootstrap, and thresholds.
@@ -1214,6 +1219,67 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Settle One Animation Target at Fully Closed
+    // ------------------------------------------------------------
+    function Na__DoorAnim__SettleClosed(animationTarget) {
+        animationTarget.state             = Na__DoorAnim__STATE_CLOSED;
+        animationTarget.currentProgress   = 0;
+        animationTarget.animStartProgress = 0;
+        animationTarget.animEndProgress   = 0;
+        animationTarget.animElapsedMs     = 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put Every Door Straight Back to Closed, Without Animating
+    // ------------------------------------------------------------
+    // For a clean first frame: a Video Studio export, or a preview played
+    // from the top, starts with every door shut whatever editing left open,
+    // so the clip never opens on a door swinging closed that the path never
+    // went near. Clicks and proximity animate from here as normal.
+    //
+    // Returns how many doors or independent leaves actually moved.
+    // ------------------------------------------------------------
+    function Na__DoorAnimation__SnapAllClosed() {
+        if (!Na__DoorAnim__Initialized || Na__DoorAnim__DoorRegistry.size === 0) return 0;
+
+        let movedCount = 0;
+
+        Na__DoorAnim__DoorRegistry.forEach((doorRecord) => {
+            if (doorRecord.isIndependentPanels === true) {
+                let doorMoved = false;
+
+                doorRecord.panels.forEach((panel) => {
+                    if (panel.type === Na__DoorAnim__MOD_TYPE_FIXED) return;
+                    if (panel.state === Na__DoorAnim__STATE_CLOSED && panel.currentProgress === 0) return;
+
+                    Na__DoorAnim__SettleClosed(panel);
+                    panel.proximityIsNear = false;
+                    Na__DoorAnim__ApplyPanelTransform(panel.modObjectMesh, panel, 0);
+                    Na__DoorAnim__ApplyPanelTransform(panel.modObjectLinework, panel, 0);
+                    doorMoved = true;
+                    movedCount++;
+                });
+
+                if (doorMoved) Na__DoorAnim__SyncLegacyDoorState(doorRecord);
+                return;
+            }
+
+            if (doorRecord.state === Na__DoorAnim__STATE_CLOSED && doorRecord.currentProgress === 0) return;
+
+            Na__DoorAnim__SettleClosed(doorRecord);
+            doorRecord.animStartAngleRad = 0;
+            doorRecord.animEndAngleRad   = 0;
+            Na__DoorAnim__ApplyAllPanels(doorRecord, 0);                         // <-- Also resets currentProgress and currentAngleRad
+            movedCount++;
+        });
+
+        if (movedCount > 0) Na__RenderLoop__RequestRender();
+        return movedCount;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -1231,6 +1297,7 @@
         Na__DoorAnimation__GetSpeedScale,                                        // <-- Read current time scale
         Na__DoorAnimation__GetBaseDurationMs,                                    // <-- Authored single-leaf swing time
         Na__DoorAnimation__HasActiveAnimations,                                  // <-- Query active animations (for render loop)
+        Na__DoorAnimation__SnapAllClosed,                                        // <-- Every door shut at once (Video Studio start frame)
         Na__DoorAnimation__ScanForDoors,                                         // <-- Re-scan scene graph
         Na__DoorAnim__DoorRegistry,                                              // <-- Door registry Map (for proximity system)
         Na__DoorAnim__ToggleDoor,                                                // <-- Toggle whole door

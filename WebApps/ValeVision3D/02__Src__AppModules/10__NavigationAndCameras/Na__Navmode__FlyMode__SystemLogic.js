@@ -36,6 +36,11 @@
 // - Ported from TrueVision3D Na__Navmode__FlyMode__SystemLogic.js.
 // - Re-headered for ValeVision3D namespace.
 //
+// 11-Sep-2026 - Version 1.1.0
+// - Added Na__FlyMode__SyncFromCamera: re-seats the look angles on a camera
+//   pose placed from outside (saved scenes and video keyframes viewed in
+//   fly), so fly carries on from that view instead of snapping back.
+//
 // =============================================================================
 
 
@@ -439,6 +444,42 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | Re-Seat Fly Mode on Wherever the Camera Now Is
+    // ------------------------------------------------------------
+    // For callers that place the camera themselves while fly is active: a
+    // saved scene or video keyframe that is viewed in fly.  Position needs no
+    // work, because fly moves the camera itself and keeps no position of its
+    // own.  The look angles do: they are the source of truth for orientation,
+    // so without this the next frame would swing the view back to wherever
+    // the flyer was last looking.
+    //
+    // Any glide still decaying from the previous move is dropped so the view
+    // does not drift off the new pose.  Keys still held stay held.
+    //
+    // Returns false when fly mode is not active.
+    // ------------------------------------------------------------
+    function Na__FlyMode__SyncFromCamera() {
+        if (!Na__FlyMode__Active || !Na__FlyMode__Camera) return false;
+
+        const euler = new THREE.Euler().setFromQuaternion(Na__FlyMode__Camera.quaternion, 'YXZ');
+        Na__FlyMode__CameraYaw   = euler.y;
+        Na__FlyMode__CameraPitch = Math.max(
+            -Na__FlyMode__PITCH_CLAMP_RAD,
+            Math.min(Na__FlyMode__PITCH_CLAMP_RAD, euler.x)
+        );
+
+        Na__FlyMode__InputYawDelta         = 0;                              // <-- Unapplied mouse look would turn away from the pose
+        Na__FlyMode__InputPitchDelta       = 0;
+        Na__FlyMode__SmoothedForwardInput  = 0;                              // <-- No residual glide carried onto the new pose
+        Na__FlyMode__SmoothedStrafeInput   = 0;
+        Na__FlyMode__SmoothedVerticalInput = 0;
+
+        Na__FlyMode__UpdateCameraOrientation();
+        return true;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -571,6 +612,7 @@
         Na__FlyMode__Initialize,
         Na__FlyMode__Activate,
         Na__FlyMode__Deactivate,
+        Na__FlyMode__SyncFromCamera,
         Na__FlyMode__Update,
         Na__FlyMode__IsActive,
         Na__FlyMode__GetCameraPosition,

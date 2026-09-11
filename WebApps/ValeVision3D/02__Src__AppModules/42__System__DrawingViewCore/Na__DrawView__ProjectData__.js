@@ -46,6 +46,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.1.0
+// - LayoutEditor__DrawingsData__LayoutModeEnabled: the per-project Layout Mode
+//   switch the localhost Dev menu sets (absent reads as off), with its getter and setter.
+//
 // 10-Sep-2026 - Version 1.0.1
 // - A save that cannot reach the origin says the local server is not running instead of "Failed to fetch".
 //
@@ -97,6 +101,7 @@
     const Na__DrawData__DESCRIPTION_KEY  = 'LayoutEditor__DrawingsData__Description';
     const Na__DrawData__VERSION_KEY      = 'LayoutEditor__DrawingsData__Version';
     const Na__DrawData__CLIENT_DIMS_KEY  = 'LayoutEditor__DrawingsData__ClientDimensionsEnabled';
+    const Na__DrawData__LAYOUT_MODE_KEY  = 'LayoutEditor__DrawingsData__LayoutModeEnabled';
     const Na__DrawData__FLOOR_PLANS_KEY  = 'LayoutEditor__DrawingsData__FloorPlans';
     const Na__DrawData__ELEVATIONS_KEY   = 'LayoutEditor__DrawingsData__Elevations';
     const Na__DrawData__SHEETS_KEY       = 'LayoutEditor__DrawingsData__Sheets';
@@ -150,6 +155,7 @@
         block[Na__DrawData__DESCRIPTION_KEY] = Na__DrawData__DESCRIPTION;
         block[Na__DrawData__VERSION_KEY]     = Na__DrawData__VERSION;
         block[Na__DrawData__CLIENT_DIMS_KEY] = false;
+        block[Na__DrawData__LAYOUT_MODE_KEY] = false;
         block[Na__DrawData__FLOOR_PLANS_KEY] = [];
         block[Na__DrawData__ELEVATIONS_KEY]  = [];
         block[Na__DrawData__SHEETS_KEY]      = [];
@@ -167,6 +173,7 @@
         if (typeof block[Na__DrawData__DESCRIPTION_KEY] !== 'string') block[Na__DrawData__DESCRIPTION_KEY] = Na__DrawData__DESCRIPTION;
         if (!Number.isFinite(block[Na__DrawData__VERSION_KEY]))        block[Na__DrawData__VERSION_KEY]     = Na__DrawData__VERSION;
         if (typeof block[Na__DrawData__CLIENT_DIMS_KEY] !== 'boolean') block[Na__DrawData__CLIENT_DIMS_KEY] = false;
+        if (typeof block[Na__DrawData__LAYOUT_MODE_KEY] !== 'boolean') block[Na__DrawData__LAYOUT_MODE_KEY] = false;
         if (!Array.isArray(block[Na__DrawData__FLOOR_PLANS_KEY]))      block[Na__DrawData__FLOOR_PLANS_KEY] = [];
         if (!Array.isArray(block[Na__DrawData__ELEVATIONS_KEY]))       block[Na__DrawData__ELEVATIONS_KEY]  = [];
         if (!Array.isArray(block[Na__DrawData__SHEETS_KEY]))           block[Na__DrawData__SHEETS_KEY]      = [];
@@ -244,6 +251,33 @@
     // ------------------------------------------------------------
     function Na__DrawData__SetClientDimensionsEnabled(enabled) {
         Na__DrawData__GetBlock()[Na__DrawData__CLIENT_DIMS_KEY] = (enabled === true);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Layout Mode Switch
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Is Layout Mode Switched On for This Project?
+    // ------------------------------------------------------------
+    // The localhost Dev menu's switch for the Layout Editor tabs. Absent
+    // reads as OFF, so a project nobody has laid out opens without them.
+    // The live site never reads it: there the tabs follow the sheets.
+    // ------------------------------------------------------------
+    function Na__DrawData__GetLayoutModeEnabled() {
+        return Na__DrawData__GetBlock()[Na__DrawData__LAYOUT_MODE_KEY] === true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Switch Layout Mode On or Off for This Project
+    // ------------------------------------------------------------
+    function Na__DrawData__SetLayoutModeEnabled(enabled) {
+        Na__DrawData__GetBlock()[Na__DrawData__LAYOUT_MODE_KEY] = (enabled === true);
         return true;
     }
     // ------------------------------------------------------------
@@ -396,6 +430,8 @@
         Na__DrawData__GetSheetsArray,
         Na__DrawData__GetClientDimensionsEnabled,
         Na__DrawData__SetClientDimensionsEnabled,
+        Na__DrawData__GetLayoutModeEnabled,
+        Na__DrawData__SetLayoutModeEnabled,
         Na__DrawData__IsFloorPlanScene,
         Na__DrawData__IsElevationScene,
         Na__DrawData__IsDrawingScene,

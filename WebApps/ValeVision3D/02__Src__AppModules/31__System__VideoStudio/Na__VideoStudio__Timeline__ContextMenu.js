@@ -33,6 +33,20 @@
 //   orientation from heading and pitch with the roll set to zero, which is
 //   what a camera on a tripod can physically do.
 //
+// NAVIGATION MODE:
+// - An Orbit | Fly | Walk switch at the top of Camera Settings shows and sets
+//   the mode the shot is viewed in (VideoStudio__Keyframe__CapturedInMode).
+//   Go To and a tile double click land the camera in that mode, and flipping
+//   the switch moves the viewport into it straight away, as Height and Tilt
+//   preview live. It is an ordinary undoable edit, saved with the path.
+//
+// ADVANCED OBJECT ANIMATION:
+// - A collapsed section under Camera Settings holding the Door Animation tick
+//   (VideoStudio__Keyframe__DoorAnimation). Ticked, doors open as the camera
+//   passes them from this keyframe to the next; unticked, they swing shut and
+//   stay shut there. Off until ticked. The video's Animations switch in the
+//   panel is still the master, and the note under the tick says when it is off.
+//
 // DELETING:
 // - Removal is recorded as a structural undo entry before it happens, exactly
 //   as the Delete hotkey does, so Ctrl+Z puts the waypoint back in its place
@@ -53,6 +67,18 @@
 // DEVELOPMENT LOG:
 // 02-Sep-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio timeline.
+//
+// 11-Sep-2026 - Version 1.1.0
+// - Added the Orbit | Fly | Walk navigation mode switch. The keyframe always
+//   recorded its capture mode, but nothing showed it or acted on it, and Go
+//   To forced orbit, so a fly shot silently became an orbit shot on its next
+//   Update.
+// - Match Current Camera reads the live mode from the navigation systems
+//   (Na__NavigationModes__Switcher) rather than the toolbar highlight.
+//
+// 11-Sep-2026 - Version 1.2.0
+// - Added the Advanced Object Animation section with the per-keyframe Door
+//   Animation tick, undoable and previewed live like the other fields.
 //
 // =============================================================================
 
@@ -85,6 +111,8 @@
         Na__VideoStudio__ProjectJson__SetKeyframeLens,
         Na__VideoStudio__ProjectJson__SetKeyframePosition,
         Na__VideoStudio__ProjectJson__SetKeyframeRotation,
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation,
+        Na__VideoStudio__ProjectJson__SetKeyframeDoorAnimation,
         Na__VideoStudio__ProjectJson__GetActiveKeyframeId,
         Na__VideoStudio__ProjectJson__DeleteKeyframe
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
@@ -140,9 +168,15 @@
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
-    // MODULE IMPORTS | Navigation Mode Reporting
+    // MODULE IMPORTS | Navigation Mode Reading and Naming
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
     // ------------------------------------------------------------
-    import { Na__NavToolbar__GetActiveMode } from '../10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js';
+    import {
+        Na__NavigationModes__ResolveMode,
+        Na__NavigationModes__GetModeLabel,
+        Na__NavigationModes__GetActiveMode,
+        Na__NavigationModes__IsModeAvailable
+    } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -169,6 +203,15 @@
     const Na__VsMenu__MIN_HEIGHT_MM = -20000;    // <-- Basements and sunken courtyards
     const Na__VsMenu__MAX_HEIGHT_MM = 200000;    // <-- Aerial establishing shots
     const Na__VsMenu__MAX_TILT_DEG  = 89;        // <-- Symmetric; straight up and down are excluded
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Navigation Switch Order
+    // ------------------------------------------------------------
+    // Left to right as the switch reads. Stored on the keyframe in the
+    // capitalised form ('Orbit', 'Fly', 'Walk') Update has always written.
+    // ------------------------------------------------------------
+    const Na__VsMenu__NAV_MODES = ['orbit', 'fly', 'walk'];
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -199,7 +242,8 @@
     // Survives closing and reopening the menu, so someone working through a
     // path adjusting heights does not have to unfold it at every waypoint.
     // ------------------------------------------------------------
-    let Na__VsMenu__AdvancedOpen = false;
+    let Na__VsMenu__AdvancedOpen        = false;   // <-- Advanced Camera Settings
+    let Na__VsMenu__ObjectAnimationOpen = false;   // <-- Advanced Object Animation, same lifetime
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -404,13 +448,9 @@
         }
 
         Na__VsMenu__CommitEdit(keyframe, `Update waypoint ${index + 1}`, () => {
-            const activeMode = (typeof Na__NavToolbar__GetActiveMode === 'function')
-                ? Na__NavToolbar__GetActiveMode()
-                : 'orbit';
-
             keyframe.VideoStudio__Keyframe__CameraPosition = cameraBlock;
             keyframe.VideoStudio__Keyframe__LensMm         = Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(captureFov));
-            keyframe.VideoStudio__Keyframe__CapturedInMode = activeMode.charAt(0).toUpperCase() + activeMode.slice(1);
+            keyframe.VideoStudio__Keyframe__CapturedInMode = Na__NavigationModes__GetModeLabel(Na__NavigationModes__GetActiveMode());
             return true;
         });
 
@@ -545,11 +585,82 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build the Orbit / Fly / Walk Navigation Switch
+    // ------------------------------------------------------------
+    // Shows the mode this shot is viewed in, and changes it. It is the mode Go
+    // To and a tile double click land the camera in, so a shot framed in fly
+    // is picked up again in fly instead of being dropped into orbit. Update
+    // still records whatever mode the camera is in when it is pressed; this
+    // is for changing it afterwards without recapturing the shot.
+    //
+    // The viewport follows the change, the same way Height and Tilt preview
+    // live. That happens inside the commit because the commit's refresh
+    // rebuilds the timeline strip, which closes this menu, and a closed menu
+    // no longer knows which waypoint it was editing.
+    //
+    // Modes switched off for the model are shown disabled rather than hidden,
+    // so the switch keeps its shape on every project and says why.
+    // ------------------------------------------------------------
+    function Na__VsMenu__BuildNavigationRow(keyframe, index) {
+        const row   = Na__VsMenu__El('div', 'na-vs-menu__field');
+        const group = Na__VsMenu__El('div', 'na-vs-menu__segmented');
+        group.setAttribute('role', 'group');
+        group.setAttribute('aria-label', 'Navigation mode');
+
+        const currentMode = Na__NavigationModes__ResolveMode(keyframe.VideoStudio__Keyframe__CapturedInMode);
+        const buttons     = [];
+
+        Na__VsMenu__NAV_MODES.forEach((mode) => {
+            const label  = Na__NavigationModes__GetModeLabel(mode);
+            const button = Na__VsMenu__El('button', 'na-vs-menu__segment', label);
+            button.type  = 'button';
+
+            if (!Na__NavigationModes__IsModeAvailable(mode)) {
+                button.disabled = true;
+                button.title    = `${label} mode is switched off for this model`;
+            } else {
+                button.title    = `View this shot in ${label} mode`;
+            }
+
+            const isActive = (mode === currentMode);
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
+
+            button.addEventListener('click', () => {
+                if (button.classList.contains('is-active')) return;          // <-- Already this mode
+
+                buttons.forEach((other) => {
+                    const nowActive = (other === button);
+                    other.classList.toggle('is-active', nowActive);
+                    other.setAttribute('aria-pressed', String(nowActive));
+                });
+
+                Na__VsMenu__CommitEdit(keyframe, `Navigation mode on waypoint ${index + 1}`, () => {
+                    keyframe.VideoStudio__Keyframe__CapturedInMode = label;
+                    Na__VsMenu__PreviewIfCameraIsHere(keyframe);             // <-- Lands the camera in the new mode
+                    return true;
+                });
+            });
+
+            buttons.push(button);
+            group.appendChild(button);
+        });
+
+        row.appendChild(group);
+        row.appendChild(Na__VsMenu__El('span', 'na-vs-menu__label', 'Navigation Mode'));
+        return row;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Camera Settings Section
     // ------------------------------------------------------------
     function Na__VsMenu__BuildCameraSection(menu, keyframe, index) {
         menu.appendChild(Na__VsMenu__El('div', 'na-vs-menu__divider'));
         menu.appendChild(Na__VsMenu__El('div', 'na-vs-menu__section-title', 'Camera Settings'));
+
+        // NAVIGATION | First, because it decides how the shot is arrived at
+        menu.appendChild(Na__VsMenu__BuildNavigationRow(keyframe, index));
 
         // LENS | Rewrites the stored field of view too, which is the value the
         // sampler interpolates, so two waypoints on different lenses give a
@@ -656,6 +767,68 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Build the Advanced Object Animation Section
+    // ------------------------------------------------------------
+    // Collapsed by default, like Advanced Camera Settings, and remembered
+    // across menus for the same reason. Holds the per-keyframe Door Animation
+    // tick. Ticked, doors open as the camera passes them over this keyframe's
+    // span: its hold and the travel on to the next keyframe. Unticked, they
+    // swing shut and stay shut there however close the camera comes, which is
+    // what stops a walkthrough flapping every door it passes. Off until ticked.
+    //
+    // The viewport follows a change straight away when the camera is parked on
+    // this keyframe, as the other fields do, and the change is one undo step.
+    // ------------------------------------------------------------
+    function Na__VsMenu__BuildObjectAnimationSection(menu, video, keyframe, index) {
+        const toggle = Na__VsMenu__El('button',
+            `na-vs-menu__disclosure${Na__VsMenu__ObjectAnimationOpen ? ' is-open' : ''}`,
+            'Advanced Object Animation');
+        toggle.type = 'button';
+
+        const body = Na__VsMenu__El('div',
+            `na-vs-menu__advanced${Na__VsMenu__ObjectAnimationOpen ? ' is-open' : ''}`);
+
+        toggle.addEventListener('click', () => {
+            Na__VsMenu__ObjectAnimationOpen = !Na__VsMenu__ObjectAnimationOpen;
+            toggle.classList.toggle('is-open', Na__VsMenu__ObjectAnimationOpen);
+            body.classList.toggle('is-open',   Na__VsMenu__ObjectAnimationOpen);
+            Na__VsMenu__ClampToViewport();                                   // <-- Unfolding may push it off the bottom
+        });
+
+        // DOOR ANIMATION | One tick, written through the data layer. The whole
+        // row is a label, so the words toggle it as well as the box.
+        const doorRow = Na__VsMenu__El('label', 'na-vs-menu__field na-vs-menu__check');
+        const doorBox = Na__VsMenu__El('input', 'na-vs-menu__checkbox');
+        doorBox.type    = 'checkbox';
+        doorBox.checked = Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(keyframe);
+        doorRow.title   = 'Let doors open as the camera passes them, from this keyframe to the next. '
+                        + 'Unticked, doors swing shut and stay shut here, however close the camera comes.';
+
+        doorBox.addEventListener('change', () => {
+            const enabled = doorBox.checked;
+            Na__VsMenu__CommitEdit(keyframe, `Door animation on waypoint ${index + 1}`, () => {
+                Na__VideoStudio__ProjectJson__SetKeyframeDoorAnimation(Na__VsMenu__VideoId, Na__VsMenu__KeyframeId, enabled);
+                Na__VsMenu__PreviewIfCameraIsHere(keyframe);                 // <-- Doors round the parked camera follow at once
+                return true;
+            });
+        });
+
+        doorRow.appendChild(doorBox);
+        doorRow.appendChild(Na__VsMenu__El('span', 'na-vs-menu__label', 'Door Animation'));
+        body.appendChild(doorRow);
+
+        // NOTE | What the tick does, or why it currently does nothing
+        const animationsOn = Na__VideoStudio__ProjectJson__GetPlaybackOptions(video).animationsEnabled;
+        body.appendChild(Na__VsMenu__El('div', 'na-vs-menu__note', animationsOn
+            ? 'Ticked, doors open as the camera passes them from this keyframe to the next. Unticked, they swing shut and stay shut.'
+            : 'Animations are switched off for this whole path in the Video Studio panel, so Video Studio leaves the doors alone.'));
+
+        menu.appendChild(toggle);
+        menu.appendChild(body);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Build the Delete Section at the Foot of the Menu
     // ------------------------------------------------------------
     function Na__VsMenu__BuildDeleteSection(menu, video, keyframe, index) {
@@ -755,6 +928,7 @@
 
         Na__VsMenu__BuildTimingSection(menu, video, keyframe, index, keyframes.length);
         Na__VsMenu__BuildCameraSection(menu, keyframe, index);
+        Na__VsMenu__BuildObjectAnimationSection(menu, video, keyframe, index);
         Na__VsMenu__BuildDeleteSection(menu, video, keyframe, index);
 
         menu.dataset.vsMenuWantX = String((clientX || 0) + Na__VsMenu__CURSOR_GAP_PX);

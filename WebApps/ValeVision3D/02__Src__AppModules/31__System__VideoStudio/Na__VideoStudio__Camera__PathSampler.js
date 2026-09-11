@@ -79,6 +79,11 @@
 //   alone put every mid-leg waypoint in the wrong place. Inverting that ramp
 //   is this module's business and nobody else's.
 //
+// 11-Sep-2026 - Version 1.2.0
+// - SampleAtTime's state carries keyIndex: the keyframe whose span the moment
+//   falls in (its hold, or the travel leaving it). Preview and export read it
+//   to apply each keyframe's Door Animation tick.
+//
 // =============================================================================
 
 
@@ -754,7 +759,8 @@
         return {
             position   : timeline.positions[index].clone(),
             quaternion : timeline.quaternions[index].clone(),
-            fov        : timeline.fovs[index]
+            fov        : timeline.fovs[index],
+            keyIndex   : index                                               // <-- Parked on this keyframe: its span
         };
     }
     // ------------------------------------------------------------
@@ -826,16 +832,22 @@
         // FIELD OF VIEW | Linear across the segment so dolly zooms read evenly
         const fov = THREE.MathUtils.lerp(timeline.fovs[segIndex], timeline.fovs[nextIndex], localS);
 
-        return { position, quaternion, fov };
+        // SPAN | The travel belongs to the keyframe it leaves, as Travel Time does
+        return { position, quaternion, fov, keyIndex: segIndex };
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | Sample Camera State at a Time in Milliseconds
     // ------------------------------------------------------------
-    // Returns { position (units), quaternion, fov }.  Times before zero clamp
-    // to the start, times past the end clamp to the final frame, so callers
-    // never have to special-case the boundaries.
+    // Returns { position (units), quaternion, fov, keyIndex }.  Times before
+    // zero clamp to the start, times past the end clamp to the final frame, so
+    // callers never have to special-case the boundaries.
+    //
+    // keyIndex indexes timeline.keyframes: the keyframe whose span the moment
+    // falls in, meaning its hold or the travel from it to the next keyframe.
+    // Per-keyframe settings that act over time, such as Door Animation, read
+    // it to know which keyframe is in charge.
     // ------------------------------------------------------------
     function Na__VideoStudio__PathSampler__SampleAtTime(timeline, timeMs) {
         if (!timeline || !timeline.events || timeline.events.length === 0) return null;

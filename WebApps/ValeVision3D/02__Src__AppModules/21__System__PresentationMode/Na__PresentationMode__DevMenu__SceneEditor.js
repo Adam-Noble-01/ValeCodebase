@@ -20,9 +20,11 @@
 //   under fold-down group headings, then the cross-section capture toggle and
 //   the global actions.
 // - Per-scene controls are built by Na__PresentationMode__DevMenu__SceneRowBuilders__:
-//   drag handle, position title, move up/down, Name, Group, FOV with live
-//   lens-mm readout, Move Speed, Easing, Position, then Update Camera, Regen
-//   Thumb, Save Scene and Delete.
+//   drag handle, position title, move up/down, Name, Group, Nav Mode (Orbit |
+//   Fly | Walk), FOV with live lens-mm readout, Move Speed, Easing, Position,
+//   then Update Camera, Regen Thumb, Save Scene and Delete.
+// - Update Camera and Add Scene From Camera record the live navigation mode
+//   with the camera, so a view framed in fly is shown in fly.
 // - Reordering (arrows, drag handle, Position field) is confined to a scene's
 //   own group; the Group dropdown is the only way to move a scene between
 //   groups. Scene Order restarts at 1 inside every group and is renumbered
@@ -70,6 +72,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.3.2
+// - Update Camera and Add Scene From Camera record the live navigation mode
+//   (PresentationMode__Scene__NavigationMode; orbit is the absent key), and
+//   a fly or walk capture stores a target along the camera's own axis rather
+//   than orbit's leftover one. Rows gain the Nav Mode switch.
+//
 // 09-Sep-2026 - Version 1.3.1 (port Phase 2)
 // - Add Scene From Camera refuses while a 2D drawing owns the viewport.
 //
@@ -146,8 +154,18 @@
     // @delegate: ./Na__PresentationMode__Camera__SceneTransition.js
     // ------------------------------------------------------------
     import {
+        Na__PresentationMode__KEY__NAVIGATION_MODE,
         Na__PresentationMode__Camera__BuildSceneCameraJson
     } from './Na__PresentationMode__Camera__SceneTransition.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Live Navigation Mode (captured with the camera)
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
+    // ------------------------------------------------------------
+    import {
+        Na__NavigationModes__GetActiveMode,
+        Na__NavigationModes__IsFreeLookMode
+    } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
     // ------------------------------------------------------------
 
     // NOTE | Carousel refresh happens via the 'na-presentation-mode-scenes-loaded'
@@ -479,6 +497,24 @@
 // REGION | Row Mutations
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | Record the Live Navigation Mode Onto a Scene
+    // ------------------------------------------------------------
+    // A view framed in fly is a fly scene, so the carousel lands the camera
+    // back in fly. Orbit is the absent-key default, so only walk and fly are
+    // ever stored; deleting rather than writing 'orbit' keeps one meaning for
+    // "no key" and keeps older scenes and new orbit scenes identical.
+    // ------------------------------------------------------------
+    function Na__PmDev__CaptureLiveNavigationMode(scene) {
+        const liveMode = Na__NavigationModes__GetActiveMode();
+        if (Na__NavigationModes__IsFreeLookMode(liveMode)) {
+            scene[Na__PresentationMode__KEY__NAVIGATION_MODE] = liveMode;
+        } else {
+            delete scene[Na__PresentationMode__KEY__NAVIGATION_MODE];
+        }
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Capture the Live Camera (and Cut) Into a Scene
     // ------------------------------------------------------------
     function Na__PmDev__CaptureLiveCameraIntoScene(scene) {
@@ -489,6 +525,7 @@
         scene.PresentationMode__Scene__CameraPosition         = { ...built.cameraPosition };
         scene.PresentationMode__Scene__OrbitHelperCubePosition = { ...built.orbitHelperCubePosition };
 
+        Na__PmDev__CaptureLiveNavigationMode(scene);                         // <-- Walk or fly travels with the camera it framed
         Na__PmDev__CaptureCrossSectionIfEnabled(scene);                      // <-- Bind the live section state (toggle-gated, default OFF)
         return true;
     }
@@ -832,6 +869,8 @@
             PresentationMode__Scene__CameraPosition              : built.cameraPosition,
             PresentationMode__Scene__OrbitHelperCubePosition     : built.orbitHelperCubePosition
         };
+
+        Na__PmDev__CaptureLiveNavigationMode(newScene);                     // <-- Added while flying: a fly scene
 
         // GROUP | A new scene joins the group the carousel is currently showing
         // ------------------------------------------------------------

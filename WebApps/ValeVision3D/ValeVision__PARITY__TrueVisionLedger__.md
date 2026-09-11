@@ -27,7 +27,7 @@ ValeVision root: `WebApps/ValeVision3D`.
 | `21/Na__PresentationMode__SceneGroups__AppConfig__.json` | `21/Na__PresentationMode__SceneGroups__AppConfig__.json` | adapted | Sixth default group Cross Sections (D09) | 09-Sep-2026 |
 | `21/Na__PresentationMode__UI__SceneGroupSelector__.js` 1.0.0 | `21/Na__PresentationMode__UI__SceneGroupSelector__.js` 1.0.0 | verbatim | Console prefix only; the ValeVision carousel has no idle fade to inherit | 09-Sep-2026 |
 | `21/Na__PresentationMode__DevMenu__GroupEditor__.js` 1.0.0 | `21/Na__PresentationMode__DevMenu__GroupEditor__.js` 1.0.0 | adapted | Async confirm dialog instead of window.confirm | 09-Sep-2026 |
-| `21/Na__PresentationMode__DevMenu__SceneRowBuilders__.js` 1.0.0 | rows inside `21/Na__PresentationMode__DevMenu__SceneEditor.js` | adapted | Split out; no Advanced fold, no nav mode or layer timing rows, four action buttons | 09-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__SceneRowBuilders__.js` 1.1.0 | rows inside `21/Na__PresentationMode__DevMenu__SceneEditor.js` | adapted | Split out; no Advanced fold, no layer timing row, four action buttons; Nav Mode switch inline since v2.21.17, reading Orbit, Fly, Walk (TV: Orbit, Walk, Fly) | 11-Sep-2026 |
 | `21/Na__PresentationMode__Styles__SceneGroupSelector__.css` | `21/Na__PresentationMode__Styles__SceneGroupSelector__.css` + dev row rules from the carousel sheet | adapted | Dev row controls carried in this sheet rather than the carousel sheet | 09-Sep-2026 |
 | `21/Na__PresentationMode__ProjectJson__SceneData.js` 1.2.0 | `21/Na__PresentationMode__ProjectJson__SceneData.js` | adapted | ValeVision keeps projectCode context and the IMG-slot thumbnail self-heal; group-aware sort and BroadcastScenesChanged ported | 09-Sep-2026 |
 | `21/Na__PresentationMode__UI__SceneCarousel.js` 1.2.0 | `21/Na__PresentationMode__UI__SceneCarousel.js` (v2.18.0 state) | adapted | Views toggle, ShowCarouselByDefault, thumbnail fallback and orbit pivot re-arm kept; idle fade and wake not ported | 09-Sep-2026 |
@@ -150,6 +150,18 @@ No TrueVision counterpart exists for this phase. Sources are pattern-level: the 
 | `51/Na__LayoutEditor__Styles__Main__.css`, `Styles__Panels__.css` | LD stylesheet | adapted | | 10-Sep-2026 |
 | `index.html`, `03/Na__CoreUi__Styles__Index__.css`, seven header-anchored stylesheets (edited) | n/a | n/a | Dev item, imports, init; CSS imports; tab strip offset | 10-Sep-2026 |
 
+## Per-Scene Navigation Modes (v2.21.17, 11-Sep-2026)
+
+Ported after the plan marked it not applicable (plan section 7.2): Adam asked for scenes and Video Studio keyframes to keep their Orbit, Fly or Walk mode.
+
+| ValeVision | TrueVision | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `10/Na__NavigationModes__Switcher.js` 1.0.0 | `10/Na__NavigationModes__Switcher.js` 1.0.0 | adapted | No registration (the toolbar exposes index.html's wrappers); active mode read from the walk and fly systems; adds pose-preserving ReleaseToOrbit and EnterModeAtPose, the look-ahead target and label normalisation | 11-Sep-2026 |
+| `10/Na__Navmode__WalkMode__SystemLogic.js` 1.1.0, `10/Na__Navmode__FlyMode__SystemLogic.js` 1.1.0 (edited) | TV same | adapted | SyncFromCamera re-seats the mode on a pose placed from outside | 11-Sep-2026 |
+| `21/Na__PresentationMode__Camera__SceneTransition.js` 1.4.0 | TV same (31-Aug-2026 state) | adapted | Same key and orbit-on-arrival rule. The release keeps the live view with a look-ahead target (TV re-aims at the old target); arrival puts the pose back over the entry nudges and keeps the scene's lens; the instant snap frames free-look scenes but never switches mode (page load opens in orbit by decision); capture stores a look-ahead target in walk or fly | 11-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__SceneEditor.js` 1.3.2 | TV `CaptureLiveNavigationMode` | adapted | Recorded on Update Camera and Add Scene From Camera; TV records it on its single Update Scene | 11-Sep-2026 |
+| `31/Na__VideoStudio__*` (preview controller 1.2.0, timeline menu 1.1.0, dev menu 1.2.1, dragger 1.0.1, video data 1.2.1, thumbnails 1.0.1, frame renderer 1.0.1) | none | new | Video Studio is ValeVision only: Go To lands in the keyframe's mode, the menu switch sets it, Stop restores the pre-play mode; stills and exports resync orbit only in orbit | 11-Sep-2026 |
+
 ---
 
 ## Pending back-port (ValeVision to TrueVision)
@@ -167,3 +179,4 @@ No TrueVision counterpart exists for this phase. Sources are pattern-level: the 
 | Rotation path in the soup builder and edge extractor (Lantern Designer) | `50/Na__ProjectedLinework__SoupBuilder__.js`, `EdgeExtractor__.js` | A free-bearing view without a fourth basis table entry |
 | Hidden segments through the worker pool (Lantern Designer) | `50/Na__ProjectedLinework__ClipWorker__.js`, `WorkerPool__.js` | The kernel already computes them; the pool now returns them |
 | The whole Layout Editor (sheets, viewports at scale, PDF) | `51/Na__LayoutEditor__*` | TrueVision has no sheet output; the module set only depends on the drawing records and the projection pipeline |
+| Pose-preserving mode release and entry, look-ahead capture target | `10/Na__NavigationModes__Switcher.js`, walk and fly `SyncFromCamera`, `21/Na__PresentationMode__Camera__SceneTransition.js` 1.4.0 | TrueVision arrives in walk or fly with the entry nudges and the mode's default lens still applied, and its free-look captures store orbit's leftover target, which only shows if the scene is later switched to orbit |

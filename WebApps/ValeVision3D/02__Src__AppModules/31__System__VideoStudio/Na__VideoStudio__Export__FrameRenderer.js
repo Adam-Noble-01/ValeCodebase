@@ -25,6 +25,16 @@
 //   caller reads the canvas.  Machine speed therefore has no effect on the
 //   result: a slow GPU produces the same video as a fast one, just later.
 //
+// ANTI-ALIASING:
+// - With antiAliasSamples at 4, 8 or 16 the effect chain runs that many times
+//   per frame with sub-pixel camera jitter and the results are averaged onto
+//   the canvas (Na__VideoStudio__Export__Supersampler.js). The composer stops
+//   drawing to the canvas for the session and FXAA stands aside; both are put
+//   back by end(). At 1 the frame is a single pass with FXAA, exactly as
+//   before the setting existed.
+// - The per-frame scene systems (doors, billboards, culling) still run once
+//   per frame. Only the passes that read the projection repeat per sample.
+//
 // NO TILING:
 // - The still exporter tiles because a 12000px 2D output canvas exceeds
 //   browser limits.  Video tops out at 3840x2160, well inside every desktop
@@ -42,6 +52,16 @@
 // DEVELOPMENT LOG:
 // 12-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
+//
+// 11-Sep-2026 - Version 1.0.1
+// - end() resyncs the orbit controls only while orbit owns the camera, so an
+//   export started in walk or fly hands back the view it borrowed unchanged.
+//
+// 11-Sep-2026 - Version 1.1.0
+// - Supersampled anti-aliasing: antiAliasSamples renders each frame 4, 8 or
+//   16 times with sub-pixel jitter and averages them, so shallow linework no
+//   longer leaves the export stair-stepped. Shadow maps are drawn once per
+//   frame rather than once per sample.
 //
 // =============================================================================
 
@@ -98,6 +118,12 @@
     import { Na__VideoStudio__PathVisualizer__SetSuppressed } from './Na__VideoStudio__Viewport__PathVisualizer.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Supersampled Anti-Aliasing
+    // @delegate: ./Na__VideoStudio__Export__Supersampler.js
+    // ------------------------------------------------------------
+    import { Na__VideoStudio__Supersampler__Create } from './Na__VideoStudio__Export__Supersampler.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -127,12 +153,15 @@
     // Mirrors the resolver used by the still exporter: surfaces the composer
     // plus every optional resize and pre-pass hook, filling absent MaxEngine
     // extras with no-ops so PureEngine needs no branching downstream.
+    // fxaaPass is null when the engine does not expose it; supersampling then
+    // still works, it just averages FXAA-softened samples.
     // ------------------------------------------------------------
     function Na__VsFrame__ResolvePipeline(getRenderPipelineState) {
         const noop  = () => {};
         const empty = {
             composer: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
-            setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop
+            setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop,
+            fxaaPass: null
         };
 
         const state = (typeof getRenderPipelineState === 'function') ? getRenderPipelineState() : null;
@@ -153,7 +182,8 @@
             setDepthPrePassSize : fn(state.setDepthPrePassSize),
             setAoSize           : fn(state.setAoSize),
             updateAoUniforms    : fn(state.updateAoUniforms),
-            renderDepthPrePass  : fn(state.renderDepthPrePass)
+            renderDepthPrePass  : fn(state.renderDepthPrePass),
+            fxaaPass            : state.fxaaPassRef || null
         };
     }
     // ------------------------------------------------------------
@@ -200,10 +230,13 @@
     //   getRenderPipelineState {Function}  Pipeline state getter
     //   width, height          {number}    Export dimensions in pixels
     //   animationsEnabled      {boolean}   Drive proximity doors along the path
+    //   antiAliasSamples       {number}    1 for a single FXAA pass, or 4, 8 or
+    //                                      16 to supersample every frame
     //
     // Returns a session object:
     //   canvas                 {HTMLCanvasElement}  Read frames from this
     //   width, height          {number}             Clamped dimensions in use
+    //   antiAliasSamples       {number}             Samples per frame in use
     //   renderFrame(deltaMs)   Renders one frame; capture SYNCHRONOUSLY after
     //   end()                  Restores all live-engine state (always call it)
     //
@@ -215,7 +248,8 @@
             getRenderPipelineState,
             width : requestedWidth,
             height: requestedHeight,
-            animationsEnabled = true
+            animationsEnabled = true,
+            antiAliasSamples  = 1
         } = options;
 
         if (!renderer || !camera) {
@@ -301,11 +335,83 @@
             sectionExportModeHandler(true, 1.0);                              // <-- Hide plane gizmos, keep outline widths
         }
 
+        // SUPERSAMPLING | Null unless 4, 8 or 16 samples were asked for. While
+        // it runs, the composer leaves each sample in its read buffer instead
+        // of drawing it to the canvas, and FXAA stands aside so the samples
+        // are averaged sharp. Both are put back by end().
+        // ------------------------------------------------------------
+        const supersampler = Na__VideoStudio__Supersampler__Create({
+            renderer,
+            width   : outW,                                                   // <-- The composer's buffer size at pixel ratio 1
+            height  : outH,
+            samples : antiAliasSamples
+        });
+
+        const fxaaPass            = pipeline.fxaaPass;
+        const savedFxaaEnabled    = fxaaPass ? fxaaPass.enabled : true;
+        const savedRenderToScreen = composer.renderToScreen;
+
+        if (supersampler) {
+            composer.renderToScreen = false;                                  // <-- Every pass renders offscreen; the result ends in readBuffer
+            if (fxaaPass) fxaaPass.enabled = false;
+        }
+
+        // HELPER FUNCTION | Run the Effect Chain Once Through the Projection
+        // ------------------------------------------------------------
+        // Everything in here reads the camera's projection, so it repeats for
+        // every supersample: fog and SSAO copy the (jittered) matrices into
+        // their uniforms, and each pre-pass renders through them.
+        // ------------------------------------------------------------
+        function renderEffectChain() {
+            Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlaneSystem__GetFogPass(), camera);
+            pipeline.updateAoUniforms(camera);                                // <-- Sync SSAO camera matrices
+            pipeline.renderDepthPrePass();                                    // <-- Depth capture for SSAO and fog
+            pipeline.renderProfileNormals();                                  // <-- Profile lines normals pre-pass
+
+            composer.render();                                                // <-- Full post-processing chain
+        }
+        // ------------------------------------------------------------
+
+        // HELPER FUNCTION | Render, Jitter and Average Every Sample of a Frame
+        // ------------------------------------------------------------
+        // Shadow maps are drawn with the first sample and reused by the rest.
+        // Lights and geometry are frozen for the length of a frame and the
+        // jitter moves only the view camera, so every later shadow pass would
+        // redraw identical maps.
+        // ------------------------------------------------------------
+        function renderSupersampledFrame() {
+            const shadowMap        = renderer.shadowMap;
+            const shadowAutoUpdate = shadowMap.autoUpdate;
+
+            supersampler.captureBaseProjection(camera);                       // <-- After the lens and shear are settled for this frame
+
+            try {
+                for (let i = 0; i < supersampler.sampleCount; i++) {
+                    if (i === 1) shadowMap.autoUpdate = false;                // <-- Keep the maps the first sample drew
+
+                    supersampler.applyJitter(camera, i);
+                    renderEffectChain();
+                    supersampler.accumulate(composer.readBuffer.texture, i);
+                }
+            } finally {
+                shadowMap.autoUpdate = shadowAutoUpdate;
+                supersampler.restoreProjection(camera);                       // <-- Unjittered for the section overlay and the next frame
+            }
+
+            if (contextLost) {
+                throw new Error('The graphics context was lost during export. Close other tabs and try a lower resolution.');
+            }
+
+            supersampler.present();                                           // <-- The averaged frame onto the canvas
+        }
+        // ------------------------------------------------------------
+
         return {
             canvas : renderer.domElement,
             width  : outW,
             height : outH,
             wasClamped : fit.wasClamped,
+            antiAliasSamples : supersampler ? supersampler.sampleCount : 1,
 
             // FUNCTION | Render Exactly One Frame at the Current Camera State
             // ------------------------------------------------------------
@@ -321,6 +427,7 @@
 
                 // PER-FRAME SYSTEMS | Same order the realtime loop uses, minus
                 // the navigation updates because the timeline owns the camera.
+                // Once per frame, however many samples follow.
                 Na__VerticalCorrection__ApplyFrame();                         // <-- Shear; no-ops when correction is off
 
                 if (animationsEnabled) {
@@ -329,14 +436,13 @@
                 }
 
                 Na__CameraFollow__Update(camera);                             // <-- Rotate camera-follow billboards
-                Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlaneSystem__GetFogPass(), camera);
                 Na__DistanceCulling__Update(camera.position);                 // <-- MaxEngine culling; internal no-op when off
 
-                pipeline.updateAoUniforms(camera);                            // <-- Sync SSAO camera matrices
-                pipeline.renderDepthPrePass();                                // <-- Depth capture for SSAO and fog
-                pipeline.renderProfileNormals();                              // <-- Profile lines normals pre-pass
-
-                composer.render();                                            // <-- Full post-processing chain
+                if (supersampler) {
+                    renderSupersampledFrame();
+                } else {
+                    renderEffectChain();                                      // <-- One pass; FXAA draws it to the canvas
+                }
 
                 if (sectionOverlayRenderer) {
                     sectionOverlayRenderer(camera);                           // <-- Section caps after post, as the live loop does
@@ -357,6 +463,12 @@
 
                 renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
 
+                if (supersampler) {
+                    composer.renderToScreen = savedRenderToScreen;            // <-- The live loop draws to the canvas again
+                    if (fxaaPass) fxaaPass.enabled = savedFxaaEnabled;
+                    supersampler.dispose();                                   // <-- Frees the export-sized accumulation buffer
+                }
+
                 Na__LineworkSettings__SetExportScales(1.0, 1.0);              // <-- Back to live viewport line widths
 
                 if (sectionExportModeHandler) {
@@ -370,7 +482,10 @@
                 camera.updateProjectionMatrix();
                 camera.updateMatrixWorld(true);
 
-                if (controls && typeof controls.update === 'function') {
+                // ORBIT ONLY | Walk and fly switch the controls off while they
+                // own the camera; an update would re-aim the restored view at
+                // orbit's leftover target and clamp its distance to it.
+                if (controls && controls.enabled !== false && typeof controls.update === 'function') {
                     controls.update();                                        // <-- Resync orbit controls to the restored camera
                 }
 

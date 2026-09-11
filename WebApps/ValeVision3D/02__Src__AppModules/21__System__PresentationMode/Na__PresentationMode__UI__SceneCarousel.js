@@ -56,7 +56,8 @@
 //   - ValeVision keeps its Views-button toggle, the ShowCarouselByDefault gate, the R2 to GH Pages
 //     thumbnail fallback and the orbit-pivot re-arm after a flight; TrueVision has none of these.
 //   - TrueVision's idle opacity fade and wake flash are not ported; this carousel stays opaque.
-//   - Per-scene navigation mode on arrival is not part of the ValeVision scene schema.
+//   - Per-scene navigation mode on arrival (added 11-Sep-2026) is handled inside AnimateToScene, so
+//     card clicks, chevrons and hotkeys all get it through NavigateToScene with no change here.
 // - Back-port     : none pending.
 //
 // -----------------------------------------------------------------------------

@@ -29,6 +29,8 @@
 //       VideoStudio__Video__Name         {string}
 //       VideoStudio__Video__Order        {number}
 //       VideoStudio__Video__Export       {object}   width/height/fps/bitrate
+//         VideoStudio__Export__AntiAliasEnabled {boolean} supersample exports; absent: on
+//         VideoStudio__Export__AntiAliasSamples {number}  4, 8 or 16 per frame; absent: 8
 //       VideoStudio__Video__Playback     {object}   speed/defaults/easing/loop
 //       VideoStudio__Video__ModelLayers  {object}   per-path model layer overrides
 //         VideoStudio__ModelLayers__Enabled    {boolean}
@@ -36,11 +38,12 @@
 //       VideoStudio__Video__Keyframes    {array}
 //         VideoStudio__Keyframe__Id             {string}  'Key_001'
 //         VideoStudio__Keyframe__Order          {number}
-//         VideoStudio__Keyframe__CapturedInMode {string}  'Orbit'|'Walk'|'Fly'
+//         VideoStudio__Keyframe__CapturedInMode {string}  'Orbit'|'Walk'|'Fly', the mode Go To lands in
 //         VideoStudio__Keyframe__LensMm         {number}
 //         VideoStudio__Keyframe__SegmentMs      {number}  travel time to next
 //         VideoStudio__Keyframe__HoldMs         {number}  dwell time at this key
 //         VideoStudio__Keyframe__CameraPosition {object}  Camera__DefaultPos etc
+//         VideoStudio__Keyframe__DoorAnimation  {boolean} true: doors open from here to the next key; absent: off
 //
 // UNITS:
 // - All stored positions are integer millimetres, matching every other camera
@@ -72,6 +75,23 @@
 //   an insertion and the timeline's tiles, and every one of those wants the
 //   others to follow. Announcing it from the single place that records it
 //   means no two of them have to know about each other.
+//
+// 11-Sep-2026 - Version 1.2.1
+// - VideoStudio__Keyframe__CapturedInMode is now acted on: Go To lands the
+//   camera in that mode, and the timeline menu can change it. An insertion
+//   defaults to 'Orbit' rather than 'Inserted', which was never a mode; the
+//   dragger passes the mode of the waypoint it follows.
+//
+// 11-Sep-2026 - Version 1.3.0
+// - VideoStudio__Keyframe__DoorAnimation, with Get and Set helpers: doors
+//   only open over the span of a keyframe ticked for it. Off until ticked,
+//   stored as an absent key. An insertion can inherit the tick through
+//   extras.doorAnimation.
+//
+// 11-Sep-2026 - Version 1.4.0
+// - VideoStudio__Export__AntiAliasEnabled and __AntiAliasSamples: per-path
+//   supersampled anti-aliasing for MP4 exports. Absent reads as on at 8x;
+//   GetExportOptions returns antiAliasEnabled and antiAliasSamples.
 //
 // =============================================================================
 
@@ -114,6 +134,16 @@
     // ------------------------------------------------------------
 
 
+    // MODULE CONSTANTS | Per-Keyframe Object Animation Key Names
+    // ------------------------------------------------------------
+    // true lets doors open from this keyframe to the next. Off until ticked,
+    // and off is stored as an absent key, so an untouched keyframe and an
+    // unticked one read identically in project.json.
+    // ------------------------------------------------------------
+    const Na__VideoStudio__KEYFRAME_DOORS_KEY = 'VideoStudio__Keyframe__DoorAnimation';
+    // ------------------------------------------------------------
+
+
     // MODULE CONSTANTS | Block Description Text
     // ------------------------------------------------------------
     const Na__VideoStudio__BLOCK_DESCRIPTION =
@@ -138,6 +168,21 @@
     const Na__VideoStudio__DEFAULT_ASPECT       = '3:2';  // <-- Vale house style
     const Na__VideoStudio__DEFAULT_FPS          = 30;     // <-- Default frame rate
     const Na__VideoStudio__DEFAULT_BITRATE_MBPS = 34;     // <-- 3240x2160 at 30fps on the High quality stop
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Export Anti-Aliasing
+    // ------------------------------------------------------------
+    // Supersampling renders every exported frame this many times with the
+    // camera shifted by a fraction of a pixel and averages them (see
+    // Na__VideoStudio__Export__Supersampler.js, which has a sample pattern for
+    // each count listed here). On by default, because FXAA alone leaves long
+    // shallow lines stepped in a 4K frame. The switch and the count are stored
+    // separately, so switching back on returns to the count the path had.
+    // ------------------------------------------------------------
+    const Na__VideoStudio__ANTIALIAS_SAMPLE_COUNTS   = [4, 8, 16];   // <-- The Samples switch, left to right
+    const Na__VideoStudio__DEFAULT_ANTIALIAS_ENABLED = true;
+    const Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES = 8;
     // ------------------------------------------------------------
 
 
@@ -227,6 +272,21 @@
     function Na__VideoStudio__Clamp(value, min, max, fallback) {
         if (!Number.isFinite(value)) return fallback;                        // <-- Non-numeric input falls back
         return Math.min(max, Math.max(min, value));                          // <-- Clamp into the permitted range
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Resolve a Stored Anti-Aliasing Sample Count
+    // ------------------------------------------------------------
+    // Anything that is not on the switch (absent, hand-edited, or a count a
+    // later build drops) reads as the default, rather than asking the exporter
+    // for a count it has no sample pattern for.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ResolveAntiAliasSamples(value) {
+        const count = Number(value);
+        return Na__VideoStudio__ANTIALIAS_SAMPLE_COUNTS.includes(count)
+            ? count
+            : Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES;
     }
     // ------------------------------------------------------------
 
@@ -495,8 +555,10 @@
                                                    Na__VideoStudio__DEFAULT_HEIGHT,
                                                    Na__VideoStudio__DEFAULT_ASPECT
                                                ),
-            VideoStudio__Export__Fps         : Na__VideoStudio__DEFAULT_FPS,
-            VideoStudio__Export__BitrateMbps : Na__VideoStudio__DEFAULT_BITRATE_MBPS
+            VideoStudio__Export__Fps              : Na__VideoStudio__DEFAULT_FPS,
+            VideoStudio__Export__BitrateMbps      : Na__VideoStudio__DEFAULT_BITRATE_MBPS,
+            VideoStudio__Export__AntiAliasEnabled : Na__VideoStudio__DEFAULT_ANTIALIAS_ENABLED,
+            VideoStudio__Export__AntiAliasSamples : Na__VideoStudio__DEFAULT_ANTIALIAS_SAMPLES
         };
     }
     // ------------------------------------------------------------
@@ -699,7 +761,15 @@
             width       : Na__VideoStudio__DeriveExportWidth(height, aspect),
 
             fps         : Number.isFinite(raw.VideoStudio__Export__Fps)         ? raw.VideoStudio__Export__Fps         : Na__VideoStudio__DEFAULT_FPS,
-            bitrateMbps : Number.isFinite(raw.VideoStudio__Export__BitrateMbps) ? raw.VideoStudio__Export__BitrateMbps : Na__VideoStudio__DEFAULT_BITRATE_MBPS
+            bitrateMbps : Number.isFinite(raw.VideoStudio__Export__BitrateMbps) ? raw.VideoStudio__Export__BitrateMbps : Na__VideoStudio__DEFAULT_BITRATE_MBPS,
+
+            // ANTI-ALIASING | Absent means the default (on, 8x), so a path
+            // saved before the setting existed exports smooth as well. Only an
+            // explicit false renders the single FXAA pass.
+            antiAliasEnabled : (typeof raw.VideoStudio__Export__AntiAliasEnabled === 'boolean')
+                ? raw.VideoStudio__Export__AntiAliasEnabled
+                : Na__VideoStudio__DEFAULT_ANTIALIAS_ENABLED,
+            antiAliasSamples : Na__VideoStudio__ResolveAntiAliasSamples(raw.VideoStudio__Export__AntiAliasSamples)
         };
     }
     // ------------------------------------------------------------
@@ -935,13 +1005,19 @@
             order          : 0,                                              // <-- Set properly by the reindex below
             cameraPosition : cameraPosition,
             lensMm         : (extras && extras.lensMm)         || 45,
-            capturedInMode : (extras && extras.capturedInMode) || 'Inserted',
+            capturedInMode : (extras && extras.capturedInMode) || 'Orbit',        // <-- The label marks an insertion; this is a navigation mode
             segmentMs      : restMs,
             holdMs         : playback.defaultHoldMs
         });
 
         if (extras && extras.label) {
             newKeyframe.VideoStudio__Keyframe__Label = extras.label;
+        }
+
+        // DOORS | A waypoint dropped into a door traversal keeps it going, or
+        // the doors would shut halfway through the opening
+        if (extras && extras.doorAnimation === true) {
+            newKeyframe[Na__VideoStudio__KEYFRAME_DOORS_KEY] = true;
         }
 
         before.VideoStudio__Keyframe__SegmentMs = firstMs;                   // <-- Leading leg keeps its share
@@ -1124,6 +1200,40 @@
             Camera__DefaultRotation__RotZ : parseFloat(eulerXYZ.z.toFixed(4))
         };
 
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Does This Keyframe Let Doors Open?
+    // ------------------------------------------------------------
+    // Off until ticked: only an explicit true lets doors open over this
+    // keyframe's span, meaning its hold and the travel on to the next
+    // keyframe. The video's Animations switch still has to be on as well.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(keyframe) {
+        return !!keyframe && keyframe[Na__VideoStudio__KEYFRAME_DOORS_KEY] === true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Tick or Untick Door Animation on a Keyframe
+    // ------------------------------------------------------------
+    // Unticking deletes the key rather than writing false, so the default and
+    // an unticked keyframe are one and the same thing in project.json.
+    //
+    // Returns true when the keyframe was found.
+    // ------------------------------------------------------------
+    function Na__VideoStudio__ProjectJson__SetKeyframeDoorAnimation(videoId, keyframeId, enabled) {
+        const video    = Na__VideoStudio__ProjectJson__GetVideoById(videoId);
+        const keyframe = Na__VideoStudio__ProjectJson__GetKeyframeById(video, keyframeId);
+        if (!keyframe) return false;
+
+        if (enabled === true) {
+            keyframe[Na__VideoStudio__KEYFRAME_DOORS_KEY] = true;
+        } else {
+            delete keyframe[Na__VideoStudio__KEYFRAME_DOORS_KEY];
+        }
         return true;
     }
     // ------------------------------------------------------------
@@ -1375,6 +1485,8 @@
         Na__VideoStudio__ClampDoorDistanceM,
         Na__VideoStudio__ASPECT_RATIOS,
         Na__VideoStudio__HEIGHT_STANDARDS,
+        Na__VideoStudio__ANTIALIAS_SAMPLE_COUNTS,
+        Na__VideoStudio__ResolveAntiAliasSamples,
         Na__VideoStudio__ResolveAspectValue,
         Na__VideoStudio__DeriveExportWidth,
         Na__VideoStudio__ProjectJson__SetExportFraming,
@@ -1406,6 +1518,8 @@
         Na__VideoStudio__ProjectJson__SetKeyframeLens,
         Na__VideoStudio__ProjectJson__SetKeyframePosition,
         Na__VideoStudio__ProjectJson__SetKeyframeRotation,
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation,
+        Na__VideoStudio__ProjectJson__SetKeyframeDoorAnimation,
         Na__VideoStudio__ProjectJson__SetExportOption,
         Na__VideoStudio__ProjectJson__SetPlaybackOption,
         Na__VideoStudio__ProjectJson__SetActiveConfig,

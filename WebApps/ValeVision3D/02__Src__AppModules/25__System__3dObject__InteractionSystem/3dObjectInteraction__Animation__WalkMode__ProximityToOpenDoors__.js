@@ -28,6 +28,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.3.0
+// - Hold-closed state for Video Studio keyframes. SetHoldClosed makes every
+//   door read as out of range, so open doors swing shut through the ordinary
+//   close path and none open; HoldClosedAt does the same until the tracked
+//   position moves away from a spot. CloseAllDoors swings every open door shut
+//   now, whether or not proximity is enabled. Walk and Fly are unaffected
+//   unless something asks for a hold.
+//
 // 10-Jul-2026 - Version 1.2.0
 // - Added ExteriorDoubleDoor proximity handling. Distance is measured to each
 //   panel's paired ROT marker. Unfixed two-leaf pairs open together; assemblies
@@ -90,6 +98,18 @@
     // ------------------------------------------------------------
 
 
+    // MODULE VARIABLES | Hold-Closed State (Video Studio Keyframes)
+    // ------------------------------------------------------------
+    // While held, every door counts as out of range, so open doors swing shut
+    // and none open however close the camera comes. An anchored hold lets go
+    // by itself once the tracked position moves away from where it was placed.
+    // ------------------------------------------------------------
+    let Na__DoorProximity__HoldClosed                      = false;      // <-- Every door treated as out of range
+    let Na__DoorProximity__HoldAnchor                      = null;       // <-- Vector3 an anchored hold was placed at, else null
+    let Na__DoorProximity__HoldReleaseUnits                = 0;          // <-- Planar distance from the anchor that ends the hold
+    // ------------------------------------------------------------
+
+
     // MODULE VARIABLES | Reusable Vectors (Avoid Per-Frame Allocation)
     // ------------------------------------------------------------
     const Na__DoorProximity__TempDoorWorldPos              = new THREE.Vector3();  // <-- Reusable door world position
@@ -125,6 +145,71 @@
     // ------------------------------------------------------------
     function Na__DoorProximity__SetEnabled(enabled) {
         Na__DoorProximity__Enabled = enabled;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Hold Doors Closed
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Hold Every Door Shut, or Hand Them Back to Proximity
+    // ------------------------------------------------------------
+    // true: from the next update, open doors swing shut and none open,
+    // whatever the distance. false: proximity decides again. Replaces any
+    // anchored hold. Video Studio sets this every frame from the keyframe the
+    // clip is passing through.
+    // ------------------------------------------------------------
+    function Na__DoorProximity__SetHoldClosed(holdClosed) {
+        Na__DoorProximity__HoldClosed = (holdClosed === true);
+        Na__DoorProximity__HoldAnchor = null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Hold Every Door Shut Until the Viewer Moves Away From a Spot
+    // ------------------------------------------------------------
+    // For landing on a Video Studio keyframe whose doors stay shut: walk and
+    // fly keep their own proximity on, and this stops it opening the doors
+    // round the keyframe until the tracked position (the fly camera or the
+    // walk capsule) is more than releaseDistanceUnits away across the floor.
+    // ------------------------------------------------------------
+    function Na__DoorProximity__HoldClosedAt(anchorPositionUnits, releaseDistanceUnits) {
+        if (!anchorPositionUnits) return;
+
+        Na__DoorProximity__HoldClosed       = true;
+        Na__DoorProximity__HoldAnchor       = anchorPositionUnits.clone();
+        Na__DoorProximity__HoldReleaseUnits = (Number.isFinite(releaseDistanceUnits) && releaseDistanceUnits > 0)
+            ? releaseDistanceUnits
+            : 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Swing Every Open Door Shut Now
+    // ------------------------------------------------------------
+    // Animated, and independent of the enabled flag, so it also works in orbit
+    // where proximity is off and nothing else would ever close them.
+    // ------------------------------------------------------------
+    function Na__DoorProximity__CloseAllDoors() {
+        if (!Na__DoorAnim__DoorRegistry || Na__DoorAnim__DoorRegistry.size === 0) return;
+
+        Na__DoorAnim__DoorRegistry.forEach((doorRecord) => {
+            if (doorRecord.isIndependentPanels === true) {
+                doorRecord.panels.forEach((panel) => {
+                    if (panel.type === Na__DoorProximity__MOD_TYPE_FIXED) return;
+                    Na__DoorProximity__ApplyPanelNearState(doorRecord, panel, false);   // <-- Closes an open or opening leaf
+                });
+                return;
+            }
+
+            if (doorRecord.state === Na__DoorProximity__STATE_OPEN
+                || doorRecord.state === Na__DoorProximity__STATE_OPENING) {
+                Na__DoorAnim__ToggleDoor(doorRecord);
+            }
+        });
     }
     // ------------------------------------------------------------
 
@@ -279,7 +364,17 @@
         if (!capsulePositionUnits) return;
         if (!Na__DoorAnim__DoorRegistry || Na__DoorAnim__DoorRegistry.size === 0) return;
 
-        const threshold = Na__DoorProximity__ThresholdUnits;
+        // ANCHORED HOLD | Lets go once the tracked position leaves its spot
+        if (Na__DoorProximity__HoldClosed && Na__DoorProximity__HoldAnchor
+            && Na__DoorProximity__CalculatePlanarDistance(capsulePositionUnits, Na__DoorProximity__HoldAnchor)
+               > Na__DoorProximity__HoldReleaseUnits) {
+            Na__DoorProximity__HoldClosed = false;
+            Na__DoorProximity__HoldAnchor = null;
+        }
+
+        // HELD | No distance is below -1, so every door reads as out of range:
+        // open ones swing shut through the ordinary close path and none open
+        const threshold = Na__DoorProximity__HoldClosed ? -1 : Na__DoorProximity__ThresholdUnits;
 
         Na__DoorAnim__DoorRegistry.forEach((doorRecord) => {
             if (doorRecord.isIndependentPanels === true) {
@@ -336,6 +431,9 @@
     export {
         Na__DoorProximity__Initialize,
         Na__DoorProximity__SetEnabled,
+        Na__DoorProximity__SetHoldClosed,
+        Na__DoorProximity__HoldClosedAt,
+        Na__DoorProximity__CloseAllDoors,
         Na__DoorProximity__Update
     };
     // ------------------------------------------------------------

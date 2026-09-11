@@ -2,6 +2,267 @@
 # =========================================================
 
 # ---------------------------------------------------------
+## ValeVision3D v2.21.20 - 11-Sep-2026 - Layout Editor: tabs only where a project uses them
+
+### Added
+- **Enable Layout Mode switch at the top of the Layout Editor Dev section**
+  (localhost), off by default. While it is off the project shows no drawing
+  tabs on localhost, even if it has sheets, and the section holds only the
+  switch: the sheet list, New Sheet, Save Sheets, Bake and Export appear
+  once it is on. Switched on, the tab strip appears (3D Model, a tab per
+  sheet, and +).
+
+- **Saved per project the moment it changes.** The switch is
+  `LayoutEditor__DrawingsData__LayoutModeEnabled` in the drawings block,
+  written through the usual drawings save (R2 first, then the Flask
+  mirror), so each project opens the way it was left. An absent key reads
+  as off.
+
+### Changed
+- **Live site: no tab strip for a project without sheets.** The web build
+  shows the strip only when the project's data file has at least one sheet,
+  even if Main.json makes the web build editable. Projects with sheets are
+  unchanged there (3D Model plus a read-only tab per sheet). The live site
+  never reads the switch.
+- A sheet can no longer be opened while the editor is not offered, so the
+  3D view is never left with no tabs to get back to it. Switching Layout
+  Mode off with a sheet open leaves it first, and loading a project that
+  has it off hands the 3D view back.
+
+### Notes
+- Existing projects, Doous included, open on localhost without tabs until
+  Enable Layout Mode is ticked for them once.
+- Ticking the switch saves the project, so drawing or scene edits still
+  held in memory are saved with it, as with any other drawings save.
+
+### Files
+- `42__System__DrawingViewCore/Na__DrawView__ProjectData__.js` 1.1.0: the
+  `LayoutModeEnabled` key (skeleton, normalise, getter and setter).
+- `51__System__LayoutEditor/`: `ModeController__.js` 1.6.0 (`IsAvailable`,
+  `IsLayoutModeOn`, `SetLayoutMode`; Enter and project loads obey it),
+  `TabStrip__.js` 1.1.0 (visibility from `IsAvailable`),
+  `DevMenu__Controls__.js` 1.2.0 (the switch), `AppConfig__.json` (three
+  labels).
+- Plan doc: the drawings block schema carries the key and the open item on
+  tabs for projects without sheets is settled.
+- Shared PWA service worker token bumped to `2026-09-11-4`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.19 - 11-Sep-2026 - Video Studio: anti-aliased MP4 exports
+
+### Added
+- **Anti-Aliasing section in each video's panel**, between Model Layers and
+  Export: an **Enabled** tick and, while it is on, a **4x | 8x | 16x**
+  Samples switch, 8x by default. Saved per path in the export block
+  (`VideoStudio__Export__AntiAliasEnabled`,
+  `VideoStudio__Export__AntiAliasSamples`).
+
+- **Each exported frame is rendered that many times with the camera shifted
+  by a fraction of a pixel, and the results are averaged.** FXAA, the only
+  anti-aliasing the pipeline had, searches along an edge for about 20px, so a
+  long shallow line (eaves, ridges, glazing bars a degree or two off
+  horizontal) kept hard steps in a 4K frame, and in a video those steps crawl
+  along the line as the camera moves. Averaged samples record how much of
+  each pixel a line really covers, so the steps become smooth gradients and
+  stay put in motion.
+
+- **The whole effect chain is anti-aliased, not just the scene.** The shift
+  goes into the camera's projection, so the fat linework, the profile lines,
+  fog and SSAO all see it. FXAA is switched off for the export while it
+  supersamples, since it would only soften the samples. The sample positions
+  are the standard hardware MSAA patterns, all inside the pixel, so lines
+  stay as crisp as multisampling draws them.
+
+### Changed
+- An export takes roughly the sample count times as long (8x: about eight
+  times). The confirmation dialog says so and the progress overlay names the
+  sample count; its time estimate is measured, so it already allows for it.
+- Shadow maps are drawn once per exported frame rather than once per sample.
+
+### Notes
+- On by default, including paths saved before this build (an absent key
+  reads as on at 8x). Untick it for quick draft exports: off renders a single
+  FXAA pass, exactly as before.
+- Exports only. The viewport, the preview and still image exports are
+  unchanged.
+- Cross-section caps and outlines are still drawn once over the finished
+  frame, and take the canvas's own multisampling.
+
+### Files
+- `31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js` (new)
+  1.0.0: sample patterns, projection jitter, half-float accumulation and the
+  copy to the canvas.
+- `31__System__VideoStudio/`: `Export__FrameRenderer.js` 1.1.0 (per-sample
+  loop, FXAA bypass, shadow map reuse), `Export__VideoEncoder.js` 1.3.0,
+  `ProjectJson__VideoData.js` 1.4.0, `DevMenu__Controls.js` 1.3.0,
+  `Stylesheet__.css` 1.3.0 (segmented switch).
+- `05__RenderPipeline/`: PureEngine and MaxEngine `Setup.js` 1.0.1 expose
+  `fxaaPassRef`, now part of the pipeline state contract in
+  `.cursor/rules/07-RenderEngine-Architecture-.mdc`.
+- Shared PWA service worker token bumped to `2026-09-11-3`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.18 - 11-Sep-2026 - Video Studio: door animation per keyframe
+
+### Added
+- **Advanced Object Animation in the keyframe right-click menu**, a fold
+  under Advanced Camera Settings holding a **Door Animation** tick, saved on
+  the keyframe (`VideoStudio__Keyframe__DoorAnimation`).
+
+- **A tick covers that keyframe and the travel on to the next one**, the
+  same way Travel Time belongs to the keyframe it leaves from. Ticked, doors
+  open as the camera passes them. Unticked, they are held shut however close
+  the camera comes, and a door left open swings shut as the clip arrives at
+  an unticked keyframe. To walk through a door, tick the keyframe before it;
+  the next unticked keyframe shuts it behind you.
+
+- **Off until ticked.** Moving through an interior no longer flaps every
+  door on the way. Existing videos stop opening doors until keyframes are
+  ticked. The video's Animations switch in the panel is still the master:
+  off, Video Studio leaves the doors alone altogether, in the clip and while
+  editing, and the ticks do nothing (the menu says so).
+
+- **Editing matches the video.** Landing on an unticked keyframe (Go To, a
+  tile double click, a live menu edit) swings nearby doors shut and stops
+  Walk and Fly proximity opening them until the camera moves about a metre
+  across the floor. A ticked keyframe leaves Walk and Fly to open them as
+  normal. Closing the panel or opening another path hands the doors back.
+
+- **Every run starts with the doors shut.** An export, and a preview played
+  from the top, snap every door closed before the first frame, so a clip
+  never opens on a door that editing left swinging.
+
+### Changed
+- Waypoints inserted on the path (Ctrl+click) inherit the Door Animation
+  tick of the waypoint before them, so splitting a door traversal does not
+  shut the door halfway through it.
+- Ticking or unticking is one Ctrl+Z step, like the other menu fields.
+- The Animations section in the panel explains that doors now only open on
+  ticked keyframes.
+
+### Notes
+- Scrubbing the timeline does not animate doors (it never did); Play and
+  export do.
+- Timeline stills show the doors as they are at render time, not per
+  keyframe.
+
+### Files
+- `25__System__3dObject__InteractionSystem/3dObjectInteraction__Animation__WalkMode__ProximityToOpenDoors__.js`
+  1.3.0: hold-closed state (`SetHoldClosed`, `HoldClosedAt`) and
+  `CloseAllDoors`. While held, every door reads as out of range, so open
+  doors close through the ordinary path and none open.
+- `25__System__3dObject__InteractionSystem/3dObjectIInteraction__Animation__ClickToOpenDoors__.js`
+  1.7.1: `SnapAllClosed`.
+- `31__System__VideoStudio/`: `Playback__SceneAnimations.js` 1.1.0 (per-frame
+  doors, start reset, landing hold), `Camera__PathSampler.js` 1.2.0 (sampled
+  state carries `keyIndex`), `ProjectJson__VideoData.js` 1.3.0,
+  `Edit__UndoHistory.js` 1.1.0, `Playback__PreviewController.js` 1.3.0,
+  `Export__VideoEncoder.js` 1.2.0, `Timeline__ContextMenu.js` 1.2.0,
+  `Timeline__Stylesheet__.css` 1.3.0, `Viewport__KeyframeDragger.js` 1.0.2,
+  `DevMenu__Controls.js` 1.2.2.
+- Shared PWA service worker token bumped to `2026-09-11-2`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.21.17 - 11-Sep-2026 - Scenes and video keyframes keep their Orbit, Fly or Walk mode
+
+### Fixed
+- **Video keyframes land in the mode they were framed in.** Every keyframe
+  already recorded the mode it was captured in, but nothing read it back:
+  Go To, a tile double click and every live preview from the keyframe menu
+  forced the camera into Orbit. Picking up a Fly shot to adjust it and
+  pressing Update therefore quietly turned it into an Orbit shot. The camera
+  now lands in the keyframe's own mode, exactly on the shot, lens included.
+
+- **Presentation scenes remember their mode.** Update Camera and Add Scene
+  From Camera store the mode the camera is in
+  (`PresentationMode__Scene__NavigationMode`, the TrueVision key: `walk` or
+  `fly`, absent means Orbit). Picking the scene in the Views bar flies there
+  and switches into that mode on arrival. Scenes without one land in Orbit,
+  so nobody is left in Walk just because the previous scene was walked.
+
+- **Scene flights work when started in Walk or Fly.** A flight started in
+  Walk went nowhere, because Walk rebuilds the camera from its capsule every
+  frame, and one started in Fly arrived facing the wrong way. Walk and Fly
+  now let go in place first, so the flight starts from exactly what is on
+  screen.
+
+- **Fly scenes frame correctly.** A scene captured in Fly stored Orbit's
+  leftover target, a point the camera was never looking at, so showing the
+  scene swung the view round to face it. Captures in Walk or Fly now store a
+  target along the camera's own axis, and Walk and Fly scenes are framed
+  along their own look direction in the flight, the page load snap and the
+  Layout Editor 3D snapshots.
+
+- **Scrubbing the timeline in Walk or Fly.** Seek never released the
+  camera, so the mode fought every scrubbed frame. It now lets go in place,
+  as Play does.
+
+- **Timeline stills and MP4 exports leave a Walk or Fly view alone.** Both
+  put the camera back after borrowing it and then resynced the orbit
+  controls, which re-aims the view at orbit's leftover target and can pull
+  it inside orbit's distance limits. They now resync only in Orbit. This was
+  rarely hit before, because Go To always forced Orbit.
+
+### Added
+- **Orbit | Fly | Walk switch in the timeline keyframe menu** (right click a
+  tile), at the top of Camera Settings. It shows the keyframe's mode and
+  changes it, and the viewport follows straight away, as Height and Tilt do.
+  Ctrl+Z undoes it. Modes switched off for the model show disabled.
+
+- **The same switch on every Presentation Scenes row** (Nav Mode, under
+  Group). It edits the row like FOV and Easing do, so Save Scene keeps it.
+  Floor plan and elevation cards do not get one.
+
+- **Stop puts back the mode as well as the view.** Play still hands the
+  camera to the timeline in Orbit, but Stop now returns you to the mode you
+  pressed Play from, at the same spot.
+
+### Changed
+- Entering Walk or Fly for a saved shot keeps the saved pose and lens. The
+  toolbar's entry nudges (FOV compensation, Walk's 1 m step and 30 degree
+  pitch clamp) and the modes' own 50 degree lens are for walking in from an
+  Orbit view, not for a chosen shot. A Walk shot still settles at eye height
+  above the floor under it, which is what walking there means.
+
+- Waypoints inserted on the path (Ctrl+click) take the mode of the waypoint
+  before them, instead of an "Inserted" marker that always landed in Orbit.
+
+- Capture Keyframe, Update and the keyframe menu read the live mode from the
+  Walk and Fly systems themselves rather than from the toolbar highlight.
+
+### Notes
+- Page load still opens in Orbit when the default scene is a Fly or Walk
+  scene (decided 11-Sep-2026); the mode switches the first time a scene is
+  picked from the Views bar.
+- Scenes updated in Fly before this build carry no mode and read as Orbit.
+  Set their switch to Fly and press Save Scene, or Update Camera again while
+  flying; either also fixes their framing. Video keyframes need nothing:
+  their recorded mode is used as it is.
+- Space (play and pause) still only works in Orbit, because Fly uses Space
+  to rise. After jumping to a Fly keyframe, use the Play button.
+- Height edits on a Walk keyframe show in playback, not in the live view,
+  because Walk keeps the camera at eye height.
+
+### Files
+- `10__NavigationAndCameras/Na__NavigationModes__Switcher.js` (new, port of
+  the TrueVision module, adapted): mode names and availability, the mode
+  that actually owns the camera, pose-preserving `ReleaseToOrbit` and
+  `EnterModeAtPose`, and the look-ahead target.
+- `Na__Navmode__WalkMode__SystemLogic.js` 1.1.0 and
+  `Na__Navmode__FlyMode__SystemLogic.js` 1.1.0: `SyncFromCamera`.
+- `21__System__PresentationMode/`: `Camera__SceneTransition.js` 1.4.0,
+  `DevMenu__SceneEditor.js` 1.3.2, `DevMenu__SceneRowBuilders__.js` 1.1.0,
+  `UI__SceneCarousel.js` (port note only); switch styles in
+  `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css`.
+- `31__System__VideoStudio/`: `Playback__PreviewController.js` 1.2.0,
+  `Timeline__ContextMenu.js` 1.1.0, `Timeline__Stylesheet__.css` 1.2.0,
+  `DevMenu__Controls.js` 1.2.1, `Viewport__KeyframeDragger.js` 1.0.1,
+  `ProjectJson__VideoData.js` 1.2.1, `Timeline__Thumbnails.js` 1.0.1,
+  `Export__FrameRenderer.js` 1.0.1.
+- Parity ledger (new section "Per-Scene Navigation Modes") and a note in
+  plan section 7.2. Shared PWA service worker token bumped to `2026-09-11-1`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.21.16 - 11-Sep-2026 - Camera-follow billboards really face the camera
 
 ### Fixed

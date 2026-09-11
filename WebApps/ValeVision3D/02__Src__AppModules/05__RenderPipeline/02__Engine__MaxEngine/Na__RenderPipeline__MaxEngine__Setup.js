@@ -58,6 +58,10 @@
 //   depthTexture, profileNormalTarget, profileColorTarget, profileLinesPassRef
 //   so ImageExport / ElevationView / GridLines / 2D profile lines keep working.
 //
+// 11-Sep-2026 - Version 1.0.1
+// - Pipeline state exposes fxaaPassRef, so the Video Studio exporter can stand
+//   FXAA aside while it supersamples. The live chain is unchanged.
+//
 // =============================================================================
 
 
@@ -293,6 +297,7 @@
             profileNormalTarget,
             profileColorTarget,
             profileLinesPassRef,
+            fxaaPassRef : fxaaPass,                                        // <-- Video export bypasses FXAA while it supersamples
             renderDepthPrePass,                                            // <-- MaxEngine extra: per-frame depth capture for SSAO/fog
             setDepthPrePassSize,                                           // <-- MaxEngine extra: resize the depth pre-pass RT
             updateAoUniforms,                                              // <-- MaxEngine extra: sync camera matrices into SSAO shader

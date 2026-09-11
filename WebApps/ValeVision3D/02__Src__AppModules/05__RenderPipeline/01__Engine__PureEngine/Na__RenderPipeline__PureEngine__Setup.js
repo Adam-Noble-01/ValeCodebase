@@ -26,6 +26,10 @@
 // - Function renamed Na__RenderPipeline__SetupComposer -> Na__RenderPipeline__PureEngine__SetupComposer.
 // - No behavioural changes.
 //
+// 11-Sep-2026 - Version 1.0.1
+// - Pipeline state exposes fxaaPassRef, so the Video Studio exporter can stand
+//   FXAA aside while it supersamples. The live chain is unchanged.
+//
 // =============================================================================
 
 
@@ -164,7 +168,8 @@
             depthTexture,
             profileNormalTarget,
             profileColorTarget,
-            profileLinesPassRef
+            profileLinesPassRef,
+            fxaaPassRef : fxaaPass                                         // <-- Video export bypasses FXAA while it supersamples
         };
     }
     // ------------------------------------------------------------

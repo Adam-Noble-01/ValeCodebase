@@ -57,6 +57,12 @@
 // 02-Sep-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio timeline.
 //
+// 11-Sep-2026 - Version 1.0.1
+// - The post-burst controls.update() runs only while orbit owns the camera.
+//   In walk or fly it re-aimed the restored view at orbit's leftover target
+//   for the frame the burst paints, and could pull a fly camera to within
+//   orbit's distance limits; Go To now lands in fly, so this matters.
+//
 // =============================================================================
 
 
@@ -493,7 +499,12 @@
             camera.updateProjectionMatrix();
             camera.updateMatrixWorld(true);
 
-            if (Na__VsThumb__Controls && typeof Na__VsThumb__Controls.update === 'function') {
+            // ORBIT ONLY | Walk and fly switch the controls off while they own
+            // the camera, and an update would re-aim the restored view at
+            // orbit's leftover target and pull it to within orbit's distance
+            // limits. Landing on a keyframe in fly makes that the usual case.
+            if (Na__VsThumb__Controls && Na__VsThumb__Controls.enabled !== false
+                && typeof Na__VsThumb__Controls.update === 'function') {
                 Na__VsThumb__Controls.update();
             }
 

@@ -302,6 +302,50 @@
         border-radius                      : 4px;
     }
 
+    /* Nav Mode switch: Orbit | Fly | Walk as one segmented control filling
+       the row like the dropdowns do. The lit segment borrows the navigation
+       toolbar's pale blue, because it means the same thing.                 */
+    .na-pm-dev__segmented {
+        flex                               : 1;
+        display                            : flex;
+        border                             : 1px solid #ccc;
+        border-radius                      : 4px;
+        overflow                           : hidden;
+        background                         : #f4f6f8;
+    }
+
+    .na-pm-dev__segment {
+        flex                               : 1;
+        padding                            : 3px 0;
+        font-size                          : 0.76rem;
+        font-family                        : inherit;
+        color                              : #444;
+        background                         : transparent;
+        border                             : none;
+        border-left                        : 1px solid #ccc;
+        cursor                             : pointer;
+        transition                         : background 0.14s, color 0.14s;
+    }
+
+    .na-pm-dev__segment:first-child {
+        border-left                        : none;
+    }
+
+    .na-pm-dev__segment:hover:not(:disabled):not(.is-active) {
+        background                         : #e8edf3;
+    }
+
+    .na-pm-dev__segment.is-active {
+        background                         : #dbe9f7;          /* navigation toolbar's active blue */
+        color                              : #1a7fc4;
+        font-weight                        : 600;
+    }
+
+    .na-pm-dev__segment:disabled {
+        color                              : #b3b3b3;
+        cursor                             : not-allowed;
+    }
+
     .na-pm-dev__actions {
         display                            : flex;
         flex-wrap                          : wrap;

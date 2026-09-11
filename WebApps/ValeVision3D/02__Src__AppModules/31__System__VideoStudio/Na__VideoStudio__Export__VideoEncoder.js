@@ -53,6 +53,16 @@
 //   so a boundary or foreground building switched off for that path stays out
 //   of the video no matter what the Tools panel was showing.
 //
+// 11-Sep-2026 - Version 1.2.0
+// - Per-keyframe Door Animation: every frame hands the tick of the keyframe in
+//   charge (its hold and the travel on to the next) to the scene animations
+//   session, and the export starts with every door snapped shut.
+//
+// 11-Sep-2026 - Version 1.3.0
+// - Passes the path's anti-aliasing setting to the frame renderer, which
+//   supersamples every frame at 4x, 8x or 16x, and names the sample count in
+//   the progress lines.
+//
 // =============================================================================
 
 
@@ -88,7 +98,8 @@
     import {
         Na__VideoStudio__ProjectJson__GetExportOptions,
         Na__VideoStudio__ProjectJson__GetPlaybackOptions,
-        Na__VideoStudio__ProjectJson__GetModelLayerOptions
+        Na__VideoStudio__ProjectJson__GetModelLayerOptions,
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     // ------------------------------------------------------------
 
@@ -97,7 +108,9 @@
     // ------------------------------------------------------------
     import {
         Na__VideoStudio__SceneAnimations__Begin,
-        Na__VideoStudio__SceneAnimations__End
+        Na__VideoStudio__SceneAnimations__End,
+        Na__VideoStudio__SceneAnimations__SetDoorsLive,
+        Na__VideoStudio__SceneAnimations__ResetDoorsClosed
     } from './Na__VideoStudio__Playback__SceneAnimations.js';
     // ------------------------------------------------------------
 
@@ -475,6 +488,10 @@
             }
         );
 
+        // CLEAN FIRST FRAME | Every door shut whatever editing left open; the
+        // keyframes ticked for Door Animation open them from here
+        Na__VideoStudio__SceneAnimations__ResetDoorsClosed();
+
         // MODEL LAYERS | The export borrows the live scene, so without this it
         // renders whatever the Tools panel happened to be showing. Apply this
         // path's own layer state instead, and put the viewport back afterwards.
@@ -489,11 +506,16 @@
             getRenderPipelineState,
             width  : exportOptions.width,
             height : exportOptions.height,
-            animationsEnabled
+            animationsEnabled,
+            antiAliasSamples : exportOptions.antiAliasEnabled ? exportOptions.antiAliasSamples : 1   // <-- 1 is the single FXAA pass
         });
 
         const outW = session.width;
         const outH = session.height;
+
+        const antiAliasNote = (session.antiAliasSamples > 1)
+            ? `, ${session.antiAliasSamples}x anti-aliasing`
+            : '';
 
         // ENCODER | Probe for a supported configuration at this format
         // ------------------------------------------------------------
@@ -511,7 +533,7 @@
                 throw new Error(`This machine cannot encode H.264 at ${outW}x${outH} @ ${fps}fps. Try a lower resolution or frame rate.`);
             }
 
-            progress(1, 'Starting hardware encoder', `H.264 at ${outW} x ${outH}, ${fps}fps`);
+            progress(1, 'Starting hardware encoder', `H.264 at ${outW} x ${outH}, ${fps}fps${antiAliasNote}`);
 
             muxer = Na__VideoStudio__Mp4Muxer__Create({ width: outW, height: outH, fps });
 
@@ -555,6 +577,9 @@
                 if (!state) throw new Error('Path sampling failed partway through the export.');
 
                 Na__VideoStudio__Camera__ApplyCameraState(camera, state);
+                Na__VideoStudio__SceneAnimations__SetDoorsLive(                 // <-- The keyframe in charge of this frame opens or holds the doors
+                    Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(timeline.keyframes[state.keyIndex])
+                );
                 session.renderFrame(frameDurationMs);
 
                 const frame = new window.VideoFrame(session.canvas, {
@@ -588,7 +613,7 @@
 
                     progress(
                         percent,
-                        `Rendering frame ${frameIndex + 1} of ${frameCount}`,
+                        `Rendering frame ${frameIndex + 1} of ${frameCount}${antiAliasNote}`,
                         `${megabytes} MB encoded${eta}`
                     );
                     await Na__ExportYield__NextTick();                       // <-- Let the panel repaint

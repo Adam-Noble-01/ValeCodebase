@@ -3326,6 +3326,14 @@
           "endTime": "18:15",
           "title": "W/C",
           "color": "na-shift-color-amber"
+        },
+        {
+          "id": "new-1789143788070",
+          "date": "2026-09-15",
+          "startTime": "08:00",
+          "endTime": "10:45",
+          "title": "Amy Thing",
+          "color": "na-shift-color-cyan"
         }
       ]
     }

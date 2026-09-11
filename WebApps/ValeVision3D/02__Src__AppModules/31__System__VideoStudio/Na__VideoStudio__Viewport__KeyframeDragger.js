@@ -67,6 +67,15 @@
 // 14-Aug-2026 - Version 1.0.0
 // - Initial implementation for the Video Studio system.
 //
+// 11-Sep-2026 - Version 1.0.1
+// - A waypoint inserted on the path takes the navigation mode of the
+//   waypoint whose leg was clicked, instead of the 'Inserted' marker, which
+//   was never a mode and so always landed in orbit.
+//
+// 11-Sep-2026 - Version 1.0.2
+// - It takes that waypoint's Door Animation tick as well, so splitting a door
+//   traversal does not shut the doors partway through it.
+//
 // =============================================================================
 
 
@@ -127,7 +136,8 @@
     import {
         Na__VideoStudio__ProjectJson__GetKeyframeById,
         Na__VideoStudio__ProjectJson__InsertKeyframeAfter,
-        Na__VideoStudio__ProjectJson__GetNextInsertedLabel
+        Na__VideoStudio__ProjectJson__GetNextInsertedLabel,
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     // ------------------------------------------------------------
 
@@ -152,6 +162,12 @@
     // ------------------------------------------------------------
     import { Na__VideoStudio__UndoHistory__SnapshotKeyframes,
              Na__VideoStudio__UndoHistory__RecordStructure } from './Na__VideoStudio__Edit__UndoHistory.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Navigation Mode Naming (inserted waypoints inherit a mode)
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
+    // ------------------------------------------------------------
+    import { Na__NavigationModes__GetModeLabel } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -801,10 +817,18 @@
             Camera__DefaultMisc     : { Camera__DefaultMisc__Fov: parseFloat(sample.fov.toFixed(4)) }
         };
 
+        // MODE AND DOORS | Taken from the waypoint whose leg was clicked, so a
+        // waypoint dropped into a fly-through is viewed in fly like its
+        // neighbours, and one dropped into a door traversal keeps the doors
+        // opening instead of shutting them halfway. The label, not the mode,
+        // is what marks it as inserted.
+        const leading = timeline.keyframes[sample.segIndex];
+
         const inserted = Na__VideoStudio__ProjectJson__InsertKeyframeAfter(videoId, sample.segIndex, cameraPosition, {
             localS         : sample.localS,
             lensMm         : Math.round(Na__VideoStudio__PathSampler__FovToFocalMm(sample.fov)),
-            capturedInMode : 'Inserted',
+            capturedInMode : Na__NavigationModes__GetModeLabel(leading && leading.VideoStudio__Keyframe__CapturedInMode),
+            doorAnimation  : Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(leading),
             label          : Na__VideoStudio__ProjectJson__GetNextInsertedLabel(video)
         });
         if (!inserted) return false;

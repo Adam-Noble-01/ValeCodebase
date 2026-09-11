@@ -29,6 +29,12 @@
  * 02-Sep-2026 - Version 1.1.0
  * - Added the keyframe context menu: surface, fields, buttons and the Advanced
  *   Camera Settings disclosure.
+ *
+ * 11-Sep-2026 - Version 1.2.0
+ * - Added the context menu's Orbit | Fly | Walk navigation switch.
+ *
+ * 11-Sep-2026 - Version 1.3.0
+ * - Added the context menu tick row, used by Advanced Object Animation.
  */
 /* ================================================================= */
 
@@ -718,6 +724,87 @@
         font-size                          : 0.72rem;
         color                              : #8d959d;
         line-height                        : 1.4;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Context Menu Navigation Switch
+ * ----- */
+
+    /* Orbit | Fly | Walk as one segmented control, sat where an input would be
+       so its label still reads down the right with the others. The lit
+       segment borrows the navigation toolbar's pale blue, because it means
+       the same thing: the mode the camera will be in.                        */
+    .na-vs-menu__segmented {
+        flex                               : none;
+        display                            : inline-flex;
+        border                             : 1px solid #ccd3da;
+        border-radius                      : 4px;
+        overflow                           : hidden;
+        background                         : #f4f6f8;
+    }
+
+    .na-vs-menu__segment {
+        flex                               : none;
+        width                              : 44px;
+        padding                            : 4px 0;
+        font-size                          : 0.74rem;
+        font-family                        : inherit;
+        line-height                        : 1.2;
+        color                              : #4c545c;
+        background                         : transparent;
+        border                             : none;
+        border-left                        : 1px solid #ccd3da;
+        cursor                             : pointer;
+        transition                         : background 0.14s, color 0.14s;
+    }
+
+    .na-vs-menu__segment:first-child {
+        border-left                        : none;
+    }
+
+    .na-vs-menu__segment:hover:not(:disabled):not(.is-active) {
+        background                         : #e8edf3;
+    }
+
+    .na-vs-menu__segment.is-active {
+        background                         : #dbe9f7;          /* navigation toolbar's active blue */
+        color                              : #1a7fc4;
+        font-weight                        : 600;
+    }
+
+    .na-vs-menu__segment:disabled {
+        color                              : #b3bac1;
+        cursor                             : not-allowed;
+    }
+
+    .na-vs-menu__segment:focus-visible {
+        outline                            : 2px solid rgba(26, 127, 196, 0.45);
+        outline-offset                     : -2px;
+    }
+
+/* endregion ---- */
+
+
+/* #Region ---
+ * REGION | Context Menu Checkbox
+ * ----- */
+
+    /* A tick row inside an Advanced section, used by Door Animation. The row
+       is a label, so the words toggle it as well as the box.                */
+    .na-vs-menu__check {
+        cursor                             : pointer;
+    }
+
+    .na-vs-menu__checkbox {
+        flex                               : none;
+        width                              : 15px;
+        height                             : 15px;
+        margin                             : 0;
+        accent-color                       : #1a7fc4;
+        cursor                             : pointer;
     }
 
 /* endregion ---- */

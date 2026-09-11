@@ -67,7 +67,7 @@ Out of scope for this plan: porting anything back into TrueVision (that is a lat
 | D19 | A per-category exclusion list lives in AppConfig with a per-drawing-record override. |
 | D20 | Exact linework is baked on localhost and stored on R2 as a per-view asset; live clients fall back to on-device computation only when the cache is missing or stale. |
 | D21 | Hidden lines are available as a dashed class, default off. |
-| D22 | The tab strip sits directly under the app header and is visible to everyone; web viewers get read-only drawing tabs. |
+| D22 | The tab strip sits directly under the app header and is visible to everyone; web viewers get read-only drawing tabs. Refined 11-Sep-2026 (v2.21.20): on the web only when the project has sheets; on localhost only while the project's Enable Layout Mode switch is on. |
 | D23 | The tool is named Layout Editor: folder `51__System__LayoutEditor`, namespaces `Na__LayoutEditor__*`, data block `LayoutEditor__DrawingsData`. |
 | D24 | Authoring is localhost-only (dev-gated like Presentation Scenes and Video Studio). Web viewers can open drawing tabs, pan, zoom and download the PDF. |
 | D25 | A drawing is a paper sheet: A4, A3, A2, A1, landscape or portrait, margins and title block from config, default A3 landscape. |
@@ -239,6 +239,7 @@ Default groups seeded in memory when the Dev menu opens and written on the first
     "LayoutEditor__DrawingsData__Description"   : "ValeVision-owned drawing definitions: floor plans, elevations and sections with their markup, and Layout Editor sheets. Distances are integer millimetres. The SketchUp cloud sync never writes this key.",
     "LayoutEditor__DrawingsData__Version"       : 1,
     "LayoutEditor__DrawingsData__ClientDimensionsEnabled": false,
+    "LayoutEditor__DrawingsData__LayoutModeEnabled": false,   // v2.21.20: localhost Dev switch for the tab strip; the live site ignores it
     "LayoutEditor__DrawingsData__FloorPlans"    : [ /* FloorPlan records, 5.2 */ ],
     "LayoutEditor__DrawingsData__Elevations"    : [ /* Elevation records, 5.3 */ ],
     "LayoutEditor__DrawingsData__Sheets"        : [ /* DrawingSheet records, 5.5 */ ]
@@ -466,6 +467,8 @@ Also bump nothing in a service worker (ValeVision registers none) but remind tes
 - `31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js`: no change needed; the bar is a child of the carousel container and hides with it. Verify.
 
 Not applicable in ValeVision: TrueVision's per-scene `NavigationMode` (walk or fly on arrival). ValeVision scenes do not carry it; the "orbit on arrival" rule is not ported.
+
+Superseded 11-Sep-2026 (v2.21.17): Adam asked for scenes and Video Studio keyframes to keep their navigation mode, so `PresentationMode__Scene__NavigationMode` and the orbit-on-arrival rule are now ported, with pose-preserving switching. Page load still opens in orbit. See the parity ledger section "Per-Scene Navigation Modes".
 
 ### 7.3 Hand-over test list
 
@@ -753,7 +756,7 @@ v2.21.8 (10-Sep-2026) split the sheet tools into `Na__LayoutEditor__TextTool__.j
 
 ### 11.6 Hand-over test list
 
-1. New sheet from the Dev menu: a "Drawing 1" tab appears; A3 landscape with the Modern title block; switch to Classic: the scan stretches and the fields overlay.
+1. Tick Enable Layout Mode in the Dev menu (from v2.21.20 the tabs stay hidden on localhost until it is on), then New Sheet: a "Drawing 1" tab appears; A3 landscape with the Modern title block; switch to Classic: the scan stretches and the fields overlay.
 2. Add a plan viewport at 1:50: linework and underlay land at scale (a 10 m wall measures 200 mm on the paper at 100 percent zoom); toggle 1:100 and 1:20.
 3. Every handle crops (a corner in both axes); a drag moves the frame; double-click enters the content and a drag then pans; Shift on a 3D corner scales; a locked viewport (right-click, Lock viewport) refuses all of it; Ctrl+Z steps back through it all.
 4. Layers: reorder changes stacking; lock prevents selection; type filter.
@@ -807,7 +810,7 @@ v2.21.8 (10-Sep-2026) split the sheet tools into `Na__LayoutEditor__TextTool__.j
 Open items to settle during the build (not blocking):
 
 - Exact Vale wording for the client measuring disclaimer paragraphs (AppConfig array; TrueVision's Noble Architecture wording is the placeholder).
-- Whether the Layout Editor tab strip should also appear on projects that have no sheets (proposal: only the "3D Model" tab renders and the strip collapses to nothing on the web).
+- ~~Whether the Layout Editor tab strip should also appear on projects that have no sheets.~~ Settled by Adam on 11-Sep-2026 (v2.21.20): the live site shows the strip only when the project's data file has sheets; localhost shows it only while the project's Enable Layout Mode switch (Dev Tools, Layout Editor, stored as `LayoutEditor__DrawingsData__LayoutModeEnabled`, off by default) is on, sheets or not.
 - Per-size Classic title block scans (A4, A2, A1) when available; the asset map has slots ready.
 - PlanVision hand-off of exported PDFs is out of scope but the filename contract is chosen so that a later Build tool step can pick them up.
 

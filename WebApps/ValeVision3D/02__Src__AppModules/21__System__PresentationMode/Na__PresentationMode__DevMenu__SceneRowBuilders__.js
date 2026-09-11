@@ -20,7 +20,8 @@
 // - A row reads, top to bottom: a header strip (drag handle, "#N - Name" where
 //   N is the position WITHIN the scene's group, move up and down arrows), the
 //   Name field, the Group dropdown (enabled groups only, absent on an ungrouped
-//   project), the FOV slider with live viewport preview, the Move Speed slider,
+//   project), the Nav Mode switch (Orbit | Fly | Walk, absent on drawing
+//   cards), the FOV slider with live viewport preview, the Move Speed slider,
 //   the Easing dropdown, the Position field (1-based within the group) and the
 //   action buttons: Update Camera, Regen Thumb, Save Scene, Delete.
 // - The drag handle is the ONLY thing that arms a drag on the row, so the
@@ -46,8 +47,9 @@
 // - Ported on     : 09-Sep-2026 for ValeVision3D v2.17.0
 // - Parity        : adapted (split out of the editor)
 // - Divergences   :
-//   - No Advanced fold: Easing and Position sit inline, as the ValeVision row always showed Easing.
-//   - No per-scene navigation mode or layer-timing rows; those keys are not in the ValeVision schema.
+//   - No Advanced fold: Easing, Position and Nav Mode sit inline, as the ValeVision row always showed Easing.
+//   - Nav Mode added 11-Sep-2026 (v2.21.17), reading Orbit | Fly | Walk left to right like the Video Studio
+//     menu; TrueVision reads Orbit | Walk | Fly. No layer-timing row; that key is not in the ValeVision schema.
 //   - Action buttons keep ValeVision's four (Update Camera, Regen Thumb, Save Scene, Delete) rather
 //     than TrueVision's single Update Scene, because the Flask thumbnail path is a separate step here.
 // - Back-port     : the split itself is worth carrying to TrueVision, whose editor is over budget.
@@ -55,6 +57,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.1.0
+// - Nav Mode switch (Orbit | Fly | Walk) under the Group dropdown. Writes
+//   PresentationMode__Scene__NavigationMode on the working copy ('walk' or
+//   'fly'; orbit deletes the key). Not shown on drawing cards.
+//
 // 09-Sep-2026 - Version 1.0.1 (port Phase 2)
 // - Update Camera is withheld on floor plan and elevation scenes.
 //
@@ -90,6 +97,20 @@
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Per-Scene Navigation Mode (key and resolution)
+    // @delegate: ./Na__PresentationMode__Camera__SceneTransition.js
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
+    // ------------------------------------------------------------
+    import {
+        Na__PresentationMode__KEY__NAVIGATION_MODE,
+        Na__PresentationMode__Camera__ResolveSceneNavigationMode
+    } from './Na__PresentationMode__Camera__SceneTransition.js';
+    import {
+        Na__NavigationModes__IsModeAvailable,
+        Na__NavigationModes__GetModeLabel
+    } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Drawing Rename (a drawing card's name is not ours)
     // ------------------------------------------------------------
     // @delegate: ../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js
@@ -117,6 +138,7 @@
     const Na__PmRows__TRANSITION_DEFAULT = 1800;  // <-- Default transition duration
     const Na__PmRows__SENSOR_HEIGHT_MM   = 24;    // <-- Full-frame sensor height (matches cameraLens AppConfig)
     const Na__PmRows__EASING_OPTIONS     = ['easeInOutCubic', 'easeInOutQuad', 'linear']; // <-- Available easing names
+    const Na__PmRows__NAV_MODES          = ['orbit', 'fly', 'walk'];  // <-- Switch order, left to right, as in the Video Studio menu
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -301,6 +323,70 @@
         select.addEventListener('change', () => onChange(select.value));
 
         row.appendChild(select);
+        return row;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the Per-Scene Navigation Mode Switch Row
+    // ------------------------------------------------------------
+    // Orbit | Fly | Walk, the same switch as the Video Studio keyframe menu.
+    // It is the mode the Views carousel lands the camera in when this scene is
+    // picked, and Update Camera resets it to whatever mode the camera is in.
+    // Like the other fields here it edits the working copy; Save Scene keeps it.
+    //
+    // Modes switched off for the model are shown disabled rather than hidden,
+    // so the switch keeps its shape on every project and says why.
+    //
+    // Returns null for a floor plan or elevation card: a drawing is never
+    // walked or flown, and its camera belongs to the drawing.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildNavigationModeRow(scene, onChange) {
+        if (scene.PresentationMode__Scene__FloorPlanId || scene.PresentationMode__Scene__ElevationId) return null;
+
+        const row   = Na__PmRows__BuildLabelledRow('Nav Mode');
+        const group = document.createElement('div');
+        group.className = 'na-pm-dev__segmented';
+        group.setAttribute('role', 'group');
+        group.setAttribute('aria-label', 'Navigation mode');
+
+        const currentMode = Na__PresentationMode__Camera__ResolveSceneNavigationMode(scene);
+        const buttons     = [];
+
+        Na__PmRows__NAV_MODES.forEach((mode) => {
+            const label  = Na__NavigationModes__GetModeLabel(mode);
+            const button = document.createElement('button');
+            button.type        = 'button';
+            button.className   = 'na-pm-dev__segment';
+            button.textContent = label;
+
+            if (!Na__NavigationModes__IsModeAvailable(mode)) {
+                button.disabled = true;
+                button.title    = `${label} mode is switched off for this model`;
+            } else {
+                button.title    = `Show this scene in ${label} mode`;
+            }
+
+            const isActive = (mode === currentMode);
+            button.classList.toggle('is-active', isActive);
+            button.setAttribute('aria-pressed', String(isActive));
+
+            button.addEventListener('click', () => {
+                if (button.classList.contains('is-active')) return;          // <-- Already this mode
+
+                buttons.forEach((other) => {
+                    const nowActive = (other === button);
+                    other.classList.toggle('is-active', nowActive);
+                    other.setAttribute('aria-pressed', String(nowActive));
+                });
+                onChange(mode);
+            });
+
+            buttons.push(button);
+            group.appendChild(button);
+        });
+
+        row.appendChild(group);
         return row;
     }
     // ------------------------------------------------------------
@@ -494,6 +580,16 @@
             onMutate('regroup', scene);                                      // <-- Renumbers both groups, persists, rebuilds
         });
         if (groupRow) wrapper.appendChild(groupRow);
+
+        // NAV MODE SWITCH | Orbit is the absent key, so older scenes read as orbit
+        const navModeRow = Na__PmRows__BuildNavigationModeRow(scene, (newMode) => {
+            if (newMode === 'walk' || newMode === 'fly') {
+                scene[Na__PresentationMode__KEY__NAVIGATION_MODE] = newMode;
+            } else {
+                delete scene[Na__PresentationMode__KEY__NAVIGATION_MODE];
+            }
+        });
+        if (navModeRow) wrapper.appendChild(navModeRow);
 
         // FOV SLIDER | Live viewport preview through the injected camera
         wrapper.appendChild(Na__PmRows__BuildFovRow(scene, (newFov) => {

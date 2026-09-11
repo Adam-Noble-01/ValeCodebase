@@ -29,6 +29,11 @@
 //   starting the new one.
 // - FOV is the authoritative runtime projection value; LensMm in scene data
 //   is metadata only and is not applied to the camera.
+// - A scene may carry PresentationMode__Scene__NavigationMode ('walk' or
+//   'fly'; absent means orbit). AnimateToScene releases walk or fly in place
+//   before the move and enters the scene's mode on arrival, through
+//   Na__NavigationModes__Switcher. The instant snap frames such a scene
+//   correctly but never changes the mode.
 //
 // INTEGRATION:
 // - Imported by Na__PresentationMode__UI__SceneCarousel.js (clicks, play).
@@ -71,6 +76,18 @@
 //   cube only becomes the orbit pivot on the first rotation afterwards, via
 //   Na__Navmode__OrbitPivot__InteractionSwap.
 //
+// 11-Sep-2026 - Version 1.4.0
+// - Per-scene navigation mode (PresentationMode__Scene__NavigationMode, the
+//   TrueVision key). Arriving at a scene enters its saved walk or fly mode
+//   exactly at the shot; scenes without one land in orbit.
+// - AnimateToScene releases walk or fly in place before moving. Before this
+//   a flight started in walk went nowhere (walk rebuilt the camera from its
+//   capsule every frame) and one started in fly arrived facing the wrong way.
+// - Walk and fly scenes are framed along their own look axis, in the flight,
+//   the instant snap and the capture. A fly capture used to store orbit's
+//   leftover target, so showing the scene in orbit swung the view to face it.
+// - options.applyNavigationMode (default true) lets a caller land in orbit.
+//
 // =============================================================================
 
 
@@ -103,6 +120,19 @@
     import { Na__ModelToggle__ApplySceneLayerVisibility } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Navigation Mode Switching (per-scene modes)
+    // @delegate: ../10__NavigationAndCameras/Na__NavigationModes__Switcher.js
+    // ------------------------------------------------------------
+    import {
+        Na__NavigationModes__ResolveMode,
+        Na__NavigationModes__IsFreeLookMode,
+        Na__NavigationModes__GetActiveMode,
+        Na__NavigationModes__PlaceLookAheadTarget,
+        Na__NavigationModes__ReleaseToOrbit,
+        Na__NavigationModes__EnterModeAtPose
+    } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -115,6 +145,14 @@
     const Na__PresentationMode__RENDER_REASON    = 'presentation-transition';  // <-- Reason tag for active render loop
     const Na__PresentationMode__DEFAULT_DURATION = 1800;                       // <-- Default transition duration ms
     const Na__PresentationMode__DEFAULT_EASING   = 'easeInOutCubic';          // <-- Default easing function name
+    // ------------------------------------------------------------
+
+    // MODULE CONSTANTS | Per-Scene Navigation Mode Key
+    // ------------------------------------------------------------
+    // 'walk' or 'fly'. Absent means orbit, so every scene saved before this
+    // key existed reads as orbit with no migration. Same key as TrueVision.
+    // ------------------------------------------------------------
+    const Na__PresentationMode__KEY__NAVIGATION_MODE = 'PresentationMode__Scene__NavigationMode';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -230,14 +268,23 @@
     // ------------------------------------------------------------
     // Returns { cameraPosition: {...}, orbitHelperCubePosition: {...} }
     // matching the PresentationMode scene schema exactly.
+    //
+    // Captured in walk or fly, controls.target is wherever orbit last left it,
+    // not where the camera is looking. Stored as the scene's target it would
+    // swing the view round to face that point whenever the scene is shown in
+    // orbit, so the target is taken along the camera's own axis instead.
     // ------------------------------------------------------------
     function Na__PresentationMode__Camera__BuildSceneCameraJson(camera, controls) {
         const cameraPosition = Na__PresentationMode__Camera__CaptureCurrentSceneState(camera, controls);
         if (!cameraPosition) return null;
 
-        const targetX = controls ? Math.round(Na__Math__ConvertUnitsToMm(controls.target.x)) : 0;
-        const targetY = controls ? Math.round(Na__Math__ConvertUnitsToMm(controls.target.y)) : 0;
-        const targetZ = controls ? Math.round(Na__Math__ConvertUnitsToMm(controls.target.z)) : 0;
+        const target = Na__NavigationModes__IsFreeLookMode(Na__NavigationModes__GetActiveMode())
+            ? Na__NavigationModes__PlaceLookAheadTarget(camera.position, camera.quaternion, new THREE.Vector3())
+            : (controls ? controls.target : null);
+
+        const targetX = target ? Math.round(Na__Math__ConvertUnitsToMm(target.x)) : 0;
+        const targetY = target ? Math.round(Na__Math__ConvertUnitsToMm(target.y)) : 0;
+        const targetZ = target ? Math.round(Na__Math__ConvertUnitsToMm(target.z)) : 0;
 
         const orbitHelperCubePosition = {
             OrbitHelperCube__Position__Description : 'Scene orbit target position. Values are integer millimetres; convert to 3D units in code.',
@@ -291,6 +338,22 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Resolve the Navigation Mode a Scene Is Viewed In
+    // ------------------------------------------------------------
+    // 'orbit' | 'walk' | 'fly'. An absent or unknown value, or a mode the
+    // model has switched off, is orbit. So is anything that belongs to a 2D
+    // drawing: the synthetic pose a floor plan or elevation flies to, and a
+    // drawing's own card, whose camera the drawing sets.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__Camera__ResolveSceneNavigationMode(scene) {
+        if (!scene) return 'orbit';
+        if (scene.PresentationMode__Scene__IsDrawingApproach === true) return 'orbit';
+        if (scene.PresentationMode__Scene__FloorPlanId || scene.PresentationMode__Scene__ElevationId) return 'orbit';
+        return Na__NavigationModes__ResolveMode(scene[Na__PresentationMode__KEY__NAVIGATION_MODE]);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Instantly Apply Scene Camera State (no animation)
     // ------------------------------------------------------------
     // Snaps position, rotation, FOV AND the scene's own camera.target, so the
@@ -303,6 +366,12 @@
     // options.applyOrbitTarget {boolean} - default true; leaving it true is
     // correct for all current callers. (Retained for the rare caller that wants
     // to snap pose only and keep the live controls.target as-is.)
+    //
+    // A walk or fly scene is framed along its own look direction rather than
+    // at its stored target, which in older fly captures is a leftover orbit
+    // point the camera was never looking at. The snap never changes the
+    // navigation mode: page load opens in orbit by design, and the Layout
+    // Editor poses the camera here only long enough to take a picture.
     // ------------------------------------------------------------
     function Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, scene, options = {}) {
         if (!camera || !scene) return;
@@ -311,6 +380,10 @@
 
         const values = Na__PresentationMode__Camera__ParseSceneToRuntimeValues(scene);
         if (!values) return;
+
+        const isFreeLookScene = Na__NavigationModes__IsFreeLookMode(
+            Na__PresentationMode__Camera__ResolveSceneNavigationMode(scene)
+        );
 
         camera.position.set(values.position.x, values.position.y, values.position.z);  // <-- Snap position
         camera.rotation.set(values.rotation.x, values.rotation.y, values.rotation.z);  // <-- Snap rotation
@@ -321,7 +394,9 @@
         }
 
         if (controls) {
-            if (applyOrbitTarget && values.target) {
+            if (applyOrbitTarget && isFreeLookScene) {
+                Na__NavigationModes__PlaceLookAheadTarget(camera.position, camera.quaternion, controls.target); // <-- The scene's own look direction
+            } else if (applyOrbitTarget && values.target) {
                 controls.target.set(values.target.x, values.target.y, values.target.z);  // <-- Snap orbit target
             }
             controls.update();                                                           // <-- Resync controls against new camera position either way
@@ -382,9 +457,11 @@
     // overridden explicitly via the options object.
     //
     // options {object}:
-    //   durationMs {number}  - override transition duration
-    //   easing     {string}  - override easing function name
-    //   onComplete {function}- callback invoked when transition finishes
+    //   durationMs          {number}  - override transition duration
+    //   easing              {string}  - override easing function name
+    //   onComplete          {function}- callback invoked when transition finishes
+    //   applyNavigationMode {boolean} - default true; false lands in orbit
+    //                                   whatever mode the scene was saved in
     // ------------------------------------------------------------
     // The scene's own orbit target is always animated to (exact SketchUp
     // framing at rest). Re-pivoting the orbit onto the OrbitHelperCube is
@@ -392,6 +469,18 @@
     // Na__Navmode__OrbitPivot__InteractionSwap — NOT by suppressing the target
     // here (suppressing it would leave OrbitControls' per-frame lookAt aimed at
     // the previous target and mis-frame the shot).
+    //
+    // NAVIGATION MODE:
+    // - Walk and fly are let go in place before the move starts. They own the
+    //   camera while active, and a flight run underneath them lost every
+    //   frame: walk rebuilt the camera from its capsule, fly re-aimed it from
+    //   its own look angles.
+    // - A walk or fly scene flies with the orbit target riding along its own
+    //   look axis, because its stored target is not what it looks at, and
+    //   OrbitControls re-aims the camera at the target on every update.
+    // - On arrival the scene's saved mode is entered exactly at the shot.
+    //   Scenes without one land in orbit, so a viewer is never left in walk
+    //   because the previous scene happened to be walked.
     // ------------------------------------------------------------
     function Na__PresentationMode__Camera__AnimateToScene(camera, controls, scene, options) {
         if (!camera || !scene) return;
@@ -412,9 +501,17 @@
         const easeFn      = Na__PresentationMode__Camera__ResolveEasing(easingName);
         const onComplete  = typeof opts.onComplete === 'function' ? opts.onComplete : null;
 
+        // RESOLVE THE ARRIVAL MODE
+        const sceneMode       = Na__PresentationMode__Camera__ResolveSceneNavigationMode(scene);
+        const arrivalMode     = (opts.applyNavigationMode === false) ? 'orbit' : sceneMode;
+        const isFreeLookScene = Na__NavigationModes__IsFreeLookMode(sceneMode);  // <-- Framing follows the shot even when arriving in orbit
+
         // CANCEL ANY IN-FLIGHT TRANSITION FIRST
         Na__PresentationMode__Camera__CancelCurrentTransition();
         const myTransitionId = Na__PresentationMode__TransitionId;            // <-- Snapshot id for this transition
+
+        // RELEASE WALK OR FLY IN PLACE | The flight starts from exactly what is on screen
+        Na__NavigationModes__ReleaseToOrbit(camera, controls);
 
         // SYNC TAG-DRIVEN MODEL TOGGLES IMMEDIATELY (not animated — an instant cut reads better than a mid-flight pop-out)
         Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);
@@ -435,7 +532,9 @@
         const endQuat      = new THREE.Quaternion().setFromEuler(endRotation);
 
         const endPos       = new THREE.Vector3(values.position.x, values.position.y, values.position.z);
-        const endTarget    = values.target ? new THREE.Vector3(values.target.x, values.target.y, values.target.z) : startTarget.clone();
+        const endTarget    = isFreeLookScene
+            ? Na__NavigationModes__PlaceLookAheadTarget(endPos, endQuat, new THREE.Vector3())   // <-- Where a walk or fly shot actually looks
+            : (values.target ? new THREE.Vector3(values.target.x, values.target.y, values.target.z) : startTarget.clone());
         const endFov       = values.fov !== null ? values.fov : startFov;
 
         const tempQuat     = new THREE.Quaternion();                          // <-- Reused scratch quaternion
@@ -466,9 +565,14 @@
             camera.fov = interpFov;
             camera.updateProjectionMatrix();                                  // <-- Rebuild projection each frame
 
-            // INTERPOLATE ORBIT TARGET
+            // INTERPOLATE ORBIT TARGET | A walk or fly shot keeps it on the
+            // slerped look axis, so update() agrees with the rotation above
             if (controls) {
-                controls.target.lerpVectors(startTarget, endTarget, t);
+                if (isFreeLookScene) {
+                    Na__NavigationModes__PlaceLookAheadTarget(camera.position, tempQuat, controls.target);
+                } else {
+                    controls.target.lerpVectors(startTarget, endTarget, t);
+                }
                 controls.update();
             }
 
@@ -488,6 +592,18 @@
 
                 Na__RenderLoop__StopActiveRender(Na__PresentationMode__RENDER_REASON); // <-- Stop continuous rendering
                 Na__PresentationMode__IsTransitioning = false;
+
+                // ARRIVE IN THE SCENE'S MODE | A mode switched on mid-flight is
+                // let go first and orbit takes the scene's own target back from
+                // the release, so arrival is always the scene as it was saved
+                if (Na__NavigationModes__GetActiveMode() !== arrivalMode
+                    && Na__NavigationModes__ReleaseToOrbit(camera, controls)
+                    && controls) {
+                    controls.target.copy(endTarget);
+                    controls.update();
+                }
+                Na__NavigationModes__EnterModeAtPose(arrivalMode, camera, controls); // <-- Orbit: nothing to enter
+
                 Na__RenderLoop__RequestRender();                              // <-- One final clean frame
 
                 if (onComplete) onComplete();                                 // <-- Notify caller
@@ -516,8 +632,10 @@
     // MODULE EXPORTS | Camera Scene Transition API
     // ------------------------------------------------------------
     export {
+        Na__PresentationMode__KEY__NAVIGATION_MODE,
         Na__PresentationMode__Camera__CaptureCurrentSceneState,
         Na__PresentationMode__Camera__BuildSceneCameraJson,
+        Na__PresentationMode__Camera__ResolveSceneNavigationMode,
         Na__PresentationMode__Camera__ApplySceneCameraState,
         Na__PresentationMode__Camera__AnimateToScene,
         Na__PresentationMode__Camera__CancelCurrentTransition,

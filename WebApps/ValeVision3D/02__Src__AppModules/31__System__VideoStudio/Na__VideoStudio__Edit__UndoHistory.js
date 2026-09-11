@@ -55,6 +55,10 @@
 // 14-Aug-2026 - Version 1.0.0
 // - Initial implementation.
 //
+// 11-Sep-2026 - Version 1.1.0
+// - Keyframe snapshots carry the Door Animation tick, so ticking or
+//   unticking it in the timeline menu is one undo step like the other fields.
+//
 // =============================================================================
 
 
@@ -67,7 +71,9 @@
     // ------------------------------------------------------------
     import {
         Na__VideoStudio__ProjectJson__GetVideoById,
-        Na__VideoStudio__ProjectJson__GetKeyframeById
+        Na__VideoStudio__ProjectJson__GetKeyframeById,
+        Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation,
+        Na__VideoStudio__ProjectJson__SetKeyframeDoorAnimation
     } from './Na__VideoStudio__ProjectJson__VideoData.js';
     // ------------------------------------------------------------
 
@@ -109,10 +115,13 @@
 
     // FUNCTION | Snapshot Everything a Viewpoint Edit Can Change
     // ------------------------------------------------------------
-    // The camera block, the lens, and which mode the shot was taken in. A drag
-    // only moves the camera block, but Update overwrites the whole viewpoint,
-    // and an undo that put the position back while leaving a stale lens beside
-    // it would be worse than no undo at all.
+    // The camera block, the lens, the navigation mode, and whether the
+    // keyframe lets doors open. A drag only moves the camera block, but Update
+    // overwrites the whole viewpoint, and an undo that put the position back
+    // while leaving a stale lens beside it would be worse than no undo at all.
+    // The mode and the door tick are here so their menu switches undo too; an
+    // entry whose two sides match is dropped, so a field left out would make
+    // its edit a step that undid nothing.
     //
     // Deliberately not the timing fields: those are typed numbers in plain
     // view, and reverting one the user typed after the edit would be a
@@ -125,7 +134,8 @@
         return {
             camera : JSON.parse(JSON.stringify(camera)),                     // <-- Plain data; structured clone is overkill
             lensMm : keyframe.VideoStudio__Keyframe__LensMm,
-            mode   : keyframe.VideoStudio__Keyframe__CapturedInMode
+            mode   : keyframe.VideoStudio__Keyframe__CapturedInMode,
+            doors  : Na__VideoStudio__ProjectJson__GetKeyframeDoorAnimation(keyframe)
         };
     }
     // ------------------------------------------------------------
@@ -160,6 +170,10 @@
 
         if (Number.isFinite(snapshot.lensMm)) keyframe.VideoStudio__Keyframe__LensMm = snapshot.lensMm;
         if (snapshot.mode)                    keyframe.VideoStudio__Keyframe__CapturedInMode = snapshot.mode;
+
+        if (typeof snapshot.doors === 'boolean') {
+            Na__VideoStudio__ProjectJson__SetKeyframeDoorAnimation(videoId, keyframeId, snapshot.doors);
+        }
 
         return true;
     }

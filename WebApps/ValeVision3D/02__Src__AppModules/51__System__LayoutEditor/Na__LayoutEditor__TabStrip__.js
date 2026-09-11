@@ -10,7 +10,9 @@
 // CREATED    : 09-Sep-2026
 //
 // DESCRIPTION:
-// - Shown whenever the project has a sheet (or the session can make one).
+// - Shown on the live site only when the project's data file has a sheet,
+//   and on localhost only while the project's Layout Mode switch (Dev Tools,
+//   Layout Editor) is on; the mode controller's IsAvailable owns the rule.
 //   Its height is published as --Vale_LayoutTabStripHeight and the body
 //   carries na-layout-tabs--visible, so the canvas, menus, breadcrumb and
 //   carousel shift down by the same amount (D22, D23, D24).
@@ -34,6 +36,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 11-Sep-2026 - Version 1.1.0
+// - Visibility from Na__LeMode__IsAvailable: no strip on the live site for a
+//   project without sheets, none on localhost until Layout Mode is switched on.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -46,7 +52,7 @@
 
     // MODULE IMPORTS | Config, Model and Mode Controller
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetLabel, Na__LeCfg__IsEnabled } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
     import {
         Na__LeModel__CHANGED_EVENT,
         Na__LeModel__GetSheets,
@@ -61,6 +67,7 @@
         Na__LeMode__Leave,
         Na__LeMode__IsActive,
         Na__LeMode__IsEditable,
+        Na__LeMode__IsAvailable,
         Na__LeMode__Ready
     } from './Na__LayoutEditor__ModeController__.js';
     // ------------------------------------------------------------
@@ -144,7 +151,7 @@
         const sheets   = Na__LeModel__GetSheets();
         const editable = Na__LeMode__IsEditable();
         const active   = Na__LeMode__IsActive() ? Na__LeModel__GetActiveSheet() : null;
-        const visible  = Na__LeCfg__IsEnabled() && (sheets.length > 0 || editable);
+        const visible  = Na__LeMode__IsAvailable();                          // <-- Live: the project has sheets. Localhost: Layout Mode is on.
         Na__LeTabs__Root.innerHTML = '';
         Na__LeTabs__Publish(visible);
         if (!visible) return;

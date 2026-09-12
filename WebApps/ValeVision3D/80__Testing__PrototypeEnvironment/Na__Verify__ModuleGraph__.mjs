@@ -59,7 +59,7 @@ import { fileURLToPath } from 'node:url';
             file      : '04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/SilhouetteGeneratorWorker.js',
             specifier : '../SilhouetteGenerator',
             reason    : 'Upstream bug in three-edge-projection 0.0.10: an extensionless relative specifier, which no browser can resolve. '
-                      + 'Reachable ONLY through the "three-edge-projection/worker" import map entry. Neither ValeVision nor ValeVision '
+                      + 'Reachable ONLY through the "three-edge-projection/worker" import map entry. Neither ValeVision nor TrueVision '
                       + 'imports that entry - both use the main entry plus a dynamic "three-edge-projection/webgpu", and the projection '
                       + 'system brings its own worker pool. Left unpatched to keep the vendor folder byte-identical across the three apps. '
                       + 'IF PHASE D EVER IMPORTS three-edge-projection/worker, THIS BREAKS THE PAGE - add the .js extension in all three '

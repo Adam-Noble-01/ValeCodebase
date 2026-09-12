@@ -16,7 +16,9 @@
 //   viewport hides the two that only mean something on a drawing.
 //
 // INTEGRATION:
-// - Registered into the right column by the mode controller.
+// - Registered into the LEFT column by the mode controller, under Drawing
+//   Layers and above Model Layers: the three panels that together say what
+//   a viewport's picture is made of.
 //
 // -----------------------------------------------------------------------------
 //
@@ -30,6 +32,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 12-Sep-2026 - Version 1.4.0
+// - Moved to the left column, under Drawing Layers. It belongs with the
+//   other two "what goes in the picture" panels, not with the property
+//   editors for whatever happens to be selected.
+//
 // 10-Sep-2026 - Version 1.3.0
 // - Context Layer toggle, last in the list. The section is called Render Composites.
 //
@@ -143,7 +150,7 @@
             styles[key] = el.checked;
             Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { styles : styles });
         });
-        return Na__LePanels__RegisterSection('right', {
+        return Na__LePanels__RegisterSection('left', {
             id : Na__LePanelStyles__ID, title : Na__LeCfg__GetLabel('StylesTitle', 'Render Composites'),
             build : Na__LePanelStyles__Build, refresh : Na__LePanelStyles__Refresh
         });

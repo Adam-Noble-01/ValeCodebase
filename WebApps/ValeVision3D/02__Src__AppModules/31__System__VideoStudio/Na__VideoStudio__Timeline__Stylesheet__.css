@@ -462,11 +462,16 @@
        both menus stop short while the strip is up and scroll instead. The
        divide by 1.2 undoes the menus' own scale(1.2), the same way their base
        clamp does.                                                            */
-    body.na-video-studio-timeline-active .na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
+    /* THE DEV MENU'S FLYOUT IS THE LIST, NOT THE DETAILS, since the trigger
+       moved into the header on 12-Sep-2026. Clamping the details would now
+       shrink the little pill button in the top bar and leave the panel it
+       opens running the full height of the viewport.                        */
+    body.na-video-studio-timeline-active .na-dropdown-menu--dev-localhost .na-dropdown-menu__list {
         max-height                         : calc(
                                                 (100vh
                                                  - var(--Vale_HeaderHeight, 54px)
-                                                 - 64px
+                                                 - var(--Vale_LayoutTabStripHeight, 0px)
+                                                 - 28px
                                                  - var(--Vale_VideoTimelineClearance)) / 1.2
                                              );
     }

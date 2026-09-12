@@ -62,6 +62,8 @@ TrueVision during the re-alignment and has now been ported back.
 | Dev menu shows the resolved backend | Per drawing, because auto is one answer per view, not one per session | **ported** |
 | `Na__AppUtils__DevGate__` | Authoring gated on a flag rather than a hostname | **ported**, routed conservatively - see below |
 | `Na__Verify__ModuleGraph__`, `Na__Verify__Exports__` | One proves every FILE resolves, the other every NAME. Both found real faults during the re-alignment | **ported** |
+| Dev Tools menu in the top bar | The menu sat fixed over the top-left of the viewport, permanently, whether or not it was open - which is where the model is. The trigger is now a pill beside the logo and only the flyout drops down, clearing the drawing tab strip. The drag handle sizes the panel (the container is a header flex item) and moved inside the list, since the container no longer establishes a positioned containing block | **ported** |
+| Render Composites panel in the LEFT column | TrueVision moved it under Drawing Layers on 12-Sep-2026 and the move never came back; ValeVision's file header said left while its code said right | **fixed** |
 
 **Deliberately NOT ported, each checked rather than assumed:**
 
@@ -78,6 +80,14 @@ TrueVision during the re-alignment and has now been ported back.
 - *The drawings-block migration.* ValeVision never nested drawings inside the presentation
   block, so there is nothing to migrate.
 - *SectionAdapter and RenderPreset.* TrueVision-specific by construction (DIV-1, DIV-2).
+
+**The dev menu port carries one deliberate divergence.** The trigger's `<details>`
+also resets `max-height` and `overflow`, because ValeVision's base dropdown sheet clamps
+and scrolls the details element and TrueVision's does not - without the reset the header
+pill inherits a viewport-height scroll box. Two ValeVision-only rules were repointed
+rather than copied: Video Studio's timeline clamp now targets the flyout list (it was
+clamping what is now the pill), and the Scene Inspector's `min-width: 290px` on the
+details was dropped, the panel's own width having replaced it.
 
 **DevGate routing is narrower here on purpose.** ValeVision's hostname test does more work
 than TrueVision's: the loader picks the local Flask server over GitHub Pages, and the save

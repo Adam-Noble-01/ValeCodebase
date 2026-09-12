@@ -1,6 +1,52 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.22.1 - 12-Sep-2026 - The Dev Menu Moves Into the Top Bar
+
+### Changed
+- **The Dev Tools menu is no longer parked over the model.** It used to sit
+  fixed at the top-left of the viewport, permanently, whether or not anyone had
+  opened it - which is exactly where the building is. The trigger is now a small
+  pill in the top bar beside the Vale Garden Houses logo, and only the flyout
+  drops down the left edge once it is pressed. The canvas is clear until you ask
+  for the menu. Ported from TrueVision3D, where this was done first.
+- **The flyout clears the drawing tab strip.** Its top is header height plus the
+  published `--Vale_LayoutTabStripHeight`, so it lands below the tabs when a
+  drawing tab is open and below the header when none is.
+- **The drag-resize corner sizes the panel, not the container.** The container is
+  a flex item in the header now; widening it would stretch the top bar and leave
+  the flyout the width it was. The handle also moved INSIDE the list, because it
+  is `position: absolute` and the container no longer establishes a positioned
+  containing block for it.
+
+### Fixed
+- **The Render Composites panel registered into the right-hand column.** It was
+  moved to the left in TrueVision on 12-Sep-2026, under Drawing Layers, and the
+  move never came back across - so the file's own header said left and the code
+  said right. Three panels say what a viewport's picture is made of and they
+  belong together.
+- **Video Studio's dev-menu height clamp pointed at the wrong element.** It
+  clamped `.na-dropdown-menu__details`, which since the move is the pill button
+  in the header; it now clamps the flyout list, which is the thing that could
+  run over the timeline strip.
+
+### Removed
+- **The legacy `--dev-localhost` positioning block** in
+  `Na__UiFeature__Styles__DropdownAndToast__.css`, plus the Scene Inspector's
+  `min-width: 290px` on the details element - the first fought the header mount,
+  the second re-inflated the header pill. Both live in the new
+  `Na__UiFeature__Styles__DevToolsMenu__.css` in the form the new layout needs.
+
+### Notes
+- Verified in the browser at 1600x950: trigger 108x27 at x=233 in the top bar,
+  flyout fixed at x=20 / y=70 (header 60px + 10px), drag grows 300 -> 420 CSS px
+  and clamps at the 640px ceiling, container never given an inline width.
+- **Divergence from TrueVision**: the trigger's details element also resets
+  `max-height` and `overflow`, because ValeVision's base dropdown sheet clamps
+  and scrolls the details and TrueVision's does not.
+
+# ---------------------------------------------------------
+# ---------------------------------------------------------
 ## ValeVision3D v2.22.0 - 12-Sep-2026 - The Return Trip: Fixes and Hardware From TrueVision
 
 ### Fixed

@@ -62,47 +62,12 @@
     opacity                            : 1;
 }
 
-.na-dropdown-menu--dev-localhost {
-    top                                : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 64px); /* <-- Below the breadcrumb row (14px + 40px card + 10px gap) */
-    right                              : unset;                                 /* <-- Override base right positioning */
-    left                               : 20px;                                 /* <-- Pin to the left side of the viewport */
-    transform-origin                   : top left;                              /* <-- Scale from top-left corner */
-    position                           : fixed;                                /* <-- Explicit fixed for absolute child positioning */
-    /* NOTE: scroll clamp lives on the details card below so its shadow is never clipped */
-}
-
-.na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
-    max-height                         : calc((100vh - (var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) - 64px) / 1.2); /* <-- Deeper offset: menu sits below the breadcrumb row */
-}
-
-.na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
-    width                              : 100%;                                  /* <-- Fill container when resized by drag handle */
-}
-
-
-/* Dev Menu Resize Handle - Bottom-Right Drag Corner */
-/* ----------------------------------------------------------------- */
-.na-dev-menu__resize-handle {
-    position                           : absolute;
-    bottom                             : 0;
-    right                              : 0;
-    width                              : 18px;
-    height                             : 18px;
-    cursor                             : se-resize;
-    z-index                            : 10;
-    opacity                            : 0.35;
-    transition                         : opacity 0.15s ease;
-    background-image                   : radial-gradient(circle, rgba(23, 43, 58, 0.6) 1px, transparent 1px);
-    background-size                    : 4px 4px;                               /* <-- 3x3 grip-dot grid */
-    background-position                : bottom 3px right 3px;
-    background-repeat                  : repeat;
-    background-clip                    : content-box;
-    padding                            : 2px;
-}
-
-.na-dev-menu__resize-handle:hover {
-    opacity                            : 0.75;
-}
+/* THE DEV TOOLS MENU IS NO LONGER A FLOATING CANVAS PANEL. Its shell, its
+   header-mounted trigger and its drag-resize corner all live in
+   Na__UiFeature__Styles__DevToolsMenu__.css, which is imported after this
+   sheet. The block that used to pin it fixed at the top-left of the viewport
+   was removed on 12-Sep-2026: it fought the header mount and put the menu
+   straight over the model.                                           */
 
 .na-dropdown-menu__details {
     background                          : rgba(255, 255, 255, 0.95);
@@ -930,11 +895,9 @@
 /* REGION  |  Scene Inspector - Dev Tools Panel                      */
 /* ================================================================= */
 
-/* Dev Tools menu - wider details panel to accommodate tree */
-/* ----------------------------------------------------------------- */
-.na-dropdown-menu--dev-localhost .na-dropdown-menu__details {
-    min-width                           : 290px;
-}
+/* The inspector's width now comes from the flyout panel's own width (300px,
+   drag-resizable) in Na__UiFeature__Styles__DevToolsMenu__.css. A min-width on
+   the details element would re-inflate the header trigger pill.      */
 
 
 /* Inspector Header - Stats Row + Scan Button */

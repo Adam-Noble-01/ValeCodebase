@@ -165,6 +165,11 @@
                 alt="Vale Garden Houses"
                 class="app-header__logo-left"
             />
+            <!-- Dev Tools trigger slot (localhost only).
+                 Filled at runtime by Na__UiFeature__DevMenu__LocalhostOnly.js, which moves
+                 #naDevToolsMenuContainer in here once the authoring gate passes; the menu's
+                 own markup stays in its region further down this file. -->
+            <div class="app-header__dev-slot" id="naHeaderDevToolsSlot"></div>
         </div>
         
         <div class="app-header__logo-container app-header__logo-container--right">
@@ -971,9 +976,11 @@
                         <div class="na-scene-inspector__tree" id="naSceneInspectorTree" aria-label="Scene node tree"></div>
                     </div>
                 </li>
+                <li class="na-dev-menu__resize-row" aria-hidden="true">
+                    <div class="na-dev-menu__resize-handle" id="naDevMenuResizeHandle"></div>
+                </li>
             </ul>
         </details>
-        <div class="na-dev-menu__resize-handle" id="naDevMenuResizeHandle" aria-hidden="true"></div>
     </div>
     
     <!-- ----------------------------------------------------------------- -->

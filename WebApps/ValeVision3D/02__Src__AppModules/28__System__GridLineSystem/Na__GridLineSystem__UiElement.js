@@ -49,7 +49,6 @@
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
     import {
-        Na__AppUtils__IsRunningOnLocalhost,
         Na__AppUtils__GetProjectCodeFromUrl,
         Na__AppUtils__FetchProjectJson
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
@@ -70,6 +69,8 @@
     // ------------------------------------------------------------
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -688,7 +689,7 @@
         if (!Na__GridUi__ToggleBtn || !Na__GridUi__Panel || !Na__GridUi__SizeSlider) return;
 
         // Reveal localhost-only position controls and enable origin marker
-        Na__GridUi__IsLocalhost = Na__AppUtils__IsRunningOnLocalhost();
+        Na__GridUi__IsLocalhost = Na__DevGate__IsAuthoringEnabled();
         if (Na__GridUi__IsLocalhost && Na__GridUi__PosSection) {
             Na__GridUi__PosSection.style.display = '';
         }

@@ -72,15 +72,30 @@
     // MODULE CONSTANTS | Section Id and the Toggle Set
     // ------------------------------------------------------------
     const Na__LePanelStyles__ID = 'styles';
+    // THE LIST IS IN DRAWING ORDER, and Context Layer sits last because it is
+    // the layer furthest back: the rendered picture everything else is drawn
+    // over. Switching it off leaves the projected linework alone on the paper,
+    // which is the vector drawing a technical sheet usually wants.
+    //
+    // ITS KEY IS STILL `baseImage`, deliberately. Renaming the key would need a
+    // migration of every saved viewport for no gain; the label is what people
+    // read and the key is what the records already hold.
+    //
+    // The old `contextLayer` toggle - which hid the existing building and the
+    // landscape categories - is gone from the panel. Two controls both claiming
+    // to be the context, one of which emptied a renovation drawing entirely, was
+    // worse than one that does the obvious thing. The key and its mechanism
+    // remain in the record layer, defaulting on, so nothing saved changes
+    // meaning and Na__LeSnap__HideContext still works if it is ever wanted back
+    // under an honest name.
     const Na__LePanelStyles__TOGGLES = [
-        { key : 'baseImage',         label : 'Base Image',              twoDOnly : false },
         { key : 'projectedLinework', label : 'Projected Linework',      twoDOnly : true },
         { key : 'profileLinework',   label : 'Profile Linework Effect', twoDOnly : false },
         { key : 'glassOpaque',       label : 'Glass Transparency Off',  twoDOnly : false },
         { key : 'whitecard',         label : 'Whitecard',               twoDOnly : false },
         { key : 'enhanceWhitecard',  label : 'Enhance Whitecard',       twoDOnly : false },
         { key : 'hiddenLines',       label : 'Hidden Lines',            twoDOnly : true },
-        { key : 'contextLayer',      label : 'Context Layer',           twoDOnly : false }
+        { key : 'baseImage',         label : 'Context Layer',           twoDOnly : false }
     ];
     // ------------------------------------------------------------
 

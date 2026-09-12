@@ -35,7 +35,7 @@
 
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
-    import { Na__AppUtils__IsRunningOnLocalhost } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -104,7 +104,7 @@
         const devMenuContainer = document.getElementById(Na__DevMenu__ContainerId);
         if (!devMenuContainer) return;                                         // <-- Exit if the dev menu shell is absent
 
-        if (!Na__AppUtils__IsRunningOnLocalhost()) {
+        if (!Na__DevGate__IsAuthoringEnabled()) {
             devMenuContainer.style.display = 'none';                           // <-- Keep hidden on live deployments
             return;
         }

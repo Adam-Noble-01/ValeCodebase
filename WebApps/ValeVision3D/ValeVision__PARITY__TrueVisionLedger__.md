@@ -8,8 +8,95 @@ Parity states: `verbatim` (logic identical, headers and console prefix differ), 
 divergences listed in the file's PORT NOTE), `diverged` (same purpose, different implementation),
 `new` (no TrueVision counterpart yet, back-port candidate).
 
-TrueVision root: `D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode`.
+TrueVision root: `D:\11_RefLib__StudioRepository__RemoteSystem\NaWeb\na-apps\30__TrueVision__CoreAppCode`
+(working copy for the re-alignment: `D:\WE10_--_Public-Repo_--_Live-Website\na-apps\30__TrueVision__CoreAppCode`).
 ValeVision root: `WebApps/ValeVision3D`.
+
+**Direction of travel reversed, 10-Sep-2026.** The back-port is now under way and is
+planned in `TrueVision__PLAN__ValeVisionRealign__DrawingSystems__.md` in the TrueVision
+root. Rows below are closed from the TrueVision side as each phase lands. Five
+structural divergences are deliberate and permanent - the drawing render path, the
+section engine, the drawings-block location, the persistence transport and (until now)
+the library baseline; see section 2.2 of that plan before assuming a file copies.
+
+### Back-port progress
+
+| Phase | Scope | State |
+|---|---|---|
+| A | Version-locked libraries (r184 set) | **done** - TrueVision v2.20.0, live |
+| B | Drawing core, drawings-block migration | **done** - v2.21.0 |
+| TD06 | Section data in ValeVision's schema | **done** - v2.21.0 |
+| C | Floor plan / elevation feature parity | **mostly done** - v2.21.0. Pick Face, gizmo grip, scene editor splits, styles, exclusions, dimension splits and the confirm dialog all landed. Ground Floor Plan quick action and sections-filed-by-type still outstanding |
+| D | Projected linework | **done** - v2.22.0, all 24 files |
+| E | Layout Editor | **done** - v2.23.0, all 49 files |
+| F | Authoring gate (TrueVision-only, TD01) | **done** - v2.24.0 |
+
+**Closed from the Pending back-port table below**: scene row builders and reorder
+splits; per-drawing style toggles; dimension config and preview splits; the R2 asset
+upload utility; the async confirm dialog; Pick Face and the gizmo grip; shared drawing
+style rows and config state; the whole Layout Editor.
+
+**Still outstanding**: the Ground Floor Plan quick action, sections filed by drawing
+type, and the two Lantern Designer items (the rotation path in the soup builder, hidden
+segments through the worker pool) which are ValeVision-to-ValeVision rather than
+back-ports.
+
+**New in TrueVision, not in ValeVision** - candidates for the return trip:
+`Na__AppUtils__DevGate__` (authoring unlocked by flag rather than hostname, so an
+installed app can author), and the two verification harnesses
+`Na__Verify__ModuleGraph__` and `Na__Verify__Exports__`, which between them prove that
+every file resolves and every imported NAME exists. The second caught faults in this
+port repeatedly and ValeVision has no equivalent.
+
+### Return trip - TrueVision to ValeVision (12-Sep-2026)
+
+The first batch under the new direction of travel. Everything below was authored in
+TrueVision during the re-alignment and has now been ported back.
+
+| Item | Why | State |
+|---|---|---|
+| Glass transmission detected | `IsTransparent` asked only about `transparent`/`opacity`. Glazing exported through KHR_materials_transmission has `transparent:false` and `opacity:1` - see-through because light passes through it, not because the slot is blended. Glass Transparency Off silently did nothing to it in BOTH apps | **ported** |
+| Viewport styles reach the linework | `FromPlan`/`FromElevation` gain a styles override and Viewport2d passes the viewport's own. Without it a Render Composites toggle changed the raster and not the vectors drawn over it | **ported** |
+| Context Layer renamed and moved last | `baseImage` is the toggle that turns the backing render off; it is now labelled Context Layer and sits last, and the old `contextLayer` toggle (which hid the existing building and landscape, emptying a renovation drawing) is gone from the panel. Key unchanged, so nothing saved changes meaning | **ported** |
+| Backend `auto` + hardware probe | Picks the fastest backend that is CORRECT per view. The GPU cannot apply a drawing cut, so plans and section elevations always take the CPU; plain elevations take the card. Probe rejects software fallback adapters, which pass every API check and are slower than the CPU backend | **ported** |
+| Dev menu shows the resolved backend | Per drawing, because auto is one answer per view, not one per session | **ported** |
+| `Na__AppUtils__DevGate__` | Authoring gated on a flag rather than a hostname | **ported**, routed conservatively - see below |
+| `Na__Verify__ModuleGraph__`, `Na__Verify__Exports__` | One proves every FILE resolves, the other every NAME. Both found real faults during the re-alignment | **ported** |
+
+**Deliberately NOT ported, each checked rather than assumed:**
+
+- *The 2D viewport camera fix.* TrueVision passed the main perspective camera where the
+  framed ortho belonged. ValeVision passes the main camera at that same line and is RIGHT
+  to: its ComposerPreset swaps the composer's RenderPass camera to the ortho, so the ortho
+  draws regardless. This is DIV-1, working as designed.
+- *TrueVision's dual key-convention read.* TrueVision needed to read both
+  `Styles__GlassOpaque` and `glassOpaque` because its ported modules disagreed. ValeVision
+  is internally consistent on the plain spelling, so adding the dual read would be
+  cargo-culting a fix for a bug it does not have.
+- *The MaterialPreset init.* TrueVision never called it, so Whitecard and Glass Transparency
+  Off swapped zero materials. ValeVision has always called it.
+- *The drawings-block migration.* ValeVision never nested drawings inside the presentation
+  block, so there is nothing to migrate.
+- *SectionAdapter and RenderPreset.* TrueVision-specific by construction (DIV-1, DIV-2).
+
+**DevGate routing is narrower here on purpose.** ValeVision's hostname test does more work
+than TrueVision's: the loader picks the local Flask server over GitHub Pages, and the save
+path writes a Flask mirror beside the R2 write. Those are DATA-PATH uses and keep the raw
+test - `Na__AppUtils__ProjectLoader`, `Na__PresentationMode__ProjectJson__SceneData`,
+`Na__DrawView__ProjectData__`, `Na__ProjectedLinework__Persistence__`,
+`Na__LayoutEditor__Assets__` and the breadcrumb nav. Only the authoring surfaces were
+routed. Unlocking authoring on the live site must not send the loader hunting for a server
+that is not there.
+
+---
+
+**One defect found in the shared vendor set, present in ValeVision too:**
+`04__Vendor__ThreeEdgeProjection__v0.0.10/src/worker/SilhouetteGeneratorWorker.js`
+imports `'../SilhouetteGenerator'` with no file extension, which no browser can resolve.
+It is reachable only through the `three-edge-projection/worker` import map entry, which
+neither app imports, so it is latent rather than live in both. Left unpatched to keep
+the vendor folders byte-identical. If either app ever imports that entry, fix it in all
+three copies or drop the map entry.
 
 ---
 
@@ -17,7 +104,7 @@ ValeVision root: `WebApps/ValeVision3D`.
 
 | ValeVision | TrueVision | Parity | Notes | Checked |
 |---|---|---|---|---|
-| `04__Lib__ThirdParty__VersionLocked/` (three r184, three-mesh-bvh 0.9.9, clipper2-js 0.9.0, three-edge-projection 0.0.10) | esm.sh three r160 import map | diverged | ValeVision runs the Lantern Designer's locked set; TrueVision stays on r160 until it adopts the projection engine. clipper2-js added 10-Sep-2026 (v2.21.1): three-edge-projection imports it at module load | 10-Sep-2026 |
+| `04__Lib__ThirdParty__VersionLocked/` (three r184, three-mesh-bvh 0.9.9, clipper2-js 0.9.0, three-edge-projection 0.0.10) | `04__Lib__ThirdParty__VersionLocked/` (same four, byte-identical, 598 files) | **verbatim** | **CLOSED 10-Sep-2026** by TrueVision v2.20.0. Vendor folders copied byte-for-byte from ValeVision; import maps identical bar the eleven-vs-eleven key order. Index JSON and README renamed to the `TrueVision__` prefix. `THREE.REVISION` reads 184 at runtime in both apps | 10-Sep-2026 |
 
 ## Phase 1 - Scene Groups (v2.17.0, 09-Sep-2026)
 

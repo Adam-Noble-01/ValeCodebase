@@ -1,4 +1,83 @@
 # ValeVision3D Development Log
+
+# ---------------------------------------------------------
+## ValeVision3D v2.22.0 - 12-Sep-2026 - The Return Trip: Fixes and Hardware From TrueVision
+
+### Fixed
+- **Glass Transparency Off did nothing to real glazing.** The detector asked
+  only whether a material was `transparent` or had `opacity` below 1. Glazing
+  exported through KHR_materials_transmission is neither: it arrives as a
+  MeshPhysicalMaterial with `transparent: false` and `opacity: 1`, see-through
+  because light passes THROUGH it rather than because the slot is blended. So
+  the toggle declared that glass opaque already, skipped it, and reported
+  success - the sliding doors kept showing the room behind them. `transmission`
+  above zero now counts. The substitute was always a flat opaque white, so the
+  glass goes white the moment it is actually caught.
+- **A viewport's Render Composites toggles did not reach its linework.** The
+  projection took its flags from the drawing record alone, so switching Hidden
+  Lines or Glass Transparency Off on a sheet viewport changed the raster picture
+  and not the vectors drawn over it. `FromPlan` and `FromElevation` take a styles
+  override and the viewport passes its own. A toggle that half works is harder to
+  trust than one that does nothing, because the half that works suggests the rest
+  should be believed.
+
+### Changed
+- **Context Layer is now the toggle that turns the backing render off**, and it
+  sits last in Render Composites because it is the layer furthest back -
+  everything else draws over it. Switching it off leaves the projected linework
+  alone on the paper, which is the vector drawing a technical sheet wants. Its
+  key is still `baseImage`, so nothing already saved changes meaning.
+- **The old Context Layer toggle is gone from the panel.** It hid the existing
+  building and the landscape, which on a renovation is most of the drawing -
+  switching it off emptied the sheet. Two controls both claiming to be the
+  context, one of which blanked the drawing, was worse than one that does the
+  obvious thing. The mechanism stays in the record layer under its own key.
+
+### Added
+- **The projection picks its backend from the hardware.** `auto` is the new
+  default and chooses the fastest backend that is CORRECT for each view, which is
+  not the same as the fastest backend. The GPU has no cut handling at all - hand
+  it a floor plan and it projects the whole building, roof included, instead of
+  the storey below the cut. Every plan carries a cut by definition, and so does a
+  section-mode elevation; a plain elevation does not, and that is where the card
+  is both correct and worth having.
+- **A real hardware probe**, because `navigator.gpu` existing is not a capability
+  test - it is true in every current Chromium, including where the adapter
+  request then fails or returns a software rasteriser. The probe awaits
+  `requestAdapter` once, caches it, and REJECTS A FALLBACK ADAPTER: software
+  WebGPU passes every API check and is slower than the CPU backend it would
+  displace, so accepting it would choose the slow path while reporting the fast
+  one. `powerPreference: high-performance` is asked for but is currently ignored
+  on Windows (crbug 369219127).
+- **The Dev menu says which backend each drawing will use** - per drawing,
+  because auto is one answer per view rather than one per session - and the Diff
+  harness holds the CPU against the card where there is one, printing which is
+  faster.
+- **`Na__AppUtils__DevGate__`**: authoring gated on a persisted flag or
+  `?authoring=on` rather than on the hostname alone. Routed NARROWLY: ValeVision's
+  hostname test also picks the local Flask server over GitHub Pages and writes the
+  Flask mirror beside the R2 write, and those data-path uses keep the raw test.
+  Unlocking authoring must not send the loader hunting for a server that is not
+  there.
+- **Two verification harnesses**, `Na__Verify__ModuleGraph__` and
+  `Na__Verify__Exports__`. One proves every FILE a page loads resolves, the other
+  that every imported NAME exists and that no `Na__` identifier is used without
+  being imported or declared. Different faults, same symptom - a blank page - and
+  between them they caught several during the work that produced this entry.
+  405 modules and 302 files pass.
+
+### Notes
+- These came back from TrueVision, where they were written during the drawing
+  re-alignment. Three TrueVision fixes were deliberately NOT ported, each checked
+  rather than assumed: the 2D viewport camera (ValeVision passes the main camera
+  there and is right to, because its composer swaps the RenderPass camera), the
+  dual style-key read (ValeVision is internally consistent on one spelling), and
+  the MaterialPreset initialisation (ValeVision has always called it). The parity
+  ledger records the reasoning.
+- **NOT verified here**: the glass fix has not been seen against a ValeVision
+  project with real glazing - the logic is identical to the one proven in
+  TrueVision, but that is an argument, not a test.
+
 # =========================================================
 
 # ---------------------------------------------------------

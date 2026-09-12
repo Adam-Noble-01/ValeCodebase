@@ -249,12 +249,32 @@
 
     // HELPER FUNCTION | Reduce the Style Toggles to the Flags the Engine Reads
     // ------------------------------------------------------------
-    function Na__PlView__Flags(styles) {
-        const flags = styles || {};
+    // THE OVERRIDE IS WHAT LETS A SHEET VIEWPORT DIFFER FROM ITS DRAWING.
+    // Without it the projection takes its flags from the drawing record alone,
+    // so a Render Composites toggle on a viewport changes the raster picture
+    // behind the linework and not the linework itself - the vectors keep whatever
+    // the drawing record said. A toggle that half works is harder to trust than
+    // one that does nothing, because the half that works suggests the other half
+    // should be believed too.
+    //
+    // Only the viewport spelling is read here, on purpose. This app writes and
+    // reads `glassOpaque` everywhere - the records through Na__FpData__GetStyles,
+    // the viewports through Viewport__Styles - so there is one convention and
+    // nothing to reconcile.
+    function Na__PlView__Flags(styles, override) {
+        const base = styles   || {};
+        const over = override || {};
+
+        const pick = (key, fallback) => {
+            if (typeof over[key] === 'boolean') return over[key];
+            if (typeof base[key] === 'boolean') return base[key];
+            return fallback;
+        };
+
         return {
-            projectedLinework : flags.projectedLinework !== false,
-            hiddenLines       : flags.hiddenLines === true,
-            glassOpaque       : flags.glassOpaque === true
+            projectedLinework : pick('projectedLinework', true),
+            hiddenLines       : pick('hiddenLines',       false),
+            glassOpaque       : pick('glassOpaque',       false)
         };
     }
     // ------------------------------------------------------------
@@ -290,7 +310,7 @@
 
     // FUNCTION | Build the View Definition for a Floor Plan
     // ------------------------------------------------------------
-    function Na__PlView__FromPlan(plan) {
+    function Na__PlView__FromPlan(plan, stylesOverride) {
         if (!plan) return null;
         const basis = Na__PlView__PlanBasis();
 
@@ -304,7 +324,7 @@
             UpScene       : Na__PlView__UpFromBasis(basis),
             Axis2Sign     : 1,                                                   // <-- Drawing y down = world Z = the broker's axis 2
             Cut           : Na__PlView__PlanCut(plan),
-            Styles        : Na__PlView__Flags(Na__FpData__GetStyles(plan)),
+            Styles        : Na__PlView__Flags(Na__FpData__GetStyles(plan), stylesOverride),
             ExcludeTokens : Na__PlView__Tokens(Na__FpData__GetExcludeTokens(plan)),
             RecordHash    : null
         };
@@ -316,7 +336,7 @@
 
     // FUNCTION | Build the View Definition for an Elevation or Section
     // ------------------------------------------------------------
-    function Na__PlView__FromElevation(elevation) {
+    function Na__PlView__FromElevation(elevation, stylesOverride) {
         if (!elevation) return null;
         const axes  = Na__ElevData__GetAxes(elevation);
         const basis = Na__PlView__ElevationBasis(axes);
@@ -331,7 +351,7 @@
             UpScene       : Na__PlView__UpFromBasis(basis),
             Axis2Sign     : -1,                                                  // <-- Drawing y down = minus height; the broker's axis 2 is height
             Cut           : Na__PlView__ElevationCut(elevation, axes),
-            Styles        : Na__PlView__Flags(Na__ElevData__GetStyles(elevation)),
+            Styles        : Na__PlView__Flags(Na__ElevData__GetStyles(elevation), stylesOverride),
             ExcludeTokens : Na__PlView__Tokens(Na__ElevData__GetExcludeTokens(elevation)),
             RecordHash    : null
         };

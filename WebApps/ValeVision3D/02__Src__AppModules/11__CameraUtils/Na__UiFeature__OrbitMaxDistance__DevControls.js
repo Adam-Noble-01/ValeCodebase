@@ -47,7 +47,7 @@
 
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
-    import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import { Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | R2-First Save Utility
@@ -60,6 +60,8 @@
     // ------------------------------------------------------------
     import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -285,7 +287,7 @@
             deviceConfig                                                         // <-- { activeConfig, isTouch }
         } = params || {};
 
-        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                       // <-- Hide on production
+        if (!Na__DevGate__IsAuthoringEnabled()) return;                       // <-- Hide on production
 
         // Wrapper visibility and submenu open/close are owned by the parent
         // Camera Configurations submenu (Na__UiFeature__SaveCameraSettings).

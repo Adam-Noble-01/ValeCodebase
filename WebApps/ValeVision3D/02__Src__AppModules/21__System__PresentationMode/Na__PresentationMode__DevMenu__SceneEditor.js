@@ -12,7 +12,7 @@
 // CREATED    : 11-Jun-2026
 //
 // DESCRIPTION:
-// - Gated behind Na__AppUtils__IsRunningOnLocalhost(); completely invisible
+// - Gated behind Na__DevGate__IsAuthoringEnabled(); completely invisible
 //   on production/hosted builds.
 // - Renders inside the static #naPmDevEditorPanel container (declared in
 //   index.html Dev Tools section): a collapsible Scene Groups section at the
@@ -206,7 +206,6 @@
     // MODULE IMPORTS | Project Utilities
     // ------------------------------------------------------------
     import {
-        Na__AppUtils__IsRunningOnLocalhost,
         Na__AppUtils__GetProjectCodeFromUrl
     } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
@@ -221,6 +220,8 @@
     // ------------------------------------------------------------
     import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -948,7 +949,7 @@
     // FUNCTION | Initialize Localhost-Only Presentation Mode Scene Editor
     // ------------------------------------------------------------
     function Na__PresentationMode__DevMenu__InitializeSceneEditor(camera, controls, showToast) {
-        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                   // <-- Production guard: never shown hosted
+        if (!Na__DevGate__IsAuthoringEnabled()) return;                   // <-- Production guard: never shown hosted
 
         Na__PmDev__Camera      = camera;
         Na__PmDev__Controls    = controls;

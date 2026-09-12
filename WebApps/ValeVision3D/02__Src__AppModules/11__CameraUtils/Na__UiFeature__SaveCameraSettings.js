@@ -44,7 +44,7 @@
 
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
-    import { Na__AppUtils__IsRunningOnLocalhost, Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+    import { Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | R2-First Save Utility
@@ -57,6 +57,8 @@
     // ------------------------------------------------------------
     import { Na__AppUtils__ConfirmDialog__Show } from '../03__AppUtils/Na__AppUtils__ConfirmDialog.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -128,7 +130,7 @@
     // FUNCTION | Initialize Localhost-Only Camera Configurations Submenu
     // ------------------------------------------------------------
     function Na__UiFeature__InitializeSaveCameraButton(camera, controls, showToast) {
-        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                   // <-- Only on localhost
+        if (!Na__DevGate__IsAuthoringEnabled()) return;                   // <-- Only on localhost
 
         const menuItem  = document.getElementById('naCameraConfigItem');     // <-- Wrapper for whole Camera Configurations submenu
         const toggleBtn = document.getElementById('naCameraConfigToggle');   // <-- Submenu open/close button

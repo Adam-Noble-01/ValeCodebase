@@ -146,7 +146,17 @@
     // ------------------------------------------------------------
     function Na__LeVp2d__Describe(viewport) {
         const source = Na__LeModel__ResolveViewportSource(viewport);
-        const definition = source.plan ? Na__PlView__FromPlan(source.plan) : (source.elevation ? Na__PlView__FromElevation(source.elevation) : null);
+
+        // The viewport's own Render Composites toggles override the drawing
+        // record's, so a sheet can show the same drawing two ways - and so a
+        // toggle in the panel governs the LINEWORK as well as the raster behind
+        // it. Without the override the vectors keep whatever the drawing record
+        // said and the panel only appears to work.
+        const override   = viewport.Viewport__Styles || null;
+        const definition = source.plan
+            ? Na__PlView__FromPlan(source.plan, override)
+            : (source.elevation ? Na__PlView__FromElevation(source.elevation, override) : null);
+
         return { source : source, definition : definition, window : Na__LeVp2d__Window(viewport) };
     }
     // ------------------------------------------------------------

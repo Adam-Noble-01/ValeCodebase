@@ -1359,6 +1359,7 @@
     // MODULE IMPORTS | Projected Linework (port Phase 4)
     // @delegate: ./02__Src__AppModules/50__System__ProjectedLinework/
     // ------------------------------------------------------------
+    import { Na__DevGate__Initialize } from './02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js';
     import { Na__PlCfg__SetAppConfig } from './02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__ConfigAccess__.js';
     import { Na__PlOverlay__Initialize } from './02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__SvgOverlay__.js';
     import { Na__PlPipe__Initialize } from './02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Pipeline__.js';
@@ -2151,6 +2152,13 @@
 
     // PROJECTED LINEWORK | Config, overlay, pipeline and Dev section (port Phase 4)
     // @delegate: ./02__Src__AppModules/50__System__ProjectedLinework/
+    // AUTHORING GATE | Resolved once, before any dev surface asks.
+    // @delegate: ./02__Src__AppModules/03__AppUtils/Na__AppUtils__DevGate__.js
+    // An ?authoring=on parameter must be honoured before the first panel is
+    // built; a gate that changed answer halfway would leave some dev surfaces
+    // built and some not.
+    Na__DevGate__Initialize();
+
     Na__PlCfg__SetAppConfig(Na__AppConfig__Data);                               // <-- Main config overrides the exclusion tokens
     Na__PlOverlay__Initialize({ canvas : Na__Renderer__Main.domElement });
     Na__PlPipe__Initialize({ modelRoot : Na__ModelGroup__Root });

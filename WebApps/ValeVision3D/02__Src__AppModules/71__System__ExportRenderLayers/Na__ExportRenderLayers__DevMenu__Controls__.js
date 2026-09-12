@@ -46,9 +46,7 @@
     // @delegate: ../03__AppUtils/Na__AppUtils__ProjectLoader.js
     // ------------------------------------------------------------
     import {
-        Na__AppUtils__GetProjectCodeFromUrl,
-        Na__AppUtils__IsRunningOnLocalhost
-    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+        Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Shared Loading Overlay
@@ -156,6 +154,8 @@
     // ------------------------------------------------------------
     import { Na__ExportRenderLayers__DownloadBlob } from './01__SystemModules/Na__ExportRenderLayers__FileWriter__.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -1126,7 +1126,7 @@
     //   showToast              {Function|null}
     // ------------------------------------------------------------
     function Na__ExportRenderLayers__InitializeDevControls(options) {
-        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                       // <-- Developer system; never on a deployment
+        if (!Na__DevGate__IsAuthoringEnabled()) return;                       // <-- Developer system; never on a deployment
 
         const config = options.config || {};
         if (config.ExportRenderLayers__Config__Enabled === false) return;        // <-- AppConfig owns the feature flag

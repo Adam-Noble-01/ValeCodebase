@@ -46,9 +46,7 @@
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
     import {
-        Na__AppUtils__GetProjectCodeFromUrl,
-        Na__AppUtils__IsRunningOnLocalhost
-    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+        Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | R2-First Save Utility
@@ -70,6 +68,8 @@
         Na__RenderEngine__GetActiveEngine
     } from '../05__RenderPipeline/Na__RenderEngine__State.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -158,7 +158,7 @@
     // FUNCTION | Initialize Render Engine Dev Controls
     // ------------------------------------------------------------
     function Na__UiFeature__InitializeRenderEngineDevControls({ onSaved, showToast } = {}) {
-        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                   // <-- Dev menu only on localhost
+        if (!Na__DevGate__IsAuthoringEnabled()) return;                   // <-- Dev menu only on localhost
 
         const menuItem  = document.getElementById(Na__EngineDevMenu__ItemId);
         const toggleBtn = document.getElementById(Na__EngineDevMenu__ToggleId);

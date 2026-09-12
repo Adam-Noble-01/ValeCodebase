@@ -76,6 +76,11 @@
     import { Na__PlStage__Describe } from './Na__ProjectedLinework__ModelStage__.js';
     import { Na__PlProjector__BuildOptions } from './Na__ProjectedLinework__Projector__.js';
     import {
+        Na__ProjectedLinework__WebGpuBackend__ProbeHardware,
+        Na__ProjectedLinework__WebGpuBackend__GetProbe,
+        Na__ProjectedLinework__WebGpuBackend__IsHardwareCapable
+    } from './Na__ProjectedLinework__WebGpuBackend__.js';
+    import {
         Na__ProjectedLinework__DiffHarness__Compare,
         Na__ProjectedLinework__DiffHarness__LogReport
     } from './Na__ProjectedLinework__DiffHarness__.js';
@@ -94,7 +99,7 @@
     const Na__PlDev__ITEM_ID   = 'naProjectedLineworkDevItem';
     const Na__PlDev__TOGGLE_ID = 'naProjectedLineworkDevToggle';
     const Na__PlDev__PANEL_ID  = 'naProjectedLineworkDevPanel';
-    const Na__PlDev__BACKENDS  = [ 'cpu', 'webgpu', 'legacy' ];
+    const Na__PlDev__BACKENDS  = [ 'auto', 'cpu', 'webgpu', 'legacy' ];
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Host Context
@@ -188,9 +193,17 @@
         const select = document.createElement('select');
         select.className = 'na-pm-dev__select';
         const current = Na__PlCfg__GetPerformanceSetup().backend;
+        // 'auto' on its own says nothing. Spell out what it will pick, so the
+        // dropdown reads as a decision rather than a shrug.
+        const autoSuffix = Na__ProjectedLinework__WebGpuBackend__IsHardwareCapable()
+            ? ' (webgpu for elevations, cpu for cuts)'
+            : ' (cpu - no usable GPU)';
+
         Na__PlDev__BACKENDS.forEach((name) => {
             const option = document.createElement('option');
-            option.value = name; option.textContent = name; option.selected = (name === current);
+            option.value = name;
+            option.textContent = (name === 'auto') ? name + autoSuffix : name;
+            option.selected = (name === current);
             select.appendChild(option);
         });
         select.addEventListener('change', () => {
@@ -200,6 +213,29 @@
         row.appendChild(caption);
         row.appendChild(select);
         wrapper.appendChild(row);
+
+        // HARDWARE LINE | What the probe actually found, in words.
+        // Without this, "auto" is a black box: there is no way to tell a machine
+        // that chose the CPU because it has no GPU from one that chose it because
+        // the view has a cut, and those want completely different responses.
+        const hardware = document.createElement('div');
+        hardware.className = 'na-dropdown-menu__panel-note';
+        hardware.textContent = 'Checking graphics hardware...';
+        wrapper.appendChild(hardware);
+
+        const describeHardware = (probe) => {
+            if (!probe) { hardware.textContent = 'Checking graphics hardware...'; return; }
+            if (!probe.Capable) { hardware.textContent = 'GPU: not used - ' + probe.Reason; return; }
+            const a = probe.Adapter || {};
+            const name = [ a.Vendor, a.Architecture ].filter(Boolean).join(' ');
+            hardware.textContent = 'GPU: ' + (name || 'hardware adapter')
+                + (a.Description ? ' (' + a.Description + ')' : '')
+                + ' - used for elevations without a cut. Plans and sections always run on the CPU, which is the only backend that can apply one.';
+        };
+
+        describeHardware(Na__ProjectedLinework__WebGpuBackend__GetProbe());
+        void Na__ProjectedLinework__WebGpuBackend__ProbeHardware().then(describeHardware);
+
         return wrapper;
     }
     // ------------------------------------------------------------
@@ -247,12 +283,32 @@
             const row  = document.createElement('div');
             row.className = 'na-pl-dev__asset';
             const name = document.createElement('span');
+
+            // WHICH BACKEND THIS DRAWING WILL ACTUALLY USE, worked out the same
+            // way the render works it out - by asking the resolver, not by
+            // repeating its rules here where the two could drift apart.
+            //
+            // It is shown PER DRAWING because that is where the decision is
+            // made: "auto" is not one answer for the session, it is one answer
+            // per view, and a panel that only said "auto" would be telling the
+            // truth while hiding everything worth knowing.
+            const resolved = Na__PlProjector__BuildOptions(definition).Backend;
+            const because  = (resolved === 'cpu' && definition.Cut) ? ' - has a cut' : '';
+
+            const backend = document.createElement('span');
+            backend.className        = 'na-pl-dev__backend';
+            backend.textContent      = resolved + because;
+            backend.style.opacity    = '0.7';
+            backend.style.marginLeft = 'auto';
+            backend.style.paddingRight = '8px';
+
             name.textContent = definition.DrawingName + ' (' + definition.Kind + ')';
             const status = Na__PlStore__AssetStatus(definition, model);
             const badge  = document.createElement('span');
             badge.className   = 'na-pl-dev__badge na-pl-dev__badge--' + status;
             badge.textContent = Na__PlCfg__GetLabel(status === 'cached' ? 'StatusCached' : status === 'stale' ? 'StatusStale' : 'StatusMissing', status);
             row.appendChild(name);
+            row.appendChild(backend);
             row.appendChild(badge);
             list.appendChild(row);
         });
@@ -304,17 +360,32 @@
             const plain = Object.assign({}, definition, { Cut : null, Styles : Object.assign({}, definition.Styles, { hiddenLines : false }) });
             plain.RecordHash = definition.RecordHash + ':diff';
 
+            // WHICH PAIR TO HOLD AGAINST EACH OTHER.
+            // Against 'legacy' the Diff answers "is our kernel still right".
+            // Against 'webgpu' it answers "is the card worth using, and does it
+            // agree" - the question that matters once auto can choose the card.
+            // `plain` has already had its cut stripped for the comparison, so
+            // this is about the hardware and nothing else.
+            const rival = Na__ProjectedLinework__WebGpuBackend__IsHardwareCapable() ? 'webgpu' : 'legacy';
+
             const runs = {};
-            for (const backend of [ 'cpu', 'legacy' ]) {
+            for (const backend of [ 'cpu', rival ]) {
                 const options   = Na__PlProjector__BuildOptions(plain, backend);
                 const startedAt = performance.now();
                 const result    = await Na__PlPipe__RenderDefinition(plain, options, null, null);
                 runs[backend]   = { Segments : result.Classes.visible, Ms : Math.round(performance.now() - startedAt) };
             }
 
-            const report = Na__ProjectedLinework__DiffHarness__Compare('cpu:' + definition.ViewKey, runs.cpu.Segments, 'legacy:' + definition.ViewKey, runs.legacy.Segments, {});
+            const report = Na__ProjectedLinework__DiffHarness__Compare('cpu:' + definition.ViewKey, runs.cpu.Segments, rival + ':' + definition.ViewKey, runs[rival].Segments, {});
             Na__ProjectedLinework__DiffHarness__LogReport(report);
-            Na__PlDev__LastNote = 'Diff: cpu ' + runs.cpu.Ms + ' ms, legacy ' + runs.legacy.Ms + ' ms. See the console table.';
+
+            const cpuMs   = runs.cpu.Ms;
+            const rivalMs = runs[rival].Ms;
+            const verdict = (rivalMs > 0 && cpuMs > 0)
+                ? (rivalMs < cpuMs ? ' - ' + rival + ' is ' + (cpuMs / rivalMs).toFixed(1) + 'x faster'
+                                   : ' - cpu is ' + (rivalMs / cpuMs).toFixed(1) + 'x faster')
+                : '';
+            Na__PlDev__LastNote = 'Diff: cpu ' + cpuMs + ' ms, ' + rival + ' ' + rivalMs + ' ms' + verdict + '. See the console table.';
         } catch (diffError) {
             console.error('[ValeVision3D ProjectedLinework] Diff failed:', diffError);
             Na__PlDev__LastNote = 'Diff failed - see console.';
@@ -351,7 +422,7 @@
         actions.appendChild(Na__PlDev__Button(Na__PlCfg__GetLabel('ForceRenderLabel', 'Force Render'), 'na-pm-dev__btn--primary', () => { void Na__PlPipe__ForceRender(); }));
         actions.appendChild(Na__PlDev__Button(Na__PlCfg__GetLabel('BakeLabel', 'Bake All to R2'), '', () => { void Na__PlDev__Bake(false); }));
         actions.appendChild(Na__PlDev__Button(Na__PlCfg__GetLabel('ClearCacheLabel', 'Clear Cache'), '', () => Na__PlPipe__ClearCache()));
-        actions.appendChild(Na__PlDev__Button(Na__PlCfg__GetLabel('DiffLabel', 'Run Diff (cpu vs legacy)'), '', () => { void Na__PlDev__Diff(); }));
+        actions.appendChild(Na__PlDev__Button(Na__PlCfg__GetLabel('DiffLabel', 'Run Diff') + (Na__ProjectedLinework__WebGpuBackend__IsHardwareCapable() ? ' (cpu vs webgpu)' : ' (cpu vs legacy)'), '', () => { void Na__PlDev__Diff(); }));
         Na__PlDev__Panel.appendChild(actions);
 
         if (Na__PlDev__LastNote) {

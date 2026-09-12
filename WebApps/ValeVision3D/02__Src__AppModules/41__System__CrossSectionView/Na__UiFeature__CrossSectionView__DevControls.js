@@ -42,9 +42,7 @@
     // MODULE IMPORTS | Project Loader Utilities
     // ------------------------------------------------------------
     import {
-        Na__AppUtils__GetProjectCodeFromUrl,
-        Na__AppUtils__IsRunningOnLocalhost
-    } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
+        Na__AppUtils__GetProjectCodeFromUrl } from '../03__AppUtils/Na__AppUtils__ProjectLoader.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | R2-First Save Utility
@@ -66,6 +64,8 @@
         Na__CrossSection__GetAppearance
     } from './Na__CrossSectionView__SystemLogic.js';
     // ------------------------------------------------------------
+
+    import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
 
 // endregion -------------------------------------------------------------------
 
@@ -147,7 +147,7 @@
     // FUNCTION | Initialize Cross Section Dev Controls
     // ------------------------------------------------------------
     function Na__UiFeature__InitializeCrossSectionDevControls({ showToast } = {}) {
-        if (!Na__AppUtils__IsRunningOnLocalhost()) return;                   // <-- Dev menu only on localhost
+        if (!Na__DevGate__IsAuthoringEnabled()) return;                   // <-- Dev menu only on localhost
 
         const menuItem    = document.getElementById(Na__SectDevMenu__ItemId);
         const toggleBtn   = document.getElementById(Na__SectDevMenu__ToggleId);

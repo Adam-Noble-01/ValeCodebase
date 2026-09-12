@@ -1,0 +1,102 @@
+{
+    "LayoutEditor__ModelLayers__Meta": {
+        "Meta__FileName"        : "Na__LayoutEditor__ModelLayers__Config__.json",
+        "Meta__Description"     : "Maps Noble Architecture SketchUp tag names (the SSOT) to the runtime model category a loaded GLB lands in, and to the short label the Model Layers panel shows. One row per thing a person would want to switch off in a drawing.",
+        "Meta__Version"         : "1.0.0",
+        "Meta__Created"         : "12-Sep-2026",
+        "Meta__Author"          : "Adam Noble - Noble Architecture",
+
+        "Meta__SsotSource"      : "Na__DataLib__CoreIndex__Tags__.json",
+        "Meta__SsotPath"        : "%AppData%/SketchUp/SketchUp 2026/SketchUp/Plugins/Na__Common__DataLib__CoreSuEntityStandards/",
+        "Meta__SsotVersionRead" : "2.2.2",
+
+        "Meta__PortedFrom"      : "TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ModelLayers__Config__.json, 12-Sep-2026.",
+        "Meta__WhyThisDiffers"  : "THE ONLY FILE OF THE FEATURE THAT IS NOT SHARED. ValeVision's GLB loader groups the building far more coarsely than TrueVision's: the whole existing building arrives as one category rather than as walls, floors, roofs, windows, doors, stairs, fixtures, furniture and decor, and the proposal arrives as one category plus its interactive doors. The runtime category keys are also namespaced ValeVision__ rather than TrueVision__. The panel, the module and the record shape are identical in both apps; only the rows below differ, and they differ because the models do.",
+
+        "Meta__HowThisIsUsed"   : "The panel lists the categories the model ACTUALLY loaded, not this file: a category here with no GLB behind it never appears, and a category the model has that this file has not heard of still appears under an auto-generated label. This file supplies the wording and the grouping, never the inventory.",
+        "Meta__WhyKeyAndTag"    : "Layer__CategoryKey is the runtime name - the THREE.Group the multi-model loader creates, and what the render and the linework exclusion actually match on. Layer__SketchUpTags are the SSOT tag names an object carries in SketchUp, kept here so the two vocabularies stay traceable to each other when either side is renamed.",
+        "Meta__WhyNoDefaultOff" : "Every category starts on. A viewport stores only what has been switched OFF, so a model that gains a category later shows it rather than silently hiding it."
+    },
+
+    "LayoutEditor__ModelLayers__Groups": [
+        {
+            "Group__Id"     : "proposed",
+            "Group__Label"  : "Proposed",
+            "Group__Layers" : [
+                {
+                    "Layer__CategoryKey" : "ValeVision__MainBuildingModel__Proposed",
+                    "Layer__SketchUpTags": ["20__ProposedBuilding", "21__ProposedBuilding__Walls", "22__ProposedBuilding__Floors", "23__ProposedBuilding__Roofs", "24__ProposedBuilding__Windows"],
+                    "Layer__TagNumbers"  : [20, 21, 22, 23, 24],
+                    "Layer__Label"       : "Proposed Building"
+                },
+                {
+                    "Layer__CategoryKey" : "ValeVision__MainBuildingModel__ProposedDoors",
+                    "Layer__SketchUpTags": ["25__ProposedBuilding__Doors"],
+                    "Layer__TagNumbers"  : [25],
+                    "Layer__Label"       : "Doors"
+                }
+            ]
+        },
+        {
+            "Group__Id"     : "existing",
+            "Group__Label"  : "Existing",
+            "Group__Layers" : [
+                {
+                    "Layer__CategoryKey" : "ValeVision__MainBuildingModel__Existing",
+                    "Layer__SketchUpTags": ["10__ExistingBuilding", "11__ExistingBuilding__Walls", "12__ExistingBuilding__Floors", "13__ExistingBuilding__Roofs", "14__ExistingBuilding__Windows", "15__ExistingBuilding__Doors", "16__ExistingBuilding__Staircase", "17__ExistingBuilding__Fixtures", "18__ExistingBuilding__Furniture", "19__ExistingBuilding__InteriorDecor"],
+                    "Layer__TagNumbers"  : [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+                    "Layer__Label"       : "Existing Building"
+                }
+            ]
+        },
+        {
+            "Group__Id"     : "furnishing",
+            "Group__Label"  : "Furniture and Decor",
+            "Group__Layers" : [
+                { "Layer__CategoryKey": "ValeVision__GroundFloorFurniture", "Layer__SketchUpTags": ["30_38__GroundFloorFurniture"], "Layer__TagNumbers": [30, 31, 32, 33, 34, 35, 36, 37, 38], "Layer__Label": "Furniture - Ground Floor" },
+                { "Layer__CategoryKey": "ValeVision__GroundFloorDecor",     "Layer__SketchUpTags": ["39__GroundFloorDecor"],        "Layer__TagNumbers": [39], "Layer__Label": "Decor - Ground Floor" },
+                { "Layer__CategoryKey": "ValeVision__FirstFloorFurniture",  "Layer__SketchUpTags": ["40_48__FirstFloorFurniture"],  "Layer__TagNumbers": [40, 41, 42, 43, 44, 45, 46, 47, 48], "Layer__Label": "Furniture - First Floor" },
+                { "Layer__CategoryKey": "ValeVision__FirstFloorDecor",      "Layer__SketchUpTags": ["49__FirstFloorDecor"],         "Layer__TagNumbers": [49], "Layer__Label": "Decor - First Floor" }
+            ]
+        },
+        {
+            "Group__Id"     : "site",
+            "Group__Label"  : "Site and Landscape",
+            "Group__Layers" : [
+                { "Layer__CategoryKey": "ValeVision__LandscapeEnvironment", "Layer__SketchUpTags": ["07__Landscape"],            "Layer__TagNumbers": [7],  "Layer__Label": "Landscape" },
+                { "Layer__CategoryKey": "ValeVision__SiteBoundaries",       "Layer__SketchUpTags": ["08__Site__Boundaries"],     "Layer__TagNumbers": [8],  "Layer__Label": "Site Boundaries" },
+                { "Layer__CategoryKey": "ValeVision__SiteVegetation2D",     "Layer__SketchUpTags": ["09__Site__Vegetation__2D"], "Layer__TagNumbers": [9],  "Layer__Label": "Planting - 2D" },
+                { "Layer__CategoryKey": "ValeVision__Vegetation",           "Layer__SketchUpTags": ["50_59__Vegetation"],        "Layer__TagNumbers": [50, 51, 52, 53, 54, 55, 56, 57, 58, 59], "Layer__Label": "Planting" }
+            ]
+        },
+        {
+            "Group__Id"     : "context",
+            "Group__Label"  : "Scene Context",
+            "Group__Layers" : [
+                { "Layer__CategoryKey": "ValeVision__SceneEntourage2D",         "Layer__SketchUpTags": ["60__Scene__Entourage__2D"],         "Layer__TagNumbers": [60], "Layer__Label": "People - 2D" },
+                { "Layer__CategoryKey": "ValeVision__SceneEntourageSilhouette", "Layer__SketchUpTags": ["61__Scene__Entourage__Silhouette"], "Layer__TagNumbers": [61], "Layer__Label": "People - Silhouette" },
+                { "Layer__CategoryKey": "ValeVision__SceneContextual",          "Layer__SketchUpTags": ["62_70__SceneContextual"],           "Layer__TagNumbers": [62, 63, 64, 65, 66, 67, 68, 69, 70], "Layer__Label": "Scene Context" }
+            ]
+        },
+        {
+            "Group__Id"     : "legacy",
+            "Group__Label"  : "Legacy",
+            "Group__Layers" : [
+                {
+                    "Layer__CategoryKey" : "ValeVision__LegacyModel",
+                    "Layer__SketchUpTags": [],
+                    "Layer__TagNumbers"  : [],
+                    "Layer__Label"       : "Model",
+                    "Layer__Note"        : "The whole model as one object, from a project exported before the tag ranges split it up. It is listed so those projects still get a switch; there is nothing finer to offer them."
+                }
+            ]
+        }
+    ],
+
+    "LayoutEditor__ModelLayers__Fallback": {
+        "Fallback__Description"  : "What a category the model loaded but this file does not list is called, and where it is put.",
+        "Fallback__GroupLabel"   : "Other",
+        "Fallback__StripPrefix"  : "ValeVision__",
+        "Fallback__SplitOnDouble": " - "
+    }
+}

@@ -329,15 +329,28 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Take the Context Out of the Picture, or Leave It Alone
+    // HELPER FUNCTION | Take Out of the Picture Whatever This Viewport Hides
     // ------------------------------------------------------------
-    // Returns the visibility map to put back afterwards, or null when the
-    // style leaves the context in and nothing was touched.
+    // Two rules, one capture. Context Layer off removes the whole surrounding
+    // set in one gesture; the Model Layers panel removes named categories one
+    // at a time. They compose - a viewport can drop the context AND the
+    // proposal's furniture - and the single captured map puts all of it back.
+    //
+    // Returns the visibility map to restore afterwards, or null when the
+    // viewport hides nothing and the scene was never touched.
     // ------------------------------------------------------------
-    function Na__LeSnap__HideContext(styles) {
-        if (!styles || styles.contextLayer !== false) return null;
+    function Na__LeSnap__HideForViewport(styles, modelLayers) {
+        const wantsContext = !!styles && styles.contextLayer === false;
+        const hidden       = modelLayers ? Object.keys(modelLayers).filter((key) => modelLayers[key] === false) : [];
+        if (!wantsContext && hidden.length === 0) return null;
+
+        // SILENT, BOTH OF THEM. Every hide here is put back before the render
+        // returns, so announcing it would only make the linework pipeline
+        // re-evaluate and the fingerprints reset in the middle of the render
+        // that caused it.
         const saved = Na__ModelToggle__CaptureVisibilityMap();
-        Na__LeSnap__CONTEXT_CATEGORIES.forEach((key) => Na__ModelToggle__SetCategoryVisibility(key, false));
+        if (wantsContext) Na__LeSnap__CONTEXT_CATEGORIES.forEach((key) => Na__ModelToggle__SetCategoryVisibility(key, false, true));
+        hidden.forEach((key) => Na__ModelToggle__SetCategoryVisibility(key, false, true));
         return saved;
     }
     // ------------------------------------------------------------
@@ -347,7 +360,7 @@
     // ------------------------------------------------------------
     // Returns { dataUrl, widthPx, heightPx } (png), or null.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx) {
+    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples) {
         if (!Na__LeSnap__IsReady() || !definition) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             const wasSuspended = Na__DrawView__Transitions__IsSuspended();
@@ -363,12 +376,13 @@
                 if (!wasSuspended) Na__DrawView__Transitions__SuspendThreeD();     // <-- Distance culling off for the picture
                 Na__DrawView__ComposerPreset__Enter({ camera : camera, styles : styles || {} });
                 Na__DrawView__MaterialPreset__Enter(styles || {});
-                contextSaved = Na__LeSnap__HideContext(styles);
+                contextSaved = Na__LeSnap__HideForViewport(styles, modelLayers);
                 Na__DrawView__SectionAdapter__ReapplyClipping();
                 const result = await Na__StaticExport__RenderToCanvas({
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : Na__LeSnap__Camera,
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
                     elevationOverrides     : Na__DrawView__ComposerPreset__GetExportOverrides(),
+                    antiAliasSamples       : antiAliasSamples,                                                            // <-- Each tile drawn N times on sub-pixel jitter and averaged
                     targetWidth : Math.max(16, Math.round(widthPx)), targetHeight : Math.max(16, Math.round(heightPx))
                 });
                 if (styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas);   // <-- Levels and sharpen: the whitecard greys go to paper white
@@ -395,7 +409,7 @@
     // ------------------------------------------------------------
     // Returns { canvas, widthPx, heightPx }, or null. The caller converts.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx) {
+    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples) {
         if (!Na__LeSnap__IsReady() || !sceneRecord) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             const camera   = Na__LeSnap__Camera;
@@ -415,11 +429,12 @@
             try {
                 Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, sceneRecord);
                 Na__DrawView__MaterialPreset__Enter(styles || {});
-                Na__LeSnap__HideContext(styles);                                   // <-- The saved map above already puts it back
+                Na__LeSnap__HideForViewport(styles, modelLayers);                                   // <-- The saved map above already puts it back
                 if (pass) pass.enabled = !(styles && styles.profileLinework === false);
                 const result = await Na__StaticExport__RenderToCanvas({
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : camera,
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
+                    antiAliasSamples       : antiAliasSamples,                                                            // <-- Each tile drawn N times on sub-pixel jitter and averaged
                     targetWidth : Math.max(16, Math.round(widthPx)), targetHeight : Math.max(16, Math.round(heightPx))
                 });
                 if (styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas);

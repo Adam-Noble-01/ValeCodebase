@@ -119,11 +119,22 @@
 
     // HELPER FUNCTION | Does a Name Carry Any of the Tokens?
     // ------------------------------------------------------------
+    // A TOKEN IS A SUBSTRING UNLESS IT STARTS WITH '=', in which case the whole
+    // name has to match it. Substrings are right for the tokens a drawing record
+    // carries, which are written by hand and meant loosely ("furniture"). They
+    // are wrong for anything naming a model category in full, because the
+    // category names nest: "ValeVision__MainBuildingModel__Proposed" is a
+    // substring of "ValeVision__MainBuildingModel__ProposedDoors", and a viewport
+    // asking to hide the proposal would lose its doors as well. The Layout
+    // Editor's Model Layers panel emits '=' tokens for that reason.
     function Na__PlSampler__NameMatches(name, tokens) {
         if (!name || !tokens || tokens.length === 0) return false;
         const lower = String(name).toLowerCase();
         for (let i = 0; i < tokens.length; i++) {
-            if (tokens[i] && lower.indexOf(String(tokens[i]).toLowerCase()) !== -1) return true;
+            if (!tokens[i]) continue;
+            const token = String(tokens[i]).toLowerCase();
+            if (token.charAt(0) === '=') { if (lower === token.slice(1)) return true; continue; }   // <-- Exact: this category and no other
+            if (lower.indexOf(token) !== -1) return true;
         }
         return false;
     }

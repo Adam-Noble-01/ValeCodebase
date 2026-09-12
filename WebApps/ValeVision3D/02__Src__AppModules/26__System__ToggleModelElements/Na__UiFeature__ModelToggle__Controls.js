@@ -141,13 +141,21 @@
 
     // FUNCTION | Toggle Category Visibility
     // ------------------------------------------------------------
-    function Na__ModelToggle__SetCategoryVisibility(categoryKey, visible) {
+    // SILENT IS FOR RENDERS, NOT FOR PEOPLE. The event this fires tells the
+    // drawings that what they show has changed, which is exactly right when a
+    // person presses a toggle and exactly wrong when the snapshot renderer
+    // hides a category for the length of one picture and puts it straight
+    // back: the linework pipeline would re-evaluate and the snapshot
+    // fingerprints would reset, repeatedly, in the middle of the render that
+    // caused it. Callers that restore what they changed pass silent.
+    function Na__ModelToggle__SetCategoryVisibility(categoryKey, visible, silent) {
         const state = Na__ModelToggle__StateMap.get(categoryKey);         // <-- Look up state entry
         if (!state) return;                                              // <-- Guard against missing category
 
         state.visible       = visible;                                   // <-- Update internal state
         state.group.visible = visible;                                   // <-- Set THREE.Group visibility
 
+        if (silent === true) return;                                     // <-- A render hiding something it will put back says nothing
         window.dispatchEvent(new CustomEvent('na-model-visibility-changed', {  // <-- Drawings re-read the model state (port Phase 4)
             detail : { categoryKey : categoryKey, visible : visible }
         }));
@@ -204,6 +212,24 @@
     // reaching into the state map or re-deriving the display names.
     // Returns an empty array before any groups have loaded.
     // ------------------------------------------------------------
+    // FUNCTION | Every Category the Model Actually Loaded, as Plain Keys
+    // ------------------------------------------------------------
+    // In load order. The Layout Editor's Model Layers panel lists these and
+    // nothing else: a category with no GLB behind it is not a choice anyone
+    // can make. GetCategories below answers the same question with labels and
+    // visibility attached, for the Tools panel; this one is the bare list, and
+    // is the shape the shared Layout Editor module expects.
+    // ------------------------------------------------------------
+    function Na__ModelToggle__GetCategoryKeys() {
+        const keys = [];
+        Na__ModelToggle__StateMap.forEach((state, categoryKey) => keys.push(categoryKey));
+        return keys;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Every Category With Its Label and Live Visibility
+    // ------------------------------------------------------------
     function Na__ModelToggle__GetCategories() {
         const categories = [];
 
@@ -246,29 +272,42 @@
 
     // FUNCTION | Build Toggle Buttons from Loaded Groups Map
     // ------------------------------------------------------------
+    // THE STATE MAP IS FILLED BEFORE THE BUTTONS, and independently of them.
+    // It used to be filled inside the button loop, behind an early return when
+    // the dev menu's list container was missing from the page - which was fine
+    // while the map served only those buttons. It no longer does: the Layout
+    // Editor's Context Layer toggle and its per-viewport Model Layers panel
+    // both read this map, and both ship to everyone. A production page that
+    // dropped the dev markup would have left them silently controlling
+    // nothing, which is the worst of the available failures because it looks
+    // like the toggle simply has no effect on that model.
     function Na__ModelToggle__BuildButtons(loadedGroups) {
+        Na__ModelToggle__StateMap.clear();                               // <-- Drop categories from a previously loaded model
+        if (loadedGroups) {
+            loadedGroups.forEach((group, categoryKey) => {
+                Na__ModelToggle__StateMap.set(categoryKey, {
+                    group   : group,                                     // <-- THREE.Group reference
+                    visible : true,                                      // <-- Default: visible
+                    button  : null                                       // <-- Populated below once the button exists
+                });
+            });
+        }
+
         const listContainer = document.getElementById(Na__ModelToggle__ListId);  // <-- Get button list container
         if (!listContainer) {
-            console.warn('[ValeVision3D] Model toggle list container not found');
-            return;                                                      // <-- Exit if no container
+            console.warn('[ValeVision3D] Model toggle list container not found - categories registered, dev buttons skipped');
+            return;                                                      // <-- No dev UI, but the map above is live
         }
 
         listContainer.innerHTML = '';                                    // <-- Clear any existing buttons
-        Na__ModelToggle__StateMap.clear();                               // <-- Drop categories from a previously loaded model
 
         if (!loadedGroups || loadedGroups.size === 0) {
             listContainer.style.display = 'none';                        // <-- Hide if no groups
             return;
         }
 
-        // BUILD STATE MAP AND BUTTONS FOR EACH LOADED CATEGORY
+        // BUILD A BUTTON FOR EACH LOADED CATEGORY
         loadedGroups.forEach((group, categoryKey) => {
-            // REGISTER STATE
-            Na__ModelToggle__StateMap.set(categoryKey, {
-                group   : group,                                         // <-- THREE.Group reference
-                visible : true,                                          // <-- Default: visible
-                button  : null                                           // <-- Populated below once the button exists
-            });
 
             // CREATE BUTTON ELEMENT
             const displayName = Na__ModelToggle__ResolveDisplayName(categoryKey);  // <-- Resolve friendly name
@@ -343,6 +382,7 @@
         Na__ModelToggle__ApplySceneLayerVisibility,
         Na__ModelToggle__SetCategoryVisibility,
         Na__ModelToggle__GetCategories,
+        Na__ModelToggle__GetCategoryKeys,
         Na__ModelToggle__CaptureVisibilityMap
     };
     // ------------------------------------------------------------

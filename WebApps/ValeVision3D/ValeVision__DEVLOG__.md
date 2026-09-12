@@ -1,6 +1,62 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.23.0 - 12-Sep-2026 - Supersampling Comes Back From the Still Exporter
+
+### Added
+- **The still image exporter is supersampled.** Each tile is now rendered 16
+  times with sub-pixel camera jitter and the results averaged, so a pixel
+  records how much of it a line actually covers instead of answering yes or no.
+  This is the same treatment the video exporter got yesterday, and the same
+  argument applies: a two-degree eaves line answers "row 100" for thirty pixels
+  and then jumps, and the shallower the line the longer the step. Buildings are
+  made of shallow lines.
+- **Exporting bigger was never going to fix it.** More resolution gives a
+  staircase smaller steps, not fewer. And FXAA cannot reach it either - it
+  searches about twenty pixels along an edge for where the step ends, gives up,
+  and smears what it could not solve. That is why exports came back blurry AND
+  still aliased. FXAA now stands aside entirely while supersampling, which is
+  why the result is sharper and smoother at the same time.
+- **The Layout Editor viewport pictures are supersampled too**, both the 2D
+  underlay and the 3D snapshot, at a count that follows the working quality
+  level: Low 1 sample for fast drafting, Medium 4, High 16. High is also the
+  level the PDF and the Dev bakes always use, so anything that reaches paper
+  gets all sixteen. Every number is config, per level.
+- **The supersampler moved into the render pipeline.** It was the video
+  studio's; three systems need it now, and a jitter table that exists twice is
+  one that will eventually disagree with itself.
+  `31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js` is a
+  re-export of `05__RenderPipeline/Na__RenderEffect__Supersampler__.js`, aliased
+  rather than wrapped, so the frame renderer's import is untouched and the two
+  names are provably the same function.
+
+### Notes
+- **The cost is linear and paid per tile, not per image.** The accumulation
+  buffer is one tile, so a 6144 x 4096 export gains about one 2112 px square
+  half-float buffer - a few tens of megabytes - whatever the output size. That
+  matters: this exporter exists because a full-resolution render demanded
+  gigabytes and killed the tab. Time is the price instead. A 25 megapixel
+  export across six tiles at 16 samples is 96 composer renders and lands in
+  about eight seconds.
+- **Shadow maps are drawn once per tile and reused by the remaining samples.**
+  The lights and geometry are frozen and only the view camera is nudged, so
+  every later shadow pass would redraw identical maps at full cost.
+- **The vertical correction shear is applied per tile and never inside the
+  sample loop.** `ApplyFrame` starts by rebuilding the projection from the
+  camera, which would wipe the jitter. The base projection is captured after
+  the shear has settled, so the jitter shifts the corrected sub-frustum rather
+  than replacing it.
+- **Fog and SSAO are re-synced per sample, not per tile.** Both rebuild world
+  positions from the inverse projection. Syncing once and jittering underneath
+  would land the fog in sixteen slightly different places and then average them.
+- **Export Render Layers is deliberately left alone.** Those are structural
+  conditioning maps - depth, normals, edges - and averaging a normal or a depth
+  across an edge produces a value that describes no surface at all. Beauty
+  wants coverage; a conditioning map wants the truth at the sample point.
+- Ported back from TrueVision3D, which generalised the video studio's
+  supersampler for the still exporter and the sheet viewport bakes.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.22.1 - 12-Sep-2026 - The Dev Menu Moves Into the Top Bar
 
 ### Changed

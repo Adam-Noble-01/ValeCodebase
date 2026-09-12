@@ -122,7 +122,9 @@
         "ImageExport__Config__AspectRatios"             : ["3:2", "4:3", "16:9"],
         "ImageExport__Config__DefaultAspectIndex"       : 0,
         "ImageExport__Config__Resolutions"              : [1024, 2048, 4096, 8192],
-        "ImageExport__Config__DefaultResolutionIndex"   : 2
+        "ImageExport__Config__DefaultResolutionIndex"   : 2,
+        "ImageExport__Config__AntiAliasSamples"         : 16,
+        "ImageExport__Config__AntiAliasSamplesNote"     : "Renders each tile this many times with sub-pixel camera jitter and averages the results, so a near-horizontal eaves or a sub-pixel glazing bar records how much of each pixel it really covers instead of winning or losing the pixel outright. Only 1 (off), 2, 4, 8 and 16 exist; anything else rounds down. Resolution is not a substitute - a bigger image gets smaller steps, not fewer - and FXAA cannot repair it, because a step on a two-degree line is longer than FXAA can see along. 16 because a still is one frame and whitecard line work is the case that needs every level. The cost is linear: 16 samples is 16 renders."
     },
     "ExportRenderLayers__Config": {
         "ExportRenderLayers__Config__Description"                : "Localhost Dev-menu structural render layer exporter (Qwen conditioning maps). All distances are integer millimetres; thresholds are unitless shader values. Aspect ratios and resolutions are deliberately reused from ImageExport__Config so a structural map always drops beside a normal ValeVision export without resizing.",

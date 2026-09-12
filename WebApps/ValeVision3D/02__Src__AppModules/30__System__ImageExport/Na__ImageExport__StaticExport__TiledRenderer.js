@@ -60,6 +60,23 @@
 //   Beauty and every structural pass share one sub-frustum, gutter and pixel
 //   registration.
 //
+// 12-Sep-2026 - Version 1.3.0
+// - SUPERSAMPLED ANTI-ALIASING, per tile. `antiAliasSamples` renders each tile
+//   2, 4, 8 or 16 times with sub-pixel projection jitter and averages the
+//   results, so a near-horizontal eaves or a sub-pixel glazing bar records how
+//   much of each pixel it really covers instead of winning or losing the pixel
+//   outright. Same module the video studio uses, now shared.
+// - Resolution was never going to fix this and FXAA could not reach it: a
+//   bigger export gets SMALLER steps, not fewer, and a step on a two-degree
+//   line is longer than FXAA can search along. Whitecard is the worst case,
+//   because aliasing severity scales with the contrast across the edge.
+// - The accumulation buffer is one TILE, so an 8000 px export gains a few tens
+//   of megabytes whatever its size - the technique costs essentially nothing
+//   against the memory ceiling this exporter was built around. It costs time
+//   instead, linearly, which for a single still is seconds.
+// - Ported back from TrueVision3D, which took the video studio's supersampler
+//   and generalised it for the still exporter.
+//
 // =============================================================================
 
 
@@ -111,6 +128,15 @@
         Na__TilePlan__ProbeCanvas,
         Na__TilePlan__IsIosDevice
     } from './Na__ImageExport__StaticExport__TilePlan__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Supersampled Anti-Aliasing (Shared With the Video Studio)
+    // @delegate: ../05__RenderPipeline/Na__RenderEffect__Supersampler__.js
+    // ------------------------------------------------------------
+    import {
+        Na__Supersampler__Create,
+        Na__Supersampler__ResolveSampleCount
+    } from '../05__RenderPipeline/Na__RenderEffect__Supersampler__.js';
     // ------------------------------------------------------------
 
 
@@ -165,13 +191,13 @@
         const state = (typeof getRenderPipelineState === 'function') ? getRenderPipelineState() : null;
 
         if (!state) {
-            return { composer: null, profileLinesPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
+            return { composer: null, profileLinesPass: null, fxaaPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
                      setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop };
         }
 
         // BACKWARD COMPAT | Legacy getter may return the composer directly
         if (typeof state.render === 'function' && !state.composer) {
-            return { composer: state, profileLinesPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
+            return { composer: state, profileLinesPass: null, fxaaPass: null, renderProfileNormals: noop, setProfileLinesSize: noop, setFxaaSize: noop,
                      setDepthPrePassSize: noop, setAoSize: noop, updateAoUniforms: noop, renderDepthPrePass: noop };
         }
 
@@ -180,6 +206,7 @@
         return {
             composer            : state.composer || null,
             profileLinesPass    : state.profileLinesPassRef || null, // <-- For per-tile Silly Lines wave offset (seam-free waves)
+            fxaaPass            : state.fxaaPassRef || null,         // <-- Stood aside while supersampling; see the tile loop
             renderProfileNormals: fn(state.renderProfileNormals),
             setProfileLinesSize : fn(state.setProfileLinesSize),
             setFxaaSize         : fn(state.setFxaaSize),
@@ -202,6 +229,7 @@
     //   elevationOverrides     {object|null}  2D ortho export overrides, or null for 3D mode
     //   targetWidth            {number}  Requested output width in pixels
     //   targetHeight           {number}  Requested output height in pixels
+    //   antiAliasSamples       {number}  1 (off), 2, 4, 8 or 16 - see the tile loop
     //   onProgress             {Function|null}  Receives human-readable status strings
     //
     // Returns: Promise<{ canvas, width, height, wasClamped }>
@@ -214,6 +242,7 @@
             renderer, scene, camera, getRenderPipelineState,
             elevationOverrides = null,
             targetWidth, targetHeight,
+            antiAliasSamples = 1,
             onProgress = null
         } = options;
 
@@ -251,11 +280,39 @@
         const isElevationMode = elevationOverrides !== null;
         const activeCamera    = isElevationMode ? elevationOverrides.camera : camera;
 
+        // SUPERSAMPLING | Null at one sample, which every branch below treats as
+        // "render the tile once, the way it always was".
+        // @delegate: ../05__RenderPipeline/Na__RenderEffect__Supersampler__.js
+        // ------------------------------------------------------------
+        // THE MEMORY PICTURE IS WHY THIS BELONGS IN THE TILED RENDERER rather
+        // than anywhere else: the accumulation buffer is ONE TILE, not one
+        // image. An 8000 px export gains about one 2112 px square half-float
+        // buffer - a few tens of megabytes - whatever the output size. The
+        // technique adds essentially nothing to the peak framebuffer memory,
+        // which is the exact constraint that shaped this exporter.
+        // ------------------------------------------------------------
+        const supersampler = composer
+            ? Na__Supersampler__Create({
+                renderer,
+                width   : fbW,                                       // <-- One tile's framebuffer, not the output image
+                height  : fbH,
+                samples : Na__Supersampler__ResolveSampleCount(antiAliasSamples)
+            })
+            : null;
+
         // SAVED STATE | Everything mutated below is restored in finally
         // ------------------------------------------------------------
         const savedSize       = renderer.getSize(new THREE.Vector2());
         const savedPixelRatio = renderer.getPixelRatio();
         const savedAspect     = camera.aspect;
+        const shadowMap       = renderer.shadowMap;
+        const savedShadowAuto = shadowMap.autoUpdate;
+
+        // SUPERSAMPLING STATE | Restored in finally alongside everything else
+        // ------------------------------------------------------------
+        const fxaaPass            = pipeline.fxaaPass;
+        const savedFxaaEnabled    = fxaaPass ? fxaaPass.enabled : null;
+        const savedRenderToScreen = composer ? composer.renderToScreen : null;
 
         // LINE WIDTH COMPENSATION | Pixel-based line widths at export resolution
         // ------------------------------------------------------------
@@ -341,6 +398,75 @@
                 }
             }
 
+            // SUPERSAMPLING SETUP | The composer stops drawing to the canvas so
+            // each sample lands in its read buffer, and FXAA stands aside.
+            // ------------------------------------------------------------
+            // FXAA WOULD SOFTEN EVERY SAMPLE BEFORE THE AVERAGE, so the result
+            // would be sixteen slightly blurred pictures averaged into one
+            // blurred picture - all of the cost and none of the sharpness.
+            // Taking it out is why a supersampled tile comes back sharper AND
+            // smoother at once; those only feel like opposites when blur is the
+            // only tool on offer.
+            // ------------------------------------------------------------
+            if (supersampler) {
+                composer.renderToScreen = false;
+                if (fxaaPass) fxaaPass.enabled = false;
+            }
+
+            // HELPER FUNCTION | Run the Effect Chain Once Through the Projection
+            // ------------------------------------------------------------
+            // Every line here reads the camera projection, so all of it repeats
+            // for every supersample: the planar fog pass and SSAO rebuild world
+            // positions from the inverse projection, and each pre-pass renders
+            // through it. Syncing them once per tile and jittering underneath
+            // would land the fog in sixteen different places and average them.
+            // ------------------------------------------------------------
+            function renderEffectChain() {
+                Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlaneSystem__GetFogPass(), activeCamera);
+                pipeline.updateAoUniforms(activeCamera);             // <-- MaxEngine: sync SSAO camera matrices for this sub-frustum
+                pipeline.renderDepthPrePass();                       // <-- MaxEngine: depth capture (no-op when profile lines share depth)
+                if (isElevationMode) {
+                    elevationOverrides.renderProfileNormals(activeCamera);  // <-- 2D profile normals with ortho tile camera
+                } else {
+                    pipeline.renderProfileNormals();                 // <-- 3D profile normals with persp tile camera
+                }
+                composer.render();
+            }
+            // ------------------------------------------------------------
+
+            // HELPER FUNCTION | Render, Jitter and Average Every Sample of a Tile
+            // ------------------------------------------------------------
+            // The base projection is captured AFTER the tile's view offset and
+            // the vertical correction shear have both settled, so the jitter
+            // shifts the corrected sub-frustum rather than replacing it. The
+            // shear is never re-applied inside the loop: it starts by rebuilding
+            // the projection from the camera, which would wipe the jitter.
+            //
+            // Shadow maps are drawn with the first sample and reused by the
+            // rest - the lights and the geometry are frozen for the tile and
+            // only the view camera is nudged, so every later shadow pass would
+            // redraw identical maps at full cost.
+            // ------------------------------------------------------------
+            function renderSupersampledTile() {
+                supersampler.captureBaseProjection(activeCamera);
+
+                try {
+                    for (let i = 0; i < supersampler.sampleCount; i++) {
+                        if (i === 1) shadowMap.autoUpdate = false;   // <-- Keep the maps the first sample drew
+
+                        supersampler.applyJitter(activeCamera, i);
+                        renderEffectChain();
+                        supersampler.accumulate(composer.readBuffer.texture, i);
+                    }
+                } finally {
+                    shadowMap.autoUpdate = savedShadowAuto;
+                    supersampler.restoreProjection(activeCamera);    // <-- Unjittered for the section overlay and the next tile
+                }
+
+                supersampler.present();                              // <-- The averaged tile onto the canvas
+            }
+            // ------------------------------------------------------------
+
             // TILE LOOP | Render each sub-frustum and composite into output
             // ------------------------------------------------------------
             const totalTiles = tilePlan.totalTiles;
@@ -362,14 +488,9 @@
                         Na__VerticalCorrection__ApplyFrame();        // <-- Shear applies per-tile exactly (operates on the sub-projection)
                     }
 
-                    // FOG SYNC | The planar fog pass reconstructs world positions from
-                    // the camera projection; its uniforms are per-frame synced by the
-                    // live loop but MUST be refreshed for each tile's sub-frustum or
-                    // the fog planes land in a different place on every tile (banding).
-                    Na__FogPlane__UpdateFogPassPerFrame(Na__FogPlaneSystem__GetFogPass(), activeCamera);
-
                     // SILLY LINES SYNC | Wave phase runs in full-image px space so the
-                    // sine is continuous across tile boundaries.
+                    // sine is continuous across tile boundaries. Per TILE, not per
+                    // sample: a sub-pixel jitter does not move the tile.
                     if (pipeline.profileLinesPass && pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset) {
                         pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset.value.set(
                             x - gutter,                              // <-- Tile framebuffer left edge in full-image px
@@ -377,22 +498,24 @@
                         );
                     }
 
-                    // RENDER | Same per-frame sequence as the realtime loop
+                    // RENDER | Same per-frame sequence as the realtime loop, run once
+                    // per supersample because every line of it reads the camera
+                    // projection - which the jitter has just moved.
                     if (composer) {
-                        pipeline.updateAoUniforms(activeCamera);     // <-- MaxEngine: sync SSAO camera matrices for this sub-frustum
-                        pipeline.renderDepthPrePass();               // <-- MaxEngine: depth capture (no-op when profile lines share depth)
-                        if (isElevationMode) {
-                            elevationOverrides.renderProfileNormals(activeCamera);  // <-- 2D profile normals with ortho tile camera
+                        if (supersampler) {
+                            renderSupersampledTile();
                         } else {
-                            pipeline.renderProfileNormals();         // <-- 3D profile normals with persp tile camera
+                            renderEffectChain();                     // <-- One pass; FXAA draws it to the canvas
                         }
-                        composer.render();
                     } else {
                         renderer.render(scene, activeCamera);        // <-- Direct render fallback (no pipeline)
                     }
 
                     // CROSS SECTION OVERLAY | Caps + profile lines on this tile's
-                    // sub-frustum, drawn onto the composited buffer before readback
+                    // sub-frustum, drawn onto the composited buffer before readback.
+                    // AFTER the average, never inside it: these are drawn with the
+                    // canvas's own anti-aliasing, exactly as the realtime loop draws
+                    // them after the composer.
                     if (sectionOverlayRenderer) {
                         sectionOverlayRenderer(activeCamera);
                     }
@@ -409,12 +532,27 @@
                 }
             }
 
-            return { canvas: outCanvas, width: outW, height: outH, wasClamped: fit.wasClamped };
+            return {
+                canvas           : outCanvas,
+                width            : outW,
+                height           : outH,
+                wasClamped       : fit.wasClamped,
+                antiAliasSamples : supersampler ? supersampler.sampleCount : 1
+            };
 
         } finally {
             // RESTORE | Camera, renderer, and composer back to live viewport state
             // ------------------------------------------------------------
             renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+
+            // SUPERSAMPLING | Hand the composer and FXAA back before anything
+            // else touches them, and free the tile-sized accumulation buffer
+            shadowMap.autoUpdate = savedShadowAuto;
+            if (supersampler) {
+                if (composer && savedRenderToScreen !== null) composer.renderToScreen = savedRenderToScreen;
+                if (fxaaPass && savedFxaaEnabled !== null)    fxaaPass.enabled = savedFxaaEnabled;
+                supersampler.dispose();
+            }
 
             activeCamera.clearViewOffset();                          // <-- Safe when no offset is set (three guards internally)
 

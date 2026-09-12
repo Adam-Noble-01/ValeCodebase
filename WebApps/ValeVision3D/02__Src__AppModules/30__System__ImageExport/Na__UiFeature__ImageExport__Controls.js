@@ -66,8 +66,19 @@
         defaultAspectIndex     : 'ImageExport__Config__DefaultAspectIndex',     // <-- Default aspect ratio index key
         resolutions            : 'ImageExport__Config__Resolutions',             // <-- Pixel height resolution options key
         defaultResolutionIndex : 'ImageExport__Config__DefaultResolutionIndex', // <-- Default resolution index key
-        customEnabled          : 'ImageExport__Config__CustomEnabled'           // <-- Custom size toggle default key
+        customEnabled          : 'ImageExport__Config__CustomEnabled',          // <-- Custom size toggle default key
+        antiAliasSamples       : 'ImageExport__Config__AntiAliasSamples'        // <-- Sub-pixel samples averaged per tile
     };
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Supersampling Fallback
+    // ------------------------------------------------------------
+    // Used when the config block predates the key. A still is one frame, so
+    // sixteen samples costs seconds on a job the user already waits for, and
+    // whitecard line work is exactly the case that needs all sixteen.
+    // ------------------------------------------------------------
+    const Na__UiFeature__DefaultAntiAliasSamples = 16;
     // ------------------------------------------------------------
 
     // endregion --------------------------------------------------------------
@@ -121,7 +132,12 @@
             defaultAspectIndex     : config[Na__UiFeature__ExportConfigKeys.defaultAspectIndex],     // <-- Map long JSON key to short internal name
             resolutions            : config[Na__UiFeature__ExportConfigKeys.resolutions],             // <-- Map long JSON key to short internal name
             defaultResolutionIndex : config[Na__UiFeature__ExportConfigKeys.defaultResolutionIndex], // <-- Map long JSON key to short internal name
-            customEnabled          : config[Na__UiFeature__ExportConfigKeys.customEnabled]           // <-- Map long JSON key to short internal name
+            customEnabled          : config[Na__UiFeature__ExportConfigKeys.customEnabled],          // <-- Map long JSON key to short internal name
+            // Defaulted here rather than at the call site, so a config block
+            // written before supersampling existed still exports supersampled.
+            antiAliasSamples       : Number.isFinite(config[Na__UiFeature__ExportConfigKeys.antiAliasSamples])
+                                   ? config[Na__UiFeature__ExportConfigKeys.antiAliasSamples]
+                                   : Na__UiFeature__DefaultAntiAliasSamples
         };
     }
     // ------------------------------------------------------------
@@ -282,6 +298,7 @@
             elevationOverrides : elevOverrides,            // <-- Ortho export overrides or null for 3D
             targetWidth,
             targetHeight,
+            antiAliasSamples   : exportConfig.antiAliasSamples,   // <-- Each tile drawn N times on sub-pixel jitter and averaged
             onProgress         : progress
         });
 

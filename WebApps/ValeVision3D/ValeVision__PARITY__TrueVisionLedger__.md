@@ -64,8 +64,29 @@ TrueVision during the re-alignment and has now been ported back.
 | `Na__Verify__ModuleGraph__`, `Na__Verify__Exports__` | One proves every FILE resolves, the other every NAME. Both found real faults during the re-alignment | **ported** |
 | Dev Tools menu in the top bar | The menu sat fixed over the top-left of the viewport, permanently, whether or not it was open - which is where the model is. The trigger is now a pill beside the logo and only the flyout drops down, clearing the drawing tab strip. The drag handle sizes the panel (the container is a header flex item) and moved inside the list, since the container no longer establishes a positioned containing block | **ported** |
 | Render Composites panel in the LEFT column | TrueVision moved it under Drawing Layers on 12-Sep-2026 and the move never came back; ValeVision's file header said left while its code said right | **fixed** |
+| Supersampler promoted to the render pipeline | `05/Na__RenderEffect__Supersampler__.js`. This file was ours - the video studio wrote it on 11-Sep - and TrueVision generalised it for two frame routes and two consumers. It comes back as the shared module and `31/Na__VideoStudio__Export__Supersampler.js` is now an ALIAS re-export of it, so the video studio and the still exporter cannot end up with different jitter tables. Verified in the browser: the two exported names are the same function object | **ported** |
+| Supersampled static exports | `30/Na__ImageExport__StaticExport__TiledRenderer.js` gains `antiAliasSamples`, per tile. Resolution was never the fix - a bigger export gets SMALLER steps, not fewer - and FXAA searches about 20 px along an edge, so a step on a two-degree line outruns it and comes back smeared as well as stepped. FXAA now stands aside during accumulation. Measured identically in both trees: 1 sample gives 2 grey levels on a shallow line, 4 gives 5, 16 gives 17 | **ported** |
+| Layout Editor sample count per quality level | `AntiAliasSamples` on each raster level (Low 1, Medium 4, High 16) carried through `Na__LeRaster__Fit` beside the pixel size, so a picture can never be rendered at one level's resolution and another's anti-aliasing. High is also the PDF and Dev bake level | **ported** |
 
 **Deliberately NOT ported, each checked rather than assumed:**
+
+- *Supersampling in Export Render Layers.* Those are structural conditioning maps -
+  depth, normals, edges - and the average of two normals across an edge describes no
+  surface, nor does the average of two depths describe any point in space. Beauty wants
+  coverage; a conditioning map wants the truth at the sample point. The shared tile plan
+  still keeps the two registered pixel for pixel.
+- *TrueVision's TARGET ROUTE and its sRGB present transfer.* Kept in the shared file so
+  both trees hold one identical module, but ValeVision has no caller: every picture here
+  goes through the composer, which leaves its frame in a read buffer ready to average.
+  TrueVision needs it because DIV-1 means a drawing draws straight to the bound
+  framebuffer and has no read buffer to hand.
+- *TrueVision's profile-buffer resize fix.* It resized the renderer per tile and never
+  the Sobel buffers, so its drawing outlines were computed at viewport resolution and
+  stretched across the sheet. Checked here: `setProfileLinesSize(fbW, fbH)` has been in
+  this tiled renderer since v1.1.0. Nothing to fix.
+- *TrueVision's composer-route fix for the 3D snapshot.* Its tiled renderer accepted a
+  pipeline getter and ignored it, so sheet 3D viewports were a bare `renderer.render`.
+  Checked here: every tile has always gone through the composer. Nothing to fix.
 
 - *The 2D viewport camera fix.* TrueVision passed the main perspective camera where the
   framed ortho belonged. ValeVision passes the main camera at that same line and is RIGHT

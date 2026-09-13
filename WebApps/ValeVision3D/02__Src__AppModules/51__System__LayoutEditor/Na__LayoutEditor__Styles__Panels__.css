@@ -385,3 +385,72 @@
 }
 
 /* endregion ------------------------------------------------------- */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Gradient Rows (Vectors panel)                          */
+/* ----------------------------------------------------------------- */
+
+/* THE SETTINGS BLOCK sits under its toggle the way the fill colour row sits
+   under Fill, with a faint rule down its left so the rows read as the
+   gradient's own rather than as more shape properties. */
+.na-le-grad {
+    margin                             : -2px 0 6px;
+    padding-left                       : 8px;
+    border-left                        : 2px solid #e6eaee;
+}
+
+/* AN ALPHA END has no colour of its own - the solid end lends it one - so its
+   colour well goes. visibility rather than display keeps the tick in place. */
+.na-le-grad-stop.is-alpha .na-le-input--colour {
+    visibility                         : hidden;
+}
+
+.na-le-grad-alpha {
+    display                            : inline-flex;
+    align-items                        : center;
+    gap                                : 4px;
+    color                              : #555;
+    font-size                          : 0.72rem;
+    white-space                        : nowrap;
+    cursor                             : pointer;
+}
+
+.na-le-input--range {
+    flex                               : 1 1 auto;
+    min-width                          : 40px;
+    height                             : 18px;
+    padding                            : 0;
+    border                             : none;
+    background                         : transparent;
+    accent-color                       : #1a7fc4;
+}
+
+.na-le-grad-readout {
+    flex                               : 0 0 34px;
+    color                              : #555;
+    font-size                          : 0.72rem;
+    font-variant-numeric               : tabular-nums;
+    text-align                         : right;
+}
+
+.na-le-grad-angle {
+    flex                               : 0 0 50px;
+    width                              : 50px;
+    text-align                         : right;
+}
+
+/* THE PREVIEW is painted from the same stops as the paper, over a
+   checkerboard so the alpha end reads as see-through rather than as white. */
+.na-le-grad-preview {
+    flex                               : 0 0 24px;
+    width                              : 24px;
+    height                             : 24px;
+    border                             : 1px solid #ccd3d8;
+    border-radius                      : 4px;
+    background-color                   : #ffffff;
+    background-size                    : 100% 100%, 8px 8px;
+    background-repeat                  : no-repeat, repeat;
+}
+
+/* endregion ------------------------------------------------------- */

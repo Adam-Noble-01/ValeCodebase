@@ -31,7 +31,8 @@
 //                 EndXMm, EndYMm, OffsetMm, TextSizeMm, Colour, Terminator,
 //                 Precision, UnitsSuffix, OverrideText
 //     Shape       Shape__Id, LayerId, Points [[x, y], ...], Closed, Stroked, StrokeColour,
-//                 StrokePt, FillColour (null for none)
+//                 StrokePt, FillColour (null for none), Gradient (null for none;
+//                 the shape is Na__LayoutEditor__GradientTool__'s)
 //   Paper coordinates are millimetres from the sheet's top-left, y down.
 //
 // - The active sheet and the selection are session state, held here so the
@@ -53,6 +54,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.2.2
+// - CreateShape and UpdateShape carry Shape__Gradient (the gradient key: an
+//   object, or null to clear it). The normaliser copies it, so no two shapes
+//   ever share one. Ported from TrueVision.
+//
 // 10-Sep-2026 - Version 1.2.1
 // - CreateShape and UpdateShape carry Shape__Stroked (the edges toggle).
 //
@@ -736,7 +742,8 @@
             Shape__StrokeColour : opts.strokeColour,
             Shape__StrokePt     : opts.strokePt,
             Shape__FillColour   : (typeof opts.fillColour === 'string') ? opts.fillColour : null,
-            Shape__Stroked      : opts.stroked !== false
+            Shape__Stroked      : opts.stroked !== false,
+            Shape__Gradient     : (opts.gradient && typeof opts.gradient === 'object') ? opts.gradient : null   // <-- The normaliser copies it, so the caller's object is never shared
         }, layerId);
         sheet.Sheet__Shapes.push(item);
         if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('shapes', sheet.Sheet__Id, item.Shape__Id);   // <-- The draw tool announces once, on finishing
@@ -750,6 +757,7 @@
         if (typeof patch.strokeColour === 'string') item.Shape__StrokeColour = patch.strokeColour;
         if (Number.isFinite(patch.strokePt)) item.Shape__StrokePt = patch.strokePt;
         if (patch.fillColour !== undefined) item.Shape__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;
+        if (patch.gradient !== undefined) item.Shape__Gradient = (patch.gradient && typeof patch.gradient === 'object') ? patch.gradient : null;   // <-- null clears it; the normaliser below copies it fresh
         if (typeof patch.stroked === 'boolean') item.Shape__Stroked = patch.stroked;
         if (typeof patch.layerId === 'string') item.Shape__LayerId = patch.layerId;
         Na__LeRec__NormaliseShape(item, item.Shape__LayerId);

@@ -194,12 +194,13 @@
     },
 
     "LayoutEditor__Snapping__Config": {
-        "LayoutEditor__Snapping__Description": "Object snaps on the projected linework inside 2D viewports, for placing and dragging sheet dimensions. RadiusPx is the pick radius on screen at any zoom. Endpoints and midpoints of every painted segment are candidates; an endpoint wins a near tie. HiddenLines adds the hidden class as a source. The toggle (toolbar button or the Snap__Toggle key binding) is remembered per browser.",
+        "LayoutEditor__Snapping__Description": "Object snaps for placing and dragging dimensions and drawing vectors. Two sources: the projected linework inside 2D viewports, and - with SheetObjects on - the sheet's own vectors and dimensions, so a new line can start on the corner of the last one and a polygon can close exactly on its first point. RadiusPx is the pick radius on screen at any zoom. Endpoints and midpoints are candidates; an endpoint wins a near tie, and the sheet's own markup wins a tie with the linework because it sits on top. The item being dragged never offers its own moving point. HiddenLines adds the hidden class as a source. The toggle (toolbar button or the Snap__Toggle key binding) is remembered per browser.",
         "LayoutEditor__Snapping__Enabled": true,
         "LayoutEditor__Snapping__RadiusPx": 14,
         "LayoutEditor__Snapping__Endpoints": true,
         "LayoutEditor__Snapping__Midpoints": true,
         "LayoutEditor__Snapping__HiddenLines": false,
+        "LayoutEditor__Snapping__SheetObjects": true,
         "LayoutEditor__Snapping__MarkerSizePx": 18
     },
     "LayoutEditor__History__Config": {
@@ -221,13 +222,25 @@
         "LayoutEditor__Lineweights__StepPt": 0.05
     },
     "LayoutEditor__Shapes__Config": {
-        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons). Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon. DefaultStroked draws the edges; with it off a new shape is its fill alone, so DefaultFilled must be on as well or the shape would have nothing to show.",
+        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons) and the Rectangle tool's rectangles, which are ordinary closed four-point shapes once drawn. Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon. DefaultStroked draws the edges; with it off a new shape is its fill alone, so DefaultFilled must be on as well or the shape would have nothing to show.",
         "LayoutEditor__Shapes__DefaultStrokeColour": "#172b3a",
         "LayoutEditor__Shapes__DefaultStrokePt": 0.20,
         "LayoutEditor__Shapes__DefaultStroked": true,
         "LayoutEditor__Shapes__DefaultFillColour": "#e4e8ec",
         "LayoutEditor__Shapes__DefaultFilled": false,
         "LayoutEditor__Shapes__CloseRadiusPx": 10
+    },
+    "LayoutEditor__Eyedropper__Config": {
+        "LayoutEditor__Eyedropper__Description": "The eyedropper (hotkey B) matches properties from one object on the sheet onto another. Click the object that already looks right, then click each object that should match it. StayLoadedAfterApply keeps the picked style on the dropper so a run of items costs one click each; with it off the dropper empties after the first apply and must be re-picked. CopyDimensionOffset is off on purpose: a dimension's offset is where its line sits, so copying it would move the target rather than restyle it. Style travels, content and geometry do not, and the layer never travels in any kind. Viewports are not matched yet - see the FUTURE EXPANSION note in Na__LayoutEditor__Eyedropper__.js. Shift+B is the palette mode: click an object and its style becomes the setting new objects of that kind are created with - the same traits travel, turned into the panel settings. PaletteSwitchesTool then hands over to the drawing tool for that kind (Text, Dimension, or whichever of Draw and Rectangle drew last); FlashMs is how long the item the style came from pulses.",
+        "LayoutEditor__Eyedropper__StayLoadedAfterApply": true,
+        "LayoutEditor__Eyedropper__CopyDimensionOffset": false,
+        "LayoutEditor__Eyedropper__HighlightPadMm": 1.2,
+        "LayoutEditor__Eyedropper__HighlightBorderPx": 1.5,
+        "LayoutEditor__Eyedropper__Cursor": "copy",
+        "LayoutEditor__Eyedropper__ApplyCursor": "alias",
+        "LayoutEditor__Eyedropper__RefuseCursor": "not-allowed",
+        "LayoutEditor__Eyedropper__PaletteSwitchesTool": true,
+        "LayoutEditor__Eyedropper__FlashMs": 700
     },
     "LayoutEditor__Enhance__Config": {
         "LayoutEditor__Enhance__Description": "The Enhance Whitecard viewport style: the image export's levels and high-pass sharpen, applied to a viewport's render. A white point of 205 sends the shaded whitecard faces to paper white while the linework stays dark.",
@@ -240,10 +253,11 @@
         "LayoutEditor__Enhance__SharpenOpacity": 1.0
     },
     "LayoutEditor__AutoSave__Config": {
-        "LayoutEditor__AutoSave__Description": "A browser draft of every change, put back on the next load while unsaved, and a project save of its own DebounceMs after a sheet is created, renamed, reordered or deleted. Localhost only; the web build is read-only.",
+        "LayoutEditor__AutoSave__Description": "A browser draft of every change, put back on the next load while unsaved, and a project save of its own DebounceMs after a sheet is created, renamed, reordered or deleted. Localhost only; the web build is read-only. The draft is written DraftDebounceMs after the editing pauses rather than inside every click - it is a synchronous disk write of every sheet, so doing it per change stalled the editor - and it is flushed when the tab is hidden or closed.",
         "LayoutEditor__AutoSave__Enabled": true,
         "LayoutEditor__AutoSave__DebounceMs": 1500,
-        "LayoutEditor__AutoSave__DraftEnabled": true
+        "LayoutEditor__AutoSave__DraftEnabled": true,
+        "LayoutEditor__AutoSave__DraftDebounceMs": 600
     },
     "LayoutEditor__Linework__Config": {
         "LayoutEditor__Linework__Description": "Paper-millimetre stroke widths for the projected linework inside sheet viewports (they print at these widths at any scale). Colours follow the Projected Linework appearance block so a sheet matches its scene.",
@@ -300,7 +314,7 @@
         "LayoutEditor__Labels__PdfReadyMessage": "PDF downloaded.",
         "LayoutEditor__Labels__PdfFailedMessage": "PDF export failed - see console.",
         "LayoutEditor__Labels__SnapToggle": "Snap",
-        "LayoutEditor__Labels__SnapToggleTitle": "Snap dimensions to the linework endpoints and midpoints (F3)",
+        "LayoutEditor__Labels__SnapToggleTitle": "Snap to endpoints and midpoints of the linework and the sheet's own vectors and dimensions (F3)",
         "LayoutEditor__Labels__ProjectingLinework": "Projecting linework",
         "LayoutEditor__Labels__Undo": "Undo",
         "LayoutEditor__Labels__Redo": "Redo",
@@ -321,6 +335,27 @@
         "LayoutEditor__Labels__LockedNote": "Locked",
         "LayoutEditor__Labels__DraftRestored": "Unsaved sheet changes from this browser were restored. Save Sheets keeps them.",
         "LayoutEditor__Labels__ToolDraw": "Draw",
+        "LayoutEditor__Labels__ToolRectangle": "Rectangle",
+        "LayoutEditor__Labels__ToolRectangleTitle": "Draw a rectangle (R): click one corner then the opposite corner, or drag from one to the other. Shift keeps it square, Esc abandons it.",
+        "LayoutEditor__Labels__ToolEyedropper": "Eyedropper",
+        "LayoutEditor__Labels__ToolEyedropperTitle": "Match properties (B): click the object to copy FROM, then each object to copy ONTO. Alt+click picks a new source, Esc finishes. Shift+B or Shift+click: use an object's style for new objects instead.",
+        "LayoutEditor__Labels__EyedropperPickHint": "Eyedropper: click the object to copy properties FROM.",
+        "LayoutEditor__Labels__EyedropperLoadedHint": "Holding {source} properties - click each {source} to apply. Alt+click picks a new source, Esc finishes.",
+        "LayoutEditor__Labels__EyedropperMismatch": "Holding {source} properties - click another {source}.",
+        "LayoutEditor__Labels__EyedropperLocked": "That layer is locked - unlock it first.",
+        "LayoutEditor__Labels__EyedropperUnsupported": "Viewport properties are not matched yet.",
+        "LayoutEditor__Labels__EyedropperKindText": "text",
+        "LayoutEditor__Labels__EyedropperKindDimension": "dimension",
+        "LayoutEditor__Labels__EyedropperKindShape": "vector",
+        "LayoutEditor__Labels__EyedropperKindViewport": "viewport",
+        "LayoutEditor__Labels__MenuCopyStyle": "Copy properties",
+        "LayoutEditor__Labels__MenuPasteStyle": "Paste properties",
+        "LayoutEditor__Labels__MenuSyncPalette": "Use for new {kinds}",
+        "LayoutEditor__Labels__EyedropperPaletteHint": "Palette: click an object to use its style for new objects of that kind. Esc finishes.",
+        "LayoutEditor__Labels__EyedropperPaletteSynced": "New {kinds} will be drawn like that {kind}. Click another to set another, Esc finishes.",
+        "LayoutEditor__Labels__EyedropperPaletteKindText": "text",
+        "LayoutEditor__Labels__EyedropperPaletteKindDimension": "dimensions",
+        "LayoutEditor__Labels__EyedropperPaletteKindShape": "vectors",
         "LayoutEditor__Labels__ShapesTitle": "Vectors",
         "LayoutEditor__Labels__ShapeStroked": "Edges",
         "LayoutEditor__Labels__ShapeStroke": "Edge colour",
@@ -332,6 +367,7 @@
         "LayoutEditor__Labels__ShapeDefaultsNote": "Nothing selected: these settings apply to new shapes.",
         "LayoutEditor__Labels__ShapeEitherNote": "Edges and fill are either or: switching one off switches the other on, so a shape always shows.",
         "LayoutEditor__Labels__ShapeDrawNote": "Draw tool (L): click points, click the first point to close a polygon, Enter or double-click to finish a line, Esc to abandon.",
+        "LayoutEditor__Labels__ShapeRectangleNote": "Rectangle tool (R): click one corner then the opposite corner, or drag from one to the other; Shift keeps it square; Esc, Space or a right click abandons it. Both corners snap like the Draw tool's points. The result is an ordinary closed vector, so the Select tool drags its corner grips like any polygon's and the Vectors panel restyles it.",
         "LayoutEditor__Labels__ShapeAxisNote": "Arrow keys lock the axis for the next point (left or right locks across, up or down locks down the page); press the same key again to release. Shift holds the nearer axis for as long as it is down. Either way the axis is kept and a snap only supplies the distance along it, so lock an axis and hover a vertex to line the edge up with that vertex - which is how the last corner of a rectangle is found. The shape closes when the point would LAND on the first one, not when the cursor passes near it.",
         "LayoutEditor__Labels__StyleEnhanceWhitecard": "Enhance Whitecard",
         "LayoutEditor__Labels__StyleBaseImage": "Base Image",

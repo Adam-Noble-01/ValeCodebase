@@ -6,7 +6,7 @@
 // NAMESPACE  : Na__LeTools
 // MODULE     : Layout Editor - Sheet Tools
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Select, move, resize and edit what is on the paper with the left button and the keyboard; hand placement to the text, dimension and draw tools
+// PURPOSE    : Select, move, resize and edit what is on the paper with the left button and the keyboard; hand placement to the text, dimension, draw and rectangle tools
 // CREATED    : 09-Sep-2026
 //
 // DESCRIPTION:
@@ -15,16 +15,27 @@
 //   selected viewport's handles and border, then any viewport), a drag
 //   past a small threshold moves or resizes it through the model in silent
 //   updates, and the release announces the change once.
-// - Tools: Select; Text, Dimension and Draw live in their own modules and
-//   are called from here with the panel defaults.
+// - Tools: Select; Text, Dimension, Draw, Rectangle and Eyedropper live in
+//   their own modules and are called from here with the panel defaults.
 // - Viewports: a drag moves one (selected or not), a handle crops or
 //   extends the frame, double-click enters the content, a lock refuses all
 //   of it. Dimensions: grips re-pick the points and slide the line (with
 //   inference); double-click edits the value. Shapes: grips move vertices.
 // - Keys: Delete removes the selection (a viewport asks first), Escape
 //   backs out, Space clears the selection, Enter finishes a shape, arrows
-//   nudge by a millimetre (ten with Shift), V T D L pick a tool, Ctrl+Z
+//   nudge by a millimetre (ten with Shift), V T D L R B pick a tool, Ctrl+Z
 //   and Ctrl+Y step the history. Nothing fires while typing in a field.
+// - Eyedropper (B): picks the style off one item and paints it onto others
+//   through Na__LayoutEditor__Eyedropper__. It neither selects nor drags, so
+//   a run of style clicks never swaps the right-hand panel out mid-run.
+//   Shift+B loads the palette instead: the clicked item's style becomes the
+//   setting new objects of its kind are created with, the selection clears so
+//   the panel shows it, and the drawing tool for that kind takes over.
+// - Rectangle (R): one corner then the opposite one, clicked or dragged,
+//   through Na__LayoutEditor__RectangleTool__. It is the one placing tool
+//   that is also handed the release, which is what lets a rectangle be
+//   dragged out. What it writes is an ordinary closed shape, so the vertex
+//   grips edit its corners like any polygon's.
 // - While the Draw or Dimension tool is placing a point the arrows lock
 //   the axis instead of nudging: left or right the X, up or down the Y,
 //   the same key again to release, as in SketchUp LayOut.
@@ -48,6 +59,40 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.8.0
+// - Palette (Shift+B, Shift+click on the Eyedropper button, or Use for new ...
+//   on the context menu): an item's style becomes the settings new objects of
+//   its kind are created with. AdoptStyle is the writer handed to the
+//   eyedropper; DEFAULTS_EVENT tells the panels. The drawing tool for the kind
+//   takes over, a vector going to whichever of Draw and Rectangle drew last.
+// - The eyedropper resolves locked items too, so a locked scrapbook is a source
+//   and a locked target is refused with a reason instead of being missed.
+// - Ported from TrueVision3D v2.30.0.
+//
+// 13-Sep-2026 - Version 1.7.1
+// - The shape defaults carry the gradient: gradientOn and its settings, seeded
+//   from Na__LayoutEditor__GradientTool__ and kept through the toggle. Ported
+//   from TrueVision.
+//
+// 13-Sep-2026 - Version 1.7.0
+// - The Rectangle tool (R), ported from TrueVision. Na__LayoutEditor__RectangleTool__
+//   draws it; this module hands it the press, the move and - new for a placing
+//   tool - the release, so a rectangle can be dragged out as well as clicked.
+//   The stage captures the pointer for it, so a drag that leaves the stage
+//   still comes back up here.
+// - Escape, Space, a right click, a second finger or another tool abandons a
+//   half-drawn rectangle. The arrow keys are swallowed while one is drawn
+//   rather than nudging whatever was selected before it.
+//
+// 13-Sep-2026 - Version 1.6.0
+// - The Eyedropper tool (B), ported from TrueVision: Na__LayoutEditor__Eyedropper__
+//   owns the picking and the painting, this module owns the slot, the pointer
+//   and the keys. B with something selected arms it already loaded. Escape
+//   empties the dropper before it clears the selection. Copy and Paste
+//   properties on the context menu drive the same dropper.
+// - Grip drags pass their own vertex or dimension end to the snap as an
+//   exclusion, now that the sheet's vectors and dimensions are candidates.
+//
 // 10-Sep-2026 - Version 1.5.0
 // - The arrow keys lock the drawing axis while a tool is placing a point
 //   (Na__LayoutEditor__AxisLock__), and nudge the selection otherwise.
@@ -85,6 +130,7 @@
         Na__LeCfg__GetTextSetup,
         Na__LeCfg__GetDimensionSetup,
         Na__LeCfg__GetShapeSetup,
+        Na__LeCfg__GetEyedropperSetup,
         Na__LeCfg__GetSelectionSetup,
         Na__LeCfg__GetLabel,
         Na__LeCfg__GetKeyboardSetup,
@@ -93,6 +139,7 @@
     } from './Na__LayoutEditor__ConfigState__.js';
     import {
         Na__LeModel__KIND_2D,
+        Na__LeModel__CHANGED_EVENT,
         Na__LeModel__GetActiveSheet,
         Na__LeModel__GetViewportById,
         Na__LeModel__IsLayerVisible,
@@ -109,6 +156,7 @@
         Na__LeModel__GetSelection
     } from './Na__LayoutEditor__SheetModel__.js';
     import {
+        Na__LeSurface__ZOOM_EVENT,
         Na__LeSurface__ClientToPaperMm,
         Na__LeSurface__GetElements,
         Na__LeSurface__GetPixelsPerMm,
@@ -131,6 +179,9 @@
     import { Na__LeText__Place, Na__LeText__BeginEdit, Na__LeText__Commit, Na__LeText__Cancel, Na__LeText__IsEditing } from './Na__LayoutEditor__TextTool__.js';
     import { Na__LeDim__Click, Na__LeDim__Move, Na__LeDim__Cancel, Na__LeDim__IsPlacing, Na__LeDim__IsSpanning, Na__LeDim__OffsetFor, Na__LeDim__ShowInference, Na__LeDim__BeginTextEdit } from './Na__LayoutEditor__DimensionTool__.js';
     import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing } from './Na__LayoutEditor__ShapeTool__.js';
+    import { Na__LeGrad__Defaults, Na__LeGrad__Create } from './Na__LayoutEditor__GradientTool__.js';
+    import { Na__LeRect__Press, Na__LeRect__Move, Na__LeRect__Release, Na__LeRect__Cancel, Na__LeRect__IsDrawing } from './Na__LayoutEditor__RectangleTool__.js';
+    import { Na__LeDrop__Click, Na__LeDrop__Hover, Na__LeDrop__Refresh, Na__LeDrop__Clear, Na__LeDrop__Pick, Na__LeDrop__Paint, Na__LeDrop__HasSource, Na__LeDrop__CanApply, Na__LeDrop__MODE_ITEM, Na__LeDrop__MODE_PALETTE, Na__LeDrop__SetMode, Na__LeDrop__GetMode, Na__LeDrop__SyncPalette, Na__LeDrop__PaletteMenuLabel } from './Na__LayoutEditor__Eyedropper__.js';
     import { Na__LeAxis__AXIS_X, Na__LeAxis__AXIS_Y, Na__LeAxis__Toggle, Na__LeAxis__Clear } from './Na__LayoutEditor__AxisLock__.js';
     import { Na__LeVp2d__SetInteracting, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
@@ -155,8 +206,11 @@
     const Na__LeTools__TOOL_TEXT      = 'text';
     const Na__LeTools__TOOL_DIMENSION = 'dimension';
     const Na__LeTools__TOOL_DRAW      = 'draw';
-    const Na__LeTools__TOOLS          = [ Na__LeTools__TOOL_SELECT, Na__LeTools__TOOL_TEXT, Na__LeTools__TOOL_DIMENSION, Na__LeTools__TOOL_DRAW ];
+    const Na__LeTools__TOOL_RECT      = 'rectangle';
+    const Na__LeTools__TOOL_EYEDROP   = 'eyedropper';
+    const Na__LeTools__TOOLS          = [ Na__LeTools__TOOL_SELECT, Na__LeTools__TOOL_TEXT, Na__LeTools__TOOL_DIMENSION, Na__LeTools__TOOL_DRAW, Na__LeTools__TOOL_RECT, Na__LeTools__TOOL_EYEDROP ];
     const Na__LeTools__CHANGED_EVENT  = 'na-layouteditor-tool-changed';
+    const Na__LeTools__DEFAULTS_EVENT = 'na-layouteditor-defaults-changed';   // <-- The settings for new objects changed from outside their panel (a palette sync)
     const Na__LeTools__MENU_SLOP_PX   = 4;      // <-- A right button that travelled further than this panned, so no menu
     // ------------------------------------------------------------
 
@@ -173,6 +227,7 @@
     let Na__LeTools__TextDefaults  = null;
     let Na__LeTools__DimDefaults   = null;
     let Na__LeTools__ShapeDefaults = null;
+    let Na__LeTools__LastVectorTool = Na__LeTools__TOOL_DRAW;   // <-- Draw or Rectangle, whichever drew last: where a vector palette sync hands over
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -203,7 +258,8 @@
     function Na__LeTools__GetShapeDefaults() {
         if (!Na__LeTools__ShapeDefaults) {
             const s = Na__LeCfg__GetShapeSetup();
-            Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled, stroked : s.defaultStroked };
+            Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled, stroked : s.defaultStroked,
+                                           gradientOn : Na__LeGrad__Defaults().on === true, gradient : Na__LeGrad__Create() };   // <-- The settings outlive the toggle, so switching it back on restores them
         }
         return Na__LeTools__ShapeDefaults;
     }
@@ -219,10 +275,16 @@
 
     // FUNCTION | Abandon Whatever a Placing Tool Has Half Done
     // ------------------------------------------------------------
+    // The eyedropper counts as a placing tool here: a style sitting on the
+    // dropper is half-finished work in exactly the same way a half-drawn
+    // polyline is, so anything that abandons one abandons the other.
+    // ------------------------------------------------------------
     function Na__LeTools__CancelPlacement() {
         const sheet = Na__LeModel__GetActiveSheet();
         Na__LeDim__Cancel(sheet);
         Na__LeShape__Cancel(sheet);
+        Na__LeRect__Cancel();
+        Na__LeDrop__Clear();
         Na__LeAxis__Clear();
     }
     // ------------------------------------------------------------
@@ -235,11 +297,123 @@
         if (!Na__LeTools__Editable && next !== Na__LeTools__TOOL_SELECT) return Na__LeTools__Tool;
         Na__LeTools__CancelPlacement();
         Na__LeTools__Tool = next;
-        if (Na__LeTools__Stage) Na__LeTools__Stage.style.cursor = next === Na__LeTools__TOOL_SELECT ? '' : 'crosshair';
+        if (next === Na__LeTools__TOOL_DRAW || next === Na__LeTools__TOOL_RECT) Na__LeTools__LastVectorTool = next;
+        if (Na__LeTools__Stage) Na__LeTools__Stage.style.cursor = Na__LeTools__ToolCursor(next);
         window.dispatchEvent(new CustomEvent(Na__LeTools__CHANGED_EVENT, { detail : { tool : next } }));
         return next;
     }
     function Na__LeTools__GetTool() { return Na__LeTools__Tool; }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Resting Cursor for a Tool
+    // ------------------------------------------------------------
+    // The eyedropper does not get the crosshair: a crosshair says "a point
+    // lands here", and the eyedropper never places anything. It carries the
+    // copy cursor from the moment it is armed, and the hover pass sharpens
+    // that to apply or refuse once there is something under the pointer.
+    // ------------------------------------------------------------
+    function Na__LeTools__ToolCursor(tool) {
+        if (tool === Na__LeTools__TOOL_SELECT)  return '';
+        if (tool === Na__LeTools__TOOL_EYEDROP) return Na__LeCfg__GetEyedropperSetup().cursor;
+        return 'crosshair';
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Arm the Eyedropper, Seeding It From the Selection
+    // ------------------------------------------------------------
+    // Pressing B with something already selected loads the dropper from that
+    // selection at once, so the common path - notice the one that looks right,
+    // click it, press B, click the ones that should match - costs one key and
+    // no extra click. With nothing selected the dropper arms empty and the
+    // first click on the sheet picks the source.
+    //
+    // Pressing B while the eyedropper is already armed for painting does
+    // nothing. Going through SetTool would run CancelPlacement and quietly
+    // throw away the style being held, which is the last thing a second press
+    // should mean. From the palette mode it changes mode without putting the
+    // tool down.
+    // ------------------------------------------------------------
+    function Na__LeTools__ArmEyedropper() {
+        if (!Na__LeTools__Editable) return Na__LeTools__Tool;
+        if (Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP && Na__LeDrop__GetMode() === Na__LeDrop__MODE_ITEM) return Na__LeTools__Tool;
+
+        const selection = Na__LeModel__GetSelection();
+        if (Na__LeTools__Tool !== Na__LeTools__TOOL_EYEDROP) Na__LeTools__SetTool(Na__LeTools__TOOL_EYEDROP);
+        Na__LeDrop__SetMode(Na__LeDrop__MODE_ITEM);
+        if (selection) Na__LeDrop__Pick(Na__LeModel__GetActiveSheet(), selection.kind, selection.id);
+        return Na__LeTools__Tool;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Arm the Eyedropper to Load the Palette (Shift+B)
+    // ------------------------------------------------------------
+    // The palette is the Text, Dimensions and Vectors settings that new
+    // objects are created with. Shift+B with something selected loads that
+    // item's style at once; with nothing selected the next click on an object
+    // does it. Either way the tool can then hand over to the drawing tool for
+    // that kind (PaletteSwitchesTool), so "set the palette, draw with it" is
+    // Shift+B and one click.
+    // ------------------------------------------------------------
+    function Na__LeTools__ArmPalette() {
+        if (!Na__LeTools__Editable) return Na__LeTools__Tool;
+        const selection = Na__LeModel__GetSelection();
+        if (Na__LeTools__Tool !== Na__LeTools__TOOL_EYEDROP) Na__LeTools__SetTool(Na__LeTools__TOOL_EYEDROP);
+        Na__LeDrop__SetMode(Na__LeDrop__MODE_PALETTE);
+        if (selection) Na__LeTools__SyncPaletteFrom(Na__LeModel__GetActiveSheet(), selection);
+        return Na__LeTools__Tool;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Load the Palette From One Item, Then Get Ready to Draw
+    // ------------------------------------------------------------
+    // The selection is cleared on purpose. A panel shows the settings for new
+    // objects only while nothing is selected, and watching the Dimensions
+    // panel change to match is the confirmation that the sync took.
+    // ------------------------------------------------------------
+    function Na__LeTools__SyncPaletteFrom(sheet, found) {
+        if (!Na__LeTools__Editable || !sheet || !found) return false;
+        if (!Na__LeDrop__SyncPalette(sheet, found.kind, found.id, Na__LeTools__AdoptStyle)) return false;
+        Na__LeModel__SetSelection(null);
+        const tool = Na__LeCfg__GetEyedropperSetup().paletteSwitchesTool ? Na__LeTools__ToolForKind(found.kind) : null;
+        if (tool) Na__LeTools__SetTool(tool);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Store a Palette Patch in the Settings for New Objects
+    // ------------------------------------------------------------
+    // Handed to the eyedropper as its writer. It only routes: the patch
+    // arrives already in the settings' own shape, so nothing here knows a
+    // field name. The event tells the mode controller to redraw the panel,
+    // which cannot tell on its own because nothing on the sheet changed.
+    // ------------------------------------------------------------
+    function Na__LeTools__AdoptStyle(kind, patch) {
+        if (kind === 'annotation')     Na__LeTools__SetTextDefaults(patch);
+        else if (kind === 'dimension') Na__LeTools__SetDimensionDefaults(patch);
+        else if (kind === 'shape')     Na__LeTools__SetShapeDefaults(patch);
+        else return false;
+        window.dispatchEvent(new CustomEvent(Na__LeTools__DEFAULTS_EVENT, { detail : { kind : kind } }));
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Drawing Tool for a Kind of Object
+    // ------------------------------------------------------------
+    // A vector goes to whichever of Draw and Rectangle drew last, so someone
+    // laying out rectangles is not bounced back to the polyline tool each time.
+    // ------------------------------------------------------------
+    function Na__LeTools__ToolForKind(kind) {
+        if (kind === 'annotation') return Na__LeTools__TOOL_TEXT;
+        if (kind === 'dimension')  return Na__LeTools__TOOL_DIMENSION;
+        if (kind === 'shape')      return Na__LeTools__LastVectorTool;
+        return null;
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -255,8 +429,8 @@
     // or null. Markup wins over viewports, and the markup bridge orders it
     // dimensions, text, shapes.
     // ------------------------------------------------------------
-    function Na__LeTools__Resolve(sheet, pointMm) {
-        const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__Tolerance());
+    function Na__LeTools__Resolve(sheet, pointMm, includeLocked) {
+        const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__Tolerance(), includeLocked === true);   // <-- The eyedropper reads locked items; nothing else touches them
         if (markup) return { kind : markup.kind, id : markup.id, hit : null };
         const ppm  = Na__LeSurface__GetPixelsPerMm();
         const zoom = Na__LeSurface__GetZoom();
@@ -377,6 +551,31 @@
             if (Na__LeTools__Tool === Na__LeTools__TOOL_TEXT)      { Na__LeText__Place(sheet, point, Na__LeTools__GetTextDefaults()); return; }
             if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Click(sheet, point, event.shiftKey, Na__LeTools__GetDimensionDefaults()); return; }
             if (Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Click(sheet, point, event.shiftKey, Na__LeTools__GetShapeDefaults()); return; }
+
+            // RECTANGLE | The press sets or lands a corner. The pointer is
+            // captured so a rectangle dragged out past the edge of the stage
+            // still delivers its release here, where it lands the far corner.
+            // ------------------------------------
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_RECT) {
+                Na__LeRect__Press(sheet, point, event.shiftKey, Na__LeTools__GetShapeDefaults(), event.pointerId);
+                try { Na__LeTools__Stage.setPointerCapture(event.pointerId); } catch (e) { /* capture refused */ }
+                return;
+            }
+
+            // EYEDROPPER | Pick the style, then paint it, without ever selecting
+            // or dragging. Selection is left untouched on purpose: the dropper's
+            // own boxes say what it is holding and what it is over, and moving
+            // the selection under a run of style clicks would keep swapping the
+            // right-hand panel out from under the user.
+            // ------------------------------------
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP) {
+                event.preventDefault();
+                const picked = Na__LeTools__Resolve(sheet, point, true);             // <-- A locked scrapbook is still a source; a locked target is refused with a reason
+                if (Na__LeDrop__GetMode() === Na__LeDrop__MODE_PALETTE) Na__LeTools__SyncPaletteFrom(sheet, picked);
+                else Na__LeDrop__Click(sheet, picked, !!event.altKey);
+                if (Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP) Na__LeTools__Stage.style.cursor = Na__LeDrop__Hover(sheet, picked);   // <-- Unless a palette sync has already handed over to a drawing tool
+                return;
+            }
         }
 
         const found     = Na__LeTools__Resolve(sheet, point);
@@ -412,6 +611,8 @@
         if (!drag || event.pointerId !== drag.pointerId) {
             if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Move(sheet, point, event.shiftKey); return; }
             if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Move(sheet, point, event.shiftKey); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_RECT)      { Na__LeRect__Move(sheet, point, event.shiftKey, (event.buttons & 1) === 1 || event.pointerType === 'touch'); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP)   { Na__LeTools__Stage.style.cursor = Na__LeDrop__Hover(sheet, Na__LeTools__Resolve(sheet, point, true)); return; }
             if (Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) return;
             Na__LeTools__Stage.style.cursor = Na__LeTools__HoverCursor(sheet, Na__LeTools__Resolve(sheet, point), point);
             return;
@@ -451,7 +652,7 @@
         if (drag.kind === 'shape') {
             let points;
             if (drag.mode === 'vertex') {
-                const snap  = Na__LeOsnap__Snap(sheet, cursor);                       // <-- A vertex jumps to a corner or a midpoint
+                const snap  = Na__LeOsnap__Snap(sheet, cursor, { kind : 'shape', id : drag.id, index : drag.index });   // <-- A vertex jumps to a corner or a midpoint, never its own
                 const p0    = drag.start[drag.index];
                 const moved = snap.snapped ? [ snap.x, snap.y ] : [ p0[0] + d.x, p0[1] + d.y ];
                 points = drag.start.map((p, i) => (i === drag.index ? moved : [ p[0], p[1] ]));
@@ -463,7 +664,7 @@
         const s = drag.start;
         let patch = null;
         if (drag.mode === 'start' || drag.mode === 'end') {
-            const snap = Na__LeOsnap__Snap(sheet, cursor);                            // <-- The grip jumps to a corner or a midpoint
+            const snap = Na__LeOsnap__Snap(sheet, cursor, { kind : 'dimension', id : drag.id, index : drag.mode });   // <-- The grip jumps to a corner or a midpoint, never its own
             const px = snap.snapped ? snap.x : (drag.mode === 'start' ? s.sx : s.ex) + d.x;
             const py = snap.snapped ? snap.y : (drag.mode === 'start' ? s.sy : s.ey) + d.y;
             patch = drag.mode === 'start' ? { startXMm : px, startYMm : py } : { endXMm : px, endYMm : py };
@@ -482,10 +683,30 @@
 
     // HELPER FUNCTION | Pointer Up: Announce the Change Once
     // ------------------------------------------------------------
+    // The rectangle tool hears the release before any drag is closed. The
+    // two never overlap in practice, but a key that swaps tools mid-drag
+    // must still leave that drag finished rather than stranded.
+    // ------------------------------------------------------------
     function Na__LeTools__OnUp(event) {
+        if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_RECT) Na__LeTools__RectangleUp(event);
         const drag = Na__LeTools__Drag;
         if (!drag || event.pointerId !== drag.pointerId) return;
         Na__LeTools__FinishDrag(event.pointerId);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Button Comes Up Over a Rectangle Being Drawn
+    // ------------------------------------------------------------
+    // A rectangle dragged out from its first corner lands the opposite one
+    // where the button lets go. A cancelled pointer - the browser or another
+    // gesture took it - lands nothing and abandons the rectangle.
+    // ------------------------------------------------------------
+    function Na__LeTools__RectangleUp(event) {
+        if (event.type === 'pointercancel') { Na__LeRect__Cancel(); return; }
+        const sheet = Na__LeModel__GetActiveSheet();
+        const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
+        if (sheet && point) Na__LeRect__Release(sheet, point, event.shiftKey, event.pointerId);
     }
     // ------------------------------------------------------------
 
@@ -602,6 +823,19 @@
     function Na__LeTools__MenuItems(sheet, found) {
         const label   = (key, fallback) => Na__LeCfg__GetLabel(key, fallback);
         const remove  = (key, fallback) => ({ label : label(key, fallback), danger : true, onSelect : () => { void Na__LeTools__DeleteSelection(); } });
+
+        // STYLE | The eyedropper reached without the hotkey. Copy loads the
+        // same dropper the B key uses, so a copy here can be pasted by menu,
+        // by clicking with the tool, or both.
+        // ------------------------------------
+        const style = (kind, id) => [
+            { label : label('MenuCopyStyle', 'Copy properties'), onSelect : () => Na__LeDrop__Pick(sheet, kind, id) },
+            { label : label('MenuPasteStyle', 'Paste properties'), disabled : !Na__LeDrop__CanApply(sheet, kind, id).ok,
+              onSelect : () => Na__LeDrop__Paint(sheet, kind, id) },
+            { label : Na__LeDrop__PaletteMenuLabel(kind), onSelect : () => { Na__LeTools__SyncPaletteFrom(sheet, { kind : kind, id : id }); } },
+            { separator : true }
+        ];
+
         const history = [
             { label : label('Undo', 'Undo'), disabled : !Na__LeHist__CanUndo(), onSelect : () => Na__LeHist__Undo() },
             { label : label('Redo', 'Redo'), disabled : !Na__LeHist__CanRedo(), onSelect : () => Na__LeHist__Redo() }
@@ -620,18 +854,21 @@
         }
         if (found.kind === 'annotation') {
             return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeText__BeginEdit(found.id) },
-                     remove('MenuDeleteText', 'Delete text'), { separator : true } ].concat(history);
+                     remove('MenuDeleteText', 'Delete text'), { separator : true } ]
+                     .concat(style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'dimension') {
             return [ { label : label('MenuEditDimText', 'Edit dimension value'), onSelect : () => Na__LeDim__BeginTextEdit(found.id) },
-                     remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ].concat(history);
+                     remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ]
+                     .concat(style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'shape') {
             const shape  = Na__LeTools__Record(sheet, found);
             const closed = !!shape && shape.Shape__Closed === true;
             return [ { label : closed ? label('MenuOpenShape', 'Open shape') : label('MenuCloseShape', 'Close shape'), disabled : !shape || Na__LeShapeGeo__Points(shape).length < 3,
                        onSelect : () => Na__LeModel__UpdateShape(sheet, found.id, { closed : !closed }) },
-                     remove('MenuDeleteShape', 'Delete shape'), { separator : true } ].concat(history);
+                     remove('MenuDeleteShape', 'Delete shape'), { separator : true } ]
+                     .concat(style(found.kind, found.id)).concat(history);
         }
 
         const viewport = Na__LeModel__GetViewportById(sheet, found.id);
@@ -680,6 +917,7 @@
         if (!sheet || !point) return;
         if (Na__LeShape__IsDrawing()) { Na__LeShape__Finish(sheet, false); return; }   // <-- As in CAD, a right click ends the line
         if (Na__LeDim__IsPlacing())   { Na__LeDim__Cancel(sheet); return; }
+        if (Na__LeRect__IsDrawing())  { Na__LeRect__Cancel(); return; }        // <-- A rectangle has no half worth keeping
         if (Na__LeText__IsEditing()) Na__LeText__Commit();
         const found = Na__LeTools__Resolve(sheet, point);
         Na__LeModel__SetSelection(found ? { kind : found.kind, id : found.id } : null);
@@ -747,10 +985,13 @@
     // LayOut; the same key again releases it. The lock belongs to the
     // segment being drawn and the tool spends it the moment the point
     // lands. Returns false when nothing is being placed, which leaves the
-    // arrow keys nudging the selection as before.
+    // arrow keys nudging the selection as before. A rectangle being drawn
+    // swallows them instead: its edges are square to the paper already, and
+    // nudging the previous selection out from under it would be a surprise.
     // ------------------------------------------------------------
     function Na__LeTools__AxisKey(axis, shift) {
         if (!Na__LeTools__Editable) return false;
+        if (Na__LeRect__IsDrawing()) return true;
         const drawing  = Na__LeShape__IsDrawing();
         const spanning = Na__LeDim__IsSpanning();                            // <-- Only the span phase: the offset phase has no axis to lock
         if (!drawing && !spanning) return false;
@@ -785,7 +1026,8 @@
 
         switch (match.action) {
             case 'Edit__Cancel':
-                if (Na__LeDim__IsPlacing() || Na__LeShape__IsDrawing()) Na__LeTools__CancelPlacement();
+                if (Na__LeDim__IsPlacing() || Na__LeShape__IsDrawing() || Na__LeRect__IsDrawing()) Na__LeTools__CancelPlacement();
+                else if (Na__LeDrop__HasSource()) Na__LeDrop__Clear();                    // <-- First Esc empties the dropper, second puts the tool down
                 else if (Na__LeSurface__GetEditingViewport()) Na__LeTools__SetEditingViewport(null);
                 else if (Na__LeModel__GetSelection()) Na__LeModel__SetSelection(null);
                 else Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
@@ -818,6 +1060,9 @@
             case 'Tool__Text':       Na__LeTools__SetTool(Na__LeTools__TOOL_TEXT);      return;
             case 'Tool__Dimension':  Na__LeTools__SetTool(Na__LeTools__TOOL_DIMENSION); return;
             case 'Tool__Draw':       Na__LeTools__SetTool(Na__LeTools__TOOL_DRAW);      return;
+            case 'Tool__Rectangle':  Na__LeTools__SetTool(Na__LeTools__TOOL_RECT);      return;
+            case 'Tool__Eyedropper': Na__LeTools__ArmEyedropper();                      return;
+            case 'Tool__EyedropperPalette': Na__LeTools__ArmPalette();                  return;
             case 'Snap__Toggle':     Na__LeOsnap__Toggle(); event.preventDefault(); return;
             case 'Edit__Undo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Undo(); } return;
             case 'Edit__Redo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Redo(); } return;
@@ -848,10 +1093,12 @@
             pointercancel : (e) => Na__LeTools__OnUp(e),
             dblclick      : (e) => Na__LeTools__OnDoubleClick(e),
             contextmenu   : (e) => Na__LeTools__OnContextMenu(e),
-            keydown       : (e) => Na__LeTools__OnKey(e)
+            keydown       : (e) => Na__LeTools__OnKey(e),
+            dropperdraw   : () => Na__LeDrop__Refresh(Na__LeModel__GetActiveSheet())       // <-- The eyedropper's boxes are counter-scaled, like the grips
         };
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.addEventListener(name, Na__LeTools__Handlers[name]));
         window.addEventListener('keydown', Na__LeTools__Handlers.keydown);
+        [ Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeTools__Handlers.dropperdraw));
         Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
         return true;
     }
@@ -869,6 +1116,7 @@
         if (!Na__LeTools__Stage || !Na__LeTools__Handlers) return;
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
         window.removeEventListener('keydown', Na__LeTools__Handlers.keydown);
+        [ Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeTools__Handlers.dropperdraw));
         Na__LeTools__Stage.style.cursor = '';
         Na__LeTools__Suppressed = false;                                     // <-- Never leave the tools deaf for the next mount
         Na__LeTools__Stage = Na__LeTools__Handlers = Na__LeTools__Drag = null;
@@ -890,11 +1138,16 @@
         Na__LeTools__TOOL_TEXT,
         Na__LeTools__TOOL_DIMENSION,
         Na__LeTools__TOOL_DRAW,
+        Na__LeTools__TOOL_RECT,
+        Na__LeTools__TOOL_EYEDROP,
         Na__LeTools__CHANGED_EVENT,
+        Na__LeTools__DEFAULTS_EVENT,
         Na__LeTools__Attach,
         Na__LeTools__Detach,
         Na__LeTools__SetTool,
         Na__LeTools__GetTool,
+        Na__LeTools__ArmEyedropper,
+        Na__LeTools__ArmPalette,
         Na__LeTools__GetTextDefaults,
         Na__LeTools__SetTextDefaults,
         Na__LeTools__GetDimensionDefaults,

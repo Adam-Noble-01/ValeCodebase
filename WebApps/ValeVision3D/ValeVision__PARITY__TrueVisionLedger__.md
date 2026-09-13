@@ -48,6 +48,80 @@ installed app can author), and the two verification harnesses
 every file resolves and every imported NAME exists. The second caught faults in this
 port repeatedly and ValeVision has no equivalent.
 
+### Pending return trip - fixed in TrueVision, awaiting Adam's sign-off
+
+| Item | Why | State |
+|---|---|---|
+| Undo and redo stop writing the project (TrueVision v2.30.1) | The same fault is here: `Na__LeHist__Apply` restores through `Na__LeModel__UpdateSheet(sheet, {})`, announced as `sheet-updated`, which `Na__LeAuto__STRUCTURAL` treats as a sheet-settings change - so every Ctrl+Z and Ctrl+Y saves the whole project. TrueVision's fix is three modules: `Na__LeModel__AnnounceRestore` and a `restore : { direction, stepReason }` field on the change event, step reasons kept by History (plus the missing shape case in its selection test), and `Na__LeAuto__CallsForSave` judging a restore by its step. Content undo becomes draft-only; structural undo still saves | **pending** |
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, gradient fill)
+
+Authored in TrueVision (v2.29.0), tested there and signed off - with the gradient rows moved
+last in the Vectors panel - then ported the same morning as ValeVision v2.26.0. Replayed from
+TrueVision's commit `50d46de`, NOT from its working copies: within the hour those copies had
+grown an unsigned palette mode on top of the gradient. Every body hunk was checked to exist
+verbatim in that commit before anything here was written.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__GradientTool__.js` 1.0.0 and `__Config__.json` 1.0.0 | Linear gradient fill: start and end colour, either end alpha, a blend (the midpoint), a direction 0-360 fitted to the shape. Owns `Shape__Gradient` (null, or six `Gradient__` fields), both painters (SVG gradient; PDF PNG strip with a soft mask, rotated and clipped), the panel preview and the Vectors panel rows | **ported**, verbatim (header and console prefix only) |
+| `51/Na__LayoutEditor__Panel__Shapes__.js` 1.3.0 | The Gradient toggle last in the list. A gradient replaces the solid fill and counts as the fill for the either-or rule; sliders redraw silently and announce once on release | **ported** - body verbatim |
+| Gradient wiring | Sheet chrome (`PushPolyline` and both polyline painters), shape geometry (`Push`, `Hit`), the shape normaliser, `CreateShape` / `UpdateShape`, the shape defaults, the Draw tool, the eyedropper header, the gradient region of the panel stylesheet | **ported** |
+| Mode controller Ready | Waits on the gradient config alongside the editor's own | **ported, adapted** - TrueVision's `Promise.all` also carries its edge style and composite configs, which ValeVision has no modules for |
+| Rectangle takes the gradient default | `Na__LayoutEditor__RectangleTool__.js` passed the Vectors panel's fill but not its gradient, in both apps | **fixed in both** (1.0.1) |
+| Eyedropper gradient trait | Already in this tree: it came across inside v2.24.0's copy of the module, ahead of the feature | **live** with this port |
+
+Verified here: every edited module parses; module graph and named exports (309 files) pass. In
+the app on a scratch A3 sheet with every write blocked: row order, the defaults toggle, a
+dragged rectangle taking the gradient, direction, edges off, one history step per slider drag,
+one alpha end, the SVG; and a test PDF rendered with pdf.js within 2/255 of the screen at 11
+points.
+
+**Deliberately NOT ported:** TrueVision's palette mode (Shift+B, `Na__LeTools__DEFAULTS_EVENT`)
+and its undo-restore announcement (`Na__LeModel__AnnounceRestore`). Both sit in the same modules
+there and neither is signed off.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, rectangle tool)
+
+Authored in TrueVision (v2.27.0), tested there, signed off and ported the same day as
+ValeVision v2.25.0 - on top of the v2.24.0 eyedropper port below, which had just brought
+the shared wiring files level with TrueVision, so every anchor landed.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__RectangleTool__.js` 1.0.0 | Rectangle (R): click then click, or press, drag and release; Shift keeps it square; both corners snap. A rubber box previews it and nothing reaches the model until the second corner lands; the result is a plain closed four-point `Sheet__Shapes` record through `CreateShape`, one undo step, selected on landing. No new record field, so both apps write identical data | **ported**, verbatim (header only) |
+| Rectangle wiring | Sheet tools (tool slot, press, move, release, cancel, swallowed arrows, the R case), toolbar button, `Na__LeGrips__ShowBox` / `HideBox`, the rubber box stylesheet rule, key map and its fallback, labels | **ported** |
+
+Verified here: the logic harness (41 checks) against this copy, and 20 in-app checks with
+real pointer and key events on a scratch A3 sheet, every write blocked.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026)
+
+Authored in TrueVision (v2.26.0 and v2.26.1), tested there, signed off and ported the
+same day as ValeVision v2.24.0. Replayed edit by edit against this tree rather than
+copied, because TrueVision's working copies of the same modules carry other unfinished
+work. In every touched file this code matched TrueVision's last commit, so every anchor
+landed; the port was written only after all of them had.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__Eyedropper__.js` 1.0.0 | Match properties between two items (B). One trait table holds every field name; kinds do not mix; the layer never travels; viewports excluded until the new viewport system settles | **ported**, verbatim (header only) |
+| Eyedropper wiring | Sheet tools (tool slot, B, staged Escape, Copy / Paste properties on the context menu), toolbar button and hint line, key map and its fallback, config block and getter, labels, stylesheet | **ported** |
+| Vector redraw route | `shape` and `shapes` were missing from the mode controller's markup route in BOTH apps, so a painted or deleted vector kept its old picture until an unrelated repaint | **fixed** |
+| Browser draft debounce | The draft was a synchronous localStorage write of every sheet inside each change. Now `DraftDebounceMs` (600) after the editing pauses; flushed on hide and close; dropped when a new project loads | **ported** |
+| Frame-coalesced surface refresh | One rebuild per animation frame, merged across callers. `RefreshNow` for anything that needs the DOM before its next statement; nothing does today | **ported** |
+| Tab strip gate | Rebuilds only when a tab would look different | **ported, adapted** - the signature carries `Na__LeMode__IsAvailable` (Layout Mode) where TrueVision's carries `Na__LeCfg__IsEnabled` |
+| Panel narrowing | Text, dimension and vector changes refresh only their own panel. Viewport changes still refresh every section, because Viewport, Render Composites and Model Layers all read the selected viewport | **ported** |
+| Sheet-object snapping | Vertices, edge midpoints and dimension ends as candidates. A moving item excludes its own points; the shape being drawn excludes only its newest vertex. `SheetObjects` switch | **ported** |
+
+**Deliberately NOT ported:**
+
+- *TrueVision's PWA cache token bump.* ValeVision has no service worker to evict.
+- *Anything else in TrueVision's copies of those files.* Clipboard chords and viewport
+  snap-move share the same modules there but are not signed off, and ValeVision has
+  none of the modules they import. The rectangle tool was on this list too until it was
+  signed off later the same day; it is ported - see the section above.
+
 ### Return trip - TrueVision to ValeVision (12-Sep-2026)
 
 The first batch under the new direction of travel. Everything below was authored in

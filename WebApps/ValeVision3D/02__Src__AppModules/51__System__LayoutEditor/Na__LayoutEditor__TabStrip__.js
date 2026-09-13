@@ -36,6 +36,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.2.0
+// - A model change rebuilds the strip only when a tab would look different - a
+//   sheet added, removed, renamed, reordered or opened, or Layout Mode switched -
+//   instead of on every edit. Ported from TrueVision; the signature carries
+//   IsAvailable where TrueVision's carries the config enable flag.
+//
 // 11-Sep-2026 - Version 1.1.0
 // - Visibility from Na__LeMode__IsAvailable: no strip on the live site for a
 //   project without sheets, none on localhost until Layout Mode is switched on.
@@ -91,6 +97,7 @@
     // ------------------------------------------------------------
     let Na__LeTabs__Root    = null;
     let Na__LeTabs__DragId  = null;
+    let Na__LeTabs__Signature = null;    // <-- What the strip last drew, so a change that alters no tab skips the rebuild
     let Na__LeTabs__Visible = null;    // <-- Last published state; the resize only fires on a change
     // ------------------------------------------------------------
 
@@ -148,6 +155,7 @@
     // ------------------------------------------------------------
     function Na__LeTabs__Render() {
         if (!Na__LeTabs__Root) return;
+        Na__LeTabs__Signature = Na__LeTabs__Sig();                              // <-- Recorded by every build, direct or gated, so the gate can never go stale
         const sheets   = Na__LeModel__GetSheets();
         const editable = Na__LeMode__IsEditable();
         const active   = Na__LeMode__IsActive() ? Na__LeModel__GetActiveSheet() : null;
@@ -187,6 +195,38 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Everything a Tab Shows, as One Comparable String
+    // ------------------------------------------------------------
+    // ValeVision's strip is shown by Na__LeMode__IsAvailable - the project's
+    // Layout Mode switch on localhost, the presence of sheets on the live
+    // site - so that is what the signature carries where TrueVision's carries
+    // the config enable flag. Flipping Layout Mode therefore always rebuilds.
+    // ------------------------------------------------------------
+    function Na__LeTabs__Sig() {
+        const sheets = Na__LeModel__GetSheets();
+        const active = Na__LeMode__IsActive() ? Na__LeModel__GetActiveSheet() : null;
+        return sheets.map((sheet) => sheet.Sheet__Id + '' + sheet.Sheet__Name).join('')
+            + '|' + (active ? active.Sheet__Id : '') + '|' + Na__LeMode__IsActive() + '|' + Na__LeMode__IsEditable() + '|' + Na__LeMode__IsAvailable();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Model Change Arrives: Rebuild Only if a Tab Would Change
+    // ------------------------------------------------------------
+    // The strip used to be torn down and rebuilt on EVERY model change - each
+    // nudge, each style paint, each vertex of a shape - although a tab only
+    // shows a sheet's name and whether it is the open one. Rebuilding also
+    // threw away a rename field half-typed whenever something else on the
+    // sheet changed underneath it. Render records the signature of what it
+    // drew, so the comparison is always against the strip actually on screen.
+    // ------------------------------------------------------------
+    function Na__LeTabs__OnModelChanged() {
+        if (Na__LeTabs__Root && Na__LeTabs__Root.childElementCount > 0 && Na__LeTabs__Sig() === Na__LeTabs__Signature) return;
+        Na__LeTabs__Render();
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -207,7 +247,7 @@
         if (header && header.parentNode) header.parentNode.insertBefore(nav, header.nextSibling);
         else document.body.insertBefore(nav, document.body.firstChild);
         Na__LeTabs__Root = nav;
-        window.addEventListener(Na__LeModel__CHANGED_EVENT, () => Na__LeTabs__Render());
+        window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeTabs__OnModelChanged);   // <-- Only when a tab would look different
         window.addEventListener(Na__LeMode__CHANGED_EVENT,  () => Na__LeTabs__Render());
         Na__LeMode__Ready().then(() => Na__LeTabs__Render());
         return true;

@@ -1,6 +1,175 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.26.0 - 13-Sep-2026 - Gradient Fills
+
+### Added
+- **A Gradient toggle in the Vectors panel**, last in the list after Fill and
+  Closed. Switch it on and the shape is filled with a linear gradient: a start
+  colour and an end colour, either of which can be Alpha, a Blend slider and a
+  Direction from 0 to 360 degrees with a preview swatch beside it. Alpha to
+  white is the default.
+- **What it is for:** draw a closed polygon on a vector layer over a drawing,
+  switch its edges off and run alpha to white, and the drawing fades out into
+  the page. Colour to colour works the same way.
+- **Direction** reads like a protractor and like Adobe's gradient tools: 0 left
+  to right, 90 bottom to top, 180 right to left, 270 top to bottom. **Blend** is
+  where the two ends meet half and half - Illustrator's midpoint - so 50% is an
+  even fade. Only one end can be alpha at a time.
+- **The gradient is fitted to the shape.** The start and end colours land on
+  the outline's furthest points back and forward along the direction, so the
+  fade spans the whole polygon at any angle.
+- **A gradient is the fill.** It replaces a solid fill, and it counts as the
+  fill for the either-or rule: edges off with a gradient on leaves the fade
+  alone instead of bringing a grey solid fill back.
+- **The PDF carries it.** A PDF shading cannot hold transparency, so the
+  gradient prints as a PNG strip with an alpha soft mask, rotated to the
+  direction and clipped to the vector outline. Screen and paper are painted
+  from one colour function.
+- **One drag is one undo step.** Blend and Direction redraw the shape silently
+  while they move and announce once on release.
+- The eyedropper carries a vector's gradient with its other traits; a missing
+  gradient clears the target's, the way a missing fill does.
+
+### Fixed
+- **A rectangle ignored the gradient default.** The Rectangle tool built its
+  shape from the Vectors panel defaults but never passed the gradient, so a
+  rectangle drawn with Gradient switched on came out with no fill at all. Found
+  while porting, and fixed in both apps.
+
+### Notes
+- **Ported from TrueVision3D v2.29.0** (commit `50d46de`, signed off by Adam the
+  same morning) by replaying the edits against this tree, not by copying files.
+  Every hunk's anchor was found exactly once here, and every body hunk's new code
+  was found exactly once in that commit - so what landed is the code that was
+  tested, not a transcription of it. 35 hunks across 12 files, line endings kept,
+  plus the config JSON copied verbatim.
+- `Na__LayoutEditor__GradientTool__.js` and its `__Config__.json` are verbatim
+  apart from the module header and the console prefix, and below its header the
+  Vectors panel is now TrueVision's line for line. The record key
+  `Shape__Gradient` and its six `Gradient__` fields are shared, so either app
+  reads the other's gradients.
+- **One adaptation:** the mode controller waits on the editor config and the
+  gradient config together. TrueVision's also waits on its edge style and render
+  composite configs, which ValeVision has no modules for.
+- **Not carried:** TrueVision's working copies already layer an unsigned palette
+  mode (Shift+B) and an undo-restore announcement on top of the gradient. Neither
+  is signed off, so neither is here.
+- The eyedropper's gradient trait line was already in this tree - it arrived
+  inside v2.24.0's copy of the module, ahead of the feature - and is live now.
+- Verified: every edited module parses, and the module graph walk and the named
+  export check (309 files) pass. In the app on a scratch A3 sheet with every
+  write blocked: the row order, the defaults toggle, a press-drag-release
+  rectangle taking the gradient, direction, edges off, no history step mid-drag
+  and one on release, alpha on one end only, and the SVG. A test PDF through this
+  tree's jsPDF path, rendered back with pdf.js, matched the screen SVG within 2
+  levels in 255 at eleven sampled points, with the soft masks, the outline clips
+  and the rotated strip present.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.25.0 - 13-Sep-2026 - The Rectangle Tool
+
+### Added
+- **A rectangle tool on the R key**, beside Draw on the toolbar. Two corners
+  instead of four sides: click one corner and then the opposite one, or press
+  on one corner and drag to the other. Shift keeps it square. Both corners snap
+  to the linework and to the sheet's own vectors, exactly as Draw's points do.
+- **What it draws is an ordinary vector.** The moment the second corner lands
+  the rectangle is a closed four-point shape, written through the same
+  `CreateShape` call the Draw tool uses with the same Vectors panel defaults.
+  From then on it is a polygon: the Select tool drags its corners one at a time,
+  the Vectors panel restyles it, the eyedropper matches it and the PDF prints
+  it. There is no rectangle flag on the record, so TrueVision and ValeVision
+  write exactly the same data.
+- **Nothing is written until the second corner lands.** The preview is a dashed
+  rubber box on the handles layer, solid while Shift holds it square. An
+  abandoned rectangle leaves nothing to delete or undo, the browser draft never
+  catches a half-drawn one, and the preview can never snap to its own corners.
+  One call is one undo step, and the new rectangle is selected as it lands.
+- Escape, Space, a right click, a second finger or another tool abandons a
+  half-drawn rectangle; the arrow keys are swallowed while one is being drawn
+  rather than nudging whatever was selected before it. A second corner with no
+  width or no height is ignored, so a double click cannot leave a sliver.
+
+### Notes
+- Ported from TrueVision3D v2.27.0, where it was authored, tested and signed off
+  the same day. `Na__LayoutEditor__RectangleTool__.js` is verbatim apart from its
+  header; the wiring was replayed edit by edit - sheet tools (tool slot, press,
+  move, release, cancel, arrows, the R case), the toolbar button, `ShowBox` /
+  `HideBox` in the grips, the rubber box stylesheet rule, the key map and its
+  fallback, and three labels.
+- It landed on top of v2.24.0's eyedropper port, which had just brought these
+  same files level with TrueVision, so every anchor matched.
+- Verified: the logic harness (41 checks) against this copy of the module, and 20
+  checks in the app with real pointer and key events on a scratch A3 sheet - both
+  drawing modes, the Shift square, Escape and right click, arrows mid-draw, one
+  undo step per rectangle, and a single corner dragged with the Select tool. Every
+  write was blocked for the run and nothing was saved.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.24.0 - 13-Sep-2026 - The Eyedropper, and Vectors That Redraw and Snap
+
+### Added
+- **The eyedropper, on the B key.** Click the object that already looks right,
+  then click every object that should match it. The picked style stays on the
+  dropper, so the second, third and fourth target each cost one click. With
+  something already selected, B arms it loaded from that selection. Alt+click
+  picks a new source, Escape empties the dropper and then puts the tool down,
+  and Copy / Paste properties on the right-click menu drive the same dropper.
+  Violet marks what is held, green what would take it, red what cannot.
+- **Style travels; content, geometry and the layer do not.** Text carries size,
+  weight, colour and alignment. A dimension carries text size, colour,
+  terminator, precision and unit suffix - not its offset, which is where its
+  line sits, so copying it would move the target rather than restyle it (a
+  config switch copies it for anyone who wants that). A vector carries edge
+  colour, weight, edges on or off and fill, where a missing fill is a real value
+  that clears the target's. Kinds do not mix: a refusal that says why is worth
+  more than a silent partial paste.
+- **Vectors snap to vectors.** Every vertex and edge midpoint of the sheet's own
+  vectors, and both measured points of every dimension, are snap candidates
+  beside the viewport linework. A polygon closes exactly on its first point, a
+  rectangle's last corner can borrow the first corner's coordinate on bare
+  paper, and whatever is being dragged never snaps to itself. Hidden layers
+  offer nothing; locked ones still do. `SheetObjects` in the snapping config.
+
+### Fixed
+- **Vectors never redrew.** The mode controller turned text and dimension
+  changes into a markup redraw and had no line for shapes, so a restyled or
+  deleted vector kept its old picture until some unrelated edit repainted the
+  sheet. It read as a slow editor, not a missing route - and it made the
+  eyedropper look broken on vectors at its first test in TrueVision, which had
+  the same gap.
+- **Every edit waited on the disk.** The browser draft - every sheet in the
+  project, stringified - was written to localStorage inside each change, which
+  is a synchronous disk write on the main thread. It now waits 600 ms for the
+  editing to pause and is flushed when the tab is hidden or closed. A write
+  still queued when another project loads is dropped rather than written over
+  that project's own draft.
+- **A drag rebuilt the sheet hundreds of times a second.** Surface refreshes are
+  booked onto the next animation frame and merged, so a pointer that reports
+  faster than the screen draws costs one rebuild a frame. The drawing tabs
+  rebuild only when a tab would look different, and a text, dimension or vector
+  change refreshes only its own panel.
+
+### Notes
+- **Ported from TrueVision3D v2.26.0 and v2.26.1 by replaying the edits, not by
+  copying files.** TrueVision's working tree carries other unfinished work in
+  the same modules - a rectangle tool, clipboard chords, viewport snap-move -
+  and copying its files would have brought those imports across broken. Every
+  anchor matched here, because in each touched file this code is identical to
+  TrueVision's last commit.
+- **One deliberate divergence.** The tab strip's change signature carries
+  `Na__LeMode__IsAvailable`, the Layout Mode gate, where TrueVision's carries the
+  config enable flag, so switching Layout Mode always rebuilds the strip.
+- **Undo is unchanged:** one step per announced change, so painting five vectors
+  is still five undos.
+- Verified on this tree: all 49 Layout Editor modules parse, every named import
+  resolves, the eyedropper harness passes 52 checks and the snapping harness 29,
+  including 0.09 ms per pointer move against 4,000 vertices.
+- Viewports are deliberately not matched yet. The hook, and what it will need,
+  is written up in the eyedropper module's header.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.23.0 - 12-Sep-2026 - Supersampling Comes Back From the Still Exporter
 
 ### Added

@@ -33,6 +33,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.2.0
+// - Shape__Gradient on the shape record: null for none, otherwise made whole by
+//   Na__LayoutEditor__GradientTool__ as a fresh object on every normalise. A
+//   gradient counts as the fill in the guard that keeps a shape visible. Ported
+//   from TrueVision.
+//
 // 10-Sep-2026 - Version 1.1.4
 // - Shape__Stroked on the shape record, defaulting on, with the guard that
 //   a shape with no fill keeps its edges.
@@ -75,6 +81,7 @@
         Na__LeCfg__GetShapeSetup
     } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__Coerce, Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
+    import { Na__LeGrad__Normalise } from './Na__LayoutEditor__GradientTool__.js';   // <-- A leaf: it reaches only the panel host, which reaches only the config
     import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__PresentationMode__ProjectJson__GetActiveConfig } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
@@ -278,8 +285,10 @@
         if (typeof item.Shape__StrokeColour !== 'string') item.Shape__StrokeColour = setup.defaultStrokeColour;
         item.Shape__StrokePt = Na__LeRec__Num(item.Shape__StrokePt, setup.defaultStrokePt);
         if (typeof item.Shape__FillColour !== 'string') item.Shape__FillColour = null;
+        item.Shape__Gradient = Na__LeGrad__Normalise(item.Shape__Gradient);              // <-- A fresh object or null: no two shapes ever hold the same gradient
         item.Shape__Stroked = item.Shape__Stroked !== false;                             // <-- A record written before the flag existed drew its edges
-        const canFill = item.Shape__FillColour !== null && item.Shape__Points.length > 2;  // <-- Two points enclose nothing, so they cannot be a fill
+        const filled  = item.Shape__FillColour !== null || item.Shape__Gradient !== null;   // <-- A gradient is a fill as far as visibility goes
+        const canFill = filled && item.Shape__Points.length > 2;                            // <-- Two points enclose nothing, so they cannot be a fill
         if (!item.Shape__Stroked && !canFill) item.Shape__Stroked = true;                   // <-- Edges or fill, never neither: an invisible shape is a lost shape
         return item;
     }

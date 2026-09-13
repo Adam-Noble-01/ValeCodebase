@@ -47,6 +47,23 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.8.0
+// - A palette sync (the settings for new objects changed from outside their
+//   panel) refreshes the panel for that kind.
+// - Ported from TrueVision3D v2.30.0.
+//
+// 13-Sep-2026 - Version 1.7.1
+// - The gradient tool's config (Na__LayoutEditor__GradientTool__Config__.json)
+//   is waited on with the editor's own, so the first shape defaults read the real
+//   file. Ported from TrueVision.
+//
+// 13-Sep-2026 - Version 1.7.0
+// - Shapes were never routed to a redraw. 'shape' and 'shapes' now refresh the
+//   markup exactly as text and dimensions do. A deleted or restyled vector used
+//   to stay on the paper unchanged until some unrelated edit repainted the sheet.
+// - A text, dimension or vector change refreshes only its own panel; viewport
+//   and structural changes still refresh every section. Ported from TrueVision.
+//
 // 11-Sep-2026 - Version 1.6.0
 // - IsAvailable: the live site offers the editor only when the project has
 //   sheets; localhost only while the project's Layout Mode switch is on.
@@ -86,6 +103,7 @@
     // MODULE IMPORTS | Config, Model, Surface, Navigation, Tools, Panels, Toolbar, Snapshots
     // ------------------------------------------------------------
     import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeGrad__Ready } from './Na__LayoutEditor__GradientTool__.js';
     import {
         Na__LeModel__CHANGED_EVENT,
         Na__LeModel__Initialize,
@@ -98,7 +116,7 @@
     import { Na__LeNav__Fit } from './Na__LayoutEditor__Navigation__.js';
     import { Na__LePc__Attach, Na__LePc__Detach } from './Na__LayoutEditor__Controls__Pc__.js';
     import { Na__LeTouch__Attach, Na__LeTouch__Detach } from './Na__LayoutEditor__Controls__TouchScreen__.js';
-    import { Na__LeTools__Attach, Na__LeTools__Detach } from './Na__LayoutEditor__SheetTools__.js';
+    import { Na__LeTools__DEFAULTS_EVENT, Na__LeTools__Attach, Na__LeTools__Detach } from './Na__LayoutEditor__SheetTools__.js';
     import { Na__LePanels__Mount, Na__LePanels__Refresh } from './Na__LayoutEditor__PanelHost__.js';
     import { Na__LePanelLayers__Register } from './Na__LayoutEditor__Panel__Layers__.js';
     import { Na__LePanelSheet__Register } from './Na__LayoutEditor__Panel__Sheet__.js';
@@ -348,6 +366,48 @@
 // REGION | Model and Request Handling
 // -----------------------------------------------------------------------------
 
+    // MODULE CONSTANTS | Which Model Reasons Redraw the Sheet's Own Markup
+    // ------------------------------------------------------------
+    // EVERY markup kind must be listed. Shapes were missing from this route
+    // and the symptom was baffling rather than obvious: the model updated, the
+    // undo stack recorded it, the sheet was marked dirty - and nothing redrew,
+    // so a deleted vector sat on the paper and a restyled one kept its old
+    // colour until some unrelated edit forced a repaint. It read as "the
+    // editor is slow", not "the editor never drew it".
+    //
+    // Singular is one item changing, plural is the collection changing (an
+    // add or a delete). The model dispatches both spellings, so both are here.
+    // ------------------------------------------------------------
+    const Na__LeMode__MARKUP_REASONS = Object.freeze([
+        'annotation', 'annotations',
+        'dimension',  'dimensions',
+        'shape',      'shapes'
+    ]);
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The One Panel a Change Concerns (null means all of them)
+    // ------------------------------------------------------------
+    // Refreshing all eight sections on every keystroke-sized change rebuilt a
+    // lot of DOM nobody was looking at. A change to a text, a dimension or a
+    // vector is shown by exactly one panel, so only that panel is asked.
+    //
+    // VIEWPORT CHANGES STILL REFRESH EVERYTHING, on purpose. Three sections
+    // describe the selected viewport - Viewport, Render Composites and Model
+    // Layers - and they reach it through the selection rather than naming the
+    // record, so a narrowed refresh would leave two of them showing the state
+    // from before the click. A viewport commit happens once per drag, not once
+    // per move, so the full refresh costs nothing anyone can feel.
+    // ------------------------------------------------------------
+    function Na__LeMode__PanelFor(reason) {
+        if (reason === 'annotation' || reason === 'annotations') return 'text';
+        if (reason === 'dimension'  || reason === 'dimensions')  return 'dimensions';
+        if (reason === 'shape'      || reason === 'shapes')      return 'shapes';
+        return null;                                                            // <-- Viewports and structural changes: everything may have moved
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Route a Model Change to the Right Refresh
     // ------------------------------------------------------------
     function Na__LeMode__OnSheetsChanged(event) {
@@ -360,11 +420,11 @@
             Na__LeSurface__SetSheet(active);
         } else if (reason === 'sheet-updated' || reason === 'fields') Na__LeSurface__Refresh(reason === 'fields' ? 'chrome' : 'sheet');
         else if (reason === 'viewports' || reason === 'viewport') Na__LeSurface__Refresh('frames');
-        else if (reason === 'annotations' || reason === 'annotation' || reason === 'dimensions' || reason === 'dimension') Na__LeSurface__Refresh('markup');
+        else if (Na__LeMode__MARKUP_REASONS.indexOf(reason) !== -1) Na__LeSurface__Refresh('markup');
         else if (reason === 'layers') Na__LeSurface__Refresh('all');
         else if (reason === 'selection') { Na__LeSurface__Refresh('markup'); Na__LeSurface__Refresh('selection'); }
         else if (reason === 'active') { if (active) Na__LeSurface__SetSheet(active); }
-        Na__LePanels__Refresh();
+        Na__LePanels__Refresh(Na__LeMode__PanelFor(reason));
     }
     // ------------------------------------------------------------
 
@@ -396,13 +456,14 @@
         if (!context) return Promise.resolve(false);
         Na__LeMode__Context = context;
         Na__LeCfg__SetAppConfig(context.appConfig || null);
-        Na__LeMode__ReadyOnce = Na__LeCfg__Ready().then(() => {
+        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeGrad__Ready() ]).then(() => {   // <-- The gradient config never rejects, so a missing file cannot hold the editor back
             if (!Na__LeCfg__IsEnabled()) return false;
             Na__LeModel__Initialize();
             Na__LeHist__Initialize();                                        // <-- Undo and redo listen to the model from the start
             Na__LeAuto__Initialize({ showToast : context.showToast || null, editable : Na__LeMode__IsEditable() });   // <-- Browser draft and structural auto save
             Na__LeSnap__Initialize(context);
             window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
+            window.addEventListener(Na__LeTools__DEFAULTS_EVENT, (event) => { if (Na__LeMode__Active) Na__LePanels__Refresh(Na__LeMode__PanelFor(event.detail && event.detail.kind)); });   // <-- A palette sync: the panel showing the new-object settings redraws
             window.addEventListener(Na__LePanelViewport__EDIT_EVENT, Na__LeMode__OnRequestDrawing);
             window.addEventListener(Na__PlPipe__CHANGED_EVENT, (event) => {
                 if (!Na__LeMode__Active) return;

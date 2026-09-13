@@ -38,6 +38,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.2.0
+// - HitTest takes includeLocked, so the eyedropper can read an item on a locked
+//   layer. Every other caller leaves it off and still skips locked items.
+// - Ported from TrueVision3D v2.30.0.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Vector shapes drawn under the markup and hit tested after text. Hit order is dimensions (lines and value text), text, shapes. Dimension weight from the sheet's lineweights.
 //
@@ -372,10 +377,10 @@
     // that order of priority. Locked and hidden layers are skipped; later
     // items of a kind win, as they draw on top.
     // ------------------------------------------------------------
-    function Na__LeMarkup__HitTest(sheet, pointMm, toleranceMm) {
+    function Na__LeMarkup__HitTest(sheet, pointMm, toleranceMm, includeLocked) {
         if (!sheet) return null;
         const tol = Number.isFinite(toleranceMm) ? toleranceMm : 1.5;
-        const editable = (layerId) => Na__LeModel__IsLayerVisible(sheet, layerId) && !Na__LeModel__IsLayerLocked(sheet, layerId);
+        const editable = (layerId) => Na__LeModel__IsLayerVisible(sheet, layerId) && (includeLocked === true || !Na__LeModel__IsLayerLocked(sheet, layerId));   // <-- includeLocked: the eyedropper may READ a locked item
 
         // DIMENSIONS FIRST | Thin lines are hard to hit, so the lines take a
         // wider tolerance and the value text counts as part of the dimension.

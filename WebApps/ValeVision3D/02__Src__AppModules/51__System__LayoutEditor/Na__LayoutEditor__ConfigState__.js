@@ -32,6 +32,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.4.0
+// - The Shift+B palette binding in the key map fallback; PaletteSwitchesTool and
+//   FlashMs in the eyedropper setup.
+// - Ported from TrueVision3D v2.30.0.
+//
+// 13-Sep-2026 - Version 1.3.0
+// - Eyedropper setup, the B binding in the key map fallback, the draft write
+//   debounce and the sheet-object snapping switch, ported from TrueVision.
+//
 // 10-Sep-2026 - Version 1.2.0
 // - Sheet setup carries BlockGapMm; style setup carries the frame caption and
 //   title block weights, tracking and uppercasing; title block setup carries
@@ -102,7 +111,10 @@
                      { Id : 'Edit__RedoShift',   Action : 'Edit__Redo',        Enabled : true, Keys : [ 'z', 'Z' ],               Modifiers : [ 'Ctrl', 'Shift' ], ModifierMatch : 'Exact' },
                      { Id : 'Edit__Deselect',    Action : 'Edit__Deselect',    Enabled : true, Keys : [ ' ' ],                    Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Edit__Finish',      Action : 'Edit__Finish',      Enabled : true, Keys : [ 'Enter' ],                Modifiers : [], ModifierMatch : 'Exact' },
-                     { Id : 'Tool__Draw',        Action : 'Tool__Draw',        Enabled : true, Keys : [ 'l', 'L' ],               Modifiers : [], ModifierMatch : 'Exact' } ],
+                     { Id : 'Tool__Draw',        Action : 'Tool__Draw',        Enabled : true, Keys : [ 'l', 'L' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Tool__Rectangle',   Action : 'Tool__Rectangle',   Enabled : true, Keys : [ 'r', 'R' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Tool__EyedropperPalette', Action : 'Tool__EyedropperPalette', Enabled : true, Keys : [ 'b', 'B' ], Modifiers : [ 'Shift' ], ModifierMatch : 'Exact' },
+                     { Id : 'Tool__Eyedropper',  Action : 'Tool__Eyedropper',  Enabled : true, Keys : [ 'b', 'B' ],               Modifiers : [], ModifierMatch : 'Exact' } ],
         keyboardSetup : { ignoreWhenTyping : true, coarseStepModifier : 'Shift', nudgeStepMm : 1, nudgeCoarseStepMm : 10,
                           panStepPx : 60, panCoarseStepPx : 240, zoomKeyStep : 1.15 },
         touch    : { oneFingerPanOnStage : true, oneFingerPanOnPaper : false, twoFingerPan : true, pinchZoom : true,
@@ -421,7 +433,8 @@
         return {
             enabled      : Na__LeCfg__Val('AutoSave', 'Enabled', true) !== false,
             debounceMs   : Math.max(200, Na__LeCfg__Num('AutoSave', 'DebounceMs', 1500)),
-            draftEnabled : Na__LeCfg__Val('AutoSave', 'DraftEnabled', true) !== false
+            draftEnabled : Na__LeCfg__Val('AutoSave', 'DraftEnabled', true) !== false,
+            draftDebounceMs : Math.max(100, Na__LeCfg__Num('AutoSave', 'DraftDebounceMs', 600))
         };
     }
     // ------------------------------------------------------------
@@ -504,6 +517,30 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Eyedropper Setup (match properties between two items)
+    // ------------------------------------------------------------
+    // stayLoaded is the one that changes how the tool feels: with it on the
+    // picked style stays on the dropper so a run of items costs one click
+    // each, which is the whole point of the tool. copyOffset is off because a
+    // dimension's offset is where its line sits, so copying it moves the
+    // target rather than restyling it.
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetEyedropperSetup() {
+        return {
+            stayLoaded         : Na__LeCfg__Val('Eyedropper', 'StayLoadedAfterApply', true) !== false,
+            copyOffset         : Na__LeCfg__Val('Eyedropper', 'CopyDimensionOffset', false) === true,
+            highlightPadMm     : Na__LeCfg__Num('Eyedropper', 'HighlightPadMm', 1.2),
+            highlightBorderPx  : Na__LeCfg__Num('Eyedropper', 'HighlightBorderPx', 1.5),
+            cursor             : Na__LeCfg__Val('Eyedropper', 'Cursor', 'copy'),
+            applyCursor        : Na__LeCfg__Val('Eyedropper', 'ApplyCursor', 'alias'),
+            refuseCursor       : Na__LeCfg__Val('Eyedropper', 'RefuseCursor', 'not-allowed'),
+            paletteSwitchesTool : Na__LeCfg__Val('Eyedropper', 'PaletteSwitchesTool', true) !== false,
+            flashMs            : Math.max(0, Na__LeCfg__Num('Eyedropper', 'FlashMs', 700))
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Enhance Whitecard Pass Parameters
     // ------------------------------------------------------------
     function Na__LeCfg__GetEnhanceSetup() {
@@ -529,6 +566,7 @@
             endpoints    : Na__LeCfg__Val('Snapping', 'Endpoints', true) !== false,
             midpoints    : Na__LeCfg__Val('Snapping', 'Midpoints', true) !== false,
             hiddenLines  : Na__LeCfg__Val('Snapping', 'HiddenLines', false) === true,
+            sheetObjects : Na__LeCfg__Val('Snapping', 'SheetObjects', true) !== false,
             markerSizePx : Na__LeCfg__Num('Snapping', 'MarkerSizePx', 10)
         };
     }
@@ -837,6 +875,7 @@
         Na__LeCfg__GetSelectionSetup,
         Na__LeCfg__GetLineweightSetup,
         Na__LeCfg__GetShapeSetup,
+        Na__LeCfg__GetEyedropperSetup,
         Na__LeCfg__GetEnhanceSetup,
         Na__LeCfg__GetPanelSetup,
         Na__LeCfg__GetNavigationSetup,

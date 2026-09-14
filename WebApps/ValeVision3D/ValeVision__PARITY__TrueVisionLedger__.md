@@ -54,6 +54,109 @@ port repeatedly and ValeVision has no equivalent.
 |---|---|---|
 | Undo and redo stop writing the project (TrueVision v2.30.1) | The same fault is here: `Na__LeHist__Apply` restores through `Na__LeModel__UpdateSheet(sheet, {})`, announced as `sheet-updated`, which `Na__LeAuto__STRUCTURAL` treats as a sheet-settings change - so every Ctrl+Z and Ctrl+Y saves the whole project. TrueVision's fix is three modules: `Na__LeModel__AnnounceRestore` and a `restore : { direction, stepReason }` field on the change event, step reasons kept by History (plus the missing shape case in its selection test), and `Na__LeAuto__CallsForSave` judging a restore by its step. Content undo becomes draft-only; structural undo still saves | **pending** |
 
+### Return trip - TrueVision to ValeVision (14-Sep-2026, VCB viewport move)
+
+Authored in TrueVision (SheetTools 1.24.0, Measurements 1.2.0, v2.47.0) and
+ported the same day at Adam's request as ValeVision v2.39.0.
+
+**Left out:** ViewportSnapMove carry (this tree has none); service worker token (n/a).
+
+| Item | Why | State |
+|---|---|---|
+| Typed length while dragging a viewport frame | GetViewportDrag / TypeViewportLength; exact mm; drag finished; at the viewport's scale | **ported** (VV 2.39.0, from TV 2.47.0) |
+| Handle crop / content pan | Do not wake the Measurements box | **ported** (same gate: `hit.mode === 'border'`) |
+| Service worker token | TrueVision PWA cache bust `2026-09-14-13` | **n/a** - this tree has no PWA worker |
+
+### Return trip - TrueVision to ValeVision (14-Sep-2026, groups and multi-item clipboard)
+
+Authored in TrueVision (Groups 1.0.0, ItemClipboard 1.0.0, SheetModel 1.18.0,
+SheetRecords 1.13.0, SheetTools 1.23.0) and ported the same day at Adam's
+request as ValeVision v2.38.0.
+
+**Left out:** TrueVision's undo-restore / `AnnounceRestore` change (still
+pending sign-off).
+
+| Item | Why | State |
+|---|---|---|
+| Group / ungroup (Ctrl+G / Ctrl+Shift+G) | Sheet__Groups records; mixed vectors and text; nested groups; blue box + "Group" overlay | **ported** (VV 2.38.0) |
+| Multi-item / text / group copy-paste | ItemClipboard wraps ViewportClipboard; silent inserts, one undo step | **ported** |
+| History `'groups'` step | SelectionExists keeps a selected group and a selected vector | **ported** (shape case included; restore field still pending) |
+
+### Return trip - TrueVision to ValeVision (14-Sep-2026, dimension text leader)
+
+Authored in TrueVision (DimensionGeometry 1.3.0 to 1.5.1: drag the value off the
+line, justified-side landing, outward hook, softer bow) and ported the same day
+at Adam's request as ValeVision v2.37.0.
+
+**Left out:** fixed-length extension lines (panel rows and record keys).
+
+| Item | Why | State |
+|---|---|---|
+| Drag dimension value + curved leader | TextDXMm / TextDYMm, outward-bulging arc to MID | **ported** (VV 2.37.0) |
+| Justified handing | Left/right of centre, arc on the justified side | **ported** |
+| Reset text position | Context menu; snap home within TextLeaderMinMm | **ported** |
+| Extension-line lengths | Geometry 1.2.0 and panel rows in TrueVision | **skipped** - still a separate pending port |
+
+### Return trip - TrueVision to ValeVision (14-Sep-2026, eyedropper viewports)
+
+Authored in TrueVision (eyedropper 1.6.0 / SheetTools 1.22.0) and ported the same
+day as ValeVision v2.36.0.
+
+**Left out:** `Viewport__ShowFrame` (TrueVision Frame toggle, plan item W) - this
+tree does not store the key yet.
+
+| Item | Why | State |
+|---|---|---|
+| Eyedropper matches unlocked viewports | Composites, caption, scale; locked frames skipped in Resolve | **ported** (VV 2.36.0) |
+| `Viewport__ShowFrame` trait | Frame on/off copied with the rest | **skipped** - Frame toggle not in this tree |
+
+### Return trip - TrueVision to ValeVision (14-Sep-2026, clipboard / snap / VCB)
+
+Authored in TrueVision (v2.44.0 clipboard + draw-vertex undo, v2.45.0 whole-shape snap +
+Shift-click insert, v2.46.0 VCB vertex-drag typed length on top of v2.40) and ported the
+same day as ValeVision v2.35.0. Viewport clipboard is included because ValeVision had
+none yet.
+
+**Left out:** PlanDoors, ViewportSnapMove, ModelSource, SpecEd, measure-at-scale /
+extension-line **panel rows**, service worker token (n/a). `atScale` is hardcoded true
+in GetShapeDefaults / GetDimensionDefaults so DrawingScale works. DimensionTool
+BeginTextEdit stays ValeVision's (`Na__LeDimGeo__TextPlacement`). CreateDimension does
+not store `Dimension__AtScale` or extension-line fields.
+
+Every new log entry ends with the TrueVision version of that slice (2.44.0 / 2.45.0 /
+2.46.0).
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__ViewportClipboard__` | Copy/paste/duplicate viewport and vector; Ctrl+C/V/D | **ported** (from TV 2.44.0) |
+| Draw-vertex undo | Ctrl+Z / Ctrl+Y while placing a polyline | **ported** (from TV 2.44.0) |
+| Whole-shape snap + Shift-click insert | SnapShapeTranslation, insert diamond | **ported** (from TV 2.45.0) |
+| Measurements box (VCB) | Typed lengths for Draw/Rectangle/Dimension and vertex drag | **ported** (from TV 2.40 / 2.46.0) |
+| DrawingScale / MeasureParse | Scale conversion for the box | **ported** (from TV 2.46.0) |
+| Vectors/Dimensions panel `atScale` rows | Measure-at-scale / Draw-at-scale toggles | **skipped** - hardcoded `atScale: true` |
+| Extension-line panel rows | Dimensions panel UI | **skipped** |
+| Service worker token | TrueVision PWA cache bust | **n/a** - this tree has no PWA worker |
+
+### Return trip - TrueVision to ValeVision (14-Sep-2026, dimension end size)
+
+Authored in TrueVision (v2.43.0) and ported the same day at Adam's request ("update the
+ValeVision counterpart as well") as ValeVision v2.34.0. The Size mm field, the record
+key `Dimension__TickLengthMm`, the draw path, the eyedropper, the selection box, the
+defaults and the config. TrueVision's Measure at scale and extension-line rows were
+left out: this tree has not taken them yet, and they are separate pending ports.
+
+Every new log entry ends "Ported from TrueVision3D v2.43.0". No service worker token
+here.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__Panel__Dimensions__` 1.2.0 | Size mm under Ends | **ported** |
+| Record and model | `Dimension__TickLengthMm` (SheetRecords 1.7.0, SheetModel 1.8.0). Same field name as TrueVision | **ported** |
+| Painting and boxing | MarkupBridge 1.6.0 (`DimensionTickMm`); SelectionBox 1.1.0 boxes the terminator at that size | **ported** |
+| Tools and eyedropper | SheetTools 1.12.0 and DimensionTool 1.3.0 take `tickLengthMm` for new dimensions; Eyedropper 1.4.0 copies it | **ported** |
+| Config | ConfigState 1.7.0: `minTickLengthMm` / `maxTickLengthMm`. `MinTickLengthMm`, `MaxTickLengthMm` and labels `DimEndSize`, `DimEndSizeTitle` | **ported** |
+| Service worker token | TrueVision bumped `2026-09-14-9` | **n/a** - this tree has no PWA worker |
+
 ### Return trip - TrueVision to ValeVision (14-Sep-2026, box select)
 
 Authored in TrueVision (v2.34.0), in the same files and at the same time as Leaders. Tested there and signed off

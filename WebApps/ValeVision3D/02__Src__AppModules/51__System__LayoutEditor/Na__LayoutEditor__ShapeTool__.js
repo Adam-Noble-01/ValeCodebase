@@ -17,8 +17,17 @@
 // - Click the first point again to close a polygon. Enter, a double-click
 //   or a right click finishes an open line or polyline. Escape abandons
 //   the shape.
+// - TYPED LENGTHS. With a point down, a length typed into the Measurements
+//   box places the next vertex exactly that far along the band - the band's
+//   direction, so a snap, Shift or an arrow key lock aims it first. A typed
+//   vertex that lands exactly on the first one closes the polygon. The
+//   length arrives in paper millimetres: Na__LayoutEditor__Measurements__
+//   has already taken the drawing scale off.
 // - The shape is created silently on the first click and announced once
-//   on finishing, so a whole shape is one undo step.
+//   on finishing, so a whole shape is one undo step. While it is being
+//   drawn, Ctrl+Z takes the last vertex off (the first vertex abandons the
+//   shape) and Ctrl+Y puts a taken-off vertex back; a new click or a typed
+//   length clears what redo was holding.
 // - Edge colour, edge weight (points), whether the edges draw at all and
 //   the fill come from the Vectors panel's defaults; the panel edits them
 //   afterwards. A shape being drawn always shows its edges, whatever the
@@ -27,19 +36,35 @@
 //
 // INTEGRATION:
 // - Na__LayoutEditor__SheetTools__ owns the pointer and delegates here.
+// - Na__LayoutEditor__Measurements__ reads the band (Measure) and places
+//   typed vertices (TypeLength).
 //
 // -----------------------------------------------------------------------------
 //
 // PORT NOTE:
-// - Ported from   : none
-// - Ported on     : 10-Sep-2026 for ValeVision3D v2.21.8 (port Phase 5)
-// - Parity        : new
-// - Divergences   : n/a
-// - Back-port     : none.
+// PORT NOTE: Ported from TrueVision3D v2.44.0 / v2.46.0 on 14-Sep-2026.
+// - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ShapeTool__.js
+// - Ported on     : 14-Sep-2026 (clipboard undo + typed lengths)
+// - Parity        : adapted (ValeVision header)
+// - Divergences   : none in this module
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.5.0
+// - While a shape is being drawn, UndoVertex takes the last vertex off
+//   (one point left abandons the draft) and RedoVertex puts a taken-off
+//   vertex back. A new click or a typed length clears the redo stack. The
+//   sheet tools intercept Ctrl+Z / Ctrl+Y before the sheet history, so
+//   undoing mid-draw no longer steps the last finished edit.
+// - Ported from TrueVision3D v2.44.0.
+//
+// 14-Sep-2026 - Version 1.4.0
+// - Typed lengths: the band's end is kept (the direction a typed length runs),
+//   Measure reports the segment being drawn and TypeLength places a vertex a
+//   typed distance along it. Click and TypeLength add a vertex the same way.
+// - Ported from TrueVision3D v2.46.0.
+//
 // 14-Sep-2026 - Version 1.3.2
 // - A new shape takes the Vectors panel's fill and edge opacity defaults.
 // - Ported from TrueVision3D v2.35.0.
@@ -101,9 +126,16 @@
 // REGION | Module State
 // -----------------------------------------------------------------------------
 
+    // MODULE CONSTANTS | Typed Lengths
+    // ------------------------------------------------------------
+    const Na__LeShape__TYPED_MIN_MM   = 1e-4;   // <-- Shorter than this (paper mm) is no length at all, and no direction
+    const Na__LeShape__TYPED_CLOSE_MM = 1e-3;   // <-- A typed vertex this close to the first one lands on it and closes the polygon
+    // ------------------------------------------------------------
+
     // MODULE VARIABLES | The Shape Being Drawn
     // ------------------------------------------------------------
-    let Na__LeShape__Draft = null;     // <-- { id, points : [[x, y], ...], stroked }
+    let Na__LeShape__Draft  = null;     // <-- { id, points : [[x, y], ...], stroked, aim : { x, y } where the band ends, or null }
+    let Na__LeShape__Undone = [];       // <-- Vertices Ctrl+Z took off this draft; Ctrl+Y puts them back, a new click forgets them
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -176,11 +208,32 @@
     // constraint at all, the point resolves onto the first vertex itself and
     // the polygon closes, which is what was wanted.
     // ------------------------------------------------------------
-    function Na__LeShape__NearFirst(resolved) {
+    // radiusMm is left out for a click (the close radius on screen) and given
+    // for a typed vertex, which closes only by landing on the first one.
+    // ------------------------------------------------------------
+    function Na__LeShape__NearFirst(resolved, radiusMm) {
         const draft = Na__LeShape__Draft;
         if (!draft || draft.points.length < 3) return false;
-        const radiusMm = Na__LeCfg__GetShapeSetup().closeRadiusPx / (Na__LeSurface__GetPixelsPerMm() * Na__LeSurface__GetZoom());
-        return Math.hypot(resolved.x - draft.points[0][0], resolved.y - draft.points[0][1]) <= radiusMm;
+        const radius = Number.isFinite(radiusMm) ? radiusMm : Na__LeCfg__GetShapeSetup().closeRadiusPx / (Na__LeSurface__GetPixelsPerMm() * Na__LeSurface__GetZoom());
+        return Math.hypot(resolved.x - draft.points[0][0], resolved.y - draft.points[0][1]) <= radius;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Add a Vertex to the Shape Being Drawn
+    // ------------------------------------------------------------
+    // The one way a vertex goes down, clicked or typed: silent, so the whole
+    // shape is still one undo step, and the band starts again from it.
+    // ------------------------------------------------------------
+    function Na__LeShape__AddVertex(sheet, pt) {
+        const draft = Na__LeShape__Draft;
+        draft.points.push(pt);
+        draft.aim = null;                                                    // <-- The band has no end until the cursor gives it one
+        Na__LeShape__Undone = [];                                            // <-- A new vertex starts a new future
+        Na__LeModel__UpdateShape(sheet, draft.id, { points : draft.points.slice() }, true);
+        Na__LeSurface__Refresh('markup');
+        Na__LeAxis__Clear();                                                 // <-- Each segment locks on its own
+        Na__LeGrips__ShowBand(pt, pt, null);
     }
     // ------------------------------------------------------------
 
@@ -209,17 +262,14 @@
                 gradient : d.gradientOn ? d.gradient : null, closed : false, stroked : true, silent : true
             });
             if (!item) return false;
-            Na__LeShape__Draft = { id : item.Shape__Id, points : [ pt ], stroked : d.stroked !== false };   // <-- Drawn with edges, finished as the default asks
+            Na__LeShape__Draft  = { id : item.Shape__Id, points : [ pt ], stroked : d.stroked !== false, aim : null };   // <-- Drawn with edges, finished as the default asks
+            Na__LeShape__Undone = [];
             Na__LeAxis__Clear();                                             // <-- The point landed: the lock is spent
             Na__LeGrips__ShowBand(pt, pt, null);
             return true;
         }
         if (Math.hypot(pt[0] - last[0], pt[1] - last[1]) < Na__LeCfg__GetSelectionSetup().dragThresholdMm) return false;   // <-- A doubled point is not a vertex
-        draft.points.push(pt);
-        Na__LeModel__UpdateShape(sheet, draft.id, { points : draft.points.slice() }, true);
-        Na__LeSurface__Refresh('markup');
-        Na__LeAxis__Clear();                                                 // <-- Each segment locks on its own
-        Na__LeGrips__ShowBand(pt, pt, null);
+        Na__LeShape__AddVertex(sheet, pt);
         return true;
     }
     // ------------------------------------------------------------
@@ -233,10 +283,12 @@
         const last = draft.points[draft.points.length - 1];
         const p    = Na__LeShape__SnapOrConstrain(sheet, last, pointMm, shift);
         if (Na__LeShape__NearFirst(p)) {
+            draft.aim = { x : draft.points[0][0], y : draft.points[0][1] };  // <-- A length typed now runs towards the first point
             Na__LeOsnap__ShowMarker({ x : draft.points[0][0], y : draft.points[0][1], kind : 'end' });   // <-- Closing is on offer
             Na__LeGrips__ShowBand(last, draft.points[0], null);
             return true;
         }
+        draft.aim = { x : p.x, y : p.y };                                    // <-- Where the band ends is the way a typed length runs
         Na__LeGrips__ShowBand(last, [ p.x, p.y ], Na__LeAxis__Get());
         return true;
     }
@@ -248,7 +300,8 @@
     function Na__LeShape__Finish(sheet, close) {
         const draft = Na__LeShape__Draft;
         if (!draft) return false;
-        Na__LeShape__Draft = null;
+        Na__LeShape__Draft  = null;
+        Na__LeShape__Undone = [];
         Na__LeAxis__Clear();
         Na__LeGrips__HideBand();
         Na__LeOsnap__HideMarker();
@@ -266,7 +319,8 @@
     // ------------------------------------------------------------
     function Na__LeShape__Cancel(sheet) {
         const draft = Na__LeShape__Draft;
-        Na__LeShape__Draft = null;
+        Na__LeShape__Draft  = null;
+        Na__LeShape__Undone = [];
         Na__LeAxis__Clear();
         Na__LeGrips__HideBand();
         Na__LeOsnap__HideMarker();
@@ -279,6 +333,103 @@
     // FUNCTION | Is a Shape Being Drawn
     // ------------------------------------------------------------
     function Na__LeShape__IsDrawing() { return !!Na__LeShape__Draft; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Take the Last Vertex Off the Shape Being Drawn
+    // ------------------------------------------------------------
+    // One point left is not a shape: the draft is abandoned, the way Escape
+    // does. Returns true when the key was spent, so the sheet history is
+    // left alone.
+    // ------------------------------------------------------------
+    function Na__LeShape__UndoVertex(sheet) {
+        const draft = Na__LeShape__Draft;
+        if (!draft) return false;
+        if (draft.points.length <= 1) return Na__LeShape__Cancel(sheet);
+        const popped = draft.points.pop();
+        Na__LeShape__Undone.push(popped);
+        draft.aim = null;
+        Na__LeModel__UpdateShape(sheet, draft.id, { points : draft.points.slice() }, true);
+        Na__LeSurface__Refresh('markup');
+        Na__LeAxis__Clear();
+        const last = draft.points[draft.points.length - 1];
+        Na__LeGrips__ShowBand(last, last, null);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put Back a Vertex Ctrl+Z Took Off This Draft
+    // ------------------------------------------------------------
+    // Only vertices taken off this drawing: a new click or a typed length
+    // empties the stack. Returns true when the key was spent, even if the
+    // stack was empty, so redo mid-draw never steps the sheet history.
+    // ------------------------------------------------------------
+    function Na__LeShape__RedoVertex(sheet) {
+        const draft = Na__LeShape__Draft;
+        if (!draft) return false;
+        if (!Na__LeShape__Undone.length || !sheet) return true;
+        const pt = Na__LeShape__Undone.pop();
+        draft.points.push(pt);
+        draft.aim = null;
+        Na__LeModel__UpdateShape(sheet, draft.id, { points : draft.points.slice() }, true);
+        Na__LeSurface__Refresh('markup');
+        Na__LeAxis__Clear();
+        Na__LeGrips__ShowBand(pt, pt, null);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Typed Lengths
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Segment Being Drawn
+    // ------------------------------------------------------------
+    // Returns { from : { x, y }, to : { x, y } or null, count } in paper
+    // millimetres: the last vertex, where the band ends (null until the
+    // cursor has moved since that vertex went down) and how many vertices
+    // there are. Null while no shape is being drawn.
+    // ------------------------------------------------------------
+    function Na__LeShape__Measure() {
+        const draft = Na__LeShape__Draft;
+        if (!draft) return null;
+        const last = draft.points[draft.points.length - 1];
+        return {
+            from  : { x : last[0], y : last[1] },
+            to    : draft.aim ? { x : draft.aim.x, y : draft.aim.y } : null,
+            count : draft.points.length
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Place the Next Vertex a Typed Distance Along the Band
+    // ------------------------------------------------------------
+    // lengthMm is PAPER millimetres; a negative one runs back the other way.
+    // Returns { ok : true, closed } or { ok : false, reason } - 'none' with no
+    // shape being drawn, 'length' for no length, 'direction' when the band
+    // has no end to aim along.
+    // ------------------------------------------------------------
+    function Na__LeShape__TypeLength(sheet, lengthMm) {
+        const draft = Na__LeShape__Draft;
+        if (!draft || !sheet) return { ok : false, reason : 'none' };
+        if (!Number.isFinite(lengthMm) || Math.abs(lengthMm) < Na__LeShape__TYPED_MIN_MM) return { ok : false, reason : 'length' };
+        const last = draft.points[draft.points.length - 1];
+        const aim  = draft.aim;
+        const run  = aim ? Math.hypot(aim.x - last[0], aim.y - last[1]) : 0;
+        if (!(run >= Na__LeShape__TYPED_MIN_MM)) return { ok : false, reason : 'direction' };
+        const pt = [ last[0] + (((aim.x - last[0]) / run) * lengthMm), last[1] + (((aim.y - last[1]) / run) * lengthMm) ];
+        if (Na__LeShape__NearFirst({ x : pt[0], y : pt[1] }, Na__LeShape__TYPED_CLOSE_MM)) {
+            Na__LeShape__Finish(sheet, true);                                // <-- Typed back onto the first vertex: the polygon closes
+            return { ok : true, closed : true };
+        }
+        Na__LeShape__AddVertex(sheet, pt);
+        return { ok : true, closed : false };
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -295,7 +446,11 @@
         Na__LeShape__Move,
         Na__LeShape__Finish,
         Na__LeShape__Cancel,
-        Na__LeShape__IsDrawing
+        Na__LeShape__IsDrawing,
+        Na__LeShape__UndoVertex,
+        Na__LeShape__RedoVertex,
+        Na__LeShape__Measure,
+        Na__LeShape__TypeLength
     };
     // ------------------------------------------------------------
 

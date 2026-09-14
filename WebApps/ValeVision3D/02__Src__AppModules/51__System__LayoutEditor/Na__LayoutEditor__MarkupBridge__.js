@@ -38,6 +38,22 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.7.0
+// - A sheet dimension's value can sit off the line: Dimension__TextDXMm and
+//   Dimension__TextDYMm shift it, and Push draws a circular arc from the
+//   justified side of the value back to the centre of the dimension line,
+//   bulging outwards. Hit testing and the selection highlight follow the
+//   moved value and the arc. DimensionTextShift and DimensionTextLayout
+//   read that layout from a record. A record from before it has no keys
+//   and draws exactly as it did.
+// - Ported from TrueVision3D (MarkupBridge 1.10.0).
+//
+// 14-Sep-2026 - Version 1.6.0
+// - A sheet dimension draws its ticks, arrows or dots at Dimension__TickLengthMm
+//   (DimensionTickMm), falling back to the config TickLengthMm when the record
+//   has no key - every dimension from before Size mm.
+// - Ported from TrueVision3D v2.43.0.
+//
 // 14-Sep-2026 - Version 1.5.0
 // - Box select: BuildSheetPrimitives takes a selection of several items - an
 //   array of { kind, id }, as well as one or null - and draws a highlight round
@@ -94,8 +110,10 @@
     import {
         Na__LeDimGeo__Skeleton,
         Na__LeDimGeo__DistanceToSegment,
+        Na__LeDimGeo__DistanceToPolyline,
         Na__LeDimGeo__Push,
-        Na__LeDimGeo__TextPlacement,
+        Na__LeDimGeo__TextLayout,
+        Na__LeDimGeo__HitText,
         Na__LeDimGeo__SpanMm
     } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShapeGeo__Push, Na__LeShapeGeo__Bounds, Na__LeShapeGeo__Hit } from './Na__LayoutEditor__ShapeGeometry__.js';
@@ -328,6 +346,55 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | How Large a Sheet Dimension's Ticks, Arrows or Dots Are
+    // ------------------------------------------------------------
+    // Paper millimetres. A record without Dimension__TickLengthMm draws at
+    // the config TickLengthMm, as every dimension from before Size mm did.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__DimensionTickMm(dim) {
+        const setup = Na__LeCfg__GetDimensionSetup();
+        const mm    = dim ? dim.Dimension__TickLengthMm : null;
+        if (!(typeof mm === 'number' && Number.isFinite(mm) && mm > 0)) return setup.tickLengthMm;
+        return Math.min(setup.maxTickLengthMm, Math.max(setup.minTickLengthMm, mm));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Value's Paper Offset From Its Un-Dragged Place
+    // ------------------------------------------------------------
+    // { dx, dy } in paper millimetres. A record without the keys - every
+    // dimension from before the text leader - is no offset.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__DimensionTextShift(dim) {
+        const dx = dim ? dim.Dimension__TextDXMm : null;
+        const dy = dim ? dim.Dimension__TextDYMm : null;
+        return {
+            dx : (typeof dx === 'number' && Number.isFinite(dx)) ? dx : 0,
+            dy : (typeof dy === 'number' && Number.isFinite(dy)) ? dy : 0
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Value's Place, Box and Leader Arc on the Paper
+    // ------------------------------------------------------------
+    // skeleton is optional: the record's own is used when it is left out.
+    // Returns { place, box, leader } or null for a degenerate span.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__DimensionTextLayout(sheet, dim, skeleton) {
+        const sk = skeleton || Na__LeMarkup__DimensionSkeleton(dim);
+        if (!sk || !dim) return null;
+        const setup = Na__LeCfg__GetDimensionSetup();
+        const shift = Na__LeMarkup__DimensionTextShift(dim);
+        const text  = sheet ? Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim)) : (dim.Dimension__OverrideText || '');
+        return Na__LeDimGeo__TextLayout(sk, {
+            liftMm : setup.textGapMm, text : text, fontMm : dim.Dimension__TextSizeMm, weight : 400,
+            dx : shift.dx, dy : shift.dy, minMm : setup.textLeaderMinMm, gapMm : setup.textLeaderGapMm
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Push a Sheet Annotation With Its Leader
     // ------------------------------------------------------------
     function Na__LeMarkup__PushAnnotation(list, item, textSetup) {
@@ -382,18 +449,25 @@
 
         sheet.Sheet__Dimensions.forEach((dim) => {
             if (!Na__LeModel__IsLayerVisible(sheet, dim.Dimension__LayerId)) return;
+            const shift = Na__LeMarkup__DimensionTextShift(dim);
             const sk = Na__LeDimGeo__Push(list, {
                 start : { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
                 end   : { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
                 orientation : dim.Dimension__Orientation,
                 offsetMm : dim.Dimension__OffsetMm, gapMm : dimSetup.extGapMm, overshootMm : dimSetup.overshootMm,
-                tickMm : dimSetup.tickLengthMm, strokeMm : Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup), colour : dim.Dimension__Colour,
+                tickMm : Na__LeMarkup__DimensionTickMm(dim), strokeMm : Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup), colour : dim.Dimension__Colour,
                 terminator : dim.Dimension__Terminator,
                 text : Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim)),
-                fontMm : dim.Dimension__TextSizeMm, weight : 400, liftMm : dimSetup.textGapMm, fontFamily : textSetup.fontFamily
+                fontMm : dim.Dimension__TextSizeMm, weight : 400, liftMm : dimSetup.textGapMm, fontFamily : textSetup.fontFamily,
+                textDXMm : shift.dx, textDYMm : shift.dy,
+                textLeaderMinMm : dimSetup.textLeaderMinMm, textLeaderGapMm : dimSetup.textLeaderGapMm,
+                textFillColour : style.paperColour
             });
             if (sk && isChosen('dimension', dim.Dimension__Id)) {
                 const xs = [ sk.S.x, sk.E.x, sk.T1.x, sk.T2.x ], ys = [ sk.S.y, sk.E.y, sk.T1.y, sk.T2.y ];
+                const layout = Na__LeMarkup__DimensionTextLayout(sheet, dim, sk);
+                if (layout && layout.box) layout.box.points.forEach((p) => { xs.push(p[0]); ys.push(p[1]); });
+                if (layout && layout.leader) layout.leader.points.forEach((p) => { xs.push(p[0]); ys.push(p[1]); });
                 const minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
                 const minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
                 highlights.push({ X : minX, Y : minY, WidthMm : maxX - minX, HeightMm : maxY - minY });
@@ -439,20 +513,20 @@
 
         // DIMENSIONS NEXT | Thin lines are hard to hit, so the lines take a
         // wider tolerance and the value text counts as part of the dimension.
-        const dimSetup = Na__LeCfg__GetDimensionSetup();
         const lineTol  = tol * 1.5;
         for (let i = sheet.Sheet__Dimensions.length - 1; i >= 0; i--) {
             const dim = sheet.Sheet__Dimensions[i];
             if (!editable(dim.Dimension__LayerId)) continue;
             const sk = Na__LeMarkup__DimensionSkeleton(dim);
             if (!sk) continue;
+            const layout = Na__LeMarkup__DimensionTextLayout(sheet, dim, sk);
+            if (layout && Na__LeDimGeo__HitText(layout.box, pointMm, tol)) return { kind : 'dimension', id : dim.Dimension__Id };
+            if (layout && layout.leader && Na__LeDimGeo__DistanceToPolyline(pointMm, layout.leader.points) <= lineTol) {
+                return { kind : 'dimension', id : dim.Dimension__Id };
+            }
             if (Na__LeDimGeo__DistanceToSegment(pointMm, sk.DS, sk.DE) <= lineTol ||
                 Na__LeDimGeo__DistanceToSegment(pointMm, sk.X1, sk.T1) <= lineTol ||
                 Na__LeDimGeo__DistanceToSegment(pointMm, sk.X2, sk.T2) <= lineTol) return { kind : 'dimension', id : dim.Dimension__Id };
-            const text  = Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim));
-            const place = Na__LeDimGeo__TextPlacement(sk, dimSetup.textGapMm);
-            const reach = Math.max(dim.Dimension__TextSizeMm, Na__LeChrome__MeasureTextMm(text, dim.Dimension__TextSizeMm, 400) / 2) + tol;
-            if (Math.hypot(pointMm.x - place.x, pointMm.y - place.y) <= reach) return { kind : 'dimension', id : dim.Dimension__Id };
         }
         for (let i = sheet.Sheet__Annotations.length - 1; i >= 0; i--) {
             const item = sheet.Sheet__Annotations[i];
@@ -488,6 +562,9 @@
         Na__LeMarkup__DimensionValueMm,
         Na__LeMarkup__FormatDimension,
         Na__LeMarkup__DimensionSkeleton,
+        Na__LeMarkup__DimensionTickMm,
+        Na__LeMarkup__DimensionTextShift,
+        Na__LeMarkup__DimensionTextLayout,
         Na__LeMarkup__BuildSheetPrimitives,
         Na__LeMarkup__HitTest
     };

@@ -60,6 +60,17 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - A dimension whose value has been dragged off the line boxes the value's
+//   rotated box and the leader arc as well as the line, so a window or a
+//   crossing that covers the moved text takes the dimension.
+// - Ported from TrueVision3D (SelectionBox 1.2.0).
+//
+// 14-Sep-2026 - Version 1.1.0
+// - A dimension's terminator parts are boxed at Dimension__TickLengthMm, so a
+//   larger arrow is taken by a window or a crossing that covers it.
+// - Ported from TrueVision3D v2.43.0.
+//
 // 14-Sep-2026 - Version 1.0.0
 // - Initial implementation: window and crossing boxes, the touch rule for each
 //   kind (viewports, vectors, text, dimensions and leaders), the live preview,
@@ -74,18 +85,19 @@
 
     // MODULE IMPORTS | Config, Model, Surface, Markup and Geometry
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetSelectionSetup, Na__LeCfg__GetDimensionSetup } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetSelectionSetup } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__IsLayerVisible, Na__LeModel__IsLayerLocked } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__GetElements, Na__LeSurface__GetPixelsPerMm, Na__LeSurface__GetZoom } from './Na__LayoutEditor__SheetSurface__.js';
     import {
         Na__LeMarkup__AnnotationBounds,
         Na__LeMarkup__DimensionSkeleton,
+        Na__LeMarkup__DimensionTickMm,
         Na__LeMarkup__DimensionValueMm,
-        Na__LeMarkup__FormatDimension
+        Na__LeMarkup__FormatDimension,
+        Na__LeMarkup__DimensionTextLayout
     } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeDimGeo__Terminator, Na__LeDimGeo__TextPlacement } from './Na__LayoutEditor__DimensionGeometry__.js';
+    import { Na__LeDimGeo__Terminator } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShapeGeo__Points } from './Na__LayoutEditor__ShapeGeometry__.js';
-    import { Na__LeChrome__MeasureTextMm } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeLeadGeo__TYPE_BUBBLE, Na__LeLeadGeo__Layout, Na__LeLeadGeo__Circle, Na__LeLeadGeo__HasText } from './Na__LayoutEditor__LeaderGeometry__.js';
     // ------------------------------------------------------------
 
@@ -299,22 +311,17 @@
     function Na__LeSelBox__DimensionParts(sheet, dim) {
         const sk = Na__LeMarkup__DimensionSkeleton(dim);
         if (!sk) return [];
-        const setup = Na__LeCfg__GetDimensionSetup();
         const line  = (a, b) => ({ points : [ [ a.x, a.y ], [ b.x, b.y ] ], closed : false, area : false });
         const parts = [ line(sk.X1, sk.T1), line(sk.X2, sk.T2), line(sk.DS, sk.DE) ];
-        [ Na__LeDimGeo__Terminator(dim.Dimension__Terminator, sk.DS, -sk.dirX, -sk.dirY, setup.tickLengthMm),
-          Na__LeDimGeo__Terminator(dim.Dimension__Terminator, sk.DE,  sk.dirX,  sk.dirY, setup.tickLengthMm) ]
+        [ Na__LeDimGeo__Terminator(dim.Dimension__Terminator, sk.DS, -sk.dirX, -sk.dirY, Na__LeMarkup__DimensionTickMm(dim)),
+          Na__LeDimGeo__Terminator(dim.Dimension__Terminator, sk.DE,  sk.dirX,  sk.dirY, Na__LeMarkup__DimensionTickMm(dim)) ]
             .forEach((t) => parts.push({ points : t.points.map((p) => [ p[0], p[1] ]), closed : t.closed, area : t.filled }));
 
         const text = Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim));
         if (text) {
-            const place  = Na__LeDimGeo__TextPlacement(sk, setup.textGapMm);
-            const fontMm = dim.Dimension__TextSizeMm;
-            const half   = Na__LeChrome__MeasureTextMm(text, fontMm, 400) / 2;        // <-- The weight the markup bridge sets a value in
-            const up     = fontMm * Na__LeSelBox__CAP_HEIGHT, down = fontMm * Na__LeSelBox__DESCENT;
-            const angle  = place.angleDeg * (Math.PI / 180), cos = Math.cos(angle), sin = Math.sin(angle);
-            const at     = (lx, ly) => [ place.x + (lx * cos) - (ly * sin), place.y + (lx * sin) + (ly * cos) ];
-            parts.push({ points : [ at(-half, -up), at(half, -up), at(half, down), at(-half, down) ], closed : true, area : true });
+            const layout = Na__LeMarkup__DimensionTextLayout(sheet, dim, sk);
+            if (layout && layout.box) parts.push({ points : layout.box.points, closed : true, area : true });
+            if (layout && layout.leader) parts.push({ points : layout.leader.points, closed : false, area : false });
         }
         return parts;
     }

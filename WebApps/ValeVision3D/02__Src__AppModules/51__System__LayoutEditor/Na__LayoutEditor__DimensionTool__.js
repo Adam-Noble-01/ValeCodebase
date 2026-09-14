@@ -33,11 +33,18 @@
 //   it measures the model at that viewport's scale.
 // - Its snap and inference markers are orange, the dimension tone; the Draw
 //   and Rectangle tools snap in blue and a carried viewport in purple.
+// - TYPED DISTANCES. With the start down, a length typed into the Measurements
+//   box picks the end that far along the band. With the line following the
+//   cursor, a typed distance puts the line that far from what it measures, on
+//   the side the cursor is on, and finishes. Lengths arrive in paper millimetres:
+//   Na__LayoutEditor__Measurements__ has already taken the drawing scale off.
 //
 // INTEGRATION:
 // - Na__LayoutEditor__SheetTools__ owns the pointer and the keys and
 //   delegates here; it runs Move again when Shift goes down or up.
 // - Na__LayoutEditor__DimensionGeometry__ owns the orientation maths.
+// - Na__LayoutEditor__Measurements__ reads the placement (Measure) and
+//   places a typed span or offset (TypeSpan, TypeOffset).
 //
 // -----------------------------------------------------------------------------
 //
@@ -54,6 +61,26 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.5.0
+// - BeginTextEdit opens the field with the value's handing: left or right
+//   once the text has been dragged off the line, centred while it sits on
+//   it, at the place the value actually reads.
+// - Ported from TrueVision3D (DimensionTool 1.5.0 / 1.6.0).
+//
+// 14-Sep-2026 - Version 1.4.0
+// - Typed distances: Measure reports the span then the offset, TypeSpan picks
+//   the end a typed length along the band, TypeOffset puts the line that far
+//   from what it measures and finishes. Span is the shared second-click path.
+// - Left out TrueVision's Dimension__AtScale and extension-line fields on
+//   CreateDimension: this tree has not taken those panel rows.
+// - Ported from TrueVision3D v2.46.0.
+//
+// 14-Sep-2026 - Version 1.3.0
+// - A new dimension takes the Dimensions panel's terminator size
+//   (tickLengthMm), so its ticks, arrows or dots are already the Size mm
+//   setting while its line follows the cursor.
+// - Ported from TrueVision3D v2.43.0.
+//
 // 13-Sep-2026 - Version 1.2.0
 // - Shift makes the dimension ortho while its line is placed: horizontal or
 //   vertical by the side of its points the line is dragged to, kept on the
@@ -96,8 +123,8 @@
     } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__GetPixelsPerMm, Na__LeSurface__GetZoom, Na__LeSurface__Refresh } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeHandles__Contains, Na__LeHandles__FrontToBack } from './Na__LayoutEditor__ViewportHandles__.js';
-    import { Na__LeMarkup__DimensionSkeleton, Na__LeMarkup__DimensionValueMm, Na__LeMarkup__FormatDimension } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeDimGeo__ALIGNED, Na__LeDimGeo__Frame, Na__LeDimGeo__OrthoToward, Na__LeDimGeo__TextPlacement } from './Na__LayoutEditor__DimensionGeometry__.js';
+    import { Na__LeMarkup__DimensionSkeleton, Na__LeMarkup__DimensionValueMm, Na__LeMarkup__FormatDimension, Na__LeMarkup__DimensionTextLayout } from './Na__LayoutEditor__MarkupBridge__.js';
+    import { Na__LeDimGeo__ALIGNED, Na__LeDimGeo__Frame, Na__LeDimGeo__OrthoToward } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeChrome__MeasureTextMm } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeOsnap__TONE_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeGrips__ShowBand, Na__LeGrips__HideBand } from './Na__LayoutEditor__Grips__.js';
@@ -116,6 +143,8 @@
     // ------------------------------------------------------------
     const Na__LeDim__PARALLEL_DOT = 0.9995;        // <-- Two dimensions are parallel when their directions agree this closely
     const Na__LeDim__INFER_KIND   = 'infer';       // <-- Marker style for an inferred line
+    const Na__LeDim__TYPED_MIN_MM = 1e-4;          // <-- Shorter than this (paper mm) is no length and no direction
+    const Na__LeDim__TYPED_PASSES = 3;             // <-- How many times a typed span re-asks its length at the new midpoint
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Placement in Progress
@@ -216,6 +245,35 @@
     }
     // ------------------------------------------------------------
 
+
+    // HELPER FUNCTION | Create the Dimension Once Its End Is Known (the second click, or a typed span)
+    // ------------------------------------------------------------
+    // Returns false, leaving the start waiting, for a span shorter than
+    // minSpanMm - the drag threshold for a click, next to nothing for a typed
+    // length, which is meant.
+    // ------------------------------------------------------------
+    function Na__LeDim__Span(sheet, end, shift, defaults, minSpanMm) {
+        const p = Na__LeDim__Placement;
+        if (Math.hypot(end.x - p.startMm.x, end.y - p.startMm.y) < minSpanMm) return false;   // <-- Not a span yet
+        const mid  = { x : (p.startMm.x + end.x) / 2, y : (p.startMm.y + end.y) / 2 };
+        const host = Na__LeHandles__FrontToBack(sheet).find((v) => v.Viewport__Kind === Na__LeModel__KIND_2D && Na__LeHandles__Contains(v, mid)) || null;
+        const d    = defaults || {};
+        const item = Na__LeModel__CreateDimension(sheet, p.startMm, end, {
+            viewportId : host ? host.Viewport__Id : null, offsetMm : d.offsetMm, textSizeMm : d.textSizeMm,
+            colour : d.colour, terminator : d.terminator, tickLengthMm : d.tickLengthMm, precision : d.precision, unitsSuffix : d.unitsSuffix,
+            orientation : shift ? Na__LeDimGeo__OrthoToward(p.startMm, end, end, null, Na__LeCfg__GetSelectionSetup().dragThresholdMm) : Na__LeDimGeo__ALIGNED,   // <-- Shift already down: ortho from the first frame
+            silent : true
+        });
+        Na__LeAxis__Clear();
+        Na__LeGrips__HideBand();
+        Na__LeOsnap__HideMarker();
+        if (!item) { Na__LeDim__Placement = null; return false; }
+        p.phase = 2; p.endMm = end; p.id = item.Dimension__Id; p.aim = null; p.cursor = null;
+        Na__LeSurface__Refresh('markup');
+        return true;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -225,38 +283,18 @@
 
     // FUNCTION | A Click With the Dimension Tool
     // ------------------------------------------------------------
-    // defaults: { offsetMm, textSizeMm, colour, terminator, precision, unitsSuffix }
+    // defaults: { offsetMm, textSizeMm, colour, terminator, tickLengthMm, precision, unitsSuffix }
     // ------------------------------------------------------------
     function Na__LeDim__Click(sheet, pointMm, shift, defaults) {
         const p = Na__LeDim__Placement;
         if (!p) {
             const first = Na__LeOsnap__Snap(sheet, pointMm, null, Na__LeOsnap__TONE_DIMENSION);
-            Na__LeDim__Placement = { phase : 1, startMm : { x : first.x, y : first.y }, endMm : null, id : null };
+            Na__LeDim__Placement = { phase : 1, startMm : { x : first.x, y : first.y }, endMm : null, id : null, aim : null, cursor : null };
             Na__LeAxis__Clear();                                              // <-- The point landed: the lock is spent
             Na__LeGrips__ShowBand(Na__LeDim__Placement.startMm, Na__LeDim__Placement.startMm, null);
             return true;
         }
-        if (p.phase === 1) {
-            const end       = Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm);
-            const minSpanMm = Na__LeCfg__GetSelectionSetup().dragThresholdMm;
-            if (Math.hypot(end.x - p.startMm.x, end.y - p.startMm.y) < minSpanMm) return false;   // <-- Not a span yet
-            const mid  = { x : (p.startMm.x + end.x) / 2, y : (p.startMm.y + end.y) / 2 };
-            const host = Na__LeHandles__FrontToBack(sheet).find((v) => v.Viewport__Kind === Na__LeModel__KIND_2D && Na__LeHandles__Contains(v, mid)) || null;
-            const d    = defaults || {};
-            const item = Na__LeModel__CreateDimension(sheet, p.startMm, end, {
-                viewportId : host ? host.Viewport__Id : null, offsetMm : d.offsetMm, textSizeMm : d.textSizeMm,
-                colour : d.colour, terminator : d.terminator, precision : d.precision, unitsSuffix : d.unitsSuffix,
-                orientation : shift ? Na__LeDimGeo__OrthoToward(p.startMm, end, end, null, minSpanMm) : Na__LeDimGeo__ALIGNED,   // <-- Shift already down: ortho from the first frame
-                silent : true
-            });
-            Na__LeAxis__Clear();
-            Na__LeGrips__HideBand();
-            Na__LeOsnap__HideMarker();
-            if (!item) { Na__LeDim__Placement = null; return false; }
-            p.phase = 2; p.endMm = end; p.id = item.Dimension__Id;
-            Na__LeSurface__Refresh('markup');
-            return true;
-        }
+        if (p.phase === 1) return Na__LeDim__Span(sheet, Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm), shift, defaults, Na__LeCfg__GetSelectionSetup().dragThresholdMm);
         // THIRD CLICK | The line stays where the cursor put it, ortho if Shift is still held
         const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
         Na__LeDim__Placement = null;
@@ -276,9 +314,15 @@
     function Na__LeDim__Move(sheet, pointMm, shift) {
         const p = Na__LeDim__Placement;
         if (!p) { Na__LeOsnap__Snap(sheet, pointMm, null, Na__LeOsnap__TONE_DIMENSION); return false; }   // <-- Marker before the first click
-        if (p.phase === 1) { Na__LeGrips__ShowBand(p.startMm, Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm), Na__LeAxis__Get()); return true; }
+        if (p.phase === 1) {
+            const end = Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm);
+            p.aim = { x : end.x, y : end.y };                                 // <-- Where the band ends is the way a typed length runs
+            Na__LeGrips__ShowBand(p.startMm, end, Na__LeAxis__Get());
+            return true;
+        }
         const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
         if (!dim) { Na__LeDim__Placement = null; return false; }
+        p.cursor = { x : pointMm.x, y : pointMm.y };                          // <-- The side a typed distance puts the line on
         const aim = Na__LeDim__Aim(sheet, dim, pointMm, shift);
         Na__LeDim__ShowInference(aim.result);
         Na__LeModel__UpdateDimension(sheet, dim.Dimension__Id, { orientation : aim.orientation, offsetMm : aim.result.offsetMm }, true);
@@ -323,6 +367,86 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Typed Distances
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | What the Placement Measures Right Now
+    // ------------------------------------------------------------
+    // Returns null with nothing placed; { phase : 1, start, end } while the
+    // end is being picked (end is null until the cursor has moved); and
+    // { phase : 2, dim } while the line follows the cursor. Paper millimetres.
+    // ------------------------------------------------------------
+    function Na__LeDim__Measure(sheet) {
+        const p = Na__LeDim__Placement;
+        if (!p) return null;
+        if (p.phase === 1) return { phase : 1, start : { x : p.startMm.x, y : p.startMm.y }, end : p.aim ? { x : p.aim.x, y : p.aim.y } : null };
+        const dim = sheet ? sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id) : null;
+        return dim ? { phase : 2, dim : dim } : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Pick the End a Typed Length Along the Band (instead of the second click)
+    // ------------------------------------------------------------
+    // lengthFor(pointMm) answers the typed length in PAPER millimetres for a
+    // dimension whose midpoint sits at that point, so the caller can take off
+    // the scale of the drawing there - the drawing it will belong to. The
+    // midpoint and the length settle together in a pass or two; a negative
+    // length runs the other way. defaults and shift as for Click.
+    // Returns { ok : true } or { ok : false, reason } - 'none' unless the end
+    // is being picked, 'direction' when the band has no end to aim along,
+    // 'length' for no length.
+    // ------------------------------------------------------------
+    function Na__LeDim__TypeSpan(sheet, lengthFor, shift, defaults) {
+        const p = Na__LeDim__Placement;
+        if (!p || p.phase !== 1 || !sheet || typeof lengthFor !== 'function') return { ok : false, reason : 'none' };
+        const aim = p.aim;
+        const run = aim ? Math.hypot(aim.x - p.startMm.x, aim.y - p.startMm.y) : 0;
+        if (!(run >= Na__LeDim__TYPED_MIN_MM)) return { ok : false, reason : 'direction' };
+        const ux = (aim.x - p.startMm.x) / run, uy = (aim.y - p.startMm.y) / run;
+        let length = lengthFor({ x : p.startMm.x, y : p.startMm.y });
+        for (let pass = 0; pass < Na__LeDim__TYPED_PASSES && Number.isFinite(length); pass++) {
+            const next = lengthFor({ x : p.startMm.x + (ux * length / 2), y : p.startMm.y + (uy * length / 2) });
+            if (!Number.isFinite(next) || Math.abs(next - length) <= 1e-9) break;
+            length = next;                                                   // <-- The midpoint crossed into a drawing at another scale
+        }
+        if (!Number.isFinite(length) || Math.abs(length) < Na__LeDim__TYPED_MIN_MM) return { ok : false, reason : 'length' };
+        const end = { x : p.startMm.x + (ux * length), y : p.startMm.y + (uy * length) };
+        return Na__LeDim__Span(sheet, end, shift, defaults, Na__LeDim__TYPED_MIN_MM) ? { ok : true } : { ok : false, reason : 'length' };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put the Line a Typed Distance From What It Measures, and Finish (instead of the third click)
+    // ------------------------------------------------------------
+    // offsetMm is PAPER millimetres, measured across the way the dimension
+    // runs, on the side of it the cursor is on; a negative one puts the line
+    // on the other side. The orientation is what the cursor and Shift ask
+    // for, exactly as for the third click; a typed distance is exact, so no
+    // parallel dimension pulls it. Returns { ok : true } or
+    // { ok : false, reason : 'none' }.
+    // ------------------------------------------------------------
+    function Na__LeDim__TypeOffset(sheet, offsetMm, shift) {
+        const p = Na__LeDim__Placement;
+        if (!p || p.phase !== 2 || !sheet || !Number.isFinite(offsetMm)) return { ok : false, reason : 'none' };
+        const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
+        if (!dim) { Na__LeDim__Placement = null; return { ok : false, reason : 'none' }; }
+        const cursor = p.cursor || { x : dim.Dimension__EndXMm, y : dim.Dimension__EndYMm };
+        const aim    = Na__LeDim__Aim(sheet, dim, cursor, shift);
+        const side   = aim.result.offsetMm < 0 ? -1 : 1;
+        Na__LeDim__Placement = null;
+        Na__LeAxis__Clear();
+        Na__LeOsnap__HideMarker();
+        Na__LeModel__UpdateDimension(sheet, dim.Dimension__Id, { orientation : aim.orientation, offsetMm : side * offsetMm }, false);   // <-- One announcement: one history step
+        Na__LeModel__SetSelection({ kind : 'dimension', id : dim.Dimension__Id });
+        return { ok : true };
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Inline Value
 // -----------------------------------------------------------------------------
 
@@ -338,10 +462,14 @@
         const shown    = Na__LeMarkup__FormatDimension(dim, valueMm);
         const fontMm   = dim.Dimension__TextSizeMm;
         const widthMm  = Math.max(fontMm * 4, Na__LeChrome__MeasureTextMm(shown, fontMm, 400));
-        const place    = Na__LeDimGeo__TextPlacement(sk, Na__LeCfg__GetDimensionSetup().textGapMm);
+        const layout   = Na__LeMarkup__DimensionTextLayout(sheet, dim, sk);
+        const place    = layout ? layout.place : null;
+        if (!place) return false;
+        const origin   = layout.origin || { x : place.x, y : place.y, align : 'center' };
+        const fieldX   = origin.align === 'right' ? origin.x - widthMm : (origin.align === 'left' ? origin.x : place.x - (widthMm / 2));
         return Na__LeText__OpenField({
-            xMm : place.x - (widthMm / 2), yMm : place.y - fontMm, widthMm : widthMm, fontMm : fontMm, weight : 400,
-            colour : dim.Dimension__Colour, align : 'center', value : shown,
+            xMm : fieldX, yMm : place.y - fontMm, widthMm : widthMm, fontMm : fontMm, weight : 400,
+            colour : dim.Dimension__Colour, align : origin.align, value : shown,
             onCommit : (text) => {
                 const live = Na__LeModel__GetActiveSheet();
                 if (!live) return;
@@ -370,7 +498,10 @@
         Na__LeDim__IsPlacingLine,
         Na__LeDim__OffsetFor,
         Na__LeDim__ShowInference,
-        Na__LeDim__BeginTextEdit
+        Na__LeDim__BeginTextEdit,
+        Na__LeDim__Measure,
+        Na__LeDim__TypeSpan,
+        Na__LeDim__TypeOffset
     };
     // ------------------------------------------------------------
 

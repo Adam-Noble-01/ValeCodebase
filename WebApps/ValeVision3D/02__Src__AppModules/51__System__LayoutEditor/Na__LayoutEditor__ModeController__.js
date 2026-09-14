@@ -47,6 +47,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.12.0
+// - A group change ('group', 'groups') redraws the markup so the blue box
+//   and the members stay in step. Ported from TrueVision3D (groups).
+//
+// 14-Sep-2026 - Version 1.11.0
+// - The Measurements box is mounted on .na-le-centre (bottom right over the
+//   stage) when the shell is built. SpecEd is not here.
+// - Ported from TrueVision3D v2.46.0.
+//
 // 14-Sep-2026 - Version 1.10.0
 // - The Leaders panel is registered in the right column, after Text. A leader
 //   change ('leader', 'leaders') redraws the markup and refreshes only the
@@ -148,6 +157,7 @@
     import { Na__LePanelStyles__Register } from './Na__LayoutEditor__Panel__Styles__.js';
     import { Na__LePanelModelLayers__Register } from './Na__LayoutEditor__Panel__ModelLayers__.js';
     import { Na__LeToolbar__Mount } from './Na__LayoutEditor__Toolbar__.js';
+    import { Na__LeMeasure__Mount } from './Na__LayoutEditor__Measurements__.js';
     import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from './Na__LayoutEditor__SnapshotRenderer__.js';
     import { Na__LeOsnap__Clear } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeHist__Initialize, Na__LeHist__Track } from './Na__LayoutEditor__History__.js';
@@ -296,6 +306,7 @@
         Na__LePanelDims__Register();
         Na__LePanelShapes__Register();
         Na__LeToolbar__Mount(host.querySelector('.na-le-centre__toolbar'), { editable : editable, showToast : toast });
+        Na__LeMeasure__Mount(host.querySelector('.na-le-centre'), { editable : editable, stage : Na__LeMode__Stage });   // <-- The Measurements box, bottom right over the stage
     }
     // ------------------------------------------------------------
 
@@ -404,7 +415,8 @@
         'annotation', 'annotations',
         'dimension',  'dimensions',
         'shape',      'shapes',
-        'leader',     'leaders'
+        'leader',     'leaders',
+        'group',      'groups'
     ]);
     // ------------------------------------------------------------
 

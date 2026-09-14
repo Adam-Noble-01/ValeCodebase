@@ -32,6 +32,29 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.10.0
+// - KEYMAP_FALLBACK: Edit__Ungroup (Ctrl+Shift+G) then Edit__Group (Ctrl+G).
+//   First Exact match wins, so ungroup is listed first.
+// - Ported from TrueVision3D (groups keys).
+//
+// 14-Sep-2026 - Version 1.9.0
+// - GetDimensionSetup: textLeaderMinMm and textLeaderGapMm, how far a
+//   dragged value has to sit from its un-dragged place before the arc is
+//   drawn, and the clear paper between the justified side and the arc.
+// - Ported from TrueVision3D (ConfigState 1.11.0).
+//
+// 14-Sep-2026 - Version 1.8.0
+// - GetClipboardSetup, GetMeasureSetup and GetMeasureKeys. The key map
+//   fallback carries copy, paste, duplicate and the Measurements box keys.
+// - Ported from TrueVision3D v2.44.0 / v2.46.0.
+//
+// 14-Sep-2026 - Version 1.7.0
+// - GetDimensionSetup: minTickLengthMm and maxTickLengthMm, the bounds of the
+//   Dimensions panel's Size mm (how large the ticks, arrows or dots at each
+//   end are). TickLengthMm is still the size a dimension without its own
+//   Dimension__TickLengthMm draws at, and the size new ones start with.
+// - Ported from TrueVision3D v2.43.0.
+//
 // 14-Sep-2026 - Version 1.6.0
 // - Box select: the Selection setup carries the box's start distance, edge
 //   weight and preview (BoxStartPx, BoxBorderPx, BoxPreview, BoxPreviewPadMm),
@@ -132,7 +155,12 @@
                      { Id : 'Tool__Rectangle',   Action : 'Tool__Rectangle',   Enabled : true, Keys : [ 'r', 'R' ],               Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Tool__Leader',      Action : 'Tool__Leader',      Enabled : true, Keys : [ 'e', 'E' ],               Modifiers : [], ModifierMatch : 'Exact' },
                      { Id : 'Tool__EyedropperPalette', Action : 'Tool__EyedropperPalette', Enabled : true, Keys : [ 'b', 'B' ], Modifiers : [ 'Shift' ], ModifierMatch : 'Exact' },
-                     { Id : 'Tool__Eyedropper',  Action : 'Tool__Eyedropper',  Enabled : true, Keys : [ 'b', 'B' ],               Modifiers : [], ModifierMatch : 'Exact' } ],
+                     { Id : 'Tool__Eyedropper',  Action : 'Tool__Eyedropper',  Enabled : true, Keys : [ 'b', 'B' ],               Modifiers : [], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Ungroup',     Action : 'Edit__Ungroup',     Enabled : true, Keys : [ 'g', 'G' ],               Modifiers : [ 'Ctrl', 'Shift' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Group',       Action : 'Edit__Group',       Enabled : true, Keys : [ 'g', 'G' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Copy',        Action : 'Edit__Copy',        Enabled : true, Keys : [ 'c', 'C' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Paste',       Action : 'Edit__Paste',       Enabled : true, Keys : [ 'v', 'V' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' },
+                     { Id : 'Edit__Duplicate',   Action : 'Edit__Duplicate',   Enabled : true, Keys : [ 'd', 'D' ],               Modifiers : [ 'Ctrl' ], ModifierMatch : 'Exact' } ],
         keyboardSetup : { ignoreWhenTyping : true, coarseStepModifier : 'Shift', nudgeStepMm : 1, nudgeCoarseStepMm : 10,
                           panStepPx : 60, panCoarseStepPx : 240, zoomKeyStep : 1.15 },
         touch    : { oneFingerPanOnStage : true, oneFingerPanOnPaper : false, twoFingerPan : true, pinchZoom : true,
@@ -140,7 +168,8 @@
         selection : { list : [ { Id : 'Select__Remove', Action : 'Select__Remove', Enabled : true, Modifiers : [ 'Ctrl', 'Shift' ], ModifierMatch : 'Exact' },
                                { Id : 'Select__Add',    Action : 'Select__Add',    Enabled : true, Modifiers : [ 'Ctrl' ],          ModifierMatch : 'Exact' },
                                { Id : 'Select__Toggle', Action : 'Select__Toggle', Enabled : true, Modifiers : [ 'Shift' ],         ModifierMatch : 'Exact' } ],
-                      boxAnywhereModifier : 'Alt' }
+                      boxAnywhereModifier : 'Alt' },
+        measure   : { start : '0123456789.,-', typing : '0123456789.,-+ xX*;mMcC', commit : [ 'Enter' ], clear : [ 'Escape', 'Delete' ], erase : [ 'Backspace' ] }
     });
     // ------------------------------------------------------------
 
@@ -426,11 +455,15 @@
             extGapMm          : Na__LeCfg__Num('Dimensions', 'ExtensionGapMm', 1.5),
             overshootMm       : Na__LeCfg__Num('Dimensions', 'ExtensionOvershootMm', 1.5),
             tickLengthMm      : Na__LeCfg__Num('Dimensions', 'TickLengthMm', 1.5),
+            minTickLengthMm   : Na__LeCfg__Num('Dimensions', 'MinTickLengthMm', 0.5),
+            maxTickLengthMm   : Na__LeCfg__Num('Dimensions', 'MaxTickLengthMm', 12),
             strokeMm          : Na__LeCfg__Num('Dimensions', 'StrokeMm', 0.25),
             textGapMm         : Na__LeCfg__Num('Dimensions', 'TextGapMm', 0.8),
             defaultPrecision  : Na__LeCfg__Num('Dimensions', 'DefaultPrecision', 0),
             defaultUnits      : Na__LeCfg__Val('Dimensions', 'DefaultUnitsSuffix', ' mm'),
-            thousandsSep      : Na__LeCfg__Val('Dimensions', 'ThousandsSeparator', ',')
+            thousandsSep      : Na__LeCfg__Val('Dimensions', 'ThousandsSeparator', ','),
+            textLeaderMinMm   : Math.max(0, Na__LeCfg__Num('Dimensions', 'TextLeaderMinMm', 1.5)),
+            textLeaderGapMm   : Math.max(0, Na__LeCfg__Num('Dimensions', 'TextLeaderGapMm', 0.4))
         };
     }
     // ------------------------------------------------------------
@@ -565,6 +598,28 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Measurements Box Setup
+    // ------------------------------------------------------------
+    // The box at the bottom right of the stage (Na__LayoutEditor__Measurements__).
+    // precision is the decimal places a reading shows, trailing zeros dropped;
+    // pairJoin goes between a rectangle's width and height; hintMs is how long
+    // a message above the box stays; edgeGapPx keeps it clear of the scrollbars.
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetMeasureSetup() {
+        const units = Na__LeCfg__Val('Measurements', 'UnitsSuffix', ' mm');
+        const join  = Na__LeCfg__Val('Measurements', 'PairSeparator', ' x ');
+        return {
+            enabled     : Na__LeCfg__Val('Measurements', 'Enabled', true) !== false,
+            precision   : Math.max(0, Math.min(3, Math.round(Na__LeCfg__Num('Measurements', 'Precision', 1)))),
+            unitsSuffix : typeof units === 'string' ? units : ' mm',
+            pairJoin    : typeof join === 'string' ? join : ' x ',
+            hintMs      : Math.max(500, Na__LeCfg__Num('Measurements', 'HintMs', 2800)),
+            edgeGapPx   : Math.max(0, Na__LeCfg__Num('Measurements', 'EdgeGapPx', 10))
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Leader and Specification Bubble Setup
     // ------------------------------------------------------------
     // The settings a new leader starts with, and the rules every leader is
@@ -633,6 +688,23 @@
             refuseCursor       : Na__LeCfg__Val('Eyedropper', 'RefuseCursor', 'not-allowed'),
             paletteSwitchesTool : Na__LeCfg__Val('Eyedropper', 'PaletteSwitchesTool', true) !== false,
             flashMs            : Math.max(0, Na__LeCfg__Num('Eyedropper', 'FlashMs', 700))
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Viewport Clipboard Setup (copy, paste and duplicate a viewport)
+    // ------------------------------------------------------------
+    // pasteOffsetMm is the diagonal step a paste takes clear of the viewport or
+    // vector it was copied from when it lands on the same sheet; never under a
+    // millimetre, or a paste would sit invisibly on top of its original.
+    // copySnapshot lets a 3D copy show the stored picture at once instead of
+    // rendering it again.
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetClipboardSetup() {
+        return {
+            pasteOffsetMm : Math.max(1, Na__LeCfg__Num('Clipboard', 'PasteOffsetMm', 10)),
+            copySnapshot  : Na__LeCfg__Val('Clipboard', 'CopySnapshot', true) !== false
         };
     }
     // ------------------------------------------------------------
@@ -863,6 +935,27 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The Keys the Measurements Box Reads
+    // ------------------------------------------------------------
+    // start and typing are strings of single characters: what may begin a
+    // value, and what a begun value may go on to hold. commit, clear and
+    // erase are key names, and act only while something is typed.
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetMeasureKeys() {
+        const fallback = Na__LeCfg__KEYMAP_FALLBACK.measure;
+        const chars = (name, fb) => { const value = Na__LeCfg__KeyVal('MeasurementsBox', name, null); return typeof value === 'string' ? value : fb; };
+        const keys  = (name, fb) => { const value = Na__LeCfg__KeyVal('MeasurementsBox', name, null); return Array.isArray(value) ? value.filter((k) => typeof k === 'string') : fb.slice(); };
+        return {
+            start  : chars('StartCharacters', fallback.start),
+            typing : chars('TypingCharacters', fallback.typing),
+            commit : keys('CommitKeys', fallback.commit),
+            clear  : keys('ClearKeys', fallback.clear),
+            erase  : keys('EraseKeys', fallback.erase)
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | What a Mouse or Pen Press Means (null when it means nothing)
     // ------------------------------------------------------------
     // input is { button : 'Left' | 'Middle' | 'Right', modifiers : {...}, emptyStage : bool }
@@ -998,8 +1091,10 @@
         Na__LeCfg__GetSelectionSetup,
         Na__LeCfg__GetLineweightSetup,
         Na__LeCfg__GetShapeSetup,
+        Na__LeCfg__GetMeasureSetup,
         Na__LeCfg__GetLeaderSetup,
         Na__LeCfg__GetEyedropperSetup,
+        Na__LeCfg__GetClipboardSetup,
         Na__LeCfg__GetEnhanceSetup,
         Na__LeCfg__GetPanelSetup,
         Na__LeCfg__GetNavigationSetup,
@@ -1010,6 +1105,7 @@
         Na__LeCfg__GetGuards,
         Na__LeCfg__GetKeyboardSetup,
         Na__LeCfg__GetTouchSetup,
+        Na__LeCfg__GetMeasureKeys,
         Na__LeCfg__MatchPointerBinding,
         Na__LeCfg__MatchWheelBinding,
         Na__LeCfg__MatchKeyBinding,

@@ -235,6 +235,56 @@
                 "ModifierMatch" : "Exact"
             },
             {
+                "Id"            : "Edit__Ungroup",
+                "Label"         : "Ungroup the selected group",
+                "Action"        : "Edit__Ungroup",
+                "Enabled"       : true,
+                "Keys"          : [ "g", "G" ],
+                "Modifiers"     : [ "Ctrl", "Shift" ],
+                "ModifierMatch" : "Exact",
+                "Note"          : "Lifts one grouping level. Nested groups come out as groups."
+            },
+            {
+                "Id"            : "Edit__Group",
+                "Label"         : "Group the selected vectors and text",
+                "Action"        : "Edit__Group",
+                "Enabled"       : true,
+                "Keys"          : [ "g", "G" ],
+                "Modifiers"     : [ "Ctrl" ],
+                "ModifierMatch" : "Exact",
+                "Note"          : "Needs at least two vectors, text items or groups. The browser Find chord is taken only when a group is made."
+            },
+            {
+                "Id"            : "Edit__Copy",
+                "Label"         : "Copy the selected viewport",
+                "Action"        : "Edit__Copy",
+                "Enabled"       : true,
+                "Keys"          : [ "c", "C" ],
+                "Modifiers"     : [ "Ctrl" ],
+                "ModifierMatch" : "Exact",
+                "Note"          : "With no viewport selected the key is left to the browser, so copying text from a panel still works."
+            },
+            {
+                "Id"            : "Edit__Paste",
+                "Label"         : "Paste the copied viewport as a new one: new id, new name, every setting kept",
+                "Action"        : "Edit__Paste",
+                "Enabled"       : true,
+                "Keys"          : [ "v", "V" ],
+                "Modifiers"     : [ "Ctrl" ],
+                "ModifierMatch" : "Exact",
+                "Note"          : "On the sheet it came from the paste steps clear of the original; on another sheet it lands in the same place."
+            },
+            {
+                "Id"            : "Edit__Duplicate",
+                "Label"         : "Duplicate the selected viewport (copy and paste in one, the clipboard is left alone)",
+                "Action"        : "Edit__Duplicate",
+                "Enabled"       : true,
+                "Keys"          : [ "d", "D" ],
+                "Modifiers"     : [ "Ctrl" ],
+                "ModifierMatch" : "Exact",
+                "Note"          : "Taken from the browser while a sheet is open, where Ctrl+D would otherwise bookmark the page. Bare D is still the Dimension tool."
+            },
+            {
                 "Id"            : "Edit__Deselect",
                 "Label"         : "Clear the selection and abandon any placement (space bar)",
                 "Action"        : "Edit__Deselect",
@@ -380,6 +430,15 @@
         "LayoutEditor__TouchBindings__PinchStartSlopPx"    : 8
     },
 
+    "LayoutEditor__MeasurementsBox__Config" : {
+        "LayoutEditor__MeasurementsBox__Description"      : "Typing into the Measurements box at the bottom right of the sheet, as in SketchUp: while the Draw, Rectangle or Dimension tool is up, or while a vertex or a viewport is being dragged, a value typed anywhere over the editor goes into the box and Enter uses it, with no click into the box first. StartCharacters begin a value; letters are left to the tool keys until a value is begun. TypingCharacters are what a begun value may go on to hold: the digits, the point, the thousands comma, a sign, a space, the units (m, cm, mm) and the x, * or ; between a rectangle's width and height. A key outside them still reaches the sheet, and a tool key puts the value away. CommitKeys use the value, ClearKeys drop it and EraseKeys take its last character back - each only while something is typed, so Enter still finishes a shape and Escape still backs out while the box is empty. A text field, a select and any chord (Ctrl, Alt or Meta held) keep their keys. A click into the box types into it directly, which is also how a touch screen reaches it.",
+        "LayoutEditor__MeasurementsBox__StartCharacters"  : "0123456789.,-",
+        "LayoutEditor__MeasurementsBox__TypingCharacters" : "0123456789.,-+ xX*;mMcC",
+        "LayoutEditor__MeasurementsBox__CommitKeys"       : [ "Enter" ],
+        "LayoutEditor__MeasurementsBox__ClearKeys"        : [ "Escape", "Delete" ],
+        "LayoutEditor__MeasurementsBox__EraseKeys"        : [ "Backspace" ]
+    },
+
     "LayoutEditor__SelectionBindings__Config" : {
         "LayoutEditor__SelectionBindings__Description"         : "What a modifier held on a Select tool press does to the selection - for a click on an item and for a box dragged from bare paper alike - as SketchUp holds them. With none held the click or the box replaces the selection. The list is tested in order with Exact matching, so the two-modifier binding sits first. BoxAnywhereModifier is set aside before the list is tested: while it is held a drag draws a box even from on top of something that could be moved, which is the way in on a sheet with no bare paper left to start from, and Shift or Ctrl still combine with it. A box dragged to the right is a window (only what it wholly encloses); dragged to the left it is a crossing (anything it touches as well).",
         "LayoutEditor__SelectionBindings__BoxAnywhereModifier" : "Alt",
@@ -444,6 +503,11 @@
             { "Action" : "Snap__Toggle",          "Label" : "Toggle object snapping",    "Group" : "Tools"      },
             { "Action" : "Edit__Undo",            "Label" : "Undo",                      "Group" : "Editing"    },
             { "Action" : "Edit__Redo",            "Label" : "Redo",                      "Group" : "Editing"    },
+            { "Action" : "Edit__Copy",            "Label" : "Copy a viewport",           "Group" : "Editing"    },
+            { "Action" : "Edit__Paste",           "Label" : "Paste a viewport",          "Group" : "Editing"    },
+            { "Action" : "Edit__Duplicate",       "Label" : "Duplicate a viewport",      "Group" : "Editing"    },
+            { "Action" : "Edit__Group",           "Label" : "Group vectors and text",    "Group" : "Editing"    },
+            { "Action" : "Edit__Ungroup",         "Label" : "Ungroup the selection",     "Group" : "Editing"    },
             { "Action" : "Edit__Deselect",        "Label" : "Clear the selection",       "Group" : "Editing"    },
             { "Action" : "Edit__Finish",          "Label" : "Finish the shape",          "Group" : "Editing"    },
             { "Action" : "Select__Add",           "Label" : "Add to the selection",      "Group" : "Selection"  },

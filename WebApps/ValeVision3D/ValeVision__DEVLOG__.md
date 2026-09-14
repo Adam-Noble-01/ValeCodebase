@@ -1,6 +1,198 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.39.0 - 14-Sep-2026 - Layout Editor: Type a Length While Dragging a Viewport
+
+### Added
+- **Typed viewport move.** While a viewport's frame is being dragged (the
+  move cursor, not a crop handle and not a pan of the drawing inside), the
+  Measurements box wakes and reads the drag's length. Type a value and press
+  Enter: the frame moves that far along the inferred direction. A minus sign
+  runs the other way. The landing is exact - no snap - and the drag finishes
+  so the still-down pointer cannot pull the frame back to the cursor. One
+  undo step.
+- The length is a real size at the viewport's scale, or the sheet's scale for
+  a 3D viewport, so 1000 or 1m at 1:50 is 20 mm on the paper.
+
+### Notes
+- **Ported from TrueVision3D v2.47.0** (SheetTools 1.24.0, Measurements 1.2.0)
+  at Adam's request the same day.
+- Left out: TrueVision's ViewportSnapMove carry (this tree has no viewport
+  carry yet); service worker token (n/a).
+- **Verified here, statically:** AppConfig and KeyMappings JSON parse. Not
+  exercised in the running app in this session.
+
+### Files
+- `Na__LayoutEditor__SheetTools__.js` 1.19.0, `Na__LayoutEditor__Measurements__.js`
+  1.2.0, `Na__LayoutEditor__AppConfig__.json`, `Na__LayoutEditor__KeyMappings__.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.38.0 - 14-Sep-2026 - Layout Editor: Group / Ungroup and Multi-Item Copy
+
+### Added
+- **Group and ungroup.** Ctrl+G groups selected vectors and text (and nested
+  groups); Ctrl+Shift+G ungroups one level. Mixed selections group. A click
+  on a member selects the outermost group. A selected group shows a blue
+  bounding box with a "Group" overlay. Groups move, nudge, delete, copy and
+  paste as one.
+- **Multi-item copy/paste.** Ctrl+C / Ctrl+V / Ctrl+D and the right-click
+  menu copy text, groups, and a multi-selection of vectors or text. Nested
+  group members remap to fresh ids. One paste is one undo step.
+
+### Notes
+- **Ported from TrueVision3D** (Groups 1.0.0, ItemClipboard 1.0.0, SheetModel
+  1.18.0, SheetRecords 1.13.0, SheetTools 1.23.0) at Adam's request the same
+  day, after grouping was signed off in TrueVision.
+- Left out: TrueVision's undo-restore / AnnounceRestore change (still pending
+  sign-off on the parity ledger). SelectionExists here now also keeps a
+  selected vector and a selected group through an undo that leaves them on
+  the sheet.
+- **Verified here, statically:** AppConfig and KeyMappings JSON parse. Not
+  exercised in the running app in this session.
+
+### Files
+- `Na__LayoutEditor__Groups__.js` 1.0.0 (new), `Na__LayoutEditor__ItemClipboard__.js`
+  1.0.0 (new), `Na__LayoutEditor__SheetRecords__.js` 1.9.0,
+  `Na__LayoutEditor__SheetModel__.js` 1.11.0, `Na__LayoutEditor__History__.js`
+  1.3.0, `Na__LayoutEditor__Grips__.js` 1.6.0, `Na__LayoutEditor__SheetTools__.js`
+  1.18.0, `Na__LayoutEditor__ModeController__.js` 1.12.0,
+  `Na__LayoutEditor__ConfigState__.js` 1.10.0, `Na__LayoutEditor__KeyMappings__.json`,
+  `Na__LayoutEditor__AppConfig__.json`, `Na__LayoutEditor__Styles__Main__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.37.0 - 14-Sep-2026 - Dimension Text Leader: Drag the Value Off the Line
+
+### Added
+- **Drag a dimension value off the line.** With the Select tool, click the
+  figure (not the line) and drag it. A circular arc runs from the justified
+  side of the value back to the centre of the dimension line, bulging away
+  from the line so the hook bends outwards. A paper-white patch sits behind
+  the moved text. Drag it close to home and it snaps; the arc goes. Right-click
+  **Reset text position** while the value is offset.
+- **Handing.** Dragged to the right of the centre (along the way the value
+  reads) the text is left-justified and the arc meets its left, at the middle
+  of the row; dragged to the left, right-justified, the arc on the right.
+  Straight above or below reads as to the right.
+
+### Notes
+- **Ported from TrueVision3D** (DimensionGeometry 1.3.0 to 1.5.1, MarkupBridge
+  1.10.0, Grips 1.4.0, SheetTools 1.19.0, DimensionTool BeginTextEdit, SelectionBox
+  1.2.0, SheetModel 1.17.0, SheetRecords 1.12.0, ConfigState text-leader keys)
+  at Adam's request the same day, after the outward-hook shape was signed off.
+- Left out: TrueVision's fixed-length extension lines (panel rows and record
+  keys). A record without TextDXMm / TextDYMm draws exactly as it did.
+- **Verified here, statically:** AppConfig JSON parses. Not exercised in the
+  running app in this session.
+
+### Files
+- `Na__LayoutEditor__DimensionGeometry__.js` 1.2.0, `Na__LayoutEditor__MarkupBridge__.js`
+  1.7.0, `Na__LayoutEditor__Grips__.js` 1.5.0, `Na__LayoutEditor__SheetTools__.js`
+  1.17.0, `Na__LayoutEditor__DimensionTool__.js` 1.5.0, `Na__LayoutEditor__SelectionBox__.js`
+  1.2.0, `Na__LayoutEditor__SheetModel__.js` 1.10.0, `Na__LayoutEditor__SheetRecords__.js`
+  1.8.0, `Na__LayoutEditor__ConfigState__.js` 1.9.0, `Na__LayoutEditor__AppConfig__.json`
+  (TextLeaderMinMm, TextLeaderGapMm, MenuResetDimText).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.36.0 - 14-Sep-2026 - Eyedropper: Match Unlocked Viewports, Skip Locked Ones
+
+### Added
+- **Unlocked viewports match properties.** The eyedropper (B) copies render
+  composites, caption and scale from one unlocked viewport onto another. Scene,
+  drawing, frame geometry, pan, name, layer and lock stay on that viewport.
+- **Locked viewports are invisible to the dropper.** A viewport lock (its own
+  flag or its layer) is not a source and not a target. Hit-testing skips the
+  locked frame, so the pointer reaches markup and other unlocked viewports
+  through it instead of the dropper sticking to the viewport over everything
+  else. Copy / Paste properties on the right-click menu only appear when the
+  viewport is unlocked.
+
+### Notes
+- **Ported from TrueVision3D** (eyedropper 1.6.0, SheetTools 1.22.0) at Adam's
+  request the same day. ValeVision does not store `Viewport__ShowFrame` yet
+  (TrueVision's Frame toggle, plan item W), so that trait stays there.
+- Viewports do not load the palette: new viewports are added from the panel,
+  not drawn with a tool.
+- **Verified here, statically:** AppConfig JSON parses. `EXCLUDED_KINDS` is
+  gone; locked-viewport skip is in Resolve. Not exercised in the running app
+  in this session.
+
+### Files
+- `Na__LayoutEditor__Eyedropper__.js` 1.5.0, `Na__LayoutEditor__SheetTools__.js`
+  1.16.0, `Na__LayoutEditor__AppConfig__.json` (description, ViewportNote,
+  labels).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.35.0 - 14-Sep-2026 - Layout Editor Clipboard, Whole-Shape Snap, Measurements Box
+
+### Added
+- **Vector and viewport clipboard (Ctrl+C / Ctrl+V / Ctrl+D).** Copy, paste and duplicate
+  a selected viewport or vector from the keyboard or the right-click menu. A paste is a
+  new item with a fresh id; a viewport also gets a copy name. ValeVision had no viewport
+  clipboard yet, so that slice came with the vector clipboard.
+- **Draw-vertex undo.** While a polyline is being placed, Ctrl+Z / Ctrl+Y take the last
+  point off and put it back instead of stepping the sheet.
+- **Whole-shape snap.** A dragged vector offers the grab point and every vertex; the
+  nearest snap moves the whole shape. Vertex grips already snapped.
+- **Shift-click insert vertex.** Hold Shift over an edge of the selected vector and click
+  to insert a vertex there (diamond marker); the same press can drag it.
+- **Measurements box (VCB)** at the bottom right of the sheet. Typed lengths for Draw,
+  Rectangle and Dimension, and a typed length while a vertex is being dragged
+  (`GetVertexDrag` / `TypeVertexLength`). DrawingScale reads `atScale: true` on the
+  shape and dimension defaults.
+
+### Notes
+- **Ported from TrueVision3D v2.44.0 (clipboard + draw-vertex undo), v2.45.0 (whole-shape
+  snap + Shift-click insert) and v2.46.0 (VCB including vertex-drag typed length),**
+  which itself sits on v2.40. Left out: PlanDoors, ViewportSnapMove, ModelSource, SpecEd,
+  measure-at-scale / extension-line **panel rows**, and the service worker token (no PWA
+  worker here). `atScale` is hardcoded true so DrawingScale works without those panel
+  rows. DimensionTool `BeginTextEdit` is still ValeVision's. CreateDimension does not
+  store `Dimension__AtScale` or extension-line fields.
+- **MarkupBridge is not wired to DrawingScale.** Dimension values painted on the sheet
+  still use ValeVision's existing length path; the Measurements box is the at-scale
+  reader/writer.
+- **KeyMappings Copy/Paste/Duplicate labels still say "viewport"** as in TrueVision;
+  AppConfig menu labels cover vectors as well.
+
+### Files
+- **New:** `Na__LayoutEditor__ViewportClipboard__.js`, `Na__LayoutEditor__Measurements__.js`,
+  `Na__LayoutEditor__MeasureParse__.js`, `Na__LayoutEditor__DrawingScale__.js`.
+- **Layout Editor modules:** SheetModel, ConfigState, ShapeGeometry, Grips, ShapeTool,
+  RectangleTool, DimensionTool, SheetTools, ModeController, Panel__ViewportSettings.
+- **Config and styles:** AppConfig clipboard/measurements/labels; KeyMappings Copy/Paste/
+  Duplicate and MeasurementsBox; Styles VCB and insert-grip.
+
+- **Verified here, statically:** named-export and module-graph harnesses should be
+  run on the Layout Editor folder after this port (62 files with the four new
+  modules). AppConfig and KeyMappings JSON must parse. Not exercised in the
+  running app in this session.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.34.0 - 14-Sep-2026 - Dimension End Size: Resize Ticks, Arrows and Dots
+
+### Added
+- **Size mm under Ends in the Dimensions panel.** How large the ticks, arrows or dots
+  at each end of a dimension are, in paper millimetres. With a dimension selected it
+  edits that one; with nothing selected it sets what the Dimension tool places next.
+- **The record is `Dimension__TickLengthMm`.** Stored only as a number above zero,
+  clamped between 0.5 and 12. A record from before it has no key and draws at the
+  config `TickLengthMm` (1.5 mm), so every existing dimension is unchanged until
+  Size mm is used. New dimensions take the panel setting. The eyedropper and Shift+B
+  copy it.
+
+### Notes
+- **Ported from TrueVision3D v2.43.0** at Adam's request in the same breath as the
+  TrueVision change. The Size mm field, the record key, the draw path, the
+  eyedropper, the selection box, the defaults and the config - without TrueVision's
+  Measure at scale or extension-line rows, which this tree has not taken yet.
+- **Same data point.** Either app now writes `Dimension__TickLengthMm` in the same
+  shape, so a later reader can take it from either.
+- **Verified here, statically:** `Na__Verify__Exports__` passes on the Layout Editor
+  folder (58 files). `Na__Verify__ModuleGraph__` passes (421 reachable modules, the
+  one known vendor issue unchanged). AppConfig JSON parses. Not exercised in the
+  running app in this session.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.33.0 - 14-Sep-2026 - Box Select: a Window to the Right, a Crossing to the Left
 
 ### Added

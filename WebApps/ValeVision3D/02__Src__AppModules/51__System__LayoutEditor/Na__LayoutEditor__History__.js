@@ -38,6 +38,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.3.0
+// - Grouping is a step ('groups'): Ctrl+G, Ctrl+Shift+G, and a paste of a
+//   group. SelectionExists keeps a selected group (and a selected vector)
+//   through an undo that leaves it on the sheet. The undo-writes restore
+//   field stays out of this tree.
+// - Ported from TrueVision3D (History groups step).
+//
 // 14-Sep-2026 - Version 1.2.0
 // - Box select: a restore keeps every selected item that still exists and
 //   drops the rest, now that the selection can hold several
@@ -88,7 +95,7 @@
     // MODULE CONSTANTS | Event and the Reasons That Count as a Step
     // ------------------------------------------------------------
     const Na__LeHist__CHANGED_EVENT = 'na-layouteditor-history-changed';
-    const Na__LeHist__STEP_REASONS  = [ 'sheet-updated', 'fields', 'layers', 'viewports', 'viewport', 'annotations', 'annotation', 'dimensions', 'dimension', 'shapes', 'shape', 'leaders', 'leader' ];
+    const Na__LeHist__STEP_REASONS  = [ 'sheet-updated', 'fields', 'layers', 'viewports', 'viewport', 'annotations', 'annotation', 'dimensions', 'dimension', 'shapes', 'shape', 'leaders', 'leader', 'groups' ];
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Per-Sheet Stacks
@@ -133,7 +140,9 @@
         if (selection.kind === 'viewport')   return sheet.Sheet__Viewports.some((v) => v.Viewport__Id === selection.id);
         if (selection.kind === 'annotation') return sheet.Sheet__Annotations.some((a) => a.Annotation__Id === selection.id);
         if (selection.kind === 'dimension')  return sheet.Sheet__Dimensions.some((d) => d.Dimension__Id === selection.id);
+        if (selection.kind === 'shape')      return (sheet.Sheet__Shapes || []).some((s) => s.Shape__Id === selection.id);
         if (selection.kind === 'leader')     return (sheet.Sheet__Leaders || []).some((l) => l.Leader__Id === selection.id);
+        if (selection.kind === 'group')      return (sheet.Sheet__Groups || []).some((g) => g.Group__Id === selection.id);
         return false;
     }
     // ------------------------------------------------------------

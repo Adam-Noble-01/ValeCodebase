@@ -33,6 +33,27 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.9.0
+// - Sheet__Groups on every sheet, and NormaliseGroup: a group is an id and a
+//   list of { kind, id } members (vectors, text, nested groups). Older sheets
+//   get an empty list. Ported from TrueVision3D (SheetRecords 1.13.0).
+//
+// 14-Sep-2026 - Version 1.8.0
+// - Dimension__TextDXMm and Dimension__TextDYMm on the dimension record: the
+//   value's paper offset from where it would have sat on the line. Kept only
+//   as a finite pair that actually shifts the value; the normaliser removes
+//   both when they are missing, not numbers, or both zero, so a record from
+//   before them stays exactly what it was and the value sits on the line.
+// - Ported from TrueVision3D (SheetRecords 1.12.0).
+//
+// 14-Sep-2026 - Version 1.7.0
+// - Dimension__TickLengthMm on the dimension record: how large the ticks,
+//   arrows or dots at each end are, in paper millimetres. Kept only as a
+//   number above zero, clamped to the config min and max; the normaliser
+//   removes anything else and never adds the key, so a record from before it
+//   stays exactly what it was and draws at TickLengthMm from the config.
+// - Ported from TrueVision3D v2.43.0.
+//
 // 14-Sep-2026 - Version 1.6.0
 // - Leaders & Annotation Bubbles: Sheet__Leaders on every sheet, and
 //   NormaliseLeader, which fills a leader with the Leader setup's defaults
@@ -140,6 +161,7 @@
     const Na__LeRec__ID_PAD      = 3;
     const Na__LeRec__LEADER_TYPES       = [ 'text', 'bubble' ];             // <-- A note with a leader, or a specification bubble
     const Na__LeRec__LEADER_LINE_STYLES = [ 'solid', 'dashed' ];
+    const Na__LeRec__GROUP_KINDS        = [ 'shape', 'annotation', 'group' ];   // <-- What a group may hold: vectors, text, and nested groups
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -393,10 +415,37 @@
         item.Dimension__TextSizeMm = Na__LeRec__Num(item.Dimension__TextSizeMm, setup.defaultTextSizeMm);
         if (typeof item.Dimension__Colour !== 'string') item.Dimension__Colour = setup.defaultColour;
         if (setup.terminators.indexOf(item.Dimension__Terminator) === -1) item.Dimension__Terminator = setup.defaultTerminator;
+        // TERMINATOR SIZE | A length is a number above zero, clamped; anything
+        // else is no key, which draws at the config TickLengthMm, as a record
+        // from before this field did.
+        if (item.Dimension__TickLengthMm !== undefined) {
+            const mm = item.Dimension__TickLengthMm;
+            if (!(typeof mm === 'number' && Number.isFinite(mm) && mm > 0)) delete item.Dimension__TickLengthMm;
+            else item.Dimension__TickLengthMm = Math.min(setup.maxTickLengthMm, Math.max(setup.minTickLengthMm, mm));
+        }
         item.Dimension__Precision = Na__LeRec__Num(item.Dimension__Precision, setup.defaultPrecision);
         if (typeof item.Dimension__UnitsSuffix !== 'string') item.Dimension__UnitsSuffix = setup.defaultUnits;
         if (item.Dimension__OverrideText === undefined) item.Dimension__OverrideText = null;
         if ([ 'aligned', 'horizontal', 'vertical' ].indexOf(item.Dimension__Orientation) === -1) item.Dimension__Orientation = 'aligned';   // <-- A record from before ortho dimensions was aligned
+        // TEXT OFFSET | Kept only as a finite pair that actually moves the
+        // value; anything else - and both keys at zero - is no key, which
+        // sits the value on the line as a record from before this did.
+        const textDx = item.Dimension__TextDXMm, textDy = item.Dimension__TextDYMm;
+        const hasDx  = typeof textDx === 'number' && Number.isFinite(textDx);
+        const hasDy  = typeof textDy === 'number' && Number.isFinite(textDy);
+        if (!hasDx && !hasDy) {
+            delete item.Dimension__TextDXMm;
+            delete item.Dimension__TextDYMm;
+        } else {
+            const dx = hasDx ? textDx : 0, dy = hasDy ? textDy : 0;
+            if (Math.hypot(dx, dy) < 1e-6) {
+                delete item.Dimension__TextDXMm;
+                delete item.Dimension__TextDYMm;
+            } else {
+                item.Dimension__TextDXMm = dx;
+                item.Dimension__TextDYMm = dy;
+            }
+        }
         return item;
     }
     // ------------------------------------------------------------
@@ -461,6 +510,30 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Fill In a Group (members are { kind, id } of a vector, text or group)
+    // ------------------------------------------------------------
+    // Kind and id are the only fields. Duplicates and anything else drop out,
+    // so a draft or a record from before a kind existed stays a list of live
+    // members. The id of the group itself is the sheet model's to assign.
+    // ------------------------------------------------------------
+    function Na__LeRec__NormaliseGroup(item) {
+        if (!item || typeof item !== 'object') return item;
+        const raw  = Array.isArray(item.Group__Members) ? item.Group__Members : [];
+        const seen = new Set();
+        item.Group__Members = raw.filter((member) => {
+            if (!member || typeof member !== 'object') return false;
+            if (Na__LeRec__GROUP_KINDS.indexOf(member.kind) === -1) return false;
+            if (typeof member.id !== 'string' || !member.id) return false;
+            const key = member.kind + ':' + member.id;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        }).map((member) => ({ kind : member.kind, id : member.id }));
+        return item;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Fill a Sheet Record's Defaults (mutates in place)
     // ------------------------------------------------------------
     function Na__LeRec__NormaliseSheet(sheet, index) {
@@ -492,6 +565,7 @@
         if (!Array.isArray(sheet.Sheet__Dimensions))  sheet.Sheet__Dimensions  = [];
         if (!Array.isArray(sheet.Sheet__Shapes))      sheet.Sheet__Shapes      = [];
         if (!Array.isArray(sheet.Sheet__Leaders))     sheet.Sheet__Leaders     = [];
+        if (!Array.isArray(sheet.Sheet__Groups))      sheet.Sheet__Groups      = [];   // <-- A record from before groups: empty, and older sheets stay as they were
 
         // LINEWEIGHTS | Printed points per sheet, seeded from the config
         const lwSetup = Na__LeCfg__GetLineweightSetup();
@@ -503,6 +577,11 @@
         sheet.Sheet__Dimensions.forEach((d)  => Na__LeRec__NormaliseDimension(d,  Na__LeRec__DefaultLayerId(sheet, 'dimension')));
         sheet.Sheet__Shapes.forEach((sh)     => Na__LeRec__NormaliseShape(sh,     Na__LeRec__DefaultLayerId(sheet, 'vector')));
         sheet.Sheet__Leaders.forEach((l)     => Na__LeRec__NormaliseLeader(l,     Na__LeRec__DefaultLayerId(sheet, 'annotation')));   // <-- Leaders live with the text
+        sheet.Sheet__Groups = sheet.Sheet__Groups.filter((g) => g && typeof g === 'object');
+        sheet.Sheet__Groups.forEach((g) => {
+            if (typeof g.Group__Id !== 'string' || !g.Group__Id) g.Group__Id = Na__LeRec__NextId(sheet.Sheet__Groups, 'Group_', 'Group__Id');
+            Na__LeRec__NormaliseGroup(g);
+        });
         return sheet;
     }
     // ------------------------------------------------------------
@@ -582,6 +661,7 @@
         Na__LeRec__NormaliseViewport,
         Na__LeRec__NormaliseAnnotation,
         Na__LeRec__NormaliseDimension,
+        Na__LeRec__NormaliseGroup,
         Na__LeRec__NormaliseSheet,
         Na__LeRec__DefaultLayerId,
         Na__LeRec__BuildFields

@@ -20,18 +20,27 @@
 // - Viewports: a drag moves one (selected or not), a handle crops or
 //   extends the frame, double-click enters the content, a lock refuses all
 //   of it. Dimensions: grips re-pick the points and slide the line (with
-//   inference); double-click edits the value. Shapes: grips move vertices.
+//   inference); click the value and drag it off the line for a curved leader
+//   back to the centre; double-click edits the value. Shapes: grips move vertices;
+//   a drag of the whole shape snaps to the linework; Shift-click an edge
+//   inserts a vertex.
 // - Keys: Delete removes the selection (a viewport asks first), Escape
 //   backs out, Space clears the selection, Enter finishes a shape, arrows
 //   nudge by a millimetre (ten with Shift), V T D L R B pick a tool, Ctrl+Z
-//   and Ctrl+Y step the history, E picks the Leader tool. Nothing fires while
-//   typing in a field.
+//   and Ctrl+Y step the history, Ctrl+C Ctrl+V Ctrl+D copy, paste and
+//   duplicate a viewport or a vector (Na__LayoutEditor__ViewportClipboard__),
+//   E picks the Leader tool. Nothing fires while typing in a field; a Ctrl
+//   chord still reaches the sheet from a select, a checkbox or a number box.
+//   While a vector is being drawn, Ctrl+Z / Ctrl+Y take vertices off and put
+//   them back instead of stepping the sheet.
 // - Eyedropper (B): picks the style off one item and paints it onto others
 //   through Na__LayoutEditor__Eyedropper__. It neither selects nor drags, so
 //   a run of style clicks never swaps the right-hand panel out mid-run.
-//   Shift+B loads the palette instead: the clicked item's style becomes the
-//   setting new objects of its kind are created with, the selection clears so
-//   the panel shows it, and the drawing tool for that kind takes over.
+//   Unlocked viewports match each other; a locked viewport is not resolved
+//   at all, so the dropper reaches through it. Shift+B loads the palette
+//   instead: the clicked item's style becomes the setting new objects of its
+//   kind are created with, the selection clears so the panel shows it, and
+//   the drawing tool for that kind takes over.
 // - Rectangle (R): one corner then the opposite one, clicked or dragged,
 //   through Na__LayoutEditor__RectangleTool__. It is the one placing tool
 //   that is also handed the release, which is what lets a rectangle be
@@ -49,6 +58,15 @@
 // - Shift while a dimension's line is being placed makes it ortho
 //   (Na__LayoutEditor__DimensionTool__); pressing or releasing Shift redraws
 //   it at once from the last pointer position.
+// - THE MEASUREMENTS BOX (Na__LayoutEditor__Measurements__) is attached and
+//   detached with the tools, and handed the tool, the defaults, the last
+//   pointer point, Shift, a way to run the tool's move again, the vertex
+//   being dragged and the viewport being moved; it is refreshed after every
+//   move and press. A value typed while the Draw, Rectangle or Dimension tool
+//   is up, or while a vertex or a viewport is being dragged, is the box's
+//   before these keys see it. A length typed during a vertex drag moves that
+//   vertex that far along the drag (TypeVertexLength); during a viewport
+//   frame drag it moves the frame (TypeViewportLength).
 // - A right click that did not pan opens the context menu for what is
 //   under the cursor, in the same order as selection.
 // - Box select (Na__LayoutEditor__SelectionBox__): a drag that starts where
@@ -76,6 +94,54 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.19.0
+// - While a viewport's frame is being dragged (not a handle, not the drawing
+//   inside), the Measurements box takes a typed length: GetViewportDrag is
+//   the frame origin and where it is headed, TypeViewportLength puts it that
+//   far along that direction (no snap) and finishes the drag. The length is
+//   a real size at the viewport's scale, or the sheet's for a 3D viewport.
+// - Ported from TrueVision3D v2.47.0.
+//
+// 14-Sep-2026 - Version 1.18.0
+// - Ctrl+G groups selected vectors and text (and nested groups); Ctrl+Shift+G
+//   ungroups. A click on a member selects the group. Groups move, nudge,
+//   delete, copy and paste as one. Multi-select copy/paste for vectors and
+//   text (Na__LayoutEditor__Groups__, Na__LayoutEditor__ItemClipboard__).
+// - Ported from TrueVision3D (SheetTools 1.23.0).
+//
+// 14-Sep-2026 - Version 1.17.0
+// - A press on a dimension's value (or on the arc back to the line) drags
+//   the text: DimensionGrab's 'text' mode writes TextDXMm / TextDYMm, and
+//   dragging it close to home clears both. The context menu's Reset text
+//   position does the same. The PDF and the screen share the arc because
+//   it is drawn as a chrome primitive.
+// - Ported from TrueVision3D (SheetTools 1.19.0).
+//
+// 14-Sep-2026 - Version 1.16.0
+// - The eyedropper skips locked viewports in Resolve, so a locked frame is
+//   not picked up over the markup and unlocked viewports on it. Unlocked
+//   viewports match each other (composites, caption, scale). Ported from
+//   TrueVision3D (SheetTools 1.22.0); the frame-shown trait stays there.
+//
+// 14-Sep-2026 - Version 1.15.0
+// - Vector clipboard (Ctrl+C / Ctrl+V / Ctrl+D) and draw-vertex undo while a
+//   polyline is being placed. Viewport copy/paste/duplicate is included: this
+//   tree had none yet. Ported from TrueVision3D v2.44.0.
+// - Whole-shape snap: a dragged vector offers the grab point and every vertex,
+//   and the nearest snap moves the whole shape. Shift-click an edge of the
+//   selected vector inserts a vertex there. Ported from TrueVision3D v2.45.0.
+// - Measurements box: typed lengths for Draw, Rectangle and Dimension, and a
+//   typed length while a vertex is being dragged (GetVertexDrag /
+//   TypeVertexLength). DrawingScale reads atScale true on the shape and
+//   dimension defaults; the Vectors/Dimensions panel toggle rows are not here.
+// - Ported from TrueVision3D v2.46.0.
+//
+// 14-Sep-2026 - Version 1.12.0
+// - The settings for new dimensions carry tickLengthMm: how large the ticks,
+//   arrows or dots at each end are, from the config TickLengthMm until Size mm
+//   in the Dimensions panel changes it.
+// - Ported from TrueVision3D v2.43.0.
+//
 // 14-Sep-2026 - Version 1.11.0
 // - Box select and multi-selection. A Select press with nothing movable under
 //   it hands the pointer to Na__LayoutEditor__SelectionBox__ (window or
@@ -216,7 +282,8 @@
         Na__LeModel__GetSelection,
         Na__LeModel__SetSelectionItems,
         Na__LeModel__GetSelectionItems,
-        Na__LeModel__IsSelected
+        Na__LeModel__IsSelected,
+        Na__LeModel__GetShapeById
     } from './Na__LayoutEditor__SheetModel__.js';
     import {
         Na__LeSurface__ZOOM_EVENT,
@@ -237,21 +304,26 @@
         Na__LeHandles__FrontToBack
     } from './Na__LayoutEditor__ViewportHandles__.js';
     import { Na__LeMarkup__HitTest } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeGrips__DimensionGrab, Na__LeGrips__ShapeGrab, Na__LeGrips__LeaderGrab } from './Na__LayoutEditor__Grips__.js';
-    import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Translated } from './Na__LayoutEditor__ShapeGeometry__.js';
+    import { Na__LeGrips__DimensionGrab, Na__LeGrips__ShapeGrab, Na__LeGrips__LeaderGrab, Na__LeGrips__ShowInsert, Na__LeGrips__HideInsert } from './Na__LayoutEditor__Grips__.js';
+    import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Translated, Na__LeShapeGeo__ClosestOnEdge, Na__LeShapeGeo__InsertPoint, Na__LeShapeGeo__VertexAt } from './Na__LayoutEditor__ShapeGeometry__.js';
     import { Na__LeText__Place, Na__LeText__BeginEdit, Na__LeText__Commit, Na__LeText__Cancel, Na__LeText__IsEditing } from './Na__LayoutEditor__TextTool__.js';
     import { Na__LeDim__Click, Na__LeDim__Move, Na__LeDim__Cancel, Na__LeDim__IsPlacing, Na__LeDim__IsSpanning, Na__LeDim__IsPlacingLine, Na__LeDim__OffsetFor, Na__LeDim__ShowInference, Na__LeDim__BeginTextEdit } from './Na__LayoutEditor__DimensionTool__.js';
     import { Na__LeDimGeo__OffsetKeepingLine } from './Na__LayoutEditor__DimensionGeometry__.js';
-    import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing } from './Na__LayoutEditor__ShapeTool__.js';
+    import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing, Na__LeShape__UndoVertex, Na__LeShape__RedoVertex } from './Na__LayoutEditor__ShapeTool__.js';
     import { Na__LeGrad__Defaults, Na__LeGrad__Create } from './Na__LayoutEditor__GradientTool__.js';
     import { Na__LeRect__Press, Na__LeRect__Move, Na__LeRect__Release, Na__LeRect__Cancel, Na__LeRect__IsDrawing } from './Na__LayoutEditor__RectangleTool__.js';
+    import { Na__LeMeasure__Attach, Na__LeMeasure__Detach, Na__LeMeasure__Refresh, Na__LeMeasure__Clear } from './Na__LayoutEditor__Measurements__.js';
+    import { Na__LeClip__RunKeyAction, Na__LeClip__MenuItems } from './Na__LayoutEditor__ItemClipboard__.js';
+    import { Na__LeGroup__Resolve, Na__LeGroup__ResolveItems, Na__LeGroup__Expand, Na__LeGroup__Group, Na__LeGroup__Ungroup, Na__LeGroup__CanGroup, Na__LeGroup__CanUngroup, Na__LeGroup__Render } from './Na__LayoutEditor__Groups__.js';
+    // @delegate: ./Na__LayoutEditor__Groups__.js
+    // @delegate: ./Na__LayoutEditor__ItemClipboard__.js
     import { Na__LeLeader__Press, Na__LeLeader__Move, Na__LeLeader__Release, Na__LeLeader__Cancel, Na__LeLeader__IsPlacing, Na__LeLeader__BeginEdit } from './Na__LayoutEditor__LeaderTool__.js';
     import { Na__LeLeadGeo__Translated } from './Na__LayoutEditor__LeaderGeometry__.js';
     import { Na__LeDrop__Click, Na__LeDrop__Hover, Na__LeDrop__Refresh, Na__LeDrop__Clear, Na__LeDrop__Pick, Na__LeDrop__Paint, Na__LeDrop__HasSource, Na__LeDrop__CanApply, Na__LeDrop__MODE_ITEM, Na__LeDrop__MODE_PALETTE, Na__LeDrop__SetMode, Na__LeDrop__GetMode, Na__LeDrop__SyncPalette, Na__LeDrop__PaletteMenuLabel } from './Na__LayoutEditor__Eyedropper__.js';
     import { Na__LeAxis__AXIS_X, Na__LeAxis__AXIS_Y, Na__LeAxis__Toggle, Na__LeAxis__Clear } from './Na__LayoutEditor__AxisLock__.js';
     import { Na__LeVp2d__SetInteracting, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
-    import { Na__LeOsnap__TONE_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle, Na__LeOsnap__IsEnabled } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeOsnap__TONE_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__Find, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle, Na__LeOsnap__IsEnabled } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeSelBox__COMBINE_ADD, Na__LeSelBox__COMBINE_REMOVE, Na__LeSelBox__Press, Na__LeSelBox__Move, Na__LeSelBox__Release, Na__LeSelBox__Cancel, Na__LeSelBox__Refresh, Na__LeSelBox__IsActive, Na__LeSelBox__Combine } from './Na__LayoutEditor__SelectionBox__.js';
     import { Na__LeSelSet__Capture, Na__LeSelSet__Apply, Na__LeSelSet__Commit, Na__LeSelSet__Nudge, Na__LeSelSet__Delete } from './Na__LayoutEditor__SelectionSet__.js';
     import { Na__LeNav__Fit } from './Na__LayoutEditor__Navigation__.js';
@@ -281,6 +353,9 @@
     const Na__LeTools__CHANGED_EVENT  = 'na-layouteditor-tool-changed';
     const Na__LeTools__DEFAULTS_EVENT = 'na-layouteditor-defaults-changed';   // <-- The settings for new objects changed from outside their panel (a palette sync)
     const Na__LeTools__MENU_SLOP_PX   = 4;      // <-- A right button that travelled further than this panned, so no menu
+    const Na__LeTools__SHEET_CHORDS   = [ 'Edit__Undo', 'Edit__Redo', 'Edit__Copy', 'Edit__Paste', 'Edit__Duplicate', 'Edit__Group', 'Edit__Ungroup' ];   // <-- Still the sheet's from a focused select, checkbox or number box
+    const Na__LeTools__NON_TEXT_INPUTS = [ 'checkbox', 'radio', 'range', 'color', 'button', 'submit', 'reset', 'file', 'image', 'number' ];
+    const Na__LeTools__TYPED_MIN_MM    = 1e-4;   // <-- Shorter than this (paper mm) is no length and no direction, as the Draw tool uses
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Attachment and Interaction State
@@ -293,6 +368,7 @@
     let Na__LeTools__Suppressed = false;   // <-- Raised by the control modules while a navigation gesture owns the pointer
     let Na__LeTools__RightPress = null;    // <-- { x, y } of the last right-button press
     let Na__LeTools__LastPointMm = null;   // <-- Where the cursor last sat on the paper, so a key can restretch the band
+    let Na__LeTools__ShiftHeld   = false;  // <-- Shift at the last move or Shift key: a typed dimension goes ortho by it, as a click does
     let Na__LeTools__TextDefaults  = null;
     let Na__LeTools__DimDefaults   = null;
     let Na__LeTools__ShapeDefaults = null;
@@ -320,7 +396,8 @@
     function Na__LeTools__GetDimensionDefaults() {
         if (!Na__LeTools__DimDefaults) {
             const s = Na__LeCfg__GetDimensionSetup();
-            Na__LeTools__DimDefaults = { textSizeMm : s.defaultTextSizeMm, colour : s.defaultColour, terminator : s.defaultTerminator, offsetMm : s.defaultOffsetMm, precision : s.defaultPrecision, unitsSuffix : s.defaultUnits };
+            Na__LeTools__DimDefaults = { textSizeMm : s.defaultTextSizeMm, colour : s.defaultColour, terminator : s.defaultTerminator, tickLengthMm : s.tickLengthMm, offsetMm : s.defaultOffsetMm, precision : s.defaultPrecision, unitsSuffix : s.defaultUnits,
+                                         atScale : true };                   // <-- DrawingScale for the Measurements box; no Dimensions panel toggle row here
         }
         return Na__LeTools__DimDefaults;
     }
@@ -329,7 +406,7 @@
         if (!Na__LeTools__ShapeDefaults) {
             const s = Na__LeCfg__GetShapeSetup();
             Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled, stroked : s.defaultStroked,
-                                           fillOpacity : s.defaultFillOpacity, strokeOpacity : 1,
+                                           fillOpacity : s.defaultFillOpacity, strokeOpacity : 1, atScale : true,   // <-- DrawingScale for the Measurements box; no Vectors panel toggle row here
                                            gradientOn : Na__LeGrad__Defaults().on === true, gradient : Na__LeGrad__Create() };   // <-- The settings outlive the toggle, so switching it back on restores them
         }
         return Na__LeTools__ShapeDefaults;
@@ -356,6 +433,93 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Outline Point a Whole-Shape Drag Is Carried By
+    // ------------------------------------------------------------
+    // The nearest vertex, or a point on an edge if that is closer, so grabbing
+    // a corner snaps that corner and grabbing along a side snaps that side.
+    // ------------------------------------------------------------
+    function Na__LeTools__ShapeGrabPoint(shape, pointMm) {
+        const pts = Na__LeShapeGeo__Points(shape);
+        if (!pts.length || !pointMm) return pointMm;
+        let best = { x : pts[0][0], y : pts[0][1] };
+        let bestD = Math.hypot(pointMm.x - best.x, pointMm.y - best.y);
+        pts.forEach((p) => {
+            const d = Math.hypot(pointMm.x - p[0], pointMm.y - p[1]);
+            if (d < bestD) { best = { x : p[0], y : p[1] }; bestD = d; }
+        });
+        const edge = Na__LeShapeGeo__ClosestOnEdge(shape, pointMm);
+        if (edge && edge.distance < bestD) return { x : edge.x, y : edge.y };
+        return best;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Where a Shift-Click Would Insert a Vertex, or Null
+    // ------------------------------------------------------------
+    // On an edge of the shape, not on a vertex grip, and not so close to
+    // either end that the new point would sit on top of one already there.
+    // A nearby snap (the linework) wins over the foot on the edge.
+    // ------------------------------------------------------------
+    function Na__LeTools__ShapeInsertHit(sheet, shape, pointMm) {
+        if (!sheet || !shape || !pointMm) return null;
+        const tol = Na__LeTools__Tolerance();
+        if (Na__LeShapeGeo__VertexAt(shape, pointMm, tol * 2) >= 0) return null;
+        const edge = Na__LeShapeGeo__ClosestOnEdge(shape, pointMm);
+        if (!edge || edge.distance > tol) return null;
+        const pts = Na__LeShapeGeo__Points(shape);
+        const a = pts[edge.index], b = pts[(edge.index + 1) % pts.length];
+        const minMm = Na__LeCfg__GetSelectionSetup().dragThresholdMm;
+        if (Math.hypot(edge.x - a[0], edge.y - a[1]) < minMm) return null;
+        if (Math.hypot(edge.x - b[0], edge.y - b[1]) < minMm) return null;
+        const snap = Na__LeOsnap__Find(sheet, { x : edge.x, y : edge.y }, { kind : 'shape', id : shape.Shape__Id });
+        return { index : edge.index, point : snap ? [ snap.x, snap.y ] : [ edge.x, edge.y ], snap : snap };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Insert-Vertex Diamond While Shift Is Held Over an Edge
+    // ------------------------------------------------------------
+    function Na__LeTools__RefreshShapeInsert(sheet, pointMm, shift) {
+        if (!shift || !sheet || !pointMm || Na__LeTools__Drag || !Na__LeTools__Editable || Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) {
+            if (Na__LeGrips__HideInsert()) Na__LeOsnap__HideMarker();
+            return false;
+        }
+        const selection = Na__LeModel__GetSelection();
+        if (!selection || selection.kind !== 'shape') { if (Na__LeGrips__HideInsert()) Na__LeOsnap__HideMarker(); return false; }
+        const shape = Na__LeTools__Record(sheet, selection);
+        if (!shape || Na__LeModel__IsLayerLocked(sheet, shape.Shape__LayerId)) { if (Na__LeGrips__HideInsert()) Na__LeOsnap__HideMarker(); return false; }
+        const hit = Na__LeTools__ShapeInsertHit(sheet, shape, pointMm);
+        if (!hit) { if (Na__LeGrips__HideInsert()) Na__LeOsnap__HideMarker(); return false; }
+        Na__LeGrips__ShowInsert(hit.point[0], hit.point[1]);
+        if (hit.snap) Na__LeOsnap__ShowMarker(hit.snap); else Na__LeOsnap__HideMarker();
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Translate a Whole Shape So a Vertex or the Grab Point Snaps
+    // ------------------------------------------------------------
+    // Every vertex and the press's grab point are offered at the axis-locked
+    // delta; the nearest snap wins, and the translation puts THAT point on it.
+    // The shape being moved is excluded, so a corner never snaps to itself.
+    // ------------------------------------------------------------
+    function Na__LeTools__SnapShapeTranslation(sheet, drag, dMm, shift) {
+        const axis = shift ? (Math.abs(dMm.x) >= Math.abs(dMm.y) ? { x : dMm.x, y : 0 } : { x : 0, y : dMm.y }) : dMm;
+        const exclude = { kind : 'shape', id : drag.id };
+        let best = null;
+        const offer = (ox, oy) => {
+            const hit = Na__LeOsnap__Find(sheet, { x : ox + axis.x, y : oy + axis.y }, exclude);
+            if (hit && (!best || hit.score < best.score)) best = { hit : hit, ox : ox, oy : oy };
+        };
+        if (drag.baseMm) offer(drag.baseMm.x, drag.baseMm.y);
+        (drag.start || []).forEach((p) => offer(p[0], p[1]));
+        if (!best) { Na__LeOsnap__HideMarker(); return axis; }
+        Na__LeOsnap__ShowMarker(best.hit);
+        return { x : best.hit.x - best.ox, y : best.hit.y - best.oy };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Abandon Whatever a Placing Tool Has Half Done
     // ------------------------------------------------------------
     // The eyedropper counts as a placing tool here: a style sitting on the
@@ -371,6 +535,7 @@
         Na__LeDrop__Clear();
         Na__LeAxis__Clear();
         Na__LeSelBox__Cancel();                                              // <-- So does a selection box being dragged out
+        Na__LeMeasure__Clear();                                              // <-- And a value half typed into the Measurements box
     }
     // ------------------------------------------------------------
 
@@ -384,6 +549,7 @@
         Na__LeTools__Tool = next;
         if (next === Na__LeTools__TOOL_DRAW || next === Na__LeTools__TOOL_RECT) Na__LeTools__LastVectorTool = next;
         if (Na__LeTools__Stage) Na__LeTools__Stage.style.cursor = Na__LeTools__ToolCursor(next);
+        Na__LeMeasure__Refresh();                                            // <-- The Measurements box reads for the new tool, or rests
         window.dispatchEvent(new CustomEvent(Na__LeTools__CHANGED_EVENT, { detail : { tool : next } }));
         return next;
     }
@@ -512,23 +678,30 @@
 
     // HELPER FUNCTION | What the Select Tool Finds Under a Point
     // ------------------------------------------------------------
-    // Returns { kind : 'dimension'|'annotation'|'shape'|'viewport', id, hit }
+    // Returns { kind : 'dimension'|'annotation'|'shape'|'leader'|'viewport', id, hit }
     // or null. Markup wins over viewports, and the markup bridge orders it
-    // dimensions, text, shapes.
+    // dimensions, text, shapes, leaders.
+    //
+    // includeLocked: the eyedropper may READ locked markup (a locked scrapbook
+    // is still a source). skipLockedViewports: a locked viewport is not there
+    // at all - it covers the sheet, and detecting it over everything else is
+    // not useful once the frame is locked.
     // ------------------------------------------------------------
-    function Na__LeTools__Resolve(sheet, pointMm, includeLocked) {
-        const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__Tolerance(), includeLocked === true);   // <-- The eyedropper reads locked items; nothing else touches them
-        if (markup) return { kind : markup.kind, id : markup.id, hit : null };
+    function Na__LeTools__Resolve(sheet, pointMm, includeLocked, skipLockedViewports, keepMember) {
+        const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__Tolerance(), includeLocked === true);   // <-- The eyedropper reads locked markup; nothing else touches it
+        if (markup) return keepMember === true ? { kind : markup.kind, id : markup.id, hit : null } : Na__LeGroup__Resolve(sheet, { kind : markup.kind, id : markup.id, hit : null });
         const ppm  = Na__LeSurface__GetPixelsPerMm();
         const zoom = Na__LeSurface__GetZoom();
         const selection = Na__LeModel__GetSelection();
         const selected  = (selection && selection.kind === 'viewport') ? Na__LeModel__GetViewportById(sheet, selection.id) : null;
-        if (selected && Na__LeModel__IsLayerVisible(sheet, selected.Viewport__LayerId)) {
+        if (selected && Na__LeModel__IsLayerVisible(sheet, selected.Viewport__LayerId)
+                && !(skipLockedViewports && Na__LeTools__IsViewportLocked(sheet, selected))) {
             const hit = Na__LeHandles__HitTest(selected, pointMm, ppm, zoom, true);
             if (hit) return { kind : 'viewport', id : selected.Viewport__Id, hit : hit };
         }
         const ordered = Na__LeHandles__FrontToBack(sheet);
         for (let i = 0; i < ordered.length; i++) {
+            if (skipLockedViewports && Na__LeTools__IsViewportLocked(sheet, ordered[i])) continue;   // <-- Look through a locked frame
             if (Na__LeHandles__Contains(ordered[i], pointMm)) return { kind : 'viewport', id : ordered[i].Viewport__Id, hit : null };
         }
         return null;
@@ -561,13 +734,15 @@
     // ------------------------------------------------------------
     function Na__LeTools__HoverCursor(sheet, found, pointMm) {
         if (!found) return '';
+        if (found.kind === 'group') return Na__LeTools__Editable ? 'move' : 'default';
         const record = Na__LeTools__Record(sheet, found);
         if (!record || !Na__LeTools__Editable) return 'default';
         const tol = Na__LeTools__Tolerance();
         if (found.kind === 'annotation') return Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId) ? 'default' : 'move';
         if (found.kind === 'dimension') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Dimension__LayerId)) return 'default';
-            return Na__LeGrips__DimensionGrab(record, pointMm, tol) === 'whole' ? 'move' : 'crosshair';
+            const grab = Na__LeGrips__DimensionGrab(record, pointMm, tol, sheet);
+            return (grab === 'whole' || grab === 'text') ? 'move' : 'crosshair';
         }
         if (found.kind === 'shape') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Shape__LayerId)) return 'default';
@@ -609,13 +784,16 @@
         }
         if (found.kind === 'dimension') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Dimension__LayerId)) return null;
-            return { kind : 'dimension', id : found.id, mode : Na__LeGrips__DimensionGrab(record, pointMm, tol),
-                     start : { sx : record.Dimension__StartXMm, sy : record.Dimension__StartYMm, ex : record.Dimension__EndXMm, ey : record.Dimension__EndYMm, offset : record.Dimension__OffsetMm } };
+            return { kind : 'dimension', id : found.id, mode : Na__LeGrips__DimensionGrab(record, pointMm, tol, sheet),
+                     start : { sx : record.Dimension__StartXMm, sy : record.Dimension__StartYMm, ex : record.Dimension__EndXMm, ey : record.Dimension__EndYMm,
+                               offset : record.Dimension__OffsetMm, tdx : record.Dimension__TextDXMm || 0, tdy : record.Dimension__TextDYMm || 0 } };
         }
         if (found.kind === 'shape') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Shape__LayerId)) return null;
             const grab = Na__LeGrips__ShapeGrab(record, pointMm, tol);
-            return { kind : 'shape', id : found.id, mode : grab.mode, index : grab.index, start : Na__LeShapeGeo__Points(record).map((p) => [ p[0], p[1] ]) };
+            const drag = { kind : 'shape', id : found.id, mode : grab.mode, index : grab.index, start : Na__LeShapeGeo__Points(record).map((p) => [ p[0], p[1] ]) };
+            if (grab.mode === 'whole') drag.baseMm = Na__LeTools__ShapeGrabPoint(record, pointMm);
+            return drag;
         }
         if (found.kind === 'leader') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Leader__LayerId)) return null;
@@ -683,6 +861,7 @@
         if (event.button === 2) { Na__LeTools__RightPress = { x : event.clientX, y : event.clientY }; return; }   // <-- Remembered so a right click that did not pan opens the menu
         if (Na__LeTools__Suppressed) return;                                 // <-- A pan or a pinch owns this pointer
         if (!Na__LeTools__IsLeft(event)) return;
+        Na__LeMeasure__Clear();                                              // <-- A press on the sheet drops a half-typed value, as in SketchUp
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
@@ -691,8 +870,8 @@
 
         if (Na__LeTools__Editable) {
             if (Na__LeTools__Tool === Na__LeTools__TOOL_TEXT)      { Na__LeText__Place(sheet, point, Na__LeTools__GetTextDefaults()); return; }
-            if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Click(sheet, point, event.shiftKey, Na__LeTools__GetDimensionDefaults()); return; }
-            if (Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Click(sheet, point, event.shiftKey, Na__LeTools__GetShapeDefaults()); return; }
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Click(sheet, point, event.shiftKey, Na__LeTools__GetDimensionDefaults()); Na__LeMeasure__Refresh(); return; }
+            if (Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Click(sheet, point, event.shiftKey, Na__LeTools__GetShapeDefaults()); Na__LeMeasure__Refresh(); return; }
 
             // RECTANGLE | The press sets or lands a corner. The pointer is
             // captured so a rectangle dragged out past the edge of the stage
@@ -700,6 +879,7 @@
             // ------------------------------------
             if (Na__LeTools__Tool === Na__LeTools__TOOL_RECT) {
                 Na__LeRect__Press(sheet, point, event.shiftKey, Na__LeTools__GetShapeDefaults(), event.pointerId);
+                Na__LeMeasure__Refresh();
                 try { Na__LeTools__Stage.setPointerCapture(event.pointerId); } catch (e) { /* capture refused */ }
                 return;
             }
@@ -724,7 +904,7 @@
             // ------------------------------------
             if (Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP) {
                 event.preventDefault();
-                const picked = Na__LeTools__Resolve(sheet, point, true);             // <-- A locked scrapbook is still a source; a locked target is refused with a reason
+                const picked = Na__LeTools__Resolve(sheet, point, true, true, true);   // <-- Locked markup is still a source; a locked viewport is not even there; grouped members keep their own style
                 if (Na__LeDrop__GetMode() === Na__LeDrop__MODE_PALETTE) Na__LeTools__SyncPaletteFrom(sheet, picked);
                 else Na__LeDrop__Click(sheet, picked, !!event.altKey);
                 if (Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP) Na__LeTools__Stage.style.cursor = Na__LeDrop__Hover(sheet, picked);   // <-- Unless a palette sync has already handed over to a drawing tool
@@ -752,6 +932,28 @@
         }
         if (!found) { if (!intent.combine) Na__LeModel__SetSelection(null); return; }
 
+        // SHIFT-CLICK AN EDGE | Insert a vertex on the selected vector, then
+        // the same press can drag it. Shift on a vertex or the fill still
+        // toggles the selection, as it always did.
+        // ------------------------------------
+        if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_SELECT && event.shiftKey && !event.ctrlKey && !event.altKey && found.kind === 'shape') {
+            const items = Na__LeModel__GetSelectionItems();
+            const shape = (items.length === 1 && items[0].kind === 'shape' && items[0].id === found.id) ? Na__LeTools__Record(sheet, found) : null;
+            const hit   = shape && !Na__LeModel__IsLayerLocked(sheet, shape.Shape__LayerId) ? Na__LeTools__ShapeInsertHit(sheet, shape, point) : null;
+            if (hit) {
+                Na__LeGrips__HideInsert();
+                const start = Na__LeShapeGeo__InsertPoint(Na__LeShapeGeo__Points(shape), hit.index, hit.point);
+                Na__LeModel__UpdateShape(sheet, found.id, { points : start }, true);
+                Na__LeSurface__Refresh('markup');
+                Na__LeTools__Drag = { kind : 'shape', id : found.id, mode : 'vertex', index : hit.index + 1, start : start, inserted : true,
+                                      startMm : point, moved : false, pointerId : event.pointerId, click : null };
+                try { Na__LeTools__Stage.setPointerCapture(event.pointerId); } catch (e) { /* capture refused */ }
+                Na__LeMeasure__Refresh();                                    // <-- The Measurements box wakes for a vertex drag
+                event.preventDefault();
+                return;
+            }
+        }
+
         // SELECTION, THEN THE DRAG | Several selected move together; one
         // selected is dragged its own way, grips and handles included.
         // ------------------------------------
@@ -759,14 +961,17 @@
         if (!Na__LeModel__IsSelected(pressed.kind, pressed.id)) return;         // <-- Ctrl+Shift on an unselected item: nothing to change, nothing to drag
         if (!Na__LeTools__Editable) { if (click) click(); return; }
         const items = Na__LeModel__GetSelectionItems();
-        const drag  = items.length > 1 ? { kind : 'group', group : Na__LeSelSet__Capture(sheet, items) } : Na__LeTools__DragFor(sheet, found, point);
+        const asSet = items.length > 1 || items.some((item) => item && item.kind === 'group');
+        const drag  = asSet ? { kind : 'group', group : Na__LeSelSet__Capture(sheet, Na__LeGroup__Expand(sheet, items)) } : Na__LeTools__DragFor(sheet, found, point);
         if (!drag) { if (click) click(); return; }
         drag.startMm   = point;
         drag.moved     = false;
         drag.pointerId = event.pointerId;
         drag.click     = click;                                              // <-- Run if the button comes up without a move
         Na__LeTools__Drag = drag;
+        Na__LeGrips__HideInsert();
         Na__LeTools__Stage.setPointerCapture(event.pointerId);
+        if ((drag.kind === 'shape' && drag.mode === 'vertex') || Na__LeTools__IsViewportMoveDrag(drag)) Na__LeMeasure__Refresh();   // <-- The box reads a vertex or a viewport while it is held
         event.preventDefault();
     }
     // ------------------------------------------------------------
@@ -779,17 +984,20 @@
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (!sheet || !point) return;
         Na__LeTools__LastPointMm = point;                                    // <-- An arrow key restretches the band from here
+        Na__LeTools__ShiftHeld   = !!event.shiftKey;
 
         const drag = Na__LeTools__Drag;
         if (!drag || event.pointerId !== drag.pointerId) {
             if (Na__LeSelBox__Move(sheet, point, event.clientX, event.clientY, event.pointerId)) return;   // <-- A selection box is being dragged out
-            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Move(sheet, point, event.shiftKey); return; }
-            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Move(sheet, point, event.shiftKey); return; }
-            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_RECT)      { Na__LeRect__Move(sheet, point, event.shiftKey, (event.buttons & 1) === 1 || event.pointerType === 'touch'); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) { Na__LeDim__Move(sheet, point, event.shiftKey); Na__LeMeasure__Refresh(); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)      { Na__LeShape__Move(sheet, point, event.shiftKey); Na__LeMeasure__Refresh(); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_RECT)      { Na__LeRect__Move(sheet, point, event.shiftKey, (event.buttons & 1) === 1 || event.pointerType === 'touch'); Na__LeMeasure__Refresh(); return; }
             if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_LEADER)    { Na__LeLeader__Move(sheet, point, (event.buttons & 1) === 1 || event.pointerType === 'touch'); return; }
-            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP)   { Na__LeTools__Stage.style.cursor = Na__LeDrop__Hover(sheet, Na__LeTools__Resolve(sheet, point, true)); return; }
+            if (Na__LeTools__Editable && Na__LeTools__Tool === Na__LeTools__TOOL_EYEDROP)   { Na__LeTools__Stage.style.cursor = Na__LeDrop__Hover(sheet, Na__LeTools__Resolve(sheet, point, true, true, true)); return; }
             if (Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT) return;
-            Na__LeTools__Stage.style.cursor = Na__LeTools__HoverCursor(sheet, Na__LeTools__Resolve(sheet, point), point);
+            const found     = Na__LeTools__Resolve(sheet, point);
+            const inserting = Na__LeTools__RefreshShapeInsert(sheet, point, event.shiftKey);
+            Na__LeTools__Stage.style.cursor = inserting ? 'crosshair' : Na__LeTools__HoverCursor(sheet, found, point);
             return;
         }
         const dMm = { x : point.x - drag.startMm.x, y : point.y - drag.startMm.y };
@@ -818,6 +1026,7 @@
             if (!patch) return;
             Na__LeModel__UpdateViewport(sheet, drag.id, patch, true);
             Na__LeSurface__Refresh('frames');
+            if (Na__LeTools__IsViewportMoveDrag(drag)) Na__LeMeasure__Refresh();   // <-- The box reads the drag length as the frame moves
             return;
         }
         if (drag.kind === 'annotation') {
@@ -832,7 +1041,14 @@
                 const p0    = drag.start[drag.index];
                 const moved = snap.snapped ? [ snap.x, snap.y ] : [ p0[0] + d.x, p0[1] + d.y ];
                 points = drag.start.map((p, i) => (i === drag.index ? moved : [ p[0], p[1] ]));
-            } else points = Na__LeShapeGeo__Translated(drag.start, d.x, d.y);
+                Na__LeModel__UpdateShape(sheet, drag.id, { points : points }, true);
+                Na__LeSurface__Refresh('markup');
+                Na__LeMeasure__Refresh();                                    // <-- The box reads the drag length as the vertex moves
+                return;
+            } else {
+                const t = Na__LeTools__SnapShapeTranslation(sheet, drag, dMm, shift);   // <-- Any vertex, or the grab, onto the linework; Shift still holds the axis
+                points  = Na__LeShapeGeo__Translated(drag.start, t.x, t.y);
+            }
             Na__LeModel__UpdateShape(sheet, drag.id, { points : points }, true);
             Na__LeSurface__Refresh('markup');
             return;
@@ -877,6 +1093,11 @@
             const result = Na__LeDim__OffsetFor(sheet, dim, cursor);                  // <-- The line lands on a parallel dimension's line when near it
             Na__LeDim__ShowInference(result);
             patch = { offsetMm : result.offsetMm };
+        } else if (drag.mode === 'text') {
+            let tdx = (s.tdx || 0) + d.x, tdy = (s.tdy || 0) + d.y;
+            const minMm = Na__LeCfg__GetDimensionSetup().textLeaderMinMm;
+            if (Math.hypot(tdx, tdy) < minMm) { tdx = 0; tdy = 0; }                 // <-- Close enough to home: drop the arc
+            patch = { textDXMm : tdx, textDYMm : tdy };
         } else patch = { startXMm : s.sx + d.x, startYMm : s.sy + d.y, endXMm : s.ex + d.x, endYMm : s.ey + d.y };
         Na__LeModel__UpdateDimension(sheet, drag.id, patch, true);
         Na__LeSurface__Refresh('markup');
@@ -912,6 +1133,7 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeSurface__ClientToPaperMm(event.clientX, event.clientY);
         if (sheet && point) Na__LeRect__Release(sheet, point, event.shiftKey, event.pointerId);
+        Na__LeMeasure__Refresh();                                            // <-- A rectangle dragged out has landed: the box reads it
     }
     // ------------------------------------------------------------
 
@@ -932,7 +1154,7 @@
         if (!result) return;
         if (Na__LeTools__Stage) { try { Na__LeTools__Stage.releasePointerCapture(event.pointerId); } catch (e) { /* already released */ } }
         const taken = result.dragged ? result.items : (result.pending ? [ result.pending ] : null);
-        if (taken) Na__LeModel__SetSelectionItems(Na__LeSelBox__Combine(Na__LeModel__GetSelectionItems(), taken, result.combine));
+        if (taken) Na__LeModel__SetSelectionItems(Na__LeSelBox__Combine(Na__LeModel__GetSelectionItems(), Na__LeGroup__ResolveItems(sheet, taken), result.combine));
     }
     // ------------------------------------------------------------
 
@@ -960,6 +1182,7 @@
     // trimming a multi-selection), which a pan taking the pointer never does.
     function Na__LeTools__FinishDrag(pointerId, released) {
         Na__LeOsnap__HideMarker();
+        Na__LeGrips__HideInsert();
         const drag = Na__LeTools__Drag;
         if (!drag) return;
         if (pointerId !== null && pointerId !== undefined && Na__LeTools__Stage) {
@@ -967,7 +1190,16 @@
         }
         Na__LeTools__Drag = null;
         document.body.classList.remove('na-le-dragging');
-        if (!drag.moved) { if (released === true && typeof drag.click === 'function') drag.click(); return; }
+        Na__LeMeasure__Refresh();                                            // <-- A finished vertex drag puts the Measurements box back to rest
+        if (!drag.moved) {
+            if (drag.inserted) {                                             // <-- Shift-click on an edge: the vertex is in, even if it did not drag
+                const sheet = Na__LeModel__GetActiveSheet();
+                if (sheet) Na__LeModel__UpdateShape(sheet, drag.id, {}, false);
+                return;
+            }
+            if (released === true && typeof drag.click === 'function') drag.click();
+            return;
+        }
         Na__LeVp2d__SetInteracting(false);
         Na__LeVp3d__SetInteracting(false);
         const sheet = Na__LeModel__GetActiveSheet();
@@ -978,6 +1210,133 @@
         else if (drag.kind === 'shape')      Na__LeModel__UpdateShape(sheet, drag.id, {}, false);
         else if (drag.kind === 'leader')     Na__LeModel__UpdateLeader(sheet, drag.id, {}, false);
         else                                 Na__LeModel__UpdateDimension(sheet, drag.id, {}, false);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Vertex Being Dragged, for the Measurements Box
+    // ------------------------------------------------------------
+    // Returns { from, to } in paper millimetres: the vertex where the drag
+    // began, and where it is headed (the live point, or the cursor when that
+    // has not moved yet). Null while no vertex is held.
+    // ------------------------------------------------------------
+    function Na__LeTools__GetVertexDrag() {
+        const drag = Na__LeTools__Drag;
+        if (!drag || drag.kind !== 'shape' || drag.mode !== 'vertex') return null;
+        const from = drag.start && drag.start[drag.index];
+        if (!from) return null;
+        const sheet = Na__LeModel__GetActiveSheet();
+        const shape = sheet ? Na__LeModel__GetShapeById(sheet, drag.id) : null;
+        const live  = shape ? Na__LeShapeGeo__Points(shape)[drag.index] : null;
+        const fromPt = { x : from[0], y : from[1] };
+        const livePt = live ? { x : live[0], y : live[1] } : null;
+        const run    = livePt ? Math.hypot(livePt.x - fromPt.x, livePt.y - fromPt.y) : 0;
+        const cursor = Na__LeTools__LastPointMm;
+        const to     = (run >= Na__LeTools__TYPED_MIN_MM) ? livePt : (cursor || livePt);
+        return { from : fromPt, to : to };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put a Dragged Vertex a Typed Distance Along the Drag
+    // ------------------------------------------------------------
+    // lengthMm is PAPER millimetres; a negative one runs back the other way.
+    // The landing is exact (no snap). The drag is then finished so a still-
+    // down pointer cannot pull the vertex back to the cursor. Returns
+    // { ok : true } or { ok : false, reason } - 'none' with no vertex held,
+    // 'length' for no length, 'direction' when the drag has no run to aim
+    // along.
+    // ------------------------------------------------------------
+    function Na__LeTools__TypeVertexLength(lengthMm) {
+        const drag = Na__LeTools__Drag;
+        if (!drag || drag.kind !== 'shape' || drag.mode !== 'vertex') return { ok : false, reason : 'none' };
+        if (!Number.isFinite(lengthMm) || Math.abs(lengthMm) < Na__LeTools__TYPED_MIN_MM) return { ok : false, reason : 'length' };
+        const reading = Na__LeTools__GetVertexDrag();
+        if (!reading || !reading.to) return { ok : false, reason : 'direction' };
+        const dx  = reading.to.x - reading.from.x;
+        const dy  = reading.to.y - reading.from.y;
+        const run = Math.hypot(dx, dy);
+        if (!(run >= Na__LeTools__TYPED_MIN_MM)) return { ok : false, reason : 'direction' };
+        const sheet = Na__LeModel__GetActiveSheet();
+        const from  = drag.start[drag.index];
+        if (!sheet || !from) return { ok : false, reason : 'none' };
+        const moved  = [ from[0] + ((dx / run) * lengthMm), from[1] + ((dy / run) * lengthMm) ];
+        const points = drag.start.map((p, i) => (i === drag.index ? moved : [ p[0], p[1] ]));
+        Na__LeModel__UpdateShape(sheet, drag.id, { points : points }, true);
+        Na__LeSurface__Refresh('markup');
+        drag.moved = true;
+        Na__LeTools__FinishDrag(drag.pointerId, false);                      // <-- Announce once; the pointer no longer owns the vertex
+        return { ok : true };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Is This Drag Moving a Viewport's Frame on the Paper
+    // ------------------------------------------------------------
+    // A handle crops the frame; a body drag pans the drawing inside. Only a
+    // grab on the border (the move cursor) is a frame translation the
+    // Measurements box can take a length for.
+    // ------------------------------------------------------------
+    function Na__LeTools__IsViewportMoveDrag(drag) {
+        return !!(drag && drag.kind === 'viewport' && drag.hit && drag.hit.mode === 'border');
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Viewport Frame Being Dragged, for the Measurements Box
+    // ------------------------------------------------------------
+    // Returns { from, to } in paper millimetres: the frame's top-left where
+    // the drag began, and where it is headed (the live origin, or the cursor
+    // when that has not moved yet). Null while no viewport is being moved.
+    // ------------------------------------------------------------
+    function Na__LeTools__GetViewportDrag() {
+        const drag = Na__LeTools__Drag;
+        if (!Na__LeTools__IsViewportMoveDrag(drag) || !drag.start || !drag.start.rect) return null;
+        const from   = { x : drag.start.rect.X, y : drag.start.rect.Y };
+        const sheet  = Na__LeModel__GetActiveSheet();
+        const live   = sheet ? Na__LeModel__GetViewportById(sheet, drag.id) : null;
+        const rect   = live && live.Viewport__FrameMm;
+        const livePt = rect ? { x : rect.X, y : rect.Y } : null;
+        const run    = livePt ? Math.hypot(livePt.x - from.x, livePt.y - from.y) : 0;
+        const cursor = Na__LeTools__LastPointMm;
+        const to     = (run >= Na__LeTools__TYPED_MIN_MM) ? livePt : (cursor && drag.startMm
+            ? { x : from.x + (cursor.x - drag.startMm.x), y : from.y + (cursor.y - drag.startMm.y) }
+            : livePt);
+        return { from : from, to : to };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Put a Dragged Viewport a Typed Distance Along the Drag
+    // ------------------------------------------------------------
+    // lengthMm is PAPER millimetres; a negative one runs back the other way.
+    // The landing is exact (no snap). The drag is then finished so a still-
+    // down pointer cannot pull the frame back to the cursor. Returns
+    // { ok : true } or { ok : false, reason } - 'none' with no frame move,
+    // 'length' for no length, 'direction' when the drag has no run to aim
+    // along.
+    // ------------------------------------------------------------
+    function Na__LeTools__TypeViewportLength(lengthMm) {
+        const drag = Na__LeTools__Drag;
+        if (!Na__LeTools__IsViewportMoveDrag(drag)) return { ok : false, reason : 'none' };
+        if (!Number.isFinite(lengthMm) || Math.abs(lengthMm) < Na__LeTools__TYPED_MIN_MM) return { ok : false, reason : 'length' };
+        const reading = Na__LeTools__GetViewportDrag();
+        if (!reading || !reading.to) return { ok : false, reason : 'direction' };
+        const dx  = reading.to.x - reading.from.x;
+        const dy  = reading.to.y - reading.from.y;
+        const run = Math.hypot(dx, dy);
+        if (!(run >= Na__LeTools__TYPED_MIN_MM)) return { ok : false, reason : 'direction' };
+        const sheet    = Na__LeModel__GetActiveSheet();
+        const viewport = sheet ? Na__LeModel__GetViewportById(sheet, drag.id) : null;
+        if (!sheet || !viewport) return { ok : false, reason : 'none' };
+        const dMm   = { x : (dx / run) * lengthMm, y : (dy / run) * lengthMm };
+        const patch = Na__LeHandles__DragPatch(viewport, drag.hit, drag.start, dMm, { shift : false });
+        if (!patch) return { ok : false, reason : 'none' };
+        Na__LeModel__UpdateViewport(sheet, drag.id, patch, true);
+        Na__LeSurface__Refresh('frames');
+        drag.moved = true;
+        Na__LeTools__FinishDrag(drag.pointerId, false);                      // <-- Announce once; the pointer no longer owns the frame
+        return { ok : true };
     }
     // ------------------------------------------------------------
 
@@ -1065,21 +1424,27 @@
 
     // HELPER FUNCTION | The Menu for What Was Right-Clicked
     // ------------------------------------------------------------
-    function Na__LeTools__MenuItems(sheet, found) {
+    function Na__LeTools__MenuItems(sheet, found, pointMm) {
         const label   = (key, fallback) => Na__LeCfg__GetLabel(key, fallback);
         const remove  = (key, fallback) => ({ label : label(key, fallback), danger : true, onSelect : () => { void Na__LeTools__DeleteSelection(); } });
 
         // STYLE | The eyedropper reached without the hotkey. Copy loads the
         // same dropper the B key uses, so a copy here can be pasted by menu,
-        // by clicking with the tool, or both.
+        // by clicking with the tool, or both. palette: false leaves off "Use
+        // for new ...", which viewports do not have.
         // ------------------------------------
-        const style = (kind, id) => [
-            { label : label('MenuCopyStyle', 'Copy properties'), onSelect : () => Na__LeDrop__Pick(sheet, kind, id) },
-            { label : label('MenuPasteStyle', 'Paste properties'), disabled : !Na__LeDrop__CanApply(sheet, kind, id).ok,
-              onSelect : () => Na__LeDrop__Paint(sheet, kind, id) },
-            { label : Na__LeDrop__PaletteMenuLabel(kind), onSelect : () => { Na__LeTools__SyncPaletteFrom(sheet, { kind : kind, id : id }); } },
-            { separator : true }
-        ];
+        const style = (kind, id, opts) => {
+            const items = [
+                { label : label('MenuCopyStyle', 'Copy properties'), onSelect : () => Na__LeDrop__Pick(sheet, kind, id) },
+                { label : label('MenuPasteStyle', 'Paste properties'), disabled : !Na__LeDrop__CanApply(sheet, kind, id).ok,
+                  onSelect : () => Na__LeDrop__Paint(sheet, kind, id) }
+            ];
+            if (!opts || opts.palette !== false) {
+                items.push({ label : Na__LeDrop__PaletteMenuLabel(kind), onSelect : () => { Na__LeTools__SyncPaletteFrom(sheet, { kind : kind, id : id }); } });
+            }
+            items.push({ separator : true });
+            return items;
+        };
 
         const history = [
             { label : label('Undo', 'Undo'), disabled : !Na__LeHist__CanUndo(), onSelect : () => Na__LeHist__Undo() },
@@ -1089,29 +1454,48 @@
         // SEVERAL SELECTED | A right click on one of them is about all of them
         const selected = Na__LeModel__GetSelectionItems();
         if (found && selected.length > 1 && Na__LeModel__IsSelected(found.kind, found.id)) {
-            return [ { label : Na__LeCfg__FormatLabel('MenuDeleteSelection', 'Delete {count} selected items', { count : selected.length }), danger : true,
-                       onSelect : () => { void Na__LeTools__DeleteSelection(); } },
-                     { separator : true } ].concat(history);
+            const groupOps = [];
+            if (Na__LeGroup__CanGroup(sheet))   groupOps.push({ label : label('MenuGroup', 'Group'),     onSelect : () => { Na__LeGroup__Group(sheet); } });
+            if (Na__LeGroup__CanUngroup(sheet)) groupOps.push({ label : label('MenuUngroup', 'Ungroup'), onSelect : () => { Na__LeGroup__Ungroup(sheet); } });
+            return groupOps.concat(Na__LeClip__MenuItems(sheet, found, pointMm), [
+                { separator : true },
+                { label : Na__LeCfg__FormatLabel('MenuDeleteSelection', 'Delete {count} selected items', { count : selected.length }), danger : true,
+                  onSelect : () => { void Na__LeTools__DeleteSelection(); } },
+                { separator : true }
+            ]).concat(history);
         }
         if (!found) {
             const snapping = Na__LeOsnap__IsEnabled();
             return [
                 { label : label('MenuZoomFit', 'Zoom to fit'), onSelect : () => Na__LeNav__Fit() },
                 { label : snapping ? label('MenuSnapOff', 'Snapping off') : label('MenuSnapOn', 'Snapping on'), checked : snapping, onSelect : () => Na__LeOsnap__Toggle() },
+                { separator : true }
+            ].concat(Na__LeClip__MenuItems(sheet, null, pointMm), [                  // <-- Paste viewport or vector, with its corner at the click
                 { separator : true },
                 { label : label('MenuForceRenderSheet', 'Re-render every viewport on this sheet'), disabled : Na__LeForce__IsRunning(),
                   onSelect : () => { void Na__LeForce__Sheet(sheet); } },
                 { separator : true }
-            ].concat(history);
+            ]).concat(history);
         }
         if (found.kind === 'annotation') {
             return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeText__BeginEdit(found.id) },
                      remove('MenuDeleteText', 'Delete text'), { separator : true } ]
-                     .concat(style(found.kind, found.id)).concat(history);
+                     .concat(Na__LeClip__MenuItems(sheet, found, pointMm), style(found.kind, found.id)).concat(history);
+        }
+        if (found.kind === 'group') {
+            return [ { label : label('MenuUngroup', 'Ungroup'), disabled : !Na__LeGroup__CanUngroup(sheet), onSelect : () => { Na__LeGroup__Ungroup(sheet); } },
+                     remove('MenuDeleteGroup', 'Delete group'), { separator : true } ]
+                     .concat(Na__LeClip__MenuItems(sheet, found, pointMm), history);
         }
         if (found.kind === 'dimension') {
-            return [ { label : label('MenuEditDimText', 'Edit dimension value'), onSelect : () => Na__LeDim__BeginTextEdit(found.id) },
-                     remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ]
+            const dim = Na__LeTools__Record(sheet, found);
+            const items = [
+                { label : label('MenuEditDimText', 'Edit dimension value'), onSelect : () => Na__LeDim__BeginTextEdit(found.id) }
+            ];
+            if (dim && (Number.isFinite(dim.Dimension__TextDXMm) || Number.isFinite(dim.Dimension__TextDYMm))) {
+                items.push({ label : label('MenuResetDimText', 'Reset text position'), onSelect : () => Na__LeModel__UpdateDimension(sheet, found.id, { textDXMm : 0, textDYMm : 0 }, false) });
+            }
+            return items.concat([ remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ])
                      .concat(style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'leader') {
@@ -1125,7 +1509,7 @@
             return [ { label : closed ? label('MenuOpenShape', 'Open shape') : label('MenuCloseShape', 'Close shape'), disabled : !shape || Na__LeShapeGeo__Points(shape).length < 3,
                        onSelect : () => Na__LeModel__UpdateShape(sheet, found.id, { closed : !closed }) },
                      remove('MenuDeleteShape', 'Delete shape'), { separator : true } ]
-                     .concat(style(found.kind, found.id)).concat(history);
+                     .concat(Na__LeClip__MenuItems(sheet, shape || found, pointMm), style(found.kind, found.id)).concat(history);
         }
 
         const viewport = Na__LeModel__GetViewportById(sheet, found.id);
@@ -1140,6 +1524,8 @@
             { label : label('MenuCentre', 'Recentre content'), disabled : locked, onSelect : () => Na__LeTools__RecentreViewport(sheet, found.id) },
             { label : viewport.Viewport__Locked === true ? label('MenuUnlock', 'Unlock viewport') : label('MenuLock', 'Lock viewport'), disabled : layerLocked, checked : viewport.Viewport__Locked === true,
               onSelect : () => Na__LeModel__UpdateViewport(sheet, found.id, { locked : viewport.Viewport__Locked !== true }) },
+            { separator : true }
+        ].concat(locked ? [] : style(found.kind, found.id, { palette : false }), Na__LeClip__MenuItems(sheet, viewport, pointMm), [           // <-- Copy, duplicate and paste viewport
             { separator : true },
             // BOTH SCOPES ARE OFFERED ON A VIEWPORT, not just its own. Half the
             // time the frame under the cursor is simply the one nearest the
@@ -1151,7 +1537,7 @@
             { label : label('MenuForceRenderSheet', 'Re-render every viewport on this sheet'), disabled : Na__LeForce__IsRunning(),
               onSelect : () => { void Na__LeForce__Sheet(sheet); } },
             { separator : true }, del, { separator : true }
-        ].concat(history);
+        ]).concat(history);
     }
     // ------------------------------------------------------------
 
@@ -1180,7 +1566,7 @@
         const found = Na__LeTools__Resolve(sheet, point);
         const keep  = !!found && Na__LeModel__GetSelectionItems().length > 1 && Na__LeModel__IsSelected(found.kind, found.id);   // <-- A right click on one of several selected keeps them all
         if (!keep) Na__LeModel__SetSelection(found ? { kind : found.kind, id : found.id } : null);
-        Na__LeMenu__Open(event.clientX, event.clientY, Na__LeTools__MenuItems(sheet, found));
+        Na__LeMenu__Open(event.clientX, event.clientY, Na__LeTools__MenuItems(sheet, found, point));
     }
     // ------------------------------------------------------------
 
@@ -1196,7 +1582,7 @@
     async function Na__LeTools__DeleteSelection() {
         const sheet = Na__LeModel__GetActiveSheet();
         const items = Na__LeModel__GetSelectionItems();
-        if (sheet && Na__LeTools__Editable && items.length > 1) return Na__LeSelSet__Delete(sheet, items);   // <-- Several: one question if a viewport is among them, one undo step
+        if (sheet && Na__LeTools__Editable && (items.length > 1 || items.some((item) => item && item.kind === 'group'))) return Na__LeSelSet__Delete(sheet, Na__LeGroup__Expand(sheet, items));   // <-- Several, or a group: one undo step
         const selection = Na__LeModel__GetSelection();
         if (!sheet || !selection || !Na__LeTools__Editable) return false;
         if (selection.kind === 'annotation') return Na__LeModel__DeleteAnnotation(sheet, selection.id);
@@ -1220,7 +1606,7 @@
     function Na__LeTools__Nudge(dx, dy) {
         const sheet = Na__LeModel__GetActiveSheet();
         const items = Na__LeModel__GetSelectionItems();
-        if (sheet && items.length > 1) return Na__LeSelSet__Nudge(sheet, items, dx, dy);   // <-- Several: every movable one by the same step, one undo step
+        if (sheet && (items.length > 1 || items.some((item) => item && item.kind === 'group'))) return Na__LeSelSet__Nudge(sheet, Na__LeGroup__Expand(sheet, items), dx, dy);   // <-- Several, or a group: every movable member by the same step
         const selection = Na__LeModel__GetSelection();
         if (!sheet || !selection) return false;
         const record = Na__LeTools__Record(sheet, selection);
@@ -1269,6 +1655,7 @@
         if (sheet && point) {                                                // <-- Show the lock at once rather than on the next move
             if (drawing) Na__LeShape__Move(sheet, point, shift);
             else Na__LeDim__Move(sheet, point, shift);
+            Na__LeMeasure__Refresh();
         }
         return true;
     }
@@ -1283,12 +1670,50 @@
     // Redraws from the last pointer position. Returns true when it did.
     // ------------------------------------------------------------
     function Na__LeTools__ShiftRedraw(shift) {
-        if (!Na__LeTools__Editable || Na__LeTools__Tool !== Na__LeTools__TOOL_DIMENSION || !Na__LeDim__IsPlacingLine()) return false;
+        Na__LeTools__ShiftHeld = !!shift;                                    // <-- Remembered for a value typed into the Measurements box
         const sheet = Na__LeModel__GetActiveSheet();
         const point = Na__LeTools__LastPointMm;
+        Na__LeTools__RefreshShapeInsert(sheet, point, shift);                 // <-- The insert diamond appears as soon as Shift goes down, without a mouse nudge
+        if (!Na__LeTools__Editable || Na__LeTools__Tool !== Na__LeTools__TOOL_DIMENSION || !Na__LeDim__IsPlacingLine()) return false;
         if (!sheet || !point) return false;
         Na__LeDim__Move(sheet, point, shift);
+        Na__LeMeasure__Refresh();
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Run the Placing Tool's Move Again From the Last Pointer Position
+    // ------------------------------------------------------------
+    // Once the Measurements box has placed a point, the band sets off again
+    // from it towards wherever the cursor is, without waiting for the mouse
+    // to move. Returns true when a placing tool was up to run.
+    // ------------------------------------------------------------
+    function Na__LeTools__Rerun() {
+        const sheet = Na__LeModel__GetActiveSheet();
+        const point = Na__LeTools__LastPointMm;
+        if (!Na__LeTools__Editable || !sheet || !point) return false;
+        if (Na__LeTools__Tool === Na__LeTools__TOOL_DRAW)           Na__LeShape__Move(sheet, point, Na__LeTools__ShiftHeld);
+        else if (Na__LeTools__Tool === Na__LeTools__TOOL_DIMENSION) Na__LeDim__Move(sheet, point, Na__LeTools__ShiftHeld);
+        else if (Na__LeTools__Tool === Na__LeTools__TOOL_RECT)      Na__LeRect__Move(sheet, point, Na__LeTools__ShiftHeld, false);
+        else return false;
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Is the Focus in a Field That Takes Typed Text
+    // ------------------------------------------------------------
+    // A text box, a text area or an editable region: somewhere Ctrl+Z and
+    // Ctrl+V already mean something to the field itself. A number box is not
+    // one of those - once Edge pt has been applied it has no undo of its own -
+    // so it is treated like a checkbox and the sheet chords still reach here.
+    // ------------------------------------------------------------
+    function Na__LeTools__IsTextEntry(target) {
+        if (!target) return false;
+        if (target.isContentEditable || target.tagName === 'TEXTAREA') return true;
+        if (target.tagName !== 'INPUT') return false;
+        return Na__LeTools__NON_TEXT_INPUTS.indexOf(String(target.type || 'text').toLowerCase()) === -1;
     }
     // ------------------------------------------------------------
 
@@ -1299,7 +1724,8 @@
         const target = event.target;
         const typing = !!(target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable));
         const keys   = Na__LeCfg__GetKeyboardSetup();
-        if (typing && keys.ignoreWhenTyping) return;
+        const guard  = typing && keys.ignoreWhenTyping;
+        if (guard && Na__LeTools__IsTextEntry(target)) return;               // <-- A text field keeps every key, its own undo and paste included
 
         // The binding, not the key, decides what happens. Navigation actions
         // are left alone here: the PC controls module owns those.
@@ -1307,6 +1733,10 @@
             Ctrl : !!event.ctrlKey, Shift : !!event.shiftKey, Alt : !!event.altKey, Meta : !!event.metaKey, Space : false
         });
         if (!match || !match.action) return;
+        // A SELECT, A CHECKBOX OR A NUMBER BOX KEEPS ITS BARE KEYS - an arrow
+        // or a digit means something to it - but it has no undo or paste of its
+        // own, so a Ctrl chord belongs to the sheet.
+        if (guard && Na__LeTools__SHEET_CHORDS.indexOf(match.action) === -1) return;
         const step  = match.coarse ? keys.nudgeCoarseStepMm : keys.nudgeStepMm;
         const sheet = Na__LeModel__GetActiveSheet();
 
@@ -1352,8 +1782,21 @@
             case 'Tool__Eyedropper': Na__LeTools__ArmEyedropper();                      return;
             case 'Tool__EyedropperPalette': Na__LeTools__ArmPalette();                  return;
             case 'Snap__Toggle':     Na__LeOsnap__Toggle(); event.preventDefault(); return;
-            case 'Edit__Undo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Undo(); } return;
-            case 'Edit__Redo':       if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Redo(); } return;
+            case 'Edit__Undo':
+                if (Na__LeShape__IsDrawing() && sheet) { event.preventDefault(); Na__LeShape__UndoVertex(sheet); Na__LeMeasure__Refresh(); return; }
+                if (Na__LeRect__IsDrawing()) { event.preventDefault(); Na__LeRect__Cancel(); Na__LeMeasure__Refresh(); return; }   // <-- A rubber box is not a record yet: undo it the way Escape does
+                if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Undo(); }
+                return;
+            case 'Edit__Redo':
+                if (Na__LeShape__IsDrawing() && sheet) { event.preventDefault(); Na__LeShape__RedoVertex(sheet); Na__LeMeasure__Refresh(); return; }
+                if (Na__LeRect__IsDrawing()) { event.preventDefault(); return; }   // <-- Nothing to redo on a rubber box; do not step the sheet either
+                if (Na__LeTools__Editable) { event.preventDefault(); Na__LeHist__Redo(); }
+                return;
+            case 'Edit__Copy':
+            case 'Edit__Paste':      if (Na__LeClip__RunKeyAction(match.action, Na__LeTools__Editable)) event.preventDefault(); return;   // <-- Nothing to copy or paste: the browser keeps the key
+            case 'Edit__Duplicate':  if (Na__LeTools__Editable) { event.preventDefault(); Na__LeClip__RunKeyAction(match.action, true); } return;   // <-- Never the bookmark dialog while a sheet is open
+            case 'Edit__Group':      if (Na__LeTools__Editable && sheet && Na__LeGroup__Group(sheet)) event.preventDefault(); return;
+            case 'Edit__Ungroup':    if (Na__LeTools__Editable && sheet && Na__LeGroup__Ungroup(sheet)) event.preventDefault(); return;
             default: return;
         }
     }
@@ -1383,12 +1826,25 @@
             contextmenu   : (e) => Na__LeTools__OnContextMenu(e),
             keydown       : (e) => { Na__LeTools__OnKey(e); if (e.key === 'Shift') Na__LeTools__ShiftRedraw(!!e.shiftKey); },   // <-- Shift turns a dimension being placed ortho: show it without waiting for the mouse
             keyup         : (e) => { if (e.key === 'Shift') Na__LeTools__ShiftRedraw(!!e.shiftKey); },
-            dropperdraw   : () => { const sheet = Na__LeModel__GetActiveSheet(); Na__LeDrop__Refresh(sheet); Na__LeSelBox__Refresh(sheet); }   // <-- The eyedropper's boxes and a selection box are counter-scaled, like the grips
+            dropperdraw   : () => { const sheet = Na__LeModel__GetActiveSheet(); Na__LeDrop__Refresh(sheet); Na__LeSelBox__Refresh(sheet); requestAnimationFrame(() => { const els = Na__LeSurface__GetElements(); if (els && els.handles && sheet) Na__LeGroup__Render(els.handles, sheet, Na__LeModel__GetSelectionItems(), Na__LeSurface__GetPixelsPerMm(), Na__LeSurface__GetZoom()); }); }   // <-- The eyedropper's boxes and a selection box are counter-scaled, like the grips; groups paint after the surface clears the layer
         };
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.addEventListener(name, Na__LeTools__Handlers[name]));
         window.addEventListener('keydown', Na__LeTools__Handlers.keydown);
         window.addEventListener('keyup', Na__LeTools__Handlers.keyup);
         [ Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeTools__Handlers.dropperdraw));
+        Na__LeMeasure__Attach({                                              // <-- The Measurements box reads the tools through these, and never imports them back
+            getTool              : () => Na__LeTools__Tool,
+            isEditable           : () => Na__LeTools__Editable,
+            getShapeDefaults     : () => Na__LeTools__GetShapeDefaults(),
+            getDimensionDefaults : () => Na__LeTools__GetDimensionDefaults(),
+            getShift             : () => Na__LeTools__ShiftHeld,
+            getPointMm           : () => Na__LeTools__LastPointMm,
+            rerun                : () => Na__LeTools__Rerun(),
+            getVertexDrag        : () => Na__LeTools__GetVertexDrag(),
+            typeVertexLength     : (paperMm) => Na__LeTools__TypeVertexLength(paperMm),
+            getViewportDrag      : () => Na__LeTools__GetViewportDrag(),
+            typeViewportLength   : (paperMm) => Na__LeTools__TypeViewportLength(paperMm)
+        });
         Na__LeTools__SetTool(Na__LeTools__TOOL_SELECT);
         return true;
     }
@@ -1403,6 +1859,7 @@
         Na__LeTools__LastPointMm = null;
         Na__LeText__Cancel();
         Na__LeTools__CancelPlacement();
+        Na__LeMeasure__Detach();                                             // <-- The box is put away with the tools, and its keys with it
         if (!Na__LeTools__Stage || !Na__LeTools__Handlers) return;
         [ 'pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'dblclick', 'contextmenu' ].forEach((name) => Na__LeTools__Stage.removeEventListener(name, Na__LeTools__Handlers[name]));
         window.removeEventListener('keydown', Na__LeTools__Handlers.keydown);

@@ -127,7 +127,8 @@
         Na__LeCfg__FormatLabel,
         Na__LeCfg__GetLineweightSetup,
         Na__LeCfg__GetShapeSetup,
-        Na__LeCfg__GetLeaderSetup
+        Na__LeCfg__GetLeaderSetup,
+        Na__LeCfg__GetMarginNotesSetup
     } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__Coerce, Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
     import { Na__LeGrad__Normalise } from './Na__LayoutEditor__GradientTool__.js';   // <-- A leaf: it reaches only the panel host, which reaches only the config
@@ -505,7 +506,45 @@
         if (item.Leader__FillColour === undefined) item.Leader__FillColour = setup.filled ? setup.fillColour : null;   // <-- Never written: the default
         else if (typeof item.Leader__FillColour !== 'string') item.Leader__FillColour = null;                        // <-- Null is "no fill", and stays
         item.Leader__FillOpacity = Na__LeRec__Unit(item.Leader__FillOpacity, setup.fillOpacity);
+        // SPECIFICATION LINK | Only where the key exists: the id of the project
+        // specification note a bubble shows the code of (Na__LayoutEditor__SpecLinks__).
+        if ('Leader__SpecNoteId' in item) {
+            const noteId = item.Leader__SpecNoteId;
+            if (typeof noteId === 'string' && noteId.trim() !== '') item.Leader__SpecNoteId = noteId.trim();
+            else delete item.Leader__SpecNoteId;
+        }
         return item;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fill In a Sheet's Notes Margin (only on a sheet that has one)
+    // ------------------------------------------------------------
+    function Na__LeRec__NormaliseMarginNotes(sheet) {
+        if (!sheet || !('Sheet__MarginNotes' in sheet)) return null;
+        const raw = sheet.Sheet__MarginNotes;
+        if (!raw || typeof raw !== 'object') { delete sheet.Sheet__MarginNotes; return null; }
+        const setup = Na__LeCfg__GetMarginNotesSetup();
+        sheet.Sheet__MarginNotes = {
+            Enabled        : raw.Enabled === true,
+            WidthMm        : Math.max(setup.minWidthMm, Na__LeRec__Num(raw.WidthMm, setup.defaultWidthMm)),
+            Heading        : (typeof raw.Heading === 'string' && raw.Heading.trim() !== '') ? raw.Heading : null,
+            TextSizeMm     : Math.min(setup.maxTextSizeMm, Math.max(setup.minTextSizeMm, Na__LeRec__Num(raw.TextSizeMm, setup.textSizeMm))),
+            IncludeGeneral : typeof raw.IncludeGeneral === 'boolean' ? raw.IncludeGeneral : setup.includeGeneral,
+            GroupHeadings  : typeof raw.GroupHeadings === 'boolean' ? raw.GroupHeadings : setup.groupHeadings
+        };
+        return sheet.Sheet__MarginNotes;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Sheet's Margin Settings, With the Defaults Where It Has None (never writes)
+    // ------------------------------------------------------------
+    function Na__LeRec__MarginNotes(sheet) {
+        const stored = (sheet && sheet.Sheet__MarginNotes && typeof sheet.Sheet__MarginNotes === 'object') ? sheet.Sheet__MarginNotes : null;
+        if (stored) return stored;
+        const setup = Na__LeCfg__GetMarginNotesSetup();
+        return { Enabled : false, WidthMm : setup.defaultWidthMm, Heading : null, TextSizeMm : setup.textSizeMm, IncludeGeneral : setup.includeGeneral, GroupHeadings : setup.groupHeadings };
     }
     // ------------------------------------------------------------
 
@@ -571,6 +610,7 @@
         const lwSetup = Na__LeCfg__GetLineweightSetup();
         const lw = (sheet.Sheet__Lineweights && typeof sheet.Sheet__Lineweights === 'object') ? sheet.Sheet__Lineweights : {};
         sheet.Sheet__Lineweights = { ViewportPt : Na__LeRec__Num(lw.ViewportPt, lwSetup.viewportPt), DimensionPt : Na__LeRec__Num(lw.DimensionPt, lwSetup.dimensionPt) };
+        Na__LeRec__NormaliseMarginNotes(sheet);                                  // <-- Only a sheet that has a notes margin
 
         sheet.Sheet__Viewports.forEach((v)   => Na__LeRec__NormaliseViewport(v,   Na__LeRec__DefaultLayerId(sheet, 'viewport')));
         sheet.Sheet__Annotations.forEach((a) => Na__LeRec__NormaliseAnnotation(a, Na__LeRec__DefaultLayerId(sheet, 'annotation')));
@@ -654,6 +694,8 @@
         Na__LeRec__STYLE_KEYS,
         Na__LeRec__NormaliseShape,
         Na__LeRec__NormaliseLeader,
+        Na__LeRec__NormaliseMarginNotes,
+        Na__LeRec__MarginNotes,
         Na__LeRec__NextId,
         Na__LeRec__Num,
         Na__LeRec__Find,

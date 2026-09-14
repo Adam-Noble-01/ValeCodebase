@@ -118,6 +118,7 @@
     } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShapeGeo__Push, Na__LeShapeGeo__Bounds, Na__LeShapeGeo__Hit } from './Na__LayoutEditor__ShapeGeometry__.js';
     import { Na__LeLeadGeo__Push, Na__LeLeadGeo__Bounds, Na__LeLeadGeo__Hit } from './Na__LayoutEditor__LeaderGeometry__.js';
+    import { Na__LeMargin__Push } from './Na__LayoutEditor__SpecMargin__.js';
     import {
         Na__LeModel__KIND_2D,
         Na__LeModel__GetViewportById,
@@ -433,6 +434,10 @@
         const chosen    = new Set((Array.isArray(selection) ? selection : [ selection ]).filter(Boolean).map((item) => item.kind + ':' + item.id));
         const isChosen  = (kind, id) => chosen.has(kind + ':' + id);
         const highlights = [];
+
+        // NOTES MARGIN | First: its paper masks a viewport pushed beneath it,
+        // and everything the sheet carries can still be drawn over it
+        if (layout) Na__LeMargin__Push(list, sheet, layout);
 
         // SHAPES | Under the text and the dimensions
         sheet.Sheet__Shapes.forEach((shape) => {

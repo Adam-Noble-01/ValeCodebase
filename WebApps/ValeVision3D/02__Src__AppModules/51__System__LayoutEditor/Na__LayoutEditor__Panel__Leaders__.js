@@ -58,11 +58,13 @@
 
     // MODULE IMPORTS | Config, Model, Tools, Surface, Leader Tool and Panel Host
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetLabel, Na__LeCfg__GetLeaderSetup, Na__LeCfg__GetLineweightSetup, Na__LeCfg__GetTextSetup } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel, Na__LeCfg__GetLeaderSetup, Na__LeCfg__GetLineweightSetup, Na__LeCfg__GetTextSetup } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeModel__GetActiveSheet, Na__LeModel__GetSelection, Na__LeModel__GetLeaders, Na__LeModel__UpdateLeader } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeTools__GetLeaderDefaults, Na__LeTools__SetLeaderDefaults } from './Na__LayoutEditor__SheetTools__.js';
     import { Na__LeSurface__Refresh } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeLeader__BeginEdit } from './Na__LayoutEditor__LeaderTool__.js';
+    import { Na__LeSpec__OPEN_EVENT, Na__LeSpec__IsLoaded, Na__LeSpec__ListNotes } from './Na__LayoutEditor__SpecData__.js';
+    import { Na__LeSpecLink__Describe, Na__LeSpecLink__NoteIdOf, Na__LeSpecLink__Link } from './Na__LayoutEditor__SpecLinks__.js';
     import {
         Na__LePanels__RegisterSection,
         Na__LePanels__OnControl,
@@ -187,6 +189,19 @@
             { value : 'bubble', label : L('LeaderTypeBubble', 'Specification bubble') },
             { value : 'text',   label : L('LeaderTypeText', 'Note') }
         ])));
+
+        // SPECIFICATION | A selected bubble's link to a project specification note
+        const specSelect = document.createElement('select');
+        specSelect.className = 'na-le-select';
+        specSelect.setAttribute('data-na-control', 'leader-spec-note');
+        const specRow = Na__LePanels__Row(L('LeaderSpecNote', 'Spec note'), specSelect);
+        specRow.setAttribute('data-na-block', 'spec');
+        specRow.title = L('LeaderSpecNoteTitle', 'The project specification note this bubble shows the code of. A linked bubble is renumbered with its note and listed in the sheet’s notes margin.');
+        body.appendChild(specRow);
+        const specStatus = Na__LePanels__Note('');
+        specStatus.setAttribute('data-na-block', 'spec-status');
+        body.appendChild(specStatus);
+
         body.appendChild(Na__LePanels__Row(L('LeaderTextSize', 'Text mm'), Na__LePanels__Input('number', 'leader-text-size', { min : setup.minTextSizeMm, max : setup.maxTextSizeMm, step : setup.textSizeStepMm })));
         body.appendChild(Na__LePanels__Row(L('LeaderWeight', 'Weight'), Na__LePanels__Select('leader-weight',
             Na__LeCfg__GetTextSetup().allowedWeights.map((w) => ({ value : w, label : w === 300 ? 'Light' : (w >= 600 ? 'Semi-bold' : 'Regular') })))));
@@ -227,6 +242,9 @@
             bar.className = 'na-le-bar';
             bar.setAttribute('data-na-block', 'edit');
             bar.appendChild(Na__LePanels__Button(L('EditLeaderText', 'Edit text'), 'leader-edit', ''));
+            const openSpec = Na__LePanels__Button(L('LeaderSpecOpen', 'Open in specification'), 'leader-spec-open', '');
+            openSpec.setAttribute('data-na-block', 'spec-open');
+            bar.appendChild(openSpec);
             body.appendChild(bar);
         }
     }
@@ -277,6 +295,60 @@
             : L('LeaderDefaultsNote', 'Nothing selected: these settings apply to new leaders (E).');
         const edit = body.querySelector('[data-na-block="edit"]');
         if (edit) edit.hidden = !selected;
+
+        // SPECIFICATION | Only a selected bubble has a link to show
+        const showSpec = !!selected && bubble;
+        body.querySelector('[data-na-block="spec"]').hidden        = !showSpec;
+        body.querySelector('[data-na-block="spec-status"]').hidden = !showSpec;
+        const openSpec = body.querySelector('[data-na-block="spec-open"]');
+        if (openSpec) openSpec.hidden = !(showSpec && Na__LeSpecLink__NoteIdOf(selected.item));
+        if (showSpec) Na__LePanelLeaders__RefreshSpec(body, selected.item);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Reflect a Selected Bubble's Specification Link
+    // ------------------------------------------------------------
+    function Na__LePanelLeaders__RefreshSpec(body, leader) {
+        const L      = Na__LeCfg__GetLabel;
+        const select = body.querySelector('[data-na-control="leader-spec-note"]');
+        const status = body.querySelector('[data-na-block="spec-status"]');
+        const info   = Na__LeSpecLink__Describe(leader);
+        const loaded = Na__LeSpec__IsLoaded();
+        const linked = Na__LeSpecLink__NoteIdOf(leader);
+        const option = (value, text) => { const o = document.createElement('option'); o.value = value; o.textContent = text; return o; };
+
+        const signature = !loaded ? 'pending' : JSON.stringify([ Na__LeSpec__ListNotes().map((e) => [ e.note.Note__Id, e.code, e.note.Note__Title ]), info.state === 'broken' ? linked : '' ]);
+        if (select.getAttribute('data-na-signature') !== signature) {
+            select.innerHTML = '';
+            select.appendChild(option('', loaded ? L('LeaderSpecNone', 'Not linked') : L('LeaderSpecLoading', 'Loading specification...')));
+            let group = null, holder = null;
+            if (loaded) Na__LeSpec__ListNotes().forEach((entry) => {
+                if (entry.group !== group) {
+                    group  = entry.group;
+                    holder = document.createElement('optgroup');
+                    holder.label = entry.group.Group__Prefix + (entry.group.Group__Title ? ' - ' + entry.group.Group__Title : '');
+                    select.appendChild(holder);
+                }
+                holder.appendChild(option(entry.note.Note__Id, entry.code + '   ' + (entry.note.Note__Title || L('SpecUntitledNote', 'Untitled note'))));
+            });
+            if (info.state === 'broken') select.appendChild(option(linked, Na__LeCfg__FormatLabel('LeaderSpecDeletedOption', 'A deleted note (last shown as {code})', { code : info.shown })));
+            select.setAttribute('data-na-signature', signature);
+        }
+        if (document.activeElement !== select) select.value = linked || '';
+        select.disabled = !Na__LePanels__IsEditable() || !loaded;
+
+        const title = info.entry ? (info.entry.note.Note__Title || L('SpecUntitledNote', 'Untitled note')) : '';
+        const lines = {
+            linked   : Na__LeCfg__FormatLabel('LeaderSpecLinked', 'Linked to {code}, {title}. The code follows the note if it is renumbered.', { code : info.code, title : title }),
+            broken   : Na__LeCfg__FormatLabel('LeaderSpecBroken', 'Its specification note was deleted. The bubble keeps its last code, {code}.', { code : info.shown }),
+            matches  : Na__LeCfg__FormatLabel('LeaderSpecMatches', 'Reads {code}, a specification note, but is not linked to it. Choose it above to link.', { code : info.code }),
+            unknown  : Na__LeCfg__FormatLabel('LeaderSpecUnknown', 'No specification note has the code {code}.', { code : info.shown }),
+            unlinked : L('LeaderSpecUnlinked', 'Not linked to the project specification. Type a note’s code into the bubble, or choose a note above.'),
+            pending  : L('LeaderSpecPending', 'Loading the project specification...')
+        };
+        status.textContent = lines[info.state] || '';
+        status.classList.toggle('na-le-note--warn', info.state === 'broken' || info.state === 'unknown');
     }
     // ------------------------------------------------------------
 
@@ -349,6 +421,12 @@
                 const value = parseFloat(el.value) / 100;
                 if (Number.isFinite(value)) both(pair[1], value);
             });
+        });
+
+        on('change', 'leader-spec-note', (e, el) => { const s = Na__LePanelLeaders__Selected(); if (s) Na__LeSpecLink__Link(s.sheet, s.item.Leader__Id, el.value || null); });
+        on('click', 'leader-spec-open', () => {
+            const s = Na__LePanelLeaders__Selected();
+            if (s) window.dispatchEvent(new CustomEvent(Na__LeSpec__OPEN_EVENT, { detail : { noteId : Na__LeSpecLink__NoteIdOf(s.item) } }));
         });
 
         on('click', 'leader-edit', () => { const s = Na__LePanelLeaders__Selected(); if (s) Na__LeLeader__BeginEdit(s.item.Leader__Id); });

@@ -32,6 +32,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.11.0
+// - GetSpecificationSetup and GetMarginNotesSetup for drawing notes beside
+//   project.json (ValeVision__DrawingNotes__.json).
+//
 // 14-Sep-2026 - Version 1.10.0
 // - KEYMAP_FALLBACK: Edit__Ungroup (Ctrl+Shift+G) then Edit__Group (Ctrl+G).
 //   First Exact match wins, so ungroup is listed first.
@@ -669,6 +673,66 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Project Specification Setup
+    // ------------------------------------------------------------
+    // The file the specification lives in beside project.json
+    // (ValeVision__DrawingNotes__.json locally and on R2), how its codes are
+    // numbered, the browser draft, its own undo depth, and the groups offered
+    // to a project with no specification yet.
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetSpecificationSetup() {
+        const starters = Na__LeCfg__Val('Specification', 'StarterGroups', null);
+        return {
+            fileName         : Na__LeCfg__Val('Specification', 'FileName', 'ValeVision__DrawingNotes__.json'),
+            numberDigits     : Math.max(1, Math.min(4, Math.round(Na__LeCfg__Num('Specification', 'NumberDigits', 2)))),
+            prefixMaxLength  : Math.max(1, Math.min(6, Math.round(Na__LeCfg__Num('Specification', 'PrefixMaxLength', 4)))),
+            draftEnabled     : Na__LeCfg__Val('Specification', 'DraftEnabled', true) !== false,
+            draftDebounceMs  : Math.max(100, Na__LeCfg__Num('Specification', 'DraftDebounceMs', 600)),
+            historySteps     : Math.max(1, Math.round(Na__LeCfg__Num('Specification', 'HistorySteps', 50))),
+            loadTimeoutMs    : Math.max(1000, Na__LeCfg__Num('Specification', 'LoadTimeoutMs', 12000)),
+            confirmOverwrite : Na__LeCfg__Val('Specification', 'ConfirmCloudOverwrite', true) !== false,
+            starterGroups    : Array.isArray(starters) ? starters : [
+                { Prefix : 'GN', Title : 'General Notes',    IsGeneral : true  },
+                { Prefix : 'SN', Title : 'Structural Notes', IsGeneral : false },
+                { Prefix : 'FN', Title : 'Finishes',         IsGeneral : false }
+            ]
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Margin Notes Setup (the notes column down a sheet)
+    // ------------------------------------------------------------
+    // What a sheet's notes margin starts with, and the rules it is laid out by.
+    // Sizes and distances are paper millimetres; the divider is printed points.
+    // ------------------------------------------------------------
+    function Na__LeCfg__GetMarginNotesSetup() {
+        return {
+            defaultWidthMm    : Math.max(10, Na__LeCfg__Num('MarginNotes', 'DefaultWidthMm', 90)),
+            minWidthMm        : Math.max(10, Na__LeCfg__Num('MarginNotes', 'MinWidthMm', 40)),
+            maxWidthFraction  : Math.max(0.1, Math.min(0.9, Na__LeCfg__Num('MarginNotes', 'MaxWidthFraction', 0.6))),
+            paddingMm         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'PaddingMm', 3)),
+            headingText       : Na__LeCfg__Val('MarginNotes', 'HeadingText', 'NOTES'),
+            headingSizeMm     : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'HeadingSizeMm', 3.5)),
+            headingTrackingMm : Math.max(0, Na__LeCfg__Num('MarginNotes', 'HeadingTrackingMm', 0.2)),
+            headingGapMm      : Math.max(0, Na__LeCfg__Num('MarginNotes', 'HeadingGapMm', 3)),
+            textSizeMm        : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'TextSizeMm', 2.2)),
+            minTextSizeMm     : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'MinTextSizeMm', 1.2)),
+            maxTextSizeMm     : Math.max(1, Na__LeCfg__Num('MarginNotes', 'MaxTextSizeMm', 6)),
+            titleScale        : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'TitleScale', 1.1)),
+            lineSpacing       : Math.max(1, Na__LeCfg__Num('MarginNotes', 'LineSpacing', 1.35)),
+            noteGapMm         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'NoteGapMm', 2.5)),
+            codeGapMm         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'CodeGapMm', 2)),
+            groupGapMm        : Math.max(0, Na__LeCfg__Num('MarginNotes', 'GroupGapMm', 2)),
+            dividerPt         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'DividerPt', 0.5)),
+            includeGeneral    : Na__LeCfg__Val('MarginNotes', 'IncludeGeneralNotes', true) !== false,
+            groupHeadings     : Na__LeCfg__Val('MarginNotes', 'GroupHeadings', false) === true,
+            gripWidthPx       : Math.max(4, Na__LeCfg__Num('MarginNotes', 'GripWidthPx', 10))
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Eyedropper Setup (match properties between two items)
     // ------------------------------------------------------------
     // stayLoaded is the one that changes how the tool feels: with it on the
@@ -1093,6 +1157,8 @@
         Na__LeCfg__GetShapeSetup,
         Na__LeCfg__GetMeasureSetup,
         Na__LeCfg__GetLeaderSetup,
+        Na__LeCfg__GetSpecificationSetup,
+        Na__LeCfg__GetMarginNotesSetup,
         Na__LeCfg__GetEyedropperSetup,
         Na__LeCfg__GetClipboardSetup,
         Na__LeCfg__GetEnhanceSetup,

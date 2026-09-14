@@ -61,7 +61,7 @@
 
     // MODULE IMPORTS | Config, Layout, Model, Chrome, Markup, Viewports, Assets
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetPdfSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetPdfSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel, Na__LeCfg__GetSpecificationSetup, Na__LeCfg__FormatLabel } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
     import { Na__LeLayout__Solve } from './Na__LayoutEditor__SheetLayout__.js';
     import { Na__LeModel__KIND_2D, Na__LeModel__GetLayers, Na__LeModel__GetFields, Na__LeModel__IsLayerVisible } from './Na__LayoutEditor__SheetModel__.js';
@@ -70,6 +70,8 @@
     import { Na__LeVp2d__Describe, Na__LeVp2d__EnsureLinework, Na__LeVp2d__RenderForExport, Na__LeVp2d__StyleBands } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__RenderForExport } from './Na__LayoutEditor__Viewport3d__.js';
     import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__LeSpec__EnsureLoaded } from './Na__LayoutEditor__SpecData__.js';
+    import { Na__LeMargin__Report } from './Na__LayoutEditor__SpecMargin__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -282,9 +284,13 @@
         const toast = (typeof showToast === 'function') ? showToast : () => {};
         if (!sheet) return false;
         try {
+            const cap = Na__LeCfg__GetSpecificationSetup().loadTimeoutMs;
+            await Promise.race([ Na__LeSpec__EnsureLoaded(), new Promise((resolve) => { window.setTimeout(resolve, cap); }) ]);   // <-- The notes margin prints its notes, not an empty column
             const built = await Na__LePdf__BuildDocument(sheet);
             built.doc.save(built.filename);
-            toast(Na__LeCfg__GetLabel('PdfReadyMessage', 'PDF downloaded.'), false);
+            const margin = Na__LeMargin__Report(sheet, null);
+            if (margin.on && margin.overflow > 0) toast(Na__LeCfg__FormatLabel('PdfMarginOverflow', 'PDF downloaded, but {count} margin note(s) did not fit and were left out. Widen the notes margin or make its text smaller.', { count : margin.overflow }), true);
+            else toast(Na__LeCfg__GetLabel('PdfReadyMessage', 'PDF downloaded.'), false);
             return true;
         } catch (exportError) {
             console.error('[ValeVision3D LayoutEditor] PDF export failed:', exportError);

@@ -74,7 +74,9 @@
     // MODULE IMPORTS | Config, Model, Tools, Navigation, Surface, PDF
     // ------------------------------------------------------------
     import { Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
-    import { Na__LeModel__CHANGED_EVENT, Na__LeModel__GetActiveSheet, Na__LeModel__IsDirty, Na__LeModel__Save } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeModel__CHANGED_EVENT, Na__LeModel__GetActiveSheet, Na__LeModel__IsDirty, Na__LeModel__Save, Na__LeModel__UpdateMarginNotes } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeRec__MarginNotes } from './Na__LayoutEditor__SheetRecords__.js';
+    import { Na__LeSpec__CHANGED_EVENT, Na__LeSpec__IsDirty, Na__LeSpec__GetState, Na__LeSpec__Sync } from './Na__LayoutEditor__SpecData__.js';
     import {
         Na__LeTools__TOOL_SELECT,
         Na__LeTools__TOOL_TEXT,
@@ -170,8 +172,15 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const name  = Na__LeToolbar__Root.querySelector('.na-le-toolbar__name');
         if (name) name.textContent = sheet ? sheet.Sheet__Name : '';
+        const margin = Na__LeToolbar__Root.querySelector('[data-na-toolbar="margin"]');
+        if (margin) {
+            const on = !!sheet && Na__LeRec__MarginNotes(sheet).Enabled === true;
+            margin.classList.toggle('na-le-toolbar__btn--active', on);
+            margin.setAttribute('aria-pressed', String(on));
+            margin.disabled = !sheet;
+        }
         const save = Na__LeToolbar__Root.querySelector('[data-na-toolbar="save"]');
-        if (save) { save.classList.toggle('na-le-toolbar__btn--attention', Na__LeModel__IsDirty()); save.disabled = Na__LeToolbar__Busy; }
+        if (save) { save.classList.toggle('na-le-toolbar__btn--attention', Na__LeModel__IsDirty() || Na__LeSpec__IsDirty()); save.disabled = Na__LeToolbar__Busy; }
         const pdf = Na__LeToolbar__Root.querySelector('[data-na-toolbar="pdf"]');
         if (pdf) pdf.disabled = Na__LeToolbar__Busy || !sheet;
     }
@@ -183,8 +192,21 @@
     async function Na__LeToolbar__Save() {
         if (Na__LeToolbar__Busy) return;
         Na__LeToolbar__Busy = true; Na__LeToolbar__Sync();
-        try { await Na__LeModel__Save(Na__LeToolbar__ShowToast); }
-        finally { Na__LeToolbar__Busy = false; Na__LeToolbar__Sync(); }
+        const notes = [];
+        let failed  = false;
+        const note  = (message, isError) => {
+            if (message) notes.push(/[.!?]$/.test(message) ? message : message + '.');
+            if (isError) failed = true;
+        };
+        try {
+            await Na__LeModel__Save(note);
+            const spec = Na__LeSpec__GetState();
+            if (spec.dirty && spec.canSync) await Na__LeSpec__Sync({ showToast : note });   // <-- The notes the sheets' codes come from go up with them
+        }
+        finally {
+            Na__LeToolbar__Busy = false; Na__LeToolbar__Sync();
+            if (notes.length > 0 && typeof Na__LeToolbar__ShowToast === 'function') Na__LeToolbar__ShowToast(notes.join(' '), failed);
+        }
     }
     async function Na__LeToolbar__Pdf() {
         const sheet = Na__LeModel__GetActiveSheet();
@@ -230,6 +252,10 @@
                 root.appendChild(button);
             });
             root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SnapToggle', 'Snap'), 'snap', Na__LeCfg__GetLabel('SnapToggleTitle', 'Snap dimensions to the linework endpoints and midpoints (F3)'), () => Na__LeOsnap__Toggle()));
+            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('MarginToggle', 'Notes'), 'margin', Na__LeCfg__GetLabel('MarginToggleTitle', 'Show the notes margin on this sheet: the specification notes its bubbles link to, with the general notes last. Drag its left edge to resize it.'), () => {
+                const sheet = Na__LeModel__GetActiveSheet();
+                if (sheet) Na__LeModel__UpdateMarginNotes(sheet, { enabled : Na__LeRec__MarginNotes(sheet).Enabled !== true });
+            }));
 
             // EYEDROPPER HINT | What the dropper is holding and what to do next.
             // It lives beside the tool buttons because that is where the eye
@@ -273,7 +299,7 @@
         root.appendChild(Na__LeToolbar__Gap());
 
         if (Na__LeToolbar__Editable) {
-            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SaveSheets', 'Save Sheets'), 'save', 'Save every sheet to the project', () => { void Na__LeToolbar__Save(); }));
+            root.appendChild(Na__LeToolbar__Button(Na__LeCfg__GetLabel('SaveSheets', 'Save Sheets'), 'save', Na__LeCfg__GetLabel('SaveSheetsTitle', 'Save every sheet to the project, and sync the project specification when it has changes'), () => { void Na__LeToolbar__Save(); }));
         } else {
             const note = document.createElement('span');
             note.className   = 'na-le-toolbar__note';
@@ -285,7 +311,7 @@
         container.appendChild(root);
         Na__LeToolbar__Root = root;
         Na__LeToolbar__Listeners = () => Na__LeToolbar__Sync();
-        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
+        [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.addEventListener(name, Na__LeToolbar__Listeners));
         Na__LeToolbar__Sync();
         return true;
     }
@@ -296,7 +322,7 @@
     // ------------------------------------------------------------
     function Na__LeToolbar__Unmount() {
         if (Na__LeToolbar__Listeners) {
-            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
+            [ Na__LeTools__CHANGED_EVENT, Na__LeSurface__ZOOM_EVENT, Na__LeModel__CHANGED_EVENT, Na__LeOsnap__CHANGED_EVENT, Na__LeHist__CHANGED_EVENT, Na__LeRaster__CHANGED_EVENT, Na__LeDrop__CHANGED_EVENT, Na__LeSpec__CHANGED_EVENT ].forEach((name) => window.removeEventListener(name, Na__LeToolbar__Listeners));
         }
         if (Na__LeToolbar__Root && Na__LeToolbar__Root.parentNode) Na__LeToolbar__Root.parentNode.removeChild(Na__LeToolbar__Root);
         Na__LeToolbar__Root = Na__LeToolbar__Listeners = null;

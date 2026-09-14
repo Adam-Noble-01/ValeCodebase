@@ -108,6 +108,11 @@
     const Na__LeLeadGeo__EPSILON       = 1e-6;
     // ------------------------------------------------------------
 
+    // MODULE VARIABLES | Specification Code Resolver
+    // ------------------------------------------------------------
+    let Na__LeLeadGeo__CodeResolver = null;
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -185,8 +190,32 @@
         const raw   = (leader && typeof leader.Leader__Text === 'string') ? leader.Leader__Text : '';
         const lines = raw.split(/\r?\n/);
         if (!leader || leader.Leader__Type !== Na__LeLeadGeo__TYPE_BUBBLE) return lines;
+        const linked = Na__LeLeadGeo__LinkedCode(leader);
+        if (linked) return [ linked ];                                          // <-- A bubble linked to the specification shows its note's code as it stands now
         const first = lines.map((line) => line.trim()).find((line) => line !== '');
         return first ? [ first ] : [];
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Code a Linked Bubble Shows (null: show its own text)
+    // ------------------------------------------------------------
+    function Na__LeLeadGeo__LinkedCode(leader) {
+        if (!Na__LeLeadGeo__CodeResolver || typeof leader.Leader__SpecNoteId !== 'string') return null;
+        try {
+            const code = Na__LeLeadGeo__CodeResolver(leader);
+            return (typeof code === 'string' && code.trim() !== '') ? code.trim() : null;
+        } catch (e) {
+            return null;
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Register How a Linked Bubble Resolves Its Code
+    // ------------------------------------------------------------
+    function Na__LeLeadGeo__SetCodeResolver(resolver) {
+        Na__LeLeadGeo__CodeResolver = (typeof resolver === 'function') ? resolver : null;
     }
     // ------------------------------------------------------------
 
@@ -499,6 +528,7 @@
         Na__LeLeadGeo__ATTACH_MIDDLE,
         Na__LeLeadGeo__Side,
         Na__LeLeadGeo__Lines,
+        Na__LeLeadGeo__SetCodeResolver,
         Na__LeLeadGeo__HasText,
         Na__LeLeadGeo__Circle,
         Na__LeLeadGeo__EndpointRadius,

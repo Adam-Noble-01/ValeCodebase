@@ -28,6 +28,9 @@
 # - POST /api/projects/<folder>/visibility : Mirror a gallery-enabled toggle into the local masterConfig/index copies
 # - POST /api/projects/<folder>/rename     : Mirror a live R2 folder rename into the local Projects/ + masterConfig/index copies
 # - POST /api/projects/<folder>/delete     : Permanently delete the local project folder + masterConfig/index entries
+# - POST /api/projects/<folder>/assets      : Save a binary asset into the local project folder
+# - GET  /api/projects/<folder>/drawing-notes : Read ValeVision__DrawingNotes__.json beside project.json
+# - POST /api/projects/<folder>/drawing-notes : Write ValeVision__DrawingNotes__.json beside project.json
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
 # - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
 # - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
@@ -124,9 +127,17 @@ def get_project_path(folder_id):
     year_folders = discover_year_folders()                               # <-- Get all year folders
     
     for year in year_folders:
-        project_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, year, folder_id)  # <-- Build path with year
-        if os.path.exists(project_path):                                 # <-- Check if project exists in this year
-            return project_path                                          # <-- Return first match found
+        year_path = os.path.join(base_dir, PROJECTS_BASE_FOLDER, year)
+        exact_path = os.path.join(year_path, folder_id)                  # <-- Build path with year
+        if os.path.exists(exact_path):                                   # <-- Check if project exists in this year
+            return exact_path
+
+        # Numeric ?project=3047 resolves to 3047__Doous on disk.
+        if os.path.isdir(year_path) and '__' not in folder_id:
+            prefix = folder_id + '__'
+            matches = [name for name in os.listdir(year_path) if name.startswith(prefix)]
+            if len(matches) == 1:
+                return os.path.join(year_path, matches[0])
     
     # FALLBACK: Return path in latest year even if doesn't exist (for error messages)
     latest_year = year_folders[0] if year_folders else '2025'            # <-- Get latest year or default
@@ -749,6 +760,46 @@ def save_project_asset(folder_id):
             'success' : True,
             'path'    : rel_path,
             'message' : f'Asset saved: {rel_path}'
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
+# ------------------------------------------------------------
+
+
+# API ENDPOINT | Read or Write Drawing Notes (beside project.json)
+# ------------------------------------------------------------
+# Local sibling of ValeVision__DrawingNotes__.json. Filename is allowlisted
+# internally so the client cannot write an arbitrary file into the folder.
+# GET 404s with { missing: true } when the file is not there yet.
+# ------------------------------------------------------------
+DRAWING_NOTES_FILE = 'ValeVision__DrawingNotes__.json'
+
+@app.route('/api/projects/<path:folder_id>/drawing-notes', methods=['GET', 'POST'])
+def drawing_notes(folder_id):
+    """Read or write ValeVision__DrawingNotes__.json beside project.json"""
+    try:
+        project_path = get_project_path(folder_id)                           # <-- Resolve project directory
+        if not os.path.exists(project_path):
+            return jsonify({'error': f'Project folder not found: {folder_id}'}), 404
+
+        notes_path = os.path.join(project_path, DRAWING_NOTES_FILE)
+
+        if request.method == 'GET':
+            if not os.path.exists(notes_path):
+                return jsonify({'missing': True}), 404
+            with open(notes_path, 'r', encoding='utf-8') as f:
+                return jsonify(json.load(f))
+
+        data = request.get_json(silent=True)
+        if data is None or not isinstance(data, dict):
+            return jsonify({'error': 'Drawing notes must be a JSON object'}), 400
+        with open(notes_path, 'w', encoding='utf-8', newline='\n') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+            f.write('\n')
+        return jsonify({
+            'success' : True,
+            'message' : f'Drawing notes saved for {folder_id}'
         })
 
     except Exception as e:

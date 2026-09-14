@@ -194,6 +194,7 @@
         Na__LeRec__BuildFields,
         Na__LeRec__NormaliseShape,
         Na__LeRec__NormaliseLeader,
+        Na__LeRec__NormaliseMarginNotes,
         Na__LeRec__NormaliseGroup
     } from './Na__LayoutEditor__SheetRecords__.js';
     import { Na__LeScale__Coerce } from './Na__LayoutEditor__ScaleManager__.js';
@@ -413,6 +414,25 @@
     // ------------------------------------------------------------
     function Na__LeModel__GetFields(sheet) {
         return Na__LeRec__BuildFields(sheet);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Switch, Widen or Restyle a Sheet's Notes Margin
+    // ------------------------------------------------------------
+    function Na__LeModel__UpdateMarginNotes(sheet, patch, silent) {
+        if (!sheet || !patch) return false;
+        const notes = (sheet.Sheet__MarginNotes && typeof sheet.Sheet__MarginNotes === 'object') ? sheet.Sheet__MarginNotes : (sheet.Sheet__MarginNotes = {});
+        if (typeof patch.enabled === 'boolean') notes.Enabled = patch.enabled;
+        if (Number.isFinite(patch.widthMm)) notes.WidthMm = patch.widthMm;
+        if (patch.heading !== undefined) notes.Heading = (typeof patch.heading === 'string' && patch.heading.trim()) ? patch.heading : null;
+        if (Number.isFinite(patch.textSizeMm)) notes.TextSizeMm = patch.textSizeMm;
+        if (typeof patch.includeGeneral === 'boolean') notes.IncludeGeneral = patch.includeGeneral;
+        if (typeof patch.groupHeadings === 'boolean') notes.GroupHeadings = patch.groupHeadings;
+        Na__LeRec__NormaliseMarginNotes(sheet);
+        if (silent) { Na__LeModel__Dirty = true; return true; }
+        Na__LeModel__Touch('margin', sheet.Sheet__Id);
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -1033,6 +1053,7 @@
             Leader__FillColour     : opts.fillColour === undefined ? undefined : ((typeof opts.fillColour === 'string') ? opts.fillColour : null),   // <-- Left out: the default fill; null: no fill
             Leader__FillOpacity    : opts.fillOpacity
         }, Na__LeModel__DefaultLayerId(sheet, 'annotation'));
+        if (typeof opts.specNoteId === 'string' && opts.specNoteId.trim()) item.Leader__SpecNoteId = opts.specNoteId.trim();   // <-- A bubble placed already linked to a specification note
         sheet.Sheet__Leaders.push(item);
         if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('leaders', sheet.Sheet__Id, item.Leader__Id);   // <-- The leader tool announces once, when the head lands
         return item;
@@ -1052,6 +1073,10 @@
         if (typeof patch.endpointFilled === 'boolean') item.Leader__EndpointFilled = patch.endpointFilled;
         if (patch.fillColour !== undefined) item.Leader__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;   // <-- null clears the fill
         if (typeof patch.layerId === 'string') item.Leader__LayerId = patch.layerId;
+        if (patch.specNoteId !== undefined) {                                   // <-- A note id links a bubble to the specification; null or empty unlinks it
+            if (typeof patch.specNoteId === 'string' && patch.specNoteId.trim()) item.Leader__SpecNoteId = patch.specNoteId.trim();
+            else delete item.Leader__SpecNoteId;
+        }
         Na__LeRec__NormaliseLeader(item, item.Leader__LayerId);
         if (silent) { Na__LeModel__Dirty = true; return true; }
         Na__LeModel__Touch('leader', sheet.Sheet__Id, itemId);
@@ -1357,6 +1382,7 @@
         Na__LeModel__UpdateSheet,
         Na__LeModel__ReorderSheet,
         Na__LeModel__GetFields,
+        Na__LeModel__UpdateMarginNotes,
         Na__LeModel__SetField,
         Na__LeModel__GetLayers,
         Na__LeModel__GetLayerById,

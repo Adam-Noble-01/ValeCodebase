@@ -77,6 +77,7 @@
     import { Na__LeOsnap__Snap, Na__LeOsnap__HideMarker } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeText__OpenField } from './Na__LayoutEditor__TextTool__.js';
     import { Na__LeLeadGeo__TYPE_BUBBLE, Na__LeLeadGeo__Layout, Na__LeLeadGeo__Lines } from './Na__LayoutEditor__LeaderGeometry__.js';
+    import { Na__LeSpecLink__PatchForText, Na__LeSpecLink__StartFor, Na__LeSpecLink__NoteIdOf } from './Na__LayoutEditor__SpecLinks__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -136,8 +137,9 @@
     // ------------------------------------------------------------
     function Na__LeLeader__Options(sheet, defaults) {
         const d = defaults || {};
+        const start = Na__LeSpecLink__StartFor(d.type || Na__LeCfg__GetLeaderSetup().defaultType, Na__LeLeader__InitialText(sheet, d.type));   // <-- A bubble whose first code a note has starts linked to it
         return {
-            type : d.type, text : Na__LeLeader__InitialText(sheet, d.type),
+            type : d.type, text : start.text, specNoteId : start.specNoteId,
             textSizeMm : d.textSizeMm, fontWeight : d.fontWeight, textColour : d.textColour,
             lineColour : d.lineColour, linePt : d.linePt, lineStyle : d.lineStyle, lineOpacity : d.lineOpacity,
             endpointFilled : d.endpointFilled, endpointPt : d.endpointPt, endpointSizeMm : d.endpointSizeMm,
@@ -297,10 +299,12 @@
         const commit = (text) => {
             const live = Na__LeModel__GetActiveSheet();
             if (!live) return;
-            if (text === '') Na__LeModel__DeleteLeader(live, itemId);           // <-- An emptied leader is a deleted leader
-            else Na__LeModel__UpdateLeader(live, itemId, { text : text }, false);
+            if (text === '') { Na__LeModel__DeleteLeader(live, itemId); return; }   // <-- An emptied leader is a deleted leader
+            const current = Na__LeModel__GetLeaders(live).find((l) => l.Leader__Id === itemId);
+            Na__LeModel__UpdateLeader(live, itemId, current ? Na__LeSpecLink__PatchForText(current, text) : { text : text }, false);   // <-- A bubble typed with a note's code links to it
         };
-        const common = { fontMm : head.fontMm, weight : head.weight, colour : leader.Leader__TextColour, value : leader.Leader__Text, onCommit : commit };
+        const shown  = (head.type === Na__LeLeadGeo__TYPE_BUBBLE && Na__LeSpecLink__NoteIdOf(leader) && head.lines.length) ? head.lines[0].text : leader.Leader__Text;   // <-- A linked bubble is edited from the code it shows
+        const common = { fontMm : head.fontMm, weight : head.weight, colour : leader.Leader__TextColour, value : shown, onCommit : commit };
 
         if (head.type === Na__LeLeadGeo__TYPE_BUBBLE) {
             const widthMm = Math.max(head.radius * 2, head.fontMm * 4);

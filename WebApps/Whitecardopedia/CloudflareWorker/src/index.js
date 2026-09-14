@@ -17,6 +17,7 @@
 // - Routes POST /api/editor/projects/{folderId}/rename to the ProjectRename handler
 // - Routes POST /api/editor/projects/{folderId}/delete to the ProjectDelete handler
 // - Routes POST /api/editor/projects/{folderId}/assets to the ProjectAsset handler (binary assets)
+// - Routes GET+POST /api/editor/projects/{folderId}/drawing-notes to the DrawingNotes handler
 // - GET /api/editor/health returns a simple health-check response
 //
 // ENVIRONMENT SECRETS (set via wrangler secret put):
@@ -26,6 +27,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.5.0
+// - Added GET+POST /api/editor/projects/{folderId}/drawing-notes for
+//   ValeVision__DrawingNotes__.json beside project.json.
+//
 // 09-Sep-2026 - Version 1.4.0
 // - Added POST /api/editor/projects/{folderId}/assets (binary asset upload
 // - for the ValeVision drawing systems, port Phase 2).
@@ -53,6 +58,7 @@
 // @delegate: ./handlers/CloudflareHandler__ProjectRename__.js
 // @delegate: ./handlers/CloudflareHandler__ProjectDelete__.js
 // @delegate: ./handlers/CloudflareHandler__ProjectAsset__.js
+// @delegate: ./handlers/CloudflareHandler__DrawingNotes__.js
 // @delegate: ./CloudflareHelper__Cors__.js
 
 import { Na__CloudflareHandler__ProjectEditor__HandleSave } from './handlers/CloudflareHandler__ProjectEditor__.js';
@@ -60,6 +66,10 @@ import { Na__CloudflareHandler__ProjectVisibility__HandleToggle } from './handle
 import { Na__CloudflareHandler__ProjectRename__HandleRename } from './handlers/CloudflareHandler__ProjectRename__.js';
 import { Na__CloudflareHandler__ProjectDelete__HandleDelete } from './handlers/CloudflareHandler__ProjectDelete__.js';
 import { Na__CloudflareHandler__ProjectAsset__HandleUpload } from './handlers/CloudflareHandler__ProjectAsset__.js';
+import {
+    Na__CloudflareHandler__DrawingNotes__HandleGet,
+    Na__CloudflareHandler__DrawingNotes__HandlePost
+} from './handlers/CloudflareHandler__DrawingNotes__.js';
 import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
 
 // -----------------------------------------------------------------------------
@@ -171,6 +181,20 @@ import { na_build_cors_headers } from './CloudflareHelper__Cors__.js';
             if (method === 'POST' && deleteMatch) {
                 const folderId = decodeURIComponent(deleteMatch[1]);         // <-- Decode: '2026%2F63592__Name' → '2026/63592__Name'
                 return Na__CloudflareHandler__ProjectDelete__HandleDelete(request, env, folderId, requestOrigin);
+            }
+
+            // ROUTE | GET+POST /api/editor/projects/{folderId}/drawing-notes
+            // Sibling ValeVision__DrawingNotes__.json beside project.json.
+            // Matched BEFORE the generic save route so the suffix always wins.
+            // GET still requires the editor API key; production reads go via CDN.
+            const notesMatch = url.pathname.match(/^\/api\/editor\/projects\/(.+)\/drawing-notes$/);
+
+            if (notesMatch && (method === 'GET' || method === 'POST')) {
+                const folderId = decodeURIComponent(notesMatch[1]);          // <-- Decode: '2026%2F3047__Doous' -> '2026/3047__Doous'
+                if (method === 'GET') {
+                    return Na__CloudflareHandler__DrawingNotes__HandleGet(request, env, folderId, requestOrigin);
+                }
+                return Na__CloudflareHandler__DrawingNotes__HandlePost(request, env, folderId, requestOrigin);
             }
 
             // ROUTE | POST /api/editor/projects/{folderId}/assets

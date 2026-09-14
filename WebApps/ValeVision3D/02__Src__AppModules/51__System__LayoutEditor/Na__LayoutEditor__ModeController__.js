@@ -47,6 +47,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.14.0
+// - The line-style config (Na__LayoutEditor__LineStyleTool__Config__.json)
+//   is waited on with the editor's own, so the first shape defaults and the
+//   Vectors panel read the real millimetre figures.
+// - Ported from TrueVision3D (LineStyleTool).
+//
 // 14-Sep-2026 - Version 1.13.0
 // - Project Specification tab, notes margin, SpecEd mount, and EnsureLoaded
 //   on editor entry. Ported from TrueVision3D drawing notes.
@@ -134,6 +140,7 @@
     // ------------------------------------------------------------
     import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeGrad__Ready } from './Na__LayoutEditor__GradientTool__.js';
+    import { Na__LeDash__Ready } from './Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ./Na__LayoutEditor__LineStyleTool__.js
     import { Na__LeEdge__Ready } from './Na__LayoutEditor__EdgeStyles__.js';
     import { Na__LeComposite__Ready } from './Na__LayoutEditor__RenderComposites__.js';
     import { Na__DrawCfg__Load } from '../42__System__DrawingViewCore/Na__DrawView__ConfigState__.js';
@@ -585,7 +592,7 @@
         // AND THE DRAWING VIEW CONFIG, because every viewport bake renders through
         // the drawing presets and they read their setup from it. index.html starts
         // the fetch; this is the same promise, so it is waited for, never repeated.
-        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeEdge__Ready(), Na__LeComposite__Ready(), Na__LeGrad__Ready(), Na__DrawCfg__Load() ]).then(() => {   // <-- None of the five rejects, so a missing file cannot hold the editor back
+        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeEdge__Ready(), Na__LeComposite__Ready(), Na__LeGrad__Ready(), Na__LeDash__Ready(), Na__DrawCfg__Load() ]).then(() => {   // <-- None of the six rejects, so a missing file cannot hold the editor back
             if (!Na__LeCfg__IsEnabled()) return false;
             Na__LeModel__Initialize();
             Na__LeHist__Initialize();                                        // <-- Undo and redo listen to the model from the start

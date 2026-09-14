@@ -68,7 +68,10 @@
 //   vertex that far along the drag (TypeVertexLength); during a viewport
 //   frame drag it moves the frame (TypeViewportLength).
 // - A right click that did not pan opens the context menu for what is
-//   under the cursor, in the same order as selection.
+//   under the cursor, in the same order as selection. Arrange (Bring to
+//   front / forward, Send backward / to back) restacks a vector, a text
+//   item, a dimension or a leader among the others of its kind on the
+//   same layer.
 // - Box select (Na__LayoutEditor__SelectionBox__): a drag that starts where
 //   there is nothing to move - bare paper, the grey stage, a locked viewport,
 //   or anywhere with Alt held - draws a window to the right or a crossing to
@@ -94,6 +97,17 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.21.0
+// - Shape defaults carry dashOn and dash from Na__LayoutEditor__LineStyleTool__,
+//   so Draw and Rectangle place a dashed edge when the Vectors toggle is on.
+// - Ported from TrueVision3D (SheetTools dashed edges).
+//
+// 14-Sep-2026 - Version 1.20.0
+// - Right-click Arrange: Bring to front, Bring forward, Send backward and
+//   Send to back, for a vector, a text item, a dimension or a leader among
+//   the other items of its kind on the same layer.
+// - Ported from TrueVision3D (SheetTools 1.26.0).
+//
 // 14-Sep-2026 - Version 1.19.0
 // - While a viewport's frame is being dragged (not a handle, not the drawing
 //   inside), the Measurements box takes a typed length: GetViewportDrag is
@@ -268,6 +282,8 @@
         Na__LeModel__GetViewportById,
         Na__LeModel__IsLayerVisible,
         Na__LeModel__IsLayerLocked,
+        Na__LeModel__CanArrange,
+        Na__LeModel__Arrange,
         Na__LeModel__UpdateViewport,
         Na__LeModel__DeleteViewport,
         Na__LeModel__UpdateAnnotation,
@@ -311,6 +327,7 @@
     import { Na__LeDimGeo__OffsetKeepingLine } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing, Na__LeShape__UndoVertex, Na__LeShape__RedoVertex } from './Na__LayoutEditor__ShapeTool__.js';
     import { Na__LeGrad__Defaults, Na__LeGrad__Create } from './Na__LayoutEditor__GradientTool__.js';
+    import { Na__LeDash__Defaults, Na__LeDash__Create } from './Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ./Na__LayoutEditor__LineStyleTool__.js
     import { Na__LeRect__Press, Na__LeRect__Move, Na__LeRect__Release, Na__LeRect__Cancel, Na__LeRect__IsDrawing } from './Na__LayoutEditor__RectangleTool__.js';
     import { Na__LeMeasure__Attach, Na__LeMeasure__Detach, Na__LeMeasure__Refresh, Na__LeMeasure__Clear } from './Na__LayoutEditor__Measurements__.js';
     import { Na__LeClip__RunKeyAction, Na__LeClip__MenuItems } from './Na__LayoutEditor__ItemClipboard__.js';
@@ -407,7 +424,8 @@
             const s = Na__LeCfg__GetShapeSetup();
             Na__LeTools__ShapeDefaults = { strokeColour : s.defaultStrokeColour, strokePt : s.defaultStrokePt, fillColour : s.defaultFillColour, filled : s.defaultFilled, stroked : s.defaultStroked,
                                            fillOpacity : s.defaultFillOpacity, strokeOpacity : 1, atScale : true,   // <-- DrawingScale for the Measurements box; no Vectors panel toggle row here
-                                           gradientOn : Na__LeGrad__Defaults().on === true, gradient : Na__LeGrad__Create() };   // <-- The settings outlive the toggle, so switching it back on restores them
+                                           gradientOn : Na__LeGrad__Defaults().on === true, gradient : Na__LeGrad__Create(),   // <-- The settings outlive the toggle, so switching it back on restores them
+                                           dashOn : Na__LeDash__Defaults().on === true, dash : Na__LeDash__Create() };
         }
         return Na__LeTools__ShapeDefaults;
     }
@@ -1427,6 +1445,12 @@
     function Na__LeTools__MenuItems(sheet, found, pointMm) {
         const label   = (key, fallback) => Na__LeCfg__GetLabel(key, fallback);
         const remove  = (key, fallback) => ({ label : label(key, fallback), danger : true, onSelect : () => { void Na__LeTools__DeleteSelection(); } });
+        const arrange = (kind, id) => [
+            { label : label('MenuBringToFront', 'Bring to front'), disabled : !Na__LeModel__CanArrange(sheet, kind, id, 'front'),    onSelect : () => Na__LeModel__Arrange(sheet, kind, id, 'front') },
+            { label : label('MenuBringForward', 'Bring forward'),  disabled : !Na__LeModel__CanArrange(sheet, kind, id, 'forward'),  onSelect : () => Na__LeModel__Arrange(sheet, kind, id, 'forward') },
+            { label : label('MenuSendBackward', 'Send backward'),  disabled : !Na__LeModel__CanArrange(sheet, kind, id, 'backward'), onSelect : () => Na__LeModel__Arrange(sheet, kind, id, 'backward') },
+            { label : label('MenuSendToBack',   'Send to back'),   disabled : !Na__LeModel__CanArrange(sheet, kind, id, 'back'),     onSelect : () => Na__LeModel__Arrange(sheet, kind, id, 'back') }
+        ];
 
         // STYLE | The eyedropper reached without the hotkey. Copy loads the
         // same dropper the B key uses, so a copy here can be pasted by menu,
@@ -1479,7 +1503,8 @@
         }
         if (found.kind === 'annotation') {
             return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeText__BeginEdit(found.id) },
-                     remove('MenuDeleteText', 'Delete text'), { separator : true } ]
+                     { separator : true } ].concat(arrange('annotation', found.id), [
+                     { separator : true }, remove('MenuDeleteText', 'Delete text'), { separator : true } ])
                      .concat(Na__LeClip__MenuItems(sheet, found, pointMm), style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'group') {
@@ -1495,12 +1520,14 @@
             if (dim && (Number.isFinite(dim.Dimension__TextDXMm) || Number.isFinite(dim.Dimension__TextDYMm))) {
                 items.push({ label : label('MenuResetDimText', 'Reset text position'), onSelect : () => Na__LeModel__UpdateDimension(sheet, found.id, { textDXMm : 0, textDYMm : 0 }, false) });
             }
-            return items.concat([ remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ])
+            return items.concat([{ separator : true }], arrange('dimension', found.id), [
+                     { separator : true }, remove('MenuDeleteDimension', 'Delete dimension'), { separator : true } ])
                      .concat(style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'leader') {
             return [ { label : label('MenuEditLeaderText', 'Edit leader text'), onSelect : () => Na__LeLeader__BeginEdit(found.id) },
-                     remove('MenuDeleteLeader', 'Delete leader'), { separator : true } ]
+                     { separator : true } ].concat(arrange('leader', found.id), [
+                     { separator : true }, remove('MenuDeleteLeader', 'Delete leader'), { separator : true } ])
                      .concat(style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'shape') {
@@ -1508,7 +1535,8 @@
             const closed = !!shape && shape.Shape__Closed === true;
             return [ { label : closed ? label('MenuOpenShape', 'Open shape') : label('MenuCloseShape', 'Close shape'), disabled : !shape || Na__LeShapeGeo__Points(shape).length < 3,
                        onSelect : () => Na__LeModel__UpdateShape(sheet, found.id, { closed : !closed }) },
-                     remove('MenuDeleteShape', 'Delete shape'), { separator : true } ]
+                     { separator : true } ].concat(arrange('shape', found.id), [
+                     { separator : true }, remove('MenuDeleteShape', 'Delete shape'), { separator : true } ])
                      .concat(Na__LeClip__MenuItems(sheet, shape || found, pointMm), style(found.kind, found.id)).concat(history);
         }
 

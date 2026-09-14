@@ -47,7 +47,9 @@
 //
 //   VECTOR      travels : edge colour, edge weight, edge on/off, fill colour,
 //                         gradient (a null fill or gradient is a real value and
-//                         clears the target's), fill and edge opacity
+//                         clears the target's), dashed edges (a null line style
+//                         is a solid edge and clears the target's), fill and
+//                         edge opacity
 //               stays   : the points, open or closed, the layer
 //
 //   LEADER      travels : text size, weight and colour; line colour, weight,
@@ -114,6 +116,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.6.0
+// - Dashed edges travel with the other vector traits (dash / Shape__LineStyle,
+//   nullable, palette dashOn). A null line style is a solid edge and clears
+//   the target's, the same way a null fill does.
+// - Ported from TrueVision3D (eyedropper dashed edges).
+//
 // 14-Sep-2026 - Version 1.5.0
 // - Unlocked viewports match: render composites, caption and scale travel
 //   from one viewport to another. A locked viewport (its own lock or its
@@ -271,6 +279,7 @@
                 { patch : 'stroked',      field : 'Shape__Stroked'      },
                 { patch : 'fillColour',   field : 'Shape__FillColour', nullable : true, palette : 'filled' },  // <-- null is "no fill", a real value to copy
                 { patch : 'gradient',     field : 'Shape__Gradient',   nullable : true, palette : 'gradientOn' },  // <-- Likewise; records are never edited in place, so the held copy cannot change
+                { patch : 'dash',         field : 'Shape__LineStyle',  nullable : true, palette : 'dashOn' },      // <-- A null line style is a solid edge, a real value to copy
                 { patch : 'fillOpacity',   field : 'Shape__FillOpacity'   },
                 { patch : 'strokeOpacity', field : 'Shape__StrokeOpacity' }
             ]

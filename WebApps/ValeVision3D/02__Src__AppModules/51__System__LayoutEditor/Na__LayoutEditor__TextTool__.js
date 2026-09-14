@@ -13,6 +13,9 @@
 // - One inline field at a time, laid over the paper in the handles layer
 //   at the item's position and size. Enter commits, Escape cancels, a blur
 //   commits. Nothing else in the editor sees the keys while it is open.
+// - Sheet annotations open a text area: Shift+Enter starts a new line,
+//   Enter (or Ctrl+Enter) commits. A leader's note uses Enter for a new
+//   line and Ctrl+Enter to commit.
 // - Text placement creates the annotation from the panel's defaults and
 //   opens the field on it at once, so a new label is typed, not dragged.
 // - The dimension tool borrows OpenField for its value override, and the
@@ -34,6 +37,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - Sheet annotations open a text area (commitOnEnter): Shift+Enter starts
+//   a new line, Enter still commits. Drawn as one line per newline.
+// - Ported from TrueVision3D (TextTool 1.2.0).
+//
 // 14-Sep-2026 - Version 1.1.0
 // - OpenField takes multiline: a text area instead of a single line, for a
 //   leader's note. Enter starts a new line and Ctrl+Enter commits; Escape
@@ -59,6 +67,7 @@
         Na__LeModel__DeleteAnnotation,
         Na__LeModel__SetSelection
     } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeCfg__GetTextSetup } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeSurface__GetElements, Na__LeSurface__GetPixelsPerMm } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeMarkup__AnnotationBounds } from './Na__LayoutEditor__MarkupBridge__.js';
     // ------------------------------------------------------------
@@ -85,17 +94,20 @@
     // FUNCTION | Open a Field Over the Paper
     // ------------------------------------------------------------
     // spec: { xMm, yMm, widthMm, fontMm, weight, colour, align, value,
-    //         multiline, lineHeightMm, onCommit(text), onCancel() }
-    // multiline opens a text area: Enter starts a new line, Ctrl+Enter (or
-    // Cmd+Enter) commits, and it grows a row for every line typed.
+    //         multiline, commitOnEnter, lineHeightMm, onCommit(text), onCancel() }
+    // multiline opens a text area. By default Enter starts a new line and
+    // Ctrl+Enter (or Cmd+Enter) commits. commitOnEnter keeps Enter as commit
+    // (sheet annotations) and Shift+Enter starts the new line instead. It
+    // grows a row for every line typed.
     // ------------------------------------------------------------
     function Na__LeText__OpenField(spec) {
         const layer = Na__LeSurface__GetElements().handles;
         if (!layer || !spec) return false;
         Na__LeText__Commit();
-        const ppm       = Na__LeSurface__GetPixelsPerMm();
-        const multiline = spec.multiline === true;
-        const input     = document.createElement(multiline ? 'textarea' : 'input');
+        const ppm           = Na__LeSurface__GetPixelsPerMm();
+        const multiline     = spec.multiline === true;
+        const commitOnEnter = spec.commitOnEnter === true;
+        const input         = document.createElement(multiline ? 'textarea' : 'input');
         if (!multiline) input.type = 'text';
         input.className = 'na-le-text-editor' + (multiline ? ' na-le-text-editor--multiline' : '');
         input.value     = spec.value || '';
@@ -108,14 +120,15 @@
         input.style.textAlign  = spec.align || 'left';
         if (multiline) {
             const lineMm = Number.isFinite(spec.lineHeightMm) ? spec.lineHeightMm : spec.fontMm * 1.2;
-            const fit    = () => { input.rows = Math.max(1, input.value.split('\n').length); };
+            const fit    = () => { input.rows = Math.max(1, input.value.split(/\r?\n/).length); };
             input.style.lineHeight = (lineMm * ppm) + 'px';
-            input.wrap = 'off';                                                  // <-- A line breaks where Enter put it, never where the box ends
+            input.wrap = 'off';                                                  // <-- A line breaks where a new line was typed, never where the box ends
             fit();
             input.addEventListener('input', fit);
         }
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && (!multiline || e.ctrlKey || e.metaKey)) { e.preventDefault(); Na__LeText__Commit(); }
+            const commitEnter = e.key === 'Enter' && (!multiline || e.ctrlKey || e.metaKey || (commitOnEnter && !e.shiftKey));
+            if (commitEnter) { e.preventDefault(); Na__LeText__Commit(); }
             if (e.key === 'Escape') { e.preventDefault(); Na__LeText__Cancel(); }
             e.stopPropagation();                                                 // <-- The sheet keys stay out of a field
         });
@@ -165,9 +178,15 @@
         const item  = sheet ? sheet.Sheet__Annotations.find((a) => a.Annotation__Id === itemId) : null;
         if (!item) return false;
         const bounds = Na__LeMarkup__AnnotationBounds(item);
+        const fontMm = item.Annotation__SizeMm;
+        const lineMm = fontMm * Na__LeCfg__GetTextSetup().lineSpacing;
+        const extra  = fontMm * 6;                                               // <-- Room to type before the field needs to be wider
+        const xMm    = item.Annotation__Align === 'center' ? bounds.X - (extra / 2)
+                     : (item.Annotation__Align === 'right' ? bounds.X - extra : bounds.X);
         return Na__LeText__OpenField({
-            xMm : bounds.X, yMm : bounds.Y, widthMm : bounds.WidthMm, fontMm : item.Annotation__SizeMm,
+            xMm : xMm, yMm : bounds.Y, widthMm : bounds.WidthMm + extra, fontMm : fontMm,
             weight : item.Annotation__FontWeight, colour : item.Annotation__Colour, align : item.Annotation__Align, value : item.Annotation__Text,
+            multiline : true, commitOnEnter : true, lineHeightMm : lineMm,
             onCommit : (text) => {
                 const live = Na__LeModel__GetActiveSheet();
                 if (!live) return;

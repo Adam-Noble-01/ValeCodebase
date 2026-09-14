@@ -70,6 +70,21 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.13.0
+// - CreateShape and UpdateShape carry Shape__LineStyle (the dash key: an
+//   object or null). Null is a solid edge; the normaliser copies a fresh
+//   object so the caller's is never shared.
+// - Ported from TrueVision3D (SheetModel dashed edges).
+//
+// 14-Sep-2026 - Version 1.12.0
+// - Arrange: CanArrange and Arrange move a vector, a text item, a dimension
+//   or a leader one step (forward / backward) or to the end of its layer
+//   (front / back) in its collection. Later in the array draws on top, so
+//   later hit-tests first. Same-kind, same-layer peers only; a locked layer
+//   refuses. Viewports stack by layer, not here. One announcement, so one
+//   undo step.
+// - Ported from TrueVision3D (SheetModel 1.22.0).
+//
 // 14-Sep-2026 - Version 1.11.0
 // - Groups: GetGroupById, InsertGroup, DeleteGroup, GetGroups. A group is a
 //   list of member { kind, id } (vectors, text, nested groups). InsertShape
@@ -563,6 +578,92 @@
 
 
 // -----------------------------------------------------------------------------
+// REGION | Public API - Item Draw Order
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | The Collection a Kind Arranges In
+    // ------------------------------------------------------------
+    // Later in the array draws on top (and hit-tests first). Viewports stack
+    // by layer, not by array, so they are not arranged here.
+    // ------------------------------------------------------------
+    function Na__LeModel__ArrangeKind(kind) {
+        if (kind === 'shape')      return { list : 'Sheet__Shapes',      idKey : 'Shape__Id',      layerKey : 'Shape__LayerId',      reason : 'shapes' };
+        if (kind === 'annotation') return { list : 'Sheet__Annotations', idKey : 'Annotation__Id', layerKey : 'Annotation__LayerId', reason : 'annotations' };
+        if (kind === 'dimension')  return { list : 'Sheet__Dimensions',  idKey : 'Dimension__Id',  layerKey : 'Dimension__LayerId',  reason : 'dimensions' };
+        if (kind === 'leader')     return { list : 'Sheet__Leaders',     idKey : 'Leader__Id',     layerKey : 'Leader__LayerId',     reason : 'leaders' };
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | An Item's Place Among Same-Layer Peers of Its Kind
+    // ------------------------------------------------------------
+    function Na__LeModel__ArrangeSlot(sheet, kind, itemId) {
+        const spec = Na__LeModel__ArrangeKind(kind);
+        if (!sheet || !spec || typeof itemId !== 'string') return null;
+        const list = sheet[spec.list];
+        if (!Array.isArray(list)) return null;
+        const index = list.findIndex((entry) => entry[spec.idKey] === itemId);
+        if (index === -1) return null;
+        const layerId = list[index][spec.layerKey];
+        const peers = [];
+        list.forEach((entry, i) => { if (entry[spec.layerKey] === layerId) peers.push({ index : i }); });
+        const peerAt = peers.findIndex((peer) => peer.index === index);
+        if (peerAt === -1) return null;
+        return { spec : spec, list : list, index : index, layerId : layerId, peers : peers, peerAt : peerAt };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Peer Index a Direction Moves To
+    // ------------------------------------------------------------
+    function Na__LeModel__ArrangeDestPeer(slot, direction) {
+        if (direction === 'forward')  return slot.peerAt + 1;
+        if (direction === 'backward') return slot.peerAt - 1;
+        if (direction === 'front')    return slot.peers.length - 1;
+        if (direction === 'back')     return 0;
+        return -1;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Can This Item Step in Draw Order?
+    // ------------------------------------------------------------
+    // direction: 'forward' | 'backward' | 'front' | 'back'
+    // ------------------------------------------------------------
+    function Na__LeModel__CanArrange(sheet, kind, itemId, direction) {
+        const slot = Na__LeModel__ArrangeSlot(sheet, kind, itemId);
+        if (!slot || Na__LeModel__IsLayerLocked(sheet, slot.layerId)) return false;
+        const dest = Na__LeModel__ArrangeDestPeer(slot, direction);
+        return dest >= 0 && dest < slot.peers.length && dest !== slot.peerAt;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Move an Item Among Same-Layer Peers of Its Kind
+    // ------------------------------------------------------------
+    // Later in the array draws on top. Forward and front step toward the
+    // front of that layer; backward and back toward the back. One announcement,
+    // so one undo step.
+    // ------------------------------------------------------------
+    function Na__LeModel__Arrange(sheet, kind, itemId, direction) {
+        const slot = Na__LeModel__ArrangeSlot(sheet, kind, itemId);
+        if (!slot || Na__LeModel__IsLayerLocked(sheet, slot.layerId)) return false;
+        const destPeer = Na__LeModel__ArrangeDestPeer(slot, direction);
+        if (destPeer < 0 || destPeer >= slot.peers.length || destPeer === slot.peerAt) return false;
+        const from = slot.index;
+        const to   = slot.peers[destPeer].index;
+        const [ moved ] = slot.list.splice(from, 1);
+        slot.list.splice(to, 0, moved);
+        Na__LeModel__Touch(slot.spec.reason, sheet.Sheet__Id, itemId);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
 // REGION | Public API - Viewports
 // -----------------------------------------------------------------------------
 
@@ -974,7 +1075,8 @@
             Shape__Stroked      : opts.stroked !== false,
             Shape__FillOpacity  : opts.fillOpacity,                            // <-- Left out, or not 0 to 1: the normaliser makes it solid
             Shape__StrokeOpacity: opts.strokeOpacity,
-            Shape__Gradient     : (opts.gradient && typeof opts.gradient === 'object') ? opts.gradient : null   // <-- The normaliser copies it, so the caller's object is never shared
+            Shape__Gradient     : (opts.gradient && typeof opts.gradient === 'object') ? opts.gradient : null,  // <-- The normaliser copies it, so the caller's object is never shared
+            Shape__LineStyle    : (opts.dash && typeof opts.dash === 'object') ? opts.dash : null
         }, layerId);
         sheet.Sheet__Shapes.push(item);
         if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('shapes', sheet.Sheet__Id, item.Shape__Id);   // <-- The draw tool announces once, on finishing
@@ -989,6 +1091,7 @@
         if (Number.isFinite(patch.strokePt)) item.Shape__StrokePt = patch.strokePt;
         if (patch.fillColour !== undefined) item.Shape__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;
         if (patch.gradient !== undefined) item.Shape__Gradient = (patch.gradient && typeof patch.gradient === 'object') ? patch.gradient : null;   // <-- null clears it; the normaliser below copies it fresh
+        if (patch.dash !== undefined) item.Shape__LineStyle = (patch.dash && typeof patch.dash === 'object') ? patch.dash : null;                   // <-- null is a solid edge
         if (typeof patch.stroked === 'boolean') item.Shape__Stroked = patch.stroked;
         if (Number.isFinite(patch.fillOpacity))   item.Shape__FillOpacity   = patch.fillOpacity;
         if (Number.isFinite(patch.strokeOpacity)) item.Shape__StrokeOpacity = patch.strokeOpacity;
@@ -1393,6 +1496,8 @@
         Na__LeModel__ReorderLayer,
         Na__LeModel__IsLayerVisible,
         Na__LeModel__IsLayerLocked,
+        Na__LeModel__CanArrange,
+        Na__LeModel__Arrange,
         Na__LeModel__GetViewports,
         Na__LeModel__GetViewportById,
         Na__LeModel__CreateViewport,

@@ -1,6 +1,46 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.40.0 - 14-Sep-2026 - Layout Editor: Dashed Edges on Vectors
+
+### Added
+- **Dashed edges.** A toggle on the Vectors panel (right column), off by
+  default. Ticking it opens a block for dashed / dotted / dash-dot (centre)
+  / hidden, with a scale slider and paper-millimetre section lengths. Draw
+  (L) and Rectangle (R) place the pattern; a two-point line can take a
+  centre line. Hidden while Edges are off.
+- **Shape__LineStyle** on the shape record: null is a solid edge (every
+  shape from before this toggle). Otherwise kind, scale, dash, gap and mark
+  in paper millimetres. The screen (SVG stroke-dasharray) and the PDF
+  (jsPDF dash pattern) paint the same array.
+- Eyedropper B and Shift+B copy the style with the other vector traits.
+
+### Notes
+- **Ported from TrueVision3D** (LineStyleTool 1.0.0 and the same wiring) at
+  Adam's request the same day, to keep the drawing editors in tandem.
+- Left out: TrueVision's Draw-at-scale Vectors panel row (this tree has no
+  such control). Config JSON is identical, so either app reads the other's
+  line styles.
+- **Verified here, statically:** LineStyleTool config and AppConfig JSON
+  parse. Not exercised in the running app in this session.
+
+### Files
+- New: `Na__LayoutEditor__LineStyleTool__.js`,
+  `Na__LayoutEditor__LineStyleTool__Config__.json`.
+- `Na__LayoutEditor__Panel__Shapes__.js` 1.6.0,
+  `Na__LayoutEditor__SheetChrome__.js` 1.4.0,
+  `Na__LayoutEditor__ShapeGeometry__.js` 1.5.0,
+  `Na__LayoutEditor__SheetRecords__.js` 1.10.0,
+  `Na__LayoutEditor__SheetModel__.js` 1.13.0,
+  `Na__LayoutEditor__SheetTools__.js` 1.21.0,
+  `Na__LayoutEditor__ShapeTool__.js` 1.6.0,
+  `Na__LayoutEditor__RectangleTool__.js` 1.2.0,
+  `Na__LayoutEditor__Eyedropper__.js` 1.6.0,
+  `Na__LayoutEditor__ModeController__.js` 1.14.0,
+  `Na__LayoutEditor__AppConfig__.json`,
+  `Na__LayoutEditor__Styles__Panels__.css`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.39.0 - 14-Sep-2026 - Layout Editor: Type a Length While Dragging a Viewport
 
 ### Added

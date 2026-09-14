@@ -28,6 +28,11 @@
 // - The edge colour and weight rows go away while the edges are off, the
 //   fill colour while there is no fill and the gradient settings while there
 //   is no gradient, so the panel only ever shows what is in play.
+// - DASHED EDGES. Off unless asked for. Ticking it opens a block for the
+//   pattern - dashed, dotted, dash-dot (centre lines), hidden - the scale of
+//   the sections and their paper-millimetre lengths. It sits with the other
+//   edge rows, so a two-point line can take a centre line; it goes away while
+//   the edges are off.
 // - OPACITY. A fill has a Fill opacity slider while it is on. The edges are
 //   solid unless Transparent edges is ticked, which brings up Edge opacity,
 //   starting at the Shapes setup's TransparentEdgeOpacity. A gradient keeps
@@ -49,6 +54,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.6.0
+// - Dashed edges, the toggle after Edge opacity: off by default, and opening
+//   a block for dashed / dotted / dash-dot (centre) / hidden, with scale and
+//   paper-millimetre section lengths. Shown for two-point lines (centre
+//   lines). Hidden while Edges are off. Owned by Na__LayoutEditor__LineStyleTool__.
+// - Ported from TrueVision3D (Panel__Shapes__ 1.7.0). Draw-at-scale is not
+//   carried: this panel has no such row.
+//
 // 14-Sep-2026 - Version 1.5.0
 // - Box select: with several items selected the note says how many, and that
 //   these are the settings for new shapes until one shape is selected on its
@@ -90,6 +103,7 @@
     import { Na__LeTools__GetShapeDefaults, Na__LeTools__SetShapeDefaults } from './Na__LayoutEditor__SheetTools__.js';
     import { Na__LeSurface__Refresh } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeGrad__BuildRows, Na__LeGrad__RefreshRows, Na__LeGrad__RegisterControls } from './Na__LayoutEditor__GradientTool__.js';
+    import { Na__LeDash__BuildRows, Na__LeDash__RefreshRows, Na__LeDash__RegisterControls } from './Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ./Na__LayoutEditor__LineStyleTool__.js
     import {
         Na__LePanels__RegisterSection,
         Na__LePanels__OnControl,
@@ -142,14 +156,16 @@
         clear.title = Na__LeCfg__GetLabel('ShapeTransparentEdgesTitle', 'Let the edges show what is beneath them.');
         body.appendChild(clear);
         body.appendChild(Na__LePanels__SliderRow(Na__LeCfg__GetLabel('ShapeEdgeOpacity', 'Edge opacity'), 'shape-edge-opacity'));
+        // DASHED EDGES | Off unless asked for; ticking it opens the pattern block
+        // @delegate: ./Na__LayoutEditor__LineStyleTool__.js
+        Na__LeDash__BuildRows(body);
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeFill', 'Fill'), Na__LePanels__Input('checkbox', 'shape-filled')));
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeFillColour', 'Fill colour'), Na__LePanels__Input('color', 'shape-fill')));
         body.appendChild(Na__LePanels__SliderRow(Na__LeCfg__GetLabel('ShapeFillOpacity', 'Fill opacity'), 'shape-fill-opacity'));
         body.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ShapeClosed', 'Closed'), Na__LePanels__Input('checkbox', 'shape-closed')));
-        // THE GRADIENT GOES LAST, after the fills and Closed. Its block is the
-        // one part of this panel that opens and shuts, and at the foot of the
-        // list it opens downwards - switching it on moves no other control out
-        // from under the pointer.
+        // THE GRADIENT GOES LAST, after the fills and Closed. Opening it moves
+        // no other control out from under the pointer. Dashed edges open among
+        // the edge rows, because a two-point centre line has no fill.
         Na__LeGrad__BuildRows(body);
         const either = Na__LePanels__Note(Na__LeCfg__GetLabel('ShapeEitherNote', 'Edges and fill are either or: switching one off switches the other on, so a shape always shows.'));
         either.setAttribute('data-na-block', 'either');
@@ -175,6 +191,21 @@
         const d = Na__LeTools__GetShapeDefaults();
         if (selected) return { on : !!selected.item.Shape__Gradient, gradient : selected.item.Shape__Gradient || d.gradient };
         return { on : d.gradientOn === true, gradient : d.gradient };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Dashed Edge in Play: the Selected Shape's, or the Defaults'
+    // ------------------------------------------------------------
+    // Returns { on, style }. style is a record even while on is false - the
+    // defaults keep their settings through the toggle - so switching a shape's
+    // dashed edges on starts from the last settings used rather than from scratch.
+    // ------------------------------------------------------------
+    function Na__LePanelShapes__Dash() {
+        const selected = Na__LePanelShapes__Selected();
+        const d = Na__LeTools__GetShapeDefaults();
+        if (selected) return { on : !!selected.item.Shape__LineStyle, style : selected.item.Shape__LineStyle || d.dash };
+        return { on : d.dashOn === true, style : d.dash };
     }
     // ------------------------------------------------------------
 
@@ -214,6 +245,7 @@
         el('shape-fill-opacity').parentNode.hidden     = !values.filled;
         Na__LePanels__ShowSlider(body, 'shape-fill-opacity', percent(fillOpacity), percent(fillOpacity) + '%');
         Na__LePanels__ShowSlider(body, 'shape-edge-opacity', percent(edgeOpacity), percent(edgeOpacity) + '%');
+        Na__LeDash__RefreshRows(body, Object.assign({ stroked : values.stroked }, Na__LePanelShapes__Dash()));
         Na__LeGrad__RefreshRows(body, Object.assign({ canFill : canFill }, Na__LePanelShapes__Gradient()));
         body.querySelector('[data-na-block="either"]').hidden = !canFill;
         const many = Na__LeModel__GetSelectionItems().length;
@@ -325,6 +357,11 @@
                 const patch = patchFor(el);
                 if (patch) Na__LePanelShapes__Apply(patch, Object.assign({}, patch));
             });
+        });
+        Na__LeDash__RegisterControls({
+            read   : Na__LePanelShapes__Dash,
+            toggle : (on, style) => Na__LePanelShapes__Apply({ dash : on ? style : null }, { dashOn : on === true, dash : style }),
+            write  : (style, live) => (live ? Na__LePanelShapes__ApplyLive : Na__LePanelShapes__Apply)({ dash : style }, { dash : style })
         });
         Na__LeGrad__RegisterControls({
             read   : Na__LePanelShapes__Gradient,

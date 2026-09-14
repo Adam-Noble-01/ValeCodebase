@@ -33,6 +33,18 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.11.0
+// - NormaliseMarginNotes migrates a stored body of 2.2 mm (the old default)
+//   or about 9 pt to the config TextSizeMm (2 mm).
+// - Ported from TrueVision3D (SheetRecords margin notes size).
+//
+// 14-Sep-2026 - Version 1.10.0
+// - Shape__LineStyle on the shape record: null for a solid edge, otherwise
+//   kind, scale and paper-millimetre sections. Normalise always returns a
+//   fresh object or null, so a record from before the toggle stays solid
+//   and two shapes never share a line style.
+// - Ported from TrueVision3D (SheetRecords dashed edges).
+//
 // 14-Sep-2026 - Version 1.9.0
 // - Sheet__Groups on every sheet, and NormaliseGroup: a group is an id and a
 //   list of { kind, id } members (vectors, text, nested groups). Older sheets
@@ -132,6 +144,7 @@
     } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__Coerce, Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
     import { Na__LeGrad__Normalise } from './Na__LayoutEditor__GradientTool__.js';   // <-- A leaf: it reaches only the panel host, which reaches only the config
+    import { Na__LeDash__Normalise } from './Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ./Na__LayoutEditor__LineStyleTool__.js
     import {
         Na__LeEdge__FIELD,
         Na__LeEdge__CAT_FIELD,
@@ -466,6 +479,7 @@
         item.Shape__FillOpacity   = Na__LeRec__Unit(item.Shape__FillOpacity, 1);         // <-- A record from before opacity was solid
         item.Shape__StrokeOpacity = Na__LeRec__Unit(item.Shape__StrokeOpacity, 1);
         item.Shape__Gradient = Na__LeGrad__Normalise(item.Shape__Gradient);              // <-- A fresh object or null: no two shapes ever hold the same gradient
+        item.Shape__LineStyle = Na__LeDash__Normalise(item.Shape__LineStyle);            // <-- Likewise: null is a solid edge, and a record from before the toggle stays one
         item.Shape__Stroked = item.Shape__Stroked !== false;                             // <-- A record written before the flag existed drew its edges
         const filled  = item.Shape__FillColour !== null || item.Shape__Gradient !== null;   // <-- A gradient is a fill as far as visibility goes
         const canFill = filled && item.Shape__Points.length > 2;                            // <-- Two points enclose nothing, so they cannot be a fill
@@ -525,11 +539,15 @@
         const raw = sheet.Sheet__MarginNotes;
         if (!raw || typeof raw !== 'object') { delete sheet.Sheet__MarginNotes; return null; }
         const setup = Na__LeCfg__GetMarginNotesSetup();
+        const storedSize = Na__LeRec__Num(raw.TextSizeMm, setup.textSizeMm);
+        const ninePtMm   = 9 * 25.4 / 72;
+        const wasDefault = raw.TextSizeMm === 2.2 || (typeof raw.TextSizeMm === 'number' && Math.abs(raw.TextSizeMm - ninePtMm) < 0.05);
+        const bodyMm     = wasDefault ? setup.textSizeMm : storedSize;           // <-- 2.2 mm and the brief 9 pt size give way to 2 mm
         sheet.Sheet__MarginNotes = {
             Enabled        : raw.Enabled === true,
             WidthMm        : Math.max(setup.minWidthMm, Na__LeRec__Num(raw.WidthMm, setup.defaultWidthMm)),
             Heading        : (typeof raw.Heading === 'string' && raw.Heading.trim() !== '') ? raw.Heading : null,
-            TextSizeMm     : Math.min(setup.maxTextSizeMm, Math.max(setup.minTextSizeMm, Na__LeRec__Num(raw.TextSizeMm, setup.textSizeMm))),
+            TextSizeMm     : Math.min(setup.maxTextSizeMm, Math.max(setup.minTextSizeMm, bodyMm)),
             IncludeGeneral : typeof raw.IncludeGeneral === 'boolean' ? raw.IncludeGeneral : setup.includeGeneral,
             GroupHeadings  : typeof raw.GroupHeadings === 'boolean' ? raw.GroupHeadings : setup.groupHeadings
         };

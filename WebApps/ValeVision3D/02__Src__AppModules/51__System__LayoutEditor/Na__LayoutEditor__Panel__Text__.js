@@ -13,7 +13,8 @@
 // - With a text item selected the controls edit it; with nothing selected
 //   they set what the Text tool places next (D32). Sizes are paper
 //   millimetres. The leader toggle adds a leader tip a little below and to
-//   the left of the text, ready to drag.
+//   the left of the text, ready to drag. The selected-text note says
+//   Shift+Enter adds a line and Enter finishes.
 //
 // INTEGRATION:
 // - Registered into the right column by the mode controller.
@@ -30,6 +31,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - The selected-text note says Shift+Enter adds a line and Enter finishes.
+// - Ported from TrueVision3D (Panel Text 1.2.0).
+//
 // 14-Sep-2026 - Version 1.1.0
 // - Box select: with several items selected the note says how many, and that
 //   these are the settings for new text until one text item is selected on its
@@ -128,7 +133,7 @@
         if (leader) leader.checked = values.leader === true;
         const many = Na__LeModel__GetSelectionItems().length;
         body.querySelector('[data-na-block="note"]').textContent = selected
-            ? Na__LeCfg__GetLabel('TextSelectedNote', 'Editing the selected text.')
+            ? Na__LeCfg__GetLabel('TextSelectedNote', 'Editing the selected text. Shift+Enter adds a line; Enter finishes.')
             : (many > 1
                 ? Na__LeCfg__FormatLabel('TextManyNote', '{count} items selected. Click one text item on its own to edit it; these settings apply to new text.', { count : many })
                 : Na__LeCfg__GetLabel('TextDefaultsNote', 'Nothing selected: these settings apply to new text.'));

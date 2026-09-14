@@ -43,6 +43,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.4.0
+// - A polyline primitive can carry a dash array (DashArray: paper millimetres)
+//   as well as the older equal-dash DashMm. The SVG writes the array as
+//   stroke-dasharray and the PDF as setLineDashPattern, so a centre line
+//   (long-short-long) prints the same on both surfaces. DashMm still paints
+//   an equal dash and gap, which every earlier caller - leaders, ghosts -
+//   keeps using.
+// - Ported from TrueVision3D (SheetChrome 1.5.0).
+//
 // 14-Sep-2026 - Version 1.3.0
 // - A polyline primitive can carry a dash (DashMm) and an opacity for its fill
 //   and for its edges (FillOpacity, StrokeOpacity), handed in through an
@@ -238,16 +247,23 @@
     // ------------------------------------------------------------
     // gradient is optional, so every earlier caller is unchanged. It is a
     // Shape__Gradient record, and both painters hand it to the gradient tool.
-    // extra is optional and last: { dashMm, fillOpacity, strokeOpacity }. A dash
-    // of 0 is a solid line; an opacity runs 0 (clear) to 1 (solid).
+    // extra is optional and last: { dashMm, dashArray, fillOpacity, strokeOpacity }.
+    // dashMm of 0 is a solid line (an equal dash and gap when it is above 0);
+    // dashArray is paper millimetres, a centre line's long-short-long, and
+    // wins over dashMm when it has anything in it. An opacity runs 0 (clear)
+    // to 1 (solid).
     // ------------------------------------------------------------
     function Na__LeChrome__PushPolyline(list, points, strokeColour, strokeMm, fillColour, closed, gradient, extra) {
         if (!points || points.length < 2) return;
         const more = (extra && typeof extra === 'object') ? extra : {};
+        const dashArray = Array.isArray(more.dashArray)
+            ? more.dashArray.filter((n) => Number.isFinite(n) && n > 0)
+            : [];
         list.push({ Kind : Na__LeChrome__KIND_POLYLINE, Points : points, StrokeColour : strokeColour || null,
                     StrokeMm : strokeMm || 0, FillColour : fillColour || null, Closed : closed === true,
                     Gradient : (gradient && typeof gradient === 'object') ? gradient : null,
-                    DashMm : (Number.isFinite(more.dashMm) && more.dashMm > 0) ? more.dashMm : 0,
+                    DashMm : dashArray.length > 0 ? 0 : ((Number.isFinite(more.dashMm) && more.dashMm > 0) ? more.dashMm : 0),
+                    DashArray : dashArray.length > 0 ? dashArray : null,
                     FillOpacity : Na__LeChrome__Alpha(more.fillOpacity), StrokeOpacity : Na__LeChrome__Alpha(more.strokeOpacity) });
     }
     // ------------------------------------------------------------
@@ -386,11 +402,30 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Dash Pattern a Primitive Paints, Paper Millimetres
+    // ------------------------------------------------------------
+    // DashArray wins when it has anything in it (a centre line, a dotted
+    // edge). Otherwise an equal DashMm dash and gap, which is what leaders
+    // and the older polyline extra still send. An empty list is solid.
+    // ------------------------------------------------------------
+    function Na__LeChrome__DashList(primitive) {
+        if (Array.isArray(primitive.DashArray) && primitive.DashArray.length > 0) {
+            return primitive.DashArray.filter((n) => Number.isFinite(n) && n > 0);
+        }
+        if (primitive.DashMm > 0) return [ primitive.DashMm, primitive.DashMm ];
+        return [];
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Serialise One Primitive to SVG
     // ------------------------------------------------------------
     function Na__LeChrome__ToSvg(primitive, style, clipCounter) {
         const R = Na__LeChrome__R;
-        const dash = (p) => (p.DashMm > 0 ? ' stroke-dasharray="' + R(p.DashMm) + ' ' + R(p.DashMm) + '"' : '');
+        const dash = (p) => {
+            const list = Na__LeChrome__DashList(p);
+            return list.length > 0 ? ' stroke-dasharray="' + list.map(R).join(' ') + '"' : '';
+        };
 
         if (primitive.Kind === Na__LeChrome__KIND_RECT) {
             return '<rect x="' + R(primitive.X) + '" y="' + R(primitive.Y) + '" width="' + R(primitive.WidthMm) + '" height="' + R(primitive.HeightMm) +
@@ -406,12 +441,13 @@
             // A DASHED RUN takes butt caps, the PDF's own, so its dashes break in
             // the same places on the screen as on paper; a solid run keeps the
             // round cap and join that tidy a polyline's corners.
-            const dashed = primitive.DashMm > 0;
+            const dashList = Na__LeChrome__DashList(primitive);
+            const dashed   = dashList.length > 0;
             const fillA  = Na__LeChrome__Alpha(primitive.FillOpacity);
             const edgeA  = Na__LeChrome__Alpha(primitive.StrokeOpacity);
             const fillOp = fillA < 1 ? ' fill-opacity="' + R(fillA) + '"' : '';
             const edges  = ' stroke="' + (primitive.StrokeColour || 'none') + '" stroke-width="' + R(primitive.StrokeMm) + '" stroke-linejoin="round" stroke-linecap="' + (dashed ? 'butt' : 'round') + '"' +
-                           (dashed ? ' stroke-dasharray="' + R(primitive.DashMm) + ' ' + R(primitive.DashMm) + '"' : '') +
+                           (dashed ? ' stroke-dasharray="' + dashList.map(R).join(' ') + '"' : '') +
                            (edgeA < 1 ? ' stroke-opacity="' + R(edgeA) + '"' : '') + '/>';
             // A GRADIENT PAINTS OVER ANY SOLID FILL AND UNDER THE EDGES. The solid
             // fill gets a path of its own so the gradient's alpha end shows it
@@ -506,7 +542,7 @@
     // HELPER FUNCTION | Draw One Primitive Into jsPDF
     // ------------------------------------------------------------
     function Na__LeChrome__ToPdf(doc, primitive, style) {
-        const setDash = (p) => { try { doc.setLineDashPattern(p.DashMm > 0 ? [ p.DashMm, p.DashMm ] : [], 0); } catch (e) { /* older jsPDF */ } };
+        const setDash = (p) => { try { doc.setLineDashPattern(Na__LeChrome__DashList(p), 0); } catch (e) { /* older jsPDF */ } };
 
         if (primitive.Kind === Na__LeChrome__KIND_RECT) {
             const fill = primitive.FillColour ? Na__LeChrome__Rgb(primitive.FillColour) : null;
@@ -532,7 +568,7 @@
             const stroke = primitive.StrokeColour ? Na__LeChrome__Rgb(primitive.StrokeColour) : null;
             const fillA  = fill ? Na__LeChrome__Alpha(primitive.FillOpacity) : 1;
             const edgeA  = stroke ? Na__LeChrome__Alpha(primitive.StrokeOpacity) : 1;
-            const dash   = { DashMm : primitive.DashMm > 0 ? primitive.DashMm : 0 };
+            const dash   = { DashMm : primitive.DashMm > 0 ? primitive.DashMm : 0, DashArray : primitive.DashArray || null };
             if (primitive.Gradient) {
                 // A GRADIENT GOES IN THREE PASSES rather than one fill-and-stroke:
                 // any solid fill, then the gradient clipped over it, then the edges
@@ -540,7 +576,7 @@
                 if (fill)   Na__LeChrome__WithOpacity(doc, fillA, 1, () => { doc.setFillColor(fill.R, fill.G, fill.B); doc.lines(rel, first[0], first[1], [ 1, 1 ], 'F', primitive.Closed === true); });
                 Na__LeGrad__DrawPdf(doc, primitive.Points, primitive.Gradient);
                 if (stroke) Na__LeChrome__WithOpacity(doc, 1, edgeA, () => { doc.setDrawColor(stroke.R, stroke.G, stroke.B); doc.setLineWidth(primitive.StrokeMm); setDash(dash); doc.lines(rel, first[0], first[1], [ 1, 1 ], 'S', primitive.Closed === true); });
-                if (dash.DashMm > 0) setDash({ DashMm : 0 });
+                if (Na__LeChrome__DashList(dash).length > 0) setDash({ DashMm : 0, DashArray : null });
                 return;
             }
             Na__LeChrome__WithOpacity(doc, fillA, edgeA, () => {
@@ -548,7 +584,7 @@
                 if (stroke) { doc.setDrawColor(stroke.R, stroke.G, stroke.B); doc.setLineWidth(primitive.StrokeMm); setDash(dash); }
                 doc.lines(rel, first[0], first[1], [ 1, 1 ], fill ? (stroke ? 'FD' : 'F') : 'S', primitive.Closed === true);
             });
-            if (dash.DashMm > 0) setDash({ DashMm : 0 });                        // <-- A dash never carries into the next primitive
+            if (Na__LeChrome__DashList(dash).length > 0) setDash({ DashMm : 0, DashArray : null });   // <-- A dash never carries into the next primitive
             return;
         }
         if (primitive.Kind === Na__LeChrome__KIND_TEXT) {

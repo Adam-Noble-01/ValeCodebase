@@ -58,6 +58,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - A rectangle takes the Vectors panel's dashed-edge default as a drawn
+//   shape does.
+// - Ported from TrueVision3D (RectangleTool dashed edges).
+//
 // 14-Sep-2026 - Version 1.1.0
 // - Typed sizes: Measure reports the box being drawn (or the rectangle that
 //   just landed) and TypeSize lands or resizes from a typed width and height.
@@ -186,7 +191,7 @@
         const item = Na__LeModel__CreateShape(sheet, points, {
             strokeColour : d.strokeColour, strokePt : d.strokePt, fillColour : d.filled ? d.fillColour : null,
             fillOpacity : d.fillOpacity, strokeOpacity : d.strokeOpacity,     // <-- The opacity defaults too, as for a drawn shape
-            gradient : d.gradientOn ? d.gradient : null, closed : true, stroked : d.stroked !== false   // <-- The gradient default reaches a rectangle exactly as it reaches a drawn shape
+            gradient : d.gradientOn ? d.gradient : null, dash : d.dashOn ? d.dash : null, closed : true, stroked : d.stroked !== false   // <-- The gradient and dashed-edge defaults reach a rectangle exactly as they reach a drawn shape
         });                                                                  // <-- Not silent: created and announced at once, so one undo step
         if (!item) return null;
         Na__LeRect__Landed = { id : item.Shape__Id, anchor : [ points[0][0], points[0][1] ], points : points.map((p) => [ p[0], p[1] ]) };

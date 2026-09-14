@@ -143,7 +143,7 @@
         }
     },
     "LayoutEditor__Text__Config": {
-        "LayoutEditor__Text__Description": "Sheet text (D31). Sizes are paper millimetres. Weights are the Open Sans cuts the app loads.",
+        "LayoutEditor__Text__Description": "Sheet text (D31). Sizes are paper millimetres. Weights are the Open Sans cuts the app loads. MULTI-LINE: Shift+Enter starts a new line in the inline editor; Enter commits. LineSpacing is line height as a multiple of the text size; a blank line typed between two others is kept.",
         "LayoutEditor__Text__FontFamily": "'Open Sans', Helvetica, Arial, sans-serif",
         "LayoutEditor__Text__DefaultSizeMm": 3,
         "LayoutEditor__Text__MinSizeMm": 1.5,
@@ -153,6 +153,7 @@
         "LayoutEditor__Text__DefaultWeight": 400,
         "LayoutEditor__Text__DefaultColour": "#172b3a",
         "LayoutEditor__Text__DefaultText": "Text",
+        "LayoutEditor__Text__LineSpacing": 1.2,
         "LayoutEditor__Text__LeaderStrokeMm": 0.2
     },
 
@@ -236,7 +237,7 @@
         "LayoutEditor__Lineweights__StepPt": 0.05
     },
     "LayoutEditor__Shapes__Config": {
-        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons) and the Rectangle tool's rectangles, which are ordinary closed four-point shapes once drawn. Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon. DefaultStroked draws the edges; with it off a new shape is its fill alone, so DefaultFilled must be on as well or the shape would have nothing to show.",
+        "LayoutEditor__Shapes__Description": "The Draw tool's vector shapes (lines, polylines, polygons) and the Rectangle tool's rectangles, which are ordinary closed four-point shapes once drawn. Defaults for a new shape; the Vectors panel edits them. CloseRadiusPx is how near the first point a click has to land to close a polygon. DefaultStroked draws the edges; with it off a new shape is its fill alone, so DefaultFilled must be on as well or the shape would have nothing to show. Dashed edges are off by default; the toggle and its millimetre figures live in Na__LayoutEditor__LineStyleTool__Config__.json.",
         "LayoutEditor__Shapes__DefaultStrokeColour": "#172b3a",
         "LayoutEditor__Shapes__DefaultStrokePt": 0.20,
         "LayoutEditor__Shapes__DefaultStroked": true,
@@ -245,6 +246,7 @@
         "LayoutEditor__Shapes__DefaultFillOpacity": 1,
         "LayoutEditor__Shapes__TransparentEdgeOpacity": 0.5,
         "LayoutEditor__Shapes__OpacityNote": "Opacity runs from 0 (clear) to 1 (solid). DefaultFillOpacity is how solid a new shape's fill is - the Vectors panel's Fill opacity slider. Edges are solid unless Transparent edges is ticked; TransparentEdgeOpacity is where the Edge opacity slider starts when it is. A gradient keeps its own alpha. Shapes from before opacity existed are solid.",
+        "LayoutEditor__Shapes__LineStyleNote": "Dashed edges - a toggle on the Vectors panel, off by default. On, the Draw and Rectangle tools place dashed, dotted or dash-dot (centre) lines, with the section lengths in paper millimetres and a scale that stretches them. Owned by Na__LayoutEditor__LineStyleTool__. A shape from before the toggle is a solid line.",
         "LayoutEditor__Shapes__CloseRadiusPx": 10
     },
     "LayoutEditor__Leader__Config": {
@@ -363,21 +365,23 @@
         ]
     },
     "LayoutEditor__MarginNotes__Config": {
-        "LayoutEditor__MarginNotes__Description": "The notes margin a sheet can carry down its right-hand side, from the top of the border to the title block. Switched on per sheet with the Notes button on the toolbar or in the Margin Notes panel; drag its left edge to make it wider or narrower. It lists the specification notes the sheet's bubbles link to, in specification order, then the general notes. Distances and text sizes are paper millimetres, the divider and the rule between notes printed points. A note reads as its code, CodePipe, then its title, with the body wrapped to the full inner width. A faint RuleColour line at RulePt sits between notes. IncludeGeneralNotes and GroupHeadings are what a newly switched-on margin starts with.",
+        "LayoutEditor__MarginNotes__Description": "The notes margin a sheet can carry down its right-hand side, from the top of the border to the title block. Switched on per sheet with the Notes button on the toolbar or in the Margin Notes panel; drag its left edge to make it wider or narrower. It lists the specification notes the sheet's bubbles link to, in specification order, then the general notes. Distances and text sizes are paper millimetres except the divider and rule (printed points). TextSizeMm is the body (2 mm); titles are TitleScale times that. PaddingMm is the left and top/foot inset; PaddingRightMm is the clearance before the sheet's right border, a little more so wrapped lines do not clip. A note reads as its code, CodePipe, then its title, with the body wrapped to the full inner width. A faint RuleColour line at RulePt sits between notes, centred in the gap between them: NoteGapMm is the least that gap can be, and decides what fits; when every note fits and the column has room left at the foot, every gap opens by the same amount, up to NoteGapMaxMm. IncludeGeneralNotes and GroupHeadings are what a newly switched-on margin starts with.",
         "LayoutEditor__MarginNotes__DefaultWidthMm": 90,
         "LayoutEditor__MarginNotes__MinWidthMm": 40,
         "LayoutEditor__MarginNotes__MaxWidthFraction": 0.6,
         "LayoutEditor__MarginNotes__PaddingMm": 3,
+        "LayoutEditor__MarginNotes__PaddingRightMm": 6,
         "LayoutEditor__MarginNotes__HeadingText": "NOTES",
         "LayoutEditor__MarginNotes__HeadingSizeMm": 3.5,
         "LayoutEditor__MarginNotes__HeadingTrackingMm": 0.2,
         "LayoutEditor__MarginNotes__HeadingGapMm": 3,
-        "LayoutEditor__MarginNotes__TextSizeMm": 2.2,
+        "LayoutEditor__MarginNotes__TextSizeMm": 2,
         "LayoutEditor__MarginNotes__MinTextSizeMm": 1.2,
         "LayoutEditor__MarginNotes__MaxTextSizeMm": 6,
         "LayoutEditor__MarginNotes__TitleScale": 1.1,
         "LayoutEditor__MarginNotes__LineSpacing": 1.35,
         "LayoutEditor__MarginNotes__NoteGapMm": 2.5,
+        "LayoutEditor__MarginNotes__NoteGapMaxMm": 5,
         "LayoutEditor__MarginNotes__CodeGapMm": 2,
         "LayoutEditor__MarginNotes__CodePipe": " | ",
         "LayoutEditor__MarginNotes__GroupGapMm": 2,
@@ -407,6 +411,7 @@
         "LayoutEditor__Labels__LayersTitle": "Drawing Layers",
         "LayoutEditor__Labels__ViewportTitle": "Viewport",
         "LayoutEditor__Labels__TextTitle": "Text",
+        "LayoutEditor__Labels__TextSelectedNote": "Editing the selected text. Shift+Enter adds a line; Enter finishes.",
         "LayoutEditor__Labels__DimensionsTitle": "Dimensions",
         "LayoutEditor__Labels__StylesTitle": "Render Composites",
         "LayoutEditor__Labels__ModelLayersTitle": "Model Layers",
@@ -531,6 +536,10 @@
         "LayoutEditor__Labels__MenuDeleteShape": "Delete shape",
         "LayoutEditor__Labels__MenuCloseShape": "Close shape",
         "LayoutEditor__Labels__MenuOpenShape": "Open shape",
+        "LayoutEditor__Labels__MenuBringToFront": "Bring to front",
+        "LayoutEditor__Labels__MenuBringForward": "Bring forward",
+        "LayoutEditor__Labels__MenuSendBackward": "Send backward",
+        "LayoutEditor__Labels__MenuSendToBack": "Send to back",
         "LayoutEditor__Labels__MenuDeleteSelection": "Delete {count} selected items",
         "LayoutEditor__Labels__DeleteSelectionTitle": "Delete selection",
         "LayoutEditor__Labels__DeleteSelectionPrompt": "Remove the {count} selected items from the sheet, including {viewports} viewport(s)? Sheet dimensions attached to a deleted viewport keep their paper length.",

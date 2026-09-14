@@ -32,6 +32,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.12.0
+// - GetTextSetup: lineSpacing, a sheet annotation's line height as a
+//   multiple of its text size (Text LineSpacing).
+// - GetMarginNotesSetup: paddingRightMm, codePipe, rulePt, ruleColour,
+//   noteGapMaxMm, and body text at TextSizeMm (2 mm).
+// - Ported from TrueVision3D (ConfigState 1.14.0 / 1.17.0 / 1.19.0 / 1.22.0).
+//
 // 14-Sep-2026 - Version 1.11.0
 // - GetSpecificationSetup and GetMarginNotesSetup for drawing notes beside
 //   project.json (ValeVision__DrawingNotes__.json).
@@ -437,6 +444,7 @@
             defaultWeight  : Na__LeCfg__Num('Text', 'DefaultWeight', 400),
             defaultColour  : Na__LeCfg__Val('Text', 'DefaultColour', '#172b3a'),
             defaultText    : Na__LeCfg__Val('Text', 'DefaultText', 'Text'),
+            lineSpacing    : Math.max(1, Na__LeCfg__Num('Text', 'LineSpacing', 1.2)),
             leaderStrokeMm : Na__LeCfg__Num('Text', 'LeaderStrokeMm', 0.2)
         };
     }
@@ -704,7 +712,11 @@
     // FUNCTION | Margin Notes Setup (the notes column down a sheet)
     // ------------------------------------------------------------
     // What a sheet's notes margin starts with, and the rules it is laid out by.
-    // Sizes and distances are paper millimetres; the divider is printed points.
+    // PaddingRightMm is the extra inset before the right border. Body text is
+    // TextSizeMm (2 mm); a note's title is TitleScale times that. CodePipe sits
+    // between the code and the title. NoteGapMm is the least gap between notes
+    // (and decides what fits); NoteGapMaxMm is the most a column with room to
+    // spare opens to. The divider and the rule between notes are printed points.
     // ------------------------------------------------------------
     function Na__LeCfg__GetMarginNotesSetup() {
         return {
@@ -712,19 +724,24 @@
             minWidthMm        : Math.max(10, Na__LeCfg__Num('MarginNotes', 'MinWidthMm', 40)),
             maxWidthFraction  : Math.max(0.1, Math.min(0.9, Na__LeCfg__Num('MarginNotes', 'MaxWidthFraction', 0.6))),
             paddingMm         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'PaddingMm', 3)),
+            paddingRightMm    : Math.max(0, Na__LeCfg__Num('MarginNotes', 'PaddingRightMm', 6)),
             headingText       : Na__LeCfg__Val('MarginNotes', 'HeadingText', 'NOTES'),
             headingSizeMm     : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'HeadingSizeMm', 3.5)),
             headingTrackingMm : Math.max(0, Na__LeCfg__Num('MarginNotes', 'HeadingTrackingMm', 0.2)),
             headingGapMm      : Math.max(0, Na__LeCfg__Num('MarginNotes', 'HeadingGapMm', 3)),
-            textSizeMm        : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'TextSizeMm', 2.2)),
+            textSizeMm        : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'TextSizeMm', 2)),
             minTextSizeMm     : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'MinTextSizeMm', 1.2)),
             maxTextSizeMm     : Math.max(1, Na__LeCfg__Num('MarginNotes', 'MaxTextSizeMm', 6)),
             titleScale        : Math.max(0.5, Na__LeCfg__Num('MarginNotes', 'TitleScale', 1.1)),
             lineSpacing       : Math.max(1, Na__LeCfg__Num('MarginNotes', 'LineSpacing', 1.35)),
             noteGapMm         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'NoteGapMm', 2.5)),
+            noteGapMaxMm      : Math.max(0, Na__LeCfg__Num('MarginNotes', 'NoteGapMaxMm', 5)),
             codeGapMm         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'CodeGapMm', 2)),
+            codePipe          : Na__LeCfg__Val('MarginNotes', 'CodePipe', ' | '),
             groupGapMm        : Math.max(0, Na__LeCfg__Num('MarginNotes', 'GroupGapMm', 2)),
             dividerPt         : Math.max(0, Na__LeCfg__Num('MarginNotes', 'DividerPt', 0.5)),
+            rulePt            : Math.max(0, Na__LeCfg__Num('MarginNotes', 'RulePt', 0.35)),
+            ruleColour        : Na__LeCfg__Val('MarginNotes', 'RuleColour', '#cfd4d8'),
             includeGeneral    : Na__LeCfg__Val('MarginNotes', 'IncludeGeneralNotes', true) !== false,
             groupHeadings     : Na__LeCfg__Val('MarginNotes', 'GroupHeadings', false) === true,
             gripWidthPx       : Math.max(4, Na__LeCfg__Num('MarginNotes', 'GripWidthPx', 10))

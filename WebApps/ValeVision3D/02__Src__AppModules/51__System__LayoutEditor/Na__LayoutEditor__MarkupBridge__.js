@@ -38,6 +38,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.8.0
+// - A sheet annotation draws every line of Annotation__Text, one primitive
+//   per newline, at Text LineSpacing. Bounds, hit testing and the selection
+//   box follow the block. A single-line record is unchanged.
+// - Ported from TrueVision3D (MarkupBridge 1.11.0).
+//
 // 14-Sep-2026 - Version 1.7.0
 // - A sheet dimension's value can sit off the line: Dimension__TextDXMm and
 //   Dimension__TextDYMm shift it, and Push draws a circular arc from the
@@ -277,13 +283,36 @@
 // REGION | Sheet Markup
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | The Lines a Sheet Annotation Shows
+    // ------------------------------------------------------------
+    // Every line, blank ones included, because a blank line is spacing someone
+    // typed. A record with no newline is one line, as it always was.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationLines(text) {
+        return String(text === undefined || text === null ? '' : text).split(/\r?\n/);
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Line Height of a Sheet Annotation, in Paper Millimetres
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationLineMm(fontMm) {
+        return fontMm * Na__LeCfg__GetTextSetup().lineSpacing;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Paper Box a Sheet Annotation Occupies
     // ------------------------------------------------------------
     function Na__LeMarkup__AnnotationBounds(item) {
         const fontMm = item.Annotation__SizeMm;
-        const width  = Math.max(fontMm, Na__LeChrome__MeasureTextMm(item.Annotation__Text, fontMm, item.Annotation__FontWeight));
+        const lines  = Na__LeMarkup__AnnotationLines(item.Annotation__Text);
+        let width = fontMm;
+        lines.forEach((line) => { width = Math.max(width, Na__LeChrome__MeasureTextMm(line, fontMm, item.Annotation__FontWeight)); });
+        const count  = Math.max(1, lines.length);
+        const height = (fontMm * Na__LeMarkup__CAP_HEIGHT) + ((count - 1) * Na__LeMarkup__AnnotationLineMm(fontMm)) + (fontMm * Na__LeMarkup__DESCENT);
         const x = item.Annotation__PosXMm - (item.Annotation__Align === 'center' ? width / 2 : (item.Annotation__Align === 'right' ? width : 0));
-        return { X : x, Y : item.Annotation__PosYMm - (fontMm * Na__LeMarkup__CAP_HEIGHT), WidthMm : width, HeightMm : fontMm * (Na__LeMarkup__CAP_HEIGHT + Na__LeMarkup__DESCENT) };
+        return { X : x, Y : item.Annotation__PosYMm - (fontMm * Na__LeMarkup__CAP_HEIGHT), WidthMm : width, HeightMm : height };
     }
     // ------------------------------------------------------------
 
@@ -412,9 +441,12 @@
             for (let i = 0; i < 8; i++) dot.push([ tipX + (Math.cos(i * Math.PI / 4) * r), tipY + (Math.sin(i * Math.PI / 4) * r) ]);
             Na__LeChrome__PushPolyline(list, dot, null, 0, item.Annotation__Colour, true);
         }
-        Na__LeChrome__PushText(list, {
-            X : item.Annotation__PosXMm, BaselineY : item.Annotation__PosYMm, Text : item.Annotation__Text, FontMm : fontMm,
-            Weight : item.Annotation__FontWeight, Colour : item.Annotation__Colour, Align : item.Annotation__Align, FontFamily : textSetup.fontFamily
+        const lineMm = Na__LeMarkup__AnnotationLineMm(fontMm);
+        Na__LeMarkup__AnnotationLines(item.Annotation__Text).forEach((line, i) => {
+            Na__LeChrome__PushText(list, {
+                X : item.Annotation__PosXMm, BaselineY : item.Annotation__PosYMm + (i * lineMm), Text : line, FontMm : fontMm,
+                Weight : item.Annotation__FontWeight, Colour : item.Annotation__Colour, Align : item.Annotation__Align, FontFamily : textSetup.fontFamily
+            });
         });
     }
     // ------------------------------------------------------------

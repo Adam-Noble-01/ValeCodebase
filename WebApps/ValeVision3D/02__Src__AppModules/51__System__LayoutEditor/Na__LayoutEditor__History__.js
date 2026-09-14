@@ -17,8 +17,8 @@
 // - Steps are snapshots of the sheet record, kept per sheet, capped at the
 //   configured depth. Undo puts the previous snapshot back into the same
 //   record object (the surface and panels hold that object), then announces
-//   a sheet update so everything redraws. Selection is dropped when the
-//   item it pointed at no longer exists.
+//   a sheet update so everything redraws. Selected items that no longer
+//   exist leave the selection; the rest stay selected.
 // - Sheet creation, deletion and reordering are not steps: they change the
 //   sheet list, not a sheet.
 //
@@ -38,6 +38,20 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - Box select: a restore keeps every selected item that still exists and
+//   drops the rest, now that the selection can hold several
+//   (Na__LeModel__GetSelectionItems).
+// - Still open: SelectionExists has no shape case here, so a restore drops a
+//   selected shape. It returns with TrueVision v2.30.1's undo-writes fix, which
+//   is still waiting for sign-off (parity ledger, pending return trip).
+// - Ported from TrueVision3D v2.34.0.
+//
+// 14-Sep-2026 - Version 1.1.0
+// - Leader changes are steps ('leaders' and 'leader'), and a selected leader
+//   survives an undo that leaves it on the sheet.
+// - Ported from TrueVision3D v2.35.0.
+//
 // 10-Sep-2026 - Version 1.0.1
 // - Shape changes are steps.
 //
@@ -59,8 +73,8 @@
         Na__LeModel__GetSheetById,
         Na__LeModel__GetActiveSheet,
         Na__LeModel__UpdateSheet,
-        Na__LeModel__GetSelection,
-        Na__LeModel__SetSelection
+        Na__LeModel__GetSelectionItems,
+        Na__LeModel__SetSelectionItems
     } from './Na__LayoutEditor__SheetModel__.js';
     // ------------------------------------------------------------
 
@@ -74,7 +88,7 @@
     // MODULE CONSTANTS | Event and the Reasons That Count as a Step
     // ------------------------------------------------------------
     const Na__LeHist__CHANGED_EVENT = 'na-layouteditor-history-changed';
-    const Na__LeHist__STEP_REASONS  = [ 'sheet-updated', 'fields', 'layers', 'viewports', 'viewport', 'annotations', 'annotation', 'dimensions', 'dimension', 'shapes', 'shape' ];
+    const Na__LeHist__STEP_REASONS  = [ 'sheet-updated', 'fields', 'layers', 'viewports', 'viewport', 'annotations', 'annotation', 'dimensions', 'dimension', 'shapes', 'shape', 'leaders', 'leader' ];
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Per-Sheet Stacks
@@ -119,6 +133,7 @@
         if (selection.kind === 'viewport')   return sheet.Sheet__Viewports.some((v) => v.Viewport__Id === selection.id);
         if (selection.kind === 'annotation') return sheet.Sheet__Annotations.some((a) => a.Annotation__Id === selection.id);
         if (selection.kind === 'dimension')  return sheet.Sheet__Dimensions.some((d) => d.Dimension__Id === selection.id);
+        if (selection.kind === 'leader')     return (sheet.Sheet__Leaders || []).some((l) => l.Leader__Id === selection.id);
         return false;
     }
     // ------------------------------------------------------------
@@ -132,7 +147,9 @@
         try {
             Object.keys(sheet).forEach((key) => { if (!(key in clone)) delete sheet[key]; });
             Object.assign(sheet, clone);
-            if (!Na__LeHist__SelectionExists(sheet, Na__LeModel__GetSelection())) Na__LeModel__SetSelection(null);
+            const selected = Na__LeModel__GetSelectionItems();
+            const kept     = selected.filter((item) => Na__LeHist__SelectionExists(sheet, item));
+            if (kept.length !== selected.length) Na__LeModel__SetSelectionItems(kept);
             Na__LeModel__UpdateSheet(sheet, {});                                   // <-- Normalises, marks dirty, announces a sheet update
         } finally {
             Na__LeHist__Restoring = false;

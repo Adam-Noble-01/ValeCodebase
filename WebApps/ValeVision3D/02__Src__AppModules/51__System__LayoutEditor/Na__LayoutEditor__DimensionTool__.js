@@ -6,25 +6,38 @@
 // NAMESPACE  : Na__LeDim
 // MODULE     : Layout Editor - Dimension Tool
 // AUTHOR     : Adam Noble - Noble Architecture
-// PURPOSE    : Place a sheet dimension in three clicks, slide its line with inference to other dimensions, and edit the value it shows
+// PURPOSE    : Place a sheet dimension in three clicks, aligned or ortho, slide its line with inference to other dimensions, and edit the value it shows
 // CREATED    : 10-Sep-2026
 //
 // DESCRIPTION:
 // - THREE CLICKS, as in CAD. The first picks the start, the second the
-//   end (both snap to the linework; Shift holds the span to the nearer
-//   axis and an arrow key locks it to one outright), and the dimension
-//   appears at once with its line following the cursor. The third click
-//   fixes how far the line sits from what it measures.
+//   end (both snap to the linework; an arrow key locks the span to one
+//   axis), and the dimension appears at once with its line following the
+//   cursor. The third click fixes how far the line sits from what it
+//   measures.
+// - SHIFT MAKES IT ORTHO. Hold Shift while the line follows the cursor and
+//   the dimension runs horizontal or vertical, whatever its two points are:
+//   drag the line above or below them for a horizontal dimension, which
+//   measures the x distance between them, or beside them for a vertical one,
+//   which measures the y. Let go of Shift and it is aligned again; pressing
+//   or releasing it redraws at once. Without it, two points at different
+//   heights - the eaves of one wall and the foot of the next - could only be
+//   given a sloping dimension.
 // - INFERENCE. While the line moves, a parallel dimension nearby pulls it
-//   onto its own line, so a run of dimensions lines up. The same happens
-//   when the round grip of an existing dimension is dragged.
+//   onto its own line, so a run of dimensions lines up - an ortho one with
+//   any other dimension running the same way. The same happens when the
+//   round grip of an existing dimension is dragged.
 // - The value can be overridden inline: double-click the dimension and
 //   type. Typing the measured value back clears the override.
 // - The dimension joins the frontmost 2D viewport under its midpoint, so
 //   it measures the model at that viewport's scale.
+// - Its snap and inference markers are orange, the dimension tone; the Draw
+//   and Rectangle tools snap in blue and a carried viewport in purple.
 //
 // INTEGRATION:
-// - Na__LayoutEditor__SheetTools__ owns the pointer and delegates here.
+// - Na__LayoutEditor__SheetTools__ owns the pointer and the keys and
+//   delegates here; it runs Move again when Shift goes down or up.
+// - Na__LayoutEditor__DimensionGeometry__ owns the orientation maths.
 //
 // -----------------------------------------------------------------------------
 //
@@ -34,10 +47,26 @@
 // - Parity        : new
 // - Divergences   : n/a
 // - Back-port     : candidate for the drawing dimension tools (45).
+// - TrueVision    : 1.2.0 (Shift ortho, the dimension snap tone) was authored in
+//                   TrueVision3D v2.31.0 and ported back 13-Sep-2026; everything below
+//                   the header is verbatim
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.2.0
+// - Shift makes the dimension ortho while its line is placed: horizontal or
+//   vertical by the side of its points the line is dragged to, kept on the
+//   record as Dimension__Orientation. The offset and the inference are
+//   measured across the orientation's own direction.
+// - Shift no longer bends the span to an axis while the end is picked. The end
+//   lands on the point that was picked, because an ortho dimension measures one
+//   axis whatever the span; an arrow key still locks the span outright.
+// - Snap and inference markers are drawn in the dimension tone (orange).
+// - IsPlacingLine: whether the line is following the cursor, for the sheet
+//   tools' Shift redraw.
+// - Ported from TrueVision3D v2.31.0.
+//
 // 10-Sep-2026 - Version 1.1.0
 // - Arrow key axis lock on the span (Na__LayoutEditor__AxisLock__), which
 //   beats a snap by taking the snapped point's free coordinate, and
@@ -53,7 +82,7 @@
 // REGION | Module Imports
 // -----------------------------------------------------------------------------
 
-    // MODULE IMPORTS | Config, Model, Surface, Handles, Markup, Snapping, Text Field
+    // MODULE IMPORTS | Config, Model, Surface, Handles, Markup, Geometry, Snapping, Text Field
     // ------------------------------------------------------------
     import { Na__LeCfg__GetDimensionSetup, Na__LeCfg__GetSelectionSetup } from './Na__LayoutEditor__ConfigState__.js';
     import {
@@ -68,11 +97,11 @@
     import { Na__LeSurface__GetPixelsPerMm, Na__LeSurface__GetZoom, Na__LeSurface__Refresh } from './Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeHandles__Contains, Na__LeHandles__FrontToBack } from './Na__LayoutEditor__ViewportHandles__.js';
     import { Na__LeMarkup__DimensionSkeleton, Na__LeMarkup__DimensionValueMm, Na__LeMarkup__FormatDimension } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeDimGeo__TextPlacement } from './Na__LayoutEditor__DimensionGeometry__.js';
+    import { Na__LeDimGeo__ALIGNED, Na__LeDimGeo__Frame, Na__LeDimGeo__OrthoToward, Na__LeDimGeo__TextPlacement } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeChrome__MeasureTextMm } from './Na__LayoutEditor__SheetChrome__.js';
-    import { Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from './Na__LayoutEditor__Snapping__.js';
+    import { Na__LeOsnap__TONE_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeGrips__ShowBand, Na__LeGrips__HideBand } from './Na__LayoutEditor__Grips__.js';
-    import { Na__LeAxis__Get, Na__LeAxis__Clear, Na__LeAxis__Apply, Na__LeAxis__Constrain } from './Na__LayoutEditor__AxisLock__.js';
+    import { Na__LeAxis__Get, Na__LeAxis__Clear, Na__LeAxis__Apply } from './Na__LayoutEditor__AxisLock__.js';
     import { Na__LeText__OpenField } from './Na__LayoutEditor__TextTool__.js';
     // ------------------------------------------------------------
 
@@ -101,33 +130,47 @@
 // REGION | Helpers
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Where the Span Ends: a Lock, Then a Snap, Then Shift
+    // HELPER FUNCTION | Where the Span Ends: a Snap, Then a Lock
     // ------------------------------------------------------------
     // An arrow key lock wins outright, but takes the free coordinate from
     // whatever the cursor snapped to, so a span locked across the paper
-    // still measures to the vertex under the cursor. With no lock a snap
-    // beats Shift, as in AutoCAD.
+    // still measures to the vertex under the cursor. Shift has no say here:
+    // it makes the finished dimension ortho instead, and an ortho dimension
+    // measures one axis whatever the span, so bending the span to an axis
+    // would only move the end off the point that was picked.
     // ------------------------------------------------------------
-    function Na__LeDim__SnapOrConstrain(sheet, start, point, shift) {
-        const snap = Na__LeOsnap__Snap(sheet, point);
-        const at   = snap.snapped ? { x : snap.x, y : snap.y } : point;
-        if (Na__LeAxis__Get()) return Na__LeAxis__Apply(start, at);
-        if (snap.snapped) return at;
-        return Na__LeAxis__Constrain(start, point, shift);
+    function Na__LeDim__SnapOrLock(sheet, start, point) {
+        const snap = Na__LeOsnap__Snap(sheet, point, null, Na__LeOsnap__TONE_DIMENSION);
+        const at   = snap.snapped ? { x : snap.x, y : snap.y } : { x : point.x, y : point.y };
+        return Na__LeAxis__Get() ? Na__LeAxis__Apply(start, at) : at;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Orientation the Line Asks For: Ortho While Shift Is Held, Aligned Otherwise
+    // ------------------------------------------------------------
+    function Na__LeDim__OrientationFor(dim, pointMm, shift) {
+        if (!shift) return Na__LeDimGeo__ALIGNED;
+        return Na__LeDimGeo__OrthoToward(
+            { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
+            { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
+            pointMm, dim.Dimension__Orientation, Na__LeCfg__GetSelectionSetup().dragThresholdMm
+        );
     }
     // ------------------------------------------------------------
 
 
     // FUNCTION | The Offset a Cursor Position Asks For, Pulled Onto a Parallel Dimension's Line When Near It
     // ------------------------------------------------------------
+    // Measured from the start across the direction the dimension runs, so an
+    // ortho line slides straight up and down, or across, whatever its points.
     // Returns { offsetMm, inferred (the other line's offset or null), foot (where the marker sits) }.
     // ------------------------------------------------------------
     function Na__LeDim__OffsetFor(sheet, dim, pointMm) {
         const sx = dim.Dimension__StartXMm, sy = dim.Dimension__StartYMm;
-        const dx = dim.Dimension__EndXMm - sx, dy = dim.Dimension__EndYMm - sy;
-        const len = Math.hypot(dx, dy);
-        if (!(len > 0)) return { offsetMm : dim.Dimension__OffsetMm, inferred : null, foot : { x : pointMm.x, y : pointMm.y } };
-        const dirX = dx / len, dirY = dy / len, perpX = -dirY, perpY = dirX;
+        const frame = Na__LeDimGeo__Frame({ x : sx, y : sy }, { x : dim.Dimension__EndXMm, y : dim.Dimension__EndYMm }, dim.Dimension__Orientation);
+        if (!frame) return { offsetMm : dim.Dimension__OffsetMm, inferred : null, foot : { x : pointMm.x, y : pointMm.y } };
+        const dirX = frame.dirX, dirY = frame.dirY, perpX = frame.perpX, perpY = frame.perpY;
         let offset = ((pointMm.x - sx) * perpX) + ((pointMm.y - sy) * perpY);
 
         // INFERENCE | A parallel dimension whose line is within the radius wins
@@ -137,7 +180,7 @@
             if (other.Dimension__Id === dim.Dimension__Id || !Na__LeModel__IsLayerVisible(sheet, other.Dimension__LayerId)) return;
             const sk = Na__LeMarkup__DimensionSkeleton(other);
             if (!sk || Math.abs((sk.dirX * dirX) + (sk.dirY * dirY)) < Na__LeDim__PARALLEL_DOT) return;
-            const d   = ((sk.DS.x - sx) * perpX) + ((sk.DS.y - sy) * perpY);   // <-- Where its line sits, measured from our span
+            const d   = ((sk.DS.x - sx) * perpX) + ((sk.DS.y - sy) * perpY);   // <-- Where its line sits, measured from our start
             const gap = Math.abs(d - offset);
             if (gap <= bestGap) { bestGap = gap; inferred = d; }
         });
@@ -151,10 +194,24 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Orientation and Offset Together for a Cursor Position
+    // ------------------------------------------------------------
+    // The orientation is settled first: it decides which way the offset is
+    // measured and which other dimensions count as parallel.
+    // Returns { orientation, result } - result as OffsetFor returns it.
+    // ------------------------------------------------------------
+    function Na__LeDim__Aim(sheet, dim, pointMm, shift) {
+        const orientation = Na__LeDim__OrientationFor(dim, pointMm, shift);
+        const posed = dim.Dimension__Orientation === orientation ? dim : Object.assign({}, dim, { Dimension__Orientation : orientation });
+        return { orientation : orientation, result : Na__LeDim__OffsetFor(sheet, posed, pointMm) };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Show the Inference Marker, or Hide It
     // ------------------------------------------------------------
     function Na__LeDim__ShowInference(result) {
-        if (result && result.inferred !== null) Na__LeOsnap__ShowMarker({ x : result.foot.x, y : result.foot.y, kind : Na__LeDim__INFER_KIND });
+        if (result && result.inferred !== null) Na__LeOsnap__ShowMarker({ x : result.foot.x, y : result.foot.y, kind : Na__LeDim__INFER_KIND }, Na__LeOsnap__TONE_DIMENSION);
         else Na__LeOsnap__HideMarker();
     }
     // ------------------------------------------------------------
@@ -173,21 +230,24 @@
     function Na__LeDim__Click(sheet, pointMm, shift, defaults) {
         const p = Na__LeDim__Placement;
         if (!p) {
-            const first = Na__LeOsnap__Snap(sheet, pointMm);
+            const first = Na__LeOsnap__Snap(sheet, pointMm, null, Na__LeOsnap__TONE_DIMENSION);
             Na__LeDim__Placement = { phase : 1, startMm : { x : first.x, y : first.y }, endMm : null, id : null };
             Na__LeAxis__Clear();                                              // <-- The point landed: the lock is spent
             Na__LeGrips__ShowBand(Na__LeDim__Placement.startMm, Na__LeDim__Placement.startMm, null);
             return true;
         }
         if (p.phase === 1) {
-            const end = Na__LeDim__SnapOrConstrain(sheet, p.startMm, pointMm, shift);
-            if (Math.hypot(end.x - p.startMm.x, end.y - p.startMm.y) < Na__LeCfg__GetSelectionSetup().dragThresholdMm) return false;   // <-- Not a span yet
+            const end       = Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm);
+            const minSpanMm = Na__LeCfg__GetSelectionSetup().dragThresholdMm;
+            if (Math.hypot(end.x - p.startMm.x, end.y - p.startMm.y) < minSpanMm) return false;   // <-- Not a span yet
             const mid  = { x : (p.startMm.x + end.x) / 2, y : (p.startMm.y + end.y) / 2 };
             const host = Na__LeHandles__FrontToBack(sheet).find((v) => v.Viewport__Kind === Na__LeModel__KIND_2D && Na__LeHandles__Contains(v, mid)) || null;
             const d    = defaults || {};
             const item = Na__LeModel__CreateDimension(sheet, p.startMm, end, {
                 viewportId : host ? host.Viewport__Id : null, offsetMm : d.offsetMm, textSizeMm : d.textSizeMm,
-                colour : d.colour, terminator : d.terminator, precision : d.precision, unitsSuffix : d.unitsSuffix, silent : true
+                colour : d.colour, terminator : d.terminator, precision : d.precision, unitsSuffix : d.unitsSuffix,
+                orientation : shift ? Na__LeDimGeo__OrthoToward(p.startMm, end, end, null, minSpanMm) : Na__LeDimGeo__ALIGNED,   // <-- Shift already down: ortho from the first frame
+                silent : true
             });
             Na__LeAxis__Clear();
             Na__LeGrips__HideBand();
@@ -197,14 +257,14 @@
             Na__LeSurface__Refresh('markup');
             return true;
         }
-        // THIRD CLICK | The line stays where the cursor put it
+        // THIRD CLICK | The line stays where the cursor put it, ortho if Shift is still held
         const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
         Na__LeDim__Placement = null;
         Na__LeAxis__Clear();
         Na__LeOsnap__HideMarker();
         if (!dim) return false;
-        const result = Na__LeDim__OffsetFor(sheet, dim, pointMm);
-        Na__LeModel__UpdateDimension(sheet, dim.Dimension__Id, { offsetMm : result.offsetMm }, false);   // <-- One announcement: one history step
+        const aim = Na__LeDim__Aim(sheet, dim, pointMm, shift);
+        Na__LeModel__UpdateDimension(sheet, dim.Dimension__Id, { orientation : aim.orientation, offsetMm : aim.result.offsetMm }, false);   // <-- One announcement: one history step
         Na__LeModel__SetSelection({ kind : 'dimension', id : dim.Dimension__Id });
         return true;
     }
@@ -215,13 +275,13 @@
     // ------------------------------------------------------------
     function Na__LeDim__Move(sheet, pointMm, shift) {
         const p = Na__LeDim__Placement;
-        if (!p) { Na__LeOsnap__Snap(sheet, pointMm); return false; }        // <-- Marker before the first click
-        if (p.phase === 1) { Na__LeGrips__ShowBand(p.startMm, Na__LeDim__SnapOrConstrain(sheet, p.startMm, pointMm, shift), Na__LeAxis__Get()); return true; }
+        if (!p) { Na__LeOsnap__Snap(sheet, pointMm, null, Na__LeOsnap__TONE_DIMENSION); return false; }   // <-- Marker before the first click
+        if (p.phase === 1) { Na__LeGrips__ShowBand(p.startMm, Na__LeDim__SnapOrLock(sheet, p.startMm, pointMm), Na__LeAxis__Get()); return true; }
         const dim = sheet.Sheet__Dimensions.find((x) => x.Dimension__Id === p.id);
         if (!dim) { Na__LeDim__Placement = null; return false; }
-        const result = Na__LeDim__OffsetFor(sheet, dim, pointMm);
-        Na__LeDim__ShowInference(result);
-        Na__LeModel__UpdateDimension(sheet, dim.Dimension__Id, { offsetMm : result.offsetMm }, true);
+        const aim = Na__LeDim__Aim(sheet, dim, pointMm, shift);
+        Na__LeDim__ShowInference(aim.result);
+        Na__LeModel__UpdateDimension(sheet, dim.Dimension__Id, { orientation : aim.orientation, offsetMm : aim.result.offsetMm }, true);
         Na__LeSurface__Refresh('markup');
         return true;
     }
@@ -251,6 +311,12 @@
     // FUNCTION | Is the Span Being Picked (the phase an axis lock applies to)
     // ------------------------------------------------------------
     function Na__LeDim__IsSpanning() { return !!Na__LeDim__Placement && Na__LeDim__Placement.phase === 1; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Is the Line Following the Cursor (the phase Shift turns ortho)
+    // ------------------------------------------------------------
+    function Na__LeDim__IsPlacingLine() { return !!Na__LeDim__Placement && Na__LeDim__Placement.phase === 2; }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -301,6 +367,7 @@
         Na__LeDim__Cancel,
         Na__LeDim__IsPlacing,
         Na__LeDim__IsSpanning,
+        Na__LeDim__IsPlacingLine,
         Na__LeDim__OffsetFor,
         Na__LeDim__ShowInference,
         Na__LeDim__BeginTextEdit

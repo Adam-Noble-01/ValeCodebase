@@ -56,6 +56,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.3.0
+// - Enter takes an optional edgeWidthPx that stands in for the configured fixed
+//   edge width while the preset is active. The Layout Editor snapshot renderer
+//   passes a viewport's Profile Linework weight through it; the LineworkSettings
+//   factor and the export line-width compensation still apply on top.
+//
 // 09-Sep-2026 - Version 1.2.0
 // - GetExportOverrides: the image export renders a drawing through the ortho
 //   camera with the 2D profile pre-pass, keeping the visible height and
@@ -146,6 +152,7 @@
     let Na__DrawPreset__Styles         = null;   // <-- Per-drawing style toggles in force
     let Na__DrawPreset__ProfilePass2d  = null;   // <-- Ortho-aware normals pre-pass (per composer instance)
     let Na__DrawPreset__Saved          = null;   // <-- Everything to put back on exit
+    let Na__DrawPreset__EdgeWidthPx    = null;   // <-- A caller's own fixed edge width while active (null = the configured one)
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -200,7 +207,8 @@
         if (!pass || !pass.material || !pass.material.uniforms) return;
         const u = pass.material.uniforms;
 
-        if (u.u_edgeWidth) u.u_edgeWidth.value = setup.edgeWidth * Na__LineworkSettings__GetProfileLineFactor();
+        const width = Number.isFinite(Na__DrawPreset__EdgeWidthPx) ? Na__DrawPreset__EdgeWidthPx : setup.edgeWidth;   // <-- A Layout Editor viewport's Profile Linework weight, else the drawing default
+        if (u.u_edgeWidth) u.u_edgeWidth.value = width * Na__LineworkSettings__GetProfileLineFactor();
 
         if (u.u_edgeColor && setup.edgeColour !== null) {
             Na__DrawPreset__Saved.edgeColour = u.u_edgeColor.value.clone();
@@ -255,9 +263,13 @@
 
     // FUNCTION | Put the Composer Into Drawing Mode
     // ------------------------------------------------------------
-    // context: { camera, styles }
-    //   camera - the drawing's THREE.OrthographicCamera
-    //   styles - { profileLinework, glassOpaque, whitecard, ... } per drawing
+    // context: { camera, styles, edgeWidthPx }
+    //   camera      - the drawing's THREE.OrthographicCamera
+    //   styles      - { profileLinework, glassOpaque, whitecard, ... } per drawing
+    //   edgeWidthPx - optional fixed profile edge width in place of the configured
+    //                 one, for as long as this preset is active. The Layout Editor
+    //                 passes a viewport's Profile Linework weight; the live drawing
+    //                 views pass nothing and keep the config.
     // ------------------------------------------------------------
     function Na__DrawView__ComposerPreset__Enter(context) {
         if (!context || !context.camera) return false;
@@ -271,6 +283,7 @@
         const setup = Na__DrawCfg__GetRenderSetup();
         Na__DrawPreset__Camera = context.camera;
         Na__DrawPreset__Styles = Object.assign({ profileLinework : true }, context.styles || {});
+        Na__DrawPreset__EdgeWidthPx = (Number.isFinite(context.edgeWidthPx) && context.edgeWidthPx > 0) ? context.edgeWidthPx : null;
         Na__DrawPreset__Saved  = {
             renderPassCamera : renderPass ? renderPass.camera : null,
             background       : Na__DrawPreset__Scene ? Na__DrawPreset__Scene.background : null,
@@ -334,6 +347,7 @@
         Na__DrawPreset__Camera = null;
         Na__DrawPreset__Styles = null;
         Na__DrawPreset__Saved  = null;
+        Na__DrawPreset__EdgeWidthPx = null;
 
         window.dispatchEvent(new CustomEvent(Na__DrawPreset__CAMERA_EVENT, {
             detail : { camera : Na__DrawPreset__PerspCamera, isOrtho : false }

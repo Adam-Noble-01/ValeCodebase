@@ -36,6 +36,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - SliderRow and ShowSlider: a labelled 0-100 slider with its reading beside
+//   it, for the fill and line opacity rows of the Leaders and Vectors panels.
+// - Ported from TrueVision3D v2.35.0.
+//
+// 13-Sep-2026 - Version 1.1.0
+// - AdvancedToggle and IsAdvanced: a small Advanced fold under a section's
+//   title that reveals every element in the section marked na-le-adv.
+//   Ported from TrueVision3D 13-Sep-2026 for the Render Composites weights.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -324,6 +334,59 @@
     function Na__LePanels__GetContext() { return Na__LePanels__Context; }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | A Small "Advanced" Fold Directly Under a Section's Title
+    // ------------------------------------------------------------
+    // Call from a section's build function, FIRST, so the toggle is the top line
+    // of the body. It does not hide rows of its own: it puts `is-advanced` on the
+    // section root, and any element in that section carrying `na-le-adv` is shown
+    // only while that class is present. So a panel marks its rarely-used controls
+    // with one class, wherever they sit - inline in an existing row or as rows of
+    // their own - and the fold reveals them all together.
+    //
+    // WHY NOT A NESTED SECTION. A fold inside a fold is a maze, and the controls
+    // this reveals belong INSIDE the rows they modify, not in a separate list a
+    // person has to match back up by name.
+    //
+    // Remembered per section like the fold itself, so someone curating a sheet
+    // does not have to reopen it on every selection.
+    // ------------------------------------------------------------
+    function Na__LePanels__AdvancedToggle(body, sectionId, label) {
+        const root   = body.closest('.na-le-section');
+        const button = document.createElement('button');
+        button.type      = 'button';
+        button.className = 'na-le-adv-toggle';
+        button.innerHTML = '<span class="na-le-adv-toggle__chevron" aria-hidden="true"></span><span class="na-le-adv-toggle__label"></span>';
+        button.querySelector('.na-le-adv-toggle__label').textContent = label || 'Advanced';
+
+        const open = Na__LePanels__Recall('advanced-' + sectionId, '0') === '1';
+        if (root) root.classList.toggle('is-advanced', open);
+        button.setAttribute('aria-expanded', String(open));
+
+        button.addEventListener('click', () => {
+            const now = !(root && root.classList.contains('is-advanced'));
+            if (root) root.classList.toggle('is-advanced', now);
+            button.setAttribute('aria-expanded', String(now));
+            Na__LePanels__Remember('advanced-' + sectionId, now ? '1' : '0');
+            Na__LePanels__Refresh(sectionId);                                     // <-- The controls it reveals may need filling
+        });
+
+        body.appendChild(button);
+        return button;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Is a Section's Advanced Fold Open
+    // ------------------------------------------------------------
+    // Refresh functions ask this so they only fill controls a person can see.
+    // ------------------------------------------------------------
+    function Na__LePanels__IsAdvanced(sectionId) {
+        const entry = Na__LePanels__Sections.get(sectionId);
+        return !!(entry && entry.root.classList.contains('is-advanced'));
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -393,6 +456,46 @@
     }
     // ------------------------------------------------------------
 
+
+    // FUNCTION | A Labelled Slider With Its Reading (0 to 100 unless told otherwise)
+    // ------------------------------------------------------------
+    // A div rather than the label row: a label hands a click on its caption to
+    // its first control, and for a slider that click would jump the value.
+    // The reading after the slider is filled by ShowSlider, and by the panel's
+    // own input handler while the slider moves.
+    // ------------------------------------------------------------
+    function Na__LePanels__SliderRow(labelText, controlName, attributes) {
+        const row = document.createElement('div');
+        row.className = 'na-le-row';
+        const caption = document.createElement('span');
+        caption.className   = 'na-le-row__label';
+        caption.textContent = labelText;
+        const slider = Na__LePanels__Input('range', controlName, Object.assign({ min : 0, max : 100, step : 1 }, attributes || {}));
+        slider.classList.add('na-le-input--range');
+        const reading = document.createElement('span');
+        reading.className = 'na-le-grad-readout';                                 // <-- The gradient rows' reading, so every slider reads alike
+        reading.setAttribute('data-na-reading', controlName);
+        row.appendChild(caption);
+        row.appendChild(slider);
+        row.appendChild(reading);
+        return row;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Show a Value on a Slider Row
+    // ------------------------------------------------------------
+    // A slider that has the focus is left where the pointer holds it, so a
+    // refresh mid-drag never pulls it back; its reading still follows.
+    // ------------------------------------------------------------
+    function Na__LePanels__ShowSlider(body, controlName, value, readingText) {
+        const slider  = body.querySelector('[data-na-control="' + controlName + '"]');
+        const reading = body.querySelector('[data-na-reading="' + controlName + '"]');
+        if (slider && document.activeElement !== slider) slider.value = String(value);
+        if (reading) reading.textContent = readingText;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -412,12 +515,16 @@
         Na__LePanels__OnControl,
         Na__LePanels__IsEditable,
         Na__LePanels__GetContext,
+        Na__LePanels__AdvancedToggle,
+        Na__LePanels__IsAdvanced,
         Na__LePanels__Row,
         Na__LePanels__Input,
         Na__LePanels__Select,
         Na__LePanels__FillSelect,
         Na__LePanels__Button,
-        Na__LePanels__Note
+        Na__LePanels__Note,
+        Na__LePanels__SliderRow,
+        Na__LePanels__ShowSlider
     };
     // ------------------------------------------------------------
 

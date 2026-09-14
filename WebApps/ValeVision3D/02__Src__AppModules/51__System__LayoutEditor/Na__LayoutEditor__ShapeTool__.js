@@ -40,6 +40,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.3.2
+// - A new shape takes the Vectors panel's fill and edge opacity defaults.
+// - Ported from TrueVision3D v2.35.0.
+//
 // 13-Sep-2026 - Version 1.3.1
 // - A new shape takes the Vectors panel's gradient default when it is on, so a
 //   run of fades can be drawn straight off with nothing selected. Ported from
@@ -189,7 +193,7 @@
 
     // FUNCTION | A Click With the Draw Tool
     // ------------------------------------------------------------
-    // defaults: { strokeColour, strokePt, fillColour, filled, stroked, gradientOn, gradient }
+    // defaults: { strokeColour, strokePt, fillColour, filled, stroked, fillOpacity, strokeOpacity, gradientOn, gradient }
     // ------------------------------------------------------------
     function Na__LeShape__Click(sheet, pointMm, shift, defaults) {
         const draft = Na__LeShape__Draft;
@@ -201,6 +205,7 @@
             const d    = defaults || {};
             const item = Na__LeModel__CreateShape(sheet, [ pt ], {
                 strokeColour : d.strokeColour, strokePt : d.strokePt, fillColour : d.filled ? d.fillColour : null,
+                fillOpacity : d.fillOpacity, strokeOpacity : d.strokeOpacity,
                 gradient : d.gradientOn ? d.gradient : null, closed : false, stroked : true, silent : true
             });
             if (!item) return false;

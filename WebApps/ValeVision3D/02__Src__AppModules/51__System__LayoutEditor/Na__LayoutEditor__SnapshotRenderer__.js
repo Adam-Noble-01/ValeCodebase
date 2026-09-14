@@ -40,6 +40,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.4.0
+// - Render Composites weights, ported from TrueVision3D: the profile edge, the
+//   section outline and the model's own edges draw at the viewport's widths for
+//   one render and are put back. Each width goes in through the system that owns
+//   it - the composer preset, the Cross Sections tool, Na__LineworkSettings -
+//   where TrueVision sets its Sobel quad and line materials directly (DIV-1).
+//
 // 11-Sep-2026 - Version 1.3.1
 // - Entourage silhouettes (ValeVision__SceneEntourageSilhouette, tag 61) are context too: Context Layer off takes them out with the rest.
 //
@@ -123,6 +130,15 @@
     import { Na__StaticExport__RenderToCanvas } from '../30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js';
     import { Na__PlView__KIND_PLAN, Na__PlView__Hash } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ViewDefinition__.js';
     import { Na__PlStage__Describe } from '../50__System__ProjectedLinework/Na__ProjectedLinework__ModelStage__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | The Line Widths a Composite Weight Sets
+    // ------------------------------------------------------------
+    // The composer preset takes the profile width on Enter; these carry the
+    // section outline and the model's own edges.
+    // ------------------------------------------------------------
+    import { Na__CrossSection__GetAppearance, Na__CrossSection__SetLineWidth } from '../41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js';
+    import { Na__LineworkSettings__SetLineworkBaseOverride } from '../05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -359,8 +375,15 @@
     // FUNCTION | Render a 2D Drawing Window Offscreen
     // ------------------------------------------------------------
     // Returns { dataUrl, widthPx, heightPx } (png), or null.
+    //
+    // weights is { profilePx, sectionPx, modelEdgePx } from the viewport's Render
+    // Composites, or null for the configured widths. All three are screen-space
+    // widths - the profile pass's sampling width, the cut outline's line material
+    // and the model's own edge materials - so they are set for the length of this
+    // one render and put back afterwards. Each goes in through the system that
+    // owns it, so ValeVision's export line-width compensation still applies on top.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples) {
+    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights) {
         if (!Na__LeSnap__IsReady() || !definition) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             const wasSuspended = Na__DrawView__Transitions__IsSuspended();
@@ -368,13 +391,29 @@
             const pass         = pipeline && pipeline.profileLinesPassRef ? pipeline.profileLinesPassRef : null;
             const passWasOn    = pass ? pass.enabled : null;                       // <-- The preset's exit forces it on; the 3D toggle owns it
             let cutApplied = false;
+            const wantProfile = !!weights && Number.isFinite(weights.profilePx)   && weights.profilePx   > 0;
+            const wantSection = !!weights && Number.isFinite(weights.sectionPx)   && weights.sectionPx   > 0;
+            const wantEdges   = !!weights && Number.isFinite(weights.modelEdgePx) && weights.modelEdgePx > 0;
+            let   sectionWas  = null;
+            let   edgesSet    = false;
             let contextSaved = null;                                               // <-- Visibility to put back when the context was hidden
             try {
                 Na__DrawView__SectionAdapter__SuspendLiveTool();
+                // THE OUTLINE WIDTH GOES IN BEFORE THE CUT IS BUILT, so the cut's
+                // outline is drawn at this viewport's width, and comes back out
+                // after the live tool is handed back (see the finally).
+                if (wantSection) {
+                    sectionWas = Na__CrossSection__GetAppearance().lineWidthPx;
+                    Na__CrossSection__SetLineWidth(weights.sectionPx);
+                }
                 cutApplied = Na__LeSnap__ApplyCut(definition);
                 const camera = Na__LeSnap__FrameOrtho(definition, windowMm);
                 if (!wasSuspended) Na__DrawView__Transitions__SuspendThreeD();     // <-- Distance culling off for the picture
-                Na__DrawView__ComposerPreset__Enter({ camera : camera, styles : styles || {} });
+                Na__DrawView__ComposerPreset__Enter({ camera : camera, styles : styles || {}, edgeWidthPx : wantProfile ? weights.profilePx : null });
+                if (wantEdges) {
+                    Na__LineworkSettings__SetLineworkBaseOverride(weights.modelEdgePx);   // <-- The tiled renderer's export scale multiplies it, so it survives the tile setup
+                    edgesSet = true;
+                }
                 Na__DrawView__MaterialPreset__Enter(styles || {});
                 contextSaved = Na__LeSnap__HideForViewport(styles, modelLayers);
                 Na__DrawView__SectionAdapter__ReapplyClipping();
@@ -391,12 +430,14 @@
                 console.warn('[ValeVision3D LayoutEditor] 2D underlay render failed:', renderError);
                 return null;
             } finally {
+                if (edgesSet) Na__LineworkSettings__SetLineworkBaseOverride(null);                   // <-- Every edge material back to its own base width
                 if (contextSaved) Na__ModelToggle__ApplySceneLayerVisibility(contextSaved);
                 Na__DrawView__MaterialPreset__Exit();
                 Na__DrawView__ComposerPreset__Exit();
                 if (pass && passWasOn !== null) pass.enabled = passWasOn;
                 if (cutApplied) Na__DrawView__SectionAdapter__RemovePlane(Na__LeSnap__CUT_ID);
                 Na__DrawView__SectionAdapter__Release();
+                if (sectionWas !== null) Na__CrossSection__SetLineWidth(sectionWas);                  // <-- After the release, so the author's sections end at their own width
                 if (!wasSuspended) Na__DrawView__Transitions__ResumeThreeD();
                 Na__RenderLoop__RequestRender();
             }
@@ -408,8 +449,13 @@
     // FUNCTION | Render a Saved Scene Offscreen With the Viewport's Styles
     // ------------------------------------------------------------
     // Returns { canvas, widthPx, heightPx }, or null. The caller converts.
+    //
+    // weights is { modelEdgePx } or null. The model's own edges are the one
+    // composite width a scene render has: its profile outline is the composer's
+    // own distance-scaled effect, and the Section Outline weight belongs to a 2D
+    // drawing's cut.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples) {
+    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights) {
         if (!Na__LeSnap__IsReady() || !sceneRecord) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             const camera   = Na__LeSnap__Camera;
@@ -426,11 +472,16 @@
                 sections   : Na__CrossSection__SerializeSections(),
                 passOn     : pass ? pass.enabled : null
             };
+            let edgesSet = false;
             try {
                 Na__PresentationMode__Camera__ApplySceneCameraState(camera, controls, sceneRecord);
                 Na__DrawView__MaterialPreset__Enter(styles || {});
                 Na__LeSnap__HideForViewport(styles, modelLayers);                                   // <-- The saved map above already puts it back
                 if (pass) pass.enabled = !(styles && styles.profileLinework === false);
+                if (weights && Number.isFinite(weights.modelEdgePx) && weights.modelEdgePx > 0) {
+                    Na__LineworkSettings__SetLineworkBaseOverride(weights.modelEdgePx);
+                    edgesSet = true;
+                }
                 const result = await Na__StaticExport__RenderToCanvas({
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : camera,
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
@@ -443,6 +494,7 @@
                 console.warn('[ValeVision3D LayoutEditor] 3D snapshot render failed:', renderError);
                 return null;
             } finally {
+                if (edgesSet) Na__LineworkSettings__SetLineworkBaseOverride(null);
                 Na__DrawView__MaterialPreset__Exit();
                 if (pass && saved.passOn !== null) pass.enabled = saved.passOn;
                 camera.position.copy(saved.position);

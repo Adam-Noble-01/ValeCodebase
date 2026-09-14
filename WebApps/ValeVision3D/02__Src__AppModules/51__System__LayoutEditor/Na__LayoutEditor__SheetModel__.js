@@ -23,20 +23,33 @@
 //     Viewport    Viewport__Id, LayerId, Name, Kind ('2d' | '3d'), SceneId,
 //                 DrawingId, FrameMm {X, Y, WidthMm, HeightMm},
 //                 ScaleDenominator, PanMm {X, Y}, ImageMm {WidthMm, HeightMm},
-//                 ImageOffsetMm {X, Y}, Styles {...}, MarkupMode, Locked,
+//                 ImageOffsetMm {X, Y}, Styles {...}, ProjectedEdges {...} and
+//                 CompositeWeights {...} (each null when none set), MarkupMode,
+//                 Locked,
 //                 SnapshotAsset {Asset__Path, Asset__Fingerprint, Asset__PixelWidth}
 //     Annotation  Annotation__Id, LayerId, Text, PosXMm, PosYMm, SizeMm,
 //                 FontWeight, Colour, Align, LeaderXMm, LeaderYMm
 //     Dimension   Dimension__Id, LayerId, ViewportId, StartXMm, StartYMm,
 //                 EndXMm, EndYMm, OffsetMm, TextSizeMm, Colour, Terminator,
-//                 Precision, UnitsSuffix, OverrideText
+//                 Precision, UnitsSuffix, OverrideText,
+//                 Orientation ('aligned' | 'horizontal' | 'vertical')
 //     Shape       Shape__Id, LayerId, Points [[x, y], ...], Closed, Stroked, StrokeColour,
 //                 StrokePt, FillColour (null for none), Gradient (null for none;
-//                 the shape is Na__LayoutEditor__GradientTool__'s)
+//                 the shape is Na__LayoutEditor__GradientTool__'s), FillOpacity,
+//                 StrokeOpacity (0 to 1)
+//     Leader      Leader__Id, LayerId, Type ('text' | 'bubble'), TipXMm, TipYMm,
+//                 AnchorXMm, AnchorYMm, Text, TextSizeMm, FontWeight, TextColour,
+//                 LineColour, LinePt, LineStyle ('solid' | 'dashed'), LineOpacity,
+//                 EndpointFilled, EndpointPt, EndpointSizeMm, BubbleSizeMm,
+//                 BubbleEdgePt, FillColour (null for none), FillOpacity
+//                 (drawn by Na__LayoutEditor__LeaderGeometry__)
 //   Paper coordinates are millimetres from the sheet's top-left, y down.
 //
 // - The active sheet and the selection are session state, held here so the
-//   panels and the surface agree on them.
+//   panels and the surface agree on them. The selection is a set of
+//   { kind, id } - one item, or several from a selection box or Shift and
+//   Ctrl clicks; GetSelection reads it as the one item when there is exactly
+//   one, which is all a properties panel can edit.
 //
 // INTEGRATION:
 // - Loads from Na__DrawView__ProjectData__ on its events; Save goes through
@@ -54,6 +67,41 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.7.0
+// - Box select: the selection is a set - SetSelectionItems, GetSelectionItems,
+//   IsSelected, and Unselect for the deletes. GetSelection still answers
+//   { kind, id } for exactly one item and null for none or several, so every
+//   single-item reader is unchanged; SetSelection sets a set of one.
+// - DeleteItems removes any mix of viewports, text, dimensions, shapes and
+//   leaders in one pass, with one announcement per collection touched: one
+//   undo step for a multi-selection delete (Na__LayoutEditor__SelectionSet__).
+// - Ported from TrueVision3D v2.34.0.
+//
+// 14-Sep-2026 - Version 1.6.0
+// - Leaders & Annotation Bubbles: GetLeaders, CreateLeader, UpdateLeader and
+//   DeleteLeader, announced as 'leaders' (the collection) and 'leader' (one
+//   item). New sheets carry Sheet__Leaders; deleting a layer moves its leaders
+//   to the default text layer.
+// - CreateShape and UpdateShape carry Shape__FillOpacity and
+//   Shape__StrokeOpacity (the fillOpacity and strokeOpacity keys, 0 to 1).
+// - Ported from TrueVision3D v2.35.0.
+//
+// 13-Sep-2026 - Version 1.5.0
+// - UpdateViewport takes projectedEdges: merged one category at a time, a null
+//   value clears that category, and the change is stamped in Edges__UpdatedIso.
+//   Ported from TrueVision3D (Edge Styles).
+//
+// 13-Sep-2026 - Version 1.4.0
+// - CreateDimension and UpdateDimension carry Dimension__Orientation (the
+//   orientation key: 'aligned', 'horizontal' or 'vertical') for the Dimension
+//   tool's Shift ortho. The normaliser makes anything else aligned. Ported from
+//   TrueVision3D v2.31.0.
+//
+// 13-Sep-2026 - Version 1.3.0
+// - UpdateViewport takes compositeWeights: merged one weight at a time, clamped
+//   to the Render Composites config, and a null value clears that weight.
+//   Ported from TrueVision.
+//
 // 13-Sep-2026 - Version 1.2.2
 // - CreateShape and UpdateShape carry Shape__Gradient (the gradient key: an
 //   object, or null to clear it). The normaliser copies it, so no two shapes
@@ -111,9 +159,12 @@
         Na__LeRec__NormaliseSheet,
         Na__LeRec__DefaultLayerId,
         Na__LeRec__BuildFields,
-        Na__LeRec__NormaliseShape
+        Na__LeRec__NormaliseShape,
+        Na__LeRec__NormaliseLeader
     } from './Na__LayoutEditor__SheetRecords__.js';
     import { Na__LeScale__Coerce } from './Na__LayoutEditor__ScaleManager__.js';
+    import { Na__LeEdge__FIELD, Na__LeEdge__CAT_FIELD } from './Na__LayoutEditor__EdgeStyles__.js';
+    import { Na__LeComposite__FIELD, Na__LeComposite__Clamp } from './Na__LayoutEditor__RenderComposites__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -135,8 +186,8 @@
 
     // MODULE VARIABLES | Session State
     // ------------------------------------------------------------
-    let Na__LeModel__ActiveSheetId = null;
-    let Na__LeModel__Selection     = null;     // <-- { kind : 'viewport' | 'annotation' | 'dimension' | 'shape', id }
+    let Na__LeModel__ActiveSheetId  = null;
+    let Na__LeModel__SelectionItems = [];      // <-- [{ kind : 'viewport' | 'annotation' | 'dimension' | 'shape' | 'leader', id }], in the order chosen
     let Na__LeModel__Dirty         = false;
     let Na__LeModel__Initialized   = false;
     // ------------------------------------------------------------
@@ -216,8 +267,8 @@
     function Na__LeModel__SetActiveSheetId(sheetId) {
         const next = (sheetId && Na__LeModel__GetSheetById(sheetId)) ? sheetId : null;
         if (next === Na__LeModel__ActiveSheetId) return next;
-        Na__LeModel__ActiveSheetId = next;
-        Na__LeModel__Selection     = null;
+        Na__LeModel__ActiveSheetId  = next;
+        Na__LeModel__SelectionItems = [];
         Na__LeModel__Dispatch('active', next);
         return next;
     }
@@ -241,7 +292,8 @@
             Sheet__Viewports       : [],
             Sheet__Annotations     : [],
             Sheet__Dimensions      : [],
-            Sheet__Shapes          : []
+            Sheet__Shapes          : [],
+            Sheet__Leaders         : []
         };
         list.push(sheet);
         Na__LeRec__NormaliseSheet(sheet, list.length - 1);
@@ -277,7 +329,7 @@
             if (list[i] && list[i].Sheet__Id === sheetId) {
                 list.splice(i, 1);
                 list.forEach((s, k) => { s.Sheet__Order = k + 1; });
-                if (Na__LeModel__ActiveSheetId === sheetId) { Na__LeModel__ActiveSheetId = null; Na__LeModel__Selection = null; }
+                if (Na__LeModel__ActiveSheetId === sheetId) { Na__LeModel__ActiveSheetId = null; Na__LeModel__SelectionItems = []; }
                 Na__LeModel__Touch('sheet-deleted', sheetId);
                 return true;
             }
@@ -402,6 +454,7 @@
         sheet.Sheet__Viewports.forEach((v)   => { if (v.Viewport__LayerId   === layerId) v.Viewport__LayerId   = Na__LeModel__DefaultLayerId(sheet, 'viewport'); });
         sheet.Sheet__Annotations.forEach((a) => { if (a.Annotation__LayerId === layerId) a.Annotation__LayerId = Na__LeModel__DefaultLayerId(sheet, 'annotation'); });
         sheet.Sheet__Dimensions.forEach((d)  => { if (d.Dimension__LayerId  === layerId) d.Dimension__LayerId  = Na__LeModel__DefaultLayerId(sheet, 'dimension'); });
+        (sheet.Sheet__Leaders || []).forEach((l) => { if (l.Leader__LayerId === layerId) l.Leader__LayerId = Na__LeModel__DefaultLayerId(sheet, 'annotation'); });
         Na__LeModel__Touch('layers', sheet.Sheet__Id, layerId);
         return true;
     }
@@ -505,7 +558,7 @@
         if (index === -1) return false;
         sheet.Sheet__Viewports.splice(index, 1);
         sheet.Sheet__Dimensions.forEach((d) => { if (d.Dimension__ViewportId === viewportId) d.Dimension__ViewportId = null; });
-        if (Na__LeModel__Selection && Na__LeModel__Selection.id === viewportId) Na__LeModel__Selection = null;
+        Na__LeModel__Unselect(viewportId);
         Na__LeModel__Touch('viewports', sheet.Sheet__Id, viewportId);
         return true;
     }
@@ -515,7 +568,7 @@
     // FUNCTION | Change a Viewport (any subset of its fields)
     // ------------------------------------------------------------
     // patch: { rect, scaleDenominator, pan, imageMm, imageOffset, styles, modelLayers,
-    //          markupMode,
+    //          projectedEdges, compositeWeights, markupMode,
     //          name, layerId, sceneId, drawingId, kind, showScaleLabel, snapshotAsset }
     // silent: true skips the change event (live drags announce on release).
     // ------------------------------------------------------------
@@ -538,6 +591,35 @@
             const merged = Object.assign({}, viewport.Viewport__ModelLayers || {});
             Object.keys(patch.modelLayers).forEach((key) => { if (typeof patch.modelLayers[key] === 'boolean') merged[key] = patch.modelLayers[key]; });
             viewport.Viewport__ModelLayers = merged;
+        }
+        if (patch.projectedEdges) {
+            // MERGED, ONE CATEGORY AT A TIME, and a null value CLEARS that
+            // category rather than storing an empty entry - which is how the
+            // panel's Reset button leaves no trace that anything was touched.
+            const held   = viewport[Na__LeEdge__FIELD] || {};
+            const merged = Object.assign({}, held[Na__LeEdge__CAT_FIELD] || {});
+            Object.keys(patch.projectedEdges).forEach((key) => {
+                const value = patch.projectedEdges[key];
+                if (value === null || value === undefined) { delete merged[key]; return; }
+                if (typeof value === 'object') merged[key] = value;
+            });
+            const next = {};
+            next[Na__LeEdge__CAT_FIELD] = merged;
+            next['Edges__UpdatedIso']   = new Date().toISOString();             // <-- Stamped where a change is known to have happened, not in the normaliser
+            viewport[Na__LeEdge__FIELD] = next;
+        }
+        if (patch.compositeWeights) {
+            // MERGED, ONE WEIGHT AT A TIME, and a null value CLEARS that weight
+            // rather than storing it - which is how the panel's reset button
+            // leaves no trace that anything was touched.
+            const merged = Object.assign({}, viewport[Na__LeComposite__FIELD] || {});
+            Object.keys(patch.compositeWeights).forEach((key) => {
+                const value = patch.compositeWeights[key];
+                if (value === null || value === undefined) { delete merged[key]; return; }
+                const clamped = Na__LeComposite__Clamp(key, parseFloat(value));
+                if (Number.isFinite(clamped)) merged[key] = clamped;
+            });
+            viewport[Na__LeComposite__FIELD] = merged;
         }
         if (patch.scaleDenominator !== undefined) viewport.Viewport__ScaleDenominator = Na__LeScale__Coerce(patch.scaleDenominator);
         if (patch.markupMode === 'scene' || patch.markupMode === 'sheet') viewport.Viewport__MarkupMode = patch.markupMode;
@@ -653,7 +735,7 @@
         const index = sheet.Sheet__Annotations.findIndex((a) => a.Annotation__Id === itemId);
         if (index === -1) return false;
         sheet.Sheet__Annotations.splice(index, 1);
-        if (Na__LeModel__Selection && Na__LeModel__Selection.id === itemId) Na__LeModel__Selection = null;
+        Na__LeModel__Unselect(itemId);
         Na__LeModel__Touch('annotations', sheet.Sheet__Id, itemId);
         return true;
     }
@@ -677,6 +759,7 @@
             Dimension__Precision    : opts.precision,
             Dimension__UnitsSuffix  : opts.unitsSuffix,
             Dimension__OverrideText : (typeof opts.overrideText === 'string') ? opts.overrideText : null,
+            Dimension__Orientation  : opts.orientation,                        // <-- 'aligned', 'horizontal' or 'vertical'; the normaliser makes anything else aligned
             Dimension__LayerId      : opts.layerId
         }, Na__LeModel__DefaultLayerId(sheet, 'dimension'));
         sheet.Sheet__Dimensions.push(item);
@@ -698,6 +781,7 @@
         if (typeof patch.colour === 'string') item.Dimension__Colour = patch.colour;
         if (typeof patch.terminator === 'string') item.Dimension__Terminator = patch.terminator;
         if (typeof patch.unitsSuffix === 'string') item.Dimension__UnitsSuffix = patch.unitsSuffix;
+        if (typeof patch.orientation === 'string') item.Dimension__Orientation = patch.orientation;
         if (patch.overrideText !== undefined) item.Dimension__OverrideText = (typeof patch.overrideText === 'string' && patch.overrideText.trim()) ? patch.overrideText : null;
         if (patch.viewportId !== undefined) item.Dimension__ViewportId = patch.viewportId;
         if (typeof patch.layerId === 'string') item.Dimension__LayerId = patch.layerId;
@@ -711,7 +795,7 @@
         const index = sheet.Sheet__Dimensions.findIndex((d) => d.Dimension__Id === itemId);
         if (index === -1) return false;
         sheet.Sheet__Dimensions.splice(index, 1);
-        if (Na__LeModel__Selection && Na__LeModel__Selection.id === itemId) Na__LeModel__Selection = null;
+        Na__LeModel__Unselect(itemId);
         Na__LeModel__Touch('dimensions', sheet.Sheet__Id, itemId);
         return true;
     }
@@ -721,7 +805,7 @@
     // FUNCTION | Create, Update and Delete a Vector Shape
     // ------------------------------------------------------------
     // points: [[x, y], ...] paper mm. options: { strokeColour, strokePt,
-    // fillColour, closed, stroked, layerId, silent }. A sheet without a
+    // fillColour, fillOpacity, strokeOpacity, closed, stroked, layerId, silent }. A sheet without a
     // vector layer gets one the first time a shape lands. Edges and fill
     // are either-or at the least: the normaliser puts the edges back on a
     // shape that would otherwise have nothing to show.
@@ -743,6 +827,8 @@
             Shape__StrokePt     : opts.strokePt,
             Shape__FillColour   : (typeof opts.fillColour === 'string') ? opts.fillColour : null,
             Shape__Stroked      : opts.stroked !== false,
+            Shape__FillOpacity  : opts.fillOpacity,                            // <-- Left out, or not 0 to 1: the normaliser makes it solid
+            Shape__StrokeOpacity: opts.strokeOpacity,
             Shape__Gradient     : (opts.gradient && typeof opts.gradient === 'object') ? opts.gradient : null   // <-- The normaliser copies it, so the caller's object is never shared
         }, layerId);
         sheet.Sheet__Shapes.push(item);
@@ -759,6 +845,8 @@
         if (patch.fillColour !== undefined) item.Shape__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;
         if (patch.gradient !== undefined) item.Shape__Gradient = (patch.gradient && typeof patch.gradient === 'object') ? patch.gradient : null;   // <-- null clears it; the normaliser below copies it fresh
         if (typeof patch.stroked === 'boolean') item.Shape__Stroked = patch.stroked;
+        if (Number.isFinite(patch.fillOpacity))   item.Shape__FillOpacity   = patch.fillOpacity;
+        if (Number.isFinite(patch.strokeOpacity)) item.Shape__StrokeOpacity = patch.strokeOpacity;
         if (typeof patch.layerId === 'string') item.Shape__LayerId = patch.layerId;
         Na__LeRec__NormaliseShape(item, item.Shape__LayerId);
         if (silent) { Na__LeModel__Dirty = true; return true; }
@@ -770,9 +858,128 @@
         const index = sheet.Sheet__Shapes.findIndex((sh) => sh.Shape__Id === itemId);
         if (index === -1) return false;
         sheet.Sheet__Shapes.splice(index, 1);
-        if (Na__LeModel__Selection && Na__LeModel__Selection.id === itemId) Na__LeModel__Selection = null;
+        Na__LeModel__Unselect(itemId);
         Na__LeModel__Touch('shapes', sheet.Sheet__Id, itemId);
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Sheet's Leaders
+    // ------------------------------------------------------------
+    function Na__LeModel__GetLeaders(sheet) { return (sheet && Array.isArray(sheet.Sheet__Leaders)) ? sheet.Sheet__Leaders : []; }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Create, Update and Delete a Leader
+    // ------------------------------------------------------------
+    // tip and anchor: { x, y } paper mm - the point the leader points at, and
+    // where it lands on its note or bubble. options: { type, text, textSizeMm,
+    // fontWeight, textColour, lineColour, linePt, lineStyle, lineOpacity,
+    // endpointFilled, endpointPt, endpointSizeMm, bubbleSizeMm, bubbleEdgePt,
+    // fillColour (null for no fill), fillOpacity, layerId, silent }. Anything
+    // left out takes the Leader setup's default in the normaliser, and a new
+    // leader lands on the sheet's text layer.
+    // ------------------------------------------------------------
+    function Na__LeModel__CreateLeader(sheet, tip, anchor, options) {
+        if (!sheet || !tip || !anchor) return null;
+        if (!Array.isArray(sheet.Sheet__Leaders)) sheet.Sheet__Leaders = [];
+        const opts = options || {};
+        const item = Na__LeRec__NormaliseLeader({
+            Leader__Id             : Na__LeRec__NextId(sheet.Sheet__Leaders, 'Leader_', 'Leader__Id'),
+            Leader__LayerId        : opts.layerId,
+            Leader__Type           : opts.type,
+            Leader__TipXMm         : tip.x,    Leader__TipYMm    : tip.y,
+            Leader__AnchorXMm      : anchor.x, Leader__AnchorYMm : anchor.y,
+            Leader__Text           : opts.text,
+            Leader__TextSizeMm     : opts.textSizeMm,
+            Leader__FontWeight     : opts.fontWeight,
+            Leader__TextColour     : opts.textColour,
+            Leader__LineColour     : opts.lineColour,
+            Leader__LinePt         : opts.linePt,
+            Leader__LineStyle      : opts.lineStyle,
+            Leader__LineOpacity    : opts.lineOpacity,
+            Leader__EndpointFilled : opts.endpointFilled,
+            Leader__EndpointPt     : opts.endpointPt,
+            Leader__EndpointSizeMm : opts.endpointSizeMm,
+            Leader__BubbleSizeMm   : opts.bubbleSizeMm,
+            Leader__BubbleEdgePt   : opts.bubbleEdgePt,
+            Leader__FillColour     : opts.fillColour === undefined ? undefined : ((typeof opts.fillColour === 'string') ? opts.fillColour : null),   // <-- Left out: the default fill; null: no fill
+            Leader__FillOpacity    : opts.fillOpacity
+        }, Na__LeModel__DefaultLayerId(sheet, 'annotation'));
+        sheet.Sheet__Leaders.push(item);
+        if (opts.silent) Na__LeModel__Dirty = true; else Na__LeModel__Touch('leaders', sheet.Sheet__Id, item.Leader__Id);   // <-- The leader tool announces once, when the head lands
+        return item;
+    }
+    function Na__LeModel__UpdateLeader(sheet, itemId, patch, silent) {
+        const item = sheet ? Na__LeRec__Find(Na__LeModel__GetLeaders(sheet), 'Leader__Id', itemId) : null;
+        if (!item || !patch) return false;
+        [ 'TipXMm', 'TipYMm', 'AnchorXMm', 'AnchorYMm', 'TextSizeMm', 'FontWeight', 'LinePt', 'LineOpacity',
+          'EndpointPt', 'EndpointSizeMm', 'BubbleSizeMm', 'BubbleEdgePt', 'FillOpacity' ].forEach((key) => {
+            const name = key.charAt(0).toLowerCase() + key.slice(1);
+            if (Number.isFinite(patch[name])) item['Leader__' + key] = patch[name];
+        });
+        [ 'Type', 'Text', 'TextColour', 'LineColour', 'LineStyle' ].forEach((key) => {
+            const name = key.charAt(0).toLowerCase() + key.slice(1);
+            if (typeof patch[name] === 'string') item['Leader__' + key] = patch[name];
+        });
+        if (typeof patch.endpointFilled === 'boolean') item.Leader__EndpointFilled = patch.endpointFilled;
+        if (patch.fillColour !== undefined) item.Leader__FillColour = (typeof patch.fillColour === 'string') ? patch.fillColour : null;   // <-- null clears the fill
+        if (typeof patch.layerId === 'string') item.Leader__LayerId = patch.layerId;
+        Na__LeRec__NormaliseLeader(item, item.Leader__LayerId);
+        if (silent) { Na__LeModel__Dirty = true; return true; }
+        Na__LeModel__Touch('leader', sheet.Sheet__Id, itemId);
+        return true;
+    }
+    function Na__LeModel__DeleteLeader(sheet, itemId) {
+        if (!sheet || !Array.isArray(sheet.Sheet__Leaders)) return false;
+        const index = sheet.Sheet__Leaders.findIndex((l) => l.Leader__Id === itemId);
+        if (index === -1) return false;
+        sheet.Sheet__Leaders.splice(index, 1);
+        Na__LeModel__Unselect(itemId);
+        Na__LeModel__Touch('leaders', sheet.Sheet__Id, itemId);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Delete Several Items at Once (one undo step)
+    // ------------------------------------------------------------
+    // items: [{ kind, id }] of any mix of kinds. Every listed record goes in one
+    // pass; a sheet dimension measuring through a removed viewport lets go of
+    // it, as DeleteViewport does; the removed items leave the selection. Then
+    // one announcement per collection that lost something - the history takes
+    // its step at the first, which already holds every removal, so one Ctrl+Z
+    // brings the lot back. Returns how many records went.
+    // ------------------------------------------------------------
+    function Na__LeModel__DeleteItems(sheet, items) {
+        if (!sheet || !Array.isArray(items)) return 0;
+        const doomed = new Set(items.filter((item) => item && item.kind && item.id).map((item) => item.kind + ':' + item.id));
+        if (!doomed.size) return 0;
+        const gone    = new Set();                                               // <-- Viewport ids removed, for the dimensions measuring through them
+        const reasons = [];
+        let count = 0;
+        [ [ 'Sheet__Viewports',   'Viewport__Id',   'viewport',   'viewports'   ],
+          [ 'Sheet__Annotations', 'Annotation__Id', 'annotation', 'annotations' ],
+          [ 'Sheet__Dimensions',  'Dimension__Id',  'dimension',  'dimensions'  ],
+          [ 'Sheet__Shapes',      'Shape__Id',      'shape',      'shapes'      ],
+          [ 'Sheet__Leaders',     'Leader__Id',     'leader',     'leaders'     ] ].forEach((row) => {
+            const list = sheet[row[0]];
+            if (!Array.isArray(list)) return;                                    // <-- A sheet that has never held that kind
+            let removed = 0;
+            for (let i = list.length - 1; i >= 0; i--) {
+                if (!list[i] || !doomed.has(row[2] + ':' + list[i][row[1]])) continue;
+                if (row[2] === 'viewport') gone.add(list[i].Viewport__Id);
+                list.splice(i, 1);
+                removed++;
+            }
+            if (removed) { count += removed; reasons.push(row[3]); }
+        });
+        if (!count) return 0;
+        if (gone.size) sheet.Sheet__Dimensions.forEach((d) => { if (gone.has(d.Dimension__ViewportId)) d.Dimension__ViewportId = null; });
+        Na__LeModel__SelectionItems = Na__LeModel__SelectionItems.filter((item) => !doomed.has(item.kind + ':' + item.id));
+        reasons.forEach((reason) => Na__LeModel__Touch(reason, sheet.Sheet__Id, null));
+        return count;
     }
     // ------------------------------------------------------------
 
@@ -786,22 +993,67 @@
     // FUNCTION | Select One Item on the Sheet (null clears)
     // ------------------------------------------------------------
     function Na__LeModel__SetSelection(selection) {
-        const next = (selection && selection.kind && selection.id) ? { kind : selection.kind, id : selection.id } : null;
-        const same = (!!next === !!Na__LeModel__Selection) && (!next || (next.kind === Na__LeModel__Selection.kind && next.id === Na__LeModel__Selection.id));
-        Na__LeModel__Selection = next;
-        if (!same) Na__LeModel__Dispatch('selection', Na__LeModel__ActiveSheetId, next ? next.id : null);
-        return next;
+        const items = Na__LeModel__SetSelectionItems((selection && selection.kind && selection.id) ? [ selection ] : []);
+        return items.length === 1 ? items[0] : null;
     }
-    function Na__LeModel__GetSelection() { return Na__LeModel__Selection; }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The Selected Viewport Record (null when the selection is something else)
+    // FUNCTION | The One Selected Item (null when nothing is selected, or several are)
+    // ------------------------------------------------------------
+    // A properties panel edits one record, so it asks this. With several items
+    // selected it sees none and shows its settings for new objects, rather than
+    // quietly editing whichever item happened to be picked last.
+    // ------------------------------------------------------------
+    function Na__LeModel__GetSelection() {
+        return Na__LeModel__SelectionItems.length === 1 ? Na__LeModel__SelectionItems[0] : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Select Any Number of Items (an empty list clears)
+    // ------------------------------------------------------------
+    // items: [{ kind, id }]. Duplicates are dropped and the order is kept. One
+    // 'selection' announcement, and none when the set is the same as before.
+    // ------------------------------------------------------------
+    function Na__LeModel__SetSelectionItems(items) {
+        const seen = new Set();
+        const next = [];
+        (Array.isArray(items) ? items : []).forEach((item) => {
+            if (!item || !item.kind || !item.id || seen.has(item.kind + ':' + item.id)) return;
+            seen.add(item.kind + ':' + item.id);
+            next.push({ kind : item.kind, id : item.id });
+        });
+        const same = next.length === Na__LeModel__SelectionItems.length && Na__LeModel__SelectionItems.every((item) => seen.has(item.kind + ':' + item.id));
+        Na__LeModel__SelectionItems = next;
+        if (!same) Na__LeModel__Dispatch('selection', Na__LeModel__ActiveSheetId, next.length === 1 ? next[0].id : null);
+        return next.slice();
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Every Selected Item, and Whether an Item Is One of Them
+    // ------------------------------------------------------------
+    function Na__LeModel__GetSelectionItems() { return Na__LeModel__SelectionItems.slice(); }
+    function Na__LeModel__IsSelected(kind, id) { return Na__LeModel__SelectionItems.some((item) => item.kind === kind && item.id === id); }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Drop a Deleted Item From the Selection (silent: its delete announces)
+    // ------------------------------------------------------------
+    function Na__LeModel__Unselect(itemId) {
+        Na__LeModel__SelectionItems = Na__LeModel__SelectionItems.filter((item) => item.id !== itemId);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Selected Viewport Record (null when the selection is something else, or several items)
     // ------------------------------------------------------------
     function Na__LeModel__GetSelectedViewport() {
-        const sheet = Na__LeModel__GetActiveSheet();
-        if (!sheet || !Na__LeModel__Selection || Na__LeModel__Selection.kind !== 'viewport') return null;
-        return Na__LeModel__GetViewportById(sheet, Na__LeModel__Selection.id);
+        const sheet     = Na__LeModel__GetActiveSheet();
+        const selection = Na__LeModel__GetSelection();
+        if (!sheet || !selection || selection.kind !== 'viewport') return null;
+        return Na__LeModel__GetViewportById(sheet, selection.id);
     }
     // ------------------------------------------------------------
 
@@ -826,7 +1078,7 @@
         records.forEach((record) => { if (record && typeof record === 'object') live.push(JSON.parse(JSON.stringify(record))); });
         Na__LeModel__GetSheets();                                                // <-- Normalises what arrived
         if (Na__LeModel__ActiveSheetId && !Na__LeModel__GetSheetById(Na__LeModel__ActiveSheetId)) Na__LeModel__ActiveSheetId = null;
-        Na__LeModel__Selection = null;
+        Na__LeModel__SelectionItems = [];
         Na__LeModel__Dirty = true;
         Na__LeModel__Dispatch('loaded', Na__LeModel__ActiveSheetId);
         return true;
@@ -854,7 +1106,7 @@
             Na__LeModel__Dirty = false;
             if (Na__LeModel__ActiveSheetId && !Na__LeModel__GetSheetById(Na__LeModel__ActiveSheetId)) Na__LeModel__ActiveSheetId = null;
             if (saved) { Na__LeModel__Dispatch('saved', Na__LeModel__ActiveSheetId); return; }   // <-- The same records, now on disk: selection and undo history stay
-            Na__LeModel__Selection = null;
+            Na__LeModel__SelectionItems = [];
             Na__LeModel__Dispatch('loaded', Na__LeModel__ActiveSheetId);
         };
         window.addEventListener(Na__DrawData__LOADED_EVENT,  reload);
@@ -915,8 +1167,16 @@
         Na__LeModel__CreateShape,
         Na__LeModel__UpdateShape,
         Na__LeModel__DeleteShape,
+        Na__LeModel__GetLeaders,
+        Na__LeModel__CreateLeader,
+        Na__LeModel__UpdateLeader,
+        Na__LeModel__DeleteLeader,
         Na__LeModel__SetSelection,
         Na__LeModel__GetSelection,
+        Na__LeModel__SetSelectionItems,
+        Na__LeModel__GetSelectionItems,
+        Na__LeModel__IsSelected,
+        Na__LeModel__DeleteItems,
         Na__LeModel__GetSelectedViewport,
         Na__LeModel__IsDirty,
         Na__LeModel__MarkDirty,

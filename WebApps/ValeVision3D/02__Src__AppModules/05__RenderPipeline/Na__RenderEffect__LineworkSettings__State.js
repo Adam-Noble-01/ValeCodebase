@@ -28,6 +28,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.1.0
+// - SetLineworkBaseOverride: one width in place of every linework material's
+//   stashed base for the length of a Layout Editor render (the Base Image
+//   composite weight). The user factor and the export scale still multiply it.
+//
 // 08-Jul-2026 - Version 1.0.0
 // - Initial release alongside the Advanced Linework Settings export panel UI.
 //
@@ -75,6 +80,16 @@
     // ------------------------------------------------------------
     let Na__LineworkSettings__ProfileExportScale  = 1.0; // <-- Multiplies u_edgeWidth during exports (1.0 = live viewport)
     let Na__LineworkSettings__LineworkExportScale = 1.0; // <-- Multiplies LineMaterial.linewidth during exports (1.0 = live viewport)
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Base Width Override (Layout Editor Snapshot Renderer Only)
+    // ------------------------------------------------------------
+    // One Layout Editor viewport's Base Image weight, standing in for every
+    // linework material's stashed base width for the length of one render. The
+    // user factor and the export scale still multiply it, so the export
+    // compensation above keeps working. null = each material's own base.
+    // ------------------------------------------------------------
+    let Na__LineworkSettings__LineworkBaseOverride = null;
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Wired References
@@ -183,7 +198,10 @@
             if (!Number.isFinite(material.userData.Na__LineworkSettings__BaseWidth)) {
                 material.userData.Na__LineworkSettings__BaseWidth = material.linewidth; // <-- Stash base once so factors never compound
             }
-            material.linewidth = material.userData.Na__LineworkSettings__BaseWidth * combined; // <-- Apply combined width
+            const base = Number.isFinite(Na__LineworkSettings__LineworkBaseOverride)
+                ? Na__LineworkSettings__LineworkBaseOverride                   // <-- A Layout Editor viewport's own edge width for this render
+                : material.userData.Na__LineworkSettings__BaseWidth;
+            material.linewidth = base * combined;                             // <-- Apply combined width
         });
     }
     // ------------------------------------------------------------
@@ -210,6 +228,20 @@
         Na__LineworkSettings__ProfileExportScale  = (Number.isFinite(profileScale)  && profileScale  > 0) ? profileScale  : 1.0;
         Na__LineworkSettings__LineworkExportScale = (Number.isFinite(lineworkScale) && lineworkScale > 0) ? lineworkScale : 1.0;
         Na__LineworkSettings__ApplyLineworkWidths();                          // <-- Push combined widths to linework materials
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set the Base Width Override (Called by the Layout Editor Snapshot Renderer)
+    // ------------------------------------------------------------
+    // Set before a viewport render, cleared with null in its finally. No render
+    // request, for the same reason as the export scales: the render owns the
+    // frame while this is set, and clearing it hands every material its own
+    // base width back straight away.
+    // ------------------------------------------------------------
+    function Na__LineworkSettings__SetLineworkBaseOverride(widthPx) {
+        Na__LineworkSettings__LineworkBaseOverride = (Number.isFinite(widthPx) && widthPx > 0) ? widthPx : null;
+        Na__LineworkSettings__ApplyLineworkWidths();                          // <-- Push the override (or each base again) to linework materials
     }
     // ------------------------------------------------------------
 
@@ -270,6 +302,7 @@
         Na__LineworkSettings__GetProfileLineFactor,
         Na__LineworkSettings__SetSillyAmplitude,
         Na__LineworkSettings__SetExportScales,
+        Na__LineworkSettings__SetLineworkBaseOverride,
         Na__LineworkSettings__GetProfileExportScale
     };
     // ------------------------------------------------------------

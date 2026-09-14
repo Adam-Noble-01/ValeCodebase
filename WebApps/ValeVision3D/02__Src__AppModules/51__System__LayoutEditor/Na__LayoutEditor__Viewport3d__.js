@@ -30,12 +30,24 @@
 // - Ported from   : ValeVision3D 21__System__PresentationMode/Na__PresentationMode__Thumbnail__Renderer.js (capture and upload pattern)
 // - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
 // - Parity        : new
-// - Divergences   : n/a
+// - Divergences   : TrueVision's 1.5.0 (Model Source - the design phase in the fingerprint
+//                   and the render) is not here: ValeVision has no model groups.
 // - Back-port     : none.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.4.1
+// - RenderNow stamps the record only when the upload came back with r2Success === true,
+//   and returns whether the picture was stored and referenced; Bake counts that return
+//   instead of reading the record afterwards. Here a refused upload already came back
+//   null (the upload throws and Assets catches it), so nothing was stamped - but a forced
+//   bake, or a same-key record too narrow for export, still read as baked after a refusal.
+//   Ported from TrueVision3D 1.5.1, where a refused upload did stamp the record.
+//
+// 13-Sep-2026 - Version 1.4.0
+// - The snapshot draws the model's own edges at the viewport's Base Image weight; a weight that has been set joins the fingerprint. Ported from TrueVision3D.
+//
 // 10-Sep-2026 - Version 1.3.1
 // - Base Image off: no snapshot is rendered, shown or exported; the picture already held comes straight back on.
 //
@@ -65,6 +77,7 @@
     import { Na__LeModel__GetSheets, Na__LeModel__GetViewports, Na__LeModel__ResolveViewportSource, Na__LeModel__UpdateViewport } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSnap__Render3d, Na__LeSnap__IsReady, Na__LeSnap__GetModelFingerprint } from './Na__LayoutEditor__SnapshotRenderer__.js';
     import { Na__LeModelLayers__Token } from './Na__LayoutEditor__ModelLayers__.js';
+    import { Na__LeComposite__Weight, Na__LeComposite__RasterToken } from './Na__LayoutEditor__RenderComposites__.js';
     import { Na__LeRaster__Working, Na__LeRaster__Export, Na__LeRaster__Fit } from './Na__LayoutEditor__RasterQuality__.js';
     import {
         Na__LeAssets__CanvasToBlob,
@@ -126,6 +139,8 @@
             Math.round((viewport.Viewport__ImageMm.WidthMm / viewport.Viewport__ImageMm.HeightMm) * 1000),
             Na__LeSnap__GetModelFingerprint()
         ];
+        const weights = Na__LeComposite__RasterToken(viewport, true);
+        if (weights) parts.push(weights);                                         // <-- Only when set, so every stored snapshot keeps its key
         return Na__LeVp3d__Hash(parts.join('|'));
     }
     // ------------------------------------------------------------
@@ -189,23 +204,31 @@
     // profile: { pixelsPerMm, maxPixels }. Every render is uploaded with the
     // width it was made at, so the record always describes the stored file
     // and a later request can tell whether it is big enough.
+    //
+    // Returns true only when R2 took the picture and the record now names it.
+    // A refused upload still hands back a result object - TrueVision's upload
+    // returns r2Success false where ValeVision's throws - so only r2Success may
+    // stamp the record. The picture stays on screen either way.
     // ------------------------------------------------------------
     async function Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, profile) {
         const px = Na__LeVp3d__PixelSize(viewport, profile);
         state.inFlight = true;
         try {
-            const result = await Na__LeSnap__Render3d(scene, viewport.Viewport__Styles, px.w, px.h, viewport.Viewport__ModelLayers, px.samples);
-            if (!result) return;
+            const result = await Na__LeSnap__Render3d(scene, viewport.Viewport__Styles, px.w, px.h, viewport.Viewport__ModelLayers, px.samples, { modelEdgePx : Na__LeComposite__Weight(viewport, 'baseImage') });
+            if (!result) return false;
             const blob    = await Na__LeAssets__CanvasToBlob(result.canvas, 'image/webp', 0.9);
             const dataUrl = blob ? await Na__LeAssets__BlobToDataUrl(blob) : result.canvas.toDataURL('image/png');
-            if (!dataUrl) return;
+            if (!dataUrl) return false;
             state.img.src = dataUrl; state.img.hidden = false;
             state.key = key; state.px = px; state.dataUrl = dataUrl;
             if (blob && sheet && Na__LeAssets__CanUpload()) {
                 const path = Na__LeAssets__SnapshotPath(sheet.Sheet__Id, viewport.Viewport__Id, key);
                 const uploaded = await Na__LeAssets__Upload(blob, path, null);
-                if (uploaded) Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key, Asset__PixelWidth : px.w } }, true);
+                if (uploaded && uploaded.r2Success === true) {                        // <-- Never name a file R2 did not take: the web build would ask for it and draw nothing
+                    return Na__LeModel__UpdateViewport(sheet, viewport.Viewport__Id, { snapshotAsset : { Asset__Path : path, Asset__Fingerprint : key, Asset__PixelWidth : px.w } }, true);
+                }
             }
+            return false;
         } finally {
             state.inFlight = false;
         }
@@ -386,7 +409,8 @@
 
     // FUNCTION | Render and Upload One 3D Viewport Without a Frame on Screen (Dev bake)
     // ------------------------------------------------------------
-    // Returns 'baked' | 'skipped' (already referenced) | 'failed'.
+    // Returns 'baked' | 'skipped' (already referenced) | 'failed' (not rendered,
+    // or R2 did not take the picture).
     // ------------------------------------------------------------
     async function Na__LeVp3d__Bake(sheet, viewport, force) {
         const scene = Na__LeModel__ResolveViewportSource(viewport).scene;
@@ -396,11 +420,10 @@
         const slot    = viewport.Viewport__SnapshotAsset;
         if (!force && slot && slot.Asset__Fingerprint === key && Na__LeVp3d__WideEnough(slot.Asset__PixelWidth, wanted.w)) return 'skipped';
         const state = { img : document.createElement('img'), key : null, px : null, dataUrl : null, inFlight : false };
-        await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeVp3d__ExportProfile());
+        const stored = await Na__LeVp3d__RenderNow(state, sheet, viewport, scene, key, Na__LeVp3d__ExportProfile());
         const live = Na__LeVp3d__States.get(viewport.Viewport__Id);
         if (live && state.dataUrl) { live.img.src = state.dataUrl; live.img.hidden = false; live.key = key; live.px = state.px; live.dataUrl = state.dataUrl; }
-        const after = viewport.Viewport__SnapshotAsset;
-        return (after && after.Asset__Fingerprint === key) ? 'baked' : 'failed';
+        return stored ? 'baked' : 'failed';                                        // <-- This render's upload, not the record: a same-key record from before read as baked
     }
     // ------------------------------------------------------------
 

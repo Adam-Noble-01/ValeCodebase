@@ -29,6 +29,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.9.0
+// - Leader tool button (E), after Text; its tooltip comes from ToolLeaderTitle.
+// - Ported from TrueVision3D v2.35.0.
+//
+// 13-Sep-2026 - Version 1.8.0
+// - The Dimension button's tooltip comes from the ToolDimensionTitle label and
+//   says that Shift makes the dimension horizontal or vertical.
+// - Ported from TrueVision3D v2.31.0.
+//
 // 13-Sep-2026 - Version 1.7.0
 // - Shift+click on the Eyedropper button arms the palette, as Shift+B does.
 // - Ported from TrueVision3D v2.30.0.
@@ -73,6 +82,7 @@
         Na__LeTools__TOOL_DRAW,
         Na__LeTools__TOOL_RECT,
         Na__LeTools__TOOL_EYEDROP,
+        Na__LeTools__TOOL_LEADER,
         Na__LeTools__CHANGED_EVENT,
         Na__LeTools__SetTool,
         Na__LeTools__GetTool,
@@ -204,7 +214,8 @@
         if (Na__LeToolbar__Editable) {
             [ [ Na__LeTools__TOOL_SELECT, Na__LeCfg__GetLabel('ToolSelect', 'Select'), 'Select and move (V)' ],
               [ Na__LeTools__TOOL_TEXT, Na__LeCfg__GetLabel('ToolText', 'Text'), 'Place text (T)' ],
-              [ Na__LeTools__TOOL_DIMENSION, Na__LeCfg__GetLabel('ToolDimension', 'Dimension'), 'Place a dimension in three clicks: start, end, then where the line sits (D)' ],
+              [ Na__LeTools__TOOL_LEADER, Na__LeCfg__GetLabel('ToolLeader', 'Leader'), Na__LeCfg__GetLabel('ToolLeaderTitle', 'Place a leader (E): click the point it marks, then where its note or bubble goes - or drag from one to the other.') ],
+              [ Na__LeTools__TOOL_DIMENSION, Na__LeCfg__GetLabel('ToolDimension', 'Dimension'), Na__LeCfg__GetLabel('ToolDimensionTitle', 'Place a dimension in three clicks (D): start, end, then where the line sits. Hold Shift while placing the line for a horizontal or vertical dimension.') ],
               [ Na__LeTools__TOOL_DRAW, Na__LeCfg__GetLabel('ToolDraw', 'Draw'), 'Draw lines and polygons: click points, click the first point to close, Enter to finish (L)' ],
               [ Na__LeTools__TOOL_RECT, Na__LeCfg__GetLabel('ToolRectangle', 'Rectangle'), Na__LeCfg__GetLabel('ToolRectangleTitle', 'Draw a rectangle (R): click one corner then the opposite corner, or drag from one to the other. Shift keeps it square, Esc abandons it.') ],
               [ Na__LeTools__TOOL_EYEDROP, Na__LeCfg__GetLabel('ToolEyedropper', 'Eyedropper'), Na__LeCfg__GetLabel('ToolEyedropperTitle', 'Match properties (B): click the object to copy FROM, then each object to copy ONTO. Alt+click picks a new source, Esc finishes.') ] ].forEach((entry) => {

@@ -106,6 +106,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.1.0
+// - Owner tags ride through the clip. When the edge set carries Owners, every
+//   piece an edge is cut into is stamped with that edge's category id, in a
+//   buffer grown in step with the coordinates, and the result adds Owners and
+//   HiddenOwners. Without owners both stay null. Ported from TrueVision3D (Edge Styles).
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Ported from the Lantern Designer projection engine for port Phase 4;
 //   identifiers renamed to the ValeVision namespace and the header restyled.
@@ -153,10 +159,17 @@
     // known before the work is done. Doubling on demand costs a handful of copies
     // across a whole render, where a plain array of numbers would cost an object
     // header per segment and a conversion pass at the end.
-    function Na__ProjectedLinework__ClipKernel__CreateSink() {
+    // wantOwners adds a parallel Uint16Array of category ids, one per segment.
+    // Sink.Owner is the id the NEXT push belongs to: one edge can emit many
+    // visible pieces, and every piece of one edge shares its owner, so the
+    // caller sets it once per edge instead of passing it through five frames of
+    // emit helpers that have no business knowing about categories.
+    function Na__ProjectedLinework__ClipKernel__CreateSink(wantOwners) {
         return {
-            Data  : new Float32Array(INITIAL_SEGMENT_CAPACITY * 4),
-            Count : 0
+            Data   : new Float32Array(INITIAL_SEGMENT_CAPACITY * 4),
+            Count  : 0,
+            Owners : wantOwners ? new Uint16Array(INITIAL_SEGMENT_CAPACITY) : null,
+            Owner  : 0
         };
     }
     // ------------------------------------------------------------
@@ -169,6 +182,12 @@
             const grown  =  new Float32Array(sink.Data.length * 2);
             grown.set(sink.Data);
             sink.Data  =  grown;
+
+            if (sink.Owners !== null) {                                       // <-- Grown in step, so index k of one is index k of the other
+                const grownOwners  =  new Uint16Array(sink.Owners.length * 2);
+                grownOwners.set(sink.Owners);
+                sink.Owners  =  grownOwners;
+            }
         }
 
         const at  =  sink.Count * 4;
@@ -176,6 +195,7 @@
         sink.Data[at + 1]  =  y0;
         sink.Data[at + 2]  =  x1;
         sink.Data[at + 3]  =  y1;
+        if (sink.Owners !== null) sink.Owners[sink.Count]  =  sink.Owner;
         sink.Count++;
     }
     // ------------------------------------------------------------
@@ -274,8 +294,14 @@
         const minimumLengthSq  =  minimumLength * minimumLength;
         const wantHidden       =  settings.IncludeHiddenEdges === true;
 
-        const visibleSink  =  Na__ProjectedLinework__ClipKernel__CreateSink();
-        const hiddenSink   =  wantHidden ? Na__ProjectedLinework__ClipKernel__CreateSink() : null;
+        // OWNER TAGS RIDE ALONG WHEN THE EDGES CARRY THEM. edges.Owners is one
+        // category id per edge; the sinks turn that into one id per emitted
+        // SEGMENT, which is what a drawing can actually colour.
+        const edgeOwners   =  (edges && edges.Owners) ? edges.Owners : null;
+        const wantOwners   =  edgeOwners !== null;
+
+        const visibleSink  =  Na__ProjectedLinework__ClipKernel__CreateSink(wantOwners);
+        const hiddenSink   =  wantHidden ? Na__ProjectedLinework__ClipKernel__CreateSink(wantOwners) : null;
 
         const positions  =  soup.Positions;
         const upPlanes   =  soup.UpPlanes;
@@ -293,6 +319,12 @@
         let pairsTested  =  0;
 
         for (let e = edgeStart; e < edgeEnd; e++) {
+
+            if (wantOwners) {                                                 // <-- Stamped once for every piece this edge is about to become
+                const owner  =  edgeOwners[e];
+                visibleSink.Owner  =  owner;
+                if (hiddenSink !== null) hiddenSink.Owner  =  owner;
+            }
 
             const v  =  e * 6;
             const sx  =  verts[v];
@@ -583,6 +615,8 @@
         return {
             Segments       : visibleSink.Data.slice(0, visibleSink.Count * 4),
             HiddenSegments : hiddenSink ? hiddenSink.Data.slice(0, hiddenSink.Count * 4) : null,
+            Owners         : visibleSink.Owners ? visibleSink.Owners.slice(0, visibleSink.Count) : null,
+            HiddenOwners   : (hiddenSink && hiddenSink.Owners) ? hiddenSink.Owners.slice(0, hiddenSink.Count) : null,
             EdgesTested    : edgesTested,
             PairsTested    : pairsTested
         };

@@ -30,6 +30,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.1.0
+// - Box select: with several items selected the note says how many, and that
+//   these are the settings for new dimensions until one dimension is selected
+//   on its own.
+// - Ported from TrueVision3D v2.34.0.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 5.
 //
@@ -42,8 +48,8 @@
 
     // MODULE IMPORTS | Config, Model, Markup, Tools and Panel Host
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetLabel, Na__LeCfg__GetDimensionSetup } from './Na__LayoutEditor__ConfigState__.js';
-    import { Na__LeModel__GetActiveSheet, Na__LeModel__GetSelection, Na__LeModel__UpdateDimension } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel, Na__LeCfg__GetDimensionSetup } from './Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeModel__GetActiveSheet, Na__LeModel__GetSelection, Na__LeModel__GetSelectionItems, Na__LeModel__UpdateDimension } from './Na__LayoutEditor__SheetModel__.js';
     import { Na__LeMarkup__DimensionValueMm, Na__LeMarkup__FormatDimension } from './Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeTools__GetDimensionDefaults, Na__LeTools__SetDimensionDefaults } from './Na__LayoutEditor__SheetTools__.js';
     import {
@@ -119,9 +125,12 @@
         set('dim-units', values.unitsSuffix);
         set('dim-override', values.overrideText);
         body.querySelector('[data-na-control="dim-override"]').parentNode.hidden = !selected;
+        const many = Na__LeModel__GetSelectionItems().length;
         body.querySelector('[data-na-block="note"]').textContent = selected
             ? Na__LeCfg__GetLabel('DimSelectedNote', 'Editing the selected dimension.')
-            : Na__LeCfg__GetLabel('DimDefaultsNote', 'Nothing selected: these settings apply to new dimensions.');
+            : (many > 1
+                ? Na__LeCfg__FormatLabel('DimManyNote', '{count} items selected. Click one dimension on its own to edit it; these settings apply to new dimensions.', { count : many })
+                : Na__LeCfg__GetLabel('DimDefaultsNote', 'Nothing selected: these settings apply to new dimensions.'));
         const value = body.querySelector('[data-na-block="value"]');
         if (selected) {
             const mm = Na__LeMarkup__DimensionValueMm(selected.sheet, selected.item);

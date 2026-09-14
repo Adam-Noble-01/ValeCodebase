@@ -1,6 +1,549 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.33.0 - 14-Sep-2026 - Box Select: a Window to the Right, a Crossing to the Left
+
+### Added
+- **Box select in the Layout Editor, as AutoCAD and SketchUp draw it.** A drag with the
+  Select tool that starts on bare paper draws a selection box.
+  - Dragged to the RIGHT it is a WINDOW: transparent blue with a solid edge. It takes only
+    what lies wholly inside it.
+  - Dragged to the LEFT it is a CROSSING: transparent green with a dashed edge. It takes
+    anything it touches as well.
+  - Only the horizontal direction decides. While the box is dragged, everything it would
+    take is outlined in its colour.
+- **What a box takes.**
+  - A viewport by its frame edge. A crossing drawn inside a viewport does not pick the
+    viewport up, so the markup laid over a drawing boxes on its own.
+  - A vector by its edges, the closing edge of a fill included. A box inside a filled
+    shape does not take it.
+  - Text by its text box or its leader; a dimension by its extension lines, dimension
+    line, terminators or value; a leader by its line, its endpoint, or its bubble or note.
+  - Hidden layers, locked layers and locked viewports are never taken.
+- **Where a box can start:** bare paper or the grey stage, a locked viewport, or anywhere
+  with Alt held. A press on anything that can move still moves it.
+- **Modifiers, as SketchUp holds them:** Ctrl adds, Shift toggles, Ctrl+Shift removes, for
+  a box and a click alike. They live in the key map's new SelectionBindings block.
+- **Working with several.**
+  - Drag any one of them and they all move, as one undo step.
+  - A click on one that does not move narrows the selection to it.
+  - The arrow keys nudge them all. Delete removes them all, asking once if a viewport is
+    among them, and the right-click menu offers Delete N selected items. Each is one undo
+    step.
+  - A locked item can be selected, but every move, nudge and delete leaves it out.
+  - A leader tip follows a moving viewport, not its text: notes moved on their own keep
+    pointing where they point.
+  - The Text, Dimensions and Vectors panels say how many are selected, and show the
+    settings for new objects until one item is selected on its own.
+
+### The Record
+- **Nothing new is saved.** The selection is session state; the sheet records are the
+  same in both apps.
+- `Na__LeModel__GetSelection` keeps its meaning: `{ kind, id }` for exactly one item, null
+  for none or several. New: `GetSelectionItems`, `SetSelectionItems`, `IsSelected` and
+  `DeleteItems` (a batch delete, one undo step).
+
+### Files
+- **New:** `51__System__LayoutEditor/Na__LayoutEditor__SelectionBox__.js` and
+  `Na__LayoutEditor__SelectionSet__.js`, both 1.0.0.
+- **Layout Editor modules:** `SheetModel__` 1.7.0, `SheetTools__` 1.11.0,
+  `SheetSurface__` 1.4.0, `ViewportHandles__` 1.3.0, `MarkupBridge__` 1.5.0, `History__`
+  1.2.0, `ConfigState__` 1.6.0, `Panel__Text__` 1.1.0, `Panel__Dimensions__` 1.1.0,
+  `Panel__Shapes__` 1.5.0.
+- **Config and styles:**
+  - `AppConfig__.json`: BoxStartPx, BoxBorderPx, BoxPreview and BoxPreviewPadMm in the
+    Selection block, and six labels.
+  - `KeyMappings__.json`: the SelectionBindings block and three Select actions.
+  - `Styles__Main__.css`: the box and preview colours.
+
+### Notes
+- **Ported from TrueVision3D v2.34.0** the day Adam signed it off, on top of Leaders
+  (v2.32.0), which was built beside it in the same files.
+  - The two new modules are verbatim below the header, leader rows included.
+  - Box Select's own 79 hunks were replayed across 13 shared files. Nothing was written
+    until every anchor was unique.
+  - 10 were development-log heads, rewritten to this tree's module versions.
+  - 6 were re-anchored where this tree lacks TrueVision's viewport snap-move and viewport
+    clipboard, or words its History header differently.
+- **Not ported: CarryTarget's guard.** This tree has no viewport carry yet.
+- **Still open: a restore drops selected vectors.** History's selection test has no shape
+  row here (see v2.32.0), so an undo or redo also takes every vector out of a
+  multi-selection. It returns with the pending undo-writes return trip.
+- **No service worker token:** this tree has no PWA worker.
+- **Verified here:**
+  - all 12 edited and new modules parse as ES modules, and both JSON files parse;
+  - `Na__Verify__ModuleGraph__` passes, with the one known vendor issue unchanged;
+  - `Na__Verify__Exports__` passes on 317 files;
+  - the TrueVision box select harness, run against this tree's real modules, passes 86 of
+    87. The one failure is the shape row above: a redo that removes a selected text item
+    drops the selected vector with it.
+- **Not exercised in the running app:** testing was kept light at Adam's request.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.32.0 - 14-Sep-2026 - Leaders & Annotation Bubbles: a Note or a Specification Code on a Sweeping Leader
+
+### Added
+- **Leaders, a new kind of sheet object.** A leader runs from a point on the drawing to
+  its head. The head is a multi-line Note, or a Specification bubble: a code centred in a
+  circle (EE02, DV01), the key drawing-specific notes will later be pulled in by.
+  - The Leader tool is E, beside Text on the toolbar.
+  - The Leaders panel sits under Text in the right column.
+- **Placing one.** Click the point, then where the head goes; or press on the point and
+  drag to the head. The leader is drawn live, exactly as it will land.
+  - The text field opens at once: one line for a bubble's code, several for a note.
+    Ctrl+Enter or a click away finishes a note.
+  - A new bubble offers the code after the newest bubble on the sheet, so EE07 is
+    followed by EE08.
+  - Nothing reaches the undo history until the head lands.
+- **Never a straight rule.** The line leaves the endpoint level and runs a short stub.
+  It sweeps through an S with level tangents, then runs a second stub into the head.
+  - The side of the point the head sits on sets the handing. A note placed to the right
+    is left-justified; to the left, right-justified.
+  - A bubble takes its leader on the side that faces the point.
+  - A code too wide for the bubble grows the bubble.
+- **The Leaders panel** edits the selected leader, or sets up the next one:
+  - type;
+  - text size, weight and colour;
+  - dashed or solid line, with its weight and colour;
+  - bubble diameter and edge weight;
+  - fill on or off, with its colour and a Fill opacity slider;
+  - Transparent lines, off by default, with a Line opacity slider;
+  - an Endpoint fold: filled or a ring, its ring weight, and its size.
+  - A slider drag is one undo step.
+- **Editing.** With the Select tool:
+  - the square tip grip re-points the leader, snapping;
+  - the head or the round anchor grip moves the head alone;
+  - the curve moves the whole leader;
+  - the arrows nudge it and Delete removes it;
+  - double-click or the right-click menu reopens the text, and emptying the text deletes
+    the leader.
+  - The eyedropper matches leaders. Their type travels only to the palette (Shift+B),
+    never in a paint.
+- **Vector transparency.** The Vectors panel gains Fill opacity, and Transparent edges
+  (off by default) with Edge opacity. New shapes and rectangles take both from the panel,
+  and the eyedropper carries them.
+
+### The Record
+- **`Sheet__Leaders`** is on every sheet, and each leader sits on the text layer. Fields:
+  - identity and place: `Leader__Id`, `LayerId`, `Type` ('text' | 'bubble'), `TipXMm`,
+    `TipYMm`, `AnchorXMm`, `AnchorYMm`;
+  - text: `Text`, `TextSizeMm`, `FontWeight`, `TextColour`;
+  - line: `LineColour`, `LinePt`, `LineStyle` ('solid' | 'dashed'), `LineOpacity`;
+  - endpoint: `EndpointFilled`, `EndpointPt`, `EndpointSizeMm`;
+  - bubble and fill: `BubbleSizeMm`, `BubbleEdgePt`, `FillColour` (null for no fill),
+    `FillOpacity`.
+  - The names and defaults are TrueVision's, so either app reads the other's leaders.
+- **`Shape__FillOpacity` and `Shape__StrokeOpacity`**, 0 to 1. Every existing shape reads
+  1 and draws as it did.
+- **Leader changes announce as 'leader' and 'leaders'.** They are content edits: the
+  browser draft keeps them, and they never trigger the structural auto save.
+
+### Files
+- **New:** `51__System__LayoutEditor/Na__LayoutEditor__LeaderGeometry__.js`,
+  `Na__LayoutEditor__LeaderTool__.js` and `Na__LayoutEditor__Panel__Leaders__.js`, all
+  1.0.0.
+- **Layout Editor modules:** `SheetModel__` 1.6.0, `SheetRecords__` 1.6.0,
+  `SheetChrome__` 1.3.0, `MarkupBridge__` 1.4.0, `Grips__` 1.3.0, `TextTool__` 1.1.0,
+  `SheetTools__` 1.10.0, `Eyedropper__` 1.3.0, `History__` 1.1.0, `ModeController__`
+  1.10.0, `Toolbar__` 1.9.0, `PanelHost__` 1.2.0, `ConfigState__` 1.5.0,
+  `ShapeGeometry__` 1.3.0, `Panel__Shapes__` 1.4.0, `ShapeTool__` 1.3.2,
+  `RectangleTool__` 1.0.2.
+- **Config and styles:**
+  - `AppConfig__.json`: the Leader block, the Shapes opacity keys and the labels.
+  - `KeyMappings__.json`: `Tool__Leader` on E.
+  - `Styles__Main__.css`: the multi-line field and the anchor grip.
+  - `Styles__Panels__.css`: the sub-fold.
+
+### Notes
+- **Ported from TrueVision3D v2.35.0** the day Adam signed it off.
+  - The source was a snapshot of the signed-off files, not TrueVision's working copies.
+    Those already carried unsigned Project Specification hunks.
+  - Box Select, built beside it in TrueVision (v2.34.0), crosses next as its own port.
+- **How the hunks crossed.** They are the authoring session's own edits, replayed in
+  order: 123 across 21 files.
+  - 112 matched verbatim.
+  - 8 were development-log heads, rewritten to this tree's module versions.
+  - 3 were re-anchored to context this tree words differently: the History selection
+    test, the SheetTools header, and the last label in the config.
+  - The three new modules are verbatim below the header.
+- **Not ported: the shape row of the History selection test.** An undo here still drops
+  a selected vector, as before. That row belongs to the pending undo-writes return trip
+  in the parity ledger.
+- **No service worker token:** this tree has no PWA worker.
+- **Verified here:**
+  - all 20 edited and new modules pass `node --check`, and both JSON files parse;
+  - `Na__Verify__ModuleGraph__` passes, with the one known vendor issue unchanged;
+  - `Na__Verify__Exports__` passes on 315 files;
+  - the TrueVision leader harness, run against this tree's real modules, passes 83 of 83,
+    old-style primitives painting byte-identically to this repo's HEAD among them.
+- **Not exercised in the running app:** testing was kept light at Adam's request.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.31.1 - 13-Sep-2026 - A Refused Snapshot Upload Is Never Counted as Baked
+
+### Fixed
+- **The Dev bake no longer counts a refused 3D snapshot upload as baked.**
+  `Na__LeVp3d__Bake` used to decide by reading the viewport record after the render:
+  if the record named this view, the bake had worked. A record that already named the
+  same view passed that test whether or not the new picture reached R2 - a forced bake,
+  or a stored picture too narrow for export (every record written before
+  `Asset__PixelWidth` existed reads as too narrow). It now counts the render's own
+  upload.
+- **The record is stamped only when the upload says R2 took the file.**
+  `Na__LeVp3d__RenderNow` requires `r2Success === true` before it writes
+  `Viewport__SnapshotAsset`, and returns whether it did.
+
+### Notes
+- **Ported from TrueVision3D v2.32.1** the day it was fixed, at Adam's request, as
+  `Na__LayoutEditor__Viewport3d__` 1.4.1. The RenderNow and Bake hunks are TrueVision's
+  1.5.1 line for line; the module still lacks TrueVision's Model Source (1.5.0), which
+  has no model groups to act on here.
+- **TrueVision had the worse half.** Its upload utility returns a result with
+  `r2Success : false` where this tree's throws, and a result object is truthy, so a
+  refused upload there wrote a path R2 had never received onto the record - the web
+  build then asked R2 for a missing file and drew an empty frame, and the Dev bake
+  called the viewport up to date. Here `Na__AppUtils__R2AssetUpload` throws and
+  `Na__LeAssets__Upload` returns null, so no refusal ever stamped a record; the new
+  check keeps the two modules identical and holds if the transport ever changes.
+- Verified here: the module parses, the module graph resolves and the named imports of
+  312 files resolve. A Node harness runs the real module of each app against stubbed
+  imports through 10 cases - an upload refused as a result object, refused as null, and
+  accepted, through Bake, Force Render and the PDF render. Before the port this copy
+  failed 5, one of them with its own null refusal (a forced bake over a same-key record
+  read as baked); after it, all 10 pass.
+- In the running app on Doous (`vvstamp.localhost:8441`), every write refused by a guard
+  and none attempted, and the running `Bake` proven to be the ported one by its source:
+  Sheet_001's 3D viewport rendered (3240 px), and Force Render, a forced bake and an
+  unforced bake each left its record untouched, both bakes `failed`. A `*.localhost` host
+  cannot upload in this app, so the upload branch itself rests on the harness. The stored
+  snapshot's fingerprint (`1od0ttx`) no longer matches the view's key (`5ski8l`), so the
+  old code would also have said `failed` here: the same-key miscount is shown by the
+  harness alone.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.31.0 - 13-Sep-2026 - Drawing Layers: Drag the Grip, Lock and Unlock
+
+### Changed
+- **A grip replaces the Up and Down buttons.** Each row in the Layout Editor's
+  Drawing Layers panel now ends in a six-square grip. Press it, drag the layer up
+  or down and let go.
+  - The row follows the pointer, and the rows it passes slide aside to show where
+    it will land. Nothing reaches the model until release, so a drag is one
+    reorder and one undo step.
+  - A row takes a place once its leading edge passes the middle of the row there,
+    so the first and last places can both be reached.
+  - Escape, or a cancelled pointer, drops the drag and leaves the order alone.
+  - A panel refresh that arrives mid-drag waits for the drop rather than pulling
+    the rows out from under the pointer.
+  - With the grip focused, the up and down arrow keys move the layer one row, so
+    the order can still be changed without a mouse. Those arrows do not reach the
+    sheet.
+  - Only the grip drags. The whole row is no longer an HTML drag source, so a
+    double-click rename or the type select cannot start a drag by accident.
+- **The lock button reads Lock, or Unlock while the layer is locked** (it read Open
+  and Locked). A locked layer's button carries a faint red tint, and both words
+  share one width so the layer names do not shift.
+
+### Notes
+- **Ported from TrueVision3D** (`Na__LayoutEditor__Panel__Layers__` 1.1.0), authored
+  there first and signed off by Adam on 13-Sep-2026. No record field changed: the
+  order is still `Layer__Order` and the lock `Layer__Locked`, so both apps write the
+  same data.
+- **How it came across.** A script confirmed that this tree's Layers module body and
+  the Layer Rows region of `Na__LayoutEditor__Styles__Panels__.css` were still
+  byte-identical to TrueVision's committed originals before replacing them, then
+  checked them again after writing.
+  - The Layers module is TrueVision's line for line below the header.
+  - Nothing outside the Layer Rows region of the stylesheet moved.
+  - Each file kept its own line endings (the module LF, the stylesheet CRLF).
+- **Verified here, statically:** the module parses; `Na__Verify__ModuleGraph` passes
+  with its one known vendor issue unchanged; `Na__Verify__Exports` passes on 312 files.
+- **Verified in the running app** on a scratch sheet at `127.0.0.1:8441`, with every
+  network write refused (none was attempted). Nine checks passed:
+  - A 2 px press is not a drag.
+  - Lock turns to Unlock and back, with the same tint and the same 48 px width as
+    TrueVision.
+  - A drag down one row, a drag to the very bottom and a drag to the very top.
+  - Escape and a cancelled pointer both leave the order alone.
+  - The arrow keys move one row and keep focus on the moved layer.
+  - A refresh mid-drag is held until the drop, which still lands.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.30.0 - 13-Sep-2026 - Edge Styles: Structure Black, Doors Grey, Furniture Faint
+
+### Added
+- **Each model category draws its own linework.** In a 2D Layout Editor viewport
+  every projected line now knows which category of the model it came from. That
+  lets structure stay black at full weight while the proposal's doors step back
+  to dark grey and furniture and planting sit at mid and light grey. The drawing
+  gets that depth cue without anyone setting it up.
+- **An Advanced fold in Model Layers** shows each category's edge colour, line
+  type and weight inline in its row, between the name and the checkbox. There is a
+  reset per row and one for the whole viewport.
+  - A change restyles that category in the selected viewport only, and repaints
+    without re-projecting.
+  - Folded, the panel is exactly the panel it was.
+  - It appears on 2D viewports only.
+- **Defaults per category**, in `Na__LayoutEditor__ModelLayers__Config__.json` 1.1.0,
+  the same as TrueVision's:
+  - Walls, floors, roofs and the building itself: black, 1.0.
+  - Windows and doors: dark grey, 0.80.
+  - Staircases: soft black, 0.90. Fixtures: dark grey, 0.75.
+  - Furniture: mid grey, 0.50. Decor: light grey, 0.50.
+  - Landscape: mid grey, 0.60.
+  - Site boundaries: soft black, dashed, 0.75.
+  - Planting and people: 0.50.
+  - A category no config names draws black, solid, at full weight: plainly
+    unstyled rather than invisible.
+- **A weight is a factor, never a width.** 1.0 is the sheet's master viewport
+  lineweight, so raising the master thickens the whole drawing and keeps the
+  hierarchy. The Projected Linework and Hidden Lines composite weights (v2.28.0)
+  multiply on top.
+- **Line types in paper millimetres** (`Na__LayoutEditor__EdgeStyles__Config__.json`):
+  solid, dashed, dashed fine, centre (steelwork and setting out), centre fine,
+  phantom and dotted. A dash measures the same on paper at 1:50 and at 1:200.
+- **Colours are the SketchUp SSOT edge greys**, stored by alias: black, soft
+  black, dark grey, medium dark grey, mid grey and light grey. Each alias carries
+  its SSOT material key.
+- **The record is `Viewport__ProjectedEdges`.** It holds only the categories
+  someone restyled, each written out in full with its label, plus the time of the
+  last change.
+  - An entry that returns to its default is pruned, and the record is null when
+    nothing is left.
+  - The shape is TrueVision's, so either app reads the other's sheets.
+- **The PDF prints the same bands** the sheet paints.
+
+### Changed
+- **Every linework render that is kept runs on the CPU backend.** That covers the
+  drawing on screen, every Layout Editor viewport, the browser cache and the R2
+  bake, because only the CPU backend tags each line with its category.
+  - `auto` used to send plain elevations to the GPU on a capable machine, where
+    the edge styles would have done nothing. That was TrueVision's first failed
+    test of this feature.
+  - The GPU and legacy backends remain for the Dev menu's Run Diff, which keeps
+    nothing, and the menu now says so.
+  - A large elevation computes more slowly on a machine that used to hand it to
+    the GPU.
+- **Linework asset schema 2** stores the category tags as `[ id, count ]` runs per
+  class.
+  - Schema 1 assets and browser copies are refused and rendered again once, because
+    a drawing restored from one could not be styled.
+  - Until a project is saved again on localhost, which re-bakes its drawings, the
+    web build computes that linework in the browser instead of loading the old
+    asset.
+- **The Layout Editor also waits for the edge style config and the drawing view
+  config** before it builds. Neither fetch rejects.
+- **The side panel drags to 680 px** (was 520), to make room for the inline controls.
+
+### Notes
+- **Ported from TrueVision3D v2.27.0** (Edge Styles), which Adam signed off on
+  13-Sep-2026. The Render Composites half of that version came across separately
+  as v2.28.0. Nothing was copied wholesale.
+  - **Projection files (folder 50).** They matched TrueVision's pre-feature code
+    apart from ValeVision's own comments and gates.
+    - A replayer applied TrueVision's committed diff hunk by hunk: 64 hunks across
+      10 files, with every anchor required to match exactly once.
+    - The two it could not place went in by hand and were then confirmed present:
+      the Owners import, because ValeVision's import block differs, and
+      WorkerPool's JoinOwners.
+    - Every body was then compared with TrueVision's committed code. What differs
+      is ValeVision's localhost authoring gate, its comments and the Dev menu's
+      formatting.
+  - **New modules.** `Na__ProjectedLinework__Owners__`, `Na__LayoutEditor__EdgeStyles__`
+    and its config are verbatim below their headers. ModelLayers (6 hunks) and
+    Panel__ModelLayers (11) were replayed the same way.
+  - **Shared files.** SheetRecords, SheetModel, Viewport2d, PdfExporter and
+    ModeController already carried today's Render Composites weights, ortho
+    dimensions and gradient fills.
+    - They took 22 anchored patch steps, each new block cut from TrueVision's
+      committed code between marker lines.
+    - PdfExporter and Panel__ModelLayers now match TrueVision line for line below
+      the header.
+- **The model layer config carries two sets of rows.** ValeVision names a category
+  after the GLB it came from.
+  - A project exported with the building split by tag, such as Doous (3047), loads
+    `ValeVision__MainBuildingModel__ProposedWalls`, `...Roofs`, `...Windows` and the
+    rest. Those are TrueVision's keys under the ValeVision prefix, and they carry
+    TrueVision's rows and styles.
+  - An older export arrives coarse: the existing building as one category, the
+    proposal as one plus its doors. Those rows stay too, styled as structure, so
+    there the windows draw at the building's weight until the project is exported
+    again with the split.
+  - A row whose category a project did not load never shows.
+  - Found in the app: the config inherited from the Model Layers port listed only
+    the coarse rows, so Doous's walls, roofs and windows fell under "Other" and its
+    windows drew black at full weight.
+- **Verified here, statically:**
+  - The 19 changed modules parse.
+  - 980 named imports across the 76 modules in folders 50 and 51 resolve.
+  - `Na__Verify__Exports` passes on 312 files, with every `Na__` name declared or
+    imported.
+  - `Na__Verify__ModuleGraph` passes, with its one known vendor issue unchanged.
+  - The owner-tag harness passes 9 of 9 against this copy of the clip kernel and
+    owners module.
+- **Verified in the running app**, read-only, on Doous (3047) at a fresh
+  `edges.localhost:8441` origin with every network write refused (none was attempted):
+  - Elevation_002's viewport rendered in 14.9 s with every segment tagged by its model
+    category: 10,073 visible, 300,384 hidden and 10,254 authored, none unknown.
+  - The bands matched the width maths exactly, on a 0.3 pt master at 1:50. Walls,
+    roofs and floors drew black at 0.1058 mm; windows and doors dark grey at 0.80;
+    site boundaries soft black at 0.75, dashed 2.5/1.5; landscape mid grey at 0.60.
+    Hidden lines in solid categories kept the class dash. The SVG painted exactly
+    those bands.
+  - In the Model Layers Advanced fold, Walls set to mid grey wrote one
+    `Viewport__ProjectedEdges` entry and split the visible black band into 4,278
+    walls and 4,332 roofs and floors. Centre at 0.5 then drew a 0.0529 mm line
+    dashed 8/2/2/2. The projected result stayed the same object throughout: the
+    drawing repainted and was never re-projected. The row's reset pruned the
+    record back to null and the original 11 paths.
+  - Not exercised here: the PDF export (PdfExporter is TrueVision's line for line,
+    and its bands were checked against the screen there) and the GPU route, which
+    the verification pane has no adapter for.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.29.0 - 13-Sep-2026 - Ortho Dimensions: Hold Shift for Horizontal or Vertical
+
+### Added
+- **Shift makes a dimension ortho.** Hold Shift while the dimension's line follows
+  the cursor (after the second click) and it runs horizontal or vertical, whatever
+  its two points are: drag the line above or below them for a horizontal dimension,
+  which measures the x distance, or beside them for a vertical one, which measures
+  the y. Let go of Shift and it is aligned again; pressing or releasing Shift redraws
+  at once. Two points at different heights - the eaves of one wall and the foot of
+  the next - no longer need a sloping dimension.
+- **The CAD box rule picks the direction.** Above or below the box the two points
+  span gives horizontal, to either side vertical, off a corner whichever side is
+  further out; inside the box the choice holds. Two level points can only take a
+  horizontal dimension, two plumb ones only a vertical.
+- **Each point runs its own extension line** to the dimension line, and a vertical
+  value reads up the sheet. Inference still lines an ortho line up with any parallel
+  dimension nearby.
+- **Snap markers are coloured by the tool that is snapping**: blue for vertices (the
+  Draw and Rectangle tools and vertex grips), orange for dimensions (the tool, its
+  grips and its line inference). Purple is the viewport tone - defined and styled,
+  ready for the viewport snap move, which has not come across yet.
+
+### Changed
+- **Shift no longer bends the span** to the nearer axis while the end point is
+  picked. The end lands on the point that was picked; the arrow keys still lock the
+  span to an axis.
+- **An ortho line stays where it was put** while a grip re-picks either point, even
+  when the end is dragged past the start.
+
+### Notes
+- **Ported from TrueVision3D v2.31.0** the day Adam signed it off there ("works
+  great"). `Na__LayoutEditor__DimensionGeometry__` 1.1.0 and
+  `Na__LayoutEditor__DimensionTool__` 1.2.0 are verbatim below their headers. The
+  edits to Snapping (1.2.0), SheetRecords and SheetModel (1.4.0), MarkupBridge
+  (1.3.0), SheetTools (1.9.0), Toolbar (1.8.0), the main stylesheet and the app
+  config were replayed by a script that required every anchor to match exactly once
+  before it wrote anything - all 32 did. The purple carry styling stays behind with
+  the viewport snap move it belongs to.
+- **New record field, shared with TrueVision**: `Dimension__Orientation` -
+  `'aligned'`, `'horizontal'` or `'vertical'`. Every existing record normalises to
+  aligned and draws exactly as before, so either app reads the other's dimensions.
+- Verified here: the 8 changed modules parse, 812 named imports resolve and every
+  `Na__` name is declared or imported; the 30-check geometry harness passes against
+  this copy, with the aligned skeleton bit-identical to the old module across 80,000
+  cases. In the running app, on a scratch A3 sheet with every write blocked (none was
+  attempted): 23 checks with pointer and key events - the Shift placement, live Shift
+  release and press, the 40 / 45 / 60.208 values, inference onto the first line, both
+  grips with the line held, two undos, the blue and orange markers and the purple
+  tone, and an aligned placement with no Shift. A 24th check, a scan of
+  `document.styleSheets` for the tone rules, came back empty while the markers'
+  computed colours were the new tones - the scan missed where the sheet is attached,
+  not the rules.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.28.0 - 13-Sep-2026 - Render Composites Weights: How Thick Each Layer Draws
+
+### Added
+- **An Advanced fold in Render Composites.** Open it and every composite that
+  draws a line gets a weight beside its checkbox, for the selected viewport only:
+  Projected Linework and Hidden Lines as multipliers (x) of the sheet's viewport
+  lineweight; Profile Linework Effect, Section Outline and Base Image in render
+  pixels (px). Folded, the panel is the panel it was.
+- **Base Image has a thickness.** Its weight is how thick the model's own
+  SketchUp edges draw inside the rendered picture, on 2D and 3D viewports alike.
+  The default, 0.80, is the width those edges already use everywhere.
+- **Section Outline is a weight-only row** - a drawing either has a cut or it has
+  not - and it keeps an empty checkbox slot, so its box lines up with the rest.
+- **A changed weight turns its row blue and shows a reset arrow**, which clears
+  it again. Only weights someone set are stored, in `Viewport__CompositeWeights`,
+  so a project nobody has curated saves exactly as it did.
+- **The panel is built from `Na__LayoutEditor__RenderComposites__Config__.json`**
+  rather than a list in its source, so a new composite is a config edit.
+- **The PDF prints what the sheet shows.** Its stroke rules now take the viewport,
+  so the Projected Linework and Hidden Lines factors reach the paper.
+
+### Notes
+- **Ported from TrueVision3D** - its v2.27.0 Render Composites weights, plus the
+  Base Image weight and the Section Outline row alignment added on 13-Sep - after
+  Adam signed them off there. This tree had no Advanced fold, no weights and no
+  Section Outline row, so the whole feature came across. The composites module,
+  the Styles panel below its header and the Advanced Fold stylesheet region are
+  verbatim; the config's layers are verbatim, with two notes reworded for this app.
+- **What consumes the pixel weights differs (DIV-1).** The profile width goes in
+  through a new `edgeWidthPx` on the composer preset, the section outline through
+  the Cross Sections tool (and back out after the live tool is released), and the
+  model's edges through a new base-width override in `Na__LineworkSettings`. The
+  session linework factors and the export line-width compensation still multiply
+  all three, so a viewport nobody has touched renders exactly as it did.
+- **3D snapshots keep their keys.** A weight joins the fingerprint only once it is
+  set, and only one a scene render can show - the Base Image weight.
+- Verified here: the 12 changed modules parse, the named-export harness passes
+  (310 files) and the module graph resolves. In the running app, on Doous (3047)
+  with every write blocked: the weight boxes and checkboxes measure into one
+  column, exactly as in TrueVision; Base Image 3 px drew the edges at 3 times the
+  export compensation and took the underlay from 3.66% to 6.25% dark pixels, every
+  edge material back to 0.8 afterwards; Profile 4 px took it on to 9.18%; Section
+  Outline 5 px was set for the render and the live width came back to 2; Projected
+  Linework x2 doubled the vector stroke without re-rendering the raster; a 3D render
+  at Base Image 3 px drew the edges at 3 and put them back; an untouched 3D
+  fingerprint matches the old algorithm. Not exercised: Hidden Lines on a drawing
+  with hidden linework (Doous has none), and a PDF export.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.27.0 - 13-Sep-2026 - The Palette: Shift+B Sets What You Draw Next
+
+### Added
+- **Shift+B loads the palette.** B still paints one object's style onto others.
+  Shift+B instead makes the clicked object's style the setting that new objects
+  of its kind are created with - the same Text, Dimensions and Vectors settings
+  the panels show when nothing is selected. The selection clears so the panel
+  visibly changes to match, the item pulses, and the drawing tool for that kind
+  takes over: Text, Dimension, or whichever of Draw and Rectangle drew last.
+  Setting the palette and drawing with it is Shift+B and one click.
+- **Shift+B with something already selected loads it at once.** Also on
+  Shift+click of the Eyedropper button, and as Use for new dimensions / text /
+  vectors on the right-click menu. `PaletteSwitchesTool` turns the hand-over off.
+- **A scrapbook is the point.** Keep one of each house style beside the paper,
+  where it shows on screen and never prints, and a dimension type or a line
+  type stops being a panel's worth of fields set again by hand.
+
+### Fixed
+- **The eyedropper could not read a locked layer**, although its own header said
+  a locked item was a valid source: the hit test skipped locked layers, so a
+  click on one found nothing. `HitTest` takes `includeLocked` and only the
+  eyedropper passes it. A locked scrapbook now hands out its style, and a locked
+  target is refused with a reason instead of being missed. Every other tool is
+  unchanged.
+
+### Notes
+- **The same traits as B.** The palette reads the eyedropper's trait table. The
+  one translation - a record's null fill or gradient becomes an off switch beside
+  the last value in the settings - is declared on those two traits, and a
+  gradient is copied rather than shared.
+- **Ported from TrueVision3D v2.30.0 the same day, after Adam signed it off**, by
+  replaying the edits. Every anchor matched this tree, which already carried the
+  eyedropper, the rectangle tool and gradient fills.
+- Verified here: 51 modules parse, every named import resolves, no undeclared
+  names in the six changed files, and the palette harness passes 53 checks and
+  the eyedropper harness 52 against this copy. In the running app, read-only: the
+  modules load, the live key map sends Shift+B to the palette and B to the
+  eyedropper, and the live config supplies the wording and both settings.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.26.0 - 13-Sep-2026 - Gradient Fills
 
 ### Added

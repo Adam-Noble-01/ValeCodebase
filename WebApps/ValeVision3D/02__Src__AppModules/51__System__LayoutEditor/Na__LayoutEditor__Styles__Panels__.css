@@ -253,6 +253,199 @@
     margin-top                         : 0;
 }
 
+/* ----------------------------------------------------------------- */
+/* REGION  |  Advanced Fold                                          */
+/* ----------------------------------------------------------------- */
+
+/* THE SMALL TOGGLE UNDER A SECTION TITLE. Deliberately quieter than the
+   section header above it - smaller, no fill, no rule - so it reads as a
+   property of the section rather than as another section. */
+.na-le-adv-toggle {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 6px;
+    width                              : 100%;
+    margin                             : -2px 0 8px;
+    padding                            : 2px 0;
+    border                             : none;
+    background                         : transparent;
+    color                              : #6c7a86;
+    font-size                          : 0.66rem;
+    font-weight                        : 600;
+    letter-spacing                     : 0.05em;
+    text-transform                     : uppercase;
+    text-align                         : left;
+    cursor                             : pointer;
+}
+
+.na-le-adv-toggle:hover {
+    color                              : #1a7fc4;
+}
+
+.na-le-adv-toggle__chevron {
+    width                              : 0;
+    height                             : 0;
+    border-left                        : 4px solid transparent;
+    border-right                       : 4px solid transparent;
+    border-top                         : 5px solid currentColor;
+    transform                          : rotate(-90deg);
+    transition                         : transform 0.15s;
+}
+
+.na-le-section.is-advanced .na-le-adv-toggle {
+    color                              : #1a7fc4;
+}
+
+.na-le-section.is-advanced .na-le-adv-toggle__chevron {
+    transform                          : none;
+}
+
+/* EVERYTHING MARKED ADVANCED IS GONE UNTIL THE FOLD IS OPEN. !important
+   because these sit inside rows whose own display rules would otherwise
+   win on specificity. */
+.na-le-section:not(.is-advanced) .na-le-adv {
+    display                            : none !important;
+}
+
+/* A SUB-FOLD inside a panel (the Leaders panel's Endpoint): the Advanced
+   fold's quiet toggle, opening only the rows under it, which carry a faint
+   rule down their left like the gradient rows. */
+.na-le-subfold-toggle {
+    margin                             : 2px 0 6px;
+}
+
+.na-le-subfold-toggle.is-open {
+    color                              : #1a7fc4;
+}
+
+.na-le-subfold-toggle.is-open .na-le-adv-toggle__chevron {
+    transform                          : none;
+}
+
+.na-le-subfold {
+    margin                             : -2px 0 6px;
+    padding-left                       : 8px;
+    border-left                        : 2px solid #e6eaee;
+}
+
+/* THE INLINE CLUSTER inside a toggle row: colour, line type, weight, then the
+   row's own checkbox after it. The label gives way first - it ellipsises
+   rather than pushing the controls off the edge - which is why the panel can
+   be dragged wider while curating and narrow again afterwards. */
+.na-le-row--toggle .na-le-row__label {
+    min-width                          : 0;
+    overflow                           : hidden;
+    text-overflow                      : ellipsis;
+    white-space                        : nowrap;
+}
+
+.na-le-row__adv {
+    display                            : flex;
+    flex                               : 0 0 auto;
+    align-items                        : center;
+    gap                                : 4px;
+}
+
+.na-le-row__adv .na-le-select,
+.na-le-row__adv .na-le-input {
+    flex                               : 0 0 auto;
+    padding                            : 1px 3px;
+    font-size                          : 0.7rem;
+}
+
+.na-le-adv-colour  { width : 92px; }
+.na-le-adv-type    { width : 82px; }
+.na-le-adv-weight  { width : 52px; text-align : right; }
+
+/* THE UNIT AFTER A COMPOSITE WEIGHT: a multiplication sign for a factor of
+   the sheet master, "px" for a render-buffer width. Two kinds of number in
+   one column need telling apart without reading the tooltip. */
+.na-le-adv-unit {
+    flex                               : 0 0 16px;
+    color                              : #8a96a0;
+    font-size                          : 0.66rem;
+}
+
+/* THE CHECKBOX COLUMN, HELD OPEN on a composite row that has a weight but no
+   toggle (Section Outline). Every other weight sits just before its row's
+   checkbox; without this the row's weight slides right by a checkbox and its
+   gap, and the column breaks. Same width as .na-le-input--check. */
+.na-le-row__check-slot {
+    flex                               : 0 0 16px;
+    width                              : 16px;
+}
+
+/* A CLUSTER THAT DOES NOT APPLY to the selected viewport - edge styles on a
+   3D viewport, a 2D-only weight on a 3D one - is removed even with the fold
+   open, rather than offering controls that would change nothing. */
+.na-le-adv--off,
+.na-le-list--no-edges .na-le-row__adv,
+.na-le-list--no-edges .na-le-adv-head {
+    display                            : none !important;
+}
+
+/* A SWATCH BESIDE THE COLOUR SELECT. A native option list cannot be relied on
+   to paint its own backgrounds, and a grey called "Mid Grey" is not a grey
+   anyone can see. The swatch shows the colour the line will actually be. */
+.na-le-adv-swatch {
+    flex                               : 0 0 12px;
+    width                              : 12px;
+    height                             : 12px;
+    border                             : 1px solid rgba(23, 43, 58, 0.25);
+    border-radius                      : 2px;
+}
+
+/* A CATEGORY THIS VIEWPORT HAS RESTYLED gets a marker on its label and a reset
+   button, so a curated row can be told from an inherited one at a glance. */
+.na-le-row.is-overridden .na-le-row__label {
+    color                              : #1a7fc4;
+    font-weight                        : 600;
+}
+
+.na-le-adv-reset {
+    flex                               : 0 0 18px;
+    width                              : 18px;
+    height                             : 18px;
+    padding                            : 0;
+    border                             : 1px solid transparent;
+    border-radius                      : 3px;
+    background                         : transparent;
+    color                              : #8a96a0;
+    font-size                          : 0.78rem;
+    line-height                        : 1;
+    cursor                             : pointer;
+    visibility                         : hidden;
+}
+
+.na-le-row.is-overridden .na-le-adv-reset {
+    visibility                         : visible;
+}
+
+.na-le-adv-reset:hover {
+    border-color                       : #ccd3d8;
+    color                              : #172b3a;
+}
+
+/* THE COLUMN HEADINGS for the inline cluster, shown once above a list rather
+   than repeated per row. Aligned to the same widths as the controls below. */
+.na-le-adv-head {
+    display                            : flex;
+    align-items                        : center;
+    gap                                : 8px;
+    margin                             : 0 0 4px;
+    color                              : #8a96a0;
+    font-size                          : 0.62rem;
+    font-weight                        : 600;
+    letter-spacing                     : 0.04em;
+    text-transform                     : uppercase;
+}
+
+.na-le-adv-head__spacer { flex : 1 1 auto; }
+.na-le-adv-head__cell   { flex : 0 0 auto; }
+
+/* endregion ------------------------------------------------------- */
+
+
 /* A ROW THAT IS ONLY BUTTONS, with no label column to line up against. */
 .na-le-row--buttons {
     gap                                : 6px;
@@ -367,14 +560,6 @@
     font-style                         : italic;
 }
 
-.na-le-layer.is-dragging {
-    opacity                            : 0.5;
-}
-
-.na-le-layer.is-drop-target {
-    border-color                       : #1a7fc4;
-}
-
 .na-le-layer__name {
     flex                               : 1 1 auto;
     min-width                          : 0;
@@ -382,6 +567,97 @@
     text-overflow                      : ellipsis;
     white-space                        : nowrap;
     cursor                             : default;
+}
+
+/* THE LOCK BUTTON SAYS WHAT A CLICK WILL DO - "Lock" or "Unlock" - so it
+   holds one width for both words; otherwise every name in the list would
+   twitch sideways as its layer locked. */
+.na-le-btn--lock {
+    min-width                          : 48px;
+}
+
+/* A LOCKED LAYER'S BUTTON is only just red: enough to pick the locked rows
+   out at a glance, too little to be mistaken for a warning or for Delete. */
+.na-le-btn--lock.is-locked {
+    border-color                       : #e8c9c9;
+    background                         : #fbf3f3;
+    color                              : #9b3b3b;
+}
+
+.na-le-btn--lock.is-locked:hover:not(:disabled) {
+    background                         : #f6e7e7;
+}
+
+/* THE GRIP - six small squares, the usual sign for "hold here and drag".
+   Faint until its row is under the pointer; the grab cursor does the rest. */
+.na-le-layer__grip {
+    flex                               : 0 0 auto;
+    display                            : inline-flex;
+    align-items                        : center;
+    justify-content                    : center;
+    width                              : 20px;
+    height                             : 22px;
+    padding                            : 0;
+    border                             : 1px solid transparent;
+    border-radius                      : 4px;
+    background                         : transparent;
+    color                              : #a0aab2;
+    cursor                             : grab;
+    touch-action                       : none;
+    user-select                        : none;
+}
+
+.na-le-layer__grip svg {
+    display                            : block;
+    width                              : 8px;
+    height                             : 13px;
+    fill                               : currentColor;
+    pointer-events                     : none;
+}
+
+.na-le-layer:hover .na-le-layer__grip:not(:disabled) {
+    color                              : #6c7a86;
+}
+
+.na-le-layer .na-le-layer__grip:hover:not(:disabled),
+.na-le-layers .na-le-layer.is-dragging .na-le-layer__grip {
+    background                         : #e2e8ee;
+    color                              : #172b3a;
+}
+
+.na-le-layer__grip:focus-visible {
+    outline                            : none;
+    border-color                       : #1a7fc4;
+}
+
+.na-le-layer__grip:disabled {
+    opacity                            : 0.35;
+    cursor                             : default;
+}
+
+/* WHILE A ROW IS DRAGGED the rows it passes slide aside to open the gap it
+   will drop into. The dragged row tracks the pointer with no easing, lifted
+   above its neighbours. */
+.na-le-layers.is-sorting .na-le-layer {
+    transition                         : transform 0.12s ease;
+}
+
+.na-le-layers.is-sorting .na-le-layer.is-dragging {
+    position                           : relative;
+    z-index                            : 2;
+    border-color                       : #1a7fc4;
+    background                         : #ffffff;
+    box-shadow                         : 0 3px 10px rgba(23, 43, 58, 0.18);
+    transition                         : none;
+}
+
+/* THE GRABBING CURSOR is held across the whole page for the length of the
+   drag, so it never flickers back to an arrow once the pointer leaves the
+   grip. */
+body.na-le-sorting,
+body.na-le-sorting * {
+    cursor                             : grabbing !important;
+    user-select                        : none !important;
 }
 
 /* endregion ------------------------------------------------------- */

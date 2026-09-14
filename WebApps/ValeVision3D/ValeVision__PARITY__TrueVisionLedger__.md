@@ -54,6 +54,249 @@ port repeatedly and ValeVision has no equivalent.
 |---|---|---|
 | Undo and redo stop writing the project (TrueVision v2.30.1) | The same fault is here: `Na__LeHist__Apply` restores through `Na__LeModel__UpdateSheet(sheet, {})`, announced as `sheet-updated`, which `Na__LeAuto__STRUCTURAL` treats as a sheet-settings change - so every Ctrl+Z and Ctrl+Y saves the whole project. TrueVision's fix is three modules: `Na__LeModel__AnnounceRestore` and a `restore : { direction, stepReason }` field on the change event, step reasons kept by History (plus the missing shape case in its selection test), and `Na__LeAuto__CallsForSave` judging a restore by its step. Content undo becomes draft-only; structural undo still saves | **pending** |
 
+### Return trip - TrueVision to ValeVision (14-Sep-2026, box select)
+
+Authored in TrueVision (v2.34.0), in the same files and at the same time as Leaders. Tested there and signed off
+("It seems to be working to me"), then ported the same day as ValeVision v2.33.0. It went on top of the Leaders port
+(v2.32.0), by agreement between the two sessions.
+
+The hunks are Box Select's own, from the patch files that landed it in TrueVision: 79 across 13 shared files, plus
+the two new modules. On the dry run against this tree after Leaders:
+
+- 10 were development-log heads, rewritten to this tree's module versions.
+- 6 were re-anchored where this tree lacks TrueVision's viewport snap-move and viewport clipboard, or words things
+  differently: the new-module imports, CancelPlacement, Escape, the zoom redraw (`dropperdraw`), the context menu call
+  and the History header.
+- 1 was left out: CarryTarget's multi-selection guard, as this tree has no viewport carry.
+- The rest matched verbatim, including the conversions of Leaders' original hunks (DeleteLeader, the leader highlight).
+
+Nothing was written until every anchor was unique. Every new log entry ends "Ported from TrueVision3D v2.34.0".
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__SelectionBox__.js`, `__SelectionSet__.js` 1.0.0 | The window and crossing rules for each kind, leaders included; the box and its live preview; the Add / Toggle / Remove combine. Group capture, move and commit, nudge and delete, one undo step each; locked items left out; the leader tip rule | **ported**, verbatim (header only) |
+| Model and history | The selection is a set: `SetSelectionItems`, `GetSelectionItems`, `IsSelected`, `Unselect` in every delete, and `DeleteItems` (SheetModel 1.7.0). `GetSelection` still means exactly one item. History 1.2.0 prunes the set on a restore | **ported** - see the shape row below |
+| Tools | SheetTools 1.11.0: `StartsBox`, `PressSelection`, `BoxUp`, the group drag, multi nudge, delete and menu, Escape mid-box, and `FinishDrag(pointerId, released)` | **ported**, less CarryTarget's guard |
+| Surface and markup | SheetSurface 1.4.0 and ViewportHandles 1.3.0 (`RenderOutlines`: outlines and no grips for several); MarkupBridge 1.5.0 (a highlight round every selected item) | **ported** |
+| Config, keys, panels and styles | ConfigState 1.6.0 (box setup, `MatchSelectionModifier`). The SelectionBindings block and three Select actions; the Selection box keys and six labels. The several-selected note in Panel__Text 1.1.0, Panel__Dimensions 1.1.0 and Panel__Shapes 1.5.0. The box and preview colours | **ported** |
+| Service worker token | TrueVision's one token bump covered both features | **n/a** - this tree has no PWA worker |
+
+**The History shape row is still missing here** (see the Leaders section below). With Box Select it matters to a
+multi-selection too: an undo or redo takes every selected vector out of the set. It returns with the undo-writes
+return trip in the Pending table.
+
+Verified here:
+
+- All 12 edited and new modules parse as ES modules, and both JSON files parse.
+- `Na__Verify__ModuleGraph__` passes, with the one known vendor issue unchanged.
+- `Na__Verify__Exports__` passes on 317 files, with every `Na__` name imported or declared.
+- The TrueVision box select harness, pointed at this tree's real modules, passes 86 of 87. The one failure is the
+  shape row above: a redo that removes a selected text item drops the selected vector with it.
+
+Not exercised in the running app: testing was kept light at Adam's request after his sign-off in TrueVision.
+
+### Return trip - TrueVision to ValeVision (14-Sep-2026, leaders and annotation bubbles)
+
+Authored in TrueVision (v2.35.0). Tested there and signed off ("It seems to be working to me"), then ported the same
+day as ValeVision v2.32.0.
+
+The port was replayed from a snapshot of the signed-off files, NOT from TrueVision's working copies. Within the hour
+those had grown Project Specification hunks that are not signed off: a code resolver in the leader geometry,
+`Leader__SpecNoteId` and margin notes.
+
+Box Select (TrueVision v2.34.0) was built beside it in the same files. It crosses next as its own port, on top of
+this one, and none of its hunks are here.
+
+The hunks are the authoring session's own edits, lifted from its transcript in order: 123 across 21 files. On the
+first dry run:
+
+- 112 matched verbatim.
+- 8 were development-log heads, where this tree's module versions differ.
+- 3 were context this tree words differently: the History selection test, the SheetTools header, and the last label
+  in the config.
+
+Nothing was written until every anchor was unique. Every new log entry ends "Ported from TrueVision3D v2.35.0".
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__LeaderGeometry__.js`, `__LeaderTool__.js`, `__Panel__Leaders__.js` 1.0.0 | The leader itself: the sweeping S between level stubs, handing by the side of the point, bubble growth, circle facets, bounds and hit parts; two-click or drag placement with the inline note and bubble fields and the next bubble code; the Leaders panel and its Endpoint fold | **ported**, verbatim (header only) |
+| Record and model | `Sheet__Leaders` and `Na__LeRec__NormaliseLeader` (SheetRecords 1.6.0); `GetLeaders`, `CreateLeader`, `UpdateLeader` and `DeleteLeader`, announced as 'leaders' / 'leader' (SheetModel 1.6.0); `Shape__FillOpacity` and `Shape__StrokeOpacity`. Same field names and defaults as TrueVision, so either app reads the other's leaders | **ported** |
+| Painting | SheetChrome 1.3.0's polyline carries `DashMm`, `FillOpacity` and `StrokeOpacity` (SVG attributes; PDF dash and jsPDF `GState` inside a saved state). MarkupBridge 1.4.0 draws leaders last and hit-tests them first. ShapeGeometry 1.3.0 passes the shape opacities | **ported** |
+| Tools and editing | SheetTools 1.10.0: the E tool; press, move and release; grips through `LeaderGrab`; drags, nudge and delete; the context menu; double-click. Grips 1.3.0. TextTool 1.1.0 (the multi-line field). Eyedropper 1.3.0 (leader traits, `paletteOnly`). ShapeTool 1.3.2 and RectangleTool 1.0.2 take the panel opacities | **ported** |
+| Panels, toolbar and history | ModeController 1.10.0 registers the Leaders panel after Text. Toolbar 1.9.0 gains the Leader button. PanelHost 1.2.0 gains `SliderRow` / `ShowSlider`. Panel__Shapes 1.4.0 gains Fill opacity, Transparent edges and Edge opacity. History 1.1.0 gains the step reasons and the leader row of its selection test | **ported** - History takes the leader row only (see below) |
+| Config, keys and styles | ConfigState 1.5.0: `GetLeaderSetup` and the shape opacity keys. The `LayoutEditor__Leader__Config` block, the Shapes opacity keys and the labels. `Tool__Leader` on E. The multi-line field, anchor grip and Endpoint sub-fold rules | **ported** |
+| Service worker token | TrueVision bumped its PWA token for the new exports | **n/a** - this tree has no PWA worker |
+
+**The History selection test takes the leader row only.** TrueVision's test also has a shape row, so an undo there
+keeps a selected vector selected. Here every undo still drops it. That row belongs to the undo-writes return trip in
+the Pending table above, which awaits sign-off, so it waits with it.
+
+Verified here:
+
+- All 20 edited and new modules pass `node --check`, and both JSON files parse.
+- `Na__Verify__ModuleGraph__` passes, with the one known vendor issue unchanged.
+- `Na__Verify__Exports__` passes on 315 files, with every `Na__` name imported or declared.
+- The TrueVision leader harness, pointed at this tree's real modules, passes 83 of 83. It covers the geometry, the
+  normalisers, the next code, the eyedropper's palette-only type, and old-style primitives painting byte-identically
+  to this repo's HEAD.
+
+Not exercised in the running app: testing was kept light at Adam's request after his sign-off in TrueVision.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, snapshot upload stamp)
+
+Fixed in TrueVision (v2.32.1, `Na__LayoutEditor__Viewport3d__` 1.5.1) and ported the same
+day at Adam's request as ValeVision v2.31.1. Both hunks - RenderNow's stamp and return, and
+Bake's count - are TrueVision's line for line. The module's remaining difference is still
+TrueVision's Model Source (1.5.0), which has no model groups to act on here.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__Viewport3d__.js` 1.4.1 | RenderNow stamps `Viewport__SnapshotAsset` only when the upload came back with `r2Success === true`, and returns whether it did; Bake counts that return instead of reading the record. In TrueVision a refused upload stamped a path R2 never received, because its upload returns `r2Success : false` where this tree's throws. Here a refusal already came back null, but a forced bake, or a same-key record too narrow for export, still read as baked | **ported**, both hunks verbatim |
+| `03/Na__AppUtils__R2AssetUpload__.js` | TrueVision's 1.0.1 corrects its PORT NOTE, which said shared callers need no branch: failure is `r2Success : false` there and a throw here, so a shared caller must test `r2Success` | **no change here** - the comment is on TrueVision's side |
+
+Verified here: the module parses, the module graph resolves and 312 files' named imports
+resolve. A Node harness loads the real module of each app against stubbed imports and
+drives 10 cases (refused as a result object, refused as null, accepted; through Bake, Force
+Render and the PDF render). This copy failed 5 before the port - one live with its own null
+refusal, a forced bake over a same-key record read as baked - and passes all 10 after.
+In the running app on Doous, every write refused and none attempted: Sheet_001's 3D viewport
+rendered, and Force Render and both bakes left its record untouched, the bakes `failed`.
+That host cannot upload, and the stored snapshot's fingerprint no longer matches the view,
+so the upload branch and the same-key miscount rest on the harness.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, drawing layers grip and lock)
+
+Authored in TrueVision (`Na__LayoutEditor__Panel__Layers__` 1.1.0), tested there and
+signed off ("It works"), and ported the same day as ValeVision v2.31.0. Before anything
+was written, a script confirmed that this tree's Layers body and Layer Rows stylesheet
+region were byte-identical to TrueVision's committed originals. It then took
+TrueVision's tested body and region, and checked both again after writing. No record
+field changed, so both apps write the same data.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__Panel__Layers__.js` 1.1.0 | A grip replaces Up and Down: a pointer drag in which the passed rows slide aside, one reorder on release, Escape to cancel, the arrow keys on a focused grip, and refreshes held until the drop. The lock button reads Lock / Unlock, faint red while locked | **ported**, verbatim below the header |
+| Layer Rows stylesheet region | The lock button's shared width and tint, the grip, the sorting states and the grabbing cursor | **ported**, verbatim |
+
+Verified here: the module parses, and `Na__Verify__ModuleGraph` and `Na__Verify__Exports`
+(312 files) both pass. Nine in-app checks passed on a scratch sheet with every write
+blocked (none was attempted), with the same computed tint and 48 px button width as
+TrueVision.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, edge styles and owner tags)
+
+Authored in TrueVision (v2.27.0) and signed off by Adam on 13-Sep-2026 with the request
+to port. It came across as ValeVision v2.30.0. The Render Composites weights from the same
+TrueVision version came first, as v2.28.0 (its section is below). Every hunk was replayed
+against this tree with its anchor required to match exactly once. Nothing was copied
+wholesale except the two new modules and the edge style config.
+
+| Item | Why | State |
+|---|---|---|
+| `50/Na__ProjectedLinework__Owners__.js` 1.0.0 | The category id table, and the non-enumerable `Owners` and `OwnerKeys` on a classes object; id 0 is unknown | **ported**, verbatim below the header |
+| Owner tags through the projection: EdgeExtractor 1.2.0, ClipKernel 1.1.0, ClipWorker 1.1.0, WorkerPool 1.1.0, CpuBackend 1.2.0, StageSampler 1.1.0, AuthoredEdges 1.1.0 | One category id per edge, then per segment, through the cut, the view transform, the clip, the worker protocol and the pool's join | **ported** - bodies are TrueVision's apart from ValeVision's comments |
+| Projector 1.1.0: kept renders on the CPU | `auto` sent plain elevations to the GPU, which cannot tag. Only Run Diff may use it now | **ported** |
+| Persistence 1.2.0: asset schema 2 | Owner runs per class; untagged blocks are refused, never written and never baked | **ported, adapted** - the localhost authoring gate stays ValeVision's |
+| DevMenu Controls 1.1.0 | The backend picker and the hardware line say kept renders use the CPU | **ported** |
+| `51/Na__LayoutEditor__EdgeStyles__.js` 1.0.0 and its config | The colour, line type and weight vocabulary, and per-viewport `Viewport__ProjectedEdges` resolution, patching and pruning | **ported**, verbatim below the header |
+| ModelLayers 1.1.0 and its config 1.1.0 | Per-category edge defaults (`EdgeDefault`) | **ported, adapted** - TrueVision's rows and styles under the ValeVision__ prefix (what a split export such as Doous loads), plus the coarse Existing, Proposed and legacy rows older exports load, styled as structure |
+| Panel__ModelLayers 1.1.0 | The Advanced fold's inline colour, type and weight per row | **ported**, verbatim below the header |
+| SheetRecords 1.5.0, SheetModel 1.5.0 | `Viewport__ProjectedEdges` normalised and pruned; `UpdateViewport` takes `projectedEdges` | **ported** |
+| Viewport2d 1.6.0, PdfExporter 1.1.0 | Style bands per class. One style token (edge styles and composite weights) keys the repaint, and an untagged cached result is a miss. The PDF draws the same bands | **ported** - PdfExporter verbatim below the header |
+| ModeController 1.9.0 and the Layout Editor config | Waits for the edge style and drawing view configs; the panels drag to 680 px | **ported** |
+| Projected linework config | The performance description (kept renders on the CPU) and the schema 2 note | **ported** |
+
+Verified here: all 19 modules parse, and the 980 named imports in folders 50 and 51
+resolve. Both `Na__Verify__` harnesses pass, and the owner-tag harness passes 9 of 9
+against this copy. In the running app, read-only on Doous: every segment tagged, bands
+exact to the width maths, a Walls restyle repainted without re-projecting, and its
+reset pruned the record to null. The PDF export and the GPU route were not exercised
+in ValeVision.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, ortho dimensions and snap tones)
+
+Authored in TrueVision (v2.31.0), tested there and signed off ("works great"), and
+ported the same day as ValeVision v2.29.0. The edits were replayed by an anchor-checked
+script: all 32 anchors across the 10 files matched exactly once before anything was
+written. The record field `Dimension__Orientation` and its three values are shared, so
+either app reads the other's dimensions.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__DimensionGeometry__.js` 1.1.0 | `Frame`, an orientation-aware `Skeleton` and `TextPlacement`, `SpanMm`, `OrthoToward` (the CAD box rule), `OffsetKeepingLine` | **ported**, verbatim below the header |
+| `51/Na__LayoutEditor__DimensionTool__.js` 1.2.0 | Shift makes the dimension ortho while its line is placed; Shift no longer bends the span; orange markers; `IsPlacingLine` | **ported**, verbatim below the header |
+| `51/Na__LayoutEditor__Snapping__.js` 1.2.0 | Marker tones: `Snap` and `ShowMarker` take `TONE_VERTEX`, `TONE_DIMENSION` or `TONE_VIEWPORT` | **ported** |
+| Record and model | `Dimension__Orientation` normalised (anything unknown is aligned); `CreateDimension` and `UpdateDimension` carry it | **ported** |
+| `51/Na__LayoutEditor__MarkupBridge__.js` 1.3.0 | The orientation reaches the skeleton, the drawing and the value | **ported** |
+| `51/Na__LayoutEditor__SheetTools__.js` 1.9.0 | Shift keydown and keyup redraw a line being placed; dimension grips hold an ortho line still and snap in orange | **ported** |
+| Toolbar, main stylesheet, app config | The `ToolDimensionTitle` tooltip label; one RGB custom property per tone; the dimension and snapping descriptions | **ported** |
+| Purple on the viewport carry (TrueVision `ViewportSnapMove__` 1.1.0; the carry ring, tracking crosses and carried frame outline) | ValeVision has no viewport snap move yet | **not ported** - comes with the carry |
+
+Verified here: 8 modules parse, 812 named imports resolve, the name scan is clean, the
+geometry harness (30) passes against this copy, and 23 in-app checks passed on a scratch
+A3 sheet with every write blocked (none was attempted).
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, render composite weights)
+
+Authored in TrueVision (v2.27.0, plus the Base Image weight and the Section Outline row
+alignment on 13-Sep), tested there and signed off ("This works great"), and ported the
+same day as ValeVision v2.28.0. This tree had none of it - no Advanced fold, no weights,
+no Section Outline row - so the whole weights feature came across, not only the two
+13-Sep fixes. The record key `Viewport__CompositeWeights` and its shape are shared, so
+either app reads the other's weights.
+
+| Item | Why | State |
+|---|---|---|
+| `51/Na__LayoutEditor__RenderComposites__.js` 1.1.0 and its `__Config__.json` 1.1.0 | The inventory of composites and their weights; the per-viewport record (overrides only); `RasterToken(viewport, forThreeD)` | **ported**, module verbatim (header and console prefix); config layers verbatim, two Meta notes reworded for this app |
+| `51/Na__LayoutEditor__Panel__Styles__.js` 1.6.0 and 1.6.1 | Panel built from the config; the Advanced fold with a weight per line-drawing composite and a reset per weight; the Section Outline row keeps an empty checkbox slot | **ported**, verbatim below the header |
+| `51/Na__LayoutEditor__PanelHost__.js` 1.1.0 | `AdvancedToggle` and `IsAdvanced` | **ported** |
+| Advanced Fold stylesheet region | Toggle, inline cluster, weight, unit, reset, override marker and the check slot. It brings the edge-style rules with it (colour, type, swatch, no-edges, column heads), unused until Edge Styles lands | **ported**, verbatim |
+| Record and model | `Na__LeRec__NormaliseCompositeWeights`; `UpdateViewport` merges `compositeWeights` one key at a time and a null clears it; the mode controller waits for the composites config | **ported** |
+| `51/Na__LayoutEditor__Viewport2d__.js` 1.5.0 | Stroke rules take the Projected Linework and Hidden Lines factors; the raster weights go to the snapshot renderer; a set pixel weight joins the raster key; the composite token joins the linework paint keys | **ported, adapted** - no `StyleToken` here yet, so the token is appended directly; the Edge Styles port folds it into `StyleToken` |
+| `51/Na__LayoutEditor__Viewport3d__.js` 1.4.0 | The Base Image weight reaches the scene render; a set 3D weight joins the fingerprint, so stored snapshots keep their keys | **ported** |
+| `51/Na__LayoutEditor__PdfExporter__.js` 1.0.3 | Stroke rules per viewport, so the factors print | **adapted** - TrueVision prints through `StyleBands` |
+| `51/Na__LayoutEditor__SnapshotRenderer__.js` 1.4.0 | Profile, section and model-edge widths set for one render and put back | **diverged (DIV-1)** - see below |
+| `42/Na__DrawView__ComposerPreset__.js` 1.3.0 | `Enter({ edgeWidthPx })` stands in for the configured drawing edge width while the preset is active | **new here** - the profile weight's consumer |
+| `05/Na__RenderEffect__LineworkSettings__State.js` 1.1.0 | `SetLineworkBaseOverride(widthPx)`: one width in place of each material's stashed base for a render, still multiplied by the session factor and the export scale | **new here** - the Base Image weight's consumer |
+
+**The consumers are the divergence, and it is deliberate.** TrueVision writes its Sobel
+quad width, its section config and the model's line materials directly. Here the tiled
+exporter rewrites every linework width from `Na__LineworkSettings` when a render starts
+and scales the section outline and the profile width for the export, so a direct write
+would be overwritten mid-render. Each weight therefore goes in through the system that
+owns it and the export compensation still applies on top - which also means one stored
+weight makes the same relative change in both apps, not byte-identical pixels.
+
+Verified here: the 12 changed modules parse; `Na__Verify__Exports__` passes (310 files)
+and `Na__Verify__ModuleGraph__` passes. In the running app on Doous (3047), every write
+blocked: the panel columns measured identical to TrueVision's (weights 96.7-148.7 px,
+checkboxes and the slot 202-218); Base Image 3 px drew the edges at 2.901 (3 times the
+tile's compensation) and took the underlay from 3.66% to 6.25% dark pixels, every
+material back to 0.8 afterwards; Profile 4 px took it on to 9.18%; Section Outline 5 px
+was set for the render and the live width came back to 2; Projected Linework x2 doubled
+the stroke with no raster re-render; a 3D render at 3 px drew the edges at 3 (2.586
+under compensation), mean luminance 244.4 to 229.0, widths back to 0.8; an untouched 3D
+fingerprint equals the old algorithm, 2D-only weights leave it alone, and the Base Image
+weight re-keys it. Not exercised: Hidden Lines on a drawing with hidden linework (Doous
+has none), and a PDF export.
+
+### Return trip - TrueVision to ValeVision (13-Sep-2026, eyedropper palette)
+
+Authored in TrueVision (v2.30.0), tested there and signed off ("works perfectly"), and
+ported the same day as ValeVision v2.27.0 by replaying the edits. This tree already
+carried the eyedropper, the rectangle tool and gradient fills, so every anchor matched
+across all nine files on the first dry run.
+
+| Item | Why | State |
+|---|---|---|
+| Eyedropper palette mode, `51/Na__LayoutEditor__Eyedropper__.js` 1.2.0 | Shift+B: an object's style becomes the settings for new objects of its kind. `ToPalette` (fill and gradient carry `palette` switch names in the trait table), `SyncPalette` with a writer the sheet tools own, `SetMode` / `GetMode`, the pulse | **ported**, verbatim (header only) |
+| Palette wiring | Sheet tools (`ArmPalette`, `SyncPaletteFrom`, `AdoptStyle`, `DEFAULTS_EVENT`, the hand-over to the drawing tool, Use for new ... on the context menu, the Shift+B case), mode controller (the panel refreshes on `DEFAULTS_EVENT`), toolbar (Shift+click), key map and its fallback, config setup and labels, the pulse stylesheet rule | **ported** |
+| Locked layers readable by the eyedropper | `Na__LeMarkup__HitTest` gains `includeLocked`; only the eyedropper passes it | **ported** |
+
+Verified here: both harnesses against this copy (53 palette, 52 eyedropper), the module
+and undeclared-name scans, and a read-only load in the running app. The pointer flow was
+not exercised in ValeVision; Adam's sign-off was given on TrueVision.
+
 ### Return trip - TrueVision to ValeVision (13-Sep-2026, gradient fill)
 
 Authored in TrueVision (v2.29.0), tested there and signed off - with the gradient rows moved

@@ -33,6 +33,33 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.6.0
+// - Leaders & Annotation Bubbles: Sheet__Leaders on every sheet, and
+//   NormaliseLeader, which fills a leader with the Leader setup's defaults
+//   (Na__LayoutEditor__LeaderGeometry__ draws it). A stored null fill is kept
+//   as "no fill"; only a fill that was never written takes the default.
+// - Shape__FillOpacity and Shape__StrokeOpacity on the shape record, 0 to 1.
+//   Every record from before them is solid.
+// - Ported from TrueVision3D v2.35.0.
+//
+// 13-Sep-2026 - Version 1.5.0
+// - Viewport__ProjectedEdges on the viewport record: only the categories whose
+//   projected linework a person restyled, each written out in full, pruned
+//   back to nothing once an entry returns to its default - and the prune waits
+//   for the configs, so a deliberate choice is never dropped against a built-in
+//   fallback. Null when there is nothing to keep. Ported from TrueVision3D (Edge Styles).
+//
+// 13-Sep-2026 - Version 1.4.0
+// - Dimension__Orientation on the dimension record: 'aligned', 'horizontal' or
+//   'vertical' (Na__LayoutEditor__DimensionGeometry__). Anything else - every
+//   record from before ortho dimensions - is aligned, which is how it was drawn.
+//   Ported from TrueVision3D v2.31.0; the field is shared with TrueVision.
+//
+// 13-Sep-2026 - Version 1.3.0
+// - Viewport__CompositeWeights on the viewport record: only the Render Composites
+//   weights a viewport has been given, clamped to the config's bounds, null when
+//   there are none. Ported from TrueVision.
+//
 // 13-Sep-2026 - Version 1.2.0
 // - Shape__Gradient on the shape record: null for none, otherwise made whole by
 //   Na__LayoutEditor__GradientTool__ as a fresh object on every normalise. A
@@ -78,10 +105,21 @@
         Na__LeCfg__GetDimensionSetup,
         Na__LeCfg__FormatLabel,
         Na__LeCfg__GetLineweightSetup,
-        Na__LeCfg__GetShapeSetup
+        Na__LeCfg__GetShapeSetup,
+        Na__LeCfg__GetLeaderSetup
     } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__Coerce, Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
     import { Na__LeGrad__Normalise } from './Na__LayoutEditor__GradientTool__.js';   // <-- A leaf: it reaches only the panel host, which reaches only the config
+    import {
+        Na__LeEdge__FIELD,
+        Na__LeEdge__CAT_FIELD,
+        Na__LeEdge__IsLoaded,
+        Na__LeEdge__IsColour,
+        Na__LeEdge__IsLineType,
+        Na__LeEdge__ClampWeight,
+        Na__LeEdge__Default
+    } from './Na__LayoutEditor__EdgeStyles__.js';
+    import { Na__LeComposite__FIELD, Na__LeComposite__Row, Na__LeComposite__Clamp } from './Na__LayoutEditor__RenderComposites__.js';   // <-- A leaf too: it imports nothing
     import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__PresentationMode__ProjectJson__GetActiveConfig } from '../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
@@ -100,6 +138,8 @@
     const Na__LeRec__LAYER_TYPES = [ 'viewport', 'annotation', 'dimension', 'vector', 'mixed' ];
     const Na__LeRec__STYLE_KEYS  = [ 'baseImage', 'projectedLinework', 'profileLinework', 'glassOpaque', 'whitecard', 'hiddenLines', 'enhanceWhitecard', 'contextLayer' ];
     const Na__LeRec__ID_PAD      = 3;
+    const Na__LeRec__LEADER_TYPES       = [ 'text', 'bubble' ];             // <-- A note with a leader, or a specification bubble
+    const Na__LeRec__LEADER_LINE_STYLES = [ 'solid', 'dashed' ];
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -131,6 +171,14 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Coerce an Opacity (0 clear to 1 solid), or Fall Back
+    // ------------------------------------------------------------
+    function Na__LeRec__Unit(value, fallback) {
+        return (typeof value === 'number' && Number.isFinite(value)) ? Math.max(0, Math.min(1, value)) : fallback;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Find a Record by Id in a List
     // ------------------------------------------------------------
     function Na__LeRec__Find(list, idKey, id) {
@@ -155,6 +203,79 @@
         if (layer.Layer__Locked  === undefined) layer.Layer__Locked  = false;
         layer.Layer__Order = Na__LeRec__Num(layer.Layer__Order, index + 1);
         return layer;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Keep Only the Edge Styles Someone Actually Chose
+    // ------------------------------------------------------------
+    // A stored entry is written out in full - label and all three values - so a
+    // project file can be read without cross-referencing the config. In exchange
+    // it is pruned hard: every value is coerced into something the palette
+    // actually contains, and an entry that has come back round to the config
+    // default is deleted, so the file only ever holds real decisions.
+    //
+    // THE PRUNE WAITS FOR THE CONFIG. Before the fetch lands the "default" is a
+    // built-in black solid line, and deleting against that would throw away a
+    // deliberate choice of black solid. Until it lands, entries are cleaned but
+    // never dropped.
+    // ------------------------------------------------------------
+    function Na__LeRec__NormaliseProjectedEdges(block) {
+        if (!block || typeof block !== 'object') return null;
+        const source = block[Na__LeEdge__CAT_FIELD];
+        if (!source || typeof source !== 'object') return null;
+
+        const canPrune = Na__LeEdge__IsLoaded();
+        const kept     = {};
+
+        Object.keys(source).forEach((key) => {
+            const entry = source[key];
+            if (!entry || typeof entry !== 'object') return;
+
+            const fallback = Na__LeEdge__Default(key);
+            const weight   = Na__LeEdge__ClampWeight(entry['Category__EdgeWeightFactor']);
+            const colour   = Na__LeEdge__IsColour(entry['Category__EdgeColour'])     ? entry['Category__EdgeColour']   : fallback.colour;
+            const lineType = Na__LeEdge__IsLineType(entry['Category__EdgeLineType']) ? entry['Category__EdgeLineType'] : fallback.lineType;
+
+            if (canPrune && weight === Na__LeEdge__ClampWeight(fallback.weight) && colour === fallback.colour && lineType === fallback.lineType) {
+                return;                                                            // <-- Back to the default: the record says nothing
+            }
+
+            kept[key] = {
+                'Category__Label'            : typeof entry['Category__Label'] === 'string' && entry['Category__Label'] ? entry['Category__Label'] : key,
+                'Category__EdgeWeightFactor' : weight,
+                'Category__EdgeColour'       : colour,
+                'Category__EdgeLineType'     : lineType
+            };
+        });
+
+        if (Object.keys(kept).length === 0) return null;
+
+        const out = {};
+        out['Edges__Description'] = 'Projected linework style for this viewport only, per SketchUp model category. Weight is a multiplier on the sheet master viewport lineweight; the colour and line type are aliases from Na__LayoutEditor__EdgeStyles__Config__.json. A category absent from this list draws at the default in Na__LayoutEditor__ModelLayers__Config__.json. Visibility is NOT here - that is Viewport__ModelLayers.';
+        if (typeof block['Edges__UpdatedIso'] === 'string') out['Edges__UpdatedIso'] = block['Edges__UpdatedIso'];
+        out[Na__LeEdge__CAT_FIELD] = kept;
+        return out;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Keep Only the Composite Weights Someone Actually Set
+    // ------------------------------------------------------------
+    // A flat map of key to number, because a composite weight is one number with
+    // no wording worth repeating. A key the config has never heard of, or one
+    // whose composite has no weight at all, is dropped rather than carried.
+    // ------------------------------------------------------------
+    function Na__LeRec__NormaliseCompositeWeights(block) {
+        if (!block || typeof block !== 'object') return null;
+        const kept = {};
+        Object.keys(block).forEach((key) => {
+            const row = Na__LeComposite__Row(key);
+            if (!row || row.weight.kind === 'none') return;
+            const value = Na__LeComposite__Clamp(key, block[key]);
+            if (Number.isFinite(value)) kept[key] = value;
+        });
+        return Object.keys(kept).length > 0 ? kept : null;
     }
     // ------------------------------------------------------------
 
@@ -217,6 +338,12 @@
             enhanceWhitecard  : pick('enhanceWhitecard'),
             contextLayer      : pick('contextLayer')
         };
+        // PROJECTED EDGE STYLES and COMPOSITE WEIGHTS | Curation, stored only
+        // where it happened. Both are null on a viewport nobody has curated,
+        // which is the overwhelming majority, so the ordinary project file is
+        // exactly the size it was before the feature existed.
+        viewport[Na__LeEdge__FIELD]      = Na__LeRec__NormaliseProjectedEdges(viewport[Na__LeEdge__FIELD]);
+        viewport[Na__LeComposite__FIELD] = Na__LeRec__NormaliseCompositeWeights(viewport[Na__LeComposite__FIELD]);
         if (viewport.Viewport__MarkupMode !== 'sheet') viewport.Viewport__MarkupMode = 'scene';
         if (viewport.Viewport__ShowScaleLabel === undefined) viewport.Viewport__ShowScaleLabel = setup.showScaleLabel;
         // SNAPSHOT ASSET | { Asset__Path, Asset__Fingerprint, Asset__PixelWidth }.
@@ -269,6 +396,7 @@
         item.Dimension__Precision = Na__LeRec__Num(item.Dimension__Precision, setup.defaultPrecision);
         if (typeof item.Dimension__UnitsSuffix !== 'string') item.Dimension__UnitsSuffix = setup.defaultUnits;
         if (item.Dimension__OverrideText === undefined) item.Dimension__OverrideText = null;
+        if ([ 'aligned', 'horizontal', 'vertical' ].indexOf(item.Dimension__Orientation) === -1) item.Dimension__Orientation = 'aligned';   // <-- A record from before ortho dimensions was aligned
         return item;
     }
     // ------------------------------------------------------------
@@ -285,11 +413,49 @@
         if (typeof item.Shape__StrokeColour !== 'string') item.Shape__StrokeColour = setup.defaultStrokeColour;
         item.Shape__StrokePt = Na__LeRec__Num(item.Shape__StrokePt, setup.defaultStrokePt);
         if (typeof item.Shape__FillColour !== 'string') item.Shape__FillColour = null;
+        item.Shape__FillOpacity   = Na__LeRec__Unit(item.Shape__FillOpacity, 1);         // <-- A record from before opacity was solid
+        item.Shape__StrokeOpacity = Na__LeRec__Unit(item.Shape__StrokeOpacity, 1);
         item.Shape__Gradient = Na__LeGrad__Normalise(item.Shape__Gradient);              // <-- A fresh object or null: no two shapes ever hold the same gradient
         item.Shape__Stroked = item.Shape__Stroked !== false;                             // <-- A record written before the flag existed drew its edges
         const filled  = item.Shape__FillColour !== null || item.Shape__Gradient !== null;   // <-- A gradient is a fill as far as visibility goes
         const canFill = filled && item.Shape__Points.length > 2;                            // <-- Two points enclose nothing, so they cannot be a fill
         if (!item.Shape__Stroked && !canFill) item.Shape__Stroked = true;                   // <-- Edges or fill, never neither: an invisible shape is a lost shape
+        return item;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Fill In a Leader (tip and anchor in paper mm, weights in points, opacities 0 to 1)
+    // ------------------------------------------------------------
+    // Every style field that is missing takes the Leader setup's default. A
+    // null fill is a real choice - no fill - and is kept; only a fill that was
+    // never written takes the default. A tip or an anchor that is not a number
+    // puts the head a little up and to the right of the tip.
+    // ------------------------------------------------------------
+    function Na__LeRec__NormaliseLeader(item, defaultLayerId) {
+        const setup = Na__LeCfg__GetLeaderSetup();
+        if (!item.Leader__LayerId) item.Leader__LayerId = defaultLayerId;
+        if (Na__LeRec__LEADER_TYPES.indexOf(item.Leader__Type) === -1) item.Leader__Type = setup.defaultType;
+        item.Leader__TipXMm    = Na__LeRec__Num(item.Leader__TipXMm, 20);
+        item.Leader__TipYMm    = Na__LeRec__Num(item.Leader__TipYMm, 20);
+        item.Leader__AnchorXMm = Na__LeRec__Num(item.Leader__AnchorXMm, item.Leader__TipXMm + 15);
+        item.Leader__AnchorYMm = Na__LeRec__Num(item.Leader__AnchorYMm, item.Leader__TipYMm - 10);
+        if (typeof item.Leader__Text !== 'string') item.Leader__Text = item.Leader__Type === 'bubble' ? setup.defaultBubbleText : setup.defaultText;
+        item.Leader__TextSizeMm = Math.max(0.5, Na__LeRec__Num(item.Leader__TextSizeMm, setup.textSizeMm));
+        item.Leader__FontWeight = Na__LeRec__Num(item.Leader__FontWeight, setup.fontWeight);
+        if (typeof item.Leader__TextColour !== 'string') item.Leader__TextColour = setup.textColour;
+        if (typeof item.Leader__LineColour !== 'string') item.Leader__LineColour = setup.lineColour;
+        item.Leader__LinePt = Math.max(0, Na__LeRec__Num(item.Leader__LinePt, setup.linePt));
+        if (Na__LeRec__LEADER_LINE_STYLES.indexOf(item.Leader__LineStyle) === -1) item.Leader__LineStyle = setup.lineStyle;
+        item.Leader__LineOpacity = Na__LeRec__Unit(item.Leader__LineOpacity, setup.lineOpacity);
+        if (typeof item.Leader__EndpointFilled !== 'boolean') item.Leader__EndpointFilled = setup.endpointFilled;
+        item.Leader__EndpointPt     = Math.max(0, Na__LeRec__Num(item.Leader__EndpointPt, setup.endpointPt));
+        item.Leader__EndpointSizeMm = Math.max(0, Na__LeRec__Num(item.Leader__EndpointSizeMm, setup.endpointSizeMm));
+        item.Leader__BubbleSizeMm   = Math.max(1, Na__LeRec__Num(item.Leader__BubbleSizeMm, setup.bubbleSizeMm));
+        item.Leader__BubbleEdgePt   = Math.max(0, Na__LeRec__Num(item.Leader__BubbleEdgePt, setup.bubbleEdgePt));
+        if (item.Leader__FillColour === undefined) item.Leader__FillColour = setup.filled ? setup.fillColour : null;   // <-- Never written: the default
+        else if (typeof item.Leader__FillColour !== 'string') item.Leader__FillColour = null;                        // <-- Null is "no fill", and stays
+        item.Leader__FillOpacity = Na__LeRec__Unit(item.Leader__FillOpacity, setup.fillOpacity);
         return item;
     }
     // ------------------------------------------------------------
@@ -325,6 +491,7 @@
         if (!Array.isArray(sheet.Sheet__Annotations)) sheet.Sheet__Annotations = [];
         if (!Array.isArray(sheet.Sheet__Dimensions))  sheet.Sheet__Dimensions  = [];
         if (!Array.isArray(sheet.Sheet__Shapes))      sheet.Sheet__Shapes      = [];
+        if (!Array.isArray(sheet.Sheet__Leaders))     sheet.Sheet__Leaders     = [];
 
         // LINEWEIGHTS | Printed points per sheet, seeded from the config
         const lwSetup = Na__LeCfg__GetLineweightSetup();
@@ -335,6 +502,7 @@
         sheet.Sheet__Annotations.forEach((a) => Na__LeRec__NormaliseAnnotation(a, Na__LeRec__DefaultLayerId(sheet, 'annotation')));
         sheet.Sheet__Dimensions.forEach((d)  => Na__LeRec__NormaliseDimension(d,  Na__LeRec__DefaultLayerId(sheet, 'dimension')));
         sheet.Sheet__Shapes.forEach((sh)     => Na__LeRec__NormaliseShape(sh,     Na__LeRec__DefaultLayerId(sheet, 'vector')));
+        sheet.Sheet__Leaders.forEach((l)     => Na__LeRec__NormaliseLeader(l,     Na__LeRec__DefaultLayerId(sheet, 'annotation')));   // <-- Leaders live with the text
         return sheet;
     }
     // ------------------------------------------------------------
@@ -406,6 +574,7 @@
         Na__LeRec__LAYER_TYPES,
         Na__LeRec__STYLE_KEYS,
         Na__LeRec__NormaliseShape,
+        Na__LeRec__NormaliseLeader,
         Na__LeRec__NextId,
         Na__LeRec__Num,
         Na__LeRec__Find,

@@ -47,6 +47,23 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.10.0
+// - The Leaders panel is registered in the right column, after Text. A leader
+//   change ('leader', 'leaders') redraws the markup and refreshes only the
+//   Leaders panel, as a text, dimension or vector change does its own.
+// - Ported from TrueVision3D v2.35.0.
+//
+// 13-Sep-2026 - Version 1.9.0
+// - The ready chain also waits for the edge style config and the drawing view
+//   config (Na__DrawCfg__Load - the promise index.html already started), so
+//   records normalise against the real edge defaults and bakes render with
+//   the loaded drawing setup. Ported from TrueVision3D (Edge Styles).
+//
+// 13-Sep-2026 - Version 1.8.1
+// - The Render Composites config (Na__LayoutEditor__RenderComposites__Config__.json)
+//   is waited on with the editor's own, so records normalise and the panel builds
+//   against the real weights. Ported from TrueVision.
+//
 // 13-Sep-2026 - Version 1.8.0
 // - A palette sync (the settings for new objects changed from outside their
 //   panel) refreshes the panel for that kind.
@@ -104,6 +121,9 @@
     // ------------------------------------------------------------
     import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel } from './Na__LayoutEditor__ConfigState__.js';
     import { Na__LeGrad__Ready } from './Na__LayoutEditor__GradientTool__.js';
+    import { Na__LeEdge__Ready } from './Na__LayoutEditor__EdgeStyles__.js';
+    import { Na__LeComposite__Ready } from './Na__LayoutEditor__RenderComposites__.js';
+    import { Na__DrawCfg__Load } from '../42__System__DrawingViewCore/Na__DrawView__ConfigState__.js';
     import {
         Na__LeModel__CHANGED_EVENT,
         Na__LeModel__Initialize,
@@ -122,6 +142,7 @@
     import { Na__LePanelSheet__Register } from './Na__LayoutEditor__Panel__Sheet__.js';
     import { Na__LePanelViewport__EDIT_EVENT, Na__LePanelViewport__Register } from './Na__LayoutEditor__Panel__ViewportSettings__.js';
     import { Na__LePanelText__Register } from './Na__LayoutEditor__Panel__Text__.js';
+    import { Na__LePanelLeaders__Register } from './Na__LayoutEditor__Panel__Leaders__.js';
     import { Na__LePanelDims__Register } from './Na__LayoutEditor__Panel__Dimensions__.js';
     import { Na__LePanelShapes__Register } from './Na__LayoutEditor__Panel__Shapes__.js';
     import { Na__LePanelStyles__Register } from './Na__LayoutEditor__Panel__Styles__.js';
@@ -271,6 +292,7 @@
         // RIGHT COLUMN | The selected item's properties
         Na__LePanelViewport__Register();
         Na__LePanelText__Register();
+        Na__LePanelLeaders__Register();
         Na__LePanelDims__Register();
         Na__LePanelShapes__Register();
         Na__LeToolbar__Mount(host.querySelector('.na-le-centre__toolbar'), { editable : editable, showToast : toast });
@@ -381,7 +403,8 @@
     const Na__LeMode__MARKUP_REASONS = Object.freeze([
         'annotation', 'annotations',
         'dimension',  'dimensions',
-        'shape',      'shapes'
+        'shape',      'shapes',
+        'leader',     'leaders'
     ]);
     // ------------------------------------------------------------
 
@@ -403,6 +426,7 @@
         if (reason === 'annotation' || reason === 'annotations') return 'text';
         if (reason === 'dimension'  || reason === 'dimensions')  return 'dimensions';
         if (reason === 'shape'      || reason === 'shapes')      return 'shapes';
+        if (reason === 'leader'     || reason === 'leaders')     return 'leaders';
         return null;                                                            // <-- Viewports and structural changes: everything may have moved
     }
     // ------------------------------------------------------------
@@ -456,7 +480,16 @@
         if (!context) return Promise.resolve(false);
         Na__LeMode__Context = context;
         Na__LeCfg__SetAppConfig(context.appConfig || null);
-        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeGrad__Ready() ]).then(() => {   // <-- The gradient config never rejects, so a missing file cannot hold the editor back
+        // THE EDGE STYLE AND COMPOSITE CONFIGS LOAD WITH THE EDITOR'S OWN. The
+        // record normaliser prunes a stored edge style that matches its default,
+        // and it can only do that honestly once the defaults are known; waiting
+        // here means the first sheet a project opens is normalised against the
+        // real files rather than the built-in fallbacks. Neither fetch rejects,
+        // so a missing file slows nothing and blocks nothing.
+        // AND THE DRAWING VIEW CONFIG, because every viewport bake renders through
+        // the drawing presets and they read their setup from it. index.html starts
+        // the fetch; this is the same promise, so it is waited for, never repeated.
+        Na__LeMode__ReadyOnce = Promise.all([ Na__LeCfg__Ready(), Na__LeEdge__Ready(), Na__LeComposite__Ready(), Na__LeGrad__Ready(), Na__DrawCfg__Load() ]).then(() => {   // <-- None of the five rejects, so a missing file cannot hold the editor back
             if (!Na__LeCfg__IsEnabled()) return false;
             Na__LeModel__Initialize();
             Na__LeHist__Initialize();                                        // <-- Undo and redo listen to the model from the start

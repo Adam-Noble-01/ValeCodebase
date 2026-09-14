@@ -38,6 +38,26 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.5.0
+// - Box select: BuildSheetPrimitives takes a selection of several items - an
+//   array of { kind, id }, as well as one or null - and draws a highlight round
+//   each.
+// - Ported from TrueVision3D v2.34.0.
+//
+// 14-Sep-2026 - Version 1.4.0
+// - Leaders & Annotation Bubbles: sheet leaders are drawn last, over the
+//   vectors, the text and the dimensions, so a filled bubble or note masks
+//   what it sits on - and hit tested first, for the same reason. LeaderBounds
+//   is the box one occupies. Na__LayoutEditor__LeaderGeometry__ lays them out.
+// - Ported from TrueVision3D v2.35.0.
+//
+// 13-Sep-2026 - Version 1.3.0
+// - Sheet dimensions carry their orientation into the skeleton, the drawing and
+//   the value: a horizontal or vertical dimension measures the x or the y alone
+//   (Na__LayoutEditor__DimensionGeometry__ SpanMm). Hit testing and the
+//   selection box follow the skeleton, so they needed nothing of their own.
+// - Ported from TrueVision3D v2.31.0.
+//
 // 13-Sep-2026 - Version 1.2.0
 // - HitTest takes includeLocked, so the eyedropper can read an item on a locked
 //   layer. Every other caller leaves it off and still skips locked items.
@@ -75,9 +95,11 @@
         Na__LeDimGeo__Skeleton,
         Na__LeDimGeo__DistanceToSegment,
         Na__LeDimGeo__Push,
-        Na__LeDimGeo__TextPlacement
+        Na__LeDimGeo__TextPlacement,
+        Na__LeDimGeo__SpanMm
     } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShapeGeo__Push, Na__LeShapeGeo__Bounds, Na__LeShapeGeo__Hit } from './Na__LayoutEditor__ShapeGeometry__.js';
+    import { Na__LeLeadGeo__Push, Na__LeLeadGeo__Bounds, Na__LeLeadGeo__Hit } from './Na__LayoutEditor__LeaderGeometry__.js';
     import {
         Na__LeModel__KIND_2D,
         Na__LeModel__GetViewportById,
@@ -247,10 +269,22 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | The Paper Box a Sheet Leader Occupies (its curve, its endpoint and its head)
+    // ------------------------------------------------------------
+    function Na__LeMarkup__LeaderBounds(leader) {
+        return Na__LeLeadGeo__Bounds(leader);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | What a Sheet Dimension Measures, in Model Millimetres
     // ------------------------------------------------------------
     function Na__LeMarkup__DimensionValueMm(sheet, dim) {
-        const paperMm = Math.hypot(dim.Dimension__EndXMm - dim.Dimension__StartXMm, dim.Dimension__EndYMm - dim.Dimension__StartYMm);
+        const paperMm = Na__LeDimGeo__SpanMm(                                   // <-- The x or the y alone for an ortho dimension
+            { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
+            { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
+            dim.Dimension__Orientation
+        );
         const viewport = dim.Dimension__ViewportId ? Na__LeModel__GetViewportById(sheet, dim.Dimension__ViewportId) : null;
         if (viewport && viewport.Viewport__Kind === Na__LeModel__KIND_2D) return paperMm * viewport.Viewport__ScaleDenominator;
         return paperMm;
@@ -288,7 +322,7 @@
         return Na__LeDimGeo__Skeleton(
             { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
             { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
-            dim.Dimension__OffsetMm, setup.extGapMm, setup.overshootMm
+            dim.Dimension__OffsetMm, setup.extGapMm, setup.overshootMm, dim.Dimension__Orientation
         );
     }
     // ------------------------------------------------------------
@@ -320,7 +354,8 @@
 
     // FUNCTION | Build the Sheet's Own Markup as Paper Primitives
     // ------------------------------------------------------------
-    // selection: { kind, id } or null; the highlight is drawn last.
+    // selection: { kind, id }, an array of them, or null; the highlights are
+    // drawn last, a box round each selected item.
     // ------------------------------------------------------------
     function Na__LeMarkup__BuildSheetPrimitives(sheet, layout, selection) {
         const list = [];
@@ -328,19 +363,21 @@
         const textSetup = Na__LeCfg__GetTextSetup();
         const dimSetup  = Na__LeCfg__GetDimensionSetup();
         const style     = Na__LeCfg__GetStyleSetup();
-        let highlight   = null;
+        const chosen    = new Set((Array.isArray(selection) ? selection : [ selection ]).filter(Boolean).map((item) => item.kind + ':' + item.id));
+        const isChosen  = (kind, id) => chosen.has(kind + ':' + id);
+        const highlights = [];
 
         // SHAPES | Under the text and the dimensions
         sheet.Sheet__Shapes.forEach((shape) => {
             if (!Na__LeModel__IsLayerVisible(sheet, shape.Shape__LayerId)) return;
             Na__LeShapeGeo__Push(list, shape);
-            if (selection && selection.kind === 'shape' && selection.id === shape.Shape__Id) highlight = Na__LeShapeGeo__Bounds(shape);
+            if (isChosen('shape', shape.Shape__Id)) highlights.push(Na__LeShapeGeo__Bounds(shape));
         });
 
         sheet.Sheet__Annotations.forEach((item) => {
             if (!Na__LeModel__IsLayerVisible(sheet, item.Annotation__LayerId)) return;
             Na__LeMarkup__PushAnnotation(list, item, textSetup);
-            if (selection && selection.kind === 'annotation' && selection.id === item.Annotation__Id) highlight = Na__LeMarkup__AnnotationBounds(item);
+            if (isChosen('annotation', item.Annotation__Id)) highlights.push(Na__LeMarkup__AnnotationBounds(item));
         });
 
         sheet.Sheet__Dimensions.forEach((dim) => {
@@ -348,24 +385,33 @@
             const sk = Na__LeDimGeo__Push(list, {
                 start : { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
                 end   : { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
+                orientation : dim.Dimension__Orientation,
                 offsetMm : dim.Dimension__OffsetMm, gapMm : dimSetup.extGapMm, overshootMm : dimSetup.overshootMm,
                 tickMm : dimSetup.tickLengthMm, strokeMm : Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup), colour : dim.Dimension__Colour,
                 terminator : dim.Dimension__Terminator,
                 text : Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim)),
                 fontMm : dim.Dimension__TextSizeMm, weight : 400, liftMm : dimSetup.textGapMm, fontFamily : textSetup.fontFamily
             });
-            if (sk && selection && selection.kind === 'dimension' && selection.id === dim.Dimension__Id) {
+            if (sk && isChosen('dimension', dim.Dimension__Id)) {
                 const xs = [ sk.S.x, sk.E.x, sk.T1.x, sk.T2.x ], ys = [ sk.S.y, sk.E.y, sk.T1.y, sk.T2.y ];
                 const minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
                 const minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
-                highlight = { X : minX, Y : minY, WidthMm : maxX - minX, HeightMm : maxY - minY };
+                highlights.push({ X : minX, Y : minY, WidthMm : maxX - minX, HeightMm : maxY - minY });
             }
         });
 
-        if (highlight) {
-            const pad = Na__LeMarkup__SELECT_PAD_MM;
-            Na__LeChrome__PushRect(list, highlight.X - pad, highlight.Y - pad, highlight.WidthMm + (pad * 2), highlight.HeightMm + (pad * 2), style.selectionColour, 0.3, null, 1.2);
-        }
+        // LEADERS | Last, over everything else, so a filled bubble or note
+        // masks the drawing it is laid on
+        (sheet.Sheet__Leaders || []).forEach((leader) => {
+            if (!Na__LeModel__IsLayerVisible(sheet, leader.Leader__LayerId)) return;
+            const layout = Na__LeLeadGeo__Push(list, leader);
+            if (selection && selection.kind === 'leader' && selection.id === leader.Leader__Id) highlight = Na__LeLeadGeo__Bounds(leader, layout);
+        });
+
+        const pad = Na__LeMarkup__SELECT_PAD_MM;
+        highlights.forEach((box) => {
+            Na__LeChrome__PushRect(list, box.X - pad, box.Y - pad, box.WidthMm + (pad * 2), box.HeightMm + (pad * 2), style.selectionColour, 0.3, null, 1.2);
+        });
         return list;
     }
     // ------------------------------------------------------------
@@ -373,16 +419,25 @@
 
     // FUNCTION | Which Sheet Markup Item Is Under a Paper Point
     // ------------------------------------------------------------
-    // Returns { kind : 'dimension' | 'annotation' | 'shape', id } or null, in
-    // that order of priority. Locked and hidden layers are skipped; later
-    // items of a kind win, as they draw on top.
+    // Returns { kind : 'leader' | 'dimension' | 'annotation' | 'shape', id } or
+    // null, in that order of priority. Locked and hidden layers are skipped;
+    // later items of a kind win, as they draw on top.
     // ------------------------------------------------------------
     function Na__LeMarkup__HitTest(sheet, pointMm, toleranceMm, includeLocked) {
         if (!sheet) return null;
         const tol = Number.isFinite(toleranceMm) ? toleranceMm : 1.5;
         const editable = (layerId) => Na__LeModel__IsLayerVisible(sheet, layerId) && (includeLocked === true || !Na__LeModel__IsLayerLocked(sheet, layerId));   // <-- includeLocked: the eyedropper may READ a locked item
 
-        // DIMENSIONS FIRST | Thin lines are hard to hit, so the lines take a
+        // LEADERS FIRST | They draw over everything else on the sheet, and a
+        // leader's tip sits on the very thing it points at.
+        const leaders = sheet.Sheet__Leaders || [];
+        for (let i = leaders.length - 1; i >= 0; i--) {
+            const leader = leaders[i];
+            if (!editable(leader.Leader__LayerId)) continue;
+            if (Na__LeLeadGeo__Hit(leader, pointMm, tol)) return { kind : 'leader', id : leader.Leader__Id };
+        }
+
+        // DIMENSIONS NEXT | Thin lines are hard to hit, so the lines take a
         // wider tolerance and the value text counts as part of the dimension.
         const dimSetup = Na__LeCfg__GetDimensionSetup();
         const lineTol  = tol * 1.5;
@@ -429,6 +484,7 @@
         Na__LeMarkup__BuildScenePrimitives,
         Na__LeMarkup__ImportFromScene,
         Na__LeMarkup__AnnotationBounds,
+        Na__LeMarkup__LeaderBounds,
         Na__LeMarkup__DimensionValueMm,
         Na__LeMarkup__FormatDimension,
         Na__LeMarkup__DimensionSkeleton,

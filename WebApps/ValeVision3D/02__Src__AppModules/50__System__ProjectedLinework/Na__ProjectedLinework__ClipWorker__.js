@@ -47,8 +47,12 @@
 //     OUT  { Type : 'Ready', Generation }
 //
 //     IN   { Type : 'Clip', Generation, JobId, EdgeStart, EdgeEnd }
-//     OUT  { Type : 'Done', Generation, JobId, Segments, PairsTested }
+//     OUT  { Type : 'Done', Generation, JobId, Segments, Owners, PairsTested }
 //     OUT  { Type : 'Failed', Generation, JobId, Message }
+//     Owners and HiddenOwners (in Done) are one category id per returned
+//     SEGMENT, present only when the loaded edge set carried owner tags, and
+//     transferred alongside the coordinates so the two halves of one answer
+//     cannot be separated in flight.
 //
 // Generation is the pool's run counter. A message carrying a stale generation is
 // answered but ignored by the pool, which is what lets a cancelled render's
@@ -63,12 +67,16 @@
 // - Ported on     : 09-Sep-2026 for ValeVision3D v2.20.0 (port Phase 4)
 // - Parity        : adapted
 // - Divergences   :
-//   - The Done reply also carries HiddenSegments (transferred) so the hidden line class rides the worker pass.
+//   - The Done reply also carries HiddenSegments (transferred) so the hidden line class rides the worker pass, and Owners and HiddenOwners so each segment keeps its model category.
 // - Back-port     : none pending.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 13-Sep-2026 - Version 1.1.0
+// - The Done reply carries Owners and HiddenOwners, transferred with the
+//   segments they describe. Ported from TrueVision3D (Edge Styles).
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Ported from the Lantern Designer projection engine for port Phase 4;
 //   identifiers renamed to the ValeVision namespace and the header restyled.
@@ -135,6 +143,8 @@ import { Na__ProjectedLinework__ClipKernel__Clip } from './Na__ProjectedLinework
                     JobId          : message.JobId,
                     Segments       : spent,
                     HiddenSegments : null,
+                    Owners         : null,
+                    HiddenOwners   : null,
                     PairsTested    : 0
                 },
                 [ spent.buffer ]
@@ -151,6 +161,15 @@ import { Na__ProjectedLinework__ClipKernel__Clip } from './Na__ProjectedLinework
                 Na__ProjectedLinework__ClipWorker__Options
             );
 
+            // EVERY BUFFER THIS REPLY CARRIES, handed over rather than copied;
+            // this worker will not touch any of them again. Built as a list
+            // because there are now up to four and a nested ternary over four
+            // optional buffers is how a transfer gets quietly forgotten.
+            const handOver  =  [ result.Segments.buffer ];
+            if (result.HiddenSegments) handOver.push(result.HiddenSegments.buffer);
+            if (result.Owners)         handOver.push(result.Owners.buffer);
+            if (result.HiddenOwners)   handOver.push(result.HiddenOwners.buffer);
+
             self.postMessage(
                 {
                     Type           : 'Done',
@@ -158,11 +177,11 @@ import { Na__ProjectedLinework__ClipKernel__Clip } from './Na__ProjectedLinework
                     JobId          : message.JobId,
                     Segments       : result.Segments,
                     HiddenSegments : result.HiddenSegments,                   // <-- Null unless IncludeHiddenEdges was asked for (ValeVision addition)
+                    Owners         : result.Owners,                           // <-- Null unless the loaded edges carried category tags
+                    HiddenOwners   : result.HiddenOwners,
                     PairsTested    : result.PairsTested
                 },
-                result.HiddenSegments
-                    ? [ result.Segments.buffer, result.HiddenSegments.buffer ]
-                    : [ result.Segments.buffer ]                              // <-- Handed over rather than copied; this worker will not touch it again
+                handOver
             );
         } catch (clipError) {
             self.postMessage({

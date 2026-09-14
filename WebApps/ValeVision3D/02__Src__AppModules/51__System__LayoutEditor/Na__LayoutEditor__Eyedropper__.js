@@ -46,8 +46,17 @@
 //
 //   VECTOR      travels : edge colour, edge weight, edge on/off, fill colour,
 //                         gradient (a null fill or gradient is a real value and
-//                         clears the target's)
+//                         clears the target's), fill and edge opacity
 //               stays   : the points, open or closed, the layer
+//
+//   LEADER      travels : text size, weight and colour; line colour, weight,
+//                         style and opacity; the endpoint (filled, ring
+//                         weight, size); bubble size and edge weight; fill
+//                         colour (a null fill is real and clears the
+//                         target's) and fill opacity. The type - note or
+//                         bubble - goes to the palette only: painting never
+//                         turns a note into a bubble.
+//               stays   : the text, the tip, the anchor, the layer
 //
 // - THE LAYER NEVER TRAVELS, in any kind. A layer is where a thing lives, not
 //   how it looks, and moving objects between layers behind a style click would
@@ -93,6 +102,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.3.0
+// - Leaders join the trait table: text, line, endpoint, bubble and fill. Their
+//   type travels to the palette only, through a new trait flag, paletteOnly,
+//   which Apply leaves out of every paint.
+// - Vectors carry their fill and edge opacity.
+// - Ported from TrueVision3D v2.35.0.
+//
 // 13-Sep-2026 - Version 1.2.0
 // - Palette mode (Shift+B): SyncPalette loads an item's style into the settings
 //   for new objects through a writer the sheet tools hand in, so this module
@@ -130,6 +146,7 @@
         Na__LeModel__UpdateAnnotation,
         Na__LeModel__UpdateDimension,
         Na__LeModel__UpdateShape,
+        Na__LeModel__UpdateLeader,
         Na__LeModel__GetViewportById
     } from './Na__LayoutEditor__SheetModel__.js';
     import {
@@ -137,7 +154,7 @@
         Na__LeSurface__GetPixelsPerMm,
         Na__LeSurface__GetZoom
     } from './Na__LayoutEditor__SheetSurface__.js';
-    import { Na__LeMarkup__AnnotationBounds, Na__LeMarkup__DimensionSkeleton } from './Na__LayoutEditor__MarkupBridge__.js';
+    import { Na__LeMarkup__AnnotationBounds, Na__LeMarkup__DimensionSkeleton, Na__LeMarkup__LeaderBounds } from './Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeShapeGeo__Bounds } from './Na__LayoutEditor__ShapeGeometry__.js';
     // ------------------------------------------------------------
 
@@ -177,6 +194,10 @@
     // colour to restore. A null turns the switch off and leaves the value; a
     // value turns it on and replaces it. paletteKey and paletteLabel name the
     // kind in the plural, for "new dimensions".
+    //
+    // paletteOnly : true marks a trait that only ever sets the settings for
+    // new objects. It is read off a source and handed to the palette, but a
+    // paint never writes it onto an existing object.
     // ------------------------------------------------------------
     const Na__LeDrop__TRAITS = Object.freeze({
         annotation : {
@@ -221,7 +242,34 @@
                 { patch : 'strokePt',     field : 'Shape__StrokePt'     },
                 { patch : 'stroked',      field : 'Shape__Stroked'      },
                 { patch : 'fillColour',   field : 'Shape__FillColour', nullable : true, palette : 'filled' },  // <-- null is "no fill", a real value to copy
-                { patch : 'gradient',     field : 'Shape__Gradient',   nullable : true, palette : 'gradientOn' }   // <-- Likewise; records are never edited in place, so the held copy cannot change
+                { patch : 'gradient',     field : 'Shape__Gradient',   nullable : true, palette : 'gradientOn' },  // <-- Likewise; records are never edited in place, so the held copy cannot change
+                { patch : 'fillOpacity',   field : 'Shape__FillOpacity'   },
+                { patch : 'strokeOpacity', field : 'Shape__StrokeOpacity' }
+            ]
+        },
+        leader : {
+            labelKey : 'EyedropperKindLeader',
+            label    : 'leader',
+            paletteKey   : 'EyedropperPaletteKindLeader',
+            paletteLabel : 'leaders',
+            lockField: 'Leader__LayerId',
+            update   : Na__LeModel__UpdateLeader,
+            traits   : [
+                { patch : 'type',           field : 'Leader__Type', paletteOnly : true },   // <-- A paint never turns a note into a bubble
+                { patch : 'textSizeMm',     field : 'Leader__TextSizeMm'     },
+                { patch : 'fontWeight',     field : 'Leader__FontWeight'     },
+                { patch : 'textColour',     field : 'Leader__TextColour'     },
+                { patch : 'lineColour',     field : 'Leader__LineColour'     },
+                { patch : 'linePt',         field : 'Leader__LinePt'         },
+                { patch : 'lineStyle',      field : 'Leader__LineStyle'      },
+                { patch : 'lineOpacity',    field : 'Leader__LineOpacity'    },
+                { patch : 'endpointFilled', field : 'Leader__EndpointFilled' },
+                { patch : 'endpointPt',     field : 'Leader__EndpointPt'     },
+                { patch : 'endpointSizeMm', field : 'Leader__EndpointSizeMm' },
+                { patch : 'bubbleSizeMm',   field : 'Leader__BubbleSizeMm'   },
+                { patch : 'bubbleEdgePt',   field : 'Leader__BubbleEdgePt'   },
+                { patch : 'fillColour',     field : 'Leader__FillColour', nullable : true, palette : 'filled' },   // <-- null is "no fill", a real value to copy
+                { patch : 'fillOpacity',    field : 'Leader__FillOpacity'    }
             ]
         }
     });
@@ -277,6 +325,7 @@
         if (kind === 'annotation') return (sheet.Sheet__Annotations || []).find((a) => a.Annotation__Id === id) || null;
         if (kind === 'dimension')  return (sheet.Sheet__Dimensions  || []).find((d) => d.Dimension__Id  === id) || null;
         if (kind === 'shape')      return (sheet.Sheet__Shapes      || []).find((s) => s.Shape__Id      === id) || null;
+        if (kind === 'leader')     return (sheet.Sheet__Leaders     || []).find((l) => l.Leader__Id     === id) || null;
         if (kind === 'viewport')   return Na__LeModel__GetViewportById(sheet, id);
         return null;
     }
@@ -332,7 +381,9 @@
     function Na__LeDrop__Apply(sheet, kind, id, style) {
         const entry = Na__LeDrop__Entry(kind);
         if (!entry || !sheet || !id || !style) return false;
-        return entry.update(sheet, id, Object.assign({}, style), false) === true;
+        const patch = Object.assign({}, style);
+        entry.traits.forEach((trait) => { if (trait.paletteOnly) delete patch[trait.patch]; });   // <-- Palette-only traits set new objects, never an existing one
+        return entry.update(sheet, id, patch, false) === true;
     }
     // ------------------------------------------------------------
 
@@ -402,6 +453,7 @@
         if (!record) return null;
         if (kind === 'annotation') return Na__LeMarkup__AnnotationBounds(record);
         if (kind === 'shape')      return Na__LeShapeGeo__Bounds(record);
+        if (kind === 'leader')     return Na__LeMarkup__LeaderBounds(record);
         if (kind === 'viewport')   return record.Viewport__FrameMm || null;                 // <-- Ready for the viewport expansion
         if (kind !== 'dimension')  return null;
 

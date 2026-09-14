@@ -58,6 +58,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.0.2
+// - A rectangle takes the Vectors panel's fill and edge opacity defaults, as a
+//   drawn shape does.
+// - Ported from TrueVision3D v2.35.0.
+//
 // 13-Sep-2026 - Version 1.0.1
 // - A rectangle takes the Vectors panel's gradient default as well as its fill,
 //   exactly as a drawn shape does (Na__LayoutEditor__GradientTool__). Without it
@@ -174,6 +179,7 @@
         Na__LeRect__Clear();
         const item = Na__LeModel__CreateShape(sheet, Na__LeRect__Corners(draft.anchor, corner), {
             strokeColour : d.strokeColour, strokePt : d.strokePt, fillColour : d.filled ? d.fillColour : null,
+            fillOpacity : d.fillOpacity, strokeOpacity : d.strokeOpacity,     // <-- The opacity defaults too, as for a drawn shape
             gradient : d.gradientOn ? d.gradient : null, closed : true, stroked : d.stroked !== false   // <-- The gradient default reaches a rectangle exactly as it reaches a drawn shape
         });                                                                  // <-- Not silent: created and announced at once, so one undo step
         if (!item) return false;

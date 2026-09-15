@@ -19,14 +19,17 @@
 //   their own modules and are called from here with the panel defaults.
 // - Viewports: a drag moves one (selected or not), a handle crops or
 //   extends the frame, double-click enters the content, a lock refuses all
-//   of it. Dimensions: grips re-pick the points and slide the line (with
+//   of it. Inside a 3D viewport's content the wheel zooms its picture
+//   (Na__LayoutEditor__Viewport3dZoom__), and Enter finishes, keeping the
+//   zoom. Dimensions: grips re-pick the points and slide the line (with
 //   inference); click the value and drag it off the line for a curved leader
 //   back to the centre; double-click edits the value. Shapes: grips move vertices;
 //   a drag of the whole shape snaps to the linework; Shift-click an edge
 //   inserts a vertex.
 // - Keys: Delete removes the selection (a viewport asks first), Escape
-//   backs out, Space clears the selection, Enter finishes a shape, arrows
-//   nudge by a millimetre (ten with Shift), V T D L R B pick a tool, Ctrl+Z
+//   backs out, Space clears the selection, Enter finishes a shape or the
+//   editing of a viewport's content, arrows nudge by a millimetre (ten with
+//   Shift), V T D L R B pick a tool, Ctrl+Z
 //   and Ctrl+Y step the history, Ctrl+C Ctrl+V Ctrl+D copy, paste and
 //   duplicate a viewport or a vector (Na__LayoutEditor__ViewportClipboard__),
 //   E picks the Leader tool. Nothing fires while typing in a field; a Ctrl
@@ -52,6 +55,10 @@
 //   leader's tip grip re-points it, its head (the bubble, the note or the
 //   round anchor grip) moves while the tip stays, and its curve moves the
 //   whole leader; double-click edits its text.
+// - Text: the round grip on a stem off the top of a selected text item turns
+//   it about the middle of its box (Na__LayoutEditor__TextTool__), holding
+//   RotateStepDeg steps with Shift; the right-click menu's Reset rotation
+//   levels it again.
 // - While the Draw or Dimension tool is placing a point the arrows lock
 //   the axis instead of nudging: left or right the X, up or down the Y,
 //   the same key again to release, as in SketchUp LayOut.
@@ -97,6 +104,24 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.23.0
+// - Rotate text: Resolve looks for the one selected text item's rotate grip
+//   before anything else (RotateGripAt), because the grip stands off the text
+//   where no hit test would find it. A press on it drags the angle through
+//   Na__LeText__RotateStart and RotateTo, Shift holding the steps, and the
+//   release announces it once. The cursor over the grip is ROTATE_CURSOR.
+//   The text menu offers Reset rotation on turned text. The text defaults
+//   carry rotationDeg (0), which the Text panel sets for new text.
+// - Ported from TrueVision3D v2.52.0 (SheetTools 1.28.0).
+//
+// 14-Sep-2026 - Version 1.22.0
+// - Enter finishes the editing of a viewport's content, as Escape already did:
+//   the way a 3D viewport's zoom is set and left
+//   (Na__LayoutEditor__Viewport3dZoom__). Recentre content centres a 3D
+//   picture at the zoom it is drawn at, rather than pinning its corner to the
+//   frame's.
+// - Ported from TrueVision3D (SheetTools 1.27.0, v2.50.0).
+//
 // 14-Sep-2026 - Version 1.21.0
 // - Shape defaults carry dashOn and dash from Na__LayoutEditor__LineStyleTool__,
 //   so Draw and Rectangle place a dashed edge when the Vectors toggle is on.
@@ -319,10 +344,10 @@
         Na__LeHandles__DragPatch,
         Na__LeHandles__FrontToBack
     } from './Na__LayoutEditor__ViewportHandles__.js';
-    import { Na__LeMarkup__HitTest } from './Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeGrips__DimensionGrab, Na__LeGrips__ShapeGrab, Na__LeGrips__LeaderGrab, Na__LeGrips__ShowInsert, Na__LeGrips__HideInsert } from './Na__LayoutEditor__Grips__.js';
+    import { Na__LeMarkup__HitTest, Na__LeMarkup__AnnotationRotationDeg } from './Na__LayoutEditor__MarkupBridge__.js';
+    import { Na__LeGrips__DimensionGrab, Na__LeGrips__ShapeGrab, Na__LeGrips__LeaderGrab, Na__LeGrips__AnnotationGrab, Na__LeGrips__ROTATE_CURSOR, Na__LeGrips__ShowInsert, Na__LeGrips__HideInsert } from './Na__LayoutEditor__Grips__.js';
     import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Translated, Na__LeShapeGeo__ClosestOnEdge, Na__LeShapeGeo__InsertPoint, Na__LeShapeGeo__VertexAt } from './Na__LayoutEditor__ShapeGeometry__.js';
-    import { Na__LeText__Place, Na__LeText__BeginEdit, Na__LeText__Commit, Na__LeText__Cancel, Na__LeText__IsEditing } from './Na__LayoutEditor__TextTool__.js';
+    import { Na__LeText__Place, Na__LeText__BeginEdit, Na__LeText__Commit, Na__LeText__Cancel, Na__LeText__IsEditing, Na__LeText__RotationPatch, Na__LeText__RotateStart, Na__LeText__RotateTo } from './Na__LayoutEditor__TextTool__.js';
     import { Na__LeDim__Click, Na__LeDim__Move, Na__LeDim__Cancel, Na__LeDim__IsPlacing, Na__LeDim__IsSpanning, Na__LeDim__IsPlacingLine, Na__LeDim__OffsetFor, Na__LeDim__ShowInference, Na__LeDim__BeginTextEdit } from './Na__LayoutEditor__DimensionTool__.js';
     import { Na__LeDimGeo__OffsetKeepingLine } from './Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShape__Click, Na__LeShape__Move, Na__LeShape__Finish, Na__LeShape__Cancel, Na__LeShape__IsDrawing, Na__LeShape__UndoVertex, Na__LeShape__RedoVertex } from './Na__LayoutEditor__ShapeTool__.js';
@@ -340,6 +365,7 @@
     import { Na__LeAxis__AXIS_X, Na__LeAxis__AXIS_Y, Na__LeAxis__Toggle, Na__LeAxis__Clear } from './Na__LayoutEditor__AxisLock__.js';
     import { Na__LeVp2d__SetInteracting, Na__LeVp2d__CentreOnDrawing } from './Na__LayoutEditor__Viewport2d__.js';
     import { Na__LeVp3d__SetInteracting } from './Na__LayoutEditor__Viewport3d__.js';
+    import { Na__LeVpZoom__CentredOffset } from './Na__LayoutEditor__Viewport3dZoom__.js';
     import { Na__LeOsnap__TONE_DIMENSION, Na__LeOsnap__Snap, Na__LeOsnap__Find, Na__LeOsnap__ShowMarker, Na__LeOsnap__HideMarker, Na__LeOsnap__Toggle, Na__LeOsnap__IsEnabled } from './Na__LayoutEditor__Snapping__.js';
     import { Na__LeSelBox__COMBINE_ADD, Na__LeSelBox__COMBINE_REMOVE, Na__LeSelBox__Press, Na__LeSelBox__Move, Na__LeSelBox__Release, Na__LeSelBox__Cancel, Na__LeSelBox__Refresh, Na__LeSelBox__IsActive, Na__LeSelBox__Combine } from './Na__LayoutEditor__SelectionBox__.js';
     import { Na__LeSelSet__Capture, Na__LeSelSet__Apply, Na__LeSelSet__Commit, Na__LeSelSet__Nudge, Na__LeSelSet__Delete } from './Na__LayoutEditor__SelectionSet__.js';
@@ -405,7 +431,7 @@
     function Na__LeTools__GetTextDefaults() {
         if (!Na__LeTools__TextDefaults) {
             const s = Na__LeCfg__GetTextSetup();
-            Na__LeTools__TextDefaults = { text : s.defaultText, sizeMm : s.defaultSizeMm, fontWeight : s.defaultWeight, colour : s.defaultColour, align : 'left', leader : false };
+            Na__LeTools__TextDefaults = { text : s.defaultText, sizeMm : s.defaultSizeMm, fontWeight : s.defaultWeight, colour : s.defaultColour, align : 'left', leader : false, rotationDeg : 0 };
         }
         return Na__LeTools__TextDefaults;
     }
@@ -694,6 +720,24 @@
 // REGION | Hit Resolution
 // -----------------------------------------------------------------------------
 
+    // HELPER FUNCTION | The Selected Text Item's Rotate Grip Under a Point, or Null
+    // ------------------------------------------------------------
+    // Only while the Select tool is up in an editable session, with one text
+    // item selected on a visible, unlocked layer. Returns the hit Resolve hands
+    // on: { kind : 'annotation', id, hit : { mode : 'rotate' } }.
+    // ------------------------------------------------------------
+    function Na__LeTools__RotateGripAt(sheet, pointMm) {
+        if (!Na__LeTools__Editable || Na__LeTools__Tool !== Na__LeTools__TOOL_SELECT || !sheet || !pointMm) return null;
+        const selection = Na__LeModel__GetSelection();
+        if (!selection || selection.kind !== 'annotation') return null;
+        const item = Na__LeTools__Record(sheet, selection);
+        if (!item || !Na__LeModel__IsLayerVisible(sheet, item.Annotation__LayerId) || Na__LeModel__IsLayerLocked(sheet, item.Annotation__LayerId)) return null;
+        const grab = Na__LeGrips__AnnotationGrab(item, pointMm, Na__LeTools__Tolerance(), Na__LeSurface__GetPixelsPerMm(), Na__LeSurface__GetZoom());
+        return grab === 'rotate' ? { kind : 'annotation', id : selection.id, hit : { mode : 'rotate' } } : null;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | What the Select Tool Finds Under a Point
     // ------------------------------------------------------------
     // Returns { kind : 'dimension'|'annotation'|'shape'|'leader'|'viewport', id, hit }
@@ -706,6 +750,8 @@
     // not useful once the frame is locked.
     // ------------------------------------------------------------
     function Na__LeTools__Resolve(sheet, pointMm, includeLocked, skipLockedViewports, keepMember) {
+        const turning = includeLocked === true ? null : Na__LeTools__RotateGripAt(sheet, pointMm);   // <-- The rotate grip first: it stands off its text, over whatever lies beneath
+        if (turning) return turning;
         const markup = Na__LeMarkup__HitTest(sheet, pointMm, Na__LeTools__Tolerance(), includeLocked === true);   // <-- The eyedropper reads locked markup; nothing else touches it
         if (markup) return keepMember === true ? { kind : markup.kind, id : markup.id, hit : null } : Na__LeGroup__Resolve(sheet, { kind : markup.kind, id : markup.id, hit : null });
         const ppm  = Na__LeSurface__GetPixelsPerMm();
@@ -756,7 +802,10 @@
         const record = Na__LeTools__Record(sheet, found);
         if (!record || !Na__LeTools__Editable) return 'default';
         const tol = Na__LeTools__Tolerance();
-        if (found.kind === 'annotation') return Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId) ? 'default' : 'move';
+        if (found.kind === 'annotation') {
+            if (Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId)) return 'default';
+            return (found.hit && found.hit.mode === 'rotate') ? Na__LeGrips__ROTATE_CURSOR : 'move';
+        }
         if (found.kind === 'dimension') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Dimension__LayerId)) return 'default';
             const grab = Na__LeGrips__DimensionGrab(record, pointMm, tol, sheet);
@@ -798,6 +847,7 @@
         const tol = Na__LeTools__Tolerance();
         if (found.kind === 'annotation') {
             if (Na__LeModel__IsLayerLocked(sheet, record.Annotation__LayerId)) return null;
+            if (found.hit && found.hit.mode === 'rotate') return { kind : 'annotation', id : found.id, mode : 'rotate', rotate : Na__LeText__RotateStart(record, pointMm) };   // <-- The rotate grip turns it
             return { kind : 'annotation', id : found.id, start : { x : record.Annotation__PosXMm, y : record.Annotation__PosYMm } };
         }
         if (found.kind === 'dimension') {
@@ -1048,7 +1098,13 @@
             return;
         }
         if (drag.kind === 'annotation') {
-            Na__LeModel__UpdateAnnotation(sheet, drag.id, { posXMm : drag.start.x + d.x, posYMm : drag.start.y + d.y }, true);
+            // TURN OR MOVE | The rotate grip turns the text about the middle of
+            // its box, Shift holding the steps; anywhere else on the text moves
+            // it, Shift holding the axis.
+            const patch = drag.mode === 'rotate'
+                ? Na__LeText__RotateTo(Na__LeTools__Record(sheet, drag), drag.rotate, cursor, shift)
+                : { posXMm : drag.start.x + d.x, posYMm : drag.start.y + d.y };
+            if (patch) Na__LeModel__UpdateAnnotation(sheet, drag.id, patch, true);
             Na__LeSurface__Refresh('markup');
             return;
         }
@@ -1434,7 +1490,7 @@
         const viewport = Na__LeModel__GetViewportById(sheet, viewportId);
         if (!viewport || Na__LeTools__IsViewportLocked(sheet, viewport)) return false;
         if (viewport.Viewport__Kind === Na__LeModel__KIND_2D) Na__LeVp2d__CentreOnDrawing(sheet, viewport);
-        else Na__LeModel__UpdateViewport(sheet, viewportId, { imageOffset : { X : 0, Y : 0 } }, true);
+        else Na__LeModel__UpdateViewport(sheet, viewportId, { imageOffset : Na__LeVpZoom__CentredOffset(viewport) }, true);   // <-- The picture's middle on the frame's middle, at the zoom it is drawn at
         return Na__LeModel__UpdateViewport(sheet, viewportId, {}, false);      // <-- One announcement: one history step
     }
     // ------------------------------------------------------------
@@ -1502,8 +1558,12 @@
             ]).concat(history);
         }
         if (found.kind === 'annotation') {
-            return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeText__BeginEdit(found.id) },
-                     { separator : true } ].concat(arrange('annotation', found.id), [
+            const text = Na__LeTools__Record(sheet, found);
+            const turn = (text && Na__LeMarkup__AnnotationRotationDeg(text) !== 0)   // <-- Only on turned text, as Reset text position is only on a moved value
+                ? [ { label : label('MenuResetTextRotation', 'Reset rotation'), onSelect : () => Na__LeModel__UpdateAnnotation(sheet, found.id, Na__LeText__RotationPatch(text, 0), false) } ]
+                : [];
+            return [ { label : label('MenuEditText', 'Edit text'), onSelect : () => Na__LeText__BeginEdit(found.id) } ].concat(turn, [
+                     { separator : true } ]).concat(arrange('annotation', found.id), [
                      { separator : true }, remove('MenuDeleteText', 'Delete text'), { separator : true } ])
                      .concat(Na__LeClip__MenuItems(sheet, found, pointMm), style(found.kind, found.id)).concat(history);
         }
@@ -1785,6 +1845,7 @@
                 return;
             case 'Edit__Finish':
                 if (Na__LeShape__IsDrawing() && sheet) { event.preventDefault(); Na__LeShape__Finish(sheet, false); }
+                else if (Na__LeSurface__GetEditingViewport()) { event.preventDefault(); Na__LeTools__SetEditingViewport(null); }   // <-- Enter finishes editing a viewport's content; a 3D picture keeps the zoom it was left at
                 return;
             case 'Edit__Delete':
                 if (Na__LeModel__GetSelectionItems().length) { event.preventDefault(); void Na__LeTools__DeleteSelection(); }

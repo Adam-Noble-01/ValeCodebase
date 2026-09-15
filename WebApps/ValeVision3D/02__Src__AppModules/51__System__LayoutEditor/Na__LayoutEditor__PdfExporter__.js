@@ -36,6 +36,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.2.0
+// - A 3D viewport's picture goes at Na__LeVp3d__ExportRectMm: the whole
+//   picture's rectangle as before, or the frame itself once the frame shows a
+//   window of a zoomed or slid picture - which is what the export rendered.
+// - Ported from TrueVision3D (PdfExporter 1.3.0, v2.50.0).
+//
 // 13-Sep-2026 - Version 1.1.0
 // - Linework prints as the same style bands the sheet paints: per-category
 //   colour, weight and dash pattern, in paper millimetres. Ported from TrueVision3D (Edge Styles).
@@ -68,7 +74,7 @@
     import { Na__LeChrome__Build, Na__LeChrome__DrawToPdf } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeMarkup__BuildScenePrimitives, Na__LeMarkup__BuildSheetPrimitives } from './Na__LayoutEditor__MarkupBridge__.js';
     import { Na__LeVp2d__Describe, Na__LeVp2d__EnsureLinework, Na__LeVp2d__RenderForExport, Na__LeVp2d__StyleBands } from './Na__LayoutEditor__Viewport2d__.js';
-    import { Na__LeVp3d__RenderForExport } from './Na__LayoutEditor__Viewport3d__.js';
+    import { Na__LeVp3d__RenderForExport, Na__LeVp3d__ExportRectMm } from './Na__LayoutEditor__Viewport3d__.js';
     import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__LeSpec__EnsureLoaded } from './Na__LayoutEditor__SpecData__.js';
     import { Na__LeMargin__Report } from './Na__LayoutEditor__SpecMargin__.js';
@@ -213,8 +219,8 @@
             }
             const dataUrl = await Na__LeVp3d__RenderForExport(sheet, viewport);
             if (dataUrl) {
-                const offset = viewport.Viewport__ImageOffsetMm, image = viewport.Viewport__ImageMm;
-                doc.addImage(dataUrl, 'PNG', frame.X + offset.X, frame.Y + offset.Y, image.WidthMm, image.HeightMm);
+                const rect = Na__LeVp3d__ExportRectMm(viewport);                   // <-- The picture's own rectangle, or the frame when it shows a window of a zoomed picture
+                doc.addImage(dataUrl, 'PNG', frame.X + rect.X, frame.Y + rect.Y, rect.WidthMm, rect.HeightMm);
             }
         } finally {
             Na__LePdf__EndClip(doc, clipped);

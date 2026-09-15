@@ -17,6 +17,12 @@
 //   readouts are editable numbers in paper and drawing millimetres; the
 //   markup mode switch, Import From Scene and Edit In Drawing implement
 //   D34 (editing of scene markup happens in the drawing itself).
+// - Zoom % (3D viewports only): how large the picture is drawn in its frame,
+//   typed to a decimal place and applied about the middle of the frame; Reset
+//   puts it back to 100 percent, centred. The wheel does the same about the
+//   cursor while the viewport's content is being edited
+//   (Na__LayoutEditor__Viewport3dZoom__). Greyed out while the viewport or its
+//   layer is locked.
 //
 // INTEGRATION:
 // - Registered into the right column by the mode controller, which also
@@ -34,6 +40,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.4.0
+// - Zoom % on 3D viewports: a number box for the picture's zoom (to a decimal
+//   place, one undo step, about the middle of the frame) and Reset (100 percent,
+//   centred). Hidden on 2D viewports, greyed out when locked.
+// - Ported from TrueVision3D (Panel__ViewportSettings 1.7.0, v2.50.0).
+//
 // 14-Sep-2026 - Version 1.3.0
 // - Changing the scene of a pasted viewport copy clears its placeholder name
 //   so the caption follows the new scene.
@@ -70,8 +82,10 @@
         Na__LeModel__UpdateViewport,
         Na__LeModel__GetSelectedViewport,
         Na__LeModel__SetSelection,
-        Na__LeModel__ResolveViewportSource
+        Na__LeModel__ResolveViewportSource,
+        Na__LeModel__IsLayerLocked
     } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeVpZoom__Get, Na__LeVpZoom__Percent, Na__LeVpZoom__PatchAbout, Na__LeVpZoom__PatchReset } from './Na__LayoutEditor__Viewport3dZoom__.js';
     import {
         Na__LePanels__RegisterSection,
         Na__LePanels__OnControl,
@@ -230,6 +244,22 @@
         if (editable) pan.appendChild(Na__LePanels__Button(Na__LeCfg__GetLabel('CentreOnDrawing', 'Centre'), 'vp-centre', 'na-le-btn--small'));
         edit.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('PanLabel', 'Window mm'), pan));
 
+        // ZOOM | 3D only: how large the picture is drawn in its frame. A 2D
+        // viewport's size on the paper is its scale, so it has no zoom of its own.
+        const zoomSetup = Na__LeCfg__GetViewportSetup();
+        const zoom      = document.createElement('div');
+        zoom.className = 'na-le-grid4';
+        zoom.setAttribute('data-na-block', 'zoom');
+        const zoomInput = Na__LePanels__Input('number', 'vp-zoom', { step : 'any', min : Math.round(zoomSetup.imageZoomMin * 100), max : Math.round(zoomSetup.imageZoomMax * 100) });   // <-- Any decimal typed; the arrows still step by one
+        zoomInput.title = Na__LeCfg__GetLabel('ZoomTitle', 'How large the 3D picture is drawn in its frame, as a percentage of its size before zooming. Type any value, to a decimal place. Or double-click the viewport and scroll over it to zoom about the cursor.');
+        zoom.appendChild(zoomInput);
+        if (editable) {
+            const zoomReset = Na__LePanels__Button(Na__LeCfg__GetLabel('ZoomReset', 'Reset'), 'vp-zoom-reset', 'na-le-btn--small');
+            zoomReset.title = Na__LeCfg__GetLabel('ZoomResetTitle', 'Back to 100%, centred in the frame.');
+            zoom.appendChild(zoomReset);
+        }
+        edit.appendChild(Na__LePanels__Row(Na__LeCfg__GetLabel('ZoomLabel', 'Zoom %'), zoom));
+
         const markup = document.createElement('div');
         markup.className = 'na-le-toggle-group';
         markup.setAttribute('data-na-block', 'markup');
@@ -283,6 +313,18 @@
         editBlock.querySelectorAll('[data-na-control="vp-pan"]').forEach((input) => {
             if (document.activeElement !== input) input.value = String(Math.round(viewport.Viewport__PanMm[input.getAttribute('data-na-role')]));
         });
+        const zoomBlock = editBlock.querySelector('[data-na-block="zoom"]');
+        if (zoomBlock) {
+            const zoomLocked = viewport.Viewport__Locked === true || Na__LeModel__IsLayerLocked(sheet, viewport.Viewport__LayerId);   // <-- A lock holds the framing as well as the frame
+            zoomBlock.parentNode.hidden = is2d;
+            const zoomInput = zoomBlock.querySelector('[data-na-control="vp-zoom"]');
+            if (zoomInput) {
+                if (document.activeElement !== zoomInput) zoomInput.value = String(Na__LeVpZoom__Percent(Na__LeVpZoom__Get(viewport)));
+                zoomInput.disabled = !Na__LePanels__IsEditable() || zoomLocked;
+            }
+            const zoomReset = zoomBlock.querySelector('[data-na-control="vp-zoom-reset"]');
+            if (zoomReset) zoomReset.disabled = !Na__LePanels__IsEditable() || zoomLocked;
+        }
         editBlock.querySelector('[data-na-block="markup"]').parentNode.hidden = !is2d;
         editBlock.querySelectorAll('[data-na-control="vp-markup"]').forEach((b) => b.classList.toggle('na-le-btn--active', b.getAttribute('data-na-role') === viewport.Viewport__MarkupMode));
         const caption = editBlock.querySelector('[data-na-control="vp-caption"]');
@@ -335,6 +377,19 @@
             if (c && Number.isFinite(v)) { const pan = {}; pan[key] = v; Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { pan : pan }); }
         });
         Na__LePanels__OnControl('click', 'vp-centre', () => { const c = Na__LePanelViewport__Current(); if (c && Na__LeVp2d__CentreOnDrawing(c.sheet, c.viewport)) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, {}, false); });
+        Na__LePanels__OnControl('change', 'vp-zoom', (e, el) => {
+            const c = Na__LePanelViewport__Current();
+            if (!c || c.viewport.Viewport__Kind !== Na__LeModel__KIND_3D) return;
+            const percent = parseFloat(el.value);
+            const patch   = (Number.isFinite(percent) && percent > 0) ? Na__LeVpZoom__PatchAbout(c.viewport, percent / 100, null) : null;
+            if (!patch) { el.value = String(Na__LeVpZoom__Percent(Na__LeVpZoom__Get(c.viewport))); return; }   // <-- Not a zoom: the box shows the one the picture has
+            Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, patch);                                // <-- About the middle of the frame; one undo step
+            el.value = String(Na__LeVpZoom__Percent(Na__LeVpZoom__Get(c.viewport)));                             // <-- A value past a limit shows the limit it was held to
+        });
+        Na__LePanels__OnControl('click', 'vp-zoom-reset', () => {
+            const c = Na__LePanelViewport__Current();
+            if (c && c.viewport.Viewport__Kind === Na__LeModel__KIND_3D) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, Na__LeVpZoom__PatchReset(c.viewport));
+        });
         Na__LePanels__OnControl('click', 'vp-markup', (e, el, role) => { const c = Na__LePanelViewport__Current(); if (c) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { markupMode : role }); });
         Na__LePanels__OnControl('change', 'vp-caption', (e, el) => { const c = Na__LePanelViewport__Current(); if (c) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { showScaleLabel : el.checked }); });
         Na__LePanels__OnControl('change', 'vp-locked',  (e, el) => { const c = Na__LePanelViewport__Current(); if (c) Na__LeModel__UpdateViewport(c.sheet, c.viewport.Viewport__Id, { locked : el.checked }); });

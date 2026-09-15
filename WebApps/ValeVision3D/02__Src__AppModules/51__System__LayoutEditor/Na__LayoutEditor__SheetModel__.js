@@ -29,7 +29,10 @@
 //                 Locked,
 //                 SnapshotAsset {Asset__Path, Asset__Fingerprint, Asset__PixelWidth}
 //     Annotation  Annotation__Id, LayerId, Text, PosXMm, PosYMm, SizeMm,
-//                 FontWeight, Colour, Align, LeaderXMm, LeaderYMm
+//                 FontWeight, Colour, Align, LeaderXMm, LeaderYMm,
+//                 RotationDeg (degrees clockwise about PosXMm, PosYMm, wrapped
+//                 into (-180, 180]; no key is level, and a turn back to level
+//                 removes it)
 //     Dimension   Dimension__Id, LayerId, ViewportId, StartXMm, StartYMm,
 //                 EndXMm, EndYMm, OffsetMm, TextSizeMm, Colour, Terminator,
 //                 TickLengthMm (how large the ticks, arrows or dots at each
@@ -70,6 +73,19 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.15.0
+// - Rotated text: CreateAnnotation and UpdateAnnotation take rotationDeg,
+//   stored as Annotation__RotationDeg - degrees clockwise about the anchor,
+//   wrapped into (-180, 180] and kept to a thousandth of a degree. Level text
+//   carries no key, so every record from before draws and saves exactly as
+//   it did.
+// - Ported from TrueVision3D v2.52.0 (SheetModel 1.24.0).
+//
+// 14-Sep-2026 - Version 1.14.0
+// - UpdateViewport takes imageZoom: a 3D viewport's picture zoom
+//   (Viewport__ImageZoom), which the normaliser clamps.
+// - Ported from TrueVision3D (SheetModel 1.23.0, v2.50.0).
+//
 // 14-Sep-2026 - Version 1.13.0
 // - CreateShape and UpdateShape carry Shape__LineStyle (the dash key: an
 //   object or null). Null is a solid edge; the normaliser copies a fresh
@@ -746,7 +762,7 @@
 
     // FUNCTION | Change a Viewport (any subset of its fields)
     // ------------------------------------------------------------
-    // patch: { rect, scaleDenominator, pan, imageMm, imageOffset, styles, modelLayers,
+    // patch: { rect, scaleDenominator, pan, imageMm, imageOffset, imageZoom, styles, modelLayers,
     //          projectedEdges, compositeWeights, markupMode,
     //          name, layerId, sceneId, drawingId, kind, showScaleLabel, snapshotAsset }
     // silent: true skips the change event (live drags announce on release).
@@ -759,6 +775,7 @@
         if (patch.pan)       viewport.Viewport__PanMm   = Object.assign({}, viewport.Viewport__PanMm,   patch.pan);
         if (patch.imageMm)   viewport.Viewport__ImageMm = Object.assign({}, viewport.Viewport__ImageMm, patch.imageMm);
         if (patch.imageOffset) viewport.Viewport__ImageOffsetMm = Object.assign({}, viewport.Viewport__ImageOffsetMm, patch.imageOffset);
+        if (patch.imageZoom !== undefined) viewport.Viewport__ImageZoom = patch.imageZoom;   // <-- A 3D picture's zoom; the normaliser clamps it and keeps it only when it is not 1
         if (patch.styles) {
             Na__LeModel__STYLE_KEYS.forEach((key) => { if (typeof patch.styles[key] === 'boolean') viewport.Viewport__Styles[key] = patch.styles[key]; });
         }
@@ -864,6 +881,22 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Set How Far a Text Item Is Turned
+    // ------------------------------------------------------------
+    // Degrees clockwise about its anchor, wrapped into (-180, 180] and kept to
+    // a thousandth of a degree. Level removes the key, so a text item that has
+    // never been turned - or has been turned back - saves exactly as before.
+    // ------------------------------------------------------------
+    function Na__LeModel__SetAnnotationRotation(item, deg) {
+        let d = Math.round((deg % 360) * 1000) / 1000;
+        if (d <= -180) d += 360;
+        if (d > 180) d -= 360;
+        if (d === 0) delete item.Annotation__RotationDeg;
+        else item.Annotation__RotationDeg = d;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Add a Text Item at a Paper Point
     // ------------------------------------------------------------
     function Na__LeModel__CreateAnnotation(sheet, posXMm, posYMm, options) {
@@ -882,6 +915,7 @@
             Annotation__LeaderYMm  : Number.isFinite(opts.leaderYMm) ? opts.leaderYMm : null,
             Annotation__LayerId    : opts.layerId
         }, Na__LeModel__DefaultLayerId(sheet, 'annotation'));
+        if (Number.isFinite(opts.rotationDeg)) Na__LeModel__SetAnnotationRotation(item, opts.rotationDeg);
         sheet.Sheet__Annotations.push(item);
         Na__LeModel__Touch('annotations', sheet.Sheet__Id, item.Annotation__Id);
         return item;
@@ -932,6 +966,7 @@
         if (patch.leaderXMm !== undefined) item.Annotation__LeaderXMm = Number.isFinite(patch.leaderXMm) ? patch.leaderXMm : null;
         if (patch.leaderYMm !== undefined) item.Annotation__LeaderYMm = Number.isFinite(patch.leaderYMm) ? patch.leaderYMm : null;
         if (typeof patch.layerId === 'string') item.Annotation__LayerId = patch.layerId;
+        if (Number.isFinite(patch.rotationDeg)) Na__LeModel__SetAnnotationRotation(item, patch.rotationDeg);
         Na__LeRec__NormaliseAnnotation(item, item.Annotation__LayerId);
         if (silent) { Na__LeModel__Dirty = true; return true; }
         Na__LeModel__Touch('annotation', sheet.Sheet__Id, itemId);

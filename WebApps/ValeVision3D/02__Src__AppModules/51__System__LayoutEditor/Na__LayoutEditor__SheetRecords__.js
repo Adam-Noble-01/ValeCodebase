@@ -33,6 +33,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.12.0
+// - Viewport__ImageZoom on the viewport record: how large a 3D viewport's
+//   picture is drawn, as a multiple of Viewport__ImageMm. Held inside the
+//   Viewport setup's ImageZoomMin and ImageZoomMax, and stored only when it is
+//   not 1, so every record from before it is exactly what it was.
+// - Ported from TrueVision3D (SheetRecords 1.19.0, v2.50.0).
+//
 // 14-Sep-2026 - Version 1.11.0
 // - NormaliseMarginNotes migrates a stored body of 2.2 mm (the old default)
 //   or about 9 pt to the config TextSizeMm (2 mm).
@@ -345,6 +352,14 @@
         };
         const offset = viewport.Viewport__ImageOffsetMm || {};
         viewport.Viewport__ImageOffsetMm = { X : Na__LeRec__Num(offset.X, 0), Y : Na__LeRec__Num(offset.Y, 0) };
+        // IMAGE ZOOM | How large a 3D viewport's picture is drawn, as a multiple
+        // of Viewport__ImageMm (Na__LayoutEditor__Viewport3dZoom__). Held inside
+        // the configured limits and stored only when it is not 1, so a record
+        // from before the zoom - and a browser draft of one - is exactly what it was.
+        const imageZoom = viewport.Viewport__ImageZoom;
+        const zoomKept  = (typeof imageZoom === 'number' && Number.isFinite(imageZoom) && imageZoom > 0) ? Math.min(setup.imageZoomMax, Math.max(setup.imageZoomMin, imageZoom)) : 1;
+        if (zoomKept !== 1) viewport.Viewport__ImageZoom = zoomKept;
+        else delete viewport.Viewport__ImageZoom;
 
         // MODEL LAYERS | Only the categories switched OFF are kept
         // A viewport records dissent, not consent: an absent key is on. That

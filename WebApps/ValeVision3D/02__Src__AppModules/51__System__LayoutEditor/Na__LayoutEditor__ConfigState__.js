@@ -32,6 +32,20 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.14.0
+// - GetTextSetup: rotateStepDeg (the steps Shift holds a rotate drag to, 15),
+//   rotateDetentDeg (how near a right angle a free drag settles on it, 2) and
+//   rotateGripOffsetPx (how far off a selected text item's outline its rotate
+//   grip stands on screen, 22).
+// - Ported from TrueVision3D v2.52.0 (ConfigState 1.21.0).
+//
+// 14-Sep-2026 - Version 1.13.0
+// - GetViewportSetup: imageZoomMin and imageZoomMax (a 3D picture's zoom
+//   limits, 0.25 and 10), imageZoomFineFactor (a Shift+wheel notch against a
+//   plain one, 0.2) and imageZoomCommitMs (how long the wheel rests before a
+//   run of notches is announced as one undo step, 350).
+// - Ported from TrueVision3D (ConfigState 1.20.0, v2.50.0).
+//
 // 14-Sep-2026 - Version 1.12.0
 // - GetTextSetup: lineSpacing, a sheet annotation's line height as a
 //   multiple of its text size (Text LineSpacing).
@@ -424,7 +438,11 @@
             handleHitRadiusPx    : Na__LeCfg__Num('Viewport', 'HandleHitRadiusPx', 10),
             showScaleLabel       : Na__LeCfg__Val('Viewport', 'ShowScaleLabel', true) !== false,
             defaultStyles        : Na__LeCfg__DefaultStyles(Na__LeCfg__Val('Viewport', 'DefaultStyles', null)),
-            assetFolder          : Na__LeCfg__Val('Viewport', 'AssetFolder', 'LayoutEditor/Snapshots')
+            assetFolder          : Na__LeCfg__Val('Viewport', 'AssetFolder', 'LayoutEditor/Snapshots'),
+            imageZoomMin         : Math.min(1, Math.max(0.01, Na__LeCfg__Num('Viewport', 'ImageZoomMin', 0.25))),   // <-- A 3D picture's zoom limits: never past 100 percent the wrong way
+            imageZoomMax         : Math.max(1, Na__LeCfg__Num('Viewport', 'ImageZoomMax', 10)),
+            imageZoomFineFactor  : Math.max(0.01, Na__LeCfg__Num('Viewport', 'ImageZoomFineFactor', 0.2)),
+            imageZoomCommitMs    : Math.max(0, Na__LeCfg__Num('Viewport', 'ImageZoomCommitMs', 350))
         };
     }
     // ------------------------------------------------------------
@@ -435,17 +453,20 @@
     function Na__LeCfg__GetTextSetup() {
         const weights = Na__LeCfg__Val('Text', 'AllowedWeights', null);
         return {
-            fontFamily     : Na__LeCfg__Val('Text', 'FontFamily', "'Open Sans', Helvetica, Arial, sans-serif"),
-            defaultSizeMm  : Na__LeCfg__Num('Text', 'DefaultSizeMm', 3),
-            minSizeMm      : Na__LeCfg__Num('Text', 'MinSizeMm', 1.5),
-            maxSizeMm      : Na__LeCfg__Num('Text', 'MaxSizeMm', 14),
-            sizeStepMm     : Na__LeCfg__Num('Text', 'SizeStepMm', 0.5),
-            allowedWeights : Array.isArray(weights) ? weights : [ 300, 400, 600 ],
-            defaultWeight  : Na__LeCfg__Num('Text', 'DefaultWeight', 400),
-            defaultColour  : Na__LeCfg__Val('Text', 'DefaultColour', '#172b3a'),
-            defaultText    : Na__LeCfg__Val('Text', 'DefaultText', 'Text'),
-            lineSpacing    : Math.max(1, Na__LeCfg__Num('Text', 'LineSpacing', 1.2)),
-            leaderStrokeMm : Na__LeCfg__Num('Text', 'LeaderStrokeMm', 0.2)
+            fontFamily         : Na__LeCfg__Val('Text', 'FontFamily', "'Open Sans', Helvetica, Arial, sans-serif"),
+            defaultSizeMm      : Na__LeCfg__Num('Text', 'DefaultSizeMm', 3),
+            minSizeMm          : Na__LeCfg__Num('Text', 'MinSizeMm', 1.5),
+            maxSizeMm          : Na__LeCfg__Num('Text', 'MaxSizeMm', 14),
+            sizeStepMm         : Na__LeCfg__Num('Text', 'SizeStepMm', 0.5),
+            allowedWeights     : Array.isArray(weights) ? weights : [ 300, 400, 600 ],
+            defaultWeight      : Na__LeCfg__Num('Text', 'DefaultWeight', 400),
+            defaultColour      : Na__LeCfg__Val('Text', 'DefaultColour', '#172b3a'),
+            defaultText        : Na__LeCfg__Val('Text', 'DefaultText', 'Text'),
+            lineSpacing        : Math.max(1, Na__LeCfg__Num('Text', 'LineSpacing', 1.2)),
+            leaderStrokeMm     : Na__LeCfg__Num('Text', 'LeaderStrokeMm', 0.2),
+            rotateStepDeg      : Math.min(90, Math.max(0, Na__LeCfg__Num('Text', 'RotateStepDeg', 15))),   // <-- 0 turns Shift's steps off
+            rotateDetentDeg    : Math.min(10, Math.max(0, Na__LeCfg__Num('Text', 'RotateDetentDeg', 2))),  // <-- 0 turns the right-angle detent off
+            rotateGripOffsetPx : Math.max(8, Na__LeCfg__Num('Text', 'RotateGripOffsetPx', 22))               // <-- Screen pixels from the outline to the rotate grip
         };
     }
     // ------------------------------------------------------------

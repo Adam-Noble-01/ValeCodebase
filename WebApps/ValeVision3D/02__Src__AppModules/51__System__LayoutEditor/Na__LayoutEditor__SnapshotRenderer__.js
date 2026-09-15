@@ -40,6 +40,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 14-Sep-2026 - Version 1.5.0
+// - Render3d takes a view window: the part of the scene camera's picture a
+//   zoomed or slid 3D viewport's frame shows (Na__LayoutEditor__Viewport3d__),
+//   handed to the tiled renderer as viewWindow. Null renders the whole picture
+//   as before.
+// - Ported from TrueVision3D 1.8.0 (v2.50.0).
+//
 // 13-Sep-2026 - Version 1.4.0
 // - Render Composites weights, ported from TrueVision3D: the profile edge, the
 //   section outline and the model's own edges draw at the viewport's widths for
@@ -454,8 +461,14 @@
     // composite width a scene render has: its profile outline is the composer's
     // own distance-scaled effect, and the Section Outline weight belongs to a 2D
     // drawing's cut.
+    //
+    // viewWindow: null for the camera's whole picture, or { u0, v0, u1, v1 } -
+    // the part of it a zoomed or slid 3D viewport's frame shows, as fractions
+    // of the picture that may run past 0..1 (Na__LayoutEditor__Viewport3d__).
+    // widthPx and heightPx are then the window's pixels, and the tiled renderer
+    // draws that window of the scene's own camera.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights) {
+    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, viewWindow) {
         if (!Na__LeSnap__IsReady() || !sceneRecord) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
             const camera   = Na__LeSnap__Camera;
@@ -486,6 +499,7 @@
                     renderer : Na__LeSnap__Renderer, scene : Na__LeSnap__Scene, camera : camera,
                     getRenderPipelineState : () => Na__LeSnap__Pipeline(),
                     antiAliasSamples       : antiAliasSamples,                                                            // <-- Each tile drawn N times on sub-pixel jitter and averaged
+                    viewWindow             : viewWindow || null,                                                          // <-- What a zoomed or slid viewport's frame shows of the picture; null is all of it
                     targetWidth : Math.max(16, Math.round(widthPx)), targetHeight : Math.max(16, Math.round(heightPx))
                 });
                 if (styles && styles.enhanceWhitecard === true) await Na__LeEnhance__Apply(result.canvas);

@@ -43,6 +43,18 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.5.0
+// - PDF: a turned text run that is centred or right-aligned is placed by its
+//   own left end. jsPDF shifts such a run along the page's x axis and then
+//   turns it about that shifted start, so a turned centred run printed half
+//   its width away from where the screen draws it. The run's width is now
+//   measured exactly as jsPDF measures a line to align it (its string width
+//   at the current font), the start is walked back along the turned
+//   baseline, and the run is drawn left-aligned. Turned sheet text and the
+//   value of a vertical or aligned dimension print where the screen draws
+//   them; level text is unchanged.
+// - Ported from TrueVision3D v2.52.0 (SheetChrome 1.6.0).
+//
 // 14-Sep-2026 - Version 1.4.0
 // - A polyline primitive can carry a dash array (DashArray: paper millimetres)
 //   as well as the older equal-dash DashMm. The SVG writes the array as
@@ -539,6 +551,22 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Width jsPDF Aligns a Text Run By, in Page Units
+    // ------------------------------------------------------------
+    // Its string width at the current font and size, with no kerning, exactly
+    // as jsPDF measures a line to centre or right-align it. For the standard
+    // fonts that width leaves character spacing out, as jsPDF's own alignment
+    // does, so a turned tracked run sits as its level twin would.
+    // ------------------------------------------------------------
+    function Na__LeChrome__PdfRunWidth(doc, text, charSpace) {
+        const fontSize = doc.internal.getFontSize();
+        const options  = { font : doc.internal.getFont(), fontSize : fontSize, doKerning : false };
+        if (charSpace) options.charSpace = charSpace;
+        return doc.getStringUnitWidth(String(text), options) * fontSize / doc.internal.scaleFactor;
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Draw One Primitive Into jsPDF
     // ------------------------------------------------------------
     function Na__LeChrome__ToPdf(doc, primitive, style) {
@@ -594,8 +622,23 @@
             doc.setTextColor(ink.R, ink.G, ink.B);
             const options = { align : primitive.Align === 'center' ? 'center' : (primitive.Align === 'right' ? 'right' : 'left'), baseline : 'alphabetic' };
             if (primitive.TrackingMm) options.charSpace = primitive.TrackingMm;  // <-- jsPDF sets character spacing in the page unit, which is mm here
-            if (primitive.RotateDeg) options.angle = -primitive.RotateDeg;     // <-- jsPDF rotates counter-clockwise
-            doc.text(primitive.Text, primitive.X, primitive.BaselineY, options);
+            let x = primitive.X, y = primitive.BaselineY;
+            if (primitive.RotateDeg) {
+                options.angle = -primitive.RotateDeg;                              // <-- jsPDF rotates counter-clockwise
+                // A TURNED RUN IS PLACED BY ITS LEFT END. jsPDF would shift a
+                // centred or right-aligned run along the page's x axis and then
+                // turn it about that shifted start; walked back along the turned
+                // baseline instead, it lands where the screen draws it.
+                if (options.align !== 'left') {
+                    const width = Na__LeChrome__PdfRunWidth(doc, primitive.Text, options.charSpace);
+                    const back  = options.align === 'center' ? width / 2 : width;
+                    const a     = primitive.RotateDeg * (Math.PI / 180);
+                    x -= back * Math.cos(a);
+                    y -= back * Math.sin(a);
+                    options.align = 'left';
+                }
+            }
+            doc.text(primitive.Text, x, y, options);
             return;
         }
         if (primitive.Kind === Na__LeChrome__KIND_IMAGE) {

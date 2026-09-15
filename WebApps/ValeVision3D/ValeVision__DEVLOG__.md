@@ -1,6 +1,244 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.44.0 - 15-Sep-2026 - Layout Editor: Margin Notes Spread Out When the Column Has Room
+
+### Added
+- **Stretching gaps between margin notes.** The gap between two notes has a
+  least (NoteGapMm, 2.5 mm) and a most (NoteGapMaxMm, 5 mm). What fits is
+  decided at the least. When every note fits and the column has room left at
+  the foot, every gap opens by the same amount up to the most, with the rule
+  centred in it. A column whose notes did not all fit keeps the least.
+- **The margin reads as TrueVision's does.** A note's code, a pipe and its
+  title share one line, and the body runs the full width (the code column is
+  gone). A faint rule sits between notes, 6 mm clear of the right border, and
+  body text is 2 mm. A margin stored at the old 2.2 mm (or about 9 pt) moves
+  to 2 mm.
+
+### Fixed
+- **The Layout Editor could not load.** The Project Specification port copied
+  SpecMargin, which imports Na__LeLayout__MarginRect, but SheetLayout never
+  had it, so the editor's module graph could not link. SheetLayout 1.2.0 adds
+  MarginRect, returns the margin from Solve as Margin, and stops the drawing
+  area a block gap short of it, so a new viewport lands clear of the notes.
+
+### Notes
+- **Ported from TrueVision3D v2.54.0** (SpecMargin 1.3.0, with 1.1.0 and 1.2.0
+  under it; SheetLayout 1.2.0) at Adam's request, after he signed the
+  TrueVision change off.
+- **Already on disk when this port began.** SpecMargin 1.3.0, ConfigState
+  1.12.0's margin fields, SheetRecords 1.11.0's size migration and the
+  MarginNotes config keys landed between 23:02 and 23:04 on 14-Sep, from a
+  writer that left no entry in this log. They match TrueVision code for code,
+  so this entry records them. SheetLayout is the only file this port changed.
+- The Project Specification and Margin Notes port underneath (SpecData,
+  SpecLinks, SpecEditor, SpecMargin 1.0.0, MarginGrip, Panel__MarginNotes,
+  R2DrawingNotes; in checkpoint commit 66937440) has no entry of its own.
+- **Verified here, in the running app** (margin.localhost, Doous 3047, every
+  non-GET refused and none attempted), on Sheet_001 with the margin switched
+  on and general notes added in memory:
+  - 6 notes, 180 mm to spare: gaps open to 5 mm; the last note 12.5 mm lower.
+  - 19 notes, one not fitting: gaps held at 2.5 mm.
+  - 18 notes, 6.39 mm to spare: gaps open to 2.88 mm and the last note ends
+    on the foot padding.
+  - Each time, every rule is centred in its gap to 0 mm, the text and left
+    edges are those laid out at the least gap, and the rules on screen sit at
+    the planned positions (17 of 17).
+  - Titles read "GN01 | Test note 1" at 2.2 mm bold over 2 mm body text, and
+    the drawing area stops 3 mm short of the margin.
+- **Verified statically:** SheetLayout, SpecMargin and GetMarginNotesSetup
+  are code-identical to TrueVision; so are the MarginNotes config block and
+  NormaliseMarginNotes. Every named import across 333 modules and index.html
+  resolves.
+
+### Files
+- `Na__LayoutEditor__SheetLayout__.js` 1.2.0.
+- Recorded here, changed before this port: `Na__LayoutEditor__SpecMargin__.js`
+  1.3.0, `Na__LayoutEditor__ConfigState__.js` 1.12.0,
+  `Na__LayoutEditor__SheetRecords__.js` 1.11.0, `Na__LayoutEditor__AppConfig__.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.43.0 - 15-Sep-2026 - Project Specification: Read - the Notes as A4 Pages, to Print or Read Aloud
+
+### Added
+- **Edit and Read.** The Project Specification tab has two tabs inside it,
+  beside its title. Edit is the page of fields it always was. Read renders the
+  specification as an A4 document: the preview of the PDF it prints as.
+- **The pages.** A4 portrait at full size on a grey desk. Along every page's
+  head, the Vale Garden Houses logo and "Project Specification · 3047 Doous";
+  along its foot, the company and "Page 1 of 3". The first page opens with the
+  title, the project's name, its code, the date and what it holds. The groups
+  follow, each over a rule, with each note's code in a hanging column.
+- **Real pages, nothing cut off.** Blocks are measured where they land. A
+  group's heading stays with its first note, and a note's heading with its
+  first paragraph. A note that does not fit moves to the next page whole,
+  unless it is taller than a third of a page: then it breaks where it starts,
+  between words, never leaving one line alone on either side.
+- **Print.** Print in the bar, or Ctrl+P while the tab is showing, prints
+  exactly these pages, one to a sheet of A4 with no margins added. Nothing else
+  in the app reaches the paper. Save as PDF in the print dialog makes the PDF.
+- **Read aloud.** The pages are real headings and paragraphs, so Edge's Read
+  aloud (right-click, or Ctrl+Shift+U) reads the specification. The running
+  head, company and page number print but are not read out, and the sheet
+  beneath the tab is hidden while it is up.
+- **The bar, and what is remembered.** Read shows the sync state, Sync, the
+  page count and Print; the editing tools belong to Edit, and Ctrl+Z does
+  nothing in Read. The view is remembered in this browser, each view keeps its
+  scroll, Open in specification on a bubble opens Edit, and a read-only session
+  starts in Read. The pages shrink to fit a window narrower than A4.
+
+### Notes
+- **Ported from TrueVision3D v2.51.0** (commit 66d69d0: SpecEditor 1.1.0 and
+  the new SpecDocument 1.0.0) at Adam's request the next morning. The code is
+  TrueVision's line for line.
+- **Adapted:** the project's name comes from the folder id (2026/3047__Doous
+  reads Doous), where TrueVision reads its PWA project context; the DrawView
+  path is 42__. The logo and the company come from this app's own config.
+- **Left out:** service worker token (n/a).
+- **Verified here:** the module graph walk (437 modules, 0 failures) and the
+  named-export check (333 files) pass. In the app on Doous
+  (specread.localhost:8571, every write refused), Read renders A4 pages with the
+  Vale logo, "3047 Doous" and Vale Garden Houses Limited. Nine notes laid in for
+  the test gave 3 pages, every code and word matching the data, with a
+  6,500-character note breaking across a page. The print hooks, the hidden
+  sheet, the right-click menu and Ctrl+Z behave as in TrueVision. The test notes
+  were removed and never synced. The real module in headless Chrome, with the
+  real stylesheet, printed 4 A4 pages (and a 7-page stress document) with no app
+  UI and no blank page.
+- **Not exercised:** Edge's speech itself, and the print dialog.
+
+### Files
+- New `Na__LayoutEditor__SpecDocument__.js` 1.0.0,
+  `Na__LayoutEditor__SpecEditor__.js` 1.1.0,
+  `Na__LayoutEditor__Styles__Specification__.css`,
+  `Na__LayoutEditor__AppConfig__.json` (17 labels).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.42.0 - 15-Sep-2026 - Layout Editor: Zoom Inside a 3D Viewport
+
+### Added
+- **The wheel.** Double-click a 3D viewport (or Edit viewport content on its
+  right-click menu) and scroll over it: the picture zooms about the cursor, and
+  Shift+scroll zooms in fine steps. Dragging still slides the picture. Enter
+  finishes (so do Esc and a click elsewhere), and the picture keeps the zoom it
+  was left at. The note over the frame reads the zoom as it changes. A run of
+  notches is one undo step; a key or a click straight after scrolling commits
+  it first. Off the frame the wheel still zooms the sheet.
+- **Zoom % box** on 3D viewports, under Window mm: any percentage to a decimal
+  place, zoomed about the middle of the frame; Reset gives 100 percent, centred.
+  Limits 25 to 1000 percent. Greyed out while the viewport or its layer is
+  locked.
+- **Zoomed out, the frame fills with scene.** A frame that is not the whole
+  picture renders as a window onto the scene camera's picture at the frame's
+  own resolution: sharp when zoomed in, and the scene carries on past the
+  camera's framing when zoomed out or slid. The camera never moves, and the
+  vertical perspective correction still applies.
+- **Copy and paste** carry the zoom with everything else, so a framed view can
+  be pasted and pointed at another scene.
+- **Enter** now finishes a 2D viewport's content editing too, and **Recentre
+  content** centres a 3D picture at its zoom.
+- **Existing sheets.** A 3D viewport whose picture fills its frame renders and
+  keys exactly as before. One whose picture had been slid or cropped renders
+  its frame as a window - its white strips fill with scene - under a new key,
+  once.
+
+### Notes
+- **Ported from TrueVision3D v2.50.0** at Adam's request, after he signed it
+  off. The new `Na__LayoutEditor__Viewport3dZoom__.js` is verbatim.
+- **Adapted:** ValeVision has no model groups, so Viewport3d and Render3d carry
+  no design phase lines. ValeVision's own tiled renderer takes the view window
+  with its vertical correction shear still applied per tile, offsets the Silly
+  Lines phase into the window, applies the window in 3D only (a 2D ortho
+  export frames its own), and keeps its line width compensation on the output
+  height, so paper lineweights stay the same at any zoom.
+- Left out: the TrueVision service worker token (n/a here).
+- **Verified here:** every touched module parses as an ES module; AppConfig
+  and KeyMappings JSON parse; module graph 437 modules, 0 failures; named
+  exports pass (333 files). In the running app on Doous (3047), with every
+  write refused and none attempted, on a temporary 3D viewport that was then
+  deleted:
+  - Five wheel notches gave exactly e^0.8 (222.6 percent) with the point under
+    the cursor fixed. Nothing was announced during the run and one change
+    after it; the note and the Zoom % box read 222.6; Enter ended the editing
+    with the zoom kept; the sheet's own zoom did not move.
+  - The sharp render landed as a frame-sized window (3240 x 2160).
+  - Through this tree's tiled renderer, a window render matched the same crop
+    of a whole render: mean difference 0.003 (centred), 0.004 (off centre)
+    and 0.003 (a wider view reaching past the picture, whose extra strip
+    carries scene), against 7.7 to 9.1 for a crop shifted 5 percent. A window
+    on both axes matched to 1.2 against 24.6; that residual is this
+    renderer's line widths following the output height, not placement.
+  - An untouched viewport keeps its old key. Doous's own 3D viewport re-keys,
+    but its stored snapshot was already stale by the old formula.
+
+### Files
+- `Na__LayoutEditor__Viewport3dZoom__.js` 1.0.0 (new),
+  `Na__LayoutEditor__Viewport3d__.js` 1.5.0,
+  `Na__LayoutEditor__SnapshotRenderer__.js` 1.5.0,
+  `Na__LayoutEditor__PdfExporter__.js` 1.2.0,
+  `Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.0,
+  `Na__LayoutEditor__SheetTools__.js` 1.22.0,
+  `Na__LayoutEditor__Controls__Pc__.js` 1.1.0,
+  `Na__LayoutEditor__ViewportHandles__.js` 1.4.0,
+  `Na__LayoutEditor__SheetRecords__.js` 1.12.0,
+  `Na__LayoutEditor__SheetModel__.js` 1.14.0,
+  `Na__LayoutEditor__ConfigState__.js` 1.13.0,
+  `Na__LayoutEditor__AppConfig__.json`, `Na__LayoutEditor__KeyMappings__.json`.
+- `30__System__ImageExport/Na__ImageExport__StaticExport__TiledRenderer.js` 1.4.0.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.41.0 - 15-Sep-2026 - Layout Editor: Rotate Text With a Round Grip
+
+### Added
+- **Rotate grip.** A selected text item shows a round grip on a short stem off the top of its outline. Over it, the
+  pointer becomes a curved arrow. Drag it and the text turns about the middle of its box, so it spins in place.
+  - **Shift** holds the angle to 15 degree steps.
+  - Without Shift, a drag settles on a right angle once within 2 degrees of one.
+- **Text panel Rotation row**, in degrees clockwise. It turns the selected text about its middle, or, with nothing
+  selected, sets the angle new text is placed at.
+- **Reset rotation** on the right-click menu of turned text.
+- **Everything follows the turn:** every line of multi-line text, the leader (it meets the turned box), the dashed
+  selection outline, the inline editor, hit testing (the turned box itself, not the square round it), box select,
+  copy, paste, undo, and the PDF.
+- **Record key** `Annotation__RotationDeg`: degrees clockwise about the anchor, wrapped into (-180, 180] and written
+  only while the text is turned. Level text, and every record from before, draws and saves exactly as it did. It is
+  the same shape TrueVision writes.
+
+### Fixed
+- **Turned text in the PDF.** jsPDF shifts a centred or right-aligned run along the page, then turns it about that
+  shifted start. A turned centred run printed half its width from where the screen draws it, and so did the value of
+  a vertical or aligned dimension. Such a run is now placed by its own left end. Level text is unchanged.
+
+### Notes
+- **Ported from TrueVision3D v2.52.0** at Adam's request, after he signed it off. The TrueVision hunks replayed as
+  they were. Only the module log heads, one Grips region comment and one SheetTools header bullet took ValeVision's
+  own anchors.
+- Left out: service worker token (n/a).
+- **Verified here:**
+  - In the app at localhost:8567 on a scratch sheet, every write refused (none was attempted), and the sheet deleted
+    afterwards.
+  - The grip drew where its geometry puts it (within 0.01 px), with the rotate cursor over it.
+  - Drags landed on 90 (from 90.86 degrees, the middle unmoved), on 135 with Shift (105 part way through), and on
+    101.7 free.
+  - At 135, a point inside the square extent but off the turned box hit nothing; a point along the text hit it.
+  - At 45, a crossing box in the empty corner of the square extent took nothing; one across the text took it.
+  - The panel turned the text to 45 about its middle. Reset rotation was on the menu and removed the key. Undo and
+    redo stepped 45, level, 45. The inline editor opened turned 45 degrees.
+  - New text with the panel at 90 put the top of its first line on the press. Two lines at -90 stepped 4.8 mm along
+    the turned block, and the leader ended 0.6 mm off the turned box.
+  - The PDF text operator put the turned run's anchor on the SVG's (0 mm).
+  - All nine touched modules parse, the module graph passes, named exports pass (333 files, after e4's MarginRect
+    fix), and the AppConfig JSON parses.
+
+### Files
+- `Na__LayoutEditor__MarkupBridge__.js` 1.9.0, `Na__LayoutEditor__Grips__.js` 1.7.0, `Na__LayoutEditor__TextTool__.js`
+  1.3.0, `Na__LayoutEditor__Panel__Text__.js` 1.3.0, `Na__LayoutEditor__SelectionBox__.js` 1.3.0.
+- `Na__LayoutEditor__SheetTools__.js` 1.23.0, `Na__LayoutEditor__SheetModel__.js` 1.15.0,
+  `Na__LayoutEditor__ConfigState__.js` 1.14.0, `Na__LayoutEditor__SheetChrome__.js` 1.5.0.
+- `Na__LayoutEditor__AppConfig__.json`; `Na__LayoutEditor__Styles__Main__.css` (`.na-le-grip--rotate`,
+  `.na-le-grip--stem`).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.40.0 - 14-Sep-2026 - Layout Editor: Dashed Edges on Vectors
 
 ### Added

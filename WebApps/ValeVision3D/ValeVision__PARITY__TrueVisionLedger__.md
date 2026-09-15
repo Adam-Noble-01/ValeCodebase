@@ -54,6 +54,77 @@ port repeatedly and ValeVision has no equivalent.
 |---|---|---|
 | Undo and redo stop writing the project (TrueVision v2.30.1) | The same fault is here: `Na__LeHist__Apply` restores through `Na__LeModel__UpdateSheet(sheet, {})`, announced as `sheet-updated`, which `Na__LeAuto__STRUCTURAL` treats as a sheet-settings change - so every Ctrl+Z and Ctrl+Y saves the whole project. TrueVision's fix is three modules: `Na__LeModel__AnnounceRestore` and a `restore : { direction, stepReason }` field on the change event, step reasons kept by History (plus the missing shape case in its selection test), and `Na__LeAuto__CallsForSave` judging a restore by its step. Content undo becomes draft-only; structural undo still saves | **pending** |
 
+### Return trip - TrueVision to ValeVision (15-Sep-2026, margin notes spacing)
+
+Authored in TrueVision (SpecMargin 1.3.0, ConfigState 1.22.0, v2.54.0) and ported
+at Adam's request as ValeVision v2.44.0. The SpecMargin, ConfigState, SheetRecords
+and config halves were already on disk from an unrecorded writer (14-Sep, 23:02 to
+23:04) and match TrueVision code for code; this port added SheetLayout's MarginRect.
+
+**Left out:** service worker token (n/a).
+
+| Item | Why | State |
+|---|---|---|
+| Stretching note gaps (NoteGapMm the least, NoteGapMaxMm the most) | Room at the foot opens every gap evenly up to the most; a column whose notes did not all fit keeps the least; each rule centred in its gap | **ported** (VV 2.44.0, from TV 2.54.0; SpecMargin 1.3.0 verbatim) |
+| Code, pipe and title on one line; rules between notes; PaddingRightMm; 2 mm body | TV SpecMargin 1.1.0 and 1.2.0, ConfigState's margin fields, SheetRecords' 2.2 mm migration | **ported** (on disk before this port; code-identical) |
+| SheetLayout MarginRect, Solve's Margin, the drawing area short of it | SpecMargin imports MarginRect; without it the Layout Editor's module graph could not link | **fixed** (SheetLayout 1.2.0, verbatim) |
+| Service worker token | TrueVision PWA cache bust `2026-09-14-23` | **n/a** - this tree has no PWA worker |
+
+### Return trip - TrueVision to ValeVision (15-Sep-2026, specification reading mode)
+
+Authored in TrueVision (SpecEditor 1.1.0, new SpecDocument 1.0.0, v2.51.0) and
+ported the next morning at Adam's request as ValeVision v2.43.0.
+
+**Adapted:** the project's name on the pages comes from the folder id, where
+TrueVision reads its PWA project context; the DrawView path is 42__.
+
+**Left out:** service worker token (n/a).
+
+| Item | Why | State |
+|---|---|---|
+| Edit and Read tabs in the Project Specification tab | Read shows the specification as the A4 pages it prints as | **ported** (VV 2.43.0, from TV 2.51.0) |
+| SpecDocument pagination | Measured blocks; headings kept with what follows; only chunks taller than a third of a page break, two lines each side; every block 2 px clear of the foot | **ported** (code identical) |
+| Print | A body-level paper container shown alone under `@media print`; `@page` A4 with no margins only between beforeprint and afterprint | **ported** |
+| Read aloud | Real headings and paragraphs; page furniture painted from attributes; the sheet hidden while the tab is up | **ported** |
+| Project name on the pages | TrueVision reads `window.TrueVision__Pwa__ProjectContext`, which this tree lacks | **adapted** - the name part of the folder id, as the share-link emails use |
+| 17 labels | SpecView*, SpecReaderLabel, SpecPages*, SpecPrint*, SpecDoc* | **ported** |
+| Service worker token | TrueVision PWA cache bust `2026-09-14-20` | **n/a** - this tree has no PWA worker |
+
+### Return trip - TrueVision to ValeVision (15-Sep-2026, 3D viewport zoom)
+
+Authored in TrueVision (Viewport3dZoom 1.0.0, Viewport3d 1.6.0, TiledRenderer
+2.1.0, v2.50.0) and ported at Adam's request after he signed it off, as
+ValeVision v2.42.0.
+
+**Left out:** the design phase lines (no model groups here); service worker token (n/a).
+
+| Item | Why | State |
+|---|---|---|
+| Wheel zoom inside an edited 3D viewport, Enter to finish | `Na__LayoutEditor__Viewport3dZoom__` (new); the PC controls offer it the wheel; SheetTools Edit__Finish ends content editing | **ported** (VV 2.42.0, from TV 2.50.0) |
+| Zoom % box and Reset | Panel__ViewportSettings zoom row, greyed when locked | **ported** |
+| Frame as a window onto the picture | Viewport3d Window / Place / ExportRectMm; Render3d and the tiled renderer's viewWindow | **adapted** - VV's renderer keeps its per-tile shear, offsets the Silly Lines phase, 3D only |
+| `Viewport__ImageZoom` record field | SheetRecords clamp, SheetModel patch, ConfigState limits, AppConfig keys and labels, KeyMappings labels | **ported** |
+| Service worker token | TrueVision PWA cache bust | **n/a** - this tree has no PWA worker |
+
+### Return trip - TrueVision to ValeVision (15-Sep-2026, text rotation)
+
+Authored in TrueVision (v2.52.0) and ported the next morning at Adam's request, after he signed it off, as
+ValeVision v2.41.0. The TrueVision hunks replayed as they were: this tree already had multi-line sheet text and
+the rest of the text code they sit on. Only the module log heads, one Grips region comment and one SheetTools
+header bullet needed ValeVision's own anchors.
+
+**Left out:** service worker token (n/a - this tree has no PWA worker). Nothing else.
+
+| Item | Why | State |
+|---|---|---|
+| Rotate grip on a selected text item | Round grip on a stem off the top of the outline; drag turns the text about the middle of its box; Shift steps 15 degrees; a free drag settles on a right angle within 2 degrees | **ported** (VV 2.41.0, from TV 2.52.0) |
+| Record key `Annotation__RotationDeg` | Degrees clockwise about the anchor, wrapped into (-180, 180], written only while turned; same record shape in both apps | **ported** |
+| Text panel Rotation row; Reset rotation | Turns the selection about its middle, or sets the angle for new text; the menu levels turned text | **ported** |
+| Turned text everywhere | Lines, leader, selection outline, hit test, box select, inline editor and new-text placement follow the turn | **ported** |
+| PDF placement of turned centred or right-aligned runs | jsPDF turns such a run about its shifted start; the run is now placed by its own left end. Also moves vertical and aligned dimension values onto the spot the screen draws | **ported** |
+| Config and labels | Text `RotateStepDeg`, `RotateDetentDeg`, `RotateGripOffsetPx`; `TextRotation`, `MenuResetTextRotation`, `TextSelectedNote` | **ported** |
+| Service worker token | TrueVision PWA cache bust `2026-09-14-21` | **n/a** - this tree has no PWA worker |
+
 ### Return trip - TrueVision to ValeVision (14-Sep-2026, VCB viewport move)
 
 Authored in TrueVision (SheetTools 1.24.0, Measurements 1.2.0, v2.47.0) and

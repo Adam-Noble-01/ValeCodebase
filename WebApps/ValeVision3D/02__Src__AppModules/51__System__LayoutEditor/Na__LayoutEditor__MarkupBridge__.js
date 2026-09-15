@@ -16,7 +16,7 @@
 //   is done in the drawing itself (Edit In Drawing), so the same record is
 //   never edited from two surfaces at once.
 // - Sheet mode: the sheet's own annotations (paper millimetres, paper text
-//   sizes, optional leader) and dimensions (paper endpoints; the value is
+//   sizes, optional leader and rotation) and dimensions (paper endpoints; the value is
 //   the paper length times the scale of the viewport they belong to, so a
 //   sheet dimension measures the model). Import From Scene copies a
 //   viewport's scene markup into a sheet layer.
@@ -38,6 +38,19 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.9.0
+// - Rotated sheet text. Annotation__RotationDeg turns a text item clockwise
+//   about its anchor, the first line's baseline at its alignment point.
+//   Each line sits its line height further along the turned block and is
+//   drawn turned; the leader meets the turned box; the selection outline
+//   turns with the text; hit testing reads the point in the text's own
+//   frame. AnnotationBox is the box before turning and AnnotationBounds the
+//   extent of the turned box; AnnotationCorners, AnnotationCentre,
+//   AnnotationToLocal, AnnotationFromLocal, AnnotationHit and
+//   AnnotationRotateGrip read the rest. A record without the key draws,
+//   hits and bounds exactly as before.
+// - Ported from TrueVision3D v2.52.0 (MarkupBridge 1.12.0).
+//
 // 14-Sep-2026 - Version 1.8.0
 // - A sheet annotation draws every line of Annotation__Text, one primitive
 //   per newline, at Text LineSpacing. Bounds, hit testing and the selection
@@ -302,9 +315,22 @@
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The Paper Box a Sheet Annotation Occupies
+    // FUNCTION | How Far a Sheet Annotation Is Turned, in Degrees Clockwise
     // ------------------------------------------------------------
-    function Na__LeMarkup__AnnotationBounds(item) {
+    // About its anchor: the first line's baseline at its alignment point, the
+    // point Annotation__PosXMm and Annotation__PosYMm name. A record without
+    // the key - every text item from before rotation - is not turned.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationRotationDeg(item) {
+        const deg = item ? item.Annotation__RotationDeg : null;
+        return (typeof deg === 'number' && Number.isFinite(deg)) ? deg : 0;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Paper Box a Sheet Annotation's Text Occupies Before It Is Turned
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationBox(item) {
         const fontMm = item.Annotation__SizeMm;
         const lines  = Na__LeMarkup__AnnotationLines(item.Annotation__Text);
         let width = fontMm;
@@ -313,6 +339,109 @@
         const height = (fontMm * Na__LeMarkup__CAP_HEIGHT) + ((count - 1) * Na__LeMarkup__AnnotationLineMm(fontMm)) + (fontMm * Na__LeMarkup__DESCENT);
         const x = item.Annotation__PosXMm - (item.Annotation__Align === 'center' ? width / 2 : (item.Annotation__Align === 'right' ? width : 0));
         return { X : x, Y : item.Annotation__PosYMm - (fontMm * Na__LeMarkup__CAP_HEIGHT), WidthMm : width, HeightMm : height };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Point of the Unturned Text, Turned With It Onto the Paper
+    // ------------------------------------------------------------
+    // Returns { x, y }. Text that is not turned hands the point straight back,
+    // to the last digit, so nothing about an unturned item moves.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationFromLocal(item, x, y) {
+        const deg = Na__LeMarkup__AnnotationRotationDeg(item);
+        if (!deg) return { x : x, y : y };
+        const a  = deg * (Math.PI / 180), cos = Math.cos(a), sin = Math.sin(a);
+        const ox = item.Annotation__PosXMm, oy = item.Annotation__PosYMm;
+        const dx = x - ox, dy = y - oy;
+        return { x : ox + (dx * cos) - (dy * sin), y : oy + (dx * sin) + (dy * cos) };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | A Paper Point in the Text's Own Unturned Frame
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationToLocal(item, point) {
+        const deg = Na__LeMarkup__AnnotationRotationDeg(item);
+        if (!deg) return { x : point.x, y : point.y };
+        const a  = deg * (Math.PI / 180), cos = Math.cos(a), sin = Math.sin(a);
+        const ox = item.Annotation__PosXMm, oy = item.Annotation__PosYMm;
+        const dx = point.x - ox, dy = point.y - oy;
+        return { x : ox + (dx * cos) + (dy * sin), y : oy - (dx * sin) + (dy * cos) };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Four Corners of a Sheet Annotation's Box on the Paper
+    // ------------------------------------------------------------
+    // [x, y] pairs: the unturned box's top-left, top-right, bottom-right and
+    // bottom-left, turned with the text. padMm grows the box on every side
+    // before it is turned (the selection outline's clearance).
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationCorners(item, padMm) {
+        const b   = Na__LeMarkup__AnnotationBox(item);
+        const pad = Number.isFinite(padMm) ? padMm : 0;
+        const x0  = b.X - pad, y0 = b.Y - pad, x1 = b.X + b.WidthMm + pad, y1 = b.Y + b.HeightMm + pad;
+        return [ [ x0, y0 ], [ x1, y0 ], [ x1, y1 ], [ x0, y1 ] ].map((p) => {
+            const q = Na__LeMarkup__AnnotationFromLocal(item, p[0], p[1]);
+            return [ q.x, q.y ];
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Middle of a Sheet Annotation's Box on the Paper
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationCentre(item) {
+        const b = Na__LeMarkup__AnnotationBox(item);
+        return Na__LeMarkup__AnnotationFromLocal(item, b.X + (b.WidthMm / 2), b.Y + (b.HeightMm / 2));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Paper Box a Sheet Annotation Occupies
+    // ------------------------------------------------------------
+    // Square to the sheet. A turned item's is the extent of its turned box, so
+    // a group, the eyedropper's outline and anything else that frames an item
+    // takes all of it. An unturned item's is its box, exactly as it always was.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationBounds(item) {
+        if (!Na__LeMarkup__AnnotationRotationDeg(item)) return Na__LeMarkup__AnnotationBox(item);
+        const pts  = Na__LeMarkup__AnnotationCorners(item, 0);
+        const xs   = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+        const minX = Math.min.apply(null, xs), minY = Math.min.apply(null, ys);
+        return { X : minX, Y : minY, WidthMm : Math.max.apply(null, xs) - minX, HeightMm : Math.max.apply(null, ys) - minY };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Whether a Paper Point Lands on a Sheet Annotation (tolerance all round its box)
+    // ------------------------------------------------------------
+    // Read in the text's own frame, so a turned item is found on its turned box
+    // and not in the empty corners of the square round it.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationHit(item, pointMm, toleranceMm) {
+        const tol = Number.isFinite(toleranceMm) ? toleranceMm : 0;
+        const b   = Na__LeMarkup__AnnotationBox(item);
+        const p   = Na__LeMarkup__AnnotationToLocal(item, pointMm);
+        return p.x >= b.X - tol && p.x <= b.X + b.WidthMm + tol && p.y >= b.Y - tol && p.y <= b.Y + b.HeightMm + tol;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Where a Selected Text Item's Rotate Grip Sits
+    // ------------------------------------------------------------
+    // Off the middle of the top of its selection outline, reachMm further out,
+    // turned with the text: { base, grip }, both { x, y }. base is where the
+    // stem leaves the outline. Upside-down text has its grip below, where the
+    // top of the text now is.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__AnnotationRotateGrip(item, reachMm) {
+        const b    = Na__LeMarkup__AnnotationBox(item);
+        const midX = b.X + (b.WidthMm / 2);
+        const topY = b.Y - Na__LeMarkup__SELECT_PAD_MM;
+        const out  = Number.isFinite(reachMm) ? Math.max(0, reachMm) : 0;
+        return { base : Na__LeMarkup__AnnotationFromLocal(item, midX, topY), grip : Na__LeMarkup__AnnotationFromLocal(item, midX, topY - out) };
     }
     // ------------------------------------------------------------
 
@@ -427,15 +556,23 @@
 
     // HELPER FUNCTION | Push a Sheet Annotation With Its Leader
     // ------------------------------------------------------------
+    // A turned item is laid out in its own frame and turned onto the paper:
+    // the leader's end is found against the unturned box from the tip read in
+    // that frame, and each line sits its line height further along the turned
+    // block, drawn at the text's angle.
+    // ------------------------------------------------------------
     function Na__LeMarkup__PushAnnotation(list, item, textSetup) {
         const fontMm = item.Annotation__SizeMm;
+        const deg    = Na__LeMarkup__AnnotationRotationDeg(item);
         if (Number.isFinite(item.Annotation__LeaderXMm) && Number.isFinite(item.Annotation__LeaderYMm)) {
-            const bounds = Na__LeMarkup__AnnotationBounds(item);
+            const bounds = Na__LeMarkup__AnnotationBox(item);
             const midY   = bounds.Y + (bounds.HeightMm / 2);
             const tipX   = item.Annotation__LeaderXMm, tipY = item.Annotation__LeaderYMm;
-            const endX   = tipX < bounds.X ? bounds.X - 0.8 : (tipX > bounds.X + bounds.WidthMm ? bounds.X + bounds.WidthMm + 0.8 : tipX);
-            const endY   = (tipX >= bounds.X && tipX <= bounds.X + bounds.WidthMm) ? (tipY < midY ? bounds.Y - 0.6 : bounds.Y + bounds.HeightMm + 0.6) : midY;
-            Na__LeChrome__PushLine(list, tipX, tipY, endX, endY, item.Annotation__Colour, textSetup.leaderStrokeMm);
+            const tip    = Na__LeMarkup__AnnotationToLocal(item, { x : tipX, y : tipY });   // <-- The tip itself for unturned text
+            const endX   = tip.x < bounds.X ? bounds.X - 0.8 : (tip.x > bounds.X + bounds.WidthMm ? bounds.X + bounds.WidthMm + 0.8 : tip.x);
+            const endY   = (tip.x >= bounds.X && tip.x <= bounds.X + bounds.WidthMm) ? (tip.y < midY ? bounds.Y - 0.6 : bounds.Y + bounds.HeightMm + 0.6) : midY;
+            const end    = Na__LeMarkup__AnnotationFromLocal(item, endX, endY);
+            Na__LeChrome__PushLine(list, tipX, tipY, end.x, end.y, item.Annotation__Colour, textSetup.leaderStrokeMm);
             const r = Na__LeMarkup__LEADER_DOT_MM;
             const dot = [];
             for (let i = 0; i < 8; i++) dot.push([ tipX + (Math.cos(i * Math.PI / 4) * r), tipY + (Math.sin(i * Math.PI / 4) * r) ]);
@@ -443,9 +580,10 @@
         }
         const lineMm = Na__LeMarkup__AnnotationLineMm(fontMm);
         Na__LeMarkup__AnnotationLines(item.Annotation__Text).forEach((line, i) => {
+            const at = Na__LeMarkup__AnnotationFromLocal(item, item.Annotation__PosXMm, item.Annotation__PosYMm + (i * lineMm));
             Na__LeChrome__PushText(list, {
-                X : item.Annotation__PosXMm, BaselineY : item.Annotation__PosYMm + (i * lineMm), Text : line, FontMm : fontMm,
-                Weight : item.Annotation__FontWeight, Colour : item.Annotation__Colour, Align : item.Annotation__Align, FontFamily : textSetup.fontFamily
+                X : at.x, BaselineY : at.y, Text : line, FontMm : fontMm,
+                Weight : item.Annotation__FontWeight, Colour : item.Annotation__Colour, Align : item.Annotation__Align, RotateDeg : deg, FontFamily : textSetup.fontFamily
             });
         });
     }
@@ -481,7 +619,9 @@
         sheet.Sheet__Annotations.forEach((item) => {
             if (!Na__LeModel__IsLayerVisible(sheet, item.Annotation__LayerId)) return;
             Na__LeMarkup__PushAnnotation(list, item, textSetup);
-            if (isChosen('annotation', item.Annotation__Id)) highlights.push(Na__LeMarkup__AnnotationBounds(item));
+            if (!isChosen('annotation', item.Annotation__Id)) return;
+            if (Na__LeMarkup__AnnotationRotationDeg(item)) highlights.push({ Points : Na__LeMarkup__AnnotationCorners(item, Na__LeMarkup__SELECT_PAD_MM) });   // <-- The outline turns with the text
+            else highlights.push(Na__LeMarkup__AnnotationBounds(item));
         });
 
         sheet.Sheet__Dimensions.forEach((dim) => {
@@ -521,6 +661,7 @@
 
         const pad = Na__LeMarkup__SELECT_PAD_MM;
         highlights.forEach((box) => {
+            if (box.Points) { Na__LeChrome__PushPolyline(list, box.Points, style.selectionColour, 0.3, null, true, null, { dashMm : 1.2 }); return; }   // <-- A turned outline, padded already
             Na__LeChrome__PushRect(list, box.X - pad, box.Y - pad, box.WidthMm + (pad * 2), box.HeightMm + (pad * 2), style.selectionColour, 0.3, null, 1.2);
         });
         return list;
@@ -568,10 +709,7 @@
         for (let i = sheet.Sheet__Annotations.length - 1; i >= 0; i--) {
             const item = sheet.Sheet__Annotations[i];
             if (!editable(item.Annotation__LayerId)) continue;
-            const b = Na__LeMarkup__AnnotationBounds(item);
-            if (pointMm.x >= b.X - tol && pointMm.x <= b.X + b.WidthMm + tol && pointMm.y >= b.Y - tol && pointMm.y <= b.Y + b.HeightMm + tol) {
-                return { kind : 'annotation', id : item.Annotation__Id };
-            }
+            if (Na__LeMarkup__AnnotationHit(item, pointMm, tol)) return { kind : 'annotation', id : item.Annotation__Id };   // <-- On its turned box, for turned text
         }
         for (let i = sheet.Sheet__Shapes.length - 1; i >= 0; i--) {
             const shape = sheet.Sheet__Shapes[i];
@@ -595,6 +733,14 @@
         Na__LeMarkup__BuildScenePrimitives,
         Na__LeMarkup__ImportFromScene,
         Na__LeMarkup__AnnotationBounds,
+        Na__LeMarkup__AnnotationBox,
+        Na__LeMarkup__AnnotationRotationDeg,
+        Na__LeMarkup__AnnotationCorners,
+        Na__LeMarkup__AnnotationCentre,
+        Na__LeMarkup__AnnotationToLocal,
+        Na__LeMarkup__AnnotationFromLocal,
+        Na__LeMarkup__AnnotationHit,
+        Na__LeMarkup__AnnotationRotateGrip,
         Na__LeMarkup__LeaderBounds,
         Na__LeMarkup__DimensionValueMm,
         Na__LeMarkup__FormatDimension,

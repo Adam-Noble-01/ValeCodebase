@@ -26,6 +26,9 @@
 // - Vertical perspective correction is re-applied per tile; the shear maths
 //   (proj[9] += tan(pitch) * proj[5]) operates on the tile's own sub-projection
 //   and therefore produces the exact crop of the corrected full frame.
+// - An optional view window (1.4.0) draws part of the camera's frame - or more
+//   than all of it - as the output: the full frame is sized so the window is
+//   exactly the output, and each tile's sub-frustum is offset into it.
 // - Composer pixel ratio is explicitly forced to 1 for the export and restored
 //   after. (EffectComposer captures its own _pixelRatio at construction; the
 //   old path only reset the renderer's ratio, silently inflating every export
@@ -76,6 +79,16 @@
 //   instead, linearly, which for a single still is seconds.
 // - Ported back from TrueVision3D, which took the video studio's supersampler
 //   and generalised it for the still exporter.
+//
+// 14-Sep-2026 - Version 1.4.0
+// - viewWindow: an optional { u0, v0, u1, v1 } that renders a window of the
+//   camera's frame instead of all of it - cropped into it, or reaching past it.
+//   The aspect is the full frame's, every tile's sub-frustum and its Silly
+//   Lines phase are offset into the window, and the vertical correction shear
+//   still applies per tile. A Layout Editor 3D viewport draws what its frame
+//   shows of a zoomed or slid picture at the frame's own resolution. 3D only;
+//   without the option every call renders exactly as before.
+// - Ported from TrueVision3D 2.1.0 (v2.50.0).
 //
 // =============================================================================
 
@@ -219,6 +232,25 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | A Usable View Window, or Null for the Whole Frame
+    // ------------------------------------------------------------
+    // { u0, v0, u1, v1 }: the part of the camera's frame the output shows, as
+    // fractions of that frame - left, top, right, bottom. Any of them may run
+    // past 0..1, so a window can reach beyond the camera's own frame as well as
+    // crop into it. Anything malformed, and the whole frame itself, is null:
+    // the ordinary path, exactly as before the option existed.
+    // ------------------------------------------------------------
+    function Na__StaticExport__ResolveViewWindow(viewWindow) {
+        if (!viewWindow || typeof viewWindow !== 'object') return null;
+        const { u0, v0, u1, v1 } = viewWindow;
+        if (![ u0, v0, u1, v1 ].every((value) => typeof value === 'number' && Number.isFinite(value))) return null;
+        if (!(u1 > u0) || !(v1 > v0)) return null;
+        if (u0 === 0 && v0 === 0 && u1 === 1 && v1 === 1) return null;
+        return { u0 : u0, v0 : v0, u1 : u1, v1 : v1 };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Render Scene to a Large 2D Canvas via Tiled Rendering
     // ------------------------------------------------------------
     // options:
@@ -230,6 +262,8 @@
     //   targetWidth            {number}  Requested output width in pixels
     //   targetHeight           {number}  Requested output height in pixels
     //   antiAliasSamples       {number}  1 (off), 2, 4, 8 or 16 - see the tile loop
+    //   viewWindow             {object|null}  { u0, v0, u1, v1 } - the part of the camera's frame to draw,
+    //                          as fractions that may run past 0..1; the target size is the window's (3D only)
     //   onProgress             {Function|null}  Receives human-readable status strings
     //
     // Returns: Promise<{ canvas, width, height, wasClamped }>
@@ -243,6 +277,7 @@
             elevationOverrides = null,
             targetWidth, targetHeight,
             antiAliasSamples = 1,
+            viewWindow = null,
             onProgress = null
         } = options;
 
@@ -279,6 +314,18 @@
         const composer        = pipeline.composer;
         const isElevationMode = elevationOverrides !== null;
         const activeCamera    = isElevationMode ? elevationOverrides.camera : camera;
+
+        // VIEW WINDOW | The output is this part of the camera's full frame (3D
+        // only; a 2D ortho export frames its own window). The full frame is sized
+        // so the window's share of it is exactly the output, and every tile below
+        // is offset into the window. With no window the full frame IS the output
+        // and nothing moves.
+        // ------------------------------------------------------------
+        const view     = isElevationMode ? null : Na__StaticExport__ResolveViewWindow(viewWindow);
+        const fullW    = view ? outW / (view.u1 - view.u0) : outW;
+        const fullH    = view ? outH / (view.v1 - view.v0) : outH;
+        const viewLeft = view ? view.u0 * fullW : 0;
+        const viewTop  = view ? view.v0 * fullH : 0;
 
         // SUPERSAMPLING | Null at one sample, which every branch below treats as
         // "render the tile once, the way it always was".
@@ -372,7 +419,7 @@
             if (isElevationMode) {
                 elevationOverrides.resizeFrustum(outW, outH);        // <-- Ortho frustum for the FULL export aspect (tiles sub-divide it)
             } else {
-                camera.aspect = outW / outH;                         // <-- Full export aspect; setViewOffset handles per-tile sub-frusta
+                camera.aspect = fullW / fullH;                       // <-- Full frame aspect (the export's own without a view window); setViewOffset handles per-tile sub-frusta
                 camera.updateProjectionMatrix();
             }
 
@@ -483,7 +530,7 @@
                     const y = tile.y;
 
                     // SUB-FRUSTUM | Exact crop of the full frame incl. gutter overscan
-                    activeCamera.setViewOffset(outW, outH, x - gutter, y - gutter, fbW, fbH);
+                    activeCamera.setViewOffset(fullW, fullH, viewLeft + x - gutter, viewTop + y - gutter, fbW, fbH);
                     if (!isElevationMode) {
                         Na__VerticalCorrection__ApplyFrame();        // <-- Shear applies per-tile exactly (operates on the sub-projection)
                     }
@@ -493,8 +540,8 @@
                     // sample: a sub-pixel jitter does not move the tile.
                     if (pipeline.profileLinesPass && pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset) {
                         pipeline.profileLinesPass.material.uniforms.u_sillyPxOffset.value.set(
-                            x - gutter,                              // <-- Tile framebuffer left edge in full-image px
-                            outH - y + gutter - fbH                  // <-- Tile framebuffer bottom edge (GL bottom-left origin)
+                            viewLeft + x - gutter,                   // <-- Tile framebuffer left edge in full-image px
+                            fullH - viewTop - y + gutter - fbH       // <-- Tile framebuffer bottom edge (GL bottom-left origin)
                         );
                     }
 

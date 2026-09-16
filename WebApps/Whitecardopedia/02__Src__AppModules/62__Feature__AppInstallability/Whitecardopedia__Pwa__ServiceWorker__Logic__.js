@@ -26,6 +26,22 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Sep-2026 - Version 1.0.10
+// - Token bumped (2026-09-16-2): ValeVision3D v2.48.1 changes the progressive
+//   renderer's settle trigger and the loading sequence that drives it. No new
+//   files, so this is a shell cache eviction only.
+//
+// 16-Sep-2026 - Version 1.0.9
+// - Token bumped (2026-09-16-1): ValeVision3D v2.48.0 adds the progressive
+//   renderer, which brings two new modules under 05__RenderPipeline and changes
+//   index.html, the loading sequence, the MaxEngine setup, the supersampler,
+//   the profile-lines Dev control and the dropdown stylesheet. A deployed
+//   origin answering the shell from the old cache would run the previous loop
+//   against the new index.html and never load either new module.
+// - Both new modules join the shell pre-cache, and so does the supersampler:
+//   it used to load only when a video export asked for it and is now on the
+//   startup path, because the progressive renderer imports it.
+//
 // 15-Sep-2026 - Version 1.0.8
 // - Token bumped (2026-09-15-2): every ValeVision Layout Editor module moved
 //   into numbered subfolders of 51__System__LayoutEditor (v2.47.0), so their
@@ -170,7 +186,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-15-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-16-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -261,9 +277,12 @@
         'ValeVision3D/02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js',
         'ValeVision3D/02__Src__AppModules/05__RenderPipeline/02__Engine__MaxEngine/Na__RenderEffect__DistanceCulling__.js',
         'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProfileLines__.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEffect__Supersampler__.js',
         'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderEngine__State.js',
         'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__RenderLoop__Invalidation.js',
         'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js',
+        'ValeVision3D/02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js',
         // VALEVISION3D SCENE + MODEL LOADER
         'ValeVision3D/02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__DefaultSceneLighting.js',
         'ValeVision3D/02__Src__AppModules/07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js',

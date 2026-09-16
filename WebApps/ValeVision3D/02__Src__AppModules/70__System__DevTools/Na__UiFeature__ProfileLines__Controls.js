@@ -23,6 +23,11 @@
 // 11-Mar-2026 - Version 1.0.0
 // - Initial extraction from index.html into a standalone Dev Tools module.
 //
+// 16-Sep-2026 - Version 1.2.0
+// - The user-facing Visual Effects section carries a Profile Lines row too.
+//   Both rows announce a flip on na-profile-lines-changed and follow each
+//   other, so neither can sit showing a state the pass is not in.
+//
 // 11-Jun-2026 - Version 1.1.0
 // - Profile Lines moved into new Visual Settings Dev Tools submenu.
 //
@@ -133,7 +138,21 @@
 
             isProfileLinesOn = pipeline.toggleProfileLines();                  // <-- Flip runtime pass state
             Na__ProfileLines__UpdateButtonState(toggleButton, statusElement, isProfileLinesOn);
+            window.dispatchEvent(new CustomEvent('na-profile-lines-changed', {
+                detail: { enabled: isProfileLinesOn }
+            }));                                                               // <-- The user-facing Visual Effects row follows this
             Na__RenderLoop__RequestRender();                                   // <-- Force one fresh render after state change
+        });
+
+        // THE OTHER TOGGLE | Profile lines are also in Tools and Settings ->
+        // App Settings -> Visual Effects, and both rows must agree. Each one
+        // announces the flip and the other follows rather than re-toggling.
+        // @delegate: ../05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js
+        window.addEventListener('na-profile-lines-changed', (event) => {
+            const enabled = !!(event.detail && event.detail.enabled);
+            if (enabled === isProfileLinesOn) return;                          // <-- Our own dispatch, or already in step
+            isProfileLinesOn = enabled;
+            Na__ProfileLines__UpdateButtonState(toggleButton, statusElement, isProfileLinesOn);
         });
     }
     // ------------------------------------------------------------

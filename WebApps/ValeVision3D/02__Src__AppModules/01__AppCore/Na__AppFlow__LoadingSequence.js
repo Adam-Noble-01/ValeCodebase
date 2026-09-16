@@ -396,6 +396,17 @@
     } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Progressive Refinement (Idle-Time Supersampling)
+    // @delegate: ../05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js
+    // ------------------------------------------------------------
+    import {
+        Na__ProgressiveRefine__Create,
+        Na__ProgressiveRefine__SetActive,
+        Na__Refine__FRAME_REFINE,
+        Na__Refine__FRAME_PRESENT
+    } from '../05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Cross Section Overlay Renderer (After-Composer Pass)
     // ------------------------------------------------------------
     import { Na__SectionClipping__GetOverlayRenderer } from '../05__RenderPipeline/Na__RenderEffect__SectionClipping__State.js';
@@ -563,6 +574,7 @@
             cameraFollow                : Na__Config__CameraFollow,
             orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible,
             ambientOcclusion            : Na__Config__AmbientOcclusion,
+            progressiveRefine           : Na__Config__ProgressiveRefine,
             sceneEnvironment            : Na__Config__SceneEnvironment,
             distanceCulling             : Na__Config__DistanceCulling,
             resilienceConfig            : Na__Config__Resilience
@@ -1160,6 +1172,44 @@
         const Na__RenderLoop__PauseReasons  = new Set();                     // <-- Holders of the engine (Layout Editor); no frame paints while any remain
         let   Na__RenderLoop__PendingWhilePaused = false;                    // <-- A request arrived during a hold; one frame paints on resume
 
+        // PROGRESSIVE REFINEMENT | Idle-time supersampling of the 3D viewport.
+        // @delegate: ../05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js
+        // ---------------------------------------------------------------
+        // Costs nothing while the camera moves: the frames below are exactly
+        // the frames this loop drew before it existed. Once the camera has
+        // held still for the debounce the loop keeps going instead of idling,
+        // drawing the same frame again with sub-pixel jitter and averaging,
+        // until the viewport holds a full 16-sample image. Anything that
+        // changes what the frame should look like resets it.
+        // ---------------------------------------------------------------
+        const Na__RenderLoop__Refiner = Na__ProgressiveRefine__Create({
+            renderer : Na__Renderer__Main,
+            config   : Na__Config__ProgressiveRefine
+        });
+        Na__ProgressiveRefine__SetActive(Na__RenderLoop__Refiner);            // <-- The Visual Effects panel polls it from here
+        let Na__RenderLoop__RefineWakeHandle = null;                         // <-- Pending debounce timer (settle wake-up)
+
+        // SUB FUNCTION | Cancel a Pending Refinement Wake-Up
+        // ---------------------------------------------------------------
+        function Na__RenderLoop__CancelRefineWake() {
+            if (Na__RenderLoop__RefineWakeHandle === null) return;
+            window.clearTimeout(Na__RenderLoop__RefineWakeHandle);
+            Na__RenderLoop__RefineWakeHandle = null;
+        }
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Abandon Any Part-Finished Refinement
+        // ---------------------------------------------------------------
+        // Called for every reason a frame is asked for. A render request is by
+        // definition "the picture should be different now", which is exactly
+        // when an average of the old picture must be thrown away.
+        // ---------------------------------------------------------------
+        function Na__RenderLoop__ResetRefinement() {
+            Na__RenderLoop__CancelRefineWake();
+            Na__RenderLoop__Refiner.reset();
+        }
+        // ---------------------------------------------------------------
+
         function Na__RenderLoop__ScheduleFrame() {
             if (Na__RenderLoop__PauseReasons.size > 0) { Na__RenderLoop__PendingWhilePaused = true; return; }  // <-- Held: remember, do not paint
             if (Na__RenderLoop__FrameHandle !== null) return;
@@ -1168,6 +1218,7 @@
 
         function Na__RenderLoop__RequestRenderOnce() {
             if (document.hidden) return;
+            Na__RenderLoop__ResetRefinement();                                // <-- The scene changed; the running average is stale
             Na__RenderLoop__ScheduleFrame();
         }
 
@@ -1206,6 +1257,49 @@
             }
         });
 
+        // SUB FUNCTION | Run the Effect Chain Once Through the Camera's Projection
+        // ---------------------------------------------------------------
+        // Everything in here reads camera.projectionMatrix, which is exactly
+        // why it is one function: a refinement sample nudges that projection
+        // and needs every one of these to repeat through the nudged matrix.
+        // Jitter only the scene render, as three's own SSAARenderPass does,
+        // and the walls smooth out while every profile line stays as stepped
+        // as it was. The lines are the drawing.
+        // ---------------------------------------------------------------
+        function Na__RenderLoop__DrawEffectChain() {
+            // MAXENGINE EXTRAS | No-ops under PureEngine (keys absent from its pipeline state)
+            if (Na__RenderPipeline__State.updateAoUniforms) {
+                Na__RenderPipeline__State.updateAoUniforms(Na__RenderLoop__ActiveCamera);  // <-- Sync SSAO camera matrices
+            }
+            if (Na__RenderPipeline__State.renderDepthPrePass) {
+                Na__RenderPipeline__State.renderDepthPrePass();              // <-- Depth capture for SSAO/fog (no-op when profile lines share depth)
+            }
+
+            if (Na__RenderLoop__ElevationActive && Na__RenderLoop__2dProfileNormals) {
+                Na__RenderLoop__2dProfileNormals(Na__RenderLoop__ActiveCamera); // <-- 2D profile lines with ortho camera
+            } else {
+                Na__RenderPipeline__State.renderProfileNormals();             // <-- 3D profile lines with persp camera
+            }
+            Na__RenderComposer__Main.render();                               // <-- Render with post-processing
+        }
+        // ---------------------------------------------------------------
+
+        // SUB FUNCTION | Draw the Cross Section Overlay Onto the Finished Frame
+        // ---------------------------------------------------------------
+        // Drawn AFTER post-processing so fog, SSAO and Sobel never touch the
+        // caps, outlines or gizmos. It draws onto the already-composited
+        // colour buffer with autoClear off, so it goes equally well on top of
+        // a composer frame or a presented average - and a refinement present
+        // overwrites the whole canvas, so it has to go back on after each one.
+        // ---------------------------------------------------------------
+        function Na__RenderLoop__DrawSectionOverlay() {
+            const Na__Section__DrawOverlay = Na__SectionClipping__GetOverlayRenderer();
+            if (Na__Section__DrawOverlay) {
+                Na__Section__DrawOverlay(Na__RenderLoop__ActiveCamera);
+            }
+        }
+        // ---------------------------------------------------------------
+
         function Na__RenderLoop__RenderFrame(deltaMs) {
             // 2D DRAWING MODE | A floor plan or elevation owns the viewport.
             // Checked FIRST so none of the 3D per-frame work runs: walk/fly
@@ -1216,6 +1310,7 @@
             // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ComposerPreset__.js
             const Na__Drawing__Camera = Na__DrawView__GetCamera();
             if (Na__Drawing__Camera) {
+                Na__RenderLoop__Refiner.suspend();                           // <-- A sheet owns the screen; this pass is the 3D viewport only
                 if (!Na__DrawView__ComposerPreset__RenderFrame()) {
                     Na__Renderer__Main.render(Na__Scene__Main, Na__Drawing__Camera); // <-- Preset not up yet: plain render
                 }
@@ -1250,29 +1345,57 @@
             Na__DistanceCulling__Update(Na__Camera__Main.position);          // <-- MaxEngine distance culling (internal no-op when disabled)
 
             if (Na__RenderComposer__Main && Na__RenderPipeline__State) {
-                // MAXENGINE EXTRAS | No-ops under PureEngine (keys absent from its pipeline state)
-                if (Na__RenderPipeline__State.updateAoUniforms) {
-                    Na__RenderPipeline__State.updateAoUniforms(Na__RenderLoop__ActiveCamera);  // <-- Sync SSAO camera matrices
-                }
-                if (Na__RenderPipeline__State.monitorAoFrame && Na__RenderLoop__CanMonitorAoPerformance) {
-                    Na__RenderPipeline__State.monitorAoFrame(deltaMs);       // <-- FPS-based AO auto-disable sampling
-                }
-                if (Na__RenderPipeline__State.renderDepthPrePass) {
-                    Na__RenderPipeline__State.renderDepthPrePass();          // <-- Depth capture for SSAO/fog (no-op when profile lines share depth)
+                // PROGRESSIVE REFINEMENT | What kind of frame is this?
+                // ---------------------------------------------------------
+                // sceneBusy is everything that changes the picture WITHOUT
+                // moving the camera, which the stillness test cannot see. The
+                // legacy 2D elevation camera is in there deliberately: this
+                // pass is the 3D viewport only, and the drawing views run
+                // through their own composer preset.
+                // ---------------------------------------------------------
+                const Na__Refine__SceneBusy = Na__VideoStudio__Preview__IsPlaying()
+                    || Na__DoorAnimation__HasActiveAnimations()
+                    || Na__RenderLoop__OrbitTrailingFrames > 0
+                    || Na__RenderLoop__ElevationActive;
+
+                const Na__Refine__FrameMode = Na__RenderLoop__Refiner.planFrame({
+                    camera    : Na__RenderLoop__ActiveCamera,
+                    sceneBusy : Na__Refine__SceneBusy,
+                    now       : Na__RenderLoop__PrevTimestamp                 // <-- Already this frame's timestamp (Tick set it)
+                });
+
+                let Na__Refine__DidDraw = false;
+                if (Na__Refine__FrameMode === Na__Refine__FRAME_PRESENT) {
+                    // CONVERGED | Nothing left to draw and the loop cannot idle
+                    // (walk and fly hold it open to poll the keyboard). The
+                    // finished average is copied back out rather than the frame
+                    // skipping: the drawing buffer is not preserved, so a frame
+                    // that draws nothing composites an empty one and flashes.
+                    Na__Refine__DidDraw = Na__RenderLoop__Refiner.presentAgain(Na__RenderLoop__DrawSectionOverlay);
+
+                } else if (Na__Refine__FrameMode === Na__Refine__FRAME_REFINE) {
+                    Na__Refine__DidDraw = Na__RenderLoop__Refiner.renderChunk({
+                        camera      : Na__RenderLoop__ActiveCamera,
+                        composer    : Na__RenderComposer__Main,
+                        fxaaPass    : Na__RenderPipeline__State.fxaaPassRef || null,
+                        drawChain   : Na__RenderLoop__DrawEffectChain,
+                        drawOverlay : Na__RenderLoop__DrawSectionOverlay
+                    });
                 }
 
-                if (Na__RenderLoop__ElevationActive && Na__RenderLoop__2dProfileNormals) {
-                    Na__RenderLoop__2dProfileNormals(Na__RenderLoop__ActiveCamera); // <-- 2D profile lines with ortho camera
-                } else {
-                    Na__RenderPipeline__State.renderProfileNormals();         // <-- 3D profile lines with persp camera
-                }
-                Na__RenderComposer__Main.render();                           // <-- Render with post-processing
-
-                // SECTION OVERLAY | Draw cross-section caps / outlines / gizmos
-                // AFTER post-processing so fog, SSAO and Sobel never touch them
-                const Na__Section__DrawOverlay = Na__SectionClipping__GetOverlayRenderer();
-                if (Na__Section__DrawOverlay) {
-                    Na__Section__DrawOverlay(Na__RenderLoop__ActiveCamera);
+                // ORDINARY FRAME | Exactly the frame this loop always drew, and
+                // the fallback for a refinement that could not draw - a frame
+                // MUST put something on the canvas or the viewport flashes.
+                // The AO performance monitor samples here and ONLY here: a
+                // refinement chunk is several frames' work in one and would
+                // read to it as a catastrophic frame rate.
+                if (!Na__Refine__DidDraw) {
+                    if (Na__RenderPipeline__State.monitorAoFrame && Na__RenderLoop__CanMonitorAoPerformance) {
+                        Na__RenderPipeline__State.monitorAoFrame(deltaMs);   // <-- FPS-based AO auto-disable sampling
+                    }
+                    Na__RenderLoop__Refiner.noteNormalFrame(Na__RenderLoop__PrevTimestamp, deltaMs); // <-- Frame rate readout + chunk sizing
+                    Na__RenderLoop__DrawEffectChain();
+                    Na__RenderLoop__DrawSectionOverlay();
                 }
             }
 
@@ -1289,6 +1412,7 @@
 
         function Na__RenderLoop__Tick(timestamp) {
             Na__RenderLoop__FrameHandle = null;
+            Na__RenderLoop__CancelRefineWake();                              // <-- A frame is running; any pending wake-up is spent
             if (Na__RenderLoop__PauseReasons.size > 0) { Na__RenderLoop__PendingWhilePaused = true; return; }  // <-- A frame scheduled before the hold began
 
             const now     = timestamp || performance.now();                  // <-- Current timestamp
@@ -1296,9 +1420,32 @@
             Na__RenderLoop__PrevTimestamp = now;                             // <-- Update previous timestamp
 
             const keepRendering = Na__RenderLoop__RenderFrame(deltaMs);
-            if (!document.hidden && keepRendering) {
-                Na__RenderLoop__ScheduleFrame();
+            if (document.hidden) return;
+
+            if (keepRendering) {
+                Na__RenderLoop__ScheduleFrame();                             // <-- Something is still moving
+                return;
             }
+
+            // SETTLE | The loop is free to idle. Before it does, ask whether the
+            // viewport still owes itself samples. delayMs is what is left of the
+            // debounce, so the engine sits genuinely idle through it - a run of
+            // small nudges never starts and abandons a burst - and then wakes to
+            // draw the next chunk. Once converged this asks for nothing and the
+            // loop stops exactly as it always did, with the canvas holding the
+            // refined image and the GPU switched off.
+            const Na__Refine__Pending = Na__RenderLoop__Refiner.getPendingWork();
+            if (!Na__Refine__Pending.wanted) return;
+
+            if (Na__Refine__Pending.delayMs <= 0) {
+                Na__RenderLoop__ScheduleFrame();                             // <-- Mid-burst: straight back for the next chunk
+                return;
+            }
+
+            Na__RenderLoop__RefineWakeHandle = window.setTimeout(() => {
+                Na__RenderLoop__RefineWakeHandle = null;
+                Na__RenderLoop__ScheduleFrame();                             // <-- Debounce served; begin refining
+            }, Na__Refine__Pending.delayMs);
         }
 
         window.addEventListener(NA__REQUEST_RENDER_EVENT, Na__RenderLoop__RequestRenderOnce);
@@ -1311,6 +1458,8 @@
         // ENGINE PAUSE | A 2D sheet owns the screen (port Phase 5): nothing paints until every holder resumes
         window.addEventListener(NA__PAUSE_RENDER_LOOP_EVENT, (event) => {
             Na__RenderLoop__PauseReasons.add(event.detail && event.detail.reason ? event.detail.reason : 'general');
+            Na__RenderLoop__CancelRefineWake();
+            Na__RenderLoop__Refiner.suspend();                                // <-- A holder owns the engine; ask for nothing until it lets go
             if (Na__RenderLoop__FrameHandle !== null) { cancelAnimationFrame(Na__RenderLoop__FrameHandle); Na__RenderLoop__FrameHandle = null; Na__RenderLoop__PendingWhilePaused = true; }
         });
         window.addEventListener(NA__RESUME_RENDER_LOOP_EVENT, (event) => {
@@ -1322,9 +1471,12 @@
             if (pending) Na__RenderLoop__RequestRenderOnce();
         });
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                Na__RenderLoop__RequestRenderOnce();
+            if (document.hidden) {
+                Na__RenderLoop__CancelRefineWake();
+                Na__RenderLoop__Refiner.suspend();                            // <-- No wake-up timer firing into a backgrounded tab
+                return;
             }
+            Na__RenderLoop__RequestRenderOnce();
         });
 
         Na__Controls__Orbit.addEventListener('start', () => {
@@ -1357,6 +1509,7 @@
 
             Na__RenderEngine__SwitchInProgress = true;
             try {
+                Na__RenderLoop__Refiner.release();                           // <-- The old composer's buffers are going; start the next burst clean
                 Na__RenderEngine__BuildPipeline(requestedEngine);            // <-- Rebuild composer chain for the new engine
                 await Na__RenderEngine__ApplyEngineMaterials(requestedEngine); // <-- Swap / restore materials to match
             } catch (switchError) {

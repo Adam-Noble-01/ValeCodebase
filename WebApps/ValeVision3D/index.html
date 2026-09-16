@@ -680,6 +680,44 @@
                         <span class="na-dropdown-menu__subarrow" aria-hidden="true">▾</span>
                     </button>
                     <div class="na-dropdown-menu__panel" id="naAppSettingsPanel">
+                        <!-- ------------------------------------------------ -->
+                        <!-- VISUAL EFFECTS | Folded by default               -->
+                        <!-- @delegate: ./02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js -->
+                        <!-- ------------------------------------------------ -->
+                        <button
+                            class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu"
+                            type="button"
+                            id="naVisualEffectsToggle"
+                            aria-expanded="false"
+                            aria-controls="naVisualEffectsPanel"
+                        >
+                            <span class="na-dropdown-menu__btn-label">Visual Effects</span>
+                            <span class="na-dropdown-menu__subarrow" aria-hidden="true">&#9662;</span>
+                        </button>
+                        <div class="na-dropdown-menu__panel na-vfx__panel" id="naVisualEffectsPanel">
+                            <button class="na-dev-toggle" type="button" id="naVfxProgressiveToggle" aria-pressed="false">
+                                <span class="na-dev-toggle__label">Progressive Renderer</span>
+                                <span class="na-dev-toggle__status" id="naVfxProgressiveStatus">N/A</span>
+                            </button>
+                            <button class="na-dev-toggle" type="button" id="naVfxProfileLinesToggle" aria-pressed="false">
+                                <span class="na-dev-toggle__label">Profile Lines</span>
+                                <span class="na-dev-toggle__status" id="naVfxProfileLinesStatus">N/A</span>
+                            </button>
+                            <button class="na-dev-toggle" type="button" id="naVfxSsaoToggle" aria-pressed="false">
+                                <span class="na-dev-toggle__label">Ambient Occlusion (SSAO)</span>
+                                <span class="na-dev-toggle__status" id="naVfxSsaoStatus">N/A</span>
+                            </button>
+                            <hr class="na-dropdown-menu__panel-divider" />
+                            <div class="na-vfx__readout">
+                                <span class="na-vfx__readout-label">Frame Rate</span>
+                                <span class="na-vfx__readout-value" id="naVfxFrameRateValue">--</span>
+                            </div>
+                            <div class="na-vfx__readout">
+                                <span class="na-vfx__readout-label">Refinement</span>
+                                <span class="na-vfx__readout-value" id="naVfxRefineValue">--</span>
+                            </div>
+                        </div>
+                        <!-- ------------------------------------------------ -->
                         <button
                             class="na-dropdown-menu__action na-dropdown-menu__action--danger"
                             type="button"
@@ -1314,6 +1352,7 @@
     import { Na__UiFeature__InitializeNavigationModesDevControls } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__NavigationModes__DevControls.js';
     import { Na__UiFeature__InitializeRenderEngineDevControls, Na__UiFeature__SyncRenderEngineDevRadios } from './02__Src__AppModules/70__System__DevTools/Na__UiFeature__RenderEngine__DevControls.js';
     import { Na__UiFeature__InitializeRenderEngineControls, Na__UiFeature__RevealRenderEngineSection } from './02__Src__AppModules/05__RenderPipeline/Na__UiFeature__RenderEngine__Controls.js';
+    import { Na__UiFeature__InitializeVisualEffectsControls } from './02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js';
     import { Na__AppFlow__StartLoadingSequence } from './02__Src__AppModules/01__AppCore/Na__AppFlow__LoadingSequence.js';
     import { Na__UiFeature__InitializeElevationViewControls } from './02__Src__AppModules/40__System__2dElevationsView/Na__UiFeature__ElevationView__Controls.js';
     import { Na__ElevationView__GetExportOverrides } from './02__Src__AppModules/40__System__2dElevationsView/Na__ElevationView__ExportOverrides.js';
@@ -1479,6 +1518,7 @@
     const Na__Config__FovCompensation = Na__AppConfig__Data.Navmode__FovCompensation || {}; // <-- FOV compensation config
     const Na__Config__MaterialsSystem = Na__AppConfig__Data.MaterialsSystem__Config || {};  // <-- Materials system config
     const Na__Config__AmbientOcclusion = Na__AppConfig__Data.RenderEffect__AmbientOcclusion || null;  // <-- SSAO config (MaxEngine only)
+    const Na__Config__ProgressiveRefine = Na__AppConfig__Data.RenderEffect__ProgressiveRefine || null; // <-- Idle-time supersampling (both engines)
     const Na__Config__SceneEnvironment = Na__AppConfig__Data.Scene__Environment || null;    // <-- HDR environment config (MaxEngine only)
     const Na__Config__DistanceCulling  = Na__AppConfig__Data.RenderEffect__DistanceCulling || null;   // <-- Distance culling config (MaxEngine only)
     const Na__Config__Resilience       = Na__AppConfig__Data.LoadResilience__Config || null; // <-- Load resilience config (timeouts, retries, concurrency)
@@ -1908,6 +1948,7 @@
             cameraFollow                : Na__Config__CameraFollow,
             orbitHelperCubeDebugVisible : Na__OrbitHelperCube__Debug__Visible,
             ambientOcclusion            : Na__Config__AmbientOcclusion,
+            progressiveRefine           : Na__Config__ProgressiveRefine,
             sceneEnvironment            : Na__Config__SceneEnvironment,
             distanceCulling             : Na__Config__DistanceCulling,
             resilienceConfig            : Na__Config__Resilience
@@ -2034,6 +2075,15 @@
     // Hidden by default; revealed by 'na-render-engine-loaded' when project.json
     // selects MaxEngine. PureEngine-only models never show this section.
     Na__UiFeature__InitializeRenderEngineControls();
+    // ------------------------------------------------------------
+
+    // INITIALIZE VISUAL EFFECTS USER CONTROLS (Tools Menu -> App Settings)
+    // ------------------------------------------------------------
+    // @delegate: ./02__Src__AppModules/05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js
+    // Folded by default. Reads the live passes rather than remembering clicks,
+    // so a Dev Tools toggle or the SSAO performance monitor cannot leave a
+    // badge lying. The readout only polls while the section is open.
+    Na__UiFeature__InitializeVisualEffectsControls(Na__AppFlow__PipelineRef);
     // ------------------------------------------------------------
 
     // INITIALIZE RENDER ENGINE DEV CONTROLS (Dev Menu)

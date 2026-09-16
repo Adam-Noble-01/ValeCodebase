@@ -3354,10 +3354,18 @@
         {
           "id": "new-1789465935311",
           "date": "2026-09-15",
-          "startTime": "11:00",
-          "endTime": "17:00",
+          "startTime": "10:00",
+          "endTime": "11:45",
           "title": "Whitecard |  Walsh",
           "color": "na-shift-color-indigo"
+        },
+        {
+          "id": "new-1789557415364",
+          "date": "2026-09-15",
+          "startTime": "12:15",
+          "endTime": "14:15",
+          "title": "Whitecard |  Gill",
+          "color": "na-shift-color-amber"
         }
       ]
     }

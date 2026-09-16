@@ -110,6 +110,7 @@
 // - Parity        : verbatim
 // - Divergences   : File header only. The TARGET ROUTE has no caller here yet and is kept
 //                   anyway - the point of the file is that both trees hold the same one.
+// - To port       : v1.1.0's present(target, scale) is not in TrueVision's copy yet.
 // - Round trip    : this began as ValeVision's own
 //                   31__System__VideoStudio/Na__VideoStudio__Export__Supersampler.js 1.0.0
 //                   (11-Sep-2026). TrueVision generalised it for two frame routes and two
@@ -119,6 +120,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Sep-2026 - Version 1.1.0
+// - present() takes an optional scale, so a caller may show the running mean
+//   of a part-finished total. The live viewport's progressive refinement
+//   spreads the samples over several frames and has to put a correctly
+//   exposed picture on the canvas after every one of them. Defaults to 1, so
+//   the video and image export callers are untouched.
+//
 // 12-Sep-2026 - Version 1.0.0
 // - Promoted from the video studio to the render pipeline, so the still image
 //   exporter and the Layout Editor viewport bakes share one jitter table.
@@ -349,14 +357,16 @@
             name           : 'Na__Supersampler__Present',
             defines        : wantsSrgbEncode ? { NA_ENCODE_SRGB : '' } : {},
             uniforms       : {
-                tAccum : { value: accumTarget.texture }
+                tAccum : { value: accumTarget.texture },
+                uScale : { value: 1 }                                        // <-- 1 for a finished total; N/k for a part-finished one
             },
             vertexShader   : Na__Ss__VERTEX_SHADER,
             fragmentShader : /* glsl */`
                 uniform sampler2D tAccum;
+                uniform float     uScale;
                 varying vec2      vUv;
                 void main() {
-                    vec4 total = texture2D(tAccum, vUv);
+                    vec4 total = texture2D(tAccum, vUv) * uScale;
                     #ifdef NA_ENCODE_SRGB
                         vec3 linear = max(total.rgb, vec3(0.0));             // <-- pow() of a negative is NaN; half float can carry one
                         total.rgb = mix(
@@ -483,10 +493,25 @@
             // FUNCTION | Copy the Averaged Frame Out
             // ------------------------------------------------------------
             // Null means the canvas, which is where every caller reads from.
+            //
+            // scale exists for a PART-FINISHED total. Every sample is added at
+            // 1/N, so after k of N samples the buffer holds sum/N and the mean
+            // of what has actually been drawn is that times N/k. A caller that
+            // renders all N samples in one go leaves scale at 1 and gets the
+            // finished average exactly as it did before this argument existed.
+            // A caller spreading the samples over several frames passes
+            // sampleCount / samplesSoFar and gets a correctly exposed picture
+            // after every one of them, rather than a frame that starts near
+            // black and fills up.
+            //
+            // The weight stays 1/N rather than a full-weight sum so the running
+            // total never leaves the range the half float carries most finely.
+            // The precision is the whole reason the buffer is half float.
             // ------------------------------------------------------------
-            present(target = null) {
+            present(target = null, scale = 1) {
                 const savedTarget = renderer.getRenderTarget();
 
+                presentMaterial.uniforms.uScale.value = scale;                // <-- 1 unless the total is part finished
                 renderer.setRenderTarget(target);
                 presentQuad.render(renderer);
                 renderer.setRenderTarget(savedTarget);

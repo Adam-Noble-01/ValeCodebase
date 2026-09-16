@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "11-Sep-2026 at 17:47",
+    "generatedAt": "16-Sep-2026 at 10:49",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -2075,6 +2075,20 @@
             "hasGlb_R2": true,
             "imageCount": 13,
             "lastSynced": "11-Sep-2026 at 17:47"
+        },
+        {
+            "folderId": "2026/64322__Walsh",
+            "year": "2026",
+            "projectCode": "64322",
+            "name": "Walsh",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 3,
+            "lastSynced": "16-Sep-2026 at 10:49"
         }
     ]
 }

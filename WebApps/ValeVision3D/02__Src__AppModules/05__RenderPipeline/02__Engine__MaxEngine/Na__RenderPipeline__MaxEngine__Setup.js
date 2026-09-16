@@ -58,6 +58,11 @@
 //   depthTexture, profileNormalTarget, profileColorTarget, profileLinesPassRef
 //   so ImageExport / ElevationView / GridLines / 2D profile lines keep working.
 //
+// 16-Sep-2026 - Version 1.0.2
+// - Pipeline state exposes aoPassRef, so the Visual Effects settings panel can
+//   read whether SSAO is actually on rather than remembering what it last
+//   asked for. The performance monitor disables AO without telling anyone.
+//
 // 11-Sep-2026 - Version 1.0.1
 // - Pipeline state exposes fxaaPassRef, so the Video Studio exporter can stand
 //   FXAA aside while it supersamples. The live chain is unchanged.
@@ -303,7 +308,10 @@
             updateAoUniforms,                                              // <-- MaxEngine extra: sync camera matrices into SSAO shader
             setAoSize,                                                     // <-- MaxEngine extra: update AO resolution uniforms
             monitorAoFrame,                                                // <-- MaxEngine extra: FPS-based AO auto-disable
-            toggleAo                                                       // <-- MaxEngine extra: runtime AO toggle
+            toggleAo,                                                      // <-- MaxEngine extra: runtime AO toggle
+            aoPassRef                                                      // <-- MaxEngine extra: the SSAO pass, so a readout shows its TRUE state
+                                                                           //     (the FPS monitor can disable AO on its own; a UI tracking only
+                                                                           //     its own clicks would then show ON over a picture with no AO)
         };
     }
     // ------------------------------------------------------------

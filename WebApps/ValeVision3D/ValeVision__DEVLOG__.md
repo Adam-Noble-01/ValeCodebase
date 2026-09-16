@@ -1,6 +1,152 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.48.1 - 16-Sep-2026 - Progressive Renderer: Zoom and Scene Changes Refine Too
+
+### Fixed
+- **Zooming left the viewport stuck on "Waiting" and never sharpened.** The wheel
+  moves the camera and asks for a single frame. The settle test needed to see two
+  still frames in a row before it would start, so on that one frame it saw the
+  camera had moved, stood down, and the render loop stopped with nothing
+  scheduled to bring a second frame. The viewport sat unrefined until something
+  else happened to ask for a redraw.
+- **Changing animation scenes did the same thing**, for the same reason: a scene
+  transition ends by asking for "one final clean frame", and one frame was never
+  enough for a test that needed two.
+- **Panning worked throughout only by accident.** It fires three trailing settle
+  frames after the mouse is released, which happened to hand the old test the
+  second look it needed. Nothing else in the app does that.
+
+### Changed
+- **The settle test now remembers when the camera last MOVED, rather than how
+  long it has been still.** A timestamp can be compared after a gap of any
+  length, so the frame that wakes at the end of the debounce compares the camera
+  against a snapshot taken before the silence, finds it unmoved, and refines on
+  that same frame. Zoom, scene changes, a jump to a saved view, a lens change and
+  anything else that redraws once now all settle into a refinement.
+- **The refiner asks for the frame it needs**, since the loop would otherwise
+  stop. It answers no whenever the frame was never its to refine: a 2D sheet
+  owning the viewport, the engine held by another system, the tab in the
+  background. Without that guard a resting app would be woken every debounce for
+  ever, which would be a considerably worse bug than the one being fixed.
+- **A couple of milliseconds of slack on the debounce comparison.** The wake is a
+  timer for the remaining debounce and the frame arrives at the next animation
+  frame after it; both round and jitter, so a wake armed for 149ms could produce
+  a frame measuring 149ms elapsed and miss a 150ms threshold by a hair, costing a
+  whole extra wake-up to gain one millisecond.
+
+### Notes
+- Nothing about the sample count, the chunk sizing, the milestones or the cost
+  while moving has changed. This is the trigger only.
+- Walk and Fly were never affected: they hold the loop open, so their frames kept
+  arriving and the old test always got its second look.
+
+### Files
+- `05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js` 1.0.1: the
+  timestamp test, the blocked state and `suspend()`.
+- `01__AppCore/Na__AppFlow__LoadingSequence.js`: the three stand-down points (2D
+  sheet, engine pause, tab hidden) call `suspend()` rather than `reset()`.
+- `Whitecardopedia__Pwa__ServiceWorker__Logic__.js` 1.0.10: token bumped
+  (2026-09-16-2).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.48.0 - 16-Sep-2026 - Progressive Renderer: the Viewport Sharpens Itself to 16x Once the Camera Stops
+
+### Added
+- **Progressive refinement of the live 3D viewport, on both engines.** While the
+  camera moves, nothing changes: the render loop draws exactly the frame it drew
+  before, FXAA included, at exactly the same frame rate. Once the camera has held
+  still for 150ms the loop keeps going instead of idling and redraws the same
+  frame with sub-pixel jitter, averaging the results, until the viewport holds a
+  full 16-sample supersampled image. The same maths the video exporter has used
+  since v2.21.19, spent in the time the viewport was previously doing nothing.
+- **What it fixes.** A glazing bar thinner than a pixel is a coin toss between
+  full black and full white, so it draws as a dashed line rather than a thin one,
+  and the dentils under a cornice read as speckle. That is not stair-stepping, it
+  is the pixel having no way to say "a third covered". Sixteen samples give it
+  one. The lower the screen resolution the worse the breakup, so a colleague on a
+  1080p screen gains far more from this than a 4K machine does.
+- **Visual Effects section** in Tools and Settings, under App Settings, folded by
+  default: Progressive Renderer, Profile Lines and Ambient Occlusion (SSAO) as
+  indicator rows, plus a frame rate readout and a refinement readout showing how
+  far the settled picture has got. The rows read the passes themselves rather
+  than remembering what was last clicked, so the Dev Tools profile-lines toggle
+  and the SSAO performance monitor cannot leave a badge lying. A pass the active
+  engine does not have reads as a dimmed N/A row (SSAO under PureEngine).
+
+### Changed
+- **`Na__RenderEffect__Supersampler__.js` 1.1.0: `present()` takes an optional
+  scale.** Samples accumulate at 1/N, so a part-finished total needs multiplying
+  by N/k to show correctly rather than appearing as a dim frame filling up. The
+  argument defaults to 1, so the video and image exporters are byte-for-byte
+  unchanged. This one needs porting to TrueVision's copy of the file.
+- **`Na__RenderPipeline__MaxEngine__Setup.js` 1.0.2** exposes `aoPassRef` so a
+  readout can show whether SSAO is actually on. The performance monitor disables
+  it without telling anyone.
+- **The render loop's per-frame work is now two named functions** rather than one
+  inline block: the effect chain (AO uniforms, depth pre-pass, profile normals,
+  composer) and the section overlay. A refinement sample runs the first through a
+  nudged projection and the second through the settled one.
+
+### Notes
+- **Samples are spread over frames, in chunks, and every frame presents.** Sixteen
+  renders inside one frame would block the main thread for a third of a second on
+  a laptop with SSAO at 4K and swallow the first click after the camera stops.
+  The chunk is sized from the measured frame time against a 100ms budget and
+  always stops on a milestone (8, then 16), so a fast machine does 8 and then 8
+  as two visible steps and a slow one takes smaller steps and still lands exactly
+  on eight and sixteen.
+- **Why every frame must draw.** `preserveDrawingBuffer` is off on the live
+  renderer, so a frame that runs and draws nothing composites an empty buffer and
+  the viewport flashes. A chunk therefore always ends with a present, and a
+  converged frame in walk or fly (where the loop is held open to poll the
+  keyboard) re-presents the finished average rather than skipping: one full
+  screen quad in place of the whole effect chain, so standing still in walk mode
+  is now cheaper than it was, not dearer.
+- **Stillness is measured, not announced.** The obvious hook would be "the loop
+  wants to stop", but walk and fly never stop, so standing still in walk mode
+  would never refine. The camera's position, orientation and projection are
+  compared frame to frame instead, which covers orbit, pan, zoom, walk, fly, a
+  lens change, the vertical correction shear and a jump to a saved view. Geometry
+  moving while the camera is still (a door swinging, the video timeline playing)
+  is invisible to that test and is passed in separately.
+- **The composer is borrowed one frame at a time.** Supersampling needs the
+  composer to stop drawing to the canvas and FXAA to stand aside. Both are set at
+  the top of a chunk and put back at the bottom of the same frame, never held
+  across frames, so a still export, a video export or a Layout Editor snapshot
+  starting between frames always finds the pipeline in its ordinary state.
+- **Shadow maps are drawn by the first sample and frozen for the rest of a
+  burst.** The jitter moves the view camera; the lights and the geometry are not
+  moving at all.
+- **Memory.** One half-float RGBA buffer at the composer's size: about 66MB at
+  3840x2160, about 17MB at 1920x1080. Allocated the first time the camera sits
+  still, rebuilt automatically when the size stops matching (a window resize, a
+  live engine switch), and handed straight back if the feature is switched off.
+- **Scope.** The 3D viewport only. The 2D drawing views run through their own
+  composer preset and are excluded, as is the legacy 2D elevation camera. Image
+  and video export are untouched: they supersample in one synchronous block and
+  always did.
+- **TrueVision takes this next**, once tested here.
+
+### Files
+- `05__RenderPipeline/Na__RenderEffect__ProgressiveRefine__.js` 1.0.0 (new): the
+  accumulator, the stillness test, the debounce and the chunk planner.
+- `05__RenderPipeline/Na__UiFeature__VisualEffects__Controls.js` 1.0.0 (new): the
+  settings section and its readouts.
+- `05__RenderPipeline/Na__RenderEffect__Supersampler__.js` 1.1.0: `present` scale.
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js` 1.0.2: `aoPassRef`.
+- `01__AppCore/Na__AppFlow__LoadingSequence.js`: the render loop branch, the two
+  extracted per-frame functions, the settle wake-up and the reset hooks.
+- `70__System__DevTools/Na__UiFeature__ProfileLines__Controls.js` 1.2.0: the two
+  profile-lines rows follow each other on `na-profile-lines-changed`.
+- `02__AppData/Na__AppConfig__Main.json`: `RenderEffect__ProgressiveRefine`.
+- `index.html`: the config read, the Visual Effects markup and the init call.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`: the
+  unavailable row state and the readout rows.
+- `Whitecardopedia__Pwa__ServiceWorker__Logic__.js` 1.0.9: token bumped
+  (2026-09-16-1) for the two new modules and the changed shell files.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.47.1 - 15-Sep-2026 - Console Tidy-Ups: Shadow Map Type and Sharpen Readbacks
 
 ### Fixed

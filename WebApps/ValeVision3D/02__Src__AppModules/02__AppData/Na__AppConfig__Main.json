@@ -71,6 +71,17 @@
         "RenderEngine__Config__Description"                : "Dual render engine system. PureEngine = original lightweight whitecard pipeline (ALWAYS the default). MaxEngine = full PBR + SSAO pipeline ported from TrueVision (per-model opt-in). Per-model overrides live in project.json under the same key; this global default applies when project.json has no RenderEngine__Config.",
         "RenderEngine__Active"                             : "PureEngine"
     },
+    "RenderEffect__ProgressiveRefine": {
+        "RenderEffect__ProgressiveRefine__Description": "Idle-time supersampled anti-aliasing for the LIVE 3D viewport, on both engines. Costs nothing while the camera moves. Once the camera has held still for SettleDebounceMs the render loop keeps going instead of idling, redrawing the same frame with sub-pixel jitter and averaging, until the viewport holds a full SampleCount image. Image and video export do their own supersampling and are not affected by anything here. The 2D drawing views are excluded.",
+        "RenderEffect__ProgressiveRefine__Enabled": true,
+        "RenderEffect__ProgressiveRefine__SampleCount": 16,
+        "RenderEffect__ProgressiveRefine__PresentMilestones": [8, 16],
+        "RenderEffect__ProgressiveRefine__SettleDebounceMs": 150,
+        "RenderEffect__ProgressiveRefine__ChunkBudgetMs": 100,
+        "RenderEffect__ProgressiveRefine__MaxChunkSamples": 8,
+        "RenderEffect__ProgressiveRefine__StillnessPositionMm": 1,
+        "RenderEffect__ProgressiveRefine__StillnessRotationDeg": 0.01
+    },
     "RenderEffect__AmbientOcclusion": {
         "RenderEffect__AmbientOcclusion__Description"      : "Screen-space ambient occlusion. MAXENGINE ONLY — never constructed under PureEngine. All distance values are integer millimeters; convert to 3D units in code. DebugMode: 0=off, 1=raw depth, 2=linear Z, 3=normals, 4=raw AO.",
         "RenderEffect__AmbientOcclusion__Enabled"          : true,

@@ -26,6 +26,36 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Sep-2026 - Version 1.0.15
+// - Token bumped (2026-09-16-7): the container-level z-index bump wasn't
+//   enough - the active card's blue ring was still rendering behind the
+//   prev/next chevron buttons (same stacking context, sibling elements).
+//   Gave .na-pm-carousel__nav and .na-pm-carousel__cards their own
+//   position:relative + z-index so the cards wrapper unconditionally paints
+//   above the nav buttons.
+//
+// 16-Sep-2026 - Version 1.0.14
+// - Token bumped (2026-09-16-6): scene carousel z-index raised from 1000 to
+//   1004 so the active card's blue ring never renders behind the nav toolbar,
+//   header, or help panel.
+//
+// 16-Sep-2026 - Version 1.0.13
+// - Token bumped (2026-09-16-5): card pop animation toned down from scale(1.12)
+//   to scale(1.06) - the original was too strong.
+//
+// 16-Sep-2026 - Version 1.0.12
+// - Token bumped (2026-09-16-4): scene carousel now flashes its wake/opaque
+//   state on PageUp/PageDown and the number-key scene-jump hotkeys (not just
+//   clicks), and the newly active card plays a scale-up "pop" animation on
+//   click, touch, or hotkey. Changes the scene carousel module and its
+//   stylesheet.
+//
+// 16-Sep-2026 - Version 1.0.11
+// - Token bumped (2026-09-16-3): ValeVision3D hotkey remap - number keys 1-9
+//   now jump to that position in the current presentation scene group, Walk
+//   and Fly moved to T/Y, Orbit/Reset moved to B/R. Changes index.html, the
+//   hotkeys dictionary JSON, and the scene carousel module.
+//
 // 16-Sep-2026 - Version 1.0.10
 // - Token bumped (2026-09-16-2): ValeVision3D v2.48.1 changes the progressive
 //   renderer's settle trigger and the loading sequence that drives it. No new
@@ -186,7 +216,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-16-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-16-7';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

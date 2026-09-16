@@ -3,7 +3,7 @@
 
         {
             "Na__Hotkey__Id"          : "navmode_reset_view",
-            "Na__Hotkey__Key"         : "0",
+            "Na__Hotkey__Key"         : "R",
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
@@ -14,7 +14,7 @@
 
         {
             "Na__Hotkey__Id"          : "navmode_set_orbit",
-            "Na__Hotkey__Key"         : "1",
+            "Na__Hotkey__Key"         : "B",
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
@@ -25,18 +25,18 @@
 
         {
             "Na__Hotkey__Id"          : "navmode_set_walk",
-            "Na__Hotkey__Key"         : "2",
+            "Na__Hotkey__Key"         : "T",
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
             "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__NavMode__SetWalkMode",
-            "Na__Hotkey__Description" : "Switch to walk navigation mode"
+            "Na__Hotkey__Description" : "Switch to walk (travel) navigation mode"
         },
 
         {
             "Na__Hotkey__Id"          : "navmode_set_fly",
-            "Na__Hotkey__Key"         : "3",
+            "Na__Hotkey__Key"         : "Y",
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
@@ -47,7 +47,7 @@
 
         {
             "Na__Hotkey__Id"          : "presentation_toggle_views_panel",
-            "Na__Hotkey__Key"         : "4",
+            "Na__Hotkey__Key"         : "V",
             "Na__Hotkey__AltKey"      : false,
             "Na__Hotkey__ShiftKey"    : false,
             "Na__Hotkey__CtrlKey"     : false,
@@ -64,7 +64,7 @@
             "Na__Hotkey__CtrlKey"     : false,
             "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__PresentationMode__NextScene",
-            "Na__Hotkey__Description" : "Advance to next presentation scene"
+            "Na__Hotkey__Description" : "Cycle to the next scene in the presentation scenes list"
         },
 
         {
@@ -75,7 +75,106 @@
             "Na__Hotkey__CtrlKey"     : false,
             "Na__Hotkey__Advanced"    : false,
             "Na__Hotkey__Action"      : "ValeVision__PresentationMode__PrevScene",
-            "Na__Hotkey__Description" : "Return to previous presentation scene"
+            "Na__Hotkey__Description" : "Cycle to the previous scene in the presentation scenes list"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_1",
+            "Na__Hotkey__Key"         : "1",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : false,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene1",
+            "Na__Hotkey__Description" : "Jump to the scene at this position in the current scene group (keys 1-9 match the visible thumbnail order)"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_2",
+            "Na__Hotkey__Key"         : "2",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene2",
+            "Na__Hotkey__Description" : "Jump to scene 2 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_3",
+            "Na__Hotkey__Key"         : "3",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene3",
+            "Na__Hotkey__Description" : "Jump to scene 3 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_4",
+            "Na__Hotkey__Key"         : "4",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene4",
+            "Na__Hotkey__Description" : "Jump to scene 4 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_5",
+            "Na__Hotkey__Key"         : "5",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene5",
+            "Na__Hotkey__Description" : "Jump to scene 5 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_6",
+            "Na__Hotkey__Key"         : "6",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene6",
+            "Na__Hotkey__Description" : "Jump to scene 6 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_7",
+            "Na__Hotkey__Key"         : "7",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene7",
+            "Na__Hotkey__Description" : "Jump to scene 7 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_8",
+            "Na__Hotkey__Key"         : "8",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene8",
+            "Na__Hotkey__Description" : "Jump to scene 8 in the current scene group"
+        },
+
+        {
+            "Na__Hotkey__Id"          : "presentation_goto_scene_9",
+            "Na__Hotkey__Key"         : "9",
+            "Na__Hotkey__AltKey"      : false,
+            "Na__Hotkey__ShiftKey"    : false,
+            "Na__Hotkey__CtrlKey"     : false,
+            "Na__Hotkey__Advanced"    : true,
+            "Na__Hotkey__Action"      : "ValeVision__PresentationMode__GoToScene9",
+            "Na__Hotkey__Description" : "Jump to scene 9 in the current scene group"
         },
 
         {

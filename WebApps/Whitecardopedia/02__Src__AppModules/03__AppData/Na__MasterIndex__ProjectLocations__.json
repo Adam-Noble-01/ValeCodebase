@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "16-Sep-2026 at 10:49",
+    "generatedAt": "16-Sep-2026 at 15:34",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -2089,6 +2089,20 @@
             "hasGlb_R2": true,
             "imageCount": 3,
             "lastSynced": "16-Sep-2026 at 10:49"
+        },
+        {
+            "folderId": "2026/44371__Gill",
+            "year": "2026",
+            "projectCode": "44371",
+            "name": "Gill",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 2,
+            "lastSynced": "16-Sep-2026 at 15:34"
         }
     ]
 }

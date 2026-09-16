@@ -6,7 +6,7 @@
         "ValeSpec__ProjectFile__Metadata__DocumentName": "Orangery",
         "ValeSpec__ProjectFile__Metadata__DocumentStatus": "In Progress",
         "ValeSpec__ProjectFile__Metadata__DateCreated": "2026-04-17",
-        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-06-23",
+        "ValeSpec__ProjectFile__Metadata__DateModified": "2026-09-16",
         "ValeSpec__ProjectFile__Metadata__DateIssued": "2026-06-23",
         "ValeSpec__ProjectFile__Metadata__RevisionCode": "A",
         "ValeSpec__ProjectFile__Metadata__Author": "Adam Noble"
@@ -29,8 +29,8 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Inward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 2240,
-                "Assembly__Dimensions__Config__HeightMm": 2000
+                "Assembly__Dimensions__Config__WidthMm": 1563,
+                "Assembly__Dimensions__Config__HeightMm": 2844
             },
             "Handing": "Right",
             "Assembly__ProgressState__Config": {
@@ -47,37 +47,37 @@
             },
             "Assembly__Hinge__Config": {
                 "Assembly__Hinge__Config__HingesPerLeaf": 4,
-                "Assembly__Hinge__Config__Hanging": "Double Top",
+                "Assembly__Hinge__Config__Hanging": "Standard",
                 "Assembly__Hinge__Config__Style": "Decorative",
                 "Assembly__Hinge__Config__Projection": 5
             },
             "Assembly__DoorCondition__Config": {
-                "Assembly__DoorCondition__Config__ConditionCode": "DOUBLE_TOP_4_HINGES",
-                "Assembly__DoorCondition__Config__WarningMessage": "Doors more than 950mm wide (leaf basis) regardless of height must be hung with 4 hinges (Double Top).",
+                "Assembly__DoorCondition__Config__ConditionCode": "TALL_STANDARD_4_HINGES",
+                "Assembly__DoorCondition__Config__WarningMessage": "Doors greater than 2250mm tall and less than 949mm single (or 1899mm double) are fitted with 4 hinges per leaf.",
                 "Assembly__DoorCondition__Config__AppliesWarning": false
             },
             "Assembly__Warnings__Config": {
                 "Assembly__Warnings__Config__ActiveWarnings": [
                     {
-                        "RuleId": "WARN_PANEL_WIDTH_OVER_1050",
+                        "RuleId": "WARN_DOOR_HEIGHT_OVER_2400",
                         "Severity": "Warning",
-                        "WarningMessage": "Door panel exceeds 1050 mm width. Subject to approval by Senior Technical Manager.",
+                        "WarningMessage": "Doors above 2400 mm height require non-standard hinge specification.",
                         "DocumentWarning": {
-                            "Title": "Door Panel Width Warning",
-                            "Message": "One or more door panels exceed 1050 mm width. Subject to approval by Senior Technical Manager."
+                            "Title": "Door Height Warning",
+                            "Message": "Doors above 2400 mm height require non-standard hinge specification."
                         },
-                        "TriggeredAtValue": "1120 mm/panel (2 panels, 2240 mm total)",
+                        "TriggeredAtValue": 2844,
                         "Acknowledged": false
                     },
                     {
-                        "RuleId": "WARN_WIDE_LEAF_HINGE_REVIEW",
-                        "Severity": "Caution",
-                        "WarningMessage": "Panel over 1000 mm wide requires double-top hinge arrangement. Subject to review — may require double-top and double-bottom (5 hinges total) or a pivot system.",
+                        "RuleId": "WARN_DOOR_HEIGHT_OVER_2650",
+                        "Severity": "Critical",
+                        "WarningMessage": "Extreme door height — doors above 2650 mm are a special case and require written approval from a Senior Architect before specification. Do not proceed without confirmation.",
                         "DocumentWarning": {
-                            "Title": "Wide Leaf Hinge Review",
-                            "Message": "One or more panels exceed 1000 mm width and require a double-top hinge arrangement. Subject to review: may require double-top and double-bottom (5 hinges total) or a pivot system."
+                            "Title": "Extreme Door Height — Special Approval Required",
+                            "Message": "Door height exceeds 2650 mm. This is an extreme specification and requires written approval from a Senior Architect prior to order. Ensure approval is documented before finalising."
                         },
-                        "TriggeredAtValue": "1120 mm/panel (2 panels, 2240 mm total)",
+                        "TriggeredAtValue": 2844,
                         "Acknowledged": false
                     }
                 ]
@@ -115,26 +115,26 @@
                 "Assembly__DoorType__Config__OpeningDirection": "Outward"
             },
             "Assembly__Dimensions__Config": {
-                "Assembly__Dimensions__Config__WidthMm": 900,
-                "Assembly__Dimensions__Config__HeightMm": 2203
+                "Assembly__Dimensions__Config__WidthMm": 780,
+                "Assembly__Dimensions__Config__HeightMm": 2023
             },
             "Handing": "Left",
             "Assembly__ProgressState__Config": {
                 "Assembly__ProgressState__Config__CompletedSteps": {
-                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__DoorType": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Dimensions": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Finish": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Handles": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": true,
-                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": true,
+                    "Assembly__ProgressState__Config__CompletedSteps__Handles": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hinges": false,
+                    "Assembly__ProgressState__Config__CompletedSteps__Hooks": false,
                     "Assembly__ProgressState__Config__CompletedSteps__Misc": false
                 },
-                "Assembly__ProgressState__Config__ActiveStepId": "finish"
+                "Assembly__ProgressState__Config__ActiveStepId": "doorType"
             },
             "Assembly__Hinge__Config": {
-                "Assembly__Hinge__Config__HingesPerLeaf": 4,
+                "Assembly__Hinge__Config__HingesPerLeaf": 3,
                 "Assembly__Hinge__Config__Hanging": "Standard",
-                "Assembly__Hinge__Config__Style": "Decorative",
+                "Assembly__Hinge__Config__Style": "Basic",
                 "Assembly__Hinge__Config__Projection": 4
             },
             "Assembly__DoorCondition__Config": {
@@ -144,17 +144,6 @@
             },
             "Assembly__Warnings__Config": {
                 "Assembly__Warnings__Config__ActiveWarnings": [
-                    {
-                        "RuleId": "WARN_TALL_DOOR_TOP_BOLT_REVIEW",
-                        "Severity": "Caution",
-                        "WarningMessage": "Tall single doors may benefit from an additional top bolt for security. Subject to senior review.",
-                        "DocumentWarning": {
-                            "Title": "Tall Door Top Bolt Review",
-                            "Message": "Single door exceeds 2200 mm height. Consider an additional top bolt — subject to senior review."
-                        },
-                        "TriggeredAtValue": 2203,
-                        "Acknowledged": false
-                    },
                     {
                         "RuleId": "WARN_IRONMONGERY_MISMATCH",
                         "Severity": "Warning",
@@ -174,7 +163,7 @@
                             "Title": "Handle Type Mismatch",
                             "Message": "The Handle Type for this assembly is different to the others on the project."
                         },
-                        "TriggeredAtValue": "Newton Lever Handle",
+                        "TriggeredAtValue": "Plain Lever Handle",
                         "Acknowledged": false
                     }
                 ]
@@ -187,7 +176,7 @@
                 "Assembly__Opening__Config__FixedPanel": "none"
             },
             "Assembly__Lever__Config": {
-                "Assembly__Lever__Config__Type": "Newton Lever Handle",
+                "Assembly__Lever__Config__Type": "Plain Lever Handle",
                 "Assembly__Lever__Config__HeightMm": 1000
             },
             "Assembly__CabinHooks__Config": {

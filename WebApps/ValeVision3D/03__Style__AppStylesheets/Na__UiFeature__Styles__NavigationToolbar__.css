@@ -100,6 +100,34 @@
     /* ------------------------------------------------------------ */
 
 
+    /* TOOLBAR DIVIDER | Vertical separator ahead of the hamburger button */
+    /* ------------------------------------------------------------ */
+    .na-nav-toolbar__divider {
+        display                            : none;                  /* <-- Mobile-only (revealed <=768px) */
+        width                              : 1px;
+        height                             : 24px;
+        background-color                   : rgba(23, 43, 58, 0.18);
+        flex-shrink                        : 0;
+        margin                             : 0 3px;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* HAMBURGER BUTTON | Swaps the toolbar for the Tools & Settings menu */
+    /* ------------------------------------------------------------ */
+    .na-nav-toolbar__btn--menu {
+        display                            : none;                  /* <-- Mobile-only (revealed <=768px) */
+    }
+
+    .na-nav-toolbar__menu-icon {
+        width                              : 20px;
+        height                             : 20px;
+        flex-shrink                        : 0;
+        pointer-events                     : none;
+    }
+    /* ------------------------------------------------------------ */
+
+
     /* RESPONSIVE | Compact icon-only toolbar on narrow screens */
     /* ------------------------------------------------------------ */
     @media (max-width: 560px) {
@@ -109,6 +137,37 @@
 
         .na-nav-toolbar__btn {
             padding                        : 11px 13px;             /* <-- 10*1.1=11px, 12*1.1=13px */
+        }
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* RESPONSIVE | Mobile Menu Swap (<=768px, or short/portrait windows) */
+    /* ------------------------------------------------------------ */
+    /* The standalone Tools & Settings trigger is hidden at this width
+       (see Na__UiFeature__Styles__DropdownAndToast__.css). The toolbar
+       gains a divider + hamburger; pressing it hides the toolbar and
+       drops the Tools & Settings menu into the same space. Folding the
+       menu back up brings the toolbar back. Ported from TrueVision3D
+       v2.9.0 (29-Aug-2026) to end the toolbar/dropdown overlap on phones.
+       The aspect-ratio leg catches windows that are plenty wide but short
+       or squarish — e.g. a resized desktop browser or a tablet in portrait
+       — where the centred pill can still run into the top-right dropdown
+       even though max-width:768px alone would not have triggered. Retired
+       the Views button on 16-Sep-2026, which narrowed the pill enough to
+       tighten this from ~1.03:1 down to 19/20 (0.95:1) — see
+       Na__PresentationMode__UI__SceneCarousel.js. */
+    @media (max-width: 768px), (max-aspect-ratio: 19/20) {
+        .na-nav-toolbar__divider {
+            display                        : block;                 /* <-- Reveal the separator */
+        }
+
+        .na-nav-toolbar__btn--menu {
+            display                        : flex;                  /* <-- Reveal the hamburger */
+        }
+
+        body.na-mobile-tools-open .na-nav-toolbar {
+            display                        : none;                  /* <-- Toolbar yields its space to the menu */
         }
     }
     /* ------------------------------------------------------------ */

@@ -1,0 +1,735 @@
+{
+    "LayoutEditor__DrawingsData": {
+        "LayoutEditor__DrawingsData__ClientDimensionsEnabled": false,
+        "LayoutEditor__DrawingsData__Description": "ValeVision-owned drawing definitions: floor plans, elevations and sections with their markup, and Layout Editor sheets. Distances are integer millimetres. The SketchUp cloud sync never writes this key.",
+        "LayoutEditor__DrawingsData__Elevations": [
+            {
+                "Elevation__Id": "Elevation_001",
+                "Elevation__Name": "North Elevation",
+                "Elevation__Order": 1,
+                "Elevation__Enabled": true,
+                "Elevation__AzimuthDeg": 0,
+                "Elevation__Mode": "elevation",
+                "Elevation__PlaneOriginMm": {
+                    "PosX": 20000,
+                    "PosZ": -20000
+                },
+                "Elevation__ViewDepthMm": null,
+                "Elevation__SceneId": "Scene_001",
+                "Elevation__Annotations": [],
+                "Elevation__Dimensions": [],
+                "Elevation__ExcludeCategoryTokens": null,
+                "Elevation__LineworkAsset": null,
+                "Elevation__SeededFrom": "preset",
+                "Elevation__Styles": {
+                    "Styles__ProjectedLinework": false,
+                    "Styles__ProfileLinework": true,
+                    "Styles__GlassOpaque": false,
+                    "Styles__Whitecard": true,
+                    "Styles__HiddenLines": false
+                },
+                "Elevation__CameraZoom": 1,
+                "Elevation__CameraTargetMm": {
+                    "PosRun": -20000,
+                    "PosHeight": 1481
+                }
+            },
+            {
+                "Elevation__Id": "Elevation_002",
+                "Elevation__Name": "East Elevation",
+                "Elevation__Order": 2,
+                "Elevation__Enabled": true,
+                "Elevation__AzimuthDeg": 90,
+                "Elevation__Mode": "elevation",
+                "Elevation__PlaneOriginMm": {
+                    "PosX": 20000,
+                    "PosZ": -20000
+                },
+                "Elevation__ViewDepthMm": null,
+                "Elevation__SceneId": "Scene_002",
+                "Elevation__Annotations": [],
+                "Elevation__Dimensions": [],
+                "Elevation__ExcludeCategoryTokens": null,
+                "Elevation__LineworkAsset": null,
+                "Elevation__SeededFrom": "preset",
+                "Elevation__Styles": {
+                    "Styles__ProjectedLinework": false,
+                    "Styles__ProfileLinework": true,
+                    "Styles__GlassOpaque": false,
+                    "Styles__Whitecard": true,
+                    "Styles__HiddenLines": false
+                },
+                "Elevation__CameraZoom": 1,
+                "Elevation__CameraTargetMm": {
+                    "PosRun": 20000,
+                    "PosHeight": 1481
+                }
+            },
+            {
+                "Elevation__Id": "Elevation_003",
+                "Elevation__Name": "South Elevation",
+                "Elevation__Order": 3,
+                "Elevation__Enabled": true,
+                "Elevation__AzimuthDeg": 180,
+                "Elevation__Mode": "elevation",
+                "Elevation__PlaneOriginMm": {
+                    "PosX": 20000,
+                    "PosZ": -20000
+                },
+                "Elevation__ViewDepthMm": null,
+                "Elevation__SceneId": "Scene_003",
+                "Elevation__Annotations": [],
+                "Elevation__Dimensions": [],
+                "Elevation__ExcludeCategoryTokens": null,
+                "Elevation__LineworkAsset": null,
+                "Elevation__SeededFrom": "preset",
+                "Elevation__Styles": {
+                    "Styles__ProjectedLinework": false,
+                    "Styles__ProfileLinework": true,
+                    "Styles__GlassOpaque": false,
+                    "Styles__Whitecard": true,
+                    "Styles__HiddenLines": false
+                },
+                "Elevation__CameraZoom": 1,
+                "Elevation__CameraTargetMm": {
+                    "PosRun": 20000,
+                    "PosHeight": 1481
+                }
+            },
+            {
+                "Elevation__Id": "Elevation_004",
+                "Elevation__Name": "West Elevation",
+                "Elevation__Order": 4,
+                "Elevation__Enabled": true,
+                "Elevation__AzimuthDeg": 270,
+                "Elevation__Mode": "elevation",
+                "Elevation__PlaneOriginMm": {
+                    "PosX": 20000,
+                    "PosZ": -20000
+                },
+                "Elevation__ViewDepthMm": null,
+                "Elevation__SceneId": "Scene_004",
+                "Elevation__Annotations": [],
+                "Elevation__Dimensions": [],
+                "Elevation__ExcludeCategoryTokens": null,
+                "Elevation__LineworkAsset": null,
+                "Elevation__SeededFrom": "preset",
+                "Elevation__Styles": {
+                    "Styles__ProjectedLinework": false,
+                    "Styles__ProfileLinework": true,
+                    "Styles__GlassOpaque": false,
+                    "Styles__Whitecard": true,
+                    "Styles__HiddenLines": false
+                },
+                "Elevation__CameraZoom": 1,
+                "Elevation__CameraTargetMm": {
+                    "PosRun": -20000,
+                    "PosHeight": 1481
+                }
+            }
+        ],
+        "LayoutEditor__DrawingsData__FloorPlans": [],
+        "LayoutEditor__DrawingsData__LayoutModeEnabled": false,
+        "LayoutEditor__DrawingsData__Sheets": [
+            {
+                "Sheet__Id": "Sheet_001",
+                "Sheet__Name": "Drawing 1",
+                "Sheet__Order": 1,
+                "Sheet__PaperSize": "A3",
+                "Sheet__Orientation": "landscape",
+                "Sheet__TitleBlockStyle": "modern",
+                "Sheet__Fields": {},
+                "Sheet__Layers": [
+                    {
+                        "Layer__Id": "Layer_001",
+                        "Layer__Name": "Viewports",
+                        "Layer__Type": "viewport",
+                        "Layer__Visible": true,
+                        "Layer__Locked": false,
+                        "Layer__Order": 1
+                    },
+                    {
+                        "Layer__Id": "Layer_002",
+                        "Layer__Name": "Text",
+                        "Layer__Type": "annotation",
+                        "Layer__Visible": true,
+                        "Layer__Locked": false,
+                        "Layer__Order": 2
+                    },
+                    {
+                        "Layer__Id": "Layer_003",
+                        "Layer__Name": "Dimensions",
+                        "Layer__Type": "dimension",
+                        "Layer__Visible": true,
+                        "Layer__Locked": false,
+                        "Layer__Order": 3
+                    },
+                    {
+                        "Layer__Id": "Layer_004",
+                        "Layer__Name": "Vectors",
+                        "Layer__Type": "vector",
+                        "Layer__Visible": true,
+                        "Layer__Locked": false,
+                        "Layer__Order": 4
+                    }
+                ],
+                "Sheet__Viewports": [
+                    {
+                        "Viewport__Id": "Viewport_001",
+                        "Viewport__Kind": "2d",
+                        "Viewport__SceneId": "Scene_003",
+                        "Viewport__DrawingId": "Elevation_003",
+                        "Viewport__Name": "",
+                        "Viewport__FrameMm": {
+                            "X": 24.985564490053832,
+                            "Y": 21.1308015623391,
+                            "WidthMm": 261.75229436905175,
+                            "HeightMm": 160.57962923395527
+                        },
+                        "Viewport__ScaleDenominator": 50,
+                        "Viewport__LayerId": "Layer_001",
+                        "Viewport__PanMm": {
+                            "X": 30980.629049249725,
+                            "Y": -2495.4907308488823
+                        },
+                        "Viewport__ImageMm": {
+                            "WidthMm": 180,
+                            "HeightMm": 120
+                        },
+                        "Viewport__ImageOffsetMm": {
+                            "X": 0,
+                            "Y": 0
+                        },
+                        "Viewport__ModelLayers": null,
+                        "Viewport__Styles": {
+                            "baseImage": true,
+                            "projectedLinework": true,
+                            "profileLinework": true,
+                            "glassOpaque": true,
+                            "whitecard": true,
+                            "hiddenLines": false,
+                            "enhanceWhitecard": true,
+                            "contextLayer": true
+                        },
+                        "Viewport__ProjectedEdges": null,
+                        "Viewport__CompositeWeights": null,
+                        "Viewport__MarkupMode": "scene",
+                        "Viewport__ShowScaleLabel": true,
+                        "Viewport__SnapshotAsset": null,
+                        "Viewport__Locked": false
+                    }
+                ],
+                "Sheet__Annotations": [],
+                "Sheet__Dimensions": [
+                    {
+                        "Dimension__Id": "Dim_001",
+                        "Dimension__ViewportId": "Viewport_001",
+                        "Dimension__StartXMm": 358.0072052294908,
+                        "Dimension__StartYMm": 150.77279808891677,
+                        "Dimension__EndXMm": 218.50720522949086,
+                        "Dimension__EndYMm": 150.77279808891677,
+                        "Dimension__OffsetMm": -17.637623233345977,
+                        "Dimension__TextSizeMm": 2.5,
+                        "Dimension__Colour": "#172b3a",
+                        "Dimension__Terminator": "tick",
+                        "Dimension__TickLengthMm": 1.5,
+                        "Dimension__Precision": 0,
+                        "Dimension__UnitsSuffix": " mm",
+                        "Dimension__OverrideText": null,
+                        "Dimension__Orientation": "aligned",
+                        "Dimension__LayerId": "Layer_003"
+                    },
+                    {
+                        "Dimension__Id": "Dim_002",
+                        "Dimension__ViewportId": "Viewport_001",
+                        "Dimension__StartXMm": 342.9072052294909,
+                        "Dimension__StartYMm": 150.77279808891677,
+                        "Dimension__EndXMm": 323.81634585449086,
+                        "Dimension__EndYMm": 103.47279808891683,
+                        "Dimension__OffsetMm": 31.4832473306177,
+                        "Dimension__TextSizeMm": 2.5,
+                        "Dimension__Colour": "#172b3a",
+                        "Dimension__Terminator": "tick",
+                        "Dimension__TickLengthMm": 1.5,
+                        "Dimension__Precision": 0,
+                        "Dimension__UnitsSuffix": " mm",
+                        "Dimension__OverrideText": null,
+                        "Dimension__Orientation": "vertical",
+                        "Dimension__LayerId": "Layer_003"
+                    }
+                ],
+                "Sheet__Shapes": [],
+                "Sheet__Leaders": [
+                    {
+                        "Leader__Id": "Leader_001",
+                        "Leader__LayerId": "Layer_002",
+                        "Leader__Type": "bubble",
+                        "Leader__TipXMm": 226.2857195491989,
+                        "Leader__TipYMm": 141.08362632512208,
+                        "Leader__AnchorXMm": 185.06445466682877,
+                        "Leader__AnchorYMm": 205.0714259396861,
+                        "Leader__Text": "FN01",
+                        "Leader__TextSizeMm": 2.5,
+                        "Leader__FontWeight": 600,
+                        "Leader__TextColour": "#172b3a",
+                        "Leader__LineColour": "#172b3a",
+                        "Leader__LinePt": 0.35,
+                        "Leader__LineStyle": "dashed",
+                        "Leader__LineOpacity": 1,
+                        "Leader__EndpointFilled": false,
+                        "Leader__EndpointPt": 0.35,
+                        "Leader__EndpointSizeMm": 1.6,
+                        "Leader__BubbleSizeMm": 9,
+                        "Leader__BubbleEdgePt": 0.35,
+                        "Leader__FillColour": "#f2f4f5",
+                        "Leader__FillOpacity": 1,
+                        "Leader__SpecNoteId": "SpecNote_005"
+                    },
+                    {
+                        "Leader__Id": "Leader_002",
+                        "Leader__LayerId": "Layer_002",
+                        "Leader__Type": "bubble",
+                        "Leader__TipXMm": 283.4936040294139,
+                        "Leader__TipYMm": 132.6750146163424,
+                        "Leader__AnchorXMm": 237.75663591266846,
+                        "Leader__AnchorYMm": 208.5253110291351,
+                        "Leader__Text": "FN03",
+                        "Leader__TextSizeMm": 2.5,
+                        "Leader__FontWeight": 600,
+                        "Leader__TextColour": "#172b3a",
+                        "Leader__LineColour": "#172b3a",
+                        "Leader__LinePt": 0.35,
+                        "Leader__LineStyle": "dashed",
+                        "Leader__LineOpacity": 1,
+                        "Leader__EndpointFilled": false,
+                        "Leader__EndpointPt": 0.35,
+                        "Leader__EndpointSizeMm": 1.6,
+                        "Leader__BubbleSizeMm": 9,
+                        "Leader__BubbleEdgePt": 0.35,
+                        "Leader__FillColour": "#f2f4f5",
+                        "Leader__FillOpacity": 1,
+                        "Leader__SpecNoteId": "SpecNote_007"
+                    },
+                    {
+                        "Leader__Id": "Leader_003",
+                        "Leader__LayerId": "Layer_002",
+                        "Leader__Type": "bubble",
+                        "Leader__TipXMm": 332.7585079323711,
+                        "Leader__TipYMm": 131.16304872818552,
+                        "Leader__AnchorXMm": 312.85094938138275,
+                        "Leader__AnchorYMm": 200.96548158835074,
+                        "Leader__Text": "FN04",
+                        "Leader__TextSizeMm": 2.5,
+                        "Leader__FontWeight": 600,
+                        "Leader__TextColour": "#172b3a",
+                        "Leader__LineColour": "#172b3a",
+                        "Leader__LinePt": 0.35,
+                        "Leader__LineStyle": "dashed",
+                        "Leader__LineOpacity": 1,
+                        "Leader__EndpointFilled": false,
+                        "Leader__EndpointPt": 0.35,
+                        "Leader__EndpointSizeMm": 1.6,
+                        "Leader__BubbleSizeMm": 9,
+                        "Leader__BubbleEdgePt": 0.35,
+                        "Leader__FillColour": "#f2f4f5",
+                        "Leader__FillOpacity": 1
+                    }
+                ],
+                "Sheet__Groups": [],
+                "Sheet__Lineweights": {
+                    "ViewportPt": 0.3,
+                    "DimensionPt": 0.35
+                },
+                "Sheet__MarginNotes": {
+                    "Enabled": true,
+                    "WidthMm": 90,
+                    "Heading": null,
+                    "TextSizeMm": 2,
+                    "IncludeGeneral": true,
+                    "GroupHeadings": false
+                }
+            }
+        ],
+        "LayoutEditor__DrawingsData__Version": 1
+    },
+    "PresentationMode__SavedCameraScenes": {
+        "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
+        "PresentationMode__SavedCameraScenes__DefaultSceneId": "su_scene_1",
+        "PresentationMode__SavedCameraScenes__Enabled": true,
+        "PresentationMode__SavedCameraScenes__Scenes": [
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 11211,
+                        "Camera__DefaultPos__PosY": 3649,
+                        "Camera__DefaultPos__PosZ": 21109
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0205,
+                        "Camera__DefaultRotation__RotY": -0.3324,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_1",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "PresentationMode__Scene__Name": "01 | Full Building",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 24311,
+                    "OrbitHelperCube__Position__PosY": 2827,
+                    "OrbitHelperCube__Position__PosZ": -16843
+                },
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG01__3dView__MainShot____WhitecardImage__16-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    },
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 21286,
+                        "Camera__DefaultPos__PosY": 2300,
+                        "Camera__DefaultPos__PosZ": 3912
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -0.0283,
+                        "Camera__DefaultRotation__RotY": -0.4376,
+                        "Camera__DefaultRotation__RotZ": 0
+                    }
+                },
+                "PresentationMode__Scene__Id": "su_scene_2",
+                "PresentationMode__Scene__ModelLayerVisibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "PresentationMode__Scene__Name": "02 | Closer View",
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Scene orbit target position derived from SketchUp camera.target. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 38296,
+                    "OrbitHelperCube__Position__PosY": 1165,
+                    "OrbitHelperCube__Position__PosZ": -32447
+                },
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__ThumbnailUrl": "IMG02__3dView__Closer____WhitecardImage__16-Sep-2026__Thumbnail__524p__.webp",
+                "PresentationMode__Scene__GroupId": "Group_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_001",
+                "PresentationMode__Scene__Name": "North Elevation",
+                "PresentationMode__Scene__Order": 1,
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 20000,
+                        "Camera__DefaultPos__PosY": 1481,
+                        "Camera__DefaultPos__PosZ": -100573
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": 0,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Elevation view centre. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 20000,
+                    "OrbitHelperCube__Position__PosY": 1481,
+                    "OrbitHelperCube__Position__PosZ": -20000
+                },
+                "PresentationMode__Scene__GroupId": "Group_005",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_001.webp",
+                "PresentationMode__Scene__ElevationId": "Elevation_001"
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_002",
+                "PresentationMode__Scene__Name": "East Elevation",
+                "PresentationMode__Scene__Order": 2,
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 100573,
+                        "Camera__DefaultPos__PosY": 1481,
+                        "Camera__DefaultPos__PosZ": -20000
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": -1.5707963267948966,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Elevation view centre. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 20000,
+                    "OrbitHelperCube__Position__PosY": 1481,
+                    "OrbitHelperCube__Position__PosZ": -20000
+                },
+                "PresentationMode__Scene__GroupId": "Group_005",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_002.webp",
+                "PresentationMode__Scene__ElevationId": "Elevation_002"
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_003",
+                "PresentationMode__Scene__Name": "South Elevation",
+                "PresentationMode__Scene__Order": 3,
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": 20000,
+                        "Camera__DefaultPos__PosY": 1481,
+                        "Camera__DefaultPos__PosZ": 60573
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": -3.141592653589793,
+                        "Camera__DefaultRotation__RotY": -1.3227955542264262e-16,
+                        "Camera__DefaultRotation__RotZ": -3.141592653589793
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Elevation view centre. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 20000,
+                    "OrbitHelperCube__Position__PosY": 1481,
+                    "OrbitHelperCube__Position__PosZ": -20000
+                },
+                "PresentationMode__Scene__GroupId": "Group_005",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_003.webp",
+                "PresentationMode__Scene__ElevationId": "Elevation_003"
+            },
+            {
+                "PresentationMode__Scene__Id": "Scene_004",
+                "PresentationMode__Scene__Name": "West Elevation",
+                "PresentationMode__Scene__Order": 4,
+                "PresentationMode__Scene__CameraPosition": {
+                    "Camera__DefaultPos": {
+                        "Camera__DefaultPos__PosX": -60573,
+                        "Camera__DefaultPos__PosY": 1481,
+                        "Camera__DefaultPos__PosZ": -20000
+                    },
+                    "Camera__DefaultRotation": {
+                        "Camera__DefaultRotation__RotX": 0,
+                        "Camera__DefaultRotation__RotY": 1.5707963267948966,
+                        "Camera__DefaultRotation__RotZ": 0
+                    },
+                    "Camera__DefaultMisc": {
+                        "Camera__DefaultMisc__Fov": 30.9573
+                    }
+                },
+                "PresentationMode__Scene__OrbitHelperCubePosition": {
+                    "OrbitHelperCube__Position__Description": "Elevation view centre. Values are integer millimetres; convert to 3D units in code.",
+                    "OrbitHelperCube__Position__PosX": 20000,
+                    "OrbitHelperCube__Position__PosY": 1481,
+                    "OrbitHelperCube__Position__PosZ": -20000
+                },
+                "PresentationMode__Scene__GroupId": "Group_005",
+                "PresentationMode__Scene__ThumbnailUrl": "PresentationMode/Thumbnails/Scene_004.webp",
+                "PresentationMode__Scene__ElevationId": "Elevation_004"
+            }
+        ],
+        "PresentationMode__SavedCameraScenes__ShowCarouselByDefault": true,
+        "PresentationMode__SavedCameraScenes__Source": "SketchUpCameraData",
+        "PresentationMode__SavedCameraScenes__Groups": [
+            {
+                "PresentationMode__Group__Id": "Group_001",
+                "PresentationMode__Group__Name": "Exterior 3D Views",
+                "PresentationMode__Group__Order": 1,
+                "PresentationMode__Group__Enabled": true
+            },
+            {
+                "PresentationMode__Group__Id": "Group_002",
+                "PresentationMode__Group__Name": "Interior 3D Views",
+                "PresentationMode__Group__Order": 2,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_003",
+                "PresentationMode__Group__Name": "Dollhouse View",
+                "PresentationMode__Group__Order": 3,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_004",
+                "PresentationMode__Group__Name": "Floor Plans",
+                "PresentationMode__Group__Order": 4,
+                "PresentationMode__Group__Enabled": false
+            },
+            {
+                "PresentationMode__Group__Id": "Group_005",
+                "PresentationMode__Group__Name": "Elevations",
+                "PresentationMode__Group__Order": 5,
+                "PresentationMode__Group__Enabled": true
+            },
+            {
+                "PresentationMode__Group__Id": "Group_006",
+                "PresentationMode__Group__Name": "Cross Sections",
+                "PresentationMode__Group__Order": 6,
+                "PresentationMode__Group__Enabled": false
+            }
+        ]
+    },
+    "ProjectType": "Whitecard",
+    "ValeVison3D__SketchUpCameraData": {
+        "captured_at": "16-Sep-2026 at 15:34",
+        "coordinate_system": "SketchUp_Z_up",
+        "model_name": "Gill__WhiteCardModel__0.2.0__",
+        "note": "Axis swap (Z-up -> Y-up) is handled by the ValeVision3D web app.",
+        "scenes": [
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.326222,
+                        "y": 0.945071,
+                        "z": -0.020469
+                    },
+                    "eye": {
+                        "x": 11210.5701,
+                        "y": -21109.4081,
+                        "z": 3649.3677
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 24310.9364,
+                        "y": 16842.5676,
+                        "z": 2827.3766
+                    },
+                    "up": {
+                        "x": 0.006679,
+                        "y": 0.019349,
+                        "z": 0.99979
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "01 | Full Building",
+                "scene_name": "IMG01__3dView__MainShot__",
+                "section_planes": null
+            },
+            {
+                "camera": {
+                    "aspect_ratio": 0,
+                    "direction": {
+                        "x": 0.423593,
+                        "y": 0.905412,
+                        "z": -0.028269
+                    },
+                    "eye": {
+                        "x": 21285.9286,
+                        "y": -3912.2311,
+                        "z": 2300
+                    },
+                    "fov_degrees": 30.9573,
+                    "fov_is_height": true,
+                    "image_width": 0,
+                    "is_perspective": true,
+                    "target": {
+                        "x": 38296.4776,
+                        "y": 32447.0902,
+                        "z": 1164.7885
+                    },
+                    "up": {
+                        "x": 0.011979,
+                        "y": 0.025605,
+                        "z": 0.9996
+                    }
+                },
+                "include_in_animation": true,
+                "model_layer_visibility": {
+                    "ValeVision__01__OrbitHelperCube": false,
+                    "ValeVision__LandscapeEnvironment": true,
+                    "ValeVision__MainBuildingModel__Existing": true,
+                    "ValeVision__MainBuildingModel__Proposed": true,
+                    "ValeVision__SiteBoundaries": true
+                },
+                "scene_description": "02 | Closer View",
+                "scene_name": "IMG02__3dView__Closer__",
+                "section_planes": null
+            }
+        ],
+        "units": "mm"
+    },
+    "allImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__16-Sep-2026.png",
+        "IMG02__3dView__Closer____WhitecardImage__16-Sep-2026.png"
+    ],
+    "basePath": "Projects/2026/44371__Gill",
+    "displayImages": [
+        "IMG01__3dView__MainShot____WhitecardImage__16-Sep-2026.png",
+        "IMG02__3dView__Closer____WhitecardImage__16-Sep-2026.png"
+    ],
+    "images": [
+        "IMG01__3dView__MainShot____WhitecardImage__16-Sep-2026.png",
+        "IMG02__3dView__Closer____WhitecardImage__16-Sep-2026.png"
+    ],
+    "productionData": {
+        "additionalNotes": "Write a description here. Credit artists or add critique if work is subpar and caused issues.",
+        "conceptArtist": "Steph",
+        "designer": "Dan",
+        "input": "NOT YET REVIEWED"
+    },
+    "projectCode": "44371",
+    "projectName": "Gill",
+    "scheduleData": {
+        "dateFulfilled": "16-Sep-2026",
+        "dateReceived": "NOT YET REVIEWED",
+        "timeTaken": "NOT YET REVIEWED"
+    },
+    "thumbnailImage": "IMG01__3dView__MainShot____WhitecardImage__16-Sep-2026__Thumbnail__524p__.webp",
+    "valeVision_Camera__DefaultPosition": {
+        "Camera__DefaultMisc": {
+            "Camera__DefaultMisc__Fov": 29.8628
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": -5000,
+            "Camera__DefaultPos__PosY": 2800,
+            "Camera__DefaultPos__PosZ": 3250
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.073,
+            "Camera__DefaultRotation__RotY": -0.8346,
+            "Camera__DefaultRotation__RotZ": -0.0541
+        },
+        "Camera__DefaultTarget": {
+            "Camera__DefaultTarget__TargetX": -1250,
+            "Camera__DefaultTarget__TargetY": 2570,
+            "Camera__DefaultTarget__TargetZ": -350
+        }
+    },
+    "valeVision_ModelUrls": [
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__01__OrbitHelperCube__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__TrueVision__LandscapeEnvironment__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__TrueVision__LandscapeEnvironment__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__TrueVision__MainBuildingModel__Existing__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__TrueVision__MainBuildingModel__Existing__MeshModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__TrueVision__MainBuildingModel__Proposed__LineworkModel__.glb",
+        "https://cdn.noble-architecture.com/VaApps/Projects/2026/44371__Gill/Gill__TrueVision__MainBuildingModel__Proposed__MeshModel__.glb"
+    ]
+}

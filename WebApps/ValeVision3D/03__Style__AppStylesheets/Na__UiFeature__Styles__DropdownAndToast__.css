@@ -87,6 +87,34 @@
     box-shadow                          : 0 4px 16px rgba(0, 0, 0, 0.14);       /* <-- Match breadcrumb card shadow */
 }
 
+/* Mobile Swap - Toolbar Hamburger Summons the Tools Menu (<=768px, or short/portrait windows) */
+/* ----------------------------------------------------------------- */
+/* On narrow screens the standalone Tools & Settings trigger and the
+   navigation toolbar cannot both fit, so the trigger is hidden and the
+   toolbar (Na__UiFeature__Styles__NavigationToolbar__.css) gains a
+   hamburger button instead. Pressing it swaps the toolbar out and drops
+   this menu down in its place; folding the menu back up swaps the
+   toolbar back in. Wiring lives in Na__UiFeature__NavigationToolbar__Controls.js.
+   Ported from TrueVision3D v2.9.0 (29-Aug-2026) so the two menus can no
+   longer render at once and overlap. The aspect-ratio leg also catches
+   windows that are wide but short or squarish, where the two would
+   otherwise still collide despite being over 768px wide - see
+   Na__UiFeature__Styles__NavigationToolbar__.css. Tightened from ~1.03:1
+   to 19/20 (0.95:1) on 16-Sep-2026 after the Views button was retired,
+   which narrowed the pill. */
+@media (max-width: 768px), (max-aspect-ratio: 19/20) {
+    .na-dropdown-menu:not(.na-dropdown-menu--dev-localhost) {
+        display                        : none;                    /* <-- Hidden until the hamburger summons it */
+        top                            : calc((var(--Vale_HeaderHeight) + var(--Vale_LayoutTabStripHeight, 0px)) + 14px);
+        right                          : 12px;
+    }
+
+    body.na-mobile-tools-open .na-dropdown-menu:not(.na-dropdown-menu--dev-localhost) {
+        display                        : block;                   /* <-- Swapped in while the menu is open */
+        opacity                        : 1;                       /* <-- Never idle-faded while swapped in */
+    }
+}
+
 .na-dropdown-menu__details--camera-open {
     min-width                           : 440px;
 }

@@ -676,7 +676,7 @@
       "Timecard__Date": "2026-09-11",
       "Timcard__Clock-In__": "08:00",
       "Timcard__Clock-Out__": "18:25",
-      "Timecard__AuthHash": "",
+      "Timecard__AuthHash": "sha256__d4e4d3b02ec3f5b107f945065957c3469d755d370e8f053045fcdd745b7c4314",
       "Timecard__AdminOverride__": {
         "Timecard__IsRetrospectiveEdit": true,
         "Timecard__EditedAtUtcIso": "2026-09-16T07:08:50.159751Z",
@@ -690,7 +690,7 @@
       "Timecard__Date": "2026-09-15",
       "Timcard__Clock-In__": "07:50",
       "Timcard__Clock-Out__": "17:30",
-      "Timecard__AuthHash": "",
+      "Timecard__AuthHash": "sha256__b884a6a82ac817330dc4712a44cbb62c4f31cb0afc2fa82c537b259db24cdd6a",
       "Timecard__AdminOverride__": {
         "Timecard__IsRetrospectiveEdit": true,
         "Timecard__EditedAtUtcIso": "2026-09-16T07:08:37.109910Z",
@@ -703,8 +703,8 @@
     {
       "Timecard__Date": "2026-09-16",
       "Timcard__Clock-In__": "08:05",
-      "Timcard__Clock-Out__": "",
-      "Timecard__AuthHash": "sha256__225f1244419dc8fc8e13938768a287fa50176d3d8d8241c0bdbc2364999de4f2"
+      "Timcard__Clock-Out__": "18:05",
+      "Timecard__AuthHash": "sha256__e3d760e436c5cc627f3fec74d8e9bf3cd6609a45ebf0fd8ad18c13362d7ad9b4"
     }
   ]
 }

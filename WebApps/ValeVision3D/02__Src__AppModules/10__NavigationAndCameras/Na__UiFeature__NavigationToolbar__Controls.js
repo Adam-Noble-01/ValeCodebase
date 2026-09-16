@@ -16,9 +16,7 @@
 //   controls live in their own pill toolbar rather than being buried in the
 //   right-hand Tools & Settings menu (which stays focused on technical and
 //   configuration tools).
-// - Button order: Orbit | Walk | Fly | [Views] | Reset View | Help.
-// - Views button is hidden until a project with PresentationMode__SavedCameraScenes
-//   data loads; wiring is in index.html Engine Entry Points.
+// - Button order: Orbit | Walk | Fly | Reset View | Help | [Menu].
 // - Orbit is always available; Walk and Fly buttons reveal only when enabled
 //   for the current model (project.json Navmode__EnabledModes), matching the
 //   gating previously used by the retired Tools-menu Navigation Mode section.
@@ -38,6 +36,20 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 16-Sep-2026 - Views Button Retired
+// - Removed the Views button (it shared the Reset View icon and only toggled
+//   the scene carousel, which now always shows itself whenever a project has
+//   valid saved scenes — see Na__PresentationMode__UI__SceneCarousel.js). The
+//   toolbar is narrower as a result, which lets the mobile menu swap's
+//   collision breakpoint below be tightened.
+//
+// 16-Sep-2026 - Mobile Menu Swap
+// - Button order: Orbit | Walk | Fly | Reset View | Help | [Menu].
+//   The Menu (hamburger) button is mobile-only (<=768px, CSS-gated): it swaps
+//   the toolbar out for the Tools & Settings dropdown so the two no longer
+//   render at once and overlap in portrait layouts. Ported from TrueVision3D
+//   v2.9.0 (29-Aug-2026).
+//
 // 09-Sep-2026 - Drawing mode visibility (port Phase 2)
 // - The pill hides from the start of a floor plan or elevation transition and
 // - returns on exit, so it never sits under the drawing markup toolbar.
@@ -80,6 +92,8 @@
     const Na__NavToolbar__FlyBtnId     = 'naNavToolbarFlyBtn';      // <-- Fly mode button
     const Na__NavToolbar__ResetBtnId   = 'naNavToolbarResetBtn';    // <-- Reset view button
     const Na__NavToolbar__HelpBtnId    = 'naNavToolbarHelpBtn';     // <-- Help panel button
+    const Na__NavToolbar__MenuBtnId    = 'naNavToolbarMenuBtn';     // <-- Mobile hamburger (swaps in the Tools & Settings menu)
+    const Na__NavToolbar__ToolsMenuId  = 'naToolsMenu';             // <-- Tools & Settings <details> element
     // ------------------------------------------------------------
 
     // MODULE CONSTANTS | CSS Classes and Events
@@ -87,6 +101,7 @@
     const Na__NavToolbar__ContainerId   = 'naNavToolbar';                     // <-- Toolbar pill container
     const Na__NavToolbar__ActiveClass   = 'na-nav-toolbar__btn--active';      // <-- Pale blue active highlight
     const Na__NavToolbar__WakeClass     = 'na-nav-toolbar--wake';             // <-- Short-lived opaque flash (hotkey mode changes)
+    const Na__NavToolbar__MobileToolsOpenClass = 'na-mobile-tools-open';     // <-- Body class: toolbar swapped out for the Tools menu
     const NA__NAV_MODE_CHANGED_EVENT    = 'na-navigation-mode-changed';       // <-- Dispatched on every mode change
     // ------------------------------------------------------------
 
@@ -259,6 +274,30 @@
     }
     // ------------------------------------------------------------
 
+
+    // SUB FUNCTION | Swap the Toolbar Out for the Tools & Settings Menu (Mobile)
+    // ------------------------------------------------------------
+    // Mobile-only (<=768px): CSS hides the standalone Tools & Settings
+    // trigger there and reveals this hamburger instead. Adding the body
+    // class hides the toolbar and displays the dropdown in the same row;
+    // opening the <details> AFTER a forced reflow lets the menu list play
+    // its normal drop-down animation from the freshly displayed state.
+    // Ported from TrueVision3D v2.9.0 (29-Aug-2026).
+    // ------------------------------------------------------------
+    function Na__NavToolbar__HandleMenuClick() {
+        const toolsMenu = document.getElementById(Na__NavToolbar__ToolsMenuId);
+        if (!toolsMenu) return;
+
+        document.body.classList.add(Na__NavToolbar__MobileToolsOpenClass);   // <-- Toolbar out, dropdown in (CSS swap)
+
+        const menuBtn = document.getElementById(Na__NavToolbar__MenuBtnId);
+        if (menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
+
+        void toolsMenu.offsetWidth;                                          // <-- Commit display change so the open animation runs
+        toolsMenu.setAttribute('open', 'open');                              // <-- Drop the regular menu down
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -307,6 +346,23 @@
         wireButton(Na__NavToolbar__FlyBtnId,   Na__NavToolbar__HandleFlyClick);
         wireButton(Na__NavToolbar__ResetBtnId, Na__NavToolbar__HandleResetClick);
         wireButton(Na__NavToolbar__HelpBtnId,  Na__NavToolbar__HandleHelpClick);
+        wireButton(Na__NavToolbar__MenuBtnId,  Na__NavToolbar__HandleMenuClick);
+
+        // MOBILE MENU SWAP | Folding the Tools menu back up restores the toolbar
+        // ------------------------------------------------------------
+        // The <details> toggle event fires however the menu is closed (its
+        // summary, the boot teaser, or a menu item closing it), so this one
+        // listener is the single point that swaps the toolbar back in.
+        // ------------------------------------------------------------
+        const toolsMenu = document.getElementById(Na__NavToolbar__ToolsMenuId);
+        if (toolsMenu) {
+            toolsMenu.addEventListener('toggle', () => {
+                if (toolsMenu.open) return;                                  // <-- Only act when the menu folds up
+                document.body.classList.remove(Na__NavToolbar__MobileToolsOpenClass); // <-- Toolbar back in its row
+                const menuBtn = document.getElementById(Na__NavToolbar__MenuBtnId);
+                if (menuBtn) menuBtn.setAttribute('aria-expanded', 'false');
+            });
+        }
 
         // SET INITIAL ACTIVE STATE (Orbit is the default mode on load)
         // Pointer hover / keyboard focus wake is pure CSS — no listeners needed.

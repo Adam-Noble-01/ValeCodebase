@@ -152,7 +152,6 @@
     // ------------------------------------------------------------
     const Na__VsTl__ROOT_ID     = 'naVideoStudioTimeline';                   // <-- Container declared in index.html
     const Na__VsTl__BODY_CLASS  = 'na-video-studio-timeline-active';         // <-- Lets other CSS step out of the way
-    const Na__VsTl__VIEWS_BTN_ID = 'naNavToolbarViewsBtn';                   // <-- Disabled while the timeline owns the bottom
     // ------------------------------------------------------------
 
 
@@ -767,22 +766,10 @@
     // by default still shows it again the moment the panel closes.
     // ------------------------------------------------------------
     function Na__VsTl__TakeOverCarousel(active) {
-        const viewsButton = document.getElementById(Na__VsTl__VIEWS_BTN_ID);
-
         if (active) {
             Na__VsTl__CarouselWasVisible = Na__PresentationMode__UI__IsCarouselVisible();
             Na__PresentationMode__UI__ToggleSceneCarousel(false);
-
-            if (viewsButton) {
-                viewsButton.disabled = true;                                 // <-- Nothing to toggle while the timeline is up
-                viewsButton.title    = 'Scene views are hidden while the Video Studio timeline is open';
-            }
             return;
-        }
-
-        if (viewsButton) {
-            viewsButton.disabled = false;
-            viewsButton.title    = 'Toggle saved scene carousel';
         }
 
         Na__PresentationMode__UI__ToggleSceneCarousel(Na__VsTl__CarouselWasVisible === true);

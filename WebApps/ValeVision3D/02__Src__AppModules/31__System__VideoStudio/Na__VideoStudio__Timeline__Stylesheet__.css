@@ -450,12 +450,6 @@
         transform                          : translateX(-50%);
     }
 
-    /* Views has nothing to toggle while the timeline owns the bottom.        */
-    body.na-video-studio-timeline-active #naNavToolbarViewsBtn {
-        opacity                            : 0.4;
-        pointer-events                     : none;
-    }
-
     /* The dropdown menus are fixed columns that can run the full height of the
        viewport, and the Video Studio panel that drives this strip is the
        longest of them. Left alone it would cover the tiles it just opened, so

@@ -1,6 +1,124 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.50.1 - 16-Sep-2026 - Carousel Holds Opaque Longer on First Reveal
+
+### Changed
+- **The carousel's first reveal after the loading screen now holds fully
+  opaque for 4 seconds** (`InitialRevealHoldMs`) instead of the usual 2.6s
+  wake hold used for ordinary interactions. A user arriving straight off the
+  loading screen gets a clear, unmissable look at the carousel before it
+  settles into its 50% idle translucency. Every other wake (clicks, taps,
+  scrolling, the scene camera flight) still uses the shorter 2.6s hold.
+- Ported identically to TrueVision3D.
+
+### Files
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+  - `FlashCarouselWake` and `ToggleSceneCarousel` take an optional hold
+    override; the `na-presentation-mode-scenes-loaded` handler passes the
+    new 4000ms constant.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.50.0 - 16-Sep-2026 - Views Button Retired, Carousel Always Shows With Idle Fade
+
+### Changed
+- **Removed the Views button from the navigation toolbar.** It only toggled
+  the saved-scene carousel and shared the Reset View icon (no icon of its own
+  existed). Every project writer already set
+  `PresentationMode__SavedCameraScenes__ShowCarouselByDefault: true`
+  regardless, so the button was never actually needed to reveal the carousel
+  for real project data - it was one more thing that could go stale.
+- **The carousel now always shows itself whenever the loaded project has
+  valid saved scenes**, ignoring that flag entirely (matching TrueVision3D,
+  which has never had a toggle). It still hides when scenes are cleared, and
+  Video Studio can still hide/restore it while its timeline owns the bottom
+  of the screen.
+- **Ported TrueVision3D's carousel idle-fade and wake-flash verbatim.** The
+  carousel now rests at 50% opacity like the toolbar and Tools & Settings
+  menu, waking on hover, keyboard focus, or a JS flash (`na-pm-carousel--wake`)
+  that covers taps, swipes and the scene camera flight before fading back out.
+  Previously the carousel had no idle-fade at all and stayed permanently
+  opaque.
+- **Tightened the mobile-swap `max-aspect-ratio` breakpoint from ~1.03:1 to
+  19/20 (0.95:1)** in both the toolbar and Tools & Settings dropdown CSS
+  (v2.49.1's fix). Removing the Views button narrows the centred pill enough
+  that the toolbar/dropdown collision now only shows up on genuinely
+  portrait-leaning windows, not merely square ones. Mirrored the same value
+  into TrueVision3D so both apps share one threshold.
+
+### Removed
+- Dead references to `naNavToolbarViewsBtn`: the Video Studio timeline's
+  disable/restore-title code and the `body.na-video-studio-timeline-active
+  #naNavToolbarViewsBtn` CSS rule (`Na__VideoStudio__Timeline__Controls.js`,
+  `Na__VideoStudio__Timeline__Stylesheet__.css`).
+- The orphaned `na-presentation-carousel-toggle` / `na-presentation-views-btn-state`
+  custom events (no producer/consumer once the button was gone).
+
+### Files
+- `index.html` - Views button markup and its wiring block removed.
+- `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__UI__SceneCarousel.js`
+  - always-show logic, wake-flash (`FlashCarouselWake`), interaction listeners.
+- `02__Src__AppModules/31__System__VideoStudio/Na__VideoStudio__Timeline__Controls.js`
+  and its stylesheet - dead Views-button code removed.
+- `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css`
+  - idle-fade region added for `.na-pm-carousel`.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css`,
+  `Na__UiFeature__Styles__DropdownAndToast__.css` - breakpoint tightened.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.49.1 - 16-Sep-2026 - Mobile Nav Swap: Also Trigger on Near-Square/Portrait Windows
+
+### Fixed
+- **The v2.49.0 swap only fired under 768px wide, but the toolbar/dropdown
+  collision also shows up on windows well over that width once they get short
+  or square** - e.g. a resized desktop browser or the SketchUp webview at
+  ~1345x1309 (~1.03:1). The centred nav pill (especially with the Views button
+  showing) can reach far enough across at that width to run into the
+  top-right Tools & Settings dropdown, which max-width alone never catches.
+
+### Changed
+- **The mobile menu swap in both `Na__UiFeature__Styles__NavigationToolbar__.css`
+  and `Na__UiFeature__Styles__DropdownAndToast__.css` now triggers on
+  `(max-width: 768px), (max-aspect-ratio: 103/100)`** - an OR of the original
+  width rule and a new aspect-ratio rule (~1.03:1, rounded from the 1345x1309
+  reference case). Either condition alone is enough to swap the toolbar for
+  the Tools & Settings menu, so a window that is wide but short/square gets
+  the same treatment as a narrow phone.
+- **Ported the identical breakpoint change to TrueVision3D**, since it shares
+  the exact same swap mechanism and was ported from there originally.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.49.0 - 16-Sep-2026 - Mobile Nav: Toolbar and Tools Menu Swap Instead of Overlap
+
+### Fixed
+- **The bottom navigation pill and the top-right Tools & Settings dropdown had
+  no coordination on a narrow phone screen.** The dropdown carried no mobile
+  treatment at all, so on portrait viewports the two menus were simply two
+  independent floating widgets competing for a screen too narrow for both.
+
+### Changed
+- **Ported TrueVision3D's mobile menu swap verbatim (v2.9.0, 29-Aug-2026).** At
+  <=768px the standalone Tools & Settings trigger is hidden and the bottom nav
+  toolbar gains a vertical divider + hamburger button instead. Pressing it adds
+  `body.na-mobile-tools-open`, which hides the toolbar and drops the Tools &
+  Settings menu into the same top-right area; folding the menu back up (by any
+  path - its own summary, the boot teaser, or a menu item closing it) restores
+  the toolbar via a single `toggle` listener on `#naToolsMenu`. Because only one
+  of the two is ever visible, the old overlap cannot occur.
+- **The boot "teaser" auto-open of the Tools menu is skipped while the menu is
+  swapped out behind the hamburger** (checks `getComputedStyle(...).display`),
+  matching TrueVision's guard.
+
+### Files
+- `index.html` - hamburger + divider markup on `#naNavToolbar`; teaser guard.
+- `02__Src__AppModules/10__NavigationAndCameras/Na__UiFeature__NavigationToolbar__Controls.js`
+  - swap wiring (`Na__NavToolbar__HandleMenuClick`, toggle listener).
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__NavigationToolbar__.css`
+  - divider/hamburger styling, `<=768px` reveal + toolbar hide.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__DropdownAndToast__.css`
+  - `<=768px` hide/swap-in rule for the dropdown (Dev Tools menu excluded).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.48.1 - 16-Sep-2026 - Progressive Renderer: Zoom and Scene Changes Refine Too
 
 ### Fixed

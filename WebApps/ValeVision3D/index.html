@@ -888,7 +888,7 @@
                 <!-- -------------------------------------------------------- -->
                 <!-- LAYOUT EDITOR (localhost dev only, port Phase 5)          -->
                 <!-- -------------------------------------------------------- -->
-                <!-- @delegate: ./02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__DevMenu__Controls__.js -->
+                <!-- @delegate: ./02__Src__AppModules/51__System__LayoutEditor/70__DevTools__DevMenu/Na__LayoutEditor__DevMenu__Controls__.js -->
                 <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naLayoutEditorDevItem" style="display:none;">
                     <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naLayoutEditorDevToggle" aria-expanded="false">
                         Layout Editor
@@ -1373,12 +1373,13 @@
     import { Na__ProjectedLinework__DevMenu__Initialize } from './02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js';
     // ------------------------------------------------------------
 
-    // MODULE IMPORTS | Layout Editor (port Phase 5)
-    // @delegate: ./02__Src__AppModules/51__System__LayoutEditor/
+    // MODULE IMPORTS | Layout Editor (port Phase 5) - the loader only
+    // @delegate: ./02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
     // ------------------------------------------------------------
-    import { Na__LeMode__Initialize } from './02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__ModeController__.js';
-    import { Na__LeTabs__Initialize } from './02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__TabStrip__.js';
-    import { Na__LayoutEditor__DevMenu__Initialize } from './02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__DevMenu__Controls__.js';
+    // The editor, its tab strip and its Dev section are imported by the loader
+    // the first time each is needed, never at start-up.
+    // ------------------------------------------------------------
+    import { Na__LeLoad__Initialize } from './02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Video Studio System (localhost dev only)
@@ -1598,7 +1599,7 @@
     Na__Renderer__Main.setSize(window.innerWidth, window.innerHeight);
     Na__Renderer__Main.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     Na__Renderer__Main.shadowMap.enabled = true;
-    Na__Renderer__Main.shadowMap.type = THREE.PCFSoftShadowMap;
+    Na__Renderer__Main.shadowMap.type = THREE.PCFShadowMap;    // <-- r184 deprecates PCFSoftShadowMap and already drew PCFShadowMap in its place
     Na__Renderer__Main.outputColorSpace = THREE.SRGBColorSpace;
     Na__Renderer__Main.toneMapping = THREE.NoToneMapping;
     Na__Renderer__Main.toneMappingExposure = 1.0;
@@ -2172,9 +2173,12 @@
     Na__ProjectedLinework__DevMenu__Initialize({ modelRoot : Na__ModelGroup__Root, showToast : Na__UiFeature__ShowToast });
     // ------------------------------------------------------------
 
-    // LAYOUT EDITOR | Sheets, tab strip and Dev section (port Phase 5)
-    // @delegate: ./02__Src__AppModules/51__System__LayoutEditor/
-    Na__LeMode__Initialize({
+    // LAYOUT EDITOR | Sheets, tab strip and Dev section (port Phase 5), loaded on first use
+    // @delegate: ./02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+    // Only the loader starts here. The tab strip arrives once the project has
+    // Layout Mode on and a sheet; the editor itself arrives, behind its loading
+    // screen, the first time a sheet is opened or a Dev action needs it.
+    Na__LeLoad__Initialize({
         renderer    : Na__Renderer__Main,
         scene       : Na__Scene__Main,
         camera      : Na__Camera__Main,
@@ -2183,10 +2187,6 @@
         modelRoot   : Na__ModelGroup__Root,
         appConfig   : Na__AppConfig__Data,                                      // <-- LayoutEditor__Config (web read-only flag)
         showToast   : Na__UiFeature__ShowToast
-    }).then((enabled) => {
-        if (!enabled) return;                                                   // <-- Feature off in config: no tabs, no Dev section
-        Na__LeTabs__Initialize();                                               // <-- 3D Model plus one tab per sheet under the header
-        Na__LayoutEditor__DevMenu__Initialize({ showToast : Na__UiFeature__ShowToast });
     });
     // ------------------------------------------------------------
 

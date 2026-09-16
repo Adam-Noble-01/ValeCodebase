@@ -52,6 +52,15 @@
             "FogPlane__Config__PlaneB__PositionMm": -28421
         }
     },
+    "LayoutEditor__DrawingsData": {
+        "LayoutEditor__DrawingsData__Description": "ValeVision-owned drawing definitions: floor plans, elevations and sections with their markup, and Layout Editor sheets. Distances are integer millimetres. The SketchUp cloud sync never writes this key.",
+        "LayoutEditor__DrawingsData__Version": 1,
+        "LayoutEditor__DrawingsData__ClientDimensionsEnabled": false,
+        "LayoutEditor__DrawingsData__LayoutModeEnabled": false,
+        "LayoutEditor__DrawingsData__FloorPlans": [],
+        "LayoutEditor__DrawingsData__Elevations": [],
+        "LayoutEditor__DrawingsData__Sheets": []
+    },
     "PresentationMode__SavedCameraScenes": {
         "PresentationMode__SavedCameraScenes__AutoPlayEnabledByDefault": false,
         "PresentationMode__SavedCameraScenes__DefaultSceneId": "su_scene_1",
@@ -1389,12 +1398,12 @@
         "VideoStudio__Config__Videos": [
             {
                 "VideoStudio__Video__Export": {
+                    "VideoStudio__Export__AntiAliasSamples": 16,
                     "VideoStudio__Export__AspectRatio": "3:2",
                     "VideoStudio__Export__BitrateMbps": 151,
                     "VideoStudio__Export__Fps": 60,
                     "VideoStudio__Export__Height": 2160,
-                    "VideoStudio__Export__Width": 3240,
-                    "VideoStudio__Export__AntiAliasSamples": 16
+                    "VideoStudio__Export__Width": 3240
                 },
                 "VideoStudio__Video__Id": "Video_001",
                 "VideoStudio__Video__Keyframes": [
@@ -1554,13 +1563,13 @@
                             }
                         },
                         "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__DoorAnimation": true,
                         "VideoStudio__Keyframe__HoldMs": 500,
                         "VideoStudio__Keyframe__Id": "Key_013",
                         "VideoStudio__Keyframe__Label": "Inserted Frame 1",
                         "VideoStudio__Keyframe__LensMm": 25,
                         "VideoStudio__Keyframe__Order": 7,
-                        "VideoStudio__Keyframe__SegmentMs": 5000,
-                        "VideoStudio__Keyframe__DoorAnimation": true
+                        "VideoStudio__Keyframe__SegmentMs": 5000
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {
@@ -1579,13 +1588,13 @@
                             }
                         },
                         "VideoStudio__Keyframe__CapturedInMode": "Fly",
+                        "VideoStudio__Keyframe__DoorAnimation": true,
                         "VideoStudio__Keyframe__HoldMs": 0,
                         "VideoStudio__Keyframe__Id": "Key_014",
                         "VideoStudio__Keyframe__Label": "Inserted Frame 2",
                         "VideoStudio__Keyframe__LensMm": 26,
                         "VideoStudio__Keyframe__Order": 8,
-                        "VideoStudio__Keyframe__SegmentMs": 3000,
-                        "VideoStudio__Keyframe__DoorAnimation": true
+                        "VideoStudio__Keyframe__SegmentMs": 3000
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {
@@ -1604,12 +1613,12 @@
                             }
                         },
                         "VideoStudio__Keyframe__CapturedInMode": "Orbit",
+                        "VideoStudio__Keyframe__DoorAnimation": true,
                         "VideoStudio__Keyframe__HoldMs": 1000,
                         "VideoStudio__Keyframe__Id": "Key_005",
                         "VideoStudio__Keyframe__LensMm": 22,
                         "VideoStudio__Keyframe__Order": 9,
-                        "VideoStudio__Keyframe__SegmentMs": 4000,
-                        "VideoStudio__Keyframe__DoorAnimation": true
+                        "VideoStudio__Keyframe__SegmentMs": 4000
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {
@@ -1628,13 +1637,13 @@
                             }
                         },
                         "VideoStudio__Keyframe__CapturedInMode": "Orbit",
+                        "VideoStudio__Keyframe__DoorAnimation": true,
                         "VideoStudio__Keyframe__HoldMs": 1000,
                         "VideoStudio__Keyframe__Id": "Key_015",
                         "VideoStudio__Keyframe__Label": "Inserted Frame 3",
                         "VideoStudio__Keyframe__LensMm": 22,
                         "VideoStudio__Keyframe__Order": 10,
-                        "VideoStudio__Keyframe__SegmentMs": 5000,
-                        "VideoStudio__Keyframe__DoorAnimation": true
+                        "VideoStudio__Keyframe__SegmentMs": 5000
                     },
                     {
                         "VideoStudio__Keyframe__CameraPosition": {

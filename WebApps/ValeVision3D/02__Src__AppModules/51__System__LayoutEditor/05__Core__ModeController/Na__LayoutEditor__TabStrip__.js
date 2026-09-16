@@ -1,0 +1,314 @@
+// =============================================================================
+// VALEVISION3D - LAYOUT EDITOR - TAB STRIP
+// =============================================================================
+//
+// FILE       : Na__LayoutEditor__TabStrip__.js
+// NAMESPACE  : Na__LeTabs
+// MODULE     : Layout Editor - Tab Strip
+// AUTHOR     : Adam Noble - Noble Architecture
+// PURPOSE    : The row of tabs under the header: 3D Model, one per sheet, and a plus on localhost
+// CREATED    : 09-Sep-2026
+//
+// DESCRIPTION:
+// - Shown only while the project's Layout Mode switch (Dev Tools, Layout
+//   Editor) is on AND the project has a sheet, on localhost and on the live
+//   site alike; IsAvailable owns the rule (the loader's copy before the
+//   editor has loaded, the mode controller's after).
+//   Its height is published as --Vale_LayoutTabStripHeight and the body
+//   carries na-layout-tabs--visible, so the canvas, menus, breadcrumb and
+//   carousel shift down by the same amount (D22, D23, D24).
+// - The 3D Model tab leaves the editor; a sheet tab enters it on that
+//   sheet; the plus tab makes a sheet and opens it. Double-click a sheet
+//   tab to rename it (localhost). Web viewers switch tabs but cannot add,
+//   rename or reorder.
+// - LIGHT ON PURPOSE. The strip is drawn before the editor exists, so it
+//   reaches the editor only through Na__LayoutEditor__Loader__: before the
+//   load the tabs are read from the raw drawings block, and the first click
+//   on a sheet tab, the plus, a rename or a drag loads the editor behind the
+//   loading screen, then does what was asked.
+//
+// INTEGRATION:
+// - Imported and initialized by Na__LayoutEditor__Loader__ the first time the
+//   editor is offered for the project; never by index.html.
+//
+// -----------------------------------------------------------------------------
+//
+// PORT NOTE:
+// - Ported from   : Lantern Designer 30__System__DrawingEditorMode (mode tab purpose)
+// - Ported on     : 09-Sep-2026 for ValeVision3D v2.21.0 (port Phase 5)
+// - Parity        : new
+// - Divergences   : n/a
+// - Back-port     : none.
+//
+// -----------------------------------------------------------------------------
+//
+// DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.3.0
+// - Loads before the editor and without it: every read and every action goes
+//   through Na__LayoutEditor__Loader__ instead of the mode controller, the
+//   sheet model, the config and the specification, which between them put
+//   the whole editor on the start-up path. The rendering is unchanged.
+// - Shown only when Layout Mode is on and the project has a sheet, here and
+//   on the live site, so a project with no sheets has no plus tab either: its
+//   first sheet comes from New Sheet in the Dev section.
+// - Rebuilt when the loader announces a change (a project loaded or saved,
+//   Layout Mode switched, the editor loaded), through the same signature gate.
+//
+// 13-Sep-2026 - Version 1.2.0
+// - A model change rebuilds the strip only when a tab would look different - a
+//   sheet added, removed, renamed, reordered or opened, or Layout Mode switched -
+//   instead of on every edit. Ported from TrueVision; the signature carries
+//   IsAvailable where TrueVision's carries the config enable flag.
+//
+// 11-Sep-2026 - Version 1.1.0
+// - Visibility from Na__LeMode__IsAvailable: no strip on the live site for a
+//   project without sheets, none on localhost until Layout Mode is switched on.
+//
+// 09-Sep-2026 - Version 1.0.0
+// - Initial implementation for port Phase 5.
+//
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Imports
+// -----------------------------------------------------------------------------
+
+    // MODULE IMPORTS | The Layout Editor Loader (the strip's only way to the editor)
+    // ------------------------------------------------------------
+    // Nothing else from the editor may be imported here: this module loads
+    // before the editor does, and a static import would pull it in.
+    // ------------------------------------------------------------
+    import {
+        Na__LeLoad__SHEETS_EVENT,
+        Na__LeLoad__MODE_EVENT,
+        Na__LeLoad__SPEC_EVENT,
+        Na__LeLoad__STATE_EVENT,
+        Na__LeLoad__VIEW_SPEC,
+        Na__LeLoad__GetLabel,
+        Na__LeLoad__GetSheets,
+        Na__LeLoad__GetActiveSheet,
+        Na__LeLoad__IsActive,
+        Na__LeLoad__IsEditable,
+        Na__LeLoad__IsAvailable,
+        Na__LeLoad__GetView,
+        Na__LeLoad__IsSpecDirty,
+        Na__LeLoad__Enter,
+        Na__LeLoad__Leave,
+        Na__LeLoad__OpenSpecification,
+        Na__LeLoad__CreateSheet,
+        Na__LeLoad__UpdateSheet,
+        Na__LeLoad__ReorderSheet
+    } from '../01__Core__Loader/Na__LayoutEditor__Loader__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Constants and State
+// -----------------------------------------------------------------------------
+
+    // MODULE CONSTANTS | Ids, Classes and the Published Height
+    // ------------------------------------------------------------
+    const Na__LeTabs__NAV_ID     = 'naLayoutEditorTabStrip';
+    const Na__LeTabs__BODY_CLASS = 'na-layout-tabs--visible';
+    const Na__LeTabs__CSS_VAR    = '--Vale_LayoutTabStripHeight';
+    const Na__LeTabs__HEIGHT_PX  = 36;
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | Root and Drag State
+    // ------------------------------------------------------------
+    let Na__LeTabs__Root    = null;
+    let Na__LeTabs__DragId  = null;
+    let Na__LeTabs__Signature = null;    // <-- What the strip last drew, so a change that alters no tab skips the rebuild
+    let Na__LeTabs__Visible = null;    // <-- Last published state; the resize only fires on a change
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Rendering
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | One Tab Button
+    // ------------------------------------------------------------
+    function Na__LeTabs__Tab(text, active, onClick, modifier) {
+        const button = document.createElement('button');
+        button.type        = 'button';
+        button.className   = 'na-le-tabs__tab' + (active ? ' na-le-tabs__tab--active' : '') + (modifier ? ' ' + modifier : '');
+        button.textContent = text;
+        button.setAttribute('aria-pressed', String(!!active));
+        button.addEventListener('click', onClick);
+        return button;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Inline Rename of a Sheet Tab
+    // ------------------------------------------------------------
+    function Na__LeTabs__Rename(button, sheet) {
+        const input = document.createElement('input');
+        input.type      = 'text';
+        input.className = 'na-le-tabs__rename';
+        input.value     = sheet.Sheet__Name;
+        const commit = () => { const v = input.value.trim(); if (v && v !== sheet.Sheet__Name) void Na__LeLoad__UpdateSheet(sheet, { name : v }); else Na__LeTabs__Render(); };
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } if (e.key === 'Escape') { input.value = sheet.Sheet__Name; input.blur(); } e.stopPropagation(); });
+        input.addEventListener('blur', commit);
+        button.replaceWith(input);
+        input.focus(); input.select();
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Publish Visibility to the Rest of the Shell
+    // ------------------------------------------------------------
+    function Na__LeTabs__Publish(visible) {
+        document.documentElement.style.setProperty(Na__LeTabs__CSS_VAR, (visible ? Na__LeTabs__HEIGHT_PX : 0) + 'px');
+        document.body.classList.toggle(Na__LeTabs__BODY_CLASS, visible);
+        if (Na__LeTabs__Root) Na__LeTabs__Root.hidden = !visible;
+        if (visible === Na__LeTabs__Visible) return;
+        Na__LeTabs__Visible = visible;
+        window.dispatchEvent(new Event('resize'));                               // <-- Canvas-sized listeners re-measure once per change
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Rebuild the Tabs
+    // ------------------------------------------------------------
+    function Na__LeTabs__Render() {
+        if (!Na__LeTabs__Root) return;
+        Na__LeTabs__Signature = Na__LeTabs__Sig();                              // <-- Recorded by every build, direct or gated, so the gate can never go stale
+        const sheets   = Na__LeLoad__GetSheets();
+        const editable = Na__LeLoad__IsEditable();
+        const isActive = Na__LeLoad__IsActive();
+        const onSpec   = isActive && Na__LeLoad__GetView() === Na__LeLoad__VIEW_SPEC;
+        const active   = (isActive && !onSpec) ? Na__LeLoad__GetActiveSheet() : null;   // <-- No sheet tab is the open one while the specification is
+        const visible  = Na__LeLoad__IsAvailable();                          // <-- Layout Mode on and at least one sheet, here and on the live site
+        Na__LeTabs__Root.innerHTML = '';
+        Na__LeTabs__Publish(visible);
+        if (!visible) return;
+
+        Na__LeTabs__Root.appendChild(Na__LeTabs__Tab(Na__LeLoad__GetLabel('ModelTab', '3D Model'), !isActive, () => Na__LeLoad__Leave(), 'na-le-tabs__tab--model'));
+        sheets.forEach((sheet) => {
+            const tab = Na__LeTabs__Tab(sheet.Sheet__Name, !!active && active.Sheet__Id === sheet.Sheet__Id, () => { void Na__LeLoad__Enter(sheet.Sheet__Id); });   // <-- Loads the editor on the first click
+            tab.setAttribute('data-na-sheet-id', sheet.Sheet__Id);
+            if (editable) {
+                tab.title = 'Double-click to rename, drag to reorder';
+                tab.addEventListener('dblclick', () => Na__LeTabs__Rename(tab, sheet));
+                tab.draggable = true;
+                tab.addEventListener('dragstart', (e) => { Na__LeTabs__DragId = sheet.Sheet__Id; e.dataTransfer.effectAllowed = 'move'; });
+                tab.addEventListener('dragover', (e) => { if (Na__LeTabs__DragId && Na__LeTabs__DragId !== sheet.Sheet__Id) e.preventDefault(); });
+                tab.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (!Na__LeTabs__DragId || Na__LeTabs__DragId === sheet.Sheet__Id) return;
+                    const dragged = Na__LeTabs__DragId;
+                    Na__LeTabs__DragId = null;
+                    void Na__LeLoad__ReorderSheet(dragged, Na__LeLoad__GetSheets().findIndex((s) => s.Sheet__Id === sheet.Sheet__Id));
+                });
+                tab.addEventListener('dragend', () => { Na__LeTabs__DragId = null; });
+            }
+            Na__LeTabs__Root.appendChild(tab);
+        });
+        if (editable) {
+            const plus = Na__LeTabs__Tab(Na__LeLoad__GetLabel('AddSheetTab', '+'), false, async () => {
+                const sheet = await Na__LeLoad__CreateSheet({});
+                if (sheet) void Na__LeLoad__Enter(sheet.Sheet__Id);
+            }, 'na-le-tabs__tab--add');
+            plus.title = Na__LeLoad__GetLabel('AddSheetTitle', 'New sheet');
+            Na__LeTabs__Root.appendChild(plus);
+        }
+
+        // PROJECT SPECIFICATION | Last, and only while a drawing tab is open
+        if (isActive) {
+            const unsynced = Na__LeLoad__IsSpecDirty();
+            const spec = Na__LeTabs__Tab(Na__LeLoad__GetLabel('SpecificationTab', 'Project Specification'), onSpec, () => { void Na__LeLoad__OpenSpecification(); },
+                'na-le-tabs__tab--spec' + (unsynced ? ' na-le-tabs__tab--unsynced' : ''));
+            spec.title = unsynced
+                ? Na__LeLoad__GetLabel('SpecificationTabUnsynced', 'Project Specification - changes kept in this browser, not yet synced')
+                : Na__LeLoad__GetLabel('SpecificationTabTitle', 'Every drawing note of the project, grouped and numbered');
+            Na__LeTabs__Root.appendChild(spec);
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Everything a Tab Shows, as One Comparable String
+    // ------------------------------------------------------------
+    // ValeVision's strip is shown by IsAvailable - the project's Layout Mode
+    // switch AND the presence of sheets - so that is what the signature
+    // carries where TrueVision's carries the config enable flag. Flipping
+    // Layout Mode therefore always rebuilds.
+    // ------------------------------------------------------------
+    function Na__LeTabs__Sig() {
+        const sheets   = Na__LeLoad__GetSheets();
+        const isActive = Na__LeLoad__IsActive();
+        const active   = isActive ? Na__LeLoad__GetActiveSheet() : null;
+        return sheets.map((sheet) => sheet.Sheet__Id + '' + sheet.Sheet__Name).join('')
+            + '|' + (active ? active.Sheet__Id : '') + '|' + isActive + '|' + Na__LeLoad__IsEditable() + '|' + Na__LeLoad__IsAvailable()
+            + '|' + Na__LeLoad__GetView() + '|' + Na__LeLoad__IsSpecDirty();     // <-- The specification tab: open or not, synced or not
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Change Arrives: Rebuild Only if a Tab Would Change
+    // ------------------------------------------------------------
+    // The strip used to be torn down and rebuilt on EVERY model change - each
+    // nudge, each style paint, each vertex of a shape - although a tab only
+    // shows a sheet's name and whether it is the open one. Rebuilding also
+    // threw away a rename field half-typed whenever something else on the
+    // sheet changed underneath it. Render records the signature of what it
+    // drew, so the comparison is always against the strip actually on screen.
+    // ------------------------------------------------------------
+    function Na__LeTabs__OnModelChanged() {
+        if (Na__LeTabs__Root && Na__LeTabs__Root.childElementCount > 0 && Na__LeTabs__Sig() === Na__LeTabs__Signature) return;
+        Na__LeTabs__Render();
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Initialization
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | Build the Strip Under the Header
+    // ------------------------------------------------------------
+    function Na__LeTabs__Initialize() {
+        if (Na__LeTabs__Root) return true;
+        const header = document.querySelector('.app-header');
+        const nav = document.createElement('nav');
+        nav.id        = Na__LeTabs__NAV_ID;
+        nav.className = 'na-le-tabs';
+        nav.setAttribute('aria-label', 'Drawing sheets');
+        nav.hidden = true;
+        if (header && header.parentNode) header.parentNode.insertBefore(nav, header.nextSibling);
+        else document.body.insertBefore(nav, document.body.firstChild);
+        Na__LeTabs__Root = nav;
+        window.addEventListener(Na__LeLoad__SHEETS_EVENT, Na__LeTabs__OnModelChanged);   // <-- Only when a tab would look different
+        window.addEventListener(Na__LeLoad__SPEC_EVENT,   Na__LeTabs__OnModelChanged);   // <-- The specification tab's unsynced dot
+        window.addEventListener(Na__LeLoad__STATE_EVENT,  Na__LeTabs__OnModelChanged);   // <-- A project loaded or saved, Layout Mode switched, the editor loaded
+        window.addEventListener(Na__LeLoad__MODE_EVENT,   () => Na__LeTabs__Render());
+        Na__LeTabs__Render();                                                    // <-- Imported because the editor is offered: draw it now
+        return true;
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Module Exports
+// -----------------------------------------------------------------------------
+
+    // MODULE EXPORTS | Layout Editor Tab Strip API
+    // ------------------------------------------------------------
+    export {
+        Na__LeTabs__Initialize,
+        Na__LeTabs__Render
+    };
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------

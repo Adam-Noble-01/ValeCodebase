@@ -26,6 +26,31 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.0.8
+// - Token bumped (2026-09-15-2): every ValeVision Layout Editor module moved
+//   into numbered subfolders of 51__System__LayoutEditor (v2.47.0), so their
+//   URLs changed, and index.html, the CSS index and RenameDrawing now name the
+//   new paths. A deployed origin answering those three from the old shell
+//   cache would ask for files that are no longer there. Also covers v2.45.1
+//   and v2.46.0 (Viewport panel, mode controller, the new ThumbnailBake
+//   module and both drawing Dev editors), and v2.47.1 (index.html's shadow
+//   map type and the sharpen effect's readback buffers).
+//
+// 15-Sep-2026 - Version 1.0.7
+// - Localhost shell assets (JS, CSS) are network-first, revalidated with
+//   cache:'no-cache', instead of stale-while-revalidate. A module edited in
+//   place was served from the shell cache at its old version while a module
+//   the cache had never seen arrived fresh from disk, and the mixed graph
+//   failed to link: ValeVision's Na__LayoutEditor__ModelLayers__ threw "does
+//   not provide an export named Na__ModelToggle__GetCategoryKeys" until a
+//   reload had let the background refresh land. Deployed origins keep
+//   stale-while-revalidate and rely on the token below.
+// - Token bumped (2026-09-15-1) for the same fault on deployed origins (the
+//   token had not moved since 11-Sep while ValeVision modules changed), and
+//   for the ValeVision Layout Editor loading on first use (new Loader,
+//   LoadingScreen and Boot stylesheet; TabStrip, DevMenu, ModeController,
+//   RenameDrawing, index.html and the CSS index edited).
+//
 // 11-Sep-2026 - Version 1.0.6
 // - Token bumped again (2026-09-11-1) for ValeVision per-scene and per-keyframe navigation modes (new Switcher module, Video Studio and Presentation Mode edits).
 // - Token bumped again (2026-09-11-2) for ValeVision per-keyframe door animation (Video Studio, door proximity and door animation modules).
@@ -145,7 +170,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-11-5';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-15-2';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id
@@ -407,6 +432,49 @@
     // ---------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Is This Service Worker Serving a Development Origin?
+    // ---------------------------------------------------------------
+    // localhost, 127.0.0.1 and 0.0.0.0 are the Flask and static dev servers;
+    // *.localhost names are the per-session hosts the preview tools use.
+    // ---------------------------------------------------------------
+    function Whitecardopedia__Pwa__ServiceWorker__Logic__IsDevelopmentOrigin() {
+        const hostname          = self.location.hostname;                                                                           // <-- The service worker's own origin
+        return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || hostname.endsWith('.localhost');   // <-- Local servers only
+    }
+    // ---------------------------------------------------------------
+
+
+    // FUNCTION | Network First, Revalidated Against the Server (Development Shell)
+    // ------------------------------------------------------------
+    // On a development origin modules are edited in place under the same URL.
+    // Stale-while-revalidate there hands the page a MIXED module graph: a file
+    // the shell cache holds comes back at its old version while a file the
+    // cache has never seen arrives fresh, and an ES module graph that mixes
+    // versions fails to link ("does not provide an export named ..."). The
+    // next reload works, because the background refresh landed meanwhile,
+    // which makes the fault look like a timing error.
+    // cache:'no-cache' asks the server every time; an unchanged file comes back
+    // as a 304 from the same machine, so nothing is downloaded twice. Offline,
+    // or with the local server stopped, the cached copy is still served.
+    // ------------------------------------------------------------
+    async function Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirstRevalidate(request, cacheName) {
+        const cacheInstance     = await caches.open(cacheName);                                                                     // <-- Open named cache
+
+        try {
+            const networkResponse = await fetch(request, { cache: 'no-cache' });                                                    // <-- Always ask the server; a 304 costs no body
+            if (networkResponse && networkResponse.ok) {
+                cacheInstance.put(request, networkResponse.clone()).catch(() => {});                                                // <-- Keep the offline copy current
+            }
+            return networkResponse;                                                                                                 // <-- The file as it is on disk now
+        } catch (error) {
+            const cachedResponse  = await cacheInstance.match(request);                                                             // <-- Server unreachable
+            if (cachedResponse) return cachedResponse;                                                                              // <-- Serve the last copy
+            return Response.error();                                                                                                // <-- Fail closed when uncached
+        }
+    }
+    // ---------------------------------------------------------------
+
+
     // FUNCTION | Network First With Slow-Network Grace (Model GLBs)
     // ------------------------------------------------------------
     // Behaviour contract (model caching strategy):
@@ -562,6 +630,10 @@
         }
 
         if (classification === 'shell') {
+            if (Whitecardopedia__Pwa__ServiceWorker__Logic__IsDevelopmentOrigin()) {
+                fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__NetworkFirstRevalidate(request, PWA_SW_CACHE_NAME_SHELL)); // <-- Localhost: modules are edited in place, so one load must never mix old and new files
+                return;
+            }
             fetchEvent.respondWith(Whitecardopedia__Pwa__ServiceWorker__Logic__StaleWhileRevalidate(request, PWA_SW_CACHE_NAME_SHELL)); // <-- JS/CSS: stale-while-revalidate (fast, background refresh)
             return;
         }

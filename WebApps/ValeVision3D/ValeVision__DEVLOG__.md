@@ -1,6 +1,323 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.47.1 - 15-Sep-2026 - Console Tidy-Ups: Shadow Map Type and Sharpen Readbacks
+
+### Fixed
+- **"PCFSoftShadowMap has been deprecated" on every load.** index.html asked the
+  renderer for `PCFSoftShadowMap`, which three r184 deprecates: it drew
+  `PCFShadowMap` in its place and said so in the console. It now asks for
+  `PCFShadowMap`, so the shadows are exactly what they were.
+- **Fewer "Multiple readback operations using getImageData" hints.** The High
+  Pass Sharpen effect reads its source and blurred buffers back on every strip.
+  Both buffers are now created with `willReadFrequently`, so each read is a copy
+  in memory rather than a readback from the graphics card. TrueVision's sharpen
+  already created its blur canvas that way.
+
+### Notes
+- **One hint can remain per 3D viewport picture** with Enhance Whitecard on. The
+  tiled renderer draws the picture, checks one pixel of its canvas and hands it
+  on; Levels and Sharpen then read that canvas again. It stays GPU-backed on
+  purpose: the tiler composites every tile into it, image exports use the same
+  path, and flagging it would slow every render to silence a hint.
+- For those two buffers the blur now runs on the processor rather than the
+  graphics card. A strip is at most about 4 MP and the radius is small; a pixel
+  may round one level differently from before, which a sharpened picture hides.
+- TrueVision takes the shadow map line in v2.55.0; its readbacks need nothing.
+
+### Files
+- `index.html` (the shadow map type).
+- `30__System__ImageExport/Na__ImageExport__PostProcessEffects__HighPassSharpen.js` (the two buffers).
+- `Whitecardopedia__Pwa__ServiceWorker__Logic__.js` 1.0.8: the note only; the token bumped for v2.47.0 covers this.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.47.0 - 15-Sep-2026 - Layout Editor Sorted Into Numbered Subfolders
+
+### Changed
+- **Folder 51 is sorted into numbered subfolders.** `51__System__LayoutEditor`
+  had grown to 126 files in one folder. Each file now sits in a subfolder
+  numbered the way `02__Src__AppModules` is: what the editor cannot start
+  without comes first, then its systems, then the panels, the features and
+  the Dev tools, with gaps left between the numbers for later.
+
+| Folder | Holds |
+|---|---|
+| `01__Core__Loader` | Loader, LoadingScreen, Styles__Boot |
+| `03__Core__Config` | ConfigState and its units, the AppConfig and KeyMappings JSON |
+| `05__Core__ModeController` | ModeController, TabStrip |
+| `07__Core__SheetData` | SheetModel and its units, SheetRecords, SheetLayout, ScaleManager, DrawingScale, History, AutoSave, Assets |
+| `10__Core__SheetSurface` | SheetSurface, SheetChrome, TitleBlock__Classic, TitleBlock__Modern, Navigation, Controls__Pc, Controls__TouchScreen, Styles__Main |
+| `15__Core__Markup` | MarkupBridge, DimensionGeometry, LeaderGeometry, ShapeGeometry, Groups, MeasureParse |
+| `20__System__Viewports` | Viewport2d and its units, Viewport3d, Viewport3dZoom, ViewportHandles, ViewportClipboard, ForceRender, RasterQuality |
+| `25__System__RenderStyles` | SnapshotRenderer, Enhance, EdgeStyles, RenderComposites, ModelLayers, and their config JSON |
+| `30__System__SheetTools` | SheetTools and its units, SelectionBox, SelectionSet, Grips, Snapping, AxisLock, ContextMenu, ItemClipboard, Eyedropper, Measurements |
+| `35__System__DrawingTools` | TextTool, DimensionTool, LeaderTool, ShapeTool, RectangleTool, GradientTool, LineStyleTool, and their config JSON |
+| `40__Ui__Panels` | PanelHost, Toolbar, the nine Panel__ modules, Styles__Panels |
+| `50__Feature__Specification` | SpecData and SpecEditor and their units, SpecDocument, SpecLinks, SpecMargin, MarginGrip, Panel__MarginNotes, Styles__Specification |
+| `55__Feature__Scrapbook` | TrueVision only (Scrapbook); not created here |
+| `60__Feature__PdfExport` | PdfExporter |
+| `70__DevTools__DevMenu` | DevMenu__Controls |
+
+- **Nothing is renamed.** Every file keeps its name, namespace and exports;
+  only its folder changed, and every relative path that reaches it changed
+  with it: 464 inside the folder (imports, dynamic imports, `@delegate` notes
+  and the loader's stylesheet addresses) and three files outside it
+  (index.html, the CSS index and `Na__DrawView__RenameDrawing__`). Each config
+  JSON sits beside the module that fetches it, so those addresses read the
+  same.
+- **Eight files over 1000 lines are split into units** (over 1000 in either
+  app; TrueVision gets the same splits, so a port still copies file for
+  file). The original keeps its name and every export and re-exports its
+  units, so no caller changed. A unit that writes shared state does it
+  through accessor functions in its State unit, because an imported binding
+  cannot be assigned. Nothing in the folder is over 1000 lines now; the
+  longest is Eyedropper at 924.
+
+| Original, lines before (ValeVision / TrueVision) | Now | Units, lines |
+|---|---|---|
+| `SheetTools` 1.24.0 (2005 / 2138) | 529 | State 153, ToolState 347, HitResolution 320, ContentEditing 129, PointerPress 388, PointerDrag 554, Keyboard 375, ContextMenu 289 |
+| `SheetModel` 1.16.0 (1580 / 1801) | 555 | State 184, Sheets 284, Layers 196, DrawOrder 153, Viewports 296, TextAndDimensions 268, Shapes 191, Leaders 168, Groups 228 |
+| `SpecData` 1.2.0 (1271 / 1318) | 283 | State 285, Document 395, Editing 393, Draft 194, Transport 461 |
+| `SpecEditor` 1.2.0 (1231 / 1230) | 321 | State 170, Builders 183, Bar 253, Notes 253, Render 256, NoteDrag 210, Actions 358 |
+| `ConfigState` 1.15.0 (1222 / 1348) | 367 | Readers 143, KeyMap 416, SheetSetup 331, ToolSetup 302, EditorSetup 192 |
+| `Styles__Specification.css` (1024 / 1023) | 424 | Notes 352, Read 270 |
+| `Styles__Main.css` (943 / 1116) | 362 | Paper 593 |
+| `Viewport2d` 1.7.0 (835 / 1141) | 399 | Window 135, Frame 265, Linework 376 |
+
+### Fixed
+- **A selected leader got no selection box.** Every other selected item gets
+  a dashed box round it, but the leader's line in MarkupBridge still expected
+  a single selected item and wrote to a variable that no longer exists, so
+  the box was never drawn (its grips still showed). It had been that way
+  since box select arrived (MarkupBridge 1.5.0, 14-Sep-2026) and was found by
+  the lint run over the whole folder for this change. The line now matches
+  TrueVision's.
+
+### Notes
+- **Start-up is unchanged:** 346 JS modules (7,663 KB), of which the Layout
+  Editor's are still only the loader and its loading screen (2 files,
+  49 KB), and 28 stylesheets, of which Styles__Boot is the editor's only one.
+- **Service worker token** bumped to 2026-09-15-2 (logic 1.0.8). Module URLs
+  changed, and a deployed origin could otherwise answer index.html, the CSS
+  index or RenameDrawing from its old cache. The bump also covers v2.45.1 and
+  v2.46.0, which did not make one.
+- **Git:** plain file moves; nothing was staged. git status shows the 83
+  files git tracked in the folder as deleted and all 126 in the subfolders as
+  untracked, so `git add` the folder before committing (`git commit -a` alone
+  would record only the deletions).
+- **TrueVision is next** (Task 04): the same folders and the same splits in
+  its folder 51, still flat at 90 files. Its extra files already have a
+  place: ModelSource, PlanDoors and ViewportSnapMove in `20__`, Scrapbook and
+  its panel in `55__`, PdfFonts in `60__`.
+- **Verified statically:** ESLint (no-undef, no-import-assign,
+  no-unused-vars) over all 112 modules reports what it did before the move,
+  less the leader fix (three old unused-variable warnings remain); the
+  module graph walk (477 modules) and the named-export check (375 files)
+  pass; every `new URL` target, CSS index import and dynamic import
+  resolves; the static import cycles are the same two groups as before the
+  splits; each split was checked unit by unit for code moved verbatim and
+  every export kept. Not run in a browser: Adam tests.
+
+### Files
+- 126 files moved into 14 subfolders of `51__System__LayoutEditor`, among
+  them 40 new units: `ConfigState__*` (5), `SheetModel__*` (9),
+  `SheetTools__*` (8), `SpecData__*` (5), `SpecEditor__*` (7),
+  `Viewport2d__*` (3), `Styles__Main__Paper__.css`,
+  `Styles__Specification__Notes__.css` and `Styles__Specification__Read__.css`.
+- `Na__LayoutEditor__MarkupBridge__.js` 1.9.1.
+- Paths only: `index.html`, `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css`,
+  `42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js`.
+- `Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js` 1.0.8.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.46.0 - 15-Sep-2026 - Plan and Elevation Thumbnails Bake Themselves
+
+### Fixed
+- **Seeded and added drawings showed broken carousel pictures.** A plan or
+  elevation card is created with the conventional thumbnail path
+  (PresentationMode/Thumbnails/<scene id>.webp), but nothing rendered that
+  picture unless someone previewed the drawing and pressed Save Thumbnail.
+  Seed N / E / S / W on Harris Scheme-02 left Scene_005 to Scene_008 pointing
+  at four files that were never written, so the carousel showed four broken
+  images.
+
+### Added
+- **New drawings bake their own thumbnails.** Seed N / E / S / W, Pick Face,
+  + Add Elevation, Seed From Model Storeys, + Add Ground Floor Plan, + Add
+  Floor Plan, and creating a card for a row that has none, all queue the new
+  cards for a bake. For each drawing the bake opens it as Preview does,
+  records its framing (the thumbnail is the framing), captures the viewport
+  and uploads it R2-first with the local mirror. A seed's drawings share one
+  run: the first flies in, the rest flip in a frame.
+- **Bake Missing Thumbnails**, in the Floor Plans and Elevations sections,
+  bakes every card whose picture does not load, and leaves a thumbnail framed
+  by hand with Save Thumbnail alone.
+- **During a run** the full-screen overlay reads "Baking thumbnail 2 of 4" with
+  the drawing's name, then how many baked and whether the save worked.
+  Afterwards the view goes back where it was: the drawing that was
+  previewing, or the 3D camera and its orbit target exactly. Save Elevations
+  or Save Floor Plans runs once, and the carousel reloads every card.
+
+### Notes
+- New shared module `Na__DrawView__ThumbnailBake__` (folder 42). It knows
+  neither mode controller: each editor hands it an adapter (open, showing,
+  active, leave, record framing).
+- The carousel still shows a broken image when a picture is missing, by
+  choice: it makes a missing picture obvious while authoring.
+- A single + Add bakes straight away too, so a drawing re-aimed afterwards
+  keeps its first picture until Save Thumbnail replaces it.
+- If a drawing of the other kind was previewing when a run starts, the run
+  ends in 3D at that drawing's approach pose rather than back on it.
+- After Pick Face the bake hides the plane gizmo; moving the plane or
+  re-picking shows it again.
+- **Verified statically:** ESLint no-undef and no-unused-vars are clean on the
+  three modules, both label configs parse, and the module graph walk and the
+  named-export check pass (338 files). Not run in a browser: Adam tests.
+
+### Files
+- New: `42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js` 1.0.0.
+- `Na__Elevation__DevMenu__Editor__.js` 1.2.0,
+  `Na__FloorPlan__DevMenu__Editor__.js` 1.2.0, and `BakeThumbnailsLabel` in
+  `Na__Elevation__AppConfig__.json` and `Na__FloorPlan__AppConfig__.json`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.45.1 - 15-Sep-2026 - Fix: New Plans and Elevations Missing From Add Viewport
+
+### Fixed
+- **Plans, elevations and scenes added after a sheet was first opened never
+  appeared in the Viewport panel's Scene list** (the one above Add Viewport).
+  The list was filled when the sheet's panels were built and only refilled
+  while it held a single option, so once a project's first scenes were in it
+  the list stayed as it was until the page reloaded. On Harris Scheme-02 it
+  kept the four Exterior 3D Views and never showed the four elevations
+  (Scene_005 to Scene_008, Elevations group), although their records and
+  scene cards were saved. The list is now rebuilt on every panel refresh,
+  keeping the scene already chosen, and left alone while it has focus.
+- **The Viewport panel follows scene changes while a sheet is open.** A scene
+  broadcast (a card added, renamed, regrouped or removed) refreshes it.
+
+### Notes
+- Not caused by v2.45.0: the one-time fill dates from the panel's first
+  version (v2.21.0). TrueVision's panel has the same line; recorded in the
+  parity ledger as a pending back-port.
+- Plans and elevations filed in a scene group that is switched off still
+  appear, at the end of the list without a group name, as before.
+
+### Files
+- `Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.1,
+  `Na__LayoutEditor__ModeController__.js` 1.15.1.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.45.0 - 15-Sep-2026 - Layout Editor Loads on First Use, Behind a Loading Screen
+
+### Changed
+- **The Layout Editor is off the start-up path.** index.html imported the mode
+  controller, the tab strip and the Dev section, and through them the whole
+  editor, for every project, drawings or not. Start-up now imports only the
+  new loader and its loading screen:
+  - JS modules at start-up: 417 files (9.5 MB) before, 345 files (7.6 MB) now.
+    The Layout Editor's share: 73 files (1.9 MB) before, 2 files (48 KB) now.
+  - Stylesheets at start-up: 30 (442 KB) before, 28 (345 KB) now. The Layout
+    Editor's share: 104 KB before, 7 KB now.
+- **When it loads.** The tab strip module arrives only when the project's
+  Layout Mode switch is on AND the project has a sheet. The editor itself (its
+  modules, its three stylesheets and its configs) arrives the first time
+  something needs it: a sheet tab, the + tab, a tab rename or drag, or a Dev
+  section action. The Dev section module arrives the first time its toggle is
+  clicked.
+- **One availability rule, everywhere.** Tabs show only while Layout Mode is
+  on and the project has at least one sheet, on localhost and on the live
+  site. The live site used to show tabs whenever a project had sheets; it now
+  needs the switch as well. Localhost used to show the strip (3D Model and +)
+  with no sheets; a project's first sheet now comes from New Sheet in Dev
+  Tools > Layout Editor.
+- **Dev Tools > Layout Editor looks and works as before.** The switch and Save
+  Sheets never load the editor; Open, New Sheet, Duplicate, Delete and Bake
+  load it first. Delete asks before it loads, so a cancelled delete loads
+  nothing. The Layout Mode wording follows the new rule.
+
+### Added
+- **Loading screen.** The ValeVision start-up screen again, full screen: the
+  same white overlay, Vale blue spinner and fade, built from the start-up
+  screen's own classes. It reads "Loading Layout Editor..." with a status line
+  (Fetching the drawing tools, then Reading the drawing settings) and hides
+  once the sheet has painted. If a file fails to load it shows the reason with
+  Reload Page and Back to 3D Model.
+
+### Notes
+- **The drawing system is unchanged**, only how it loads. The tab strip and
+  the Dev section reach the editor through the loader (`Na__LeLoad__*`), which
+  answers from the raw drawings block until the editor has loaded and calls
+  the real modules after.
+- **A late start is caught up.** Once the editor has initialised, the loader
+  announces the sheet model's project load once more, so an unsaved browser
+  draft is still put back (its toast now appears when the editor first opens,
+  not when the page loads), history takes its baseline and bubble codes
+  propagate.
+- **Drawing renames.** `Na__DrawView__RenameDrawing__` imported Viewport3d
+  directly, and that one import put the whole editor into start-up. The
+  re-stamp now goes through the loader: renaming a scene that a sheet viewport
+  holds a baked snapshot of loads the editor quietly (no screen) before
+  anything is written; any other rename loads nothing.
+- **Stylesheets** are linked at the end of the head when the editor loads.
+  Every selector in them is the editor's own, so the new position changes no
+  other rule. `Styles__Main` gave the tab strip, the Dev section and the
+  published tab height to the new `Styles__Boot` (Main is now 943 lines).
+- **Before the editor loads**, the tab and Dev wording uses the code
+  fallbacks, which match the config. `LayoutEditor__Enabled` can only be read
+  once the config loads; if it is ever false, the first click says so and the
+  tabs go.
+- **Verified statically:** the module graph walk and the named-export check
+  pass (337 files); all 35 calls the loader, tab strip and Dev section make on
+  loaded modules name real exports; ESLint no-undef and no-unused-vars are
+  clean on the six changed modules; the start-up graph was measured before
+  and after. Not run in a browser: Adam tests.
+- **Also seen:** `Na__LayoutEditor__AppConfig__.json` was reformatted (aligned
+  colons) by another writer at 09:21 while this change was being made. This
+  change only rewords three labels in it.
+
+### Files
+- New: `Na__LayoutEditor__Loader__.js` 1.0.0, `Na__LayoutEditor__LoadingScreen__.js`
+  1.0.0, `Na__LayoutEditor__Styles__Boot__.css`.
+- `Na__LayoutEditor__TabStrip__.js` 1.3.0, `Na__LayoutEditor__DevMenu__Controls__.js`
+  1.3.0, `Na__LayoutEditor__ModeController__.js` 1.15.0,
+  `Na__LayoutEditor__Styles__Main__.css`, `Na__LayoutEditor__AppConfig__.json`
+  (three labels), `Na__DrawView__RenameDrawing__.js` 1.1.0, `index.html`,
+  `Na__CoreUi__Styles__Index__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.44.1 - 15-Sep-2026 - Fix: "does not provide an export named Na__ModelToggle__GetCategoryKeys" on Load
+
+### Fixed
+- **The page could die on load with a SyntaxError from the Layout Editor's
+  Model Layers module**, then load normally after a refresh or two. The code
+  was never wrong: `Na__UiFeature__ModelToggle__Controls.js` has exported
+  `Na__ModelToggle__GetCategoryKeys` since 12-Sep. The shared PWA service
+  worker served shell JS stale-while-revalidate, so the page got the cached
+  copy of the Model Toggle module (from before that export existed) while
+  `Na__LayoutEditor__ModelLayers__.js`, which the cache had never seen, came
+  fresh from disk. A module graph that mixes versions fails to link. Each load
+  refreshed the cache in the background, which is why a reload cleared it and
+  why it looked like a timing error.
+- **Localhost is now network-first for shell JS and CSS.** Every module is
+  revalidated against the local server (`cache: 'no-cache'`, a 304 when
+  unchanged), so a load can never mix old and new files, and a module edited
+  in place is live on the next reload with no cache purge. The cached copy is
+  still served when the server is down.
+- **Service worker token bumped** to `2026-09-15-1`. It had not moved since
+  11-Sep while Layout Editor modules changed, so deployed origins, which keep
+  stale-while-revalidate, could hit the same fault once per changed module.
+
+### Notes
+- ValeVision3D does register this service worker: index.html loads
+  `Whitecardopedia__Pwa__ServiceWorker__Registrar__.js`.
+- The first load after pulling installs the new worker, which reloads the page
+  once by itself (the registrar's controllerchange bridge).
+
+### Files
+- `Whitecardopedia/02__Src__AppModules/62__Feature__AppInstallability/Whitecardopedia__Pwa__ServiceWorker__Logic__.js` 1.0.7.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.44.0 - 15-Sep-2026 - Layout Editor: Margin Notes Spread Out When the Column Has Room
 
 ### Added

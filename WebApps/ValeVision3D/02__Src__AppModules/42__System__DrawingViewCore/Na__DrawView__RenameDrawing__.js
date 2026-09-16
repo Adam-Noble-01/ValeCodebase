@@ -35,6 +35,11 @@
 //   is re-stamped, which keeps the asset, its path and the web build's view
 //   of it intact. See Na__LeVp3d__RestampForScene.
 //
+// - THE STAMPER LOADS ON DEMAND. The Layout Editor is off the start-up path,
+//   so the re-stamp is reached through its loader. Renaming a scene that a
+//   sheet viewport holds a baked snapshot of loads the editor quietly first,
+//   before anything is written; any other rename loads nothing.
+//
 // INTEGRATION:
 // - Na__FloorPlan__DevMenu__Editor__ and Na__Elevation__DevMenu__Editor__
 //   pass their name field's requested value straight here.
@@ -106,10 +111,14 @@
     // MODULE IMPORTS | The Name-Keyed Section Binding and the Sheet Viewports
     // ------------------------------------------------------------
     // @delegate: ../41__System__CrossSectionView/Na__CrossSectionView__SceneData.js
-    // @delegate: ../51__System__LayoutEditor/Na__LayoutEditor__Viewport3d__.js
+    // @delegate: ../51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js
+    // ------------------------------------------------------------
+    // The re-stamp comes through the Layout Editor's loader, never straight
+    // from Viewport3d: importing Viewport3d here put the whole editor on the
+    // start-up path.
     // ------------------------------------------------------------
     import { Na__SectSceneData__RenameSceneKey } from '../41__System__CrossSectionView/Na__CrossSectionView__SceneData.js';
-    import { Na__LeVp3d__RestampForScene }       from '../51__System__LayoutEditor/Na__LayoutEditor__Viewport3d__.js';
+    import { Na__LeLoad__PrepareRestamp, Na__LeLoad__RestampForScene } from '../51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -198,7 +207,7 @@
         state.record[state.nameKey] = state.beforeRecordName;
         if (state.scene) state.scene[Na__DrawRename__SCENE_NAME] = state.beforeSceneName;
         if (state.movedBinding) Na__SectSceneData__RenameSceneKey(state.nextName, state.beforeSceneName, state.sceneId);
-        if (state.restamped)    Na__LeVp3d__RestampForScene(state.sceneId);
+        if (state.restamped)    Na__LeLoad__RestampForScene(state.sceneId);
     }
     // ------------------------------------------------------------
 
@@ -237,6 +246,12 @@
         Na__DrawRename__Busy = true;
 
         try {
+            // THE SHEET VIEWPORTS' STAMPER | The Layout Editor loads on first use,
+            // and only it can re-stamp a baked 3D snapshot. It is fetched BEFORE
+            // anything below is written, so the rename stays one uninterrupted
+            // step. A project with no baked snapshot of this scene loads nothing.
+            if (state.sceneId) await Na__LeLoad__PrepareRestamp(state.sceneId);
+
             state.record[state.nameKey] = nextName;
             if (state.scene) state.scene[Na__DrawRename__SCENE_NAME] = nextName;
 
@@ -245,7 +260,7 @@
             // viewports are fingerprinted from the name the scene has NOW, so
             // they are re-stamped after the write above.
             if (state.scene)   state.movedBinding = Na__SectSceneData__RenameSceneKey(state.beforeSceneName, nextName, state.sceneId);
-            if (state.sceneId) state.restamped    = Na__LeVp3d__RestampForScene(state.sceneId);
+            if (state.sceneId) state.restamped    = Na__LeLoad__RestampForScene(state.sceneId);
 
             // ONE DOCUMENT | Na__DrawData__Save writes the drawings block, the
             // presentation block and the section bindings together, so the

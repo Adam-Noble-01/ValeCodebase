@@ -88,9 +88,8 @@
 @import url('../02__Src__AppModules/44__System__PlanAnnotations/Na__PlanAnnotations__Styles__.css');
 @import url('../02__Src__AppModules/45__System__PlanDimensions/Na__PlanDimensions__Styles__.css');
 @import url('../02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__Styles__Main__.css');
-@import url('../02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__Styles__Main__.css');
-@import url('../02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__Styles__Panels__.css');
-@import url('../02__Src__AppModules/51__System__LayoutEditor/Na__LayoutEditor__Styles__Specification__.css');
+@import url('../02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Styles__Boot__.css');
+/* Layout Editor Main, Panels and Specification are linked by Na__LayoutEditor__Loader__.js when the editor first loads */
 
 /* Video Studio - Dev Tools camera path authoring panel */
 /* ----------------------------------------------------------------- */

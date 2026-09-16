@@ -771,6 +771,80 @@ Ported after the plan marked it not applicable (plan section 7.2): Adam asked fo
 | `21/Na__PresentationMode__DevMenu__SceneEditor.js` 1.3.2 | TV `CaptureLiveNavigationMode` | adapted | Recorded on Update Camera and Add Scene From Camera; TV records it on its single Update Scene | 11-Sep-2026 |
 | `31/Na__VideoStudio__*` (preview controller 1.2.0, timeline menu 1.1.0, dev menu 1.2.1, dragger 1.0.1, video data 1.2.1, thumbnails 1.0.1, frame renderer 1.0.1) | none | new | Video Studio is ValeVision only: Go To lands in the keyframe's mode, the menu switch sets it, Stop restores the pre-play mode; stills and exports resync orbit only in orbit | 11-Sep-2026 |
 
+## Layout Editor Loads on First Use (v2.45.0, 15-Sep-2026)
+
+ValeVision only, at Adam's request. index.html imported the mode controller, the tab strip and the Dev section, and
+through them all 73 editor modules and three stylesheets, on every start-up. A loader facade now sits between the
+page and the editor. The drawing system itself is unchanged; only how and when it loads, plus one availability rule.
+
+| ValeVision | TrueVision | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `51/Na__LayoutEditor__Loader__.js` 1.0.0, `LoadingScreen__.js` 1.0.0, `Styles__Boot__.css` | none | new | Offers the editor (Layout Mode on AND a sheet), imports the tab strip when offered and the Dev section when opened, loads the editor behind a full-screen loading screen on first use, and answers the strip and the Dev section from the raw block until then | 15-Sep-2026 |
+| `51/Na__LayoutEditor__TabStrip__.js` 1.3.0, `DevMenu__Controls__.js` 1.3.0 | TV same | adapted | Every read and every action goes through the loader instead of static editor imports; rendering unchanged | 15-Sep-2026 |
+| `51/Na__LayoutEditor__ModeController__.js` 1.15.0 | TV same | adapted | IsAvailable is Layout Mode on AND a sheet, on localhost and live; initialised by the loader, not index.html | 15-Sep-2026 |
+| `51/Na__LayoutEditor__Styles__Main__.css` | TV same | adapted | The published tab height, the tab strip and the Dev section moved to `Styles__Boot__.css`; linked by the loader | 15-Sep-2026 |
+| `42/Na__DrawView__RenameDrawing__.js` 1.1.0 | TV `40/` same | adapted | Re-stamp through the loader, which loads the editor quietly only when a baked snapshot shows the renamed scene | 15-Sep-2026 |
+| `index.html`, `03/Na__CoreUi__Styles__Index__.css`, `51/Na__LayoutEditor__AppConfig__.json` (edited) | n/a | n/a | Loader import and initialisation; Styles__Boot import; Layout Mode wording | 15-Sep-2026 |
+
+## Drawing Thumbnail Bake (v2.46.0, 15-Sep-2026)
+
+ValeVision only, at Adam's request. Plan and elevation cards were created with a thumbnail path but no picture,
+so seeded drawings showed broken images in the carousel until each was previewed and Save Thumbnail pressed.
+
+| ValeVision | TrueVision | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `42/Na__DrawView__ThumbnailBake__.js` 1.0.0 | none | new | Queues drawings, opens each through an editor-supplied adapter, records the framing, captures and uploads, puts the view back and saves once; FindMissing probes each card's picture | 15-Sep-2026 |
+| `43/Na__FloorPlan__DevMenu__Editor__.js` 1.2.0, `46/Na__Elevation__DevMenu__Editor__.js` 1.2.0 | TV `42/`, `45/` same | adapted | Add, seed, Pick Face and card creation queue a bake; Bake Missing Thumbnails button | 15-Sep-2026 |
+| `43/Na__FloorPlan__AppConfig__.json`, `46/Na__Elevation__AppConfig__.json` (edited) | TV same | adapted | `BakeThumbnailsLabel` | 15-Sep-2026 |
+
+## Layout Editor Subfolders (v2.47.0, 15-Sep-2026)
+
+Adam's Task 03. ValeVision first; TrueVision gets the same folders and the same splits in Task 04, so both apps hold
+every Layout Editor file at the same path and a port copies file for file. File names, namespaces and exports are
+unchanged. A file's folder follows its base name, and split units and `__Config__.json` files sit with their base.
+Rows in the sections above keep the flat `51/` paths they were written with.
+
+| Folder | Bases (both apps) | TrueVision-only bases |
+|---|---|---|
+| `01__Core__Loader` | Loader, LoadingScreen, Styles__Boot (ValeVision only until the loader is back-ported) | |
+| `03__Core__Config` | ConfigState, AppConfig, KeyMappings | |
+| `05__Core__ModeController` | ModeController, TabStrip | |
+| `07__Core__SheetData` | SheetModel, SheetRecords, SheetLayout, ScaleManager, DrawingScale, History, AutoSave, Assets | |
+| `10__Core__SheetSurface` | SheetSurface, SheetChrome, TitleBlock__Classic, TitleBlock__Modern, Navigation, Controls__Pc, Controls__TouchScreen, Styles__Main | |
+| `15__Core__Markup` | MarkupBridge, DimensionGeometry, LeaderGeometry, ShapeGeometry, Groups, MeasureParse | |
+| `20__System__Viewports` | Viewport2d, Viewport3d, Viewport3dZoom, ViewportHandles, ViewportClipboard, ForceRender, RasterQuality | ModelSource, PlanDoors, ViewportSnapMove |
+| `25__System__RenderStyles` | SnapshotRenderer, Enhance, EdgeStyles, RenderComposites, ModelLayers | |
+| `30__System__SheetTools` | SheetTools, SelectionBox, SelectionSet, Grips, Snapping, AxisLock, ContextMenu, ItemClipboard, Eyedropper, Measurements | |
+| `35__System__DrawingTools` | TextTool, DimensionTool, LeaderTool, ShapeTool, RectangleTool, GradientTool, LineStyleTool | |
+| `40__Ui__Panels` | PanelHost, Toolbar, Panel__Sheet, Panel__Layers, Panel__Styles, Panel__ModelLayers, Panel__ViewportSettings, Panel__Text, Panel__Leaders, Panel__Dimensions, Panel__Shapes, Styles__Panels | |
+| `50__Feature__Specification` | SpecData, SpecEditor, SpecDocument, SpecLinks, SpecMargin, MarginGrip, Panel__MarginNotes, Styles__Specification | |
+| `55__Feature__Scrapbook` | | Scrapbook (and its config JSON), Panel__Scrapbook |
+| `60__Feature__PdfExport` | PdfExporter | PdfFonts |
+| `70__DevTools__DevMenu` | DevMenu__Controls | |
+
+Splits: every module over 1000 lines in either app, split the same way in both. The original keeps its name and every
+export and re-exports its units; units that write shared state go through accessors in the State unit.
+
+**TrueVision followed the same day in v2.55.0 (Task 04).** Its folder 51 now holds 131 files in the same subfolders
+(no `01__Core__Loader` while it has no loader), with the units below; its CSS index imports the stylesheet parts that
+ValeVision's loader links. A file in one app is at the same path in the other.
+
+| Original | ValeVision before | TrueVision before | Units | TrueVision v2.55.0 |
+|---|---|---|---|---|
+| `SheetTools` 1.24.0 | 2005 | 2138 | State, ToolState, HitResolution, ContentEditing, PointerPress, PointerDrag, Keyboard, ContextMenu | 1.29.0, 586 lines. DoorAt and CarryTarget in HitResolution; 17 accessor writes, one more than here (the doors drag, through the existing WriteDrag) |
+| `SheetModel` 1.16.0 | 1580 | 1801 | State, Sheets, Layers, DrawOrder, Viewports, TextAndDimensions, Shapes, Leaders, Groups | 1.25.0, 700 lines (322 of them header). Drawing type constants in State; IsSitePlanSheet, TabGroup, NextOrder and RenumberSheets in Sheets; IsSitePlanViewport in Viewports; AnnounceRestore stays in the original, since it needs SheetRecords |
+| `SpecData` 1.2.0 | 1271 | 1318 | State, Document, Editing, Draft, Transport | 290 lines. FetchJson and UsesWorker in Transport; Document imports `Na__CfApi__IsConfigured` for GetState |
+| `SpecEditor` 1.2.0 | 1231 | 1230 | State, Builders, Bar, Notes, Render, NoteDrag, Actions | 322 lines, each unit the same length as here; Bar imports TrueVision's `40__` drawing core |
+| `ConfigState` 1.15.0 | 1222 | 1348 | Readers, KeyMap, SheetSetup, ToolSetup, EditorSetup | 1.24.0, 414 lines. GetPlanDoorsSetup, GetModelSourceSetup and the private PdfFontCuts in SheetSetup; no code line changed |
+| `Styles__Specification.css` | 1024 | 1023 | Notes, Read | 425 lines, parts 352 and 270 |
+| `Styles__Main.css` | 943 | 1116 | Paper | 463 lines, Paper 667. Main keeps the tab strip and the Dev section (TrueVision has no Styles__Boot) |
+| `Viewport2d` 1.7.0 | 835 | 1141 | Window, Frame, Linework | 1.10.0, 499 lines. The eight site plan functions in a TrueVision-only `Viewport2d__SitePlan__` unit (319 lines, Adam's choice); Linework also exports BandPaths for it; no code line changed |
+
+| ValeVision | TrueVision | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `51/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js` 1.9.1 | TV same | adapted | A selected leader's box: the leader line now uses isChosen and highlights, as TrueVision's already did. Fixed here only; nothing to send back | 15-Sep-2026 |
+| `index.html`, `03/Na__CoreUi__Styles__Index__.css`, `42/Na__DrawView__RenameDrawing__.js` (paths) | TV `Index.html`, TV CSS index, TV `40/` same | n/a | New Loader and Styles__Boot paths | 15-Sep-2026 |
+
 ---
 
 ## Pending back-port (ValeVision to TrueVision)
@@ -789,3 +863,6 @@ Ported after the plan marked it not applicable (plan section 7.2): Adam asked fo
 | Hidden segments through the worker pool (Lantern Designer) | `50/Na__ProjectedLinework__ClipWorker__.js`, `WorkerPool__.js` | The kernel already computes them; the pool now returns them |
 | The whole Layout Editor (sheets, viewports at scale, PDF) | `51/Na__LayoutEditor__*` | TrueVision has no sheet output; the module set only depends on the drawing records and the projection pipeline |
 | Pose-preserving mode release and entry, look-ahead capture target | `10/Na__NavigationModes__Switcher.js`, walk and fly `SyncFromCamera`, `21/Na__PresentationMode__Camera__SceneTransition.js` 1.4.0 | TrueVision arrives in walk or fly with the entry nudges and the mode's default lens still applied, and its free-look captures store orbit's leftover target, which only shows if the scene is later switched to orbit |
+| Layout Editor loads on first use: loader facade, loading screen, boot stylesheet | `51/01__Core__Loader/Na__LayoutEditor__Loader__.js`, `LoadingScreen__.js`, `Styles__Boot__.css`; TabStrip, DevMenu, ModeController and RenameDrawing edits (v2.45.0) | TrueVision's Index.html imports the whole editor at start-up as well; the loader keeps it off every page load until a sheet is opened |
+| Add Viewport scene list rebuilt on every refresh; the Viewport panel refreshed on scene broadcasts | `51/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.1, `51/05__Core__ModeController/Na__LayoutEditor__ModeController__.js` 1.15.1 (v2.45.1) | TrueVision's panel has the same one-time fill (`addSelect.options.length <= 1`), so plans, elevations and scenes added after a sheet first opens never reach Add Viewport there either |
+| Drawing thumbnail bake: new cards bake their picture, Bake Missing Thumbnails button | `42/Na__DrawView__ThumbnailBake__.js`, the floor plan and elevation Dev editors 1.2.0, two label keys (v2.46.0) | TrueVision's scene links also set the thumbnail path at creation with no picture behind it, so its seeded and added drawing cards show broken images until Save Thumbnail is pressed on each |

@@ -98,6 +98,7 @@
         "ElevationViews__Labels__ExitPreviewLabel": "Exit Preview",
         "ElevationViews__Labels__AnnotateLabel": "Annotate",
         "ElevationViews__Labels__ThumbnailLabel": "Save Thumbnail",
+        "ElevationViews__Labels__BakeThumbnailsLabel": "Bake Missing Thumbnails",
         "ElevationViews__Labels__DeleteElevationPrompt": "Delete the elevation \"{name}\"? Its scene, annotations and dimensions go with it.",
         "ElevationViews__Labels__SaveLabel": "Save Elevations",
         "ElevationViews__Labels__SavedMessage": "Elevations saved to R2.",

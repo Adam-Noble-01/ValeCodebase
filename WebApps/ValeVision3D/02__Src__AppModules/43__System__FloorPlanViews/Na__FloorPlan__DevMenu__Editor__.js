@@ -27,6 +27,10 @@
 // - Save writes the drawings block and the scene links through the one
 //   drawings save path (Na__DrawView__ProjectData__), which merges both into
 //   the live project.json and hands it to the R2-first save utility.
+// - A NEW CARD GETS A PICTURE. Adding or seeding a plan, or giving one a
+//   carousel card, bakes its thumbnail straight away through
+//   Na__DrawView__ThumbnailBake__; Bake Missing Thumbnails catches up the cards
+//   that never had one and leaves hand-framed thumbnails alone.
 //
 // INTEGRATION:
 // - Initialized from index.html alongside the other localhost-only dev tools.
@@ -52,6 +56,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.2.0
+// - Every plan added, seeded from the storeys or given a card is queued for a
+//   thumbnail bake (Na__DrawView__ThumbnailBake__): the plan is opened, captured
+//   and uploaded under the full-screen overlay, the view is put back and Save
+//   Floor Plans runs once. New cards used to point at pictures nobody had
+//   rendered.
+// - Bake Missing Thumbnails bakes every card whose picture does not load.
+//
 // 09-Sep-2026 - Bake before save (port Phase 4)
 // - Save bakes every drawing's projected linework asset that is missing or stale before the project save.
 //
@@ -100,6 +112,7 @@
     } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__DrawView__SectionAdapter__SetPlaneHeightMm } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
     import { Na__DrawSceneRow__Build } from '../42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js';
+    import { Na__DrawThumb__Queue, Na__DrawThumb__FindMissing } from '../42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Projected Linework Baking (port Phase 4)
@@ -420,6 +433,7 @@
         if (config) {
             Na__FpLink__CreateSceneForPlan(config, plan, Na__FpDev__Measure(), Na__FpDev__Fov());
             Na__PresentationMode__ProjectJson__BroadcastScenesChanged();         // <-- Or the new card stays invisible all session
+            Na__FpDev__QueueThumbnails([ plan ]);                                // <-- A card without a picture is a broken image; a seed's plans share one run
         } else {
             Na__FpDev__Toast('Plan created. Add a Presentation scene first so it can have a carousel card.', true);
         }
@@ -500,6 +514,57 @@
         Na__PresentationMode__ProjectJson__BroadcastScenesChanged();             // <-- Drop the card with the plan
         Na__FpDev__Render();
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | How the Thumbnail Bake Opens, Checks and Closes a Plan
+    // ------------------------------------------------------------
+    // Opening is what the Preview button does.
+    // ------------------------------------------------------------
+    function Na__FpDev__ThumbAdapter() {
+        return {
+            kind         : 'plan',
+            enter        : (plan) => Na__FloorPlanMode__EnterPlan(plan),
+            isShowing    : (plan) => Na__FloorPlanMode__IsActive() && Na__FloorPlanMode__GetActivePlan() === plan,
+            getActive    : () => (Na__FloorPlanMode__IsActive() ? Na__FloorPlanMode__GetActivePlan() : null),
+            exit         : () => Na__FloorPlanMode__ExitPlan(null),
+            storeFraming : () => Na__FloorPlanMode__StoreActiveFraming()
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | A Plan as a Bake Item (null when it has no card)
+    // ------------------------------------------------------------
+    function Na__FpDev__ThumbItem(plan) {
+        const config = Na__FpDev__GetConfig();
+        const scene  = (config && plan) ? Na__FpData__FindSceneForPlan(config, plan) : null;
+        return scene ? { drawing : plan, sceneId : scene.PresentationMode__Scene__Id, label : plan.FloorPlan__Name } : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Bake the Thumbnails of Plans Just Added (one run, one save)
+    // ------------------------------------------------------------
+    function Na__FpDev__QueueThumbnails(plans) {
+        const items = (plans || []).map(Na__FpDev__ThumbItem).filter(Boolean);
+        return Na__DrawThumb__Queue({ items : items, adapter : Na__FpDev__ThumbAdapter(), save : Na__FpDev__Save, showToast : Na__FpDev__ShowToast });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Bake Every Plan Card Whose Picture Does Not Load
+    // ------------------------------------------------------------
+    async function Na__FpDev__BakeMissingThumbnails() {
+        const items   = Na__FpData__GetFloorPlans().map(Na__FpDev__ThumbItem).filter(Boolean);
+        const missing = await Na__DrawThumb__FindMissing(items);
+        if (missing.length === 0) {
+            Na__FpDev__Toast(items.length === 0 ? 'No floor plan has a carousel card to bake a thumbnail for.' : 'Every floor plan card already has a picture.');
+            return 0;
+        }
+        Na__DrawThumb__Queue({ items : missing, adapter : Na__FpDev__ThumbAdapter(), save : Na__FpDev__Save, showToast : Na__FpDev__ShowToast });
+        return missing.length;
     }
     // ------------------------------------------------------------
 
@@ -599,6 +664,7 @@
                 Na__FpLink__CreateSceneForPlan(config, plan, Na__FpDev__Measure(), Na__FpDev__Fov());
                 Na__PresentationMode__ProjectJson__BroadcastScenesChanged();
                 Na__FpDev__Toast('Added "' + plan.FloorPlan__Name + '" to the scene carousel.');
+                Na__FpDev__QueueThumbnails([ plan ]);                            // <-- The new card needs its picture too
                 Na__FpDev__Render();
             }
         });
@@ -660,6 +726,10 @@
         actions.appendChild(Na__FpRow__BuildButton(
             Na__FpCfg__GetLabel('SeedFromStoreysLabel', 'Seed From Model Storeys'), '',
             Na__FpDev__SeedFromStoreys
+        ));
+        actions.appendChild(Na__FpRow__BuildButton(
+            Na__FpCfg__GetLabel('BakeThumbnailsLabel', 'Bake Missing Thumbnails'), '',
+            () => { void Na__FpDev__BakeMissingThumbnails(); }
         ));
         Na__FpDev__Panel.appendChild(actions);
 

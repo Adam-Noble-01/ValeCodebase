@@ -85,9 +85,9 @@
         // ------------------------------------------------------------
         const maxAssembledH = stripHeight + pad * 2;
         const sourceCanvas  = Na__HighPass__CreateCanvas(width, maxAssembledH); // <-- Assembled ORIGINAL pixels (carry + body + below)
-        const sourceCtx     = sourceCanvas.getContext('2d');
+        const sourceCtx     = sourceCanvas.getContext('2d', { willReadFrequently : true });   // <-- Read back every strip: kept in memory, so each read is a copy rather than a GPU readback
         const blurCanvas    = Na__HighPass__CreateCanvas(width, maxAssembledH); // <-- Blurred copy of the assembled pixels
-        const blurCtx       = blurCanvas.getContext('2d');
+        const blurCtx       = blurCanvas.getContext('2d', { willReadFrequently : true });     // <-- Read back every strip too (TrueVision's sharpen flags its blur canvas the same way)
         const highPassCanvas = Na__HighPass__CreateCanvas(width, stripHeight);  // <-- High-pass result for one strip
         const highPassCtx    = highPassCanvas.getContext('2d');
         const carryCanvas   = Na__HighPass__CreateCanvas(width, pad);           // <-- ORIGINAL bottom pad rows of the previous strip
@@ -110,7 +110,7 @@
             }
             sourceCtx.drawImage(canvas, 0, y0, width, rowCount + padBot, 0, padTop, width, rowCount + padBot); // <-- Rows [y0, y1+padBot) are still original
 
-            // BLUR | GPU-accelerated Gaussian on the assembled original pixels
+            // BLUR | Canvas-filter Gaussian on the assembled original pixels (drawn in memory: both buffers are read back every strip)
             // ------------------------------------------------------------
             blurCtx.clearRect(0, 0, width, maxAssembledH);
             blurCtx.drawImage(sourceCanvas, 0, 0);                   // <-- Unblurred base copy (matches legacy edge behaviour)

@@ -27,6 +27,10 @@
 //   Elevations; flipping the drawing type moves the card straight away.
 // - Save writes the drawings block and the scene links through the one
 //   drawings save path (Na__DrawView__ProjectData__).
+// - A NEW CARD GETS A PICTURE. Adding, seeding or picking an elevation, or
+//   giving one a carousel card, bakes its thumbnail straight away through
+//   Na__DrawView__ThumbnailBake__; Bake Missing Thumbnails catches up the cards
+//   that never had one and leaves hand-framed thumbnails alone.
 //
 // INTEGRATION:
 // - Initialized from index.html alongside the other localhost-only dev tools.
@@ -50,6 +54,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 15-Sep-2026 - Version 1.2.0
+// - Every elevation added, seeded, picked from a face or given a card is queued
+//   for a thumbnail bake (Na__DrawView__ThumbnailBake__): the drawing is opened,
+//   captured and uploaded under the full-screen overlay, the view is put back
+//   and Save Elevations runs once. Seed N / E / S / W used to leave four cards
+//   pointing at pictures nobody had rendered.
+// - Bake Missing Thumbnails bakes every card whose picture does not load.
+//
 // 09-Sep-2026 - Bake before save (port Phase 4)
 // - Save bakes every drawing's projected linework asset that is missing or stale before the project save.
 //
@@ -89,6 +101,7 @@
     import { Na__DrawView__SectionAdapter__SetPlaneDistanceMm } from '../42__System__DrawingViewCore/Na__DrawView__SectionAdapter__.js';
     import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
     import { Na__DrawSceneRow__Build } from '../42__System__DrawingViewCore/Na__DrawView__SceneLinkRow__.js';
+    import { Na__DrawThumb__Queue, Na__DrawThumb__FindMissing } from '../42__System__DrawingViewCore/Na__DrawView__ThumbnailBake__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Projected Linework Baking (port Phase 4)
@@ -512,6 +525,7 @@
         if (config) {
             Na__ElevLink__CreateSceneForElevation(config, elevation, Na__ElevDev__Measure(elevation), Na__ElevDev__Fov());
             Na__PresentationMode__ProjectJson__BroadcastScenesChanged();         // <-- Or the new card stays invisible all session
+            Na__ElevDev__QueueThumbnails([ elevation ]);                         // <-- A card without a picture is a broken image; a seed's four share one run
         } else {
             Na__ElevDev__Toast('Elevation created. Add a Presentation scene first so it can have a carousel card.', true);
         }
@@ -637,6 +651,58 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | How the Thumbnail Bake Opens, Checks and Closes an Elevation
+    // ------------------------------------------------------------
+    // Opening is what the Preview button does, so the face pick and the gizmo
+    // stand down first and can never appear in a captured picture.
+    // ------------------------------------------------------------
+    function Na__ElevDev__ThumbAdapter() {
+        return {
+            kind         : 'elevation',
+            enter        : (elevation) => { Na__ElevPick__Cancel(); Na__ElevDev__HideGizmo(); return Na__ElevationMode__EnterElevation(elevation); },
+            isShowing    : (elevation) => Na__ElevationMode__IsActive() && Na__ElevationMode__GetActiveElevation() === elevation,
+            getActive    : () => (Na__ElevationMode__IsActive() ? Na__ElevationMode__GetActiveElevation() : null),
+            exit         : () => Na__ElevationMode__ExitElevation(null),
+            storeFraming : () => Na__ElevationMode__StoreActiveFraming()
+        };
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | An Elevation as a Bake Item (null when it has no card)
+    // ------------------------------------------------------------
+    function Na__ElevDev__ThumbItem(elevation) {
+        const config = Na__ElevDev__GetConfig();
+        const scene  = (config && elevation) ? Na__ElevData__FindSceneFor(config, elevation) : null;
+        return scene ? { drawing : elevation, sceneId : scene.PresentationMode__Scene__Id, label : elevation.Elevation__Name } : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Bake the Thumbnails of Elevations Just Added (one run, one save)
+    // ------------------------------------------------------------
+    function Na__ElevDev__QueueThumbnails(elevations) {
+        const items = (elevations || []).map(Na__ElevDev__ThumbItem).filter(Boolean);
+        return Na__DrawThumb__Queue({ items : items, adapter : Na__ElevDev__ThumbAdapter(), save : Na__ElevDev__Save, showToast : Na__ElevDev__ShowToast });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Bake Every Elevation Card Whose Picture Does Not Load
+    // ------------------------------------------------------------
+    async function Na__ElevDev__BakeMissingThumbnails() {
+        const items   = Na__ElevData__GetElevations().map(Na__ElevDev__ThumbItem).filter(Boolean);
+        const missing = await Na__DrawThumb__FindMissing(items);
+        if (missing.length === 0) {
+            Na__ElevDev__Toast(items.length === 0 ? 'No elevation has a carousel card to bake a thumbnail for.' : 'Every elevation card already has a picture.');
+            return 0;
+        }
+        Na__DrawThumb__Queue({ items : missing, adapter : Na__ElevDev__ThumbAdapter(), save : Na__ElevDev__Save, showToast : Na__ElevDev__ShowToast });
+        return missing.length;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Save the Drawings Block and the Scene Links to R2
     // ------------------------------------------------------------
     async function Na__ElevDev__Save() {
@@ -679,6 +745,7 @@
                 Na__ElevLink__CreateSceneForElevation(config, elevation, Na__ElevDev__Measure(elevation), Na__ElevDev__Fov());
                 Na__PresentationMode__ProjectJson__BroadcastScenesChanged();
                 Na__ElevDev__Toast('Added "' + elevation.Elevation__Name + '" to the scene carousel.');
+                Na__ElevDev__QueueThumbnails([ elevation ]);                     // <-- The new card needs its picture too
                 Na__ElevDev__Render();
             }
         });
@@ -713,6 +780,10 @@
         actions.appendChild(Na__ElevRow__BuildButton(
             Na__ElevCfg__GetLabel('SeedFourSidesLabel', 'Seed N / E / S / W'), '',
             Na__ElevDev__SeedFourSides
+        ));
+        actions.appendChild(Na__ElevRow__BuildButton(
+            Na__ElevCfg__GetLabel('BakeThumbnailsLabel', 'Bake Missing Thumbnails'), '',
+            () => { void Na__ElevDev__BakeMissingThumbnails(); }
         ));
         return actions;
     }

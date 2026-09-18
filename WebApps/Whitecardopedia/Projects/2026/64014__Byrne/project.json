@@ -1,18 +1,18 @@
 {
     "Camera__DefaultPosition": {
-        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
-        "Camera__DefaultPos": {
-            "Camera__DefaultPos__PosX": 59263,
-            "Camera__DefaultPos__PosY": 2535,
-            "Camera__DefaultPos__PosZ": 35048
-        },
-        "Camera__DefaultRotation": {
-            "Camera__DefaultRotation__RotX": 0,
-            "Camera__DefaultRotation__RotY": 0.719,
-            "Camera__DefaultRotation__RotZ": 0
-        },
         "Camera__DefaultMisc": {
-            "Camera__DefaultMisc__Fov": 27.1619
+            "Camera__DefaultMisc__Fov": 30.9573
+        },
+        "Camera__DefaultPos": {
+            "Camera__DefaultPos__PosX": 33456,
+            "Camera__DefaultPos__PosY": 27746,
+            "Camera__DefaultPos__PosZ": 10477
+        },
+        "Camera__DefaultPosition__Description": "All camera position/target values are integer millimeters; convert to 3D units in code.",
+        "Camera__DefaultRotation": {
+            "Camera__DefaultRotation__RotX": -0.9309,
+            "Camera__DefaultRotation__RotY": 0.3606,
+            "Camera__DefaultRotation__RotZ": 0.4427
         }
     },
     "FogPlane__Config": {
@@ -21,22 +21,22 @@
         "FogPlane__Config__FalloffDistanceMm": 2500,
         "FogPlane__Config__PlaneA": {
             "FogPlane__Config__PlaneA__Active": true,
+            "FogPlane__Config__PlaneA__PositionMm": -30428,
             "FogPlane__Config__PlaneA__NormalX": 0,
-            "FogPlane__Config__PlaneA__NormalZ": 1,
-            "FogPlane__Config__PlaneA__PositionMm": -30428
+            "FogPlane__Config__PlaneA__NormalZ": 1
         },
         "FogPlane__Config__PlaneB": {
             "FogPlane__Config__PlaneB__Active": true,
+            "FogPlane__Config__PlaneB__PositionMm": 1366,
             "FogPlane__Config__PlaneB__NormalX": 1,
-            "FogPlane__Config__PlaneB__NormalZ": 0,
-            "FogPlane__Config__PlaneB__PositionMm": 1366
+            "FogPlane__Config__PlaneB__NormalZ": 0
         }
     },
     "OrbitHelperCube__Position": {
         "OrbitHelperCube__Position__Description": "Orbit target position from OrbitHelperCube GLB center point. Values are integer millimeters; convert to 3D units in code.",
-        "OrbitHelperCube__Position__PosX": 23040,
-        "OrbitHelperCube__Position__PosY": 2535,
-        "OrbitHelperCube__Position__PosZ": -6339
+        "OrbitHelperCube__Position__PosX": 19286,
+        "OrbitHelperCube__Position__PosY": -2395,
+        "OrbitHelperCube__Position__PosZ": -11959
     },
     "ProjectType": "Whitecard",
     "ValeVison3D__SketchUpCameraData": {

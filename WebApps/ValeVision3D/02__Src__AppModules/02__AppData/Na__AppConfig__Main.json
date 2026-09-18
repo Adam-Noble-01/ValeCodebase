@@ -381,7 +381,7 @@
     },
 
     "LayoutEditor__Config": {
-        "LayoutEditor__Config__Description"   : "Layout Editor (port Phase 5). Drawing tabs are visible to everyone; authoring is localhost-only and the web build is read-only.",
+        "LayoutEditor__Config__Description"   : "Layout Editor (port Phase 5). Authoring is localhost-only (or an explicitly unlocked device); everywhere else the drawings and the project specification are shown by the read-only web viewer, which builds no panel columns or toolbar at all. The tab strip is the same one the editor has. Switch the viewer off in LayoutEditor__WebViewer__Config in Na__LayoutEditor__AppConfig__.json to hand the web build back the read-only editor.",
         "LayoutEditor__Config__ReadOnlyOnWeb" : true
     }
 }

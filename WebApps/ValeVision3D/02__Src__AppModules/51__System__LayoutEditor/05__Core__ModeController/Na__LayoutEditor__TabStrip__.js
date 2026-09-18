@@ -21,6 +21,13 @@
 //   sheet; the plus tab makes a sheet and opens it. Double-click a sheet
 //   tab to rename it (localhost). Web viewers switch tabs but cannot add,
 //   rename or reorder.
+// - WHEN THE TABS DO NOT ALL FIT the strip scrolls sideways under a finger and
+//   an arrow appears at each end of the visible run, stepping a document at a
+//   time. Seven tabs need about 700px and a phone in portrait has 375, so this
+//   is how the whole set is reachable there; on a desktop that fits them all,
+//   no arrow is shown and the strip is what it always was. The same strip
+//   serves the read-only web viewer: what a viewer loses is the plus, the
+//   rename and the drag, which it never had.
 // - LIGHT ON PURPOSE. The strip is drawn before the editor exists, so it
 //   reaches the editor only through Na__LayoutEditor__Loader__: before the
 //   load the tabs are read from the raw drawings block, and the first click
@@ -43,6 +50,14 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.4.0
+// - The tabs go into a scroller with an arrow at each end, shown only when they
+//   do not all fit. An arrow opens the tab before or after the open one by
+//   clicking it, so there is still exactly one way into each document - in
+//   ValeVision that is also what loads the editor on the first press - and a
+//   rebuild scrolls the open tab back into the visible run. Ported from
+//   TrueVision3D 1.5.0.
+//
 // 15-Sep-2026 - Version 1.3.0
 // - Loads before the editor and without it: every read and every action goes
 //   through Na__LayoutEditor__Loader__ instead of the mode controller, the
@@ -115,11 +130,13 @@
     const Na__LeTabs__BODY_CLASS = 'na-layout-tabs--visible';
     const Na__LeTabs__CSS_VAR    = '--Vale_LayoutTabStripHeight';
     const Na__LeTabs__HEIGHT_PX  = 36;
+    const Na__LeTabs__REVEAL_PAD = 8;     // <-- Breathing room left beside a tab scrolled back into view
     // ------------------------------------------------------------
 
     // MODULE VARIABLES | Root and Drag State
     // ------------------------------------------------------------
-    let Na__LeTabs__Root    = null;
+    let Na__LeTabs__Root     = null;
+    let Na__LeTabs__Scroller = null;   // <-- The tabs themselves; the arrows sit outside it so they never scroll away
     let Na__LeTabs__DragId  = null;
     let Na__LeTabs__Signature = null;    // <-- What the strip last drew, so a change that alters no tab skips the rebuild
     let Na__LeTabs__Visible = null;    // <-- Last published state; the resize only fires on a change
@@ -175,6 +192,80 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Every Tab That Opens Something, in the Order They Sit
+    // ------------------------------------------------------------
+    // Read back off the strip rather than rebuilt from the model, so the arrows
+    // step through exactly what is on screen, in exactly the order it is shown,
+    // and every tab is opened by its own click handler - which in ValeVision is
+    // what loads the editor on the first press. The plus is left out: it makes
+    // a sheet rather than opening one.
+    // ------------------------------------------------------------
+    function Na__LeTabs__Openable() {
+        if (!Na__LeTabs__Scroller) return [];
+        return Array.from(Na__LeTabs__Scroller.querySelectorAll('.na-le-tabs__tab:not(.na-le-tabs__tab--add)'));
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Open the Tab Before or After the Open One
+    // ------------------------------------------------------------
+    function Na__LeTabs__Step(direction) {
+        const tabs = Na__LeTabs__Openable();
+        if (!tabs.length) return false;
+        const at   = tabs.findIndex((tab) => tab.classList.contains('na-le-tabs__tab--active'));
+        const next = (at === -1 ? 0 : at + (direction < 0 ? -1 : 1));
+        if (next < 0 || next >= tabs.length) return false;
+        tabs[next].click();                                                      // <-- The tab's own handler, so there is one way in per tab
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Bring the Open Tab Into View Inside the Scroller
+    // ------------------------------------------------------------
+    // Written as a scrollLeft rather than scrollIntoView, which scrolls every
+    // scrollable ancestor as well - including the page, which on a phone slides
+    // the header and the drawing about for no reason anybody asked for.
+    //
+    // MEASURED WITH RECTS, NOT offsetLeft. offsetLeft is counted from the
+    // nearest POSITIONED ancestor, which the scroller is not, so comparing it
+    // with the scroller's own scrollLeft compares two different origins: the
+    // sums come out plausible and the open tab still sits half off the edge.
+    // ------------------------------------------------------------
+    function Na__LeTabs__Reveal() {
+        const active = Na__LeTabs__Scroller ? Na__LeTabs__Scroller.querySelector('.na-le-tabs__tab--active') : null;
+        if (!active) return;
+        const box = Na__LeTabs__Scroller.getBoundingClientRect();
+        const tab = active.getBoundingClientRect();
+        if (tab.left  < box.left)  Na__LeTabs__Scroller.scrollLeft += (tab.left  - box.left)  - Na__LeTabs__REVEAL_PAD;
+        else if (tab.right > box.right) Na__LeTabs__Scroller.scrollLeft += (tab.right - box.right) + Na__LeTabs__REVEAL_PAD;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Show the End Arrows Only When the Tabs Do Not All Fit
+    // ------------------------------------------------------------
+    // ON A PHONE IN PORTRAIT THEY ALWAYS WILL NOT. Seven tabs at their natural
+    // width need about 700px and a phone has 375, so the strip scrolls sideways
+    // under a finger and the arrows at its ends step a document at a time for
+    // anyone who would rather press than flick. On a desktop, where the whole
+    // set fits, nothing is shown and the strip is exactly what it always was.
+    // ------------------------------------------------------------
+    function Na__LeTabs__SyncArrows() {
+        if (!Na__LeTabs__Root || !Na__LeTabs__Scroller) return;
+        const tabs     = Na__LeTabs__Openable();
+        const at       = tabs.findIndex((tab) => tab.classList.contains('na-le-tabs__tab--active'));
+        const overflow = Na__LeTabs__Scroller.scrollWidth > Na__LeTabs__Scroller.clientWidth + 1;
+        [ [ 'prev', at > 0 ], [ 'next', at !== -1 && at < tabs.length - 1 ] ].forEach((entry) => {
+            const arrow = Na__LeTabs__Root.querySelector('.na-le-tabs__arrow--' + entry[0]);
+            if (!arrow) return;
+            arrow.hidden   = !overflow || !tabs.length;
+            arrow.disabled = !entry[1];
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Rebuild the Tabs
     // ------------------------------------------------------------
     function Na__LeTabs__Render() {
@@ -186,11 +277,11 @@
         const onSpec   = isActive && Na__LeLoad__GetView() === Na__LeLoad__VIEW_SPEC;
         const active   = (isActive && !onSpec) ? Na__LeLoad__GetActiveSheet() : null;   // <-- No sheet tab is the open one while the specification is
         const visible  = Na__LeLoad__IsAvailable();                          // <-- Layout Mode on and at least one sheet, here and on the live site
-        Na__LeTabs__Root.innerHTML = '';
+        Na__LeTabs__Scroller.innerHTML = '';
         Na__LeTabs__Publish(visible);
-        if (!visible) return;
+        if (!visible) { Na__LeTabs__SyncArrows(); return; }
 
-        Na__LeTabs__Root.appendChild(Na__LeTabs__Tab(Na__LeLoad__GetLabel('ModelTab', '3D Model'), !isActive, () => Na__LeLoad__Leave(), 'na-le-tabs__tab--model'));
+        Na__LeTabs__Scroller.appendChild(Na__LeTabs__Tab(Na__LeLoad__GetLabel('ModelTab', '3D Model'), !isActive, () => Na__LeLoad__Leave(), 'na-le-tabs__tab--model'));
         sheets.forEach((sheet) => {
             const tab = Na__LeTabs__Tab(sheet.Sheet__Name, !!active && active.Sheet__Id === sheet.Sheet__Id, () => { void Na__LeLoad__Enter(sheet.Sheet__Id); });   // <-- Loads the editor on the first click
             tab.setAttribute('data-na-sheet-id', sheet.Sheet__Id);
@@ -209,7 +300,7 @@
                 });
                 tab.addEventListener('dragend', () => { Na__LeTabs__DragId = null; });
             }
-            Na__LeTabs__Root.appendChild(tab);
+            Na__LeTabs__Scroller.appendChild(tab);
         });
         if (editable) {
             const plus = Na__LeTabs__Tab(Na__LeLoad__GetLabel('AddSheetTab', '+'), false, async () => {
@@ -217,7 +308,7 @@
                 if (sheet) void Na__LeLoad__Enter(sheet.Sheet__Id);
             }, 'na-le-tabs__tab--add');
             plus.title = Na__LeLoad__GetLabel('AddSheetTitle', 'New sheet');
-            Na__LeTabs__Root.appendChild(plus);
+            Na__LeTabs__Scroller.appendChild(plus);
         }
 
         // PROJECT SPECIFICATION | Last, and only while a drawing tab is open
@@ -228,8 +319,10 @@
             spec.title = unsynced
                 ? Na__LeLoad__GetLabel('SpecificationTabUnsynced', 'Project Specification - changes kept in this browser, not yet synced')
                 : Na__LeLoad__GetLabel('SpecificationTabTitle', 'Every drawing note of the project, grouped and numbered');
-            Na__LeTabs__Root.appendChild(spec);
+            Na__LeTabs__Scroller.appendChild(spec);
         }
+        Na__LeTabs__SyncArrows();
+        Na__LeTabs__Reveal();                                                    // <-- The tab just opened is brought back into the visible run
     }
     // ------------------------------------------------------------
 
@@ -284,9 +377,30 @@
         nav.className = 'na-le-tabs';
         nav.setAttribute('aria-label', 'Drawing sheets');
         nav.hidden = true;
+        // THE ARROWS SIT OUTSIDE THE SCROLLER, so they stay put at the ends of
+        // the visible run however far the tabs are scrolled along.
+        nav.innerHTML = '<button type="button" class="na-le-tabs__arrow na-le-tabs__arrow--prev" hidden>\u2039</button>'
+                      + '<div class="na-le-tabs__scroller"></div>'
+                      + '<button type="button" class="na-le-tabs__arrow na-le-tabs__arrow--next" hidden>\u203a</button>';
         if (header && header.parentNode) header.parentNode.insertBefore(nav, header.nextSibling);
         else document.body.insertBefore(nav, document.body.firstChild);
-        Na__LeTabs__Root = nav;
+        Na__LeTabs__Root     = nav;
+        Na__LeTabs__Scroller = nav.querySelector('.na-le-tabs__scroller');
+        const prev = nav.querySelector('.na-le-tabs__arrow--prev');
+        const next = nav.querySelector('.na-le-tabs__arrow--next');
+        prev.title = prev.ariaLabel = Na__LeLoad__GetLabel('TabsPreviousTitle', 'The drawing before this one');
+        next.title = next.ariaLabel = Na__LeLoad__GetLabel('TabsNextTitle', 'The drawing after this one');
+        prev.addEventListener('click', () => Na__LeTabs__Step(-1));
+        next.addEventListener('click', () => Na__LeTabs__Step(1));
+        Na__LeTabs__Scroller.addEventListener('scroll', Na__LeTabs__SyncArrows, { passive : true });
+        // A ROTATED PHONE FITS A DIFFERENT NUMBER OF TABS, and measured twice on
+        // purpose: resize can arrive before the strip has been laid out at the
+        // new width, and a reading taken then is of the old one. The second,
+        // on the settled frame, is the one that is right.
+        window.addEventListener('resize', () => {
+            Na__LeTabs__SyncArrows();
+            window.requestAnimationFrame(Na__LeTabs__SyncArrows);
+        });
         window.addEventListener(Na__LeLoad__SHEETS_EVENT, Na__LeTabs__OnModelChanged);   // <-- Only when a tab would look different
         window.addEventListener(Na__LeLoad__SPEC_EVENT,   Na__LeTabs__OnModelChanged);   // <-- The specification tab's unsynced dot
         window.addEventListener(Na__LeLoad__STATE_EVENT,  Na__LeTabs__OnModelChanged);   // <-- A project loaded or saved, Layout Mode switched, the editor loaded

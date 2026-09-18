@@ -225,6 +225,15 @@
         "LayoutEditor__Navigation__FitPaddingPx"  : 32
     },
 
+    "LayoutEditor__WebViewer__Config"     : {
+        "LayoutEditor__WebViewer__Description"           : "The read-only document viewer the live web build shows in place of the editor. Where authoring is off - anywhere but localhost or an explicitly unlocked device - the panel columns, toolbar and measurements box are never built, and the drawings and the project specification are read as one cycled list of documents with a dock at the bottom of the screen. The tab strip is unchanged: it is the same strip the editor has, scrolling sideways with an arrow at each end once the tabs do not all fit. Enabled false hands the web build back the read-only editor it had before this existed. ShowSpecification false leaves the specification out of the cycle. SwipeMinPx is how far a finger has to travel PAST the edge of the paper before the document changes, so panning a zoomed drawing never turns the page by accident. DoubleTapZoomFactor is how much closer a double tap on a fitted sheet brings it; a double tap on an already magnified sheet fits it again.",
+        "LayoutEditor__WebViewer__Enabled"               : true,
+        "LayoutEditor__WebViewer__ShowSpecification"     : true,
+        "LayoutEditor__WebViewer__SwipeToChangeDocument" : true,
+        "LayoutEditor__WebViewer__SwipeMinPx"            : 70,
+        "LayoutEditor__WebViewer__DoubleTapZoomFactor"   : 2.5
+    },
+
     "LayoutEditor__Snapping__Config"      : {
         "LayoutEditor__Snapping__Description"  : "Object snaps for placing and dragging dimensions and drawing vectors. Two sources: the projected linework inside 2D viewports, and - with SheetObjects on - the sheet's own vectors and dimensions, so a new line can start on the corner of the last one and a polygon can close exactly on its first point. A dragged vector snaps too: the grab point and every vertex are offered, and the nearest snap moves the whole shape. RadiusPx is the pick radius on screen at any zoom. Endpoints and midpoints are candidates; an endpoint wins a near tie, and the sheet's own markup wins a tie with the linework because it sits on top. The item being dragged never offers its own moving point. HiddenLines adds the hidden class as a source. The toggle (toolbar button or the Snap__Toggle key binding) is remembered per browser. MARKER COLOURS say which tool is snapping: blue for vertices (the Draw and Rectangle tools, vertex grips, and a vector being moved), orange for dimensions (the Dimension tool, its grips and its line inference); purple is the viewport tone, for carrying a viewport by a point once TrueVision's viewport snap move is ported. The colours live in Na__LayoutEditor__Styles__Main__.css.",
         "LayoutEditor__Snapping__Enabled"      : true,
@@ -460,6 +469,20 @@
         "LayoutEditor__Labels__LayoutModeHint"                 : "Shows this project's drawing tabs, here and on the live site, once it has a sheet. Saved with the project.",
         "LayoutEditor__Labels__LayoutModeOffNote"              : "Off for this project: no drawing tabs, here or on the live site.",
         "LayoutEditor__Labels__ReadOnlyNote"                   : "Read-only on the web build.",
+        "LayoutEditor__Labels__TabsPreviousTitle"              : "The drawing before this one",
+        "LayoutEditor__Labels__TabsNextTitle"                  : "The drawing after this one",
+        "LayoutEditor__Labels__ViewerPrevious"                 : "Previous document",
+        "LayoutEditor__Labels__ViewerNext"                     : "Next document",
+        "LayoutEditor__Labels__ViewerCount"                    : "{index} / {total}",
+        "LayoutEditor__Labels__ViewerFitTitle"                 : "Show the whole sheet",
+        "LayoutEditor__Labels__ViewerZoomInTitle"              : "Zoom in",
+        "LayoutEditor__Labels__ViewerZoomOutTitle"             : "Zoom out",
+        "LayoutEditor__Labels__ViewerPdf"                      : "PDF",
+        "LayoutEditor__Labels__ViewerPdfTitle"                 : "Download this sheet as a PDF at paper size",
+        "LayoutEditor__Labels__ViewerPageUp"                   : "Page up",
+        "LayoutEditor__Labels__ViewerPageUpTitle"              : "The page before this one",
+        "LayoutEditor__Labels__ViewerPageDown"                 : "Page down",
+        "LayoutEditor__Labels__ViewerPageDownTitle"            : "The page after this one",
         "LayoutEditor__Labels__DownloadPdf"                    : "Download PDF",
         "LayoutEditor__Labels__AddViewport"                    : "Add Viewport",
         "LayoutEditor__Labels__AddText"                        : "Add Text",

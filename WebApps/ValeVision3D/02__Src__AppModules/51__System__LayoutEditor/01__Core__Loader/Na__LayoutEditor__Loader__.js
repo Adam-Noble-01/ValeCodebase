@@ -117,7 +117,8 @@
         new URL('../40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css', import.meta.url).href,
         new URL('../50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css', import.meta.url).href,
         new URL('../50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Notes__.css', import.meta.url).href,
-        new URL('../50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css', import.meta.url).href
+        new URL('../50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css', import.meta.url).href,
+        new URL('../80__Feature__WebViewer/Na__LayoutEditor__Styles__WebViewer__.css', import.meta.url).href   // <-- LAST: it reshapes the shell and the specification page for the read-only web viewer
     ];
     // ------------------------------------------------------------
 

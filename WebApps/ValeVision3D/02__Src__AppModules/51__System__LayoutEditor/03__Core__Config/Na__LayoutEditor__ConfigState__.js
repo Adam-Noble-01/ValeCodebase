@@ -223,7 +223,8 @@
         Na__LeCfg__GetSpecificationSetup,
         Na__LeCfg__GetMarginNotesSetup,
         Na__LeCfg__GetPanelSetup,
-        Na__LeCfg__GetNavigationSetup
+        Na__LeCfg__GetNavigationSetup,
+        Na__LeCfg__GetWebViewerSetup
     } from './Na__LayoutEditor__ConfigState__EditorSetup__.js';
     // ------------------------------------------------------------
 
@@ -355,6 +356,7 @@
         Na__LeCfg__GetEnhanceSetup,
         Na__LeCfg__GetPanelSetup,
         Na__LeCfg__GetNavigationSetup,
+        Na__LeCfg__GetWebViewerSetup,
         Na__LeCfg__GetPdfSetup,
         Na__LeCfg__GetLabel,
         Na__LeCfg__FormatLabel,

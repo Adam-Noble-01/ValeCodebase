@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<!-- =============================================================================
+     VALE OBJECT LIBRARY - STRUCTURE DEMONSTRATION
+     =============================================================================
+
+     FILE       : ValeObjectLibrary__Demo__.html
+     NAMESPACE  : ValeObjectLibrary
+     MODULE     : Presentation - Object Database Structure Demo
+     AUTHOR     : Adam Noble - Noble Architecture
+     PURPOSE    : Walk through the Scheme / Family / Assembly / Component /
+                  Product / Resource hierarchy behind the Vale object database
+     CREATED    : 18-Sep-2026
+
+     DESCRIPTION:
+     - Standalone single-file demo, served locally by
+       ValePresentations__LocalServer__Localhost__.py (see Start__ValePresentations
+       __Localhost__8011__.bat in the parent folder)
+     - Header matches the Vale app shell used by Lantern Designer / ValeVision3D
+     - Structure diagram near the top is a pure CSS/HTML org chart, not an image -
+       edit the tree markup directly to change a tier or add a branch
+     - The two branded reference graphics are further down the page, click to
+       view either full size
+     - The interactive folder trees below are hand-authored HTML, not generated -
+       edit the markup directly to change an example
+
+     ============================================================================= -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vale Garden Houses - Object Library Structure</title>
+    <style>
+
+        /* #region ---------------------------------------------------------------
+         * VARIABLES | Vale Brand Tokens (matches Lantern Designer / ValeVision3D)
+         * ------------------------------------------------------------------- */
+        :root {
+            --Vale_PrimaryBrand                : #172b3a;
+            --Vale_PrimaryBrand_Dark            : #0f1e28;
+            --Vale_AccentBlue                   : #3498db;
+            --Vale_BackgroundPage               : #f8f9fa;
+            --Vale_BackgroundWhite              : #ffffff;
+            --Vale_BorderColour                 : #e2e8f0;
+            --Vale_HoverColour                  : #edf2f7;
+            --Vale_TextPrimary                  : #172b3a;
+            --Vale_TextSecondary                : #34495e;
+
+            --Vale_HeaderHeight                 : 60px;
+            --Vale_Spacing_Small                : 8px;
+            --Vale_Spacing_Medium                : 16px;
+            --Vale_Spacing_Large                : 24px;
+
+            --Vale_FontFamily                   : 'Segoe UI', 'Open Sans', system-ui, -apple-system, sans-serif;
+            --Vale_FontSize_Heading             : 24px;
+            --Vale_FontWeight_SemiBold          : 600;
+        }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * BASE | Page and Layout
+         * ------------------------------------------------------------------- */
+        * {
+            box-sizing                         : border-box;
+        }
+
+        body {
+            font-family                        : var(--Vale_FontFamily);
+            line-height                        : 1.6;
+            margin                              : 0;
+            padding                             : 0;
+            background-color                   : var(--Vale_BackgroundPage);
+            color                                : var(--Vale_TextPrimary);
+            padding-top                         : var(--Vale_HeaderHeight);
+        }
+
+        .page-container {
+            max-width                           : 1100px;
+            margin                              : 0 auto;
+            padding                             : var(--Vale_Spacing_Large);
+        }
+
+        .content-panel {
+            background-color                   : var(--Vale_BackgroundWhite);
+            padding                             : 40px;
+            border-radius                       : 12px;
+            box-shadow                          : 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom                       : var(--Vale_Spacing_Large);
+        }
+
+        h1, h2, h3, h4 {
+            color                                : var(--Vale_PrimaryBrand);
+            margin-top                          : 1.5em;
+        }
+
+        h1 {
+            font-size                           : 2em;
+            border-bottom                       : 2px solid var(--Vale_AccentBlue);
+            padding-bottom                      : 10px;
+            margin-top                          : 0;
+        }
+
+        p {
+            margin-bottom                       : 1.2em;
+        }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * COMPONENT | Vale App Header (matches VghLantern__UiFeature__Styles__AppHeader__)
+         * ------------------------------------------------------------------- */
+        .app-header {
+            position                            : fixed;
+            top                                  : 0;
+            left                                 : 0;
+            right                                : 0;
+            display                              : flex;
+            align-items                         : center;
+            justify-content                     : space-between;
+            height                               : var(--Vale_HeaderHeight);
+            padding                              : 0 var(--Vale_Spacing_Large);
+            background                          : var(--Vale_BackgroundWhite);
+            color                                : var(--Vale_TextPrimary);
+            box-shadow                          : 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom                       : 2px solid var(--Vale_PrimaryBrand);
+            z-index                              : 1000;
+        }
+
+        .app-header__logo-container {
+            display                              : flex;
+            align-items                         : center;
+        }
+
+        .app-header__logo-container--left {
+            justify-content                     : flex-start;
+        }
+
+        .app-header__logo-container--right {
+            justify-content                     : flex-end;
+        }
+
+        .app-header__logo-left {
+            height                                : 42px;
+            width                                 : auto;
+        }
+
+        .app-header__title {
+            font-size                            : var(--Vale_FontSize_Heading);
+            font-weight                          : var(--Vale_FontWeight_SemiBold);
+            font-family                          : var(--Vale_FontFamily);
+            color                                 : var(--Vale_PrimaryBrand);
+            margin                                : 0;
+            padding                              : 0;
+        }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * COMPONENT | Full Diagram Figures and Lightbox
+         * ------------------------------------------------------------------- */
+        .diagram-figure {
+            padding                              : var(--Vale_Spacing_Large);
+            text-align                          : center;
+        }
+
+        .diagram-figure__caption {
+            color                                 : var(--Vale_TextSecondary);
+            font-size                            : 0.9em;
+            margin-top                           : var(--Vale_Spacing_Small);
+            margin-bottom                        : 0;
+        }
+
+        .diagram-figure + .diagram-figure {
+            border-top                           : 1px solid var(--Vale_BorderColour);
+            margin-top                            : var(--Vale_Spacing_Large);
+            padding-top                           : 40px;
+        }
+
+        .zoomable-image {
+            max-width                            : 100%;
+            border-radius                        : 8px;
+            border                                : 1px solid var(--Vale_BorderColour);
+            cursor                                : zoom-in;
+            transition                           : box-shadow 0.2s;
+        }
+
+        .zoomable-image:hover {
+            box-shadow                           : 0 4px 14px rgba(0,0,0,0.12);
+        }
+
+        .lightbox-overlay {
+            position                             : fixed;
+            inset                                 : 0;
+            background                           : rgba(23, 43, 58, 0.92);
+            display                               : flex;
+            align-items                          : center;
+            justify-content                      : center;
+            padding                              : var(--Vale_Spacing_Large);
+            z-index                               : 2000;
+            cursor                                : zoom-out;
+        }
+
+        .lightbox-overlay[hidden] {
+            display                              : none;
+        }
+
+        .lightbox-overlay img {
+            max-width                            : 100%;
+            max-height                           : 100%;
+            border-radius                        : 6px;
+            box-shadow                           : 0 10px 40px rgba(0,0,0,0.5);
+        }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * COMPONENT | Structure Diagram (Pure CSS Org Chart, No Image)
+         * -------------------------------------------------------------------
+         * Classic border-based org chart: every <li> draws its own connector
+         * up to its parent using ::before/::after, and a nested <ul> draws the
+         * short vertical drop from parent to child row with ::before. A branch
+         * marked --referenced (Resources, under Components / Products) draws
+         * that drop as a dashed line instead of solid, since Resources are
+         * looked up by a Component or Product rather than contained inside it.
+         * ------------------------------------------------------------------- */
+        .structure-diagram-wrap {
+            overflow-x                           : auto;
+            padding                               : var(--Vale_Spacing_Large) var(--Vale_Spacing_Small) 10px;
+        }
+
+        .structure-diagram,
+        .structure-diagram ul {
+            list-style                           : none;
+            margin                                : 0;
+            padding                               : 0;
+            text-align                           : center;
+        }
+
+        .structure-diagram ul {
+            padding-top                           : 28px;
+            position                              : relative;
+        }
+
+        .structure-diagram li {
+            display                               : inline-table;
+            vertical-align                       : top;
+            text-align                            : center;
+            padding                               : 28px 14px 0;
+            position                              : relative;
+        }
+
+        .structure-diagram li::before,
+        .structure-diagram li::after {
+            content                               : "";
+            position                              : absolute;
+            top                                    : 0;
+            right                                  : 50%;
+            width                                  : 50%;
+            height                                 : 28px;
+            border-top                            : 2px solid var(--Vale_BorderColour);
+        }
+
+        .structure-diagram li::after {
+            right                                  : auto;
+            left                                   : 50%;
+            border-top                            : none;
+            border-left                            : 2px solid var(--Vale_BorderColour);
+        }
+
+        .structure-diagram li:only-child {
+            padding-top                           : 0;
+        }
+
+        .structure-diagram li:only-child::before,
+        .structure-diagram li:only-child::after {
+            display                               : none;
+        }
+
+        .structure-diagram li:first-child::before,
+        .structure-diagram li:last-child::after {
+            border                                 : none;
+        }
+
+        .structure-diagram li:last-child::before {
+            border-right                          : 2px solid var(--Vale_BorderColour);
+            border-radius                          : 0 6px 0 0;
+        }
+
+        .structure-diagram li:first-child::after {
+            border-radius                          : 6px 0 0 0;
+        }
+
+        .structure-diagram ul ul::before {
+            content                               : "";
+            position                              : absolute;
+            top                                    : 0;
+            left                                   : 50%;
+            width                                  : 0;
+            height                                 : 28px;
+            border-left                            : 2px solid var(--Vale_BorderColour);
+        }
+
+        .structure-diagram li.structure-diagram__branch--referenced > ul::before {
+            border-left-style                     : dashed;
+        }
+
+        .structure-diagram__node {
+            display                               : inline-block;
+            padding                               : 10px 16px;
+            border-radius                          : 6px;
+            font-weight                            : var(--Vale_FontWeight_SemiBold);
+            font-size                              : 0.85em;
+            white-space                           : nowrap;
+            border                                 : 1px solid transparent;
+        }
+
+        .structure-diagram__node--referenced {
+            font-weight                           : normal;
+            border-style                          : dashed;
+        }
+
+        .structure-diagram__node--scheme    { background: #e1bee7; color: #4a148c; border-color: #ce93d8; }
+        .structure-diagram__node--family    { background: #bbdefb; color: #0d47a1; border-color: #90caf9; }
+        .structure-diagram__node--assembly  { background: #c8e6c9; color: #1b5e20; border-color: #a5d6a7; }
+        .structure-diagram__node--component { background: #ffecb3; color: #f57f17; border-color: #ffe082; }
+        .structure-diagram__node--product   { background: #ffccbc; color: #bf360c; border-color: #ffab91; }
+        .structure-diagram__node--resource  { background: #cfd8dc; color: #263238; border-color: #b0bec5; }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * COMPONENT | Controls Bar
+         * ------------------------------------------------------------------- */
+        .controls {
+            margin-bottom                        : var(--Vale_Spacing_Medium);
+            padding                               : 15px;
+            background-color                     : var(--Vale_HoverColour);
+            border-radius                         : 8px;
+            display                               : flex;
+            gap                                    : 10px;
+        }
+
+        button {
+            background-color                     : var(--Vale_PrimaryBrand);
+            color                                  : white;
+            border                                 : none;
+            padding                                : 8px 16px;
+            border-radius                          : 6px;
+            cursor                                 : pointer;
+            font-size                             : 0.9em;
+            font-family                           : var(--Vale_FontFamily);
+            transition                            : background-color 0.2s;
+        }
+
+        button:hover {
+            background-color                     : var(--Vale_AccentBlue);
+        }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * COMPONENT | Interactive Folder Tree
+         * ------------------------------------------------------------------- */
+        .interactive-tree {
+            background                            : var(--Vale_BackgroundWhite);
+            border                                 : 1px solid var(--Vale_BorderColour);
+            border-radius                          : 8px;
+            padding                                : 20px;
+            margin                                 : 20px 0;
+        }
+
+        details {
+            margin                                 : 5px 0;
+        }
+
+        summary {
+            padding                                : 8px 12px;
+            cursor                                 : pointer;
+            background-color                      : var(--Vale_HoverColour);
+            border-radius                          : 6px;
+            font-weight                            : var(--Vale_FontWeight_SemiBold);
+            user-select                            : none;
+            transition                             : background-color 0.2s;
+            display                                : flex;
+            align-items                            : center;
+        }
+
+        summary:hover {
+            background-color                      : var(--Vale_BorderColour);
+        }
+
+        summary::before {
+            content                                : "\1F4C1";
+            margin-right                            : 10px;
+            font-size                              : 1.1em;
+        }
+
+        details[open] > summary::before {
+            content                                : "\1F4C2";
+        }
+
+        .details-content {
+            padding-left                            : 25px;
+            margin-left                             : 15px;
+            border-left                             : 2px solid var(--Vale_BorderColour);
+            margin-top                              : 5px;
+        }
+
+        .leaf-node {
+            padding                                 : 8px 12px 8px 35px;
+            display                                 : flex;
+            align-items                             : center;
+            color                                   : var(--Vale_TextSecondary);
+        }
+
+        .leaf-node::before {
+            content                                 : "\1F4C4";
+            margin-right                             : 10px;
+        }
+
+        .resource-node::before {
+            content                                 : "\1F527";
+        }
+
+        .product-node::before {
+            content                                 : "\1F4E6";
+        }
+
+        .tag {
+            font-size                               : 0.75em;
+            padding                                 : 2px 8px;
+            border-radius                           : 12px;
+            margin-left                             : 10px;
+            font-weight                             : normal;
+        }
+
+        .tag-scheme    { background: #e1bee7; color: #4a148c; }
+        .tag-family    { background: #bbdefb; color: #0d47a1; }
+        .tag-assembly  { background: #c8e6c9; color: #1b5e20; }
+        .tag-component { background: #ffecb3; color: #f57f17; }
+        .tag-product   { background: #ffccbc; color: #bf360c; }
+        .tag-resource  { background: #cfd8dc; color: #263238; }
+        /* #endregion --------------------------------------------------------- */
+
+
+        /* #region ---------------------------------------------------------------
+         * COMPONENT | Footer
+         * ------------------------------------------------------------------- */
+        .app-footer {
+            text-align                              : center;
+            color                                   : var(--Vale_TextSecondary);
+            font-size                               : 0.85em;
+            padding                                 : var(--Vale_Spacing_Large) 0 40px;
+        }
+        /* #endregion --------------------------------------------------------- */
+
+    </style>
+</head>
+<body>
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Application Header - Vale Branding                       -->
+    <!-- ----------------------------------------------------------------- -->
+    <header class="app-header">
+        <div class="app-header__logo-container app-header__logo-container--left">
+            <img src="01_Assets/AppLogo__ValeHeaderImage_ValeLogo_HorizontalFormat__.png"
+                 class="app-header__logo-left"
+                 alt="Vale Garden Houses">
+        </div>
+        <div class="app-header__logo-container app-header__logo-container--right">
+            <h1 class="app-header__title">Object Library</h1>
+        </div>
+    </header>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <div class="page-container">
+
+        <div class="content-panel">
+
+            <h1>Vale Garden Houses - Object Library Structure</h1>
+
+            <div class="controls">
+                <button onclick="ValeObjectLibrary_ExpandAll()">Expand All Folders</button>
+                <button onclick="ValeObjectLibrary_CollapseAll()">Collapse All Folders</button>
+            </div>
+
+            <h2>Top Level Hierarchy</h2>
+            <p>The database is structured into four main tiers. These include Schemes, Families, Assemblies which contain Components and Products, and Resources.</p>
+
+            <!-- ------------------------------------------------------------- -->
+            <!-- REGION | Structure Diagram - Pure CSS Org Chart, No Image      -->
+            <!-- ------------------------------------------------------------- -->
+            <div class="structure-diagram-wrap">
+                <ul class="structure-diagram">
+                    <li>
+                        <span class="structure-diagram__node structure-diagram__node--scheme">Scheme</span>
+                        <ul>
+                            <li>
+                                <span class="structure-diagram__node structure-diagram__node--family">Families</span>
+                                <ul>
+                                    <li>
+                                        <span class="structure-diagram__node structure-diagram__node--assembly">Assemblies</span>
+                                        <ul>
+                                            <li class="structure-diagram__branch--referenced">
+                                                <span class="structure-diagram__node structure-diagram__node--component">Components</span>
+                                                <ul>
+                                                    <li><span class="structure-diagram__node structure-diagram__node--resource structure-diagram__node--referenced">Resources</span></li>
+                                                </ul>
+                                            </li>
+                                            <li class="structure-diagram__branch--referenced">
+                                                <span class="structure-diagram__node structure-diagram__node--product">Products</span>
+                                                <ul>
+                                                    <li><span class="structure-diagram__node structure-diagram__node--resource structure-diagram__node--referenced">Resources</span></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <p class="diagram-figure__caption">Solid lines mean "contains", dashed lines mean "references" - Components and Products each draw from the shared Resource library rather than owning it.</p>
+            <!-- endregion --------------------------------------------------------------- -->
+
+            <h2>Scheme Level Definition</h2>
+            <p>The Scheme represents the top level configured project or design option. A Scheme contains the selected Families, Assemblies, Components and Products required to define a complete Vale Garden Houses project. Schemes should be version controlled so multiple design options and revisions can be maintained.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Scheme: Orangery Option 01 <span class="tag tag-scheme">Scheme</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Roof Lantern Family <span class="tag tag-family">Family</span></div>
+                        <div class="leaf-node">Framework Family <span class="tag tag-family">Family</span></div>
+                        <div class="leaf-node">North Elevation Family <span class="tag tag-family">Family</span></div>
+                        <div class="leaf-node">South Elevation Family <span class="tag tag-family">Family</span></div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Families And Architectural Elements</h2>
+            <p>Families group related Assemblies into larger logical architectural elements. Families provide the main organisational structure used to configure a Scheme.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Roof Lantern <span class="tag tag-family">Family</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">ETR Vent <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Ridge Assembly <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Hip Assemblies <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Rafter Assemblies <span class="tag tag-assembly">Assembly</span></div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Framework <span class="tag tag-family">Family</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Columns <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Entablatures <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Structural Assemblies <span class="tag tag-assembly">Assembly</span></div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Elevations <span class="tag tag-family">Family</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Door Assemblies <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Window Assemblies <span class="tag tag-assembly">Assembly</span></div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Assemblies And Construction Objects</h2>
+            <p>Assemblies are objects constructed from multiple Components or Products. Assemblies can also contain other Assemblies where additional hierarchy is required.</p>
+            <p>Common examples include Door Assemblies, Window Assemblies, Pilaster Assemblies, Roof Rafter Assemblies, Ridge Assemblies, Hip Assemblies, ETR Vent Assemblies and Framework Assemblies.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Pilaster Assembly <span class="tag tag-assembly">Assembly</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Base Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Shaft Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Capital Component <span class="tag tag-component">Component</span></div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Door Assembly <span class="tag tag-assembly">Assembly</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Door Stile Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Door Rail Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Fielded Panel Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node">Glazing Component <span class="tag tag-component">Component</span></div>
+                        <div class="leaf-node product-node">Handle Product <span class="tag tag-product">Product</span></div>
+                        <div class="leaf-node product-node">Hinges Product <span class="tag tag-product">Product</span></div>
+                        <div class="leaf-node product-node">Lock Product <span class="tag tag-product">Product</span></div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Configurable Fabricated Components</h2>
+            <p>A Component is a fabricated or configurable element rather than a fixed purchased object. Components will commonly vary in length, width, depth or other parameters depending on the configuration of the Scheme.</p>
+            <p>Examples include Cornice, Entablature, Glazing Bar, Door Stile, Door Rail, Fielded Panel, Cill, Fascia, Frieze, Mullion, Pilaster Base, Pilaster Shaft, Pilaster Capital and Glazing Panel. Components may reference one or more Resources such as profiles, materials, finishes or specifications.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Entablature Component <span class="tag tag-component">Component</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node resource-node">Moulding Profile A <span class="tag tag-resource">Resource</span></div>
+                        <div class="leaf-node resource-node">Moulding Profile B <span class="tag tag-resource">Resource</span></div>
+                        <div class="leaf-node resource-node">Timber Material <span class="tag tag-resource">Resource</span></div>
+                        <div class="leaf-node resource-node">Length Parameter <span class="tag tag-resource">Parameter</span></div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Discrete Purchased Products</h2>
+            <p>A Product is a discrete and identifiable item which generally exists as a known object, casting, SKU or purchased product. Examples include Door Handles, Hinges, Finials, Cresting Sections, Locks, Espagnolettes, Vents, Brackets and Gutter Outlets.</p>
+            <p>Typical Product data includes Product Code, Supplier or Manufacturer, Fixed or Selectable Sizes, Material, Finish, Cost, Weight, CAD or 3D Asset and Availability or Status. Products can be referenced by Assemblies without needing to duplicate the underlying Product record.</p>
+
+            <h2>Database Reusable Resources</h2>
+            <p>Resources represent the lowest level reusable definitions within the database. Resources are generally not complete physical objects by themselves. Instead, they define the profiles, materials, specifications and other data used by Components, Products and Assemblies. A single Resource should be reusable across multiple Components and Assemblies.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Profiles <span class="tag tag-resource">Resource</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node resource-node">Ogee</div>
+                        <div class="leaf-node resource-node">Astragal</div>
+                        <div class="leaf-node resource-node">Bolection</div>
+                        <div class="leaf-node resource-node">Cornice Profile</div>
+                        <div class="leaf-node resource-node">Timber Section</div>
+                        <div class="leaf-node resource-node">Aluminium Extrusion</div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Materials <span class="tag tag-resource">Resource</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node resource-node">Accoya</div>
+                        <div class="leaf-node resource-node">Oak</div>
+                        <div class="leaf-node resource-node">Aluminium</div>
+                        <div class="leaf-node resource-node">Lead</div>
+                        <div class="leaf-node resource-node">Sheet Materials</div>
+                        <div class="leaf-node resource-node">Board Materials</div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Finishes <span class="tag tag-resource">Resource</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node resource-node">RAL Colours</div>
+                        <div class="leaf-node resource-node">Paint Systems</div>
+                        <div class="leaf-node resource-node">Stains</div>
+                        <div class="leaf-node resource-node">Metal Finishes</div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Specifications <span class="tag tag-resource">Resource</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node resource-node">Glass Specification</div>
+                        <div class="leaf-node resource-node">Board or Sheet Specification</div>
+                        <div class="leaf-node resource-node">Casting Definition</div>
+                        <div class="leaf-node resource-node">Fixing Specification</div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Complete Family Structure Example</h2>
+            <p>The following interactive tree demonstrates how a complete family is constructed using nested assemblies, components and products.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Roof Lantern Family <span class="tag tag-family">Family</span></summary>
+                    <div class="details-content">
+                        <div class="leaf-node">Ridge Assembly <span class="tag tag-assembly">Assembly</span></div>
+                        <div class="leaf-node">Hip Assemblies <span class="tag tag-assembly">Assembly</span></div>
+                        <details>
+                            <summary>Rafter Assemblies <span class="tag tag-assembly">Assembly</span></summary>
+                            <div class="details-content">
+                                <div class="leaf-node">Glazing Panels Component <span class="tag tag-component">Component</span></div>
+                            </div>
+                        </details>
+                        <div class="leaf-node product-node">Finials Product <span class="tag tag-product">Product</span></div>
+                        <div class="leaf-node product-node">Cresting Product <span class="tag tag-product">Product</span></div>
+                        <div class="leaf-node">ETR Vent Assembly <span class="tag tag-assembly">Assembly</span></div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Database Concept And Structure</h2>
+            <p>The Object Library contains the reusable definitions from which Vale projects are configured. Resources build into Components and Products, which build into Assemblies, which combine into Families, culminating in a Scheme.</p>
+
+            <h2>Configuration Engine Rules</h2>
+            <p>The engine controls how objects can be selected, sized, combined and configured using Rules, Parameters and Constraints. Examples include Dimensional Rules, Compatibility Rules, Quantity Rules, Product Selection Rules, Minimum and Maximum Sizes, Spacing Rules, Manufacturing Constraints and Design Constraints.</p>
+
+            <h2>Configured Scheme Implementation</h2>
+            <p>A Scheme contains configured instances of objects from the Object Library. The library definition remains reusable while each Scheme stores the actual configured dimensions, quantities and selections.</p>
+
+            <div class="interactive-tree">
+                <details>
+                    <summary>Scheme Configuration <span class="tag tag-scheme">Scheme</span></summary>
+                    <div class="details-content">
+                        <details>
+                            <summary>Families</summary>
+                            <div class="details-content">
+                                <details>
+                                    <summary>Assemblies</summary>
+                                    <div class="details-content">
+                                        <div class="leaf-node">Components</div>
+                                        <div class="leaf-node product-node">Products</div>
+                                    </div>
+                                </details>
+                            </div>
+                        </details>
+                        <div class="leaf-node resource-node">Scheme Parameters</div>
+                    </div>
+                </details>
+            </div>
+
+            <h2>Associated Asset Library</h2>
+            <p>Associated data can be linked to any relevant database object. Examples include Manufacturing Data, Cost Data, CAD, SketchUp Models, 3D Models, Photographs, PDF Drawings, Data Sheets, Technical Specifications, Supplier Information, Installation Information and Historical or Revision Data.</p>
+
+        </div>
+
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- REGION | Full Reference Diagrams - Branded Graphics                -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="content-panel">
+            <h2>Full Reference Diagrams</h2>
+            <p>The tree above is the working structure. These two branded graphics are the same structure laid out for a presentation - click either to view it full size.</p>
+
+            <div class="diagram-figure">
+                <img src="01_Assets/Graphic-02__LargerTree__.png"
+                     class="zoomable-image"
+                     alt="Vale Garden Houses Object Database Structure - full diagram"
+                     onclick="ValeObjectLibrary_OpenLightbox(this.src)">
+                <p class="diagram-figure__caption">Full wide layout, with a worked Roof Lantern Family example and the Object Library / Configuration Engine / Scheme flow.</p>
+            </div>
+
+            <div class="diagram-figure">
+                <img src="01_Assets/Graphic-01__BriefBreakdown__.png"
+                     class="zoomable-image"
+                     alt="Vale Garden Houses Object Database Structure - brief breakdown"
+                     onclick="ValeObjectLibrary_OpenLightbox(this.src)">
+                <p class="diagram-figure__caption">A more compact, one-column read of the same six tiers - useful when the full diagram above is too wide for the page it is being dropped into.</p>
+            </div>
+        </div>
+        <!-- endregion ----------------------------------------------------------------- -->
+
+
+        <div class="app-footer">Vale Garden Houses - Object Library Structure Demo</div>
+
+    </div>
+
+
+    <!-- ----------------------------------------------------------------- -->
+    <!-- REGION | Lightbox Overlay - Full Size Graphic View                 -->
+    <!-- ----------------------------------------------------------------- -->
+    <div id="ValeObjectLibrary_LightboxOverlay" class="lightbox-overlay" hidden onclick="ValeObjectLibrary_CloseLightbox()">
+        <img id="ValeObjectLibrary_LightboxImage" src="" alt="Full size diagram">
+    </div>
+    <!-- endregion ----------------------------------------------------------------- -->
+
+
+    <script>
+
+        // FUNCTION | Expand every folder in every interactive tree
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_ExpandAll() {
+            document.querySelectorAll('.interactive-tree details').forEach(function (detailElement) {
+                detailElement.open = true;
+            });
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Collapse every folder in every interactive tree
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_CollapseAll() {
+            document.querySelectorAll('.interactive-tree details').forEach(function (detailElement) {
+                detailElement.open = false;
+            });
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Open a graphic full size in the lightbox overlay
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_OpenLightbox(imageSource) {
+            var overlayElement = document.getElementById('ValeObjectLibrary_LightboxOverlay');
+            var imageElement   = document.getElementById('ValeObjectLibrary_LightboxImage');
+            imageElement.src   = imageSource;
+            overlayElement.hidden = false;
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Close the lightbox overlay
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_CloseLightbox() {
+            var overlayElement = document.getElementById('ValeObjectLibrary_LightboxOverlay');
+            overlayElement.hidden = true;
+        }
+        // ------------------------------------------------------------
+
+        // Escape key also closes the lightbox
+        document.addEventListener('keydown', function (keyboardEvent) {
+            if (keyboardEvent.key === 'Escape') {
+                ValeObjectLibrary_CloseLightbox();
+            }
+        });
+
+    </script>
+
+</body>
+</html>

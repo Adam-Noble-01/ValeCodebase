@@ -1,6 +1,126 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.58.0 - 18-Sep-2026 - The Public Web Is a Viewer, Not a Disabled Editor
+### Ported from TrueVision3D v2.65.0 and v2.65.1, authored there the same day
+
+**Overview**
+- Adam, on TrueVision: "The public web version of the layout editor should not show, it should
+  instead be a view only mode... dont show the main editor side panels, most people will be
+  viewing on a phone in portrait so they are useless." Then, on the first cut: "use regular tabs
+  but add an additional side scroll on portrait and a next arrow at the end of the visible list",
+  and "ensure no objects outside the bounds of the paper render... I sometimes leave objects to
+  match properties to outside the drawing."
+- The read-only web build was already read-only. What it was not was USABLE: read-only meant the
+  whole editor with its buttons greyed - 550px of panel columns and a toolbar of drawing tools -
+  which on a 375px phone leaves the drawing a sliver and every control on screen is one the reader
+  has to work out is not for them. ValeVision's copy had exactly the same problem.
+
+**Where the line is**
+- The gate is the one that already exists: `Na__DevGate__IsAuthoringEnabled()`. Localhost in a
+  browser and localhost installed as a PWA both author; the live site either way is the viewer.
+  The display mode is never asked, because it was never the question.
+
+**Four new modules under `51__System__LayoutEditor/80__Feature__WebViewer/`**
+- `...__TouchControls__.js` (`Na__LeVwTouch`): a gesture recogniser that knows nothing about
+  sheets or specifications. Drag to pan, pinch to zoom, double tap to fit, swipe sideways for the
+  next document. The EDITOR'S touch module reserves the second finger for navigation so the first
+  can drag sheet items; a viewer edits nothing, so the first finger is free.
+- `...__Drawings__.js` (`Na__LeVwDraw`): the read-only drawing surface. It attaches the PC
+  navigation controls and the recogniser and NOTHING ELSE - no sheet tools, no margin grip, no
+  context menu, no measurements box.
+- `...__Spec__.js` (`Na__LeVwSpec`): the specification as the A4 pages it prints as. The Read view
+  is SET on every show rather than defaulted, so a stored Edit view from a once-unlocked device
+  cannot bring the authoring surface back.
+- `...__WebViewer__.js` (`Na__LeVw`): the dock at the bottom of the screen - which document of how
+  many, an arrow each side, and the controls for however the showing document is being looked at.
+- Plus `Na__LayoutEditor__Styles__WebViewer__.css`, linked LAST in the loader's stylesheet list
+  (TrueVision imports it last in the CSS index; ValeVision links the editor's sheets lazily).
+
+**Not disabled: not built**
+- `Na__LeMode__Build` gives a viewer a different shell - `<shell><centre><stage>`, no columns, no
+  toolbar row - and `AttachSheetInput` returns early. Every read-only leak this codebase has had
+  came from attaching the editing tools and then disabling each thing they can do; one new tool,
+  one forgotten guard, and a web reader can drag a viewport. A tool that was never attached cannot
+  leak. Verified: 0 panel columns, 0 panels, 0 toolbars, 0 measurement boxes.
+
+**The tab strip keeps its tabs, and learns to scroll**
+- The same strip the editor has - every sheet, then the specification - with no plus, rename or
+  drag for a viewer, which it never had. The tabs now sit in `.na-le-tabs__scroller` with an arrow
+  OUTSIDE it at each end, so the arrows stay put at the ends of the visible run however far the
+  tabs are pushed along. Shown only when they do not all fit: seven tabs need about 700px and a
+  phone in portrait has 375.
+- An arrow opens the tab before or after the open one by CLICKING it, which in ValeVision is also
+  what loads the editor on the first press - so the lazy loader is untouched and there is still
+  exactly one way into each document. The plus is skipped: it makes a sheet rather than opening
+  one.
+
+**The page is where the drawing ends**
+- `.na-le-host--viewer .na-le-paper { overflow: hidden }`. The editor sets overflow visible on the
+  paper and on each of its layers on purpose - an author parks an item off the page, or leaves a
+  swatch out on the grey to match properties from. A reader is being shown an issued drawing, and
+  on a phone that working material arrives as unexplained marks floating beside the page. Clipping
+  the paper clips every layer inside it, because an ancestor that hides its overflow clips its
+  descendants whatever they set.
+
+**`Na__AppUtils__DevGate__` 1.1.0 - the tri-state lock**
+- The stored flag is now unlocked, LOCKED, or nothing said, and an explicit lock closes authoring
+  on localhost too. Before this, `Lock()` and `?authoring=off` cleared the key and localhost
+  carried on authoring, so the read-only web build could not be seen without deploying it.
+  `?authoring=off` is now how this viewer is developed, here and in TrueVision.
+
+**What did NOT need porting, and why it is worth recording**
+- TrueVision's v2.65.1 also had to teach the nav toolbar, the controls help panel and the Tools &
+  Settings dropdown to clear the tab strip. **ValeVision already had that on every one of them** -
+  it was TrueVision's port that dropped `var(--Vale_LayoutTabStripHeight, 0px)` from those rules.
+  That fix was a back-port of ValeVision's own correct behaviour, and nothing changes here.
+- TrueVision bumped its service worker cache token so installed copies pick the new shell up.
+  ValeVision has no service worker, so there is nothing to bump.
+
+**Deliberate divergences from the TrueVision original**
+- `Na__LeVw__Documents()` is the sheets in model order, then the specification. TrueVision splits
+  site plan sheets out and files them after the plus; ValeVision has no drawing type on a sheet,
+  so there is one run of sheets and nothing to split.
+- The tab strip reaches the editor through `Na__LayoutEditor__Loader__` rather than the mode
+  controller, exactly as it did before. The scroller, the arrows and the reveal are indifferent to
+  which, because they read the tabs back off the strip and click them.
+
+**Tested in the browser (57994__Harris__Scheme-02, localhost, 375x812 and desktop)**
+- `?authoring=off`: the gate persists `false`, the host is `na-le-host--viewer`, the dock reads
+  `< 1 / 3 Fit - + PDF >`, the tabs are `3D Model | Elevations | Drawing 2 | Project
+  Specification` with both arrows shown, 0 columns and 0 toolbars, and the paper clips.
+- Stepping with the arrows moves one document at a time, swaps the dock to the page keys on the
+  specification, stops at the ends, and never leaves the open tab clipped at either edge.
+- `?authoring=on`: the editor is untouched - the plus tab is back, two panel columns, the whole
+  toolbar through to Raster, no dock, and the paper's overflow is visible again.
+- NOT tested: a real finger on a real phone (TrueVision's gestures were driven as synthetic
+  pointer events and the code is verbatim), and the drawings rendered with their models - the
+  test project's GLBs are CDN-hosted and 404 against a local static server, so the viewport
+  pictures were empty. The chrome, the clipping and the navigation are all independent of that.
+
+**A note on verifying this locally**
+- ValeVision asks a local Flask server for `/api/projects/<code>`, so no project opens against a
+  plain static server and the layout editor cannot be reached at all. A small no-cache dev server
+  that also answers that one endpoint from `WebApps/Whitecardopedia/Projects` is in the session
+  scratchpad and wired up as `vv-nocache` in `.claude/launch.json`. It sends `no-store` and no
+  `Last-Modified` (a browser otherwise serves the previous save of an edited module and a CSS
+  change becomes a coin toss) and speaks HTTP/1.1, because a module graph this size asks for 100+
+  files at once and on HTTP/1.0 a few come back as ERR_CONNECTION_REFUSED - which looks exactly
+  like a broken import.
+
+**Files**
+- `51__System__LayoutEditor/80__Feature__WebViewer/` (new): `Na__LayoutEditor__WebViewer__.js`
+  1.1.0, `...__Drawings__.js` 1.0.0, `...__Spec__.js` 1.0.0, `...__TouchControls__.js` 1.0.0,
+  `Na__LayoutEditor__Styles__WebViewer__.css`.
+- `05__Core__ModeController/Na__LayoutEditor__ModeController__.js` 1.17.0, `...__TabStrip__.js` 1.4.0.
+- `01__Core__Loader/Na__LayoutEditor__Loader__.js` (viewer stylesheet registered last),
+  `...__Styles__Boot__.css` (the scroller and the arrows).
+- `03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js` (GetWebViewerSetup),
+  `...__ConfigState__.js`, `Na__LayoutEditor__AppConfig__.json` (LayoutEditor__WebViewer__Config
+  and the viewer labels).
+- `03__AppUtils/Na__AppUtils__DevGate__.js` 1.1.0, `02__AppData/Na__AppConfig__Main.json`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.57.0 - 18-Sep-2026 - Drawing Tabs Stay Rendered, and a Moved Thing Is a New Model
 ### Ported from TrueVision3D v2.64.0 and v2.64.1, authored there the same day
 

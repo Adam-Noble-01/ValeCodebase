@@ -898,6 +898,7 @@ ValeVision's loader links. A file in one app is at the same path in the other.
 | `03/Na__AppUtils__DevGate__.js` 1.1.0 | TV 1.1.0 | verbatim | Tri-state stored flag: unlocked, LOCKED, or nothing said. An explicit lock now closes authoring on localhost too, which is how the read-only web build is seen without deploying it | 18-Sep-2026 |
 | The tab strip clearance on the nav toolbar, controls help panel and Tools & Settings dropdown | TV v2.65.1 fixed the same three | **no change needed** | ValeVision already added `var(--Vale_LayoutTabStripHeight, 0px)` to all of them; TrueVision's port had dropped it. Its v2.65.1 fix was a back-port of this behaviour, not something to bring back the other way | 18-Sep-2026 |
 | The service worker cache token bump that carries TV v2.65.0 to installed copies | TV `62/TrueVision__Pwa__ServiceWorker__Logic__.js` 1.7.1 | **n/a** | ValeVision has no service worker or installability module, so there is no shell cache to evict | 18-Sep-2026 |
+| `51/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js` 1.1.0, `...__Drawings__.js` 1.1.0, `...__WebViewer__.js` | TV v2.65.2 same files | verbatim | The iPad round: a drawing no longer turns the page (a fitted sheet had no panning to spend, so every drag was spare travel), gestures apply once per painted frame instead of once per touch move, the pan stopped reading the scroll back, and WebKit's page pinch is refused where this code does the pinching. Applied to both copies the same day | 18-Sep-2026 |
 
 ---
 

@@ -214,117 +214,154 @@
 
 
         /* #region ---------------------------------------------------------------
-         * COMPONENT | Structure Diagram (Pure CSS Org Chart, No Image)
+         * COMPONENT | Structure Diagram (CSS Grid Boxes + JS-Measured Connectors)
          * -------------------------------------------------------------------
-         * Classic border-based org chart: every <li> draws its own connector
-         * up to its parent using ::before/::after, and a nested <ul> draws the
-         * short vertical drop from parent to child row with ::before. A branch
-         * marked --referenced (Resources, under Components / Products) draws
-         * that drop as a dashed line instead of solid, since Resources are
-         * looked up by a Component or Product rather than contained inside it.
+         * The boxes sit in an ordinary CSS Grid and size themselves to their own
+         * content (bigger padding and type for the higher tiers, so the diagram
+         * actually reads top-heavy the way the hierarchy is). Because box
+         * heights are no longer fixed, the connector lines are NOT hardcoded
+         * coordinates - a small script (see ValeObjectLibrary_DrawStructureDiagram
+         * near the end of the file) measures each box's real position with
+         * getBoundingClientRect() after layout and draws plain SVG <line>
+         * elements between the real edges. That is what keeps this immune to
+         * the earlier fixed-pixel version's failure mode: text wrapping, a
+         * different font fallback or a narrower window can never throw a line
+         * out of sync with its box, because the line is drawn from wherever the
+         * box actually ended up, not from a guess made ahead of time.
+         * Solid = "contains" / "is grouped into". Dashed = "references" -
+         * Components and Products both look the Resources pool up rather than
+         * owning it.
          * ------------------------------------------------------------------- */
         .structure-diagram-wrap {
             overflow-x                           : auto;
             padding                               : var(--Vale_Spacing_Large) var(--Vale_Spacing_Small) 10px;
         }
 
-        .structure-diagram,
-        .structure-diagram ul {
-            list-style                           : none;
-            margin                                : 0;
-            padding                               : 0;
-            text-align                           : center;
-        }
-
-        .structure-diagram ul {
-            padding-top                           : 28px;
+        .structure-diagram {
             position                              : relative;
+            min-width                             : 760px;
+            max-width                             : 920px;
+            margin                                 : 0 auto;
+            display                                : grid;
+            grid-template-columns                 : repeat(4, 1fr);
+            column-gap                             : 14px;
+            row-gap                                : 52px;
         }
 
-        .structure-diagram li {
-            display                               : inline-table;
-            vertical-align                       : top;
-            text-align                            : center;
-            padding                               : 28px 14px 0;
-            position                              : relative;
-        }
-
-        .structure-diagram li::before,
-        .structure-diagram li::after {
-            content                               : "";
+        .structure-diagram__connectors {
             position                              : absolute;
-            top                                    : 0;
-            right                                  : 50%;
-            width                                  : 50%;
-            height                                 : 28px;
-            border-top                            : 2px solid var(--Vale_BorderColour);
+            inset                                  : 0;
+            width                                  : 100%;
+            height                                 : 100%;
+            overflow                              : visible;
+            pointer-events                        : none;
         }
 
-        .structure-diagram li::after {
-            right                                  : auto;
-            left                                   : 50%;
-            border-top                            : none;
-            border-left                            : 2px solid var(--Vale_BorderColour);
+        .structure-diagram__connectors line {
+            stroke                                 : var(--Vale_BorderColour);
+            stroke-width                           : 2;
         }
 
-        .structure-diagram li:only-child {
-            padding-top                           : 0;
-        }
-
-        .structure-diagram li:only-child::before,
-        .structure-diagram li:only-child::after {
-            display                               : none;
-        }
-
-        .structure-diagram li:first-child::before,
-        .structure-diagram li:last-child::after {
-            border                                 : none;
-        }
-
-        .structure-diagram li:last-child::before {
-            border-right                          : 2px solid var(--Vale_BorderColour);
-            border-radius                          : 0 6px 0 0;
-        }
-
-        .structure-diagram li:first-child::after {
-            border-radius                          : 6px 0 0 0;
-        }
-
-        .structure-diagram ul ul::before {
-            content                               : "";
-            position                              : absolute;
-            top                                    : 0;
-            left                                   : 50%;
-            width                                  : 0;
-            height                                 : 28px;
-            border-left                            : 2px solid var(--Vale_BorderColour);
-        }
-
-        .structure-diagram li.structure-diagram__branch--referenced > ul::before {
-            border-left-style                     : dashed;
+        .structure-diagram__connectors line.dashed {
+            stroke-dasharray                      : 5 4;
         }
 
         .structure-diagram__node {
-            display                               : inline-block;
-            padding                               : 10px 16px;
-            border-radius                          : 6px;
-            font-weight                            : var(--Vale_FontWeight_SemiBold);
-            font-size                              : 0.85em;
-            white-space                           : nowrap;
+            position                              : relative;
+            border-radius                          : 8px;
             border                                 : 1px solid transparent;
+            text-align                             : center;
         }
 
-        .structure-diagram__node--referenced {
-            font-weight                           : normal;
-            border-style                          : dashed;
+        .structure-diagram__number {
+            display                                : block;
+            font-size                              : 0.7em;
+            font-weight                            : normal;
+            letter-spacing                         : 0.04em;
+            text-transform                        : uppercase;
+            opacity                                : 0.75;
+            margin-bottom                          : 2px;
         }
 
-        .structure-diagram__node--scheme    { background: #e1bee7; color: #4a148c; border-color: #ce93d8; }
-        .structure-diagram__node--family    { background: #bbdefb; color: #0d47a1; border-color: #90caf9; }
-        .structure-diagram__node--assembly  { background: #c8e6c9; color: #1b5e20; border-color: #a5d6a7; }
-        .structure-diagram__node--component { background: #ffecb3; color: #f57f17; border-color: #ffe082; }
-        .structure-diagram__node--product   { background: #ffccbc; color: #bf360c; border-color: #ffab91; }
-        .structure-diagram__node--resource  { background: #cfd8dc; color: #263238; border-color: #b0bec5; }
+        .structure-diagram__label {
+            display                                : block;
+            font-weight                            : var(--Vale_FontWeight_SemiBold);
+            white-space                            : nowrap;
+        }
+
+        .structure-diagram__chips {
+            display                                : flex;
+            flex-wrap                              : wrap;
+            justify-content                       : center;
+            gap                                     : 4px;
+            margin-top                             : 8px;
+        }
+
+        .structure-diagram__chip {
+            font-size                              : 0.72em;
+            font-weight                            : normal;
+            padding                                : 2px 9px;
+            border-radius                          : 10px;
+            background                             : rgba(255, 255, 255, 0.55);
+            border                                 : 1px solid rgba(0, 0, 0, 0.08);
+            white-space                            : nowrap;
+        }
+
+        /* Tier sizing - bigger, bolder type for the higher tiers so the
+           hierarchy reads at a glance instead of needing the labels */
+        .structure-diagram__node--scheme {
+            grid-column                            : 1 / span 4;
+            justify-self                           : center;
+            min-width                              : 340px;
+            padding                                : 18px 32px;
+            font-size                              : 1.15em;
+        }
+
+        .structure-diagram__node--family {
+            padding                                : 12px 14px;
+            font-size                              : 0.92em;
+        }
+
+        .structure-diagram__node--assembly {
+            grid-column                            : 1 / span 4;
+            justify-self                           : center;
+            min-width                              : 520px;
+            padding                                : 14px 28px;
+            font-size                              : 1.02em;
+        }
+
+        .structure-diagram__node--component {
+            grid-column                            : 1 / span 2;
+            padding                                : 12px 18px;
+            font-size                              : 0.92em;
+        }
+
+        .structure-diagram__node--product {
+            grid-column                            : 3 / span 2;
+            padding                                : 12px 18px;
+            font-size                              : 0.92em;
+        }
+
+        .structure-diagram__node--resources-hub {
+            grid-column                            : 1 / span 4;
+            justify-self                           : center;
+            min-width                              : 220px;
+            padding                                : 10px 24px;
+            font-size                              : 0.9em;
+        }
+
+        .structure-diagram__node--resource-category {
+            padding                                : 8px 10px;
+            font-size                              : 0.78em;
+        }
+
+        .structure-diagram__node--scheme          { background: #e1bee7; color: #4a148c; border-color: #ce93d8; }
+        .structure-diagram__node--family          { background: #bbdefb; color: #0d47a1; border-color: #90caf9; }
+        .structure-diagram__node--assembly        { background: #c8e6c9; color: #1b5e20; border-color: #a5d6a7; }
+        .structure-diagram__node--component       { background: #ffecb3; color: #f57f17; border-color: #ffe082; }
+        .structure-diagram__node--product         { background: #ffccbc; color: #bf360c; border-color: #ffab91; }
+        .structure-diagram__node--resources-hub,
+        .structure-diagram__node--resource-category { background: #cfd8dc; color: #263238; border-color: #b0bec5; }
         /* #endregion --------------------------------------------------------- */
 
 
@@ -489,40 +526,138 @@
             <p>The database is structured into four main tiers. These include Schemes, Families, Assemblies which contain Components and Products, and Resources.</p>
 
             <!-- ------------------------------------------------------------- -->
-            <!-- REGION | Structure Diagram - Pure CSS Org Chart, No Image      -->
+            <!-- REGION | Structure Diagram - CSS Grid Boxes + JS Connectors    -->
             <!-- ------------------------------------------------------------- -->
             <div class="structure-diagram-wrap">
-                <ul class="structure-diagram">
-                    <li>
-                        <span class="structure-diagram__node structure-diagram__node--scheme">Scheme</span>
-                        <ul>
-                            <li>
-                                <span class="structure-diagram__node structure-diagram__node--family">Families</span>
-                                <ul>
-                                    <li>
-                                        <span class="structure-diagram__node structure-diagram__node--assembly">Assemblies</span>
-                                        <ul>
-                                            <li class="structure-diagram__branch--referenced">
-                                                <span class="structure-diagram__node structure-diagram__node--component">Components</span>
-                                                <ul>
-                                                    <li><span class="structure-diagram__node structure-diagram__node--resource structure-diagram__node--referenced">Resources</span></li>
-                                                </ul>
-                                            </li>
-                                            <li class="structure-diagram__branch--referenced">
-                                                <span class="structure-diagram__node structure-diagram__node--product">Products</span>
-                                                <ul>
-                                                    <li><span class="structure-diagram__node structure-diagram__node--resource structure-diagram__node--referenced">Resources</span></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                <div class="structure-diagram" id="ValeObjectLibrary_StructureDiagram">
+
+                    <svg class="structure-diagram__connectors" id="ValeObjectLibrary_StructureDiagramSvg"></svg>
+
+                    <div id="node-scheme" class="structure-diagram__node structure-diagram__node--scheme">
+                        <span class="structure-diagram__number">01 - Scheme</span>
+                        <span class="structure-diagram__label">Scheme</span>
+                        <div class="structure-diagram__chips"><span class="structure-diagram__chip">e.g. Orangery Option 01</span></div>
+                    </div>
+
+                    <div id="node-family-roof-lantern" class="structure-diagram__node structure-diagram__node--family">
+                        <span class="structure-diagram__number">02 - Family</span>
+                        <span class="structure-diagram__label">Roof Lantern</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">ETR Vent</span>
+                            <span class="structure-diagram__chip">Ridge</span>
+                            <span class="structure-diagram__chip">Hip</span>
+                            <span class="structure-diagram__chip">Rafter</span>
+                        </div>
+                    </div>
+                    <div id="node-family-framework" class="structure-diagram__node structure-diagram__node--family">
+                        <span class="structure-diagram__number">02 - Family</span>
+                        <span class="structure-diagram__label">Framework</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Columns</span>
+                            <span class="structure-diagram__chip">Entablatures</span>
+                            <span class="structure-diagram__chip">Structural</span>
+                        </div>
+                    </div>
+                    <div id="node-family-north-elevation" class="structure-diagram__node structure-diagram__node--family">
+                        <span class="structure-diagram__number">02 - Family</span>
+                        <span class="structure-diagram__label">North Elevation</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Door</span>
+                            <span class="structure-diagram__chip">Window</span>
+                        </div>
+                    </div>
+                    <div id="node-family-south-elevation" class="structure-diagram__node structure-diagram__node--family">
+                        <span class="structure-diagram__number">02 - Family</span>
+                        <span class="structure-diagram__label">South Elevation</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Door</span>
+                            <span class="structure-diagram__chip">Window</span>
+                        </div>
+                    </div>
+
+                    <div id="node-assemblies" class="structure-diagram__node structure-diagram__node--assembly">
+                        <span class="structure-diagram__number">03 - Assemblies</span>
+                        <span class="structure-diagram__label">Assemblies</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Door</span>
+                            <span class="structure-diagram__chip">Window</span>
+                            <span class="structure-diagram__chip">Pilaster</span>
+                            <span class="structure-diagram__chip">Ridge</span>
+                            <span class="structure-diagram__chip">Hip</span>
+                            <span class="structure-diagram__chip">ETR Vent</span>
+                            <span class="structure-diagram__chip">Framework</span>
+                        </div>
+                    </div>
+
+                    <div id="node-components" class="structure-diagram__node structure-diagram__node--component">
+                        <span class="structure-diagram__number">03.01 - Components</span>
+                        <span class="structure-diagram__label">Components</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Cornice</span>
+                            <span class="structure-diagram__chip">Entablature</span>
+                            <span class="structure-diagram__chip">Glazing Bar</span>
+                            <span class="structure-diagram__chip">Door Stile</span>
+                            <span class="structure-diagram__chip">Fielded Panel</span>
+                            <span class="structure-diagram__chip">Cill</span>
+                            <span class="structure-diagram__chip">Mullion</span>
+                            <span class="structure-diagram__chip">Pilaster Base</span>
+                        </div>
+                    </div>
+                    <div id="node-products" class="structure-diagram__node structure-diagram__node--product">
+                        <span class="structure-diagram__number">03.02 - Products</span>
+                        <span class="structure-diagram__label">Products</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Handle</span>
+                            <span class="structure-diagram__chip">Hinge</span>
+                            <span class="structure-diagram__chip">Finial</span>
+                            <span class="structure-diagram__chip">Cresting</span>
+                            <span class="structure-diagram__chip">Lock</span>
+                            <span class="structure-diagram__chip">Vent</span>
+                            <span class="structure-diagram__chip">Bracket</span>
+                        </div>
+                    </div>
+
+                    <div id="node-resources-hub" class="structure-diagram__node structure-diagram__node--resources-hub">
+                        <span class="structure-diagram__number">04 - Resources</span>
+                        <span class="structure-diagram__label">Resources</span>
+                    </div>
+
+                    <div id="node-resource-profiles" class="structure-diagram__node structure-diagram__node--resource-category">
+                        <span class="structure-diagram__label">Profiles</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Ogee</span>
+                            <span class="structure-diagram__chip">Astragal</span>
+                            <span class="structure-diagram__chip">Bolection</span>
+                        </div>
+                    </div>
+                    <div id="node-resource-materials" class="structure-diagram__node structure-diagram__node--resource-category">
+                        <span class="structure-diagram__label">Materials</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Accoya</span>
+                            <span class="structure-diagram__chip">Oak</span>
+                            <span class="structure-diagram__chip">Aluminium</span>
+                        </div>
+                    </div>
+                    <div id="node-resource-finishes" class="structure-diagram__node structure-diagram__node--resource-category">
+                        <span class="structure-diagram__label">Finishes</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">RAL Colours</span>
+                            <span class="structure-diagram__chip">Paint Systems</span>
+                            <span class="structure-diagram__chip">Stains</span>
+                        </div>
+                    </div>
+                    <div id="node-resource-specifications" class="structure-diagram__node structure-diagram__node--resource-category">
+                        <span class="structure-diagram__label">Specifications</span>
+                        <div class="structure-diagram__chips">
+                            <span class="structure-diagram__chip">Glass Spec</span>
+                            <span class="structure-diagram__chip">Casting</span>
+                            <span class="structure-diagram__chip">Fixing Spec</span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            <p class="diagram-figure__caption">Solid lines mean "contains", dashed lines mean "references" - Components and Products each draw from the shared Resource library rather than owning it.</p>
+            <p class="diagram-figure__caption">Solid lines mean "contains" or "is grouped into", dashed lines mean "references" - Components and Products both draw from the shared Resource library rather than owning it. Box size and weight follow the hierarchy: Scheme and Assemblies are the two anchor tiers.</p>
             <!-- endregion --------------------------------------------------------------- -->
 
             <h2>Scheme Level Definition</h2>
@@ -805,6 +940,116 @@
                 ValeObjectLibrary_CloseLightbox();
             }
         });
+
+
+        // ------------------------------------------------------------------------
+        // REGION | Structure Diagram Connectors - Measured, Not Guessed
+        // ------------------------------------------------------------------------
+        // The boxes size themselves to their content, so the lines between them
+        // are drawn from each box's real getBoundingClientRect() after layout,
+        // not from hardcoded pixel coordinates. See the CSS region "Structure
+        // Diagram" for why: a fixed-coordinate version is one font substitution
+        // or window resize away from drawing a line into the wrong place.
+        // ------------------------------------------------------------------------
+
+        // FUNCTION | Read a node's top or bottom centre point, relative to the diagram container
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_GetAnchor(nodeId, containerRect, edge) {
+            var nodeElement = document.getElementById(nodeId);
+            var nodeRect    = nodeElement.getBoundingClientRect();
+            return {
+                x: nodeRect.left + (nodeRect.width / 2) - containerRect.left,
+                y: (edge === 'bottom' ? nodeRect.bottom : nodeRect.top) - containerRect.top
+            };
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Append one straight SVG line to the connectors layer
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_AddLine(svgElement, x1, y1, x2, y2, dashed) {
+            var lineElement = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            lineElement.setAttribute('x1', x1);
+            lineElement.setAttribute('y1', y1);
+            lineElement.setAttribute('x2', x2);
+            lineElement.setAttribute('y2', y2);
+            if (dashed) {
+                lineElement.setAttribute('class', 'dashed');
+            }
+            svgElement.appendChild(lineElement);
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Draw a branch (one parent, many children) or a merge (many parents, one child)
+        // ------------------------------------------------------------
+        // Covers every connector this diagram needs: a straight line when both
+        // sides have one box, an even branch/bar/drops shape otherwise. Which
+        // side is the "one" and which is the "many" is worked out from the
+        // array lengths, so the same function draws Scheme -> four Families
+        // and Components + Products -> Resources without needing two versions.
+        function ValeObjectLibrary_DrawConnector(svgElement, containerRect, upperIds, lowerIds, dashed) {
+            var upperAnchors = upperIds.map(function (id) { return ValeObjectLibrary_GetAnchor(id, containerRect, 'bottom'); });
+            var lowerAnchors = lowerIds.map(function (id) { return ValeObjectLibrary_GetAnchor(id, containerRect, 'top'); });
+
+            if (upperAnchors.length === 1 && lowerAnchors.length === 1) {
+                ValeObjectLibrary_AddLine(svgElement, upperAnchors[0].x, upperAnchors[0].y, lowerAnchors[0].x, lowerAnchors[0].y, dashed);
+                return;
+            }
+
+            var maxUpperY = Math.max.apply(null, upperAnchors.map(function (a) { return a.y; }));
+            var minLowerY = Math.min.apply(null, lowerAnchors.map(function (a) { return a.y; }));
+            var barY      = (maxUpperY + minLowerY) / 2;
+
+            if (upperAnchors.length === 1) {
+                // One parent branching down into several children
+                var upper   = upperAnchors[0];
+                var lowerXs = lowerAnchors.map(function (a) { return a.x; });
+                ValeObjectLibrary_AddLine(svgElement, upper.x, upper.y, upper.x, barY, dashed);
+                ValeObjectLibrary_AddLine(svgElement, Math.min.apply(null, lowerXs), barY, Math.max.apply(null, lowerXs), barY, dashed);
+                lowerAnchors.forEach(function (a) { ValeObjectLibrary_AddLine(svgElement, a.x, barY, a.x, a.y, dashed); });
+                return;
+            }
+
+            // Several parents merging down into one child
+            var lower   = lowerAnchors[0];
+            var upperXs = upperAnchors.map(function (a) { return a.x; });
+            upperAnchors.forEach(function (a) { ValeObjectLibrary_AddLine(svgElement, a.x, a.y, a.x, barY, dashed); });
+            ValeObjectLibrary_AddLine(svgElement, Math.min.apply(null, upperXs), barY, Math.max.apply(null, upperXs), barY, dashed);
+            ValeObjectLibrary_AddLine(svgElement, lower.x, barY, lower.x, lower.y, dashed);
+        }
+        // ------------------------------------------------------------
+
+        // FUNCTION | Redraw every connector in the structure diagram from the live layout
+        // ------------------------------------------------------------
+        function ValeObjectLibrary_DrawStructureDiagram() {
+            var diagramElement = document.getElementById('ValeObjectLibrary_StructureDiagram');
+            var svgElement      = document.getElementById('ValeObjectLibrary_StructureDiagramSvg');
+            if (!diagramElement || !svgElement) {
+                return;
+            }
+
+            svgElement.innerHTML = '';
+            var containerRect = diagramElement.getBoundingClientRect();
+
+            var familyIds  = ['node-family-roof-lantern', 'node-family-framework', 'node-family-north-elevation', 'node-family-south-elevation'];
+            var resourceIds = ['node-resource-profiles', 'node-resource-materials', 'node-resource-finishes', 'node-resource-specifications'];
+
+            ValeObjectLibrary_DrawConnector(svgElement, containerRect, ['node-scheme'], familyIds, false);
+            ValeObjectLibrary_DrawConnector(svgElement, containerRect, familyIds, ['node-assemblies'], false);
+            ValeObjectLibrary_DrawConnector(svgElement, containerRect, ['node-assemblies'], ['node-components', 'node-products'], false);
+            ValeObjectLibrary_DrawConnector(svgElement, containerRect, ['node-components', 'node-products'], ['node-resources-hub'], true);
+            ValeObjectLibrary_DrawConnector(svgElement, containerRect, ['node-resources-hub'], resourceIds, false);
+        }
+        // ------------------------------------------------------------
+
+        window.addEventListener('load', ValeObjectLibrary_DrawStructureDiagram);
+
+        var ValeObjectLibrary_ResizeTimer = null;
+        window.addEventListener('resize', function () {
+            clearTimeout(ValeObjectLibrary_ResizeTimer);
+            ValeObjectLibrary_ResizeTimer = setTimeout(ValeObjectLibrary_DrawStructureDiagram, 150);
+        });
+
+        // endregion ------------------------------------------------------------------
 
     </script>
 

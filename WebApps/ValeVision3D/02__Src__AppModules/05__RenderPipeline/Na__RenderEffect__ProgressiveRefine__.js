@@ -434,9 +434,22 @@
             const readBuffer = composer ? composer.readBuffer : null;
             if (!readBuffer) return null;
 
-            const width  = readBuffer.width;
-            const height = readBuffer.height;
-            if (!(width > 0) || !(height > 0)) return null;
+            // FLOORED, BECAUSE THE COMPOSER DOES NOT. EffectComposer sizes its
+            // buffers as cssWidth x pixelRatio and stores the product as it comes,
+            // so on any display scaling that is not 100% - 125% and 150% are the
+            // normal cases on a good monitor - readBuffer.width is a number like
+            // 2498.75. The supersampler rounds what it is given and reports the
+            // rounded size, so comparing the two raw fails on EVERY chunk: the
+            // buffer is torn down, the running total discarded with it, and the
+            // chunk drawn again from zero, landing on the first chunk size every
+            // frame for ever. That is the "stuck at 6 of 16" at a full chunk of
+            // GPU work per frame. Floor, not round: WebGL takes texture sizes as
+            // integers and truncates, so the floor is the buffer that actually
+            // exists on the GPU, which makes the equality test exact AND the
+            // accumulation target the same pixel size as the frame it accumulates.
+            const width  = Math.max(1, Math.floor(readBuffer.width));
+            const height = Math.max(1, Math.floor(readBuffer.height));
+            if (!(readBuffer.width > 0) || !(readBuffer.height > 0)) return null;
 
             if (supersampler && (supersampler.width !== width || supersampler.height !== height)) {
                 supersampler.dispose();                                       // <-- Window resized or the engine was swapped

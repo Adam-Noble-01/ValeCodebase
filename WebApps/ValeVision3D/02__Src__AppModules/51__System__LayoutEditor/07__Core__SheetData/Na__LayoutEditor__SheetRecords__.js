@@ -150,6 +150,7 @@
         Na__LeCfg__GetMarginNotesSetup
     } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeScale__Coerce, Na__LeScale__SheetLabel } from './Na__LayoutEditor__ScaleManager__.js';
+    import { Na__LeLayout__PaperSizeMm } from './Na__LayoutEditor__SheetLayout__.js';               // <-- A leaf: it reads the sheet config and nothing else, so it cannot cycle back here
     import { Na__LeGrad__Normalise } from '../35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js';   // <-- A leaf: it reaches only the panel host, which reaches only the config
     import { Na__LeDash__Normalise } from '../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
     import {
@@ -687,6 +688,7 @@
         const code    = Na__DrawData__GetProjectCode() || '';
         const index   = sheet ? sheet.Sheet__Order : 1;
         const scales  = (sheet ? sheet.Sheet__Viewports : []).filter((v) => v.Viewport__Kind === Na__LeRec__KIND_2D).map((v) => v.Viewport__ScaleDenominator);
+        const paper   = Na__LeLayout__PaperSizeMm(sheet ? sheet.Sheet__PaperSize : null, sheet ? sheet.Sheet__Orientation : null);   // <-- Resolved, not read raw: an unset or unknown size falls back to the default paper the sheet actually prints on
         const today   = new Date();
         const dateText = String(today.getDate()).padStart(2, '0') + ' ' +
             [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ][today.getMonth()] + ' ' + today.getFullYear();
@@ -697,7 +699,7 @@
             Title         : sheet ? sheet.Sheet__Name : '',
             DrawingNumber : (code ? code + '-' : '') + String(index).padStart(2, '0'),
             Revision      : 'A',
-            Scale         : Na__LeScale__SheetLabel(scales),
+            Scale         : Na__LeScale__SheetLabel(scales, paper.Label),
             Date          : dateText,
             DrawnBy       : setup.drawnByDefault
         };

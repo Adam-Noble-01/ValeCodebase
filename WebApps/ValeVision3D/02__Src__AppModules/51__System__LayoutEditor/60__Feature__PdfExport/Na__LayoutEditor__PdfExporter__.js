@@ -68,6 +68,7 @@
     // MODULE IMPORTS | Config, Layout, Model, Chrome, Markup, Viewports, Assets
     // ------------------------------------------------------------
     import { Na__LeCfg__GetPdfSetup, Na__LeCfg__GetLineworkSetup, Na__LeCfg__GetLabel, Na__LeCfg__GetSpecificationSetup, Na__LeCfg__FormatLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeFileName__Build } from './Na__LayoutEditor__PdfFilename__.js';   // <-- Shared with the specification download, so both name their files alike
     import { Na__LeScale__SheetLabel } from '../07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js';
     import { Na__LeLayout__Solve } from '../07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js';
     import { Na__LeModel__KIND_2D, Na__LeModel__GetLayers, Na__LeModel__GetFields, Na__LeModel__IsLayerVisible } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
@@ -231,12 +232,25 @@
 
     // HELPER FUNCTION | The Output File Name From the Pattern
     // ------------------------------------------------------------
+    // Every token comes from the sheet as the title block reads it, so the file name
+    // and the drawing it holds cannot disagree: the drawing code, revision and paper
+    // are the ones printed on the sheet, not a second set assembled here. The naming
+    // itself lives in Na__LayoutEditor__PdfFilename__, which the specification
+    // download shares, so the two come out of the app named the same way.
+    //
+    // The date is TODAY, the day the file was issued, which is also what the title
+    // block prints unless that field has been typed over. To make the file follow an
+    // overridden title block date instead, pass fields.Date as parts.date.
+    // ------------------------------------------------------------
     function Na__LePdf__Filename(sheet, layout) {
-        const clean = (v) => String(v || '').replace(/[^A-Za-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'Sheet';
-        return Na__LeCfg__GetPdfSetup().filenamePattern
-            .split('{projectCode}').join(clean(Na__DrawData__GetProjectCode() || 'Project'))
-            .split('{sheetName}').join(clean(sheet.Sheet__Name))
-            .split('{paperSize}').join(clean(layout.Page.SizeKey));
+        const fields = Na__LeModel__GetFields(sheet);                              // <-- Defaults filled in, so a blank Drawing No. still names the file
+        return Na__LeFileName__Build({
+            code        : fields.DrawingNumber,
+            name        : sheet.Sheet__Name,
+            paper       : layout.Page.SizeKey,
+            revision    : fields.Revision,
+            projectCode : Na__DrawData__GetProjectCode()
+        });
     }
     // ------------------------------------------------------------
 

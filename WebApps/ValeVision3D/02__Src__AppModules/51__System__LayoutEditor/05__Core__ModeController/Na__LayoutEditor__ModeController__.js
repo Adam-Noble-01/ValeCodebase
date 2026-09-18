@@ -48,6 +48,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 17-Sep-2026 - Version 1.16.0
+// - SectionForKind and FocusPanelForSelection: a selection change, and the
+//   eyedropper picking up a style, open that kind's panel and fold the rest of
+//   the markup group. One kind, one panel; a mixed selection opens nothing.
+// - Ported from TrueVision3D v2.57.0.
+//
 // 15-Sep-2026 - Version 1.15.1
 // - A scene broadcast (a scene or drawing card added, renamed, regrouped or
 //   removed) refreshes the Viewport panel while a sheet is open, so its Scene
@@ -152,7 +158,7 @@
 
     // MODULE IMPORTS | Config, Model, Surface, Navigation, Tools, Panels, Toolbar, Snapshots
     // ------------------------------------------------------------
-    import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel, Na__LeCfg__GetPanelSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeGrad__Ready } from '../35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js';
     import { Na__LeDash__Ready } from '../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
     import { Na__LeEdge__Ready } from '../25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js';
@@ -165,14 +171,17 @@
         Na__LeModel__GetSheetById,
         Na__LeModel__GetActiveSheet,
         Na__LeModel__SetActiveSheetId,
-        Na__LeModel__SetSelection
+        Na__LeModel__SetSelection,
+        Na__LeModel__GetSelectionItems
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__Mount, Na__LeSurface__SetSheet, Na__LeSurface__Refresh, Na__LeSurface__SetZoom, Na__LeSurface__GetZoom } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeNav__Fit } from '../10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js';
     import { Na__LePc__Attach, Na__LePc__Detach } from '../10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js';
     import { Na__LeTouch__Attach, Na__LeTouch__Detach } from '../10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js';
     import { Na__LeTools__DEFAULTS_EVENT, Na__LeTools__Attach, Na__LeTools__Detach } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
-    import { Na__LePanels__Mount, Na__LePanels__Refresh } from '../40__Ui__Panels/Na__LayoutEditor__PanelHost__.js';
+    import { Na__LePanels__Mount, Na__LePanels__Refresh, Na__LePanels__FocusSection } from '../40__Ui__Panels/Na__LayoutEditor__PanelHost__.js';
+    import { Na__LeGroup__Expand } from '../15__Core__Markup/Na__LayoutEditor__Groups__.js';
+    import { Na__LeDrop__CHANGED_EVENT } from '../30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js';
     import { Na__LePanelLayers__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js';
     import { Na__LePanelSheet__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Sheet__.js';
     import { Na__LePanelViewport__EDIT_EVENT, Na__LePanelViewport__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js';
@@ -549,6 +558,46 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Section That Edits a Kind of Sheet Item
+    // ------------------------------------------------------------
+    // The selection side of PanelFor, which answers the same question for a
+    // change announcement. A kind with no section of its own - a viewport, a
+    // group - answers null and the folds are left alone.
+    // ------------------------------------------------------------
+    function Na__LeMode__SectionForKind(kind) {
+        if (kind === 'annotation') return 'text';
+        if (kind === 'dimension')  return 'dimensions';
+        if (kind === 'shape')      return 'shapes';
+        if (kind === 'leader')     return 'leaders';
+        return null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Show the Section for What Is Selected, Fold the Rest
+    // ------------------------------------------------------------
+    // Called on every selection change and whenever the eyedropper picks up a
+    // style. ONE KIND, ONE PANEL: a selection of several vectors opens Vectors,
+    // and a mixed selection opens nothing, because there is no single answer to
+    // what would be edited. Groups are opened up first, so windowing a grouped
+    // block of notes still lands on Leaders.
+    // ------------------------------------------------------------
+    function Na__LeMode__FocusPanelFor(kind) {
+        if (!Na__LeMode__Active || !Na__LeCfg__GetPanelSetup().focusOnSelect) return false;
+        const section = Na__LeMode__SectionForKind(kind);
+        return section ? Na__LePanels__FocusSection(section) : false;
+    }
+    function Na__LeMode__FocusPanelForSelection() {
+        const items = Na__LeModel__GetSelectionItems();
+        if (!items.length) return false;                                        // <-- Nothing selected: the folds are the user's again
+        const kinds = new Set(Na__LeGroup__Expand(Na__LeModel__GetActiveSheet(), items).map((item) => item.kind));
+        kinds.delete('group');
+        if (kinds.size !== 1) return false;                                     // <-- Mixed: no one panel describes it
+        return Na__LeMode__FocusPanelFor(kinds.values().next().value);
+    }
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Route a Model Change to the Right Refresh
     // ------------------------------------------------------------
     function Na__LeMode__OnSheetsChanged(event) {
@@ -563,7 +612,7 @@
         else if (reason === 'viewports' || reason === 'viewport') Na__LeSurface__Refresh('frames');
         else if (Na__LeMode__MARKUP_REASONS.indexOf(reason) !== -1) Na__LeSurface__Refresh('markup');
         else if (reason === 'layers') Na__LeSurface__Refresh('all');
-        else if (reason === 'selection') { Na__LeSurface__Refresh('markup'); Na__LeSurface__Refresh('selection'); }
+        else if (reason === 'selection') { Na__LeSurface__Refresh('markup'); Na__LeSurface__Refresh('selection'); Na__LeMode__FocusPanelForSelection(); }
         else if (reason === 'active') { if (active) Na__LeSurface__SetSheet(active); }
         Na__LePanels__Refresh(Na__LeMode__PanelFor(reason));
         if (reason === 'leader' || reason === 'leaders') Na__LePanels__Refresh('margin');   // <-- A link made or lost changes what the notes margin lists
@@ -617,6 +666,9 @@
             Na__LeSnap__Initialize(context);
             window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
             window.addEventListener(Na__LeTools__DEFAULTS_EVENT, (event) => { if (Na__LeMode__Active) Na__LePanels__Refresh(Na__LeMode__PanelFor(event.detail && event.detail.kind)); });   // <-- A palette sync: the panel showing the new-object settings redraws
+            window.addEventListener(Na__LeDrop__CHANGED_EVENT, (event) => {     // <-- Picking a style says what is being matched, the same way a selection does
+                if (event.detail && event.detail.hasSource) Na__LeMode__FocusPanelFor(event.detail.kind);
+            });
             window.addEventListener(Na__LePanelViewport__EDIT_EVENT, Na__LeMode__OnRequestDrawing);
             window.addEventListener(Na__LeSpec__CHANGED_EVENT, () => {
                 if (!Na__LeMode__Active || Na__LeMode__View === Na__LeMode__VIEW_SPEC) return;

@@ -845,6 +845,17 @@ ValeVision's loader links. A file in one app is at the same path in the other.
 | `51/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js` 1.9.1 | TV same | adapted | A selected leader's box: the leader line now uses isChosen and highlights, as TrueVision's already did. Fixed here only; nothing to send back | 15-Sep-2026 |
 | `index.html`, `03/Na__CoreUi__Styles__Index__.css`, `42/Na__DrawView__RenameDrawing__.js` (paths) | TV `Index.html`, TV CSS index, TV `40/` same | n/a | New Loader and Styles__Boot paths | 15-Sep-2026 |
 
+| ValeVision | TrueVision | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `51/30__System__SheetTools/Na__LayoutEditor__EditScope__.js` 1.1.0 | TV same, authored there | verbatim | The context stack: a group, a vector or a dimension open for editing, and the points picked inside it | 17-Sep-2026 |
+| `51/15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js` 1.10.0 | TV 1.12.0 | adapted | `PushDimension` keeps ValeVision's option shape: its dimensions have no fixed-length extension lines, so no `extension` key | 17-Sep-2026 |
+| The v2.52.0 container-editing set (`SheetTools__*`, `Grips__`, `SelectionBox__`, `SheetSurface__`, `Toolbar__`, config, styles) | TV v2.59.0 same files | verbatim | Divergences are the ones already in these files: TrueVision's plan doors, viewport snap move, force render and model source have no ValeVision counterpart and are simply absent | 17-Sep-2026 |
+| `51/07__Core__SheetData/Na__LayoutEditor__ScaleManager__.js` 1.2.0 | TV 1.2.0 | adapted | The title block Scale cell names its paper and lists a mix. ValeVision has no site plan scale list, so `SheetLabel` is shaped to its single list: no `IsListed`, and an off-list denominator still coerces | 17-Sep-2026 |
+| `51/10__Core__SheetSurface/Na__LayoutEditor__SheetChrome__.js` 1.8.0 | TV 1.8.0 | verbatim | The caption measurement round-trip fix and `FitCaptionFont`. ValeVision's `BuildFrame` has no `Viewport__ShowFrame` guard, which is TrueVision-only and simply absent | 17-Sep-2026 |
+| `51/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js` 1.0.0 | TV 1.0.0 | verbatim | New leaf; the app name in its header is the only divergence | 17-Sep-2026 |
+| `51/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js` 1.0.0 | TV 1.0.0 | adapted | ValeVision has no `Na__LayoutEditor__PdfFonts__`, so the pages are set in its own measuring face (Helvetica) rather than an embedded Open Sans; the drawing core is `42__System__DrawingViewCore` here | 17-Sep-2026 |
+| The specification revision set (`SpecData__State__`, `SpecData__Document__`, `SpecData__Editing__`, `SpecData__`, `SpecEditor__Bar__`, `SpecEditor__Actions__`, `SpecDocument__`, both stylesheets, config) | TV v2.63.0 same files | verbatim | Revision and document number on the specification, and the Download button | 17-Sep-2026 |
+
 ---
 
 ## Pending back-port (ValeVision to TrueVision)

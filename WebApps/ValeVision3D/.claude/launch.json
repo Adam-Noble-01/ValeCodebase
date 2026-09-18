@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vv-port",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8578",
+        "--directory",
+        "D:/80__External__LiveRepos/ValeCodebase/WebApps/ValeVision3D"
+      ],
+      "port": 8578
+    }
+  ]
+}

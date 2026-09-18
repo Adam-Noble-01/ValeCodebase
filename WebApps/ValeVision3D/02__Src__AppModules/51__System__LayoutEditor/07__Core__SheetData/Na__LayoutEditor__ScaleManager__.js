@@ -72,6 +72,18 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Is a Denominator on the List (captions and the title block quote it as it is)
+    // ------------------------------------------------------------
+    // PORT NOTE: TrueVision also consults its site plan scale list here. ValeVision
+    // has no site plan scales, so there is one list to ask.
+    // ------------------------------------------------------------
+    function Na__LeScale__IsListed(denominator) {
+        const parsed = parseFloat(denominator);
+        return Number.isFinite(parsed) && Na__LeCfg__GetScaleSetup().denominators.indexOf(parsed) !== -1;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Next Denominator Round the Toggle (wraps)
     // ------------------------------------------------------------
     function Na__LeScale__Next(denominator) {
@@ -103,23 +115,52 @@
     function Na__LeScale__FormatLabel(denominator) {
         const setup = Na__LeCfg__GetScaleSetup();
         if (!Number.isFinite(parseFloat(denominator))) return setup.notToScaleLabel;
-        return setup.labelPrefix + String(Na__LeScale__Coerce(denominator));
+        return setup.labelPrefix + String(Na__LeScale__IsListed(denominator) ? parseFloat(denominator) : Na__LeScale__Coerce(denominator));
     }
     // ------------------------------------------------------------
 
 
-    // FUNCTION | The Label a Sheet Quotes When Its Viewports Disagree
+    // HELPER FUNCTION | The Paper Suffix a Sheet Label Carries ("@ ISO A2")
     // ------------------------------------------------------------
-    // One denominator across every 2D viewport reads as that scale; a mix
-    // reads "As shown", which is what the office writes in that case.
+    // A scale only means anything at the paper it was drawn for - 1:50 on A2 and
+    // 1:50 on A4 are different drawings - so the cell names both. A Label that
+    // already opens with the prefix is left alone, so configuring a paper size as
+    // "ISO A2" cannot print "ISO ISO A2".
     // ------------------------------------------------------------
-    function Na__LeScale__SheetLabel(denominators) {
+    function Na__LeScale__PaperSuffix(paperLabel, setup) {
+        if (setup.sheetShowPaperSize === false) return '';
+        const label = String(paperLabel === undefined || paperLabel === null ? '' : paperLabel).trim();
+        if (label === '') return '';
+        const prefix = String(setup.sheetPaperPrefix || '');
+        const named  = (prefix !== '' && label.toUpperCase().indexOf(prefix.trim().toUpperCase()) !== 0) ? prefix + label : label;
+        return String(setup.sheetPaperJoiner || ' @ ') + named;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Label a Sheet Quotes, at the Paper It Is Drawn On
+    // ------------------------------------------------------------
+    // One denominator across every 2D viewport reads as that scale; several list
+    // themselves finest first, "1:50 & 1:100", so a reader is told which scales
+    // are on the sheet rather than only that it is mixed. Past sheetMaxScales the
+    // list is longer than the cell, so the old "As shown" is quoted instead.
+    //
+    // paperLabel is optional and last: pass it and the label carries the paper
+    // size ("1:50 @ ISO A2"); leave it off and this is the scales alone, which is
+    // what the PDF metadata wants, since that names the paper in its own field.
+    // ------------------------------------------------------------
+    function Na__LeScale__SheetLabel(denominators, paperLabel) {
         const setup  = Na__LeCfg__GetScaleSetup();
         const unique = [];
-        (denominators || []).forEach((d) => { const c = Na__LeScale__Coerce(d); if (unique.indexOf(c) === -1) unique.push(c); });
-        if (unique.length === 0) return setup.notToScaleLabel;
-        if (unique.length === 1) return Na__LeScale__FormatLabel(unique[0]);
-        return 'As shown';
+        (denominators || []).forEach((d) => { const c = Na__LeScale__IsListed(d) ? parseFloat(d) : Na__LeScale__Coerce(d); if (unique.indexOf(c) === -1) unique.push(c); });
+        const paper  = Na__LeScale__PaperSuffix(paperLabel, setup);
+
+        if (unique.length === 0)                  return setup.notToScaleLabel + paper;       // <-- A 3D-only sheet still says what paper it is
+        if (unique.length === 1)                  return Na__LeScale__FormatLabel(unique[0]) + paper;
+        if (unique.length > setup.sheetMaxScales) return setup.sheetMixedLabel + paper;
+
+        unique.sort((a, b) => a - b);                                                          // <-- Finest first, the order the scale list itself is held in
+        return unique.map((d) => Na__LeScale__FormatLabel(d)).join(setup.sheetScaleSeparator) + paper;
     }
     // ------------------------------------------------------------
 
@@ -135,6 +176,7 @@
     export {
         Na__LeScale__ListDenominators,
         Na__LeScale__Coerce,
+        Na__LeScale__IsListed,
         Na__LeScale__Next,
         Na__LeScale__PaperToModelMm,
         Na__LeScale__ModelToPaperMm,

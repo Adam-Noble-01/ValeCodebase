@@ -33,6 +33,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 17-Sep-2026 - Version 1.4.0
+// - Several selected: the panel reads the first text item and writes all of
+//   them. Only the style traits travel, so the words stay where they are.
+// - Ported from TrueVision3D v2.57.0.
+//
 // 15-Sep-2026 - Version 1.3.0
 // - Rotation row: degrees clockwise, -180 to 180. It turns the selected text
 //   about the middle of its box, or sets the angle new text is placed at. The
@@ -70,6 +75,8 @@
         Na__LePanels__RegisterSection,
         Na__LePanels__OnControl,
         Na__LePanels__IsEditable,
+        Na__LePanels__SelectedOfKind,
+        Na__LePanels__ApplyToSelection,
         Na__LePanels__Row,
         Na__LePanels__Input,
         Na__LePanels__Select,
@@ -99,6 +106,24 @@
         if (!sheet || !selection || selection.kind !== 'annotation') return null;
         const item = sheet.Sheet__Annotations.find((a) => a.Annotation__Id === selection.id) || null;
         return item ? { sheet : sheet, item : item } : null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Every Selected Text Item, When There Is More Than One
+    // ------------------------------------------------------------
+    // Reading is what the panel shows; writing is what it changes. With one
+    // thing selected the two are the same item. With several, the panel reads
+    // the FIRST of them and writes ALL of them - a box showing the setting for
+    // new objects while nine are selected is what sent an edit somewhere
+    // nobody expected.
+    // ------------------------------------------------------------
+    function Na__LePanelText__Many() {
+        const sheet = Na__LeModel__GetActiveSheet();
+        const items = Na__LePanels__SelectedOfKind(sheet, 'annotation');
+        if (!items.length) return null;
+        const item = sheet.Sheet__Annotations.find((a) => a.Annotation__Id === items[0].id) || null;
+        return item ? { sheet : sheet, item : item, count : items.length } : null;
     }
     // ------------------------------------------------------------
 
@@ -160,8 +185,9 @@
     // ------------------------------------------------------------
     function Na__LePanelText__Apply(patchForItem, patchForDefaults) {
         const selected = Na__LePanelText__Selected();
-        if (selected) Na__LeModel__UpdateAnnotation(selected.sheet, selected.item.Annotation__Id, patchForItem);
-        else Na__LeTools__SetTextDefaults(patchForDefaults);
+        if (selected) { Na__LeModel__UpdateAnnotation(selected.sheet, selected.item.Annotation__Id, patchForItem); return; }
+        if (Na__LePanels__ApplyToSelection(Na__LeModel__GetActiveSheet(), 'annotation', patchForItem)) return;   // <-- Several selected: the style traits go to every one of them
+        Na__LeTools__SetTextDefaults(patchForDefaults);
     }
     // ------------------------------------------------------------
 

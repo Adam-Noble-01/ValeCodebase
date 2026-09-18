@@ -60,6 +60,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 17-Sep-2026 - Version 1.4.0
+// - A BOX DRAWN INSIDE A CONTAINER TAKES WHAT IS IN THAT CONTAINER. Candidates
+//   asks Na__LayoutEditor__EditScope__ first: inside a vector each vertex is a
+//   candidate of its own, inside a group its members are, and only with nothing
+//   open is the whole sheet offered. Describe is one item's parts and bounds,
+//   handed to the scope so it never needs to know what a leader is made of.
+// - Press takes an escape flag and Release reports it: the press outside an
+//   open container that never stretched into a box is the way out of it.
+//
+//
 // 15-Sep-2026 - Version 1.3.0
 // - A turned text item's box is its turned box (Na__LeMarkup__AnnotationCorners),
 //   so a window takes it once that box is inside, not the square round it, and
@@ -106,6 +116,7 @@
     import { Na__LeDimGeo__Terminator } from '../15__Core__Markup/Na__LayoutEditor__DimensionGeometry__.js';
     import { Na__LeShapeGeo__Points } from '../15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js';
     import { Na__LeLeadGeo__TYPE_BUBBLE, Na__LeLeadGeo__Layout, Na__LeLeadGeo__Circle, Na__LeLeadGeo__HasText } from '../15__Core__Markup/Na__LayoutEditor__LeaderGeometry__.js';
+    import { Na__LeScope__BoxCandidates } from './Na__LayoutEditor__EditScope__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -373,14 +384,43 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | One Item's Parts and Bounds, by Kind (null when it cannot be taken)
+    // ------------------------------------------------------------
+    // The same reading Candidates makes of a whole sheet, for one named item.
+    // Handed to the edit scope so a box drawn inside a container can describe
+    // that container's members without the scope knowing what a leader or a
+    // dimension is made of.
+    // ------------------------------------------------------------
+    function Na__LeSelBox__Describe(sheet, item) {
+        if (!sheet || !item) return null;
+        const row = Na__LeSelBox__KINDS.find((entry) => entry.kind === item.kind);
+        if (!row) return null;
+        const records = Array.isArray(sheet[row.list]) ? sheet[row.list] : [];
+        const record  = records.find((candidate) => candidate && candidate[row.idKey] === item.id);
+        if (!record || !Na__LeModel__IsLayerVisible(sheet, record[row.layerKey]) || Na__LeModel__IsLayerLocked(sheet, record[row.layerKey])) return null;
+        if (row.ownLock && row.ownLock(record)) return null;
+        const parts = row.parts(sheet, record).filter((part) => part && Array.isArray(part.points) && part.points.length > 0);
+        return parts.length ? { parts : parts, bounds : Na__LeSelBox__BoundsOf(parts) } : null;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Every Item a Box Could Take on a Sheet, With Its Parts and Bounds
     // ------------------------------------------------------------
     // Built when a box starts and again on a zoom or a model change, never on
     // every move: a dimension's value has to be measured to know its box.
+    //
+    // INSIDE AN OPEN CONTAINER the sheet is not what a box is drawn over: in a
+    // vector the candidates are its vertices, in a group its members. That list
+    // comes from Na__LayoutEditor__EditScope__, which is also what makes a box
+    // dragged across a vector take four corners rather than the four viewports
+    // behind it.
     // ------------------------------------------------------------
     function Na__LeSelBox__Candidates(sheet) {
         const list = [];
         if (!sheet) return list;
+        const scoped = Na__LeScope__BoxCandidates(sheet, Na__LeSelBox__Describe);
+        if (scoped) return scoped;
         Na__LeSelBox__KINDS.forEach((row) => {
             const records = Array.isArray(sheet[row.list]) ? sheet[row.list] : [];
             records.forEach((record) => {
@@ -465,7 +505,7 @@
         node.style.top         = (y * ppm) + 'px';
         node.style.width       = Math.max(0, widthMm  * ppm) + 'px';
         node.style.height      = Math.max(0, heightMm * ppm) + 'px';
-        node.style.borderWidth = Math.max(1, Na__LeCfg__GetSelectionSetup().boxBorderPx / zoom) + 'px';   // <-- One weight on screen at any zoom
+        node.style.borderWidth = (Na__LeCfg__GetSelectionSetup().boxBorderPx / (zoom > 0 ? zoom : 1)) + 'px';   // <-- One weight on screen at any zoom; the old Math.max floor was in paper pixels, so zoomed in it thickened instead
         return node;
     }
     // ------------------------------------------------------------
@@ -539,10 +579,13 @@
 
     // FUNCTION | A Left Press That May Become a Box
     // ------------------------------------------------------------
-    // options: { combine, pending }
+    // options: { combine, pending, escape }
     //   combine   the modifier the press was made with: a COMBINE_ constant, or null
     //   pending   the { kind, id } under the press when it was something that
     //             cannot move; a release that never became a box selects it
+    //   escape    the press landed outside the open container: a release that
+    //             never became a box steps back out of it (a drag selects
+    //             inside it instead, which is why the two share one press)
     // Nothing shows until the pointer has travelled BoxStartPx on screen, so a
     // click stays a click.
     // ------------------------------------------------------------
@@ -559,6 +602,7 @@
             active     : false,
             combine    : opts.combine || null,
             pending    : (opts.pending && opts.pending.kind && opts.pending.id) ? { kind : opts.pending.kind, id : opts.pending.id } : null,
+            escape     : opts.escape === true,
             candidates : null
         };
         return true;
@@ -604,7 +648,8 @@
             mode    : mode,
             items   : state.active ? Na__LeSelBox__ItemsIn(sheet, state.startMm, state.endMm, mode) : [],
             combine : state.combine,
-            pending : state.pending
+            pending : state.pending,
+            escape  : state.escape === true
         };
         Na__LeSelBox__Cancel();
         return result;

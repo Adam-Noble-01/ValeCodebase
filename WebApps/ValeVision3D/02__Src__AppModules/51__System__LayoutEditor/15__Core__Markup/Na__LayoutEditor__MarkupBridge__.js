@@ -38,6 +38,18 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 17-Sep-2026 - Version 1.10.0
+// - BuildItemPrimitives: the same drawing BuildSheetPrimitives makes of a whole
+//   sheet, for a named handful of items and without the selection highlights.
+//   The sheet surface draws the contents of an open container with it, over the
+//   faded sheet (Na__LayoutEditor__EditScope__).
+// - PushDimension: one dimension's primitives, lifted out of
+//   BuildSheetPrimitives so one can be drawn on its own. The sheet build calls
+//   it for every dimension, so there is one description of what a dimension
+//   looks like and the two cannot drift apart. ValeVision's dimensions have no
+//   fixed-length extension lines, so the helper keeps ValeVision's own shape.
+//
+//
 // 15-Sep-2026 - Version 1.9.1
 // - Fix: a selected leader got no selection box. BuildSheetPrimitives'
 //   leader line still read the single { kind, id } selection from before box
@@ -597,6 +609,74 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Push One Dimension's Primitives (returns its skeleton)
+    // ------------------------------------------------------------
+    // Lifted out of BuildSheetPrimitives so one dimension can be drawn on its
+    // own - the focus layer draws exactly the dimension that is open for
+    // editing, over the faded sheet (Na__LayoutEditor__EditScope__). The sheet
+    // build calls it for every dimension, so there is one description of what a
+    // dimension looks like and the two can never drift apart.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__PushDimension(list, sheet, dim, dimSetup, textSetup, style) {
+        const shift = Na__LeMarkup__DimensionTextShift(dim);
+        return Na__LeDimGeo__Push(list, {
+            start : { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
+            end   : { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
+            orientation : dim.Dimension__Orientation,
+            offsetMm : dim.Dimension__OffsetMm, gapMm : dimSetup.extGapMm, overshootMm : dimSetup.overshootMm,
+            tickMm : Na__LeMarkup__DimensionTickMm(dim), strokeMm : Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup), colour : dim.Dimension__Colour,
+            terminator : dim.Dimension__Terminator,
+            text : Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim)),
+            fontMm : dim.Dimension__TextSizeMm, weight : 400, liftMm : dimSetup.textGapMm, fontFamily : textSetup.fontFamily,
+            textDXMm : shift.dx, textDYMm : shift.dy,
+            textLeaderMinMm : dimSetup.textLeaderMinMm, textLeaderGapMm : dimSetup.textLeaderGapMm,
+            textFillColour : style.paperColour
+        });
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Draw a Named Handful of Items, and Nothing Else
+    // ------------------------------------------------------------
+    // The same drawing BuildSheetPrimitives makes of a whole sheet, for a list
+    // of { kind, id }. The sheet surface uses it for the focus layer: while a
+    // container is open the whole sheet is faded, and its contents are drawn
+    // again over the top at full strength (Na__LayoutEditor__EditScope__).
+    // Selection highlights are left out on purpose; the grips and the highlight
+    // box come from the layers above, as they always did.
+    // ------------------------------------------------------------
+    function Na__LeMarkup__BuildItemPrimitives(sheet, items) {
+        const list = [];
+        if (!sheet || !Array.isArray(items) || !items.length) return list;
+        const textSetup = Na__LeCfg__GetTextSetup();
+        const dimSetup  = Na__LeCfg__GetDimensionSetup();
+        const style     = Na__LeCfg__GetStyleSetup();
+        const wanted    = new Set(items.filter(Boolean).map((item) => item.kind + ':' + item.id));
+        sheet.Sheet__Shapes.forEach((shape) => {
+            if (!wanted.has('shape:' + shape.Shape__Id)) return;
+            if (!Na__LeModel__IsLayerVisible(sheet, shape.Shape__LayerId)) return;
+            Na__LeShapeGeo__Push(list, shape);
+        });
+        sheet.Sheet__Annotations.forEach((item) => {
+            if (!wanted.has('annotation:' + item.Annotation__Id)) return;
+            if (!Na__LeModel__IsLayerVisible(sheet, item.Annotation__LayerId)) return;
+            Na__LeMarkup__PushAnnotation(list, item, textSetup);
+        });
+        sheet.Sheet__Dimensions.forEach((dim) => {
+            if (!wanted.has('dimension:' + dim.Dimension__Id)) return;
+            if (!Na__LeModel__IsLayerVisible(sheet, dim.Dimension__LayerId)) return;
+            Na__LeMarkup__PushDimension(list, sheet, dim, dimSetup, textSetup, style);
+        });
+        (sheet.Sheet__Leaders || []).forEach((leader) => {
+            if (!wanted.has('leader:' + leader.Leader__Id)) return;
+            if (!Na__LeModel__IsLayerVisible(sheet, leader.Leader__LayerId)) return;
+            Na__LeLeadGeo__Push(list, leader);
+        });
+        return list;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Build the Sheet's Own Markup as Paper Primitives
     // ------------------------------------------------------------
     // selection: { kind, id }, an array of them, or null; the highlights are
@@ -633,20 +713,7 @@
 
         sheet.Sheet__Dimensions.forEach((dim) => {
             if (!Na__LeModel__IsLayerVisible(sheet, dim.Dimension__LayerId)) return;
-            const shift = Na__LeMarkup__DimensionTextShift(dim);
-            const sk = Na__LeDimGeo__Push(list, {
-                start : { x : dim.Dimension__StartXMm, y : dim.Dimension__StartYMm },
-                end   : { x : dim.Dimension__EndXMm,   y : dim.Dimension__EndYMm },
-                orientation : dim.Dimension__Orientation,
-                offsetMm : dim.Dimension__OffsetMm, gapMm : dimSetup.extGapMm, overshootMm : dimSetup.overshootMm,
-                tickMm : Na__LeMarkup__DimensionTickMm(dim), strokeMm : Na__LeMarkup__DimensionStrokeMm(sheet, dimSetup), colour : dim.Dimension__Colour,
-                terminator : dim.Dimension__Terminator,
-                text : Na__LeMarkup__FormatDimension(dim, Na__LeMarkup__DimensionValueMm(sheet, dim)),
-                fontMm : dim.Dimension__TextSizeMm, weight : 400, liftMm : dimSetup.textGapMm, fontFamily : textSetup.fontFamily,
-                textDXMm : shift.dx, textDYMm : shift.dy,
-                textLeaderMinMm : dimSetup.textLeaderMinMm, textLeaderGapMm : dimSetup.textLeaderGapMm,
-                textFillColour : style.paperColour
-            });
+            const sk = Na__LeMarkup__PushDimension(list, sheet, dim, dimSetup, textSetup, style);
             if (sk && isChosen('dimension', dim.Dimension__Id)) {
                 const xs = [ sk.S.x, sk.E.x, sk.T1.x, sk.T2.x ], ys = [ sk.S.y, sk.E.y, sk.T1.y, sk.T2.y ];
                 const layout = Na__LeMarkup__DimensionTextLayout(sheet, dim, sk);
@@ -756,6 +823,7 @@
         Na__LeMarkup__DimensionTextShift,
         Na__LeMarkup__DimensionTextLayout,
         Na__LeMarkup__BuildSheetPrimitives,
+        Na__LeMarkup__BuildItemPrimitives,
         Na__LeMarkup__HitTest
     };
     // ------------------------------------------------------------

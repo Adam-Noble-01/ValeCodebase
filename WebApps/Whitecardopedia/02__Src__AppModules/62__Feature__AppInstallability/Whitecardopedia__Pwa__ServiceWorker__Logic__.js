@@ -26,6 +26,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.0.16
+// - Token bumped (2026-09-18-1): unpkg.com started answering the React,
+//   ReactDOM and Babel standalone requests with 500s and no CORS header, so
+//   app.html and ValeVision3D__ProductionKpi__.html loaded no React at all and
+//   died on ReactDOM.createRoot. Both pages now load those three from
+//   cdnjs.cloudflare.com, pinned to 18.3.1 / 18.3.1 / 7.29.7, each followed by
+//   an inline document.write fallback to jsdelivr if the global is still
+//   missing. A deployed origin answering app.html from the old shell cache
+//   would keep asking unpkg, so the shell has to be evicted.
+//
 // 16-Sep-2026 - Version 1.0.15
 // - Token bumped (2026-09-16-7): the container-level z-index bump wasn't
 //   enough - the active card's blue ring was still rendering behind the
@@ -216,7 +226,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers and Limits
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN              = '2026-09-16-7';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
+    const PWA_SW_VERSION_TOKEN              = '2026-09-18-1';                                                                       // <-- Bump to invalidate all caches (model/HDRI/DataLib caching strategy). BUMP THIS whenever shell JS/CSS changes so the old shell cache is force-evicted and users skip the stale double-reload.
     const PWA_SW_CACHE_NAME_SHELL           = `wpwa-shell-${PWA_SW_VERSION_TOKEN}`;                                                 // <-- App shell cache id
     const PWA_SW_CACHE_NAME_THUMBS          = `wpwa-thumbs-${PWA_SW_VERSION_TOKEN}`;                                                // <-- Gallery thumbnail cache id
     const PWA_SW_CACHE_NAME_DATA            = `wpwa-data-${PWA_SW_VERSION_TOKEN}`;                                                  // <-- Project JSON cache id

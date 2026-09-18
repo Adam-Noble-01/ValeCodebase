@@ -1,6 +1,6 @@
 {
     "indexVersion": "1.0.0",
-    "generatedAt": "16-Sep-2026 at 15:34",
+    "generatedAt": "18-Sep-2026 at 21:13",
     "r2BaseUrl": "https://cdn.noble-architecture.com/VaApps/Projects",
     "ghBaseUrl": "https://adam-noble-01.github.io/ValeCodebase/WebApps/Whitecardopedia/Projects",
     "projects": [
@@ -2103,6 +2103,20 @@
             "hasGlb_R2": true,
             "imageCount": 2,
             "lastSynced": "16-Sep-2026 at 15:34"
+        },
+        {
+            "folderId": "2026/64014__Byrne",
+            "year": "2026",
+            "projectCode": "64014",
+            "name": "Byrne",
+            "enabled": true,
+            "assetHome": "r2",
+            "hasProjectJson_R2": true,
+            "hasImages_R2": true,
+            "hasThumbnails_R2": true,
+            "hasGlb_R2": true,
+            "imageCount": 5,
+            "lastSynced": "18-Sep-2026 at 21:13"
         }
     ]
 }

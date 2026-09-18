@@ -3368,14 +3368,6 @@
           "color": "na-shift-color-amber"
         },
         {
-          "id": "new-1789741469193",
-          "date": "2026-09-18",
-          "startTime": "15:15",
-          "endTime": "17:45",
-          "title": "Whitecard |  Byrne",
-          "color": "na-shift-color-rose"
-        },
-        {
           "id": "new-1789644465957",
           "date": "2026-09-17",
           "startTime": "13:00",
@@ -3398,6 +3390,14 @@
           "endTime": "12:30",
           "title": "Whitecard |  Byrne",
           "color": "na-shift-color-purple"
+        },
+        {
+          "id": "new-1789741469193",
+          "date": "2026-09-18",
+          "startTime": "15:30",
+          "endTime": "18:00",
+          "title": "Whitecard |  Byrne",
+          "color": "na-shift-color-rose"
         }
       ]
     }

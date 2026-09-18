@@ -1,6 +1,155 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.57.0 - 18-Sep-2026 - Drawing Tabs Stay Rendered, and a Moved Thing Is a New Model
+### Ported from TrueVision3D v2.64.0 and v2.64.1, authored there the same day
+
+**Overview**
+- Adam, on TrueVision: "flipping between tabs in the layout editor forces a redraw of all
+  viewports which seems crazy, once they are rendered once they should be cached and only
+  regenerate if changes are made to their parameters... the renderer should ALWAYS run at export
+  time at max quality." Then, with a hopper drawn twice on an elevation - base image where the
+  model has it, linework where it used to be: "ANY NEW MODEL UPDATES or any other changes must
+  force re render... none of the re render buttons or methods are working."
+- Three faults, all of them in ValeVision's copy as well. They came across as one change.
+
+**1. The viewport cache (TrueVision v2.64.0)**
+- `Na__LeSurface__SetSheet` released every frame whenever the sheet changed: base images, painted
+  linework SVG, 3D snapshots and the keys they were rendered under. Fill has always compared keys
+  before rendering; it was handed nothing to compare with on every tab change.
+- Each sheet now owns its frames container. Leaving a sheet PARKS it - container lifted off the
+  paper whole, viewport states handed over by `Na__LeVp2d__Park` / `Na__LeVp3d__Park` - and
+  showing it again puts both back before `RefreshFrames` runs. Every key matches, nothing renders.
+  Leaving the editor parks too.
+- The states move out of the viewport modules' maps because those maps are keyed by viewport id
+  and every sheet numbers its viewports from one. `Release` names the frame body for the same
+  reason, and `Na__LeVp3d__LiveState` fixes the same collision in `Bake`, `RenderForExport` and
+  `RestampForScene`, which could paint one sheet's picture into the same-numbered frame of the
+  sheet on screen.
+- A render still queued for a sheet that has been left is skipped (`stillWanted` on Render2d and
+  Render3d); one already under way lands in the parked frame.
+- `LayoutEditor__ViewportCache__MaxParkedSheets` (24; 0 is off).
+
+**2. The PDF always renders**
+- 2D underlays already rendered fresh at the export level. 3D reused the on-screen or stored
+  picture when it was wide enough under the same fingerprint - and ValeVision's copy did not even
+  check the sample count, so a working-level picture on a dense screen could print. Whenever the
+  renderer is present every 3D viewport is now rendered afresh at ExportLevel; a failed render
+  prints nothing rather than the screen's picture. The web build still places the stored picture.
+
+**3. The model fingerprint looks at the model (TrueVision v2.64.1)**
+- The fingerprint every cache is keyed by was category names, triangle counts and visibility.
+  Move something and re-export: same names, same counts, same keys, and the browser store hands
+  back the old projection as a perfect match.
+- `15__ModelLoader/Na__ModelLoader__ContentStamp__.js` (new) hashes each GLB's scene the moment it
+  is parsed - node placements, every geometry attribute and index, material names and colours -
+  onto the mesh or linework root's userData. `Na__PlStage__Describe` folds the stamps into the
+  fingerprint and the Layout Editor's 3D snapshot fingerprint takes them too
+  (`Na__LeSnap__ModelHash`). Taken once, at load, before the material pass and the fat line
+  upgrade, so nothing the app does to the scene afterwards can re-key a drawing.
+- ValeVision loads categories in parallel. A stamp belongs to one file, so the order they land in
+  does not matter.
+
+**4. Force Render repaints**
+- `EnsureLinework(force)` cleared `PathCache` under the bare linework key while `BandPaths` files
+  under `key@hidden@styleToken`. Nothing was ever cleared: the projection ran again and
+  PaintLinework painted the old strings. `Na__LeVp2d__ForgetPaths` clears every entry built from
+  the result, and a forced run calls the new `Na__PlPipe__ForgetCollections` once at its start.
+
+**Divergences from TrueVision's copy**
+- No design phase lines anywhere: `Render2d` takes `stillWanted` as its ninth argument here (its
+  tenth there), and there is one model fingerprint rather than one per phase.
+- TrueVision's ModelStage 1.1.0 (the three edge rules in the fingerprint) is a separate pending
+  item and did NOT come with this; ValeVision's fingerprint gains the stamp only.
+- ValeVision's 3D export never had `SampledEnough`, so there was nothing to remove.
+
+**One-off cost, and one thing to do**
+- Every fingerprint changes once: the first visit to each sheet re-projects and re-renders it, and
+  every baked asset reads as stale once. **Re-bake and Save Sheets on each live project before
+  deploying**, or the web build finds no baked asset under the new keys until you do.
+
+**Tested in the browser (57994 Harris Scheme-02, localhost)**
+- All three categories stamped; no module errors on load.
+- Elevations rendered its two viewports once. Elevations / Drawing 2 / 3D Model and back: 11-13 ms
+  per tab change, the same image elements back on the paper, ZERO new renders afterwards.
+- PathCache poisoned with dummy strings, then Force Render on Viewport_001: the frame came back
+  with its real 695,574 characters of path data.
+- No project data was written.
+- NOT tested here: a 3D viewport through the cache (Harris has none; the code is TrueVision's,
+  where six were tested), a PDF export end to end, the Dev bake across sheets, and a real
+  re-export changing the stamp.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.56.1 - 18-Sep-2026 - A Line Tagged Dashed in SketchUp Arrives Dashed on the Sheet
+### Ported from TrueVision3D v2.63.1 and v2.63.2, authored there the same day
+
+**Overview**
+- Adam draws a line in SketchUp, tags it `02__Linetype__DashedLines`, and means something by it:
+  this is dashed. The same for centre lines, dotted lines, door swings, clearances, overhead
+  extents, building joins and work coming out.
+- Every one of those tags was excluded from the GLB export, so the meaning stopped at the SketchUp
+  file. GLB Builder 2.7.3 now writes one linework-only GLB per LINETYPE tag. This side names them,
+  draws them in their own style, and keeps them out of the 3D render.
+- Ported in one go after Adam tested both halves in TrueVision: v2.63.1 landed the feature and
+  v2.63.2 made it projection-only when a drawing showed the same line twice.
+
+**What arrives**
+- Eight new model categories, each a linework GLB with no mesh beside it, discovered by the
+  existing filename contract with **no parse change**: this tree's `Na__ModelUrl__ParseRegex`
+  already accepts a `TrueVision__` namespace and normalises it to `ValeVision__`, so
+  `PS01__TrueVision__Linetype__DashedLines__LineworkModel__.glb` becomes
+  `ValeVision__Linetype__DashedLines` on its own.
+      Dashed Lines - Centre Lines - Dotted Lines - Door Swings - Clearance Lines
+      Overhead Objects - Building Joins - Elements For Removal
+- A category with no lines behind it never appears, so a project that has tagged nothing gains
+  nothing. This is opt-in from the SketchUp end.
+
+**Mapped, not guessed** - `Na__LayoutEditor__ModelLayers__Config__.json` (1.1.1)
+- A new **Annotation Linework** group, one row per linetype tag, naming its label, colour, weight
+  factor and line type from the EdgeStyles vocabulary this tree already carries: dashed, centre,
+  dotted, dashed-fine, phantom, solid.
+- The rows are TrueVision's, key for key apart from the namespace, and their line types mirror
+  `Glb__LineworkLineType` in the Tags SSOT. Change one, change the other.
+- They appear in the Model Layers panel like any other category, so a viewport can switch off the
+  clearances and keep the door swings.
+
+**Drawn as authored, not as geometry** - `Na__ProjectedLinework__CpuBackend__.js` (1.2.1)
+- Annotation linework reaches a drawing through the AUTHORED class, like all SketchUp linework.
+  Two things are now done differently for it, and only for it:
+  - **It is not divided at the drawing's cut plane.** A line tagged as an overhead extent is drawn
+    at the height of the thing it describes, above a plan's cut. Cutting it away would delete the
+    only reason it was drawn.
+  - **It is not occlusion-clipped.** A clearance zone drawn flat on a floor slab is coplanar with
+    the slab, and the clip would take it for a hidden line and remove it.
+- `Na__PlCpu__SplitAnnotation` divides the authored buffer once, by owner id, testing the owner KEY
+  TABLE rather than the edges. Without an owner table there is nothing to divide by and the whole
+  buffer takes the old path, which is what every earlier version did.
+- `ProjectedLinework__Annotation__Config` holds the tokens (`Linetype__`) and an Enabled flag;
+  turning it off drops annotation back to being cut and clipped, and never hides it. `BuildToken`
+  moves to `2026-09-18-linetype-annotation`, so every cached drawing re-projects.
+
+**Projection only: the 3D render stops drawing them** - `Na__ModelLoader__MultiModel.js` (1.2.3)
+- `material.visible = false` on every fat line of a projection-only category, and the distinction
+  from object visibility is the whole point: THREE skips an object whose material is invisible, so
+  no 3D render draws it - the viewer, the image export, the Layout Editor's raster underlay - while
+  the OBJECTS stay visible for the projected linework pipeline, which walks the scene graph and
+  skips anything whose `.visible` is false.
+- Which categories: `RenderConfig__Linework__ProjectionOnlyCategoryTokens` in the app config.
+- The eight Linetype categories therefore get **no toggle button**: a 3D toggle that looks inert
+  while quietly taking lines off every drawing is worse than none. They stay registered, so the
+  Model Layers panel still lists and controls them.
+
+**Fixed while porting, in both trees**
+- Walk mode took every fat line as a collision mesh (`LineSegments2` extends `Mesh`, so `isMesh`
+  is true). Harmless while linework sat on the faces it came from; an invisible annotation line in
+  mid air is not. `Linetype__` joins the collision-exempt keywords here and in TrueVision.
+
+**Not tested in the browser.** Node syntax checks pass on all six modules changed and the three
+JSON configs parse. The eight category keys were cross-checked end to end - SSOT stem, URL parse,
+Model Layers rows, load order, toggle names - and the Annotation rows are identical to TrueVision's
+apart from the namespace. This wants a real export from GLB Builder 2.7.3 and a look at a plan.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.56.0 - 17-Sep-2026 - The Specification Is a Document: Revision, Number and Download
 ### Ported from TrueVision3D v2.63.0, authored there the same day
 

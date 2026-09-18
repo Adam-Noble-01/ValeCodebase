@@ -54,7 +54,7 @@
 
     // MODULE CONSTANTS | Cache Identifiers
     // ------------------------------------------------------------
-    const PWA_SW_VERSION_TOKEN          = '2026-09-16-114126';                                                          // <-- Bump to invalidate every cache bucket
+    const PWA_SW_VERSION_TOKEN          = '2026-09-17-082412';                                                          // <-- Bump to invalidate every cache bucket
     const PWA_SW_CACHE_NAME_SHELL       = `vghlantern-shell-${PWA_SW_VERSION_TOKEN}`;                              // <-- App shell cache id
     const PWA_SW_CACHE_NAME_DATA        = `vghlantern-data-${PWA_SW_VERSION_TOKEN}`;                               // <-- Application data cache id
     const PWA_SW_CACHE_PREFIXES_OWNED   = ['vghlantern-shell-', 'vghlantern-data-', 'na-vghlantern-cache-'];       // <-- Owned prefixes, including the superseded stub prefix

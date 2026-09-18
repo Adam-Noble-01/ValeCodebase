@@ -39,6 +39,34 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.6.0
+// - THE VIEWPORT CACHE. Showing another sheet used to release every frame of
+//   the one being left: the base images, the painted linework SVG, the 3D
+//   snapshots and the keys they were rendered under all went, so coming back
+//   to a drawing tab rendered every viewport on it again from nothing, however
+//   many times it had been drawn already. Each sheet now has its own frames
+//   container. Leaving a sheet PARKS it: the container is lifted off the paper
+//   whole and the viewport modules hand over their states (Na__LeVp2d__Park,
+//   Na__LeVp3d__Park) to be kept beside it. Showing the sheet again puts both
+//   back before RefreshFrames runs, and Fill - which has always compared keys
+//   before asking for a render - finds every key unchanged and asks for
+//   nothing. A tab change is a DOM swap.
+// - Nothing new decides when a picture is stale. The keys Fill already builds
+//   cover the frame, the window, the scale, the styles, the composite weights,
+//   the model layers, the raster level, the scene and the model, and they are
+//   compared when the sheet is shown again, so a change made while a sheet was
+//   parked (a raster level, a scene edit) re-renders exactly the viewports it
+//   touches, then. Force Render is untouched.
+// - Why the states move rather than stay in the viewport modules' maps: those
+//   maps are keyed by viewport id, and every sheet numbers its viewports from
+//   one. Two sheets' Viewport_1 cannot share a map, so a parked state is never
+//   in it. Release now names the frame body for the same reason.
+// - Least recently shown sheets are dropped past ViewportCache MaxParkedSheets
+//   (0 switches the cache off); a sheet deleted from the set is dropped when
+//   the next sheet is shown. Leaving the editor parks too, so the 3D Model tab
+//   and back costs nothing either. The PDF never reads any of this.
+// - Ported from TrueVision3D 1.6.0 (v2.64.0).
+//
 // 17-Sep-2026 - Version 1.5.0
 // - RefreshScope and the focus layer: while a container is open
 //   (Na__LayoutEditor__EditScope__) the paper takes na-le-paper--scoped, which
@@ -81,10 +109,11 @@
 
     // MODULE IMPORTS | Layout, Model, Chrome, Markup, Viewports and Handles
     // ------------------------------------------------------------
-    import { Na__LeCfg__GetEditScopeSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__GetEditScopeSetup, Na__LeCfg__GetViewportCacheSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeLayout__Solve } from '../07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js';
     import {
         Na__LeModel__KIND_3D,
+        Na__LeModel__GetSheetById,
         Na__LeModel__GetLayers,
         Na__LeModel__GetFields,
         Na__LeModel__GetSelection,
@@ -98,8 +127,8 @@
         Na__LeChrome__ToSvgMarkup
     } from './Na__LayoutEditor__SheetChrome__.js';
     import { Na__LeMarkup__BuildSheetPrimitives } from '../15__Core__Markup/Na__LayoutEditor__MarkupBridge__.js';
-    import { Na__LeVp2d__Fill, Na__LeVp2d__Release } from '../20__System__Viewports/Na__LayoutEditor__Viewport2d__.js';
-    import { Na__LeVp3d__Fill, Na__LeVp3d__Release } from '../20__System__Viewports/Na__LayoutEditor__Viewport3d__.js';
+    import { Na__LeVp2d__Fill, Na__LeVp2d__Release, Na__LeVp2d__Park, Na__LeVp2d__Restore } from '../20__System__Viewports/Na__LayoutEditor__Viewport2d__.js';
+    import { Na__LeVp3d__Fill, Na__LeVp3d__Release, Na__LeVp3d__Park, Na__LeVp3d__Restore } from '../20__System__Viewports/Na__LayoutEditor__Viewport3d__.js';
     import { Na__LeHandles__Render, Na__LeHandles__RenderOutlines, Na__LeHandles__Clear } from '../20__System__Viewports/Na__LayoutEditor__ViewportHandles__.js';
     import { Na__LeGrips__Render } from '../30__System__SheetTools/Na__LayoutEditor__Grips__.js';
     import { Na__LeScope__Get, Na__LeScope__Contents } from '../30__System__SheetTools/Na__LayoutEditor__EditScope__.js';
@@ -120,6 +149,7 @@
     const Na__LeSurface__CLASS_SCALER = 'na-le-scaler';
     const Na__LeSurface__CLASS_PAPER  = 'na-le-paper';
     const Na__LeSurface__CLASS_FRAME  = 'na-le-frame';
+    const Na__LeSurface__CLASS_FRAMES = 'na-le-paper__viewports';
     const Na__LeSurface__CLASS_SCOPED = 'na-le-paper--scoped';   // <-- A container is open: everything outside it is faded back
     // ------------------------------------------------------------
 
@@ -129,7 +159,7 @@
     let Na__LeSurface__Room      = null;    // <-- Paper plus a whole stage of room on every side
     let Na__LeSurface__Scaler    = null;
     let Na__LeSurface__Paper     = null;
-    let Na__LeSurface__Frames    = null;    // <-- Container of viewport frames
+    let Na__LeSurface__Frames    = null;    // <-- Container of viewport frames: the shown sheet's own, swapped as sheets change
     let Na__LeSurface__ChromeSvg = null;
     let Na__LeSurface__MarkupSvg = null;
     let Na__LeSurface__FocusSvg  = null;    // <-- What is inside the open container, redrawn crisp over the faded sheet
@@ -143,6 +173,15 @@
     let Na__LeSurface__OnAsset   = null;
     let Na__LeSurface__Pending   = null;    // <-- Reasons waiting for the next animation frame
     let Na__LeSurface__Frame     = 0;       // <-- The requestAnimationFrame handle holding them
+    // ------------------------------------------------------------
+
+    // MODULE VARIABLES | The Viewport Cache (sheets kept rendered while another is shown)
+    // ------------------------------------------------------------
+    // sheetId -> { frames : the sheet's container, off the paper, states : Map(viewportId -> { is3d, state }) }
+    // A Map keeps insertion order, and a sheet is re-inserted each time it is
+    // parked, so the first key is always the least recently shown.
+    // ------------------------------------------------------------
+    const Na__LeSurface__Parked  = new Map();
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -173,7 +212,7 @@
         Na__LeSurface__Room     = Na__LeSurface__El('div', Na__LeSurface__CLASS_ROOM, stageElement);
         Na__LeSurface__Scaler   = Na__LeSurface__El('div', Na__LeSurface__CLASS_SCALER, Na__LeSurface__Room);
         Na__LeSurface__Paper    = Na__LeSurface__El('div', Na__LeSurface__CLASS_PAPER, Na__LeSurface__Scaler);
-        Na__LeSurface__Frames   = Na__LeSurface__El('div', 'na-le-paper__viewports', Na__LeSurface__Paper);
+        Na__LeSurface__Frames   = Na__LeSurface__El('div', Na__LeSurface__CLASS_FRAMES, Na__LeSurface__Paper);
         Na__LeSurface__Handles  = null;                                          // <-- Created after the SVG layers so it sits on top
         Na__LeSurface__OnAsset  = () => Na__LeSurface__RefreshChrome();
         window.addEventListener(Na__LeChrome__ASSET_EVENT, Na__LeSurface__OnAsset);
@@ -189,6 +228,7 @@
         if (Na__LeSurface__OnAsset) window.removeEventListener(Na__LeChrome__ASSET_EVENT, Na__LeSurface__OnAsset);
         Na__LeSurface__OnAsset = null;
         if (Na__LeSurface__Sheet) Na__LeSurface__ReleaseFrames();
+        Na__LeSurface__Parked.clear();                                           // <-- Parked states are in no map but this one: forgetting them is releasing them
         if (Na__LeSurface__Room && Na__LeSurface__Room.parentNode) Na__LeSurface__Room.parentNode.removeChild(Na__LeSurface__Room);
         Na__LeSurface__Stage = Na__LeSurface__Room = Na__LeSurface__Scaler = Na__LeSurface__Paper = Na__LeSurface__Frames = null;
         Na__LeSurface__ChromeSvg = Na__LeSurface__MarkupSvg = Na__LeSurface__FocusSvg = Na__LeSurface__Handles = null;
@@ -203,9 +243,75 @@
         if (!Na__LeSurface__Frames) return;
         Array.from(Na__LeSurface__Frames.children).forEach((frame) => {
             const id = frame.getAttribute('data-na-viewport-id');
-            if (frame.classList.contains(Na__LeSurface__CLASS_FRAME + '--3d')) Na__LeVp3d__Release(id); else Na__LeVp2d__Release(id);
+            if (frame.classList.contains(Na__LeSurface__CLASS_FRAME + '--3d')) Na__LeVp3d__Release(id, frame.firstElementChild); else Na__LeVp2d__Release(id, frame.firstElementChild);
         });
         Na__LeSurface__Frames.innerHTML = '';
+    }
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | The Viewport Cache
+// -----------------------------------------------------------------------------
+
+    // HELPER FUNCTION | Lift the Shown Sheet's Frames Off the Paper and Keep Them
+    // ------------------------------------------------------------
+    // The container leaves the DOM whole, so nothing in it is laid out or
+    // painted while it waits, and the viewport modules hand over each frame's
+    // state - timers cleared, no render booked - to wait with it. The paper
+    // is left with a fresh, empty container, so everything that reads
+    // Na__LeSurface__Frames finds one as it always has.
+    //
+    // With the cache off (MaxParkedSheets 0) this is the old release.
+    // ------------------------------------------------------------
+    function Na__LeSurface__ParkFrames(sheetId) {
+        if (!Na__LeSurface__Frames || !Na__LeSurface__Paper) return;
+        const limit = Na__LeCfg__GetViewportCacheSetup().maxParkedSheets;
+        if (!sheetId || limit <= 0) { Na__LeSurface__ReleaseFrames(); return; }
+
+        const states = new Map();
+        Array.from(Na__LeSurface__Frames.children).forEach((frame) => {
+            const id    = frame.getAttribute('data-na-viewport-id');
+            const is3d  = frame.classList.contains(Na__LeSurface__CLASS_FRAME + '--3d');
+            const state = is3d ? Na__LeVp3d__Park(id, frame.firstElementChild) : Na__LeVp2d__Park(id, frame.firstElementChild);
+            if (state) states.set(id, { is3d : is3d, state : state });
+        });
+
+        const parkedFrames = Na__LeSurface__Frames;
+        Na__LeSurface__Frames = document.createElement('div');                   // <-- The stand-in the next sheet fills, or that TakeFrames swaps for a parked one
+        Na__LeSurface__Frames.className = Na__LeSurface__CLASS_FRAMES;
+        Na__LeSurface__Paper.replaceChild(Na__LeSurface__Frames, parkedFrames);  // <-- Same place in the paper: under the chrome, the markup and the handles
+
+        Na__LeSurface__Parked.delete(sheetId);                                   // <-- Re-inserted, so it is the most recently shown
+        Na__LeSurface__Parked.set(sheetId, { frames : parkedFrames, states : states });
+        while (Na__LeSurface__Parked.size > limit) {
+            Na__LeSurface__Parked.delete(Na__LeSurface__Parked.keys().next().value);   // <-- The least recently shown goes; its states are in no other map
+        }
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Put a Parked Sheet's Frames Back on the Paper
+    // ------------------------------------------------------------
+    // Called with the paper holding the empty stand-in ParkFrames (or Mount)
+    // left. The states go back into the viewport modules' maps BEFORE
+    // RefreshFrames runs, so Fill meets the body it knows and the keys it
+    // rendered under. Sheets deleted from the set meanwhile are dropped here.
+    // ------------------------------------------------------------
+    function Na__LeSurface__TakeFrames(sheetId) {
+        Array.from(Na__LeSurface__Parked.keys()).forEach((id) => {
+            if (!Na__LeModel__GetSheetById(id)) Na__LeSurface__Parked.delete(id);
+        });
+        const entry = Na__LeSurface__Parked.get(sheetId);
+        if (!entry || !Na__LeSurface__Frames || !Na__LeSurface__Paper) return false;
+        Na__LeSurface__Parked.delete(sheetId);
+        Na__LeSurface__ReleaseFrames();                                          // <-- The stand-in is empty; this only keeps the maps honest if it ever is not
+        Na__LeSurface__Paper.replaceChild(entry.frames, Na__LeSurface__Frames);
+        Na__LeSurface__Frames = entry.frames;
+        entry.states.forEach((held, id) => { if (held.is3d) Na__LeVp3d__Restore(id, held.state); else Na__LeVp2d__Restore(id, held.state); });
+        return true;
     }
     // ------------------------------------------------------------
 
@@ -221,7 +327,11 @@
     function Na__LeSurface__SetSheet(sheet) {
         if (!Na__LeSurface__Paper) return false;
         Na__LeSurface__CancelPending();                                          // <-- A full rebuild covers whatever was queued
-        if (Na__LeSurface__Sheet && (!sheet || sheet.Sheet__Id !== Na__LeSurface__Sheet.Sheet__Id)) Na__LeSurface__ReleaseFrames();
+        // ANOTHER SHEET (or none): the one on screen is parked, not released, and
+        // the one arriving takes its own frames back if it has been shown before.
+        const changing = !Na__LeSurface__Sheet || !sheet || sheet.Sheet__Id !== Na__LeSurface__Sheet.Sheet__Id;
+        if (changing && Na__LeSurface__Sheet) Na__LeSurface__ParkFrames(Na__LeSurface__Sheet.Sheet__Id);
+        if (changing && sheet) Na__LeSurface__TakeFrames(sheet.Sheet__Id);
         Na__LeSurface__Sheet  = sheet || null;
         Na__LeSurface__Layout = sheet ? Na__LeLayout__Solve(sheet) : null;
         Na__LeSurface__Paper.hidden = !sheet;
@@ -433,7 +543,7 @@
         Array.from(Na__LeSurface__Frames.children).forEach((frame) => {
             const id = frame.getAttribute('data-na-viewport-id');
             if (alive.has(id)) return;
-            if (frame.classList.contains(Na__LeSurface__CLASS_FRAME + '--3d')) Na__LeVp3d__Release(id); else Na__LeVp2d__Release(id);
+            if (frame.classList.contains(Na__LeSurface__CLASS_FRAME + '--3d')) Na__LeVp3d__Release(id, frame.firstElementChild); else Na__LeVp2d__Release(id, frame.firstElementChild);
             frame.remove();
         });
     }

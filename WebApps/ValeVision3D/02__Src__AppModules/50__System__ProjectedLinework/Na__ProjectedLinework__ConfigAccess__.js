@@ -41,6 +41,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.0.1
+// - GetAnnotationSetup answers the annotation category tokens and its Enabled
+//   flag (on unless the config says false). The fallbacks carry both, and the
+//   build token that re-projects every linework asset rendered before
+//   annotation linework existed. Ported from TrueVision3D ConfigAccess 1.1.1.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -95,7 +101,9 @@
         cacheInBrowser          : true,
         exclusionTokens         : ['Planting', 'Trees', 'People', 'Vehicles', 'Furniture', 'Decor'],
         skipObjectNames         : ['OrbitHelperCube', 'Na__GridLine', 'Na__FogPlane', 'Na__Billboard', 'Na__ElevGizmo', 'DrawingCut__'],
-        buildToken              : '2026-09-09-phase4-initial',
+        annotationEnabled       : true,
+        annotationTokens        : ['Linetype__'],
+        buildToken              : '2026-09-18-linetype-annotation',
         transparentOccludes     : false,
         transparentOpacityBelow : 0.999,
         appearance              : {
@@ -352,6 +360,19 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Get the Annotation Setup (linetype linework)
+    // ------------------------------------------------------------
+    function Na__PlCfg__GetAnnotationSetup() {
+        const F      = Na__PlCfg__FALLBACKS;
+        const tokens = Na__PlCfg__Val('Annotation', 'CategoryTokens', null);
+        return {
+            enabled       : Na__PlCfg__Val('Annotation', 'Enabled', F.annotationEnabled) !== false,
+            categoryTokens: Array.isArray(tokens) ? tokens.slice() : F.annotationTokens.slice()
+        };
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Get the Model Sampling Setup
     // ------------------------------------------------------------
     function Na__PlCfg__GetModelSetup() {
@@ -396,6 +417,7 @@
         Na__PlCfg__GetAppearance,
         Na__PlCfg__GetDefaultExclusionTokens,
         Na__PlCfg__GetSkipObjectNames,
+        Na__PlCfg__GetAnnotationSetup,
         Na__PlCfg__GetModelSetup,
         Na__PlCfg__GetLabel
     };

@@ -12,6 +12,18 @@
         "D:/80__External__LiveRepos/ValeCodebase/WebApps/ValeVision3D"
       ],
       "port": 8578
+    },
+    {
+      "name": "vv-leaderclip",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8622",
+        "--directory",
+        "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D"
+      ],
+      "port": 8622
     }
   ]
 }

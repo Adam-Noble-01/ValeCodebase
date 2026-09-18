@@ -51,6 +51,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.1.1
+// - BuildOptions carries AnnotationCategoryTokens. Empty for an explicit
+//   backend override, so a Diff still compares one engine with another rather
+//   than one rule with another. Ported from TrueVision3D Projector 1.4.1.
+//
 // 13-Sep-2026 - Version 1.1.0
 // - Every render the pipeline keeps resolves to the CPU backend, the only one
 //   that tags each line with its model category. An explicit backend override
@@ -80,7 +85,8 @@
     // ------------------------------------------------------------
     import {
         Na__PlCfg__GetProjectionSetup,
-        Na__PlCfg__GetPerformanceSetup
+        Na__PlCfg__GetPerformanceSetup,
+        Na__PlCfg__GetAnnotationSetup
     } from './Na__ProjectedLinework__ConfigAccess__.js';
     import { Na__ProjectedLinework__Scheduler__DriveGenerator } from './Na__ProjectedLinework__Scheduler__.js';
     import {
@@ -235,6 +241,7 @@
     function Na__PlProjector__BuildOptions(definition, backendOverride) {
         const projection  = Na__PlCfg__GetProjectionSetup();
         const performance = Na__PlCfg__GetPerformanceSetup();
+        const annotation  = Na__PlCfg__GetAnnotationSetup();
         const requested   = backendOverride || performance.backend || Na__PlProjector__BACKEND_AUTO;
         const backend     = Na__PlProjector__ResolveBackend(requested, definition, !!backendOverride);   // <-- An explicit override is the Diff harness: a render nothing keeps
 
@@ -256,7 +263,8 @@
             IntersectionMaxInstances : projection.intersectionMaxInstances,
             IntersectionMaxPairs     : projection.intersectionMaxPairs,
             IntersectionSelfMaxTriangles : projection.intersectionSelfMaxTriangles,
-            NeedsIntersectionEdges   : backend === Na__PlProjector__BACKEND_CPU && projection.includeIntersectionEdges
+            NeedsIntersectionEdges   : backend === Na__PlProjector__BACKEND_CPU && projection.includeIntersectionEdges,
+            AnnotationCategoryTokens : (!backendOverride && annotation.enabled) ? annotation.categoryTokens : []   // <-- Linetype linework: drawn as tagged, neither cut nor clipped
         };
     }
     // ------------------------------------------------------------

@@ -1,0 +1,20 @@
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.109:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================
+[REQUEST] 18-Sep-2026 - 09:44 | 127.0.0.1 | code 404, message File not found
+[REQUEST] 18-Sep-2026 - 09:44 | 127.0.0.1 | "GET /na-apps/TrueVision-WebApp.html HTTP/1.1" 404 -
+[REQUEST] 18-Sep-2026 - 09:44 | 127.0.0.1 | "GET / HTTP/1.1" 200 -
+[REQUEST] 18-Sep-2026 - 12:40 | 127.0.0.1 | code 404, message File not found
+[REQUEST] 18-Sep-2026 - 12:40 | 127.0.0.1 | "GET /ValeVision3D/index.html HTTP/1.1" 404 -
+[REQUEST] 18-Sep-2026 - 12:40 | 127.0.0.1 | code 404, message File not found
+[REQUEST] 18-Sep-2026 - 12:40 | 127.0.0.1 | "GET /WebApps/ValeVision3D/index.html HTTP/1.1" 404 -
+[REQUEST] 18-Sep-2026 - 12:40 | 127.0.0.1 | code 404, message File not found
+[REQUEST] 18-Sep-2026 - 12:40 | 127.0.0.1 | "GET /index.html HTTP/1.1" 404 -

@@ -27,6 +27,25 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.3.0
+// - Content stamp. Each GLB's scene is hashed the moment it is parsed - node
+//   placements, every geometry attribute and index, material names and colours
+//   (Na__ModelLoader__ContentStamp__) - and the hash rides on the mesh or
+//   linework root's userData. The model fingerprint reads it, so a re-export
+//   that moves something without changing a triangle count re-keys every
+//   drawing cached from the model. Read before the material pass and the fat
+//   line upgrade, which are the loader's doing and not the model's. Categories
+//   load in parallel here; a stamp belongs to one file, so the order they land
+//   in does not matter. Ported from TrueVision3D 1.4.0 (v2.64.1).
+//
+// 18-Sep-2026 - Version 1.2.3
+// - Linetype linework. The eight Linetype__ categories take their place at the
+//   end of the load order; the URL parse and the mesh-optional pair loader
+//   already handled them. A category matching RenderConfig__Linework__Projection-
+//   OnlyCategoryTokens then loads with material.visible false on every fat line,
+//   so no 3D render draws it while the objects stay visible for the projected
+//   linework to read. Ported from TrueVision3D MultiModel 1.3.2.
+//
 // 21-Aug-2026 - Version 1.2.2
 // - LoadSingleMesh preserves transparent MAT000E__ exempt materials (clone +
 //   transparent + depthWrite false) instead of collapsing them into the opaque
@@ -71,6 +90,13 @@ import {
     Na__ResilientLoad__RunWithConcurrencyCap
 } from '../03__AppUtils/Na__AppUtils__ResilientLoad__.js';
 
+// MODULE IMPORTS | Content Stamp (what each GLB held when it loaded)
+// @delegate: ./Na__ModelLoader__ContentStamp__.js
+import {
+    Na__ModelStamp__Stamp,
+    Na__ModelStamp__Carry
+} from './Na__ModelLoader__ContentStamp__.js';
+
 
 // -----------------------------------------------------------------------------
 // REGION | Module Constants and Category Registry
@@ -92,7 +118,15 @@ import {
         "ValeVision__FirstFloorFurniture",           // <-- Tag 40-48: First floor furniture
         "ValeVision__FirstFloorDecor",               // <-- Tag 49:    First floor high detail
         "ValeVision__Vegetation",                    // <-- Tag 50-59: Vegetation
-        "ValeVision__SceneContextual"                // <-- Tag 62-70: Scene context (60 Entourage 2D and 61 Entourage Silhouette load unordered, after this list)
+        "ValeVision__SceneContextual",               // <-- Tag 62-70: Scene context (60 Entourage 2D and 61 Entourage Silhouette load unordered, after this list)
+        "ValeVision__Linetype__DashedLines",         // <-- Linetype tag: 2D dashed linework, no mesh
+        "ValeVision__Linetype__CentreLines",         // <-- Linetype tag: 2D centre linework, no mesh
+        "ValeVision__Linetype__DottedLines",         // <-- Linetype tag: 2D dotted linework, no mesh
+        "ValeVision__Linetype__DoorSwings",          // <-- Linetype tag: 2D door swing arcs, no mesh
+        "ValeVision__Linetype__ClearanceLines",      // <-- Linetype tag: clearance zones, no mesh
+        "ValeVision__Linetype__OverheadObjects",     // <-- Linetype tag: overhead extents in plan, no mesh
+        "ValeVision__Linetype__BuildingJoins",       // <-- Linetype tag: building / party wall joins, no mesh
+        "ValeVision__Linetype__ElementsForRemoval"   // <-- Linetype tag: demolition, no mesh
     ];
     // ------------------------------------------------------------
 
@@ -113,6 +147,7 @@ import {
     const Na__ModelUrl__LegacyParseRegex  = /__(BaseMeshModel|LineworkModel|MeshModel)__/i;
     const Na__ModelUrl__LegacyCategoryKey = "ValeVision__LegacyModel";   // <-- Fallback category for legacy URLs
     const Na__ModelUrl__OrbitCubeRegex    = /OrbitHelperCube__MeshModel__\.glb$/i;  // <-- Orbit helper cube detection
+    const Na__ModelLoader__ProjectionOnlyTokens = ['Linetype__'];                   // <-- Hardcoded fallback - overridden by AppConfig at runtime
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -308,6 +343,7 @@ import {
         const retryDelayMs     = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;
         const gltf             = await Na__ResilientLoad__GltfLoadWithTimeout(loader, modelUrl, { timeoutMs: gltfTimeoutMs, retries, retryDelayMs }); // <-- Bounded load
         const meshRoot     = gltf.scene;                                 // <-- Extract scene graph
+        Na__ModelStamp__Stamp(meshRoot);                                 // <-- What this file holds, read before anything below alters it: the model fingerprint's content half
 
         const indexedNameRegex = /^MAT\d{3}__/;                          // <-- Indexed materials that survive to the swap pass (TrueVision parity)
         const exemptNameRegex  = /^MAT000E__/;                           // <-- MAT000E__ "Material Exempt" one-off materials (never SSOT enriched)
@@ -707,6 +743,47 @@ import {
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | Is This Category's Linework for Drawings Only?
+    // ------------------------------------------------------------
+    function Na__ModelLoader__IsProjectionOnlyCategory(category, lineworkConfig) {
+        const configured = lineworkConfig ? lineworkConfig.RenderConfig__Linework__ProjectionOnlyCategoryTokens : null;
+        const tokens     = Array.isArray(configured) ? configured : Na__ModelLoader__ProjectionOnlyTokens;
+        if (!category || tokens.length === 0) return false;
+
+        const lower = String(category).toLowerCase();
+        return tokens.some((token) => token && lower.indexOf(String(token).toLowerCase()) !== -1);
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Take a Category's Linework Out of Every 3D Render
+    // ------------------------------------------------------------
+    // MATERIAL VISIBILITY, NOT OBJECT VISIBILITY, and the distinction is the
+    // whole point. THREE skips an object whose material.visible is false, so no
+    // 3D render draws these lines - the viewer, the image export, the Layout
+    // Editor's raster underlay. The OBJECTS stay visible, because the projected
+    // linework pipeline reads them by walking the scene graph and skips anything
+    // whose .visible is false. Setting the root invisible would have hidden them
+    // from the drawings as well, which is the opposite of what they are for.
+    //
+    // Each fat line carries its own LineMaterial (built per node in the upgrade
+    // above), so this can never reach another category's lines.
+    // ------------------------------------------------------------
+    function Na__ModelLoader__HideLineworkFromRender(categoryGroup, lineworkRoot) {
+        if (!lineworkRoot) return;
+
+        if (categoryGroup) categoryGroup.userData.Na__LineworkProjectionOnly = true;
+        lineworkRoot.userData.Na__LineworkProjectionOnly = true;
+
+        lineworkRoot.traverse((node) => {
+            if (!node.material) return;
+            const materials = Array.isArray(node.material) ? node.material : [ node.material ];
+            materials.forEach((material) => { if (material) material.visible = false; });
+        });
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Load Single Linework GLB (Fat Lines)
     // ------------------------------------------------------------
     async function Na__ModelLoader__LoadSingleLinework(modelUrl, lineworkConfig, loader, lineResolution, resilienceConfig) {
@@ -715,7 +792,10 @@ import {
         const retryDelayMs  = (resilienceConfig && resilienceConfig.LoadResilience__Config__RetryBaseDelayMs) || 1000;
         const gltf          = await Na__ResilientLoad__GltfLoadWithTimeout(loader, modelUrl, { timeoutMs: gltfTimeoutMs, retries, retryDelayMs }); // <-- Bounded load
         const lineworkRoot = gltf.scene;                                 // <-- Extract scene graph
-        return Na__ModelLoader__UpgradeLineworkRoot(lineworkRoot, lineworkConfig, lineResolution);
+        const stamp        = Na__ModelStamp__Stamp(lineworkRoot);        // <-- Before the fat line upgrade replaces every line it was read from
+        const upgradedRoot = Na__ModelLoader__UpgradeLineworkRoot(lineworkRoot, lineworkConfig, lineResolution);
+        Na__ModelStamp__Carry(stamp, upgradedRoot);
+        return upgradedRoot;
     }
     // ------------------------------------------------------------
 
@@ -799,7 +879,12 @@ import {
                     lineworkRoot.userData.Na__ModelType = 'linework';     // <-- Tag for render passes & collision filters
                     categoryGroup.add(lineworkRoot);
                     Na__ModelLoader__ApplyProfileLineColoursToMeshRoot(categoryGroup.children.find((child) => child !== lineworkRoot), lineworkRoot);
-                    console.log(`[ValeVision3D] Loaded Linework: ${shortName}`);
+                    if (Na__ModelLoader__IsProjectionOnlyCategory(category, config.RenderConfig__Linework)) {
+                        Na__ModelLoader__HideLineworkFromRender(categoryGroup, lineworkRoot);
+                        console.log(`[ValeVision3D] Loaded Linework (drawings only, not rendered in 3D): ${shortName}`);
+                    } else {
+                        console.log(`[ValeVision3D] Loaded Linework: ${shortName}`);
+                    }
                 } catch (error) {
                     console.error(`[ValeVision3D] Failed to load Linework for ${shortName}:`, error);
                     Na__ModelLoader__DispatchLoadErrorToast(`${shortName} (Linework)`);

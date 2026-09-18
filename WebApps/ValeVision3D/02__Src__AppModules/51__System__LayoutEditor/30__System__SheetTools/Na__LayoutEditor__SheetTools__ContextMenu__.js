@@ -42,6 +42,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.2.0
+// - The leader entry now offers the clipboard too (Na__LeClip__MenuItems):
+//   Copy leader, Duplicate leader, Paste - the way text and vectors already
+//   do. Ported from TrueVision3D.
+//
 // 17-Sep-2026 - Version 1.1.0
 // - Paste properties to N selected, on a multi-selection and on a group. The
 //   count is what will actually change: the items are expanded past any group
@@ -279,7 +284,7 @@
             return [ { label : label('MenuEditLeaderText', 'Edit leader text'), onSelect : () => Na__LeLeader__BeginEdit(found.id) },
                      { separator : true } ].concat(arrange('leader', found.id), [
                      { separator : true }, remove('MenuDeleteLeader', 'Delete leader'), { separator : true } ])
-                     .concat(style(found.kind, found.id)).concat(history);
+                     .concat(Na__LeClip__MenuItems(sheet, found, pointMm), style(found.kind, found.id)).concat(history);
         }
         if (found.kind === 'shape') {
             const shape  = Na__LeTools__Record(sheet, found);

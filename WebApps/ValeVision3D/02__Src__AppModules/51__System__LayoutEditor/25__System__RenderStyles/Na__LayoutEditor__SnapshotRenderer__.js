@@ -40,6 +40,22 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.6.0
+// - stillWanted. Render2d and Render3d take an optional last argument, a
+//   function asked when the render's turn in the queue comes; false answers
+//   null without rendering. Renders are queued one behind another, so a sheet
+//   left while its viewports were still waiting used to hold up the sheet
+//   arrived at; the viewport cache answers false for a sheet that is parked.
+//   A caller that passes nothing - the PDF, a bake, a forced render - is always
+//   rendered, as before.
+// - The model fingerprint (what keys a 3D snapshot) takes each category's
+//   content stamp as well as its name and triangle count (ModelHash). A
+//   re-export that moves something without changing a count now re-keys the
+//   snapshots, as it does the linework and the base images (the pipeline
+//   fingerprint, 1.1.0 of the model stage). An unstamped model keys as before.
+// - Ported from TrueVision3D 1.9.0 and 1.10.0 (v2.64.0, v2.64.1), less their
+//   design phase lines.
+//
 // 14-Sep-2026 - Version 1.5.0
 // - Render3d takes a view window: the part of the scene camera's picture a
 //   zoomed or slid 3D viewport's frame shows (Na__LayoutEditor__Viewport3d__),
@@ -285,6 +301,19 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Visibility-Free Model Fingerprint of a Described Model
+    // ------------------------------------------------------------
+    // Names, triangle counts and - where the loader stamped them - what the
+    // GLBs under each category held. Counts alone cannot see a thing that
+    // moved. The stamp is appended only where there is one, so a model loaded
+    // without stamps keeps the key it always had.
+    // ------------------------------------------------------------
+    function Na__LeSnap__ModelHash(described) {
+        return Na__PlView__Hash(JSON.stringify(described.Categories.map((c) => (c.stamp ? [ c.name, c.tris, c.stamp ] : [ c.name, c.tris ]))));
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Model Fingerprints, Computed Once and Held Until the Model Changes
     // ------------------------------------------------------------
     // Describing the model walks every mesh, so the viewports must not ask
@@ -295,7 +324,7 @@
     function Na__LeSnap__GetModelFingerprint() {
         if (Na__LeSnap__ModelFp === null) {
             const described = Na__PlStage__Describe(Na__LeSnap__ModelRoot);
-            Na__LeSnap__ModelFp = Na__PlView__Hash(JSON.stringify(described.Categories.map((c) => [ c.name, c.tris ])));
+            Na__LeSnap__ModelFp = Na__LeSnap__ModelHash(described);
         }
         return Na__LeSnap__ModelFp;
     }
@@ -390,9 +419,10 @@
     // one render and put back afterwards. Each goes in through the system that
     // owns it, so ValeVision's export line-width compensation still applies on top.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights) {
+    function Na__LeSnap__Render2d(definition, windowMm, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, stillWanted) {
         if (!Na__LeSnap__IsReady() || !definition) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
+            if (typeof stillWanted === 'function' && !stillWanted()) return null;  // <-- Nobody is waiting for it any more (its sheet was left meanwhile): the queue moves on. The PDF and the forced renders never pass it
             const wasSuspended = Na__DrawView__Transitions__IsSuspended();
             const pipeline     = Na__LeSnap__Pipeline();
             const pass         = pipeline && pipeline.profileLinesPassRef ? pipeline.profileLinesPassRef : null;
@@ -468,9 +498,10 @@
     // widthPx and heightPx are then the window's pixels, and the tiled renderer
     // draws that window of the scene's own camera.
     // ------------------------------------------------------------
-    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, viewWindow) {
+    function Na__LeSnap__Render3d(sceneRecord, styles, widthPx, heightPx, modelLayers, antiAliasSamples, weights, viewWindow, stillWanted) {
         if (!Na__LeSnap__IsReady() || !sceneRecord) return Promise.resolve(null);
         return Na__LeSnap__Enqueue(async () => {
+            if (typeof stillWanted === 'function' && !stillWanted()) return null;  // <-- As Render2d: a render nobody is waiting for is skipped
             const camera   = Na__LeSnap__Camera;
             const controls = Na__LeSnap__Controls;
             const pipeline = Na__LeSnap__Pipeline();

@@ -23,6 +23,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.2.2
+// - Display names for the eight Linetype__ categories, and no buttons for them:
+//   a projection-only category is not drawn in 3D, so a 3D toggle would look
+//   inert while taking its lines off every drawing. They stay registered, so
+//   the Model Layers panel still lists them. Ported from TrueVision3D v2.63.2.
+//
 // 11-Sep-2026 - Version 1.2.1
 // - Display name for ValeVision__SceneEntourageSilhouette (tag 61, fill-only entourage silhouettes), now its own GLB segment so it toggles separately from Scene Entourage 2D. Scene Context comment narrowed to tags 62-70.
 //
@@ -90,7 +96,20 @@
         "ValeVision__SceneEntourage2D"                 : "Scene Entourage 2D",     // <-- Tag 60 camera-follow billboards
         "ValeVision__SceneEntourageSilhouette"         : "Scene Entourage Silhouettes",  // <-- Tag 61 camera-follow fill-only silhouettes
         "ValeVision__SceneContextual"                  : "Scene Entourage",        // <-- Tag 62-70
-        "ValeVision__LegacyModel"                      : "Model"                   // <-- Legacy fallback
+        "ValeVision__LegacyModel"                      : "Model",                  // <-- Legacy fallback
+
+        // LINETYPE LINEWORK | One linework-only GLB per SketchUp linetype tag. These
+        // get no toggle button (see BuildButtons) because no 3D render draws them;
+        // the names are kept for the console, the Model Layers panel and anything
+        // else that resolves a category key to something a person can read.
+        "ValeVision__Linetype__DashedLines"            : "Lines - Dashed",
+        "ValeVision__Linetype__CentreLines"            : "Lines - Centre",
+        "ValeVision__Linetype__DottedLines"            : "Lines - Dotted",
+        "ValeVision__Linetype__DoorSwings"             : "Lines - Door Swings",
+        "ValeVision__Linetype__ClearanceLines"         : "Lines - Clearances",
+        "ValeVision__Linetype__OverheadObjects"        : "Lines - Overhead Objects",
+        "ValeVision__Linetype__BuildingJoins"          : "Lines - Building Joins",
+        "ValeVision__Linetype__ElementsForRemoval"     : "Lines - Elements For Removal"
     };
     // ------------------------------------------------------------
 
@@ -307,7 +326,15 @@
         }
 
         // BUILD A BUTTON FOR EACH LOADED CATEGORY
+        // A PROJECTION-ONLY CATEGORY GETS NO BUTTON. Its linework is loaded with
+        // material.visible false and no 3D render draws it, so a 3D toggle would
+        // appear to do nothing while quietly taking the lines off every drawing.
+        // It stays in the map above, so the Layout Editor's Model Layers panel -
+        // which is where a drawing layer belongs - still lists and controls it.
+        let buttonCount = 0;
         loadedGroups.forEach((group, categoryKey) => {
+            if (group && group.userData && group.userData.Na__LineworkProjectionOnly === true) return;
+            buttonCount += 1;
 
             // CREATE BUTTON ELEMENT
             const displayName = Na__ModelToggle__ResolveDisplayName(categoryKey);  // <-- Resolve friendly name
@@ -330,6 +357,8 @@
 
             listContainer.appendChild(button);                           // <-- Add button to container
         });
+
+        if (buttonCount === 0) listContainer.style.display = 'none';     // <-- Every category was projection only
     }
     // ---------------------------------------------------------------
 

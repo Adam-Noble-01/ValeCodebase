@@ -54,6 +54,34 @@ port repeatedly and ValeVision has no equivalent.
 |---|---|---|
 | Undo and redo stop writing the project (TrueVision v2.30.1) | The same fault is here: `Na__LeHist__Apply` restores through `Na__LeModel__UpdateSheet(sheet, {})`, announced as `sheet-updated`, which `Na__LeAuto__STRUCTURAL` treats as a sheet-settings change - so every Ctrl+Z and Ctrl+Y saves the whole project. TrueVision's fix is three modules: `Na__LeModel__AnnounceRestore` and a `restore : { direction, stepReason }` field on the change event, step reasons kept by History (plus the missing shape case in its selection test), and `Na__LeAuto__CallsForSave` judging a restore by its step. Content undo becomes draft-only; structural undo still saves | **pending** |
 
+### Return trip - TrueVision to ValeVision (18-Sep-2026, linetype linework)
+
+Authored in TrueVision (v2.63.1 and v2.63.2, the same day, after Adam tested the
+first half) and ported here as ValeVision v2.56.1. The upstream half is SketchUp:
+GLB Builder 2.7.3 writes one linework-only GLB per LINETYPE tag - a Tags SSOT entry
+carrying `Glb__LineworkOnly` - and Tags SSOT 2.3.2 carries the tags themselves.
+
+**No adaptation needed anywhere.** This tree's URL parse already accepted a
+`TrueVision__` namespace and normalised it to `ValeVision__`, so the exported files
+classify with no loader change; the EdgeStyles config already held all seven line
+type aliases; and `Classes__AppliesToClasses` already included `authored`, so the
+per-category restyle reaches these lines without touching the viewport painter.
+
+**Adapted:** category keys and display names carry `ValeVision__`; the loader has one
+load path (concurrency-capped) where TrueVision has an ordered and an unordered branch,
+so the projection-only call is made once rather than twice.
+
+| Item | Why | State |
+|---|---|---|
+| Annotation Linework group, 8 rows | Label, colour, weight and line type per linetype tag; mirrors `Glb__LineworkLineType` in the SSOT | **ported** (ModelLayers config 1.1.1, from TV 1.1.1; rows identical apart from the namespace) |
+| `Na__PlCpu__SplitAnnotation` | Linetype categories go to the page uncut and unclipped - an overhead extent is drawn to be seen through the roof, a clearance on a slab must not be clipped by it | **ported** (CpuBackend 1.2.1, from TV 1.3.1, verbatim) |
+| `ProjectedLinework__Annotation__Config`, `GetAnnotationSetup`, `AnnotationCategoryTokens` | The tokens and the Enabled flag, carried into the render options | **ported** (ConfigAccess 1.0.1 from TV 1.1.1; Projector 1.1.1 from TV 1.4.1) |
+| BuildToken `2026-09-18-linetype-annotation` | Re-projects every cached and baked drawing rendered before annotation existed | **ported** |
+| Projection only: `material.visible = false` | No 3D render draws them - viewer, image export, Layout Editor raster - while the objects stay visible for the projection to read. Stops the same line appearing solid in a rendered underlay beneath its own dashes | **ported** (MultiModel 1.2.3, from TV 1.3.2) |
+| No toggle button for a projection-only category | A 3D toggle would look inert while taking lines off every drawing; the Model Layers panel is the control | **ported** (ModelToggle 1.2.2, from TV's 18-Sep entry) |
+| Load order, display names, `RenderConfig__Linework__ProjectionOnlyCategoryTokens` | Deterministic load position; readable labels; which categories are drawing-only | **ported** |
+| Walk mode collision exemption for `Linetype__` | `LineSegments2` extends `Mesh`, so every fat line was already a collision mesh. Harmless on linework that sits on its own faces; not harmless on an invisible line in mid air | **fixed here AND in TrueVision** - same one-line keyword both sides |
+
 ### Return trip - TrueVision to ValeVision (15-Sep-2026, margin notes spacing)
 
 Authored in TrueVision (SpecMargin 1.3.0, ConfigState 1.22.0, v2.54.0) and ported
@@ -855,6 +883,11 @@ ValeVision's loader links. A file in one app is at the same path in the other.
 | `51/60__Feature__PdfExport/Na__LayoutEditor__PdfFilename__.js` 1.0.0 | TV 1.0.0 | verbatim | New leaf; the app name in its header is the only divergence | 17-Sep-2026 |
 | `51/50__Feature__Specification/Na__LayoutEditor__SpecPdf__.js` 1.0.0 | TV 1.0.0 | adapted | ValeVision has no `Na__LayoutEditor__PdfFonts__`, so the pages are set in its own measuring face (Helvetica) rather than an embedded Open Sans; the drawing core is `42__System__DrawingViewCore` here | 17-Sep-2026 |
 | The specification revision set (`SpecData__State__`, `SpecData__Document__`, `SpecData__Editing__`, `SpecData__`, `SpecEditor__Bar__`, `SpecEditor__Actions__`, `SpecDocument__`, both stylesheets, config) | TV v2.63.0 same files | verbatim | Revision and document number on the specification, and the Download button | 17-Sep-2026 |
+| The viewport cache set: `51/10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js` 1.6.0, `51/20__System__Viewports/Na__LayoutEditor__Viewport2d__Frame__.js` 1.1.0, `Viewport2d__.js` 1.8.0, `Viewport3d__.js` 1.6.0, `51/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js` 1.6.0, `ConfigState__` 1.16.0, `ConfigState__SheetSetup__` 1.1.0, the `ViewportCache` config block | TV v2.64.0: SheetSurface 1.6.0, Frame 1.1.0, Viewport2d 1.11.0, Viewport3d 1.7.0, SnapshotRenderer 1.9.0, ConfigState 1.25.0, SheetSetup 1.2.0 | adapted | Sheets are parked, not released; Park / Restore / Release by body; `LiveState`; the PDF always renders 3D. No design phase lines: `Render2d` takes `stillWanted` ninth here, tenth there. ValeVision's 3D export had no `SampledEnough` to remove | 18-Sep-2026 |
+| `15/Na__ModelLoader__ContentStamp__.js` 1.0.0 | TV 1.0.0 | verbatim | New leaf; header only | 18-Sep-2026 |
+| `15/Na__ModelLoader__MultiModel.js` 1.3.0 | TV 1.4.0 | adapted | Stamps each GLB scene as it is parsed. ValeVision's resilient, parallel loader is its own; a stamp belongs to one file, so load order does not matter | 18-Sep-2026 |
+| `50/Na__ProjectedLinework__ModelStage__.js` 1.1.0 | TV 1.2.0 | adapted | The content stamp joins the fingerprint. TrueVision's 1.1.0 (edge rules in the fingerprint) is NOT here and stays a separate item | 18-Sep-2026 |
+| `50/Na__ProjectedLinework__Pipeline__.js` (`ForgetCollections`), `51/20__System__Viewports/Na__LayoutEditor__Viewport2d__Linework__.js` 1.1.0 (`ForgetPaths`), `ForceRender__.js` 1.1.0, SnapshotRenderer `ModelHash` | TV v2.64.1 same files | verbatim | A forced render repaints: the path cache is cleared under the keys it is filled under, and a run re-reads the model once | 18-Sep-2026 |
 
 ---
 

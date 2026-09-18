@@ -50,6 +50,22 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.1.0
+// - THE FINGERPRINT SEES WHAT THE MODEL CONTAINS, not only how much of it there
+//   is. It was category names, triangle counts and visibility, so something
+//   moved along a wall and re-exported - same names, same counts - kept the old
+//   fingerprint, and every cache keyed by it (the results, the collected model,
+//   the browser store, the baked asset, the Layout Editor's base image) handed
+//   back the drawing of it where it used to be. Each category now adds the
+//   content stamps of the GLBs under it (Na__ModelLoader__ContentStamp__), and
+//   Categories carries the stamp so the Layout Editor's own model fingerprint
+//   can use it too. A category with nothing stamped under it fingerprints
+//   exactly as before.
+// - One-off cost: every fingerprint changes once, so every stored result and
+//   baked asset reads as stale once and is made again.
+// - Ported from TrueVision3D 1.2.0 (v2.64.1). TrueVision's 1.1.0 (the edge
+//   rules in the fingerprint) is a separate item and is NOT part of this port.
+//
 // 09-Sep-2026 - Version 1.0.0
 // - Initial implementation for port Phase 4.
 //
@@ -75,6 +91,7 @@
     import { Na__ProjectedLinework__Scheduler__CreateSlicer } from './Na__ProjectedLinework__Scheduler__.js';
     import { Na__PlView__Hash } from './Na__ProjectedLinework__ViewDefinition__.js';
     import { Na__DrawData__GetProjectCode } from '../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__ModelStamp__Read } from '../15__ModelLoader/Na__ModelLoader__ContentStamp__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -116,14 +133,14 @@
                 const category = modelRoot.children[i];
                 const tris     = Na__PlStage__CountUnder(category);
                 total += tris;
-                categories.push({ name : category.name || ('child_' + i), tris : tris, visible : category.visible !== false });
+                categories.push({ name : category.name || ('child_' + i), tris : tris, visible : category.visible !== false, stamp : Na__ModelStamp__Read(category) });   // <-- stamp: what its GLBs held when they loaded
             }
         }
 
         const material = JSON.stringify({
             token   : Na__PlCfg__GetModelSetup().buildToken,
             project : Na__DrawData__GetProjectCode() || null,
-            groups  : categories.map((c) => [ c.name, c.tris, c.visible ? 1 : 0 ])
+            groups  : categories.map((c) => (c.stamp ? [ c.name, c.tris, c.visible ? 1 : 0, c.stamp ] : [ c.name, c.tris, c.visible ? 1 : 0 ]))   // <-- The stamp only where there is one, so an unstamped model keys as it always did
         });
 
         return {

@@ -49,6 +49,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 18-Sep-2026 - Version 1.16.0
+// - Re-exports GetViewportCacheSetup (the SheetSetup unit): the sheet surface's
+//   viewport cache. Ported from TrueVision3D 1.25.0 (v2.64.0).
+//
 // 15-Sep-2026 - Version 1.15.0
 // - Split into Na__LayoutEditor__ConfigState__Readers__.js,
 //   Na__LayoutEditor__ConfigState__KeyMap__.js,
@@ -194,6 +198,7 @@
         Na__LeCfg__GetScaleSetup,
         Na__LeCfg__GetViewportSetup,
         Na__LeCfg__GetRasterSetup,
+        Na__LeCfg__GetViewportCacheSetup,
         Na__LeCfg__PtToMm,
         Na__LeCfg__GetLineweightSetup,
         Na__LeCfg__GetEnhanceSetup,
@@ -336,6 +341,7 @@
         Na__LeCfg__GetAutoSaveSetup,
         Na__LeCfg__PtToMm,
         Na__LeCfg__GetRasterSetup,
+        Na__LeCfg__GetViewportCacheSetup,
         Na__LeCfg__GetSelectionSetup,
         Na__LeCfg__GetEditScopeSetup,
         Na__LeCfg__GetLineweightSetup,

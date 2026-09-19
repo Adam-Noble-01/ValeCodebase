@@ -207,6 +207,9 @@
         let monitorAoFrame   = () => {};
         let disableAo        = () => {};
         let enableAo         = () => {};
+        let setAoFullQuality  = () => {};                               // <-- The resting state: anything that does not ask gets this
+        let setAoLiveQuality  = () => {};                               // <-- Reduced kernel, borrowed for ONE ordinary frame
+        let setAoRefineSample = () => {};                               // <-- Full kernel, rotated per progressive-refinement sample
         let aoPassRef        = null;
         const aoEnabled = aoConfig
             && aoConfig.RenderEffect__AmbientOcclusion__Enabled === true;
@@ -220,6 +223,9 @@
             setAoSize        = aoState.setSize;
             disableAo        = aoState.disable;
             enableAo         = aoState.enable;
+            setAoFullQuality  = aoState.setFullQuality;
+            setAoLiveQuality  = aoState.setLiveQuality;
+            setAoRefineSample = aoState.setRefineSample;
             aoPassRef        = aoState.pass;
             monitorAoFrame   = Na__RenderEffect__AmbientOcclusion__CreatePerformanceMonitor(aoState, aoConfig);
         }
@@ -309,6 +315,9 @@
             setAoSize,                                                     // <-- MaxEngine extra: update AO resolution uniforms
             monitorAoFrame,                                                // <-- MaxEngine extra: FPS-based AO auto-disable
             toggleAo,                                                      // <-- MaxEngine extra: runtime AO toggle
+            setAoFullQuality,                                              // <-- MaxEngine extra: the resting quality, restored after every borrow
+            setAoLiveQuality,                                              // <-- MaxEngine extra: reduced kernel for one moving frame
+            setAoRefineSample,                                             // <-- MaxEngine extra: full kernel, rotated per refinement sample
             aoPassRef                                                      // <-- MaxEngine extra: the SSAO pass, so a readout shows its TRUE state
                                                                            //     (the FPS monitor can disable AO on its own; a UI tracking only
                                                                            //     its own clicks would then show ON over a picture with no AO)

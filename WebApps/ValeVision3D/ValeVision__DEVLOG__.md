@@ -1,6 +1,82 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.59.0 - 19-Sep-2026 - The Settle Was Buying Sixteen Copies of the Same Noise
+### Authored in TrueVision3D v2.66.0 and applied to both copies the same day
+
+**Overview**
+- Adam, having confirmed the TrueVision viewport: "it seems to look much better", and then the note
+  that decides the scope here - "it's the Max engine that uses SAO in ValeVision3D".
+- It does, and it uses the SAME custom SSAO module, not three.js's stock `SAOPass`, so this is a
+  genuine parity port rather than a re-implementation. PureEngine constructs no AO at all and is
+  untouched: every new call site is guarded, so the Pure path runs exactly the frame it ran before.
+
+**The drop-out was a broken measurement, not a slow device**
+- The AO performance monitor timed 120 sampled frames end to end with wall clock and divided. That
+  is only a frame rate if frames arrive back to back, and in this app they never do: the render
+  loop is invalidation based, so it draws while something moves and then STOPS, and the render loop
+  deliberately withholds refinement chunks from the monitor because one chunk is several frames of
+  work in one. Both the idle and the bursts landed in the elapsed time while contributing no
+  counted frames.
+- Simulated against a machine holding a genuine locked 60fps: 1s drags with 5s of looking measured
+  16.5fps, 2s drags with 10s of looking measured 9.8fps, short nudges with 4s of looking measured
+  8.1fps - all below the 24fps threshold, so AO was switched off with a toast blaming the hardware.
+  It was never about the device; it was about how long its user spent LOOKING at the scene.
+- The monitor now averages the DURATION of ordinary frames that arrive back to back, rejecting any
+  delta that measures a gap rather than a frame. A real 18fps still reads 18fps and still disables
+  AO, which is the case the monitor exists for.
+
+**The burst ran sixteen SSAO passes and got one pass's worth of AO**
+- The refinement burst runs the whole effect chain per sample, SSAO included, and nothing stood the
+  AO passes down. The kernel rotation is hashed from `vUv` - the fullscreen quad's UV, which the
+  jitter does not move, because the jitter moves the scene under the fragment grid and not the
+  grid - so every one of the sixteen passes handed a given fragment the identical rotation, and
+  sixteen copies of one noise pattern average to that same pattern.
+- `uAoNoiseOffset` advances by the golden ratio per supersample, so the burst averages sixteen
+  INDEPENDENT estimates. Same sixteen renders, same cost. Measured here against a 256-rotation
+  ground truth on an RTX 3080: settle error 1.178 to 0.172, **85.4% closer to the truth**
+  (TrueVision measured 87.5% on the same probe).
+- `uAoActiveSamples` lets an ordinary moving frame walk fewer kernel samples - `SamplesWhileMoving`,
+  4 against a ceiling of 8 - with an early `break` inside a loop whose bound stays constant so the
+  unroll is unaffected.
+
+**The trap that would have made it pop**
+- The cosine weighting was baked into the kernel vectors, so a reduced budget would have inherited
+  a PREFIX of it - every sample bunched against the surface, a hard contact line with no falloff,
+  popping into the real effect at every settle. The kernel now holds unit directions and the
+  weighting is applied in the shader against the ACTIVE count. Bit-identical at the full count, so
+  nothing hand-tuned moves unless something asks for a reduction. Brightness change measured at the
+  settle here: 0.503 luma out of 224.
+
+**Borrowed for a draw, never held across one**
+- The still exporter, the video exporter and the Layout Editor all borrow this composer between
+  frames and render through it without saying anything about quality. Full quality is the resting
+  state; the reduced budget is set immediately before an ordinary frame and restored in a `finally`
+  immediately after - the discipline the refiner already uses for FXAA and `renderToScreen`.
+
+**Divergence from TrueVision**
+- TrueVision has one engine and calls the quality hooks directly. ValeVision has two, so the render
+  loop guards each call the way it already guards `monitorAoFrame`, and the MaxEngine setup exports
+  the hooks as MaxEngine extras. `onSample` is passed as `... || null` and the refiner's own
+  `typeof` guard covers the rest.
+- `onSample` was added to `Na__RenderEffect__ProgressiveRefine__.js` as an OPTIONAL context field
+  specifically so the two copies of that module stay adoptable verbatim - the refiner was ported
+  from here to TrueVision and is meant to stay one file in two places.
+
+**Tested**
+- The real AO module driven through a real composer on an RTX 3080 (ANGLE / D3D11): both new
+  uniforms confirmed live rather than optimised away, and the quality API present on the returned
+  state. Same probe as TrueVision, same result shape.
+- NOT tested: a real project in the running app, and PureEngine beyond reading the guards.
+
+**Files**
+- `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__.js`, `...__Shader.js`.
+- `05__RenderPipeline/02__Engine__MaxEngine/Na__RenderPipeline__MaxEngine__Setup.js`,
+  `Na__RenderEffect__ProgressiveRefine__.js`.
+- `01__AppCore/Na__AppFlow__LoadingSequence.js`.
+- `02__AppData/Na__AppConfig__Main.json` (`SamplesWhileMoving` 4, `SettleDebounceMs` 150 to 90).
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.58.1 - 18-Sep-2026 - The Drawing Keeps the Finger
 ### Authored in TrueVision3D v2.65.2 and applied to both copies the same day
 

@@ -1,6 +1,59 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.59.1 - 19-Sep-2026 - The Floor Was Shading Itself
+### Authored in TrueVision3D v2.68.1 and applied to both copies the same day
+
+**Overview**
+- Adam, in TrueVision: "a random smudged black element" on the ground in front of the house, and
+  the whole forecourt grained mid-move. Same SSAO module here under MaxEngine, same fault, same fix.
+- A flat surface has ZERO true occlusion, so anything on open ground is false; the band is what the
+  grain averages to once the burst settles.
+
+**What it was**
+- At a grazing view one screen pixel spans a long stretch of ground. A hemisphere sample above the
+  floor projects to a pixel whose read-back surface point can be metres along the floor from the
+  pixel being shaded, and slightly nearer the camera than the sample, which the depth test alone
+  calls occluded. Measured on a clean plane at 12 degrees: 0.02 / 0.05 / 0.15 / 0.28 mean
+  occlusion near to far, where the truth is zero. It surfaced when the radius doubled and the cull
+  distance rose from 8m to 50m, which shaded mid-ground that had always been culled before.
+- Ruled out with measurements: the depth source, coplanar ground surfaces, the reconstructed
+  normal (0.23 degrees from true; a real normal buffer bought nothing) and the bias.
+
+**The fix: an occluder has to rise out of the surface**
+- The read-back point is also measured against the tangent plane of the shaded pixel and only its
+  elevation counts, faded from one bias to four. Floor points contribute nothing; wall points count
+  as before. After: 12 degrees 0 / 0 / 0 / 0.013, 25 degrees all zero; a real corner keeps its
+  contact (0.112 before and after). Ten lines in the fragment shader, verbatim from TrueVision, no
+  new uniforms, no MaxEngine wiring.
+
+**Also in this release**
+- `RadiusMm` 50 to 100 (`Intensity` stays 1.2: the radius alone measured x1.95 darker, both
+  together x3.44). `finalAo` clamped 0..1 so a strong intensity saturates instead of smearing a
+  negative through the blur. `CullDistanceMm` 8000 to 50000, with a `CullDistanceNote` recording
+  why: it measures camera distance, so below the orbit range the whole image loses its shading at
+  once as the camera pulls back.
+
+**Found, not changed**
+- `uResolution` is CSS pixels while the fragment grid is CSS x pixel ratio, so the AO blur is wider
+  than the config implies on a scaled display. Same in TrueVision; left for Adam to decide.
+
+**Tested**
+- The measurements above were taken against TrueVision's copy of the module; the shader hunk here is
+  byte-identical and the surrounding code was already at parity from v2.59.0.
+- Doous (3047, a MaxEngine project) loaded on a static server from this checkout: the console
+  reported `Configured engine for this model: MaxEngine`, the shader the server handed the page
+  carried the gate and the clamp, and a grazing view across the forecourt showed clean ground with
+  the contact shadows under the orangery intact. Adam confirmed the same view in TrueVision.
+- The Export Render Layers occlusion (`71__System__ExportRenderLayers`, a separate horizon-based
+  shader) was read and left alone: it already scores an occluder by its elevation above the
+  surface normal, so it never had this defect.
+
+**Files**
+- `07__Scene__EnvironmentEffects/Na__RenderEffect__AmbientOcclusion__Shader.js`.
+- `02__AppData/Na__AppConfig__Main.json`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.59.0 - 19-Sep-2026 - The Settle Was Buying Sixteen Copies of the Same Noise
 ### Authored in TrueVision3D v2.66.0 and applied to both copies the same day
 

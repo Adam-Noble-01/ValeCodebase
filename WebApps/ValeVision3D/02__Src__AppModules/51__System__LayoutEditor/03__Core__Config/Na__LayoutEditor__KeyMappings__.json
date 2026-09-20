@@ -249,6 +249,21 @@
                 "ModifierMatch": "Exact"
             },
             {
+                "Id": "Edit__Save",
+                "Label": "Save the sheets and sync the specification (Ctrl+S)",
+                "Action": "Edit__Save",
+                "Enabled": true,
+                "Keys": [
+                    "s",
+                    "S"
+                ],
+                "Modifiers": [
+                    "Ctrl"
+                ],
+                "ModifierMatch": "Exact",
+                "Note": "Exactly what the Save Sheets button does, from anywhere in the editor - the sheet or the specification - because unlike the other Edit chords it is answered by the mode controller rather than by the sheet's own keys. Typing on the paper is committed first, and a panel field with focus is blurred so the value being typed into it commits too: those fields report on 'change', which a keyboard shortcut does not fire by itself, and the Save button only ever got away with it because clicking anything blurs. Taken from the browser while the editor is open, where Ctrl+S would otherwise offer to save the page as a file. An editable session only: a read-only viewer keeps the browser's own Ctrl+S."
+            },
+            {
                 "Id": "Edit__Undo",
                 "Label": "Undo the last change on the sheet",
                 "Action": "Edit__Undo",

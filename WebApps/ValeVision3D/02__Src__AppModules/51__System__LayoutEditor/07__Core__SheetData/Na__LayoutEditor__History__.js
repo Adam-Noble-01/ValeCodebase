@@ -15,10 +15,18 @@
 //   updates the model silently and announces once on release, so a drag
 //   is one step, however long it lasted.
 // - Steps are snapshots of the sheet record, kept per sheet, capped at the
-//   configured depth. Undo puts the previous snapshot back into the same
-//   record object (the surface and panels hold that object), then announces
-//   a sheet update so everything redraws. Selected items that no longer
-//   exist leave the selection; the rest stay selected.
+//   configured depth, each with the reason its change was announced with.
+//   Undo puts the previous snapshot back into the same record object (the
+//   surface and panels hold that object), then announces a sheet update so
+//   everything redraws. Selected items that no longer exist leave the
+//   selection; the rest stay selected.
+// - THE ANNOUNCEMENT SAYS IT IS A RESTORE, and which step it reverses
+//   (Na__LeModel__AnnounceRestore). It used to go out as a plain sheet
+//   update, which the auto save reads as a sheet-settings change - so every
+//   undo and redo, of anything, wrote the whole project to R2. An undo is
+//   now saved the way the step it reverses was saved: undoing a rename or a
+//   paper change saves, undoing a vector, a text move or a viewport drag
+//   stays with the browser draft and Save Sheets, as the edit itself did.
 // - Sheet creation, deletion and reordering are not steps: they change the
 //   sheet list, not a sheet.
 //
@@ -38,6 +46,37 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.3.0
+// - Common title block fields. A step now carries the pack's client and site
+//   address beside the sheet snapshot, and the "changed nothing" test reads
+//   both: those two values live on the drawings block, so retyping the client
+//   on a sheet that is on Common changes not one byte of the sheet record.
+//   Without this, that edit recorded no step at all and Ctrl+Z reached past it.
+//
+// 20-Sep-2026 - Version 1.4.0
+// - UNDO AND REDO STOP WRITING THE PROJECT. Each step keeps the reason its
+//   change was announced with, and Undo and Redo pass
+//   { direction, stepReason } to Na__LeModel__AnnounceRestore instead of
+//   calling UpdateSheet. Before this, a restore went out as a bare
+//   'sheet-updated' - which Na__LeAuto__STRUCTURAL reads as a sheet-settings
+//   change - so EVERY Ctrl+Z and Ctrl+Y wrote the whole project to R2 a
+//   second and a half later, including the undo of a vector delete that had
+//   never written anything itself.
+// - Any announcement carrying a restore is ignored by OnChanged, as well as
+//   everything during Apply, so the history can never record its own restores.
+//   Belt and braces: Restoring already covered the synchronous path, and this
+//   covers a restore that arrives any other way.
+// - Ported from TrueVision3D v2.30.1 (History 1.1.0), the open row in the
+//   parity ledger's pending return trip, signed off by Adam on 20-Sep-2026.
+// - NOT ported with it: the 'register-updated' rewrite of kept steps, which
+//   needs a Drawing Register this tree does not have, so it is not reachable
+//   here rather than missing.
+// - The pack's common client and site address were named here as unportable
+//   too, and were landed the same day by the SheetModel__Common work, which
+//   merged onto this file's step objects rather than the old bare strings.
+//   A step is { json, common, reason }: the first two are that port's, the
+//   third is this one's, and they are independent.
+//
 // 14-Sep-2026 - Version 1.3.0
 // - Grouping is a step ('groups'): Ctrl+G, Ctrl+Shift+G, and a paste of a
 //   group. SelectionExists keeps a selected group (and a selected vector)
@@ -52,6 +91,8 @@
 // - Still open: SelectionExists has no shape case here, so a restore drops a
 //   selected shape. It returns with TrueVision v2.30.1's undo-writes fix, which
 //   is still waiting for sign-off (parity ledger, pending return trip).
+//   [CLOSED 20-Sep-2026 - the shape case arrived with the v1.3.0 groups port
+//   above, ahead of the undo-writes fix; this note outlived it by six days.]
 // - Ported from TrueVision3D v2.34.0.
 //
 // 14-Sep-2026 - Version 1.1.0
@@ -79,10 +120,11 @@
         Na__LeModel__CHANGED_EVENT,
         Na__LeModel__GetSheetById,
         Na__LeModel__GetActiveSheet,
-        Na__LeModel__UpdateSheet,
+        Na__LeModel__AnnounceRestore,
         Na__LeModel__GetSelectionItems,
         Na__LeModel__SetSelectionItems
     } from './Na__LayoutEditor__SheetModel__.js';
+    import { Na__LeCommon__Get, Na__LeCommon__Set, Na__LeCommon__KEYS } from './Na__LayoutEditor__SheetModel__Common__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -100,7 +142,7 @@
 
     // MODULE VARIABLES | Per-Sheet Stacks
     // ------------------------------------------------------------
-    const Na__LeHist__Entries   = new Map();   // <-- sheetId -> { undo : [], redo : [], current : json|null }
+    const Na__LeHist__Entries   = new Map();   // <-- sheetId -> { undo : [step], redo : [step], current : step|null }, step = { json, reason }
     let   Na__LeHist__Restoring = false;
     let   Na__LeHist__Ready     = false;
     // ------------------------------------------------------------
@@ -150,16 +192,25 @@
 
     // HELPER FUNCTION | Put a Snapshot Back Into the Live Record and Redraw
     // ------------------------------------------------------------
-    function Na__LeHist__Apply(sheet, json) {
-        const clone = JSON.parse(json);
+    // restore: { direction : 'undo' | 'redo', stepReason } - rides on the
+    // announcement so the auto save can tell an undo of a rename from an
+    // undo of a vector delete. Both redraw alike; only one saves.
+    // ------------------------------------------------------------
+    function Na__LeHist__Apply(sheet, step, restore) {
+        const clone = JSON.parse(step.json);
         Na__LeHist__Restoring = true;
         try {
             Object.keys(sheet).forEach((key) => { if (!(key in clone)) delete sheet[key]; });
             Object.assign(sheet, clone);
+            // THE PACK'S CLIENT AND SITE ADDRESS live on the drawings block, not
+            // on the sheet, so the sheet snapshot alone cannot put them back.
+            // Restored before the announcement, so the one redraw that follows
+            // shows the whole step rather than half of it.
+            if (step.common) Na__LeCommon__KEYS.forEach((key) => Na__LeCommon__Set(key, step.common[key]));
             const selected = Na__LeModel__GetSelectionItems();
             const kept     = selected.filter((item) => Na__LeHist__SelectionExists(sheet, item));
             if (kept.length !== selected.length) Na__LeModel__SetSelectionItems(kept);
-            Na__LeModel__UpdateSheet(sheet, {});                                   // <-- Normalises, marks dirty, announces a sheet update
+            Na__LeModel__AnnounceRestore(sheet, restore);                          // <-- Normalises, marks dirty, announces a sheet update that says it is a restore
         } finally {
             Na__LeHist__Restoring = false;
         }
@@ -178,7 +229,7 @@
     function Na__LeHist__Track(sheet) {
         if (!sheet) return;
         const entry = Na__LeHist__Entry(sheet.Sheet__Id);
-        if (entry.current === null) entry.current = JSON.stringify(sheet);
+        if (entry.current === null) entry.current = { json : JSON.stringify(sheet), common : Na__LeCommon__Get(), reason : null };
     }
     // ------------------------------------------------------------
 
@@ -188,6 +239,7 @@
     function Na__LeHist__OnChanged(event) {
         if (Na__LeHist__Restoring) return;
         const detail = event.detail || {};
+        if (detail.restore) return;                                             // <-- An undo or redo, however it arrived: never a new step
         const reason = detail.reason || '';
         if (reason === 'loaded') { Na__LeHist__Entries.clear(); Na__LeHist__Track(Na__LeModel__GetActiveSheet()); Na__LeHist__Dispatch(null); return; }
         if (reason === 'sheet-deleted') { Na__LeHist__Entries.delete(detail.sheetId); Na__LeHist__Dispatch(null); return; }
@@ -196,14 +248,20 @@
         const sheet = Na__LeModel__GetSheetById(detail.sheetId);
         if (!sheet) return;
         const entry = Na__LeHist__Entry(sheet.Sheet__Id);
-        const next  = JSON.stringify(sheet);
-        if (entry.current === null) { entry.current = next; return; }          // <-- First sighting: a baseline, not a step
-        if (next === entry.current) return;                                     // <-- An announce that changed nothing
+        const next       = JSON.stringify(sheet);
+        const nextCommon = Na__LeCommon__Get();
+        if (entry.current === null) { entry.current = { json : next, common : nextCommon, reason : null }; return; }   // <-- First sighting: a baseline, not a step
+        // BOTH HALVES, because retyping the client on a sheet that is on Common
+        // changes the pack and not one byte of the sheet. Reading the sheet
+        // alone called that "an announce that changed nothing", recorded no
+        // step, and left Ctrl+Z to reach past it to an older, unrelated one.
+        const commonSame = Na__LeCommon__KEYS.every((key) => nextCommon[key] === (entry.current.common || {})[key]);
+        if (next === entry.current.json && commonSame) return;                  // <-- An announce that changed nothing
         entry.undo.push(entry.current);
         const max = Na__LeCfg__GetHistorySetup().maxSteps;
         while (entry.undo.length > max) entry.undo.shift();
         entry.redo.length = 0;
-        entry.current = next;
+        entry.current = { json : next, common : nextCommon, reason : reason };   // <-- The reason goes with the step, so undoing it is saved the way it was
         Na__LeHist__Dispatch(sheet.Sheet__Id);
     }
     // ------------------------------------------------------------
@@ -239,10 +297,11 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const entry = sheet ? Na__LeHist__Entries.get(sheet.Sheet__Id) : null;
         if (!entry || !entry.undo.length) return false;
+        const undone   = entry.current;                                         // <-- The step being reversed is the one that made the current state
         const snapshot = entry.undo.pop();
-        entry.redo.push(entry.current);
+        entry.redo.push(undone);
         entry.current = snapshot;
-        Na__LeHist__Apply(sheet, snapshot);
+        Na__LeHist__Apply(sheet, snapshot, { direction : 'undo', stepReason : undone.reason });
         Na__LeHist__Dispatch(sheet.Sheet__Id);
         return true;
     }
@@ -255,10 +314,10 @@
         const sheet = Na__LeModel__GetActiveSheet();
         const entry = sheet ? Na__LeHist__Entries.get(sheet.Sheet__Id) : null;
         if (!entry || !entry.redo.length) return false;
-        const snapshot = entry.redo.pop();
+        const snapshot = entry.redo.pop();                                      // <-- The step being replayed is the one that made this snapshot
         entry.undo.push(entry.current);
         entry.current = snapshot;
-        Na__LeHist__Apply(sheet, snapshot);
+        Na__LeHist__Apply(sheet, snapshot, { direction : 'redo', stepReason : snapshot.reason });
         Na__LeHist__Dispatch(sheet.Sheet__Id);
         return true;
     }

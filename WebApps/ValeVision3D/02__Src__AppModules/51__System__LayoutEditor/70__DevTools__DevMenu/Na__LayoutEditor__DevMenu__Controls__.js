@@ -42,6 +42,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.4.0
+// - The sheet list and the delete prompt name a sheet as its tab does
+//   (Na__LeLoad__GetTabLabel, "D03 - Elevations"), in place of its place in the
+//   order and a name that no longer carries a number. Ported from TrueVision3D
+//   v2.70.0.
+//
 // 15-Sep-2026 - Version 1.3.0
 // - Loads before the editor and without it: the sheet model, mode
 //   controller, config, Viewport3d and PDF exporter are reached through
@@ -81,6 +87,7 @@
         Na__LeLoad__STATE_EVENT,
         Na__LeLoad__GetLabel,
         Na__LeLoad__FormatLabel,
+        Na__LeLoad__GetTabLabel,
         Na__LeLoad__GetEditor,
         Na__LeLoad__Require,
         Na__LeLoad__GetSheets,
@@ -171,7 +178,7 @@
     async function Na__LeDev__Delete(sheet) {
         const ok = await Na__AppUtils__ConfirmDialog__Show({
             title : Na__LeLoad__GetLabel('DeleteSheetTitle', 'Delete sheet'),
-            message : Na__LeLoad__FormatLabel('DeleteSheetPrompt', 'Delete the sheet "{name}"? Its viewports, text and dimensions go with it.', { name : sheet.Sheet__Name }),
+            message : Na__LeLoad__FormatLabel('DeleteSheetPrompt', 'Delete the sheet "{name}"? Its viewports, text and dimensions go with it.', { name : Na__LeLoad__GetTabLabel(sheet) }),
             confirmLabel : Na__LeLoad__GetLabel('DeleteLabel', 'Delete'), isDestructive : true
         });
         if (ok) await Na__LeLoad__DeleteSheet(sheet.Sheet__Id);
@@ -293,7 +300,7 @@
             row.className = 'na-pm-dev__row na-le-dev__sheet' + (active && active.Sheet__Id === sheet.Sheet__Id ? ' na-le-dev__sheet--active' : '');
             const name = document.createElement('span');
             name.className   = 'na-pm-dev__label na-le-dev__sheet-name';
-            name.textContent = sheet.Sheet__Order + '. ' + sheet.Sheet__Name + ' (' + sheet.Sheet__PaperSize + ', ' + sheet.Sheet__Viewports.length + ' viewports)';
+            name.textContent = Na__LeLoad__GetTabLabel(sheet) + ' (' + sheet.Sheet__PaperSize + ', ' + sheet.Sheet__Viewports.length + ' viewports)';
             row.appendChild(name);
             row.appendChild(Na__LeDev__Button(Na__LeLoad__GetLabel('OpenSheet', 'Open'), 'na-pm-dev__btn--primary', () => { void Na__LeLoad__Enter(sheet.Sheet__Id); }));
             row.appendChild(Na__LeDev__Button(Na__LeLoad__GetLabel('DuplicateSheet', 'Duplicate'), '', () => { void Na__LeDev__Duplicate(sheet); }));

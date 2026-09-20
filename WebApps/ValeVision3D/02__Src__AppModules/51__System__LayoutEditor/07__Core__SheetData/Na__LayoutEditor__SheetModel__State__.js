@@ -98,9 +98,12 @@
 
     // HELPER FUNCTION | Announce a Change
     // ------------------------------------------------------------
-    function Na__LeModel__Dispatch(reason, sheetId, itemId) {
+    // restore is null except when undo or redo put a snapshot back:
+    // { direction : 'undo' | 'redo', stepReason } - see AnnounceRestore.
+    // ------------------------------------------------------------
+    function Na__LeModel__Dispatch(reason, sheetId, itemId, restore) {
         window.dispatchEvent(new CustomEvent(Na__LeModel__CHANGED_EVENT, {
-            detail : { reason : reason || 'change', sheetId : sheetId || Na__LeModel__ActiveSheetId, itemId : itemId || null }
+            detail : { reason : reason || 'change', sheetId : sheetId || Na__LeModel__ActiveSheetId, itemId : itemId || null, restore : restore || null }
         }));
     }
     // ------------------------------------------------------------
@@ -108,9 +111,9 @@
 
     // HELPER FUNCTION | Touch: Mark Dirty and Announce
     // ------------------------------------------------------------
-    function Na__LeModel__Touch(reason, sheetId, itemId) {
+    function Na__LeModel__Touch(reason, sheetId, itemId, restore) {
         Na__LeModel__Dirty = true;
-        Na__LeModel__Dispatch(reason, sheetId, itemId);
+        Na__LeModel__Dispatch(reason, sheetId, itemId, restore);
     }
     // ------------------------------------------------------------
 

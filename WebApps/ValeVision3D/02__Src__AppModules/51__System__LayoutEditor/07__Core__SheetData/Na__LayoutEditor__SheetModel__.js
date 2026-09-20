@@ -96,6 +96,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.17.0
+// - Re-exports the Sheets unit's short tab name API: GetDrawingNumber,
+//   GetShortCode, GetTabLabel, CleanSheetName and ApplySheetName.
+//
 // 15-Sep-2026 - Version 1.16.0
 // - Split into Na__LayoutEditor__SheetModel__State__.js,
 //   Na__LayoutEditor__SheetModel__Sheets__.js,
@@ -241,6 +245,12 @@
     } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     // ------------------------------------------------------------
 
+    // MODULE IMPORTS | Common Title Block Fields: the Per-Project Caches
+    // ------------------------------------------------------------
+    import { Na__LeCommon__Reset } from './Na__LayoutEditor__SheetModel__Common__.js';
+    import { Na__LeRecord__Reset } from './Na__LayoutEditor__ProjectRecord__.js';
+    // ------------------------------------------------------------
+
     // MODULE IMPORTS | Constants (re-exported below), Session State and Helpers
     // ------------------------------------------------------------
     import {
@@ -270,10 +280,20 @@
         Na__LeModel__DuplicateSheet,
         Na__LeModel__DeleteSheet,
         Na__LeModel__UpdateSheet,
+        Na__LeModel__AnnounceRestore,
         Na__LeModel__ReorderSheet,
         Na__LeModel__GetFields,
+        Na__LeModel__GetDrawingNumber,
+        Na__LeModel__GetShortCode,
+        Na__LeModel__GetTabLabel,
+        Na__LeModel__CleanSheetName,
+        Na__LeModel__ApplySheetName,
         Na__LeModel__UpdateMarginNotes,
-        Na__LeModel__SetField
+        Na__LeModel__SetField,
+        Na__LeModel__IsCommonFields,
+        Na__LeModel__SetCommonFields,
+        Na__LeModel__SetCommonFieldValue,
+        Na__LeModel__SeedCommonFields
     } from './Na__LayoutEditor__SheetModel__Sheets__.js';
     import {
         Na__LeModel__GetLayers,
@@ -465,6 +485,13 @@
             if (saved) { Na__LeModel__Dispatch('saved', Na__LeModel__ActiveSheetId); return; }   // <-- The same records, now on disk: selection and undo history stay
             Na__LeModel__AssignSelectionItems([]);
             Na__LeModel__Dispatch('loaded', Na__LeModel__ActiveSheetId);
+            // THE PACK'S CLIENT AND SITE ADDRESS | A new project brings a new
+            // record, so both caches are dropped before the seed runs. Fire and
+            // forget: it announces 'fields' only if it writes anything, so a
+            // project whose pack already agrees with itself never repaints.
+            Na__LeCommon__Reset();
+            Na__LeRecord__Reset();
+            void Na__LeModel__SeedCommonFields();
         };
         window.addEventListener(Na__DrawData__LOADED_EVENT,  reload);
         window.addEventListener(Na__DrawData__CHANGED_EVENT, reload);
@@ -495,10 +522,20 @@
         Na__LeModel__DuplicateSheet,
         Na__LeModel__DeleteSheet,
         Na__LeModel__UpdateSheet,
+        Na__LeModel__AnnounceRestore,
         Na__LeModel__ReorderSheet,
         Na__LeModel__GetFields,
+        Na__LeModel__GetDrawingNumber,
+        Na__LeModel__GetShortCode,
+        Na__LeModel__GetTabLabel,
+        Na__LeModel__CleanSheetName,
+        Na__LeModel__ApplySheetName,
         Na__LeModel__UpdateMarginNotes,
         Na__LeModel__SetField,
+        Na__LeModel__IsCommonFields,
+        Na__LeModel__SetCommonFields,
+        Na__LeModel__SetCommonFieldValue,
+        Na__LeModel__SeedCommonFields,
         Na__LeModel__GetLayers,
         Na__LeModel__GetLayerById,
         Na__LeModel__DefaultLayerId,

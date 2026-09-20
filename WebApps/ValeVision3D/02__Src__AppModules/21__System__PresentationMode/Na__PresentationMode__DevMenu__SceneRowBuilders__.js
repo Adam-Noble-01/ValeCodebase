@@ -17,22 +17,30 @@
 //   array, never saves and never talks to R2. Splitting it out keeps the scene
 //   editor inside the house line budget now that grouping, reordering and drag
 //   and drop live there.
-// - A row reads, top to bottom: a header strip (drag handle, "#N - Name" where
-//   N is the position WITHIN the scene's group, move up and down arrows), the
-//   Name field, the Group dropdown (enabled groups only, absent on an ungrouped
-//   project), the Nav Mode switch (Orbit | Fly | Walk, absent on drawing
-//   cards), the FOV slider with live viewport preview, the Move Speed slider,
-//   the Easing dropdown, the Position field (1-based within the group) and the
-//   action buttons: Update Camera, Regen Thumb, Save Scene, Delete.
+// - A ROW FOLDS. Collapsed it is a header strip (drag handle, "#N - Name"
+//   where N is the position WITHIN the scene's group, a LAYOUT chip when the
+//   scene is hidden from the viewer, and the move up/down arrows). The body is
+//   built either way and hidden by a class, which is what lets the editor
+//   re-point the panel from a carousel click without rebuilding it.
+// - Open, a row reads: the scene's saved thumbnail beside the Name field and
+//   the Group dropdown; the FOV slider with live viewport preview and the move
+//   speed value box on the same line; then Advanced (collapsed) holding
+//   Position, the Nav Mode switch, Easing and the layout-editor-only flag;
+//   then Preview, Update Scene and Delete.
 // - The drag handle is the ONLY thing that arms a drag on the row, so the
 //   sliders stay usable and selecting text in the name field never starts a
 //   drag.
 //
 // HANDLERS CONTRACT (all optional except onMutate):
 // - handlers.camera                      : live perspective camera for the FOV preview
+// - handlers.focusedSceneId              : the one scene id whose row is open
+// - handlers.onFocusToggle(sceneId|null) : the title was clicked; open that scene, or fold everything
+// - handlers.isAdvancedOpen(sceneId)     : should this row's Advanced section start open?
+// - handlers.onAdvancedToggle(id, open)  : remember an Advanced fold across rebuilds
+// - handlers.onPreview(sceneId)          : fly to this scene (routed, so drawings open their own mode)
 // - handlers.onMoveByOffset(sceneId, +-1): reorder arrows
 // - handlers.onMoveToPosition(sceneId, n): Position field, 1-based within the group
-// - handlers.onMutate(action, scene)     : 'regroup' | 'update' | 'thumb' | 'save-one' | 'delete'
+// - handlers.onMutate(action, scene)     : 'regroup' | 'update' | 'flag' | 'delete'
 //
 // INTEGRATION:
 // - Consumed only by Na__PresentationMode__DevMenu__SceneEditor.js.
@@ -47,16 +55,31 @@
 // - Ported on     : 09-Sep-2026 for ValeVision3D v2.17.0
 // - Parity        : adapted (split out of the editor)
 // - Divergences   :
-//   - No Advanced fold: Easing, Position and Nav Mode sit inline, as the ValeVision row always showed Easing.
-//   - Nav Mode added 11-Sep-2026 (v2.21.17), reading Orbit | Fly | Walk left to right like the Video Studio
-//     menu; TrueVision reads Orbit | Walk | Fly. No layer-timing row; that key is not in the ValeVision schema.
-//   - Action buttons keep ValeVision's four (Update Camera, Regen Thumb, Save Scene, Delete) rather
-//     than TrueVision's single Update Scene, because the Flask thumbnail path is a separate step here.
+//   - Nav Mode reads Orbit | Fly | Walk left to right like the Video Studio menu; TrueVision reads
+//     Orbit | Walk | Fly.
+//   - No layer-timing row. TrueVision offers a per-scene "switch layers before the camera move"
+//     choice; this app applies model layers instantly at the start of a flight ON PURPOSE - an
+//     instant cut reads better than a mid-flight pop-out - so the choice would control nothing.
 // - Back-port     : the split itself is worth carrying to TrueVision, whose editor is over budget.
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.2.0 (Presentation Scenes alignment with TrueVision)
+// - Rows fold. The header title is the fold control; the editor decides which
+//   single row is open.
+// - Each open row shows the scene's saved thumbnail beside Name and Group,
+//   which is the only picture a layout-editor-only scene has anywhere.
+// - Move Speed lost its slider and became a value box on the FOV line. Two
+//   sliders for two settings, one of which is set once a project, was most of
+//   the height of every row.
+// - Added an Advanced fold holding Position, Nav Mode, Easing and the new
+//   layout-editor-only flag.
+// - Update Camera, Regen Thumb and Save Scene collapsed into one Update Scene,
+//   matching TrueVision: three presses for one gesture, with every ordering of
+//   them saving a slightly different subset. Preview took the space.
+//
+
 // 11-Sep-2026 - Version 1.1.0
 // - Nav Mode switch (Orbit | Fly | Walk) under the Group dropdown. Writes
 //   PresentationMode__Scene__NavigationMode on the working copy ('walk' or
@@ -88,7 +111,9 @@
     // MODULE IMPORTS | Scene Data Accessors
     // ------------------------------------------------------------
     import {
-        Na__PresentationMode__ProjectJson__GetActiveConfig
+        Na__PresentationMode__ProjectJson__GetActiveConfig,
+        Na__PresentationMode__ProjectJson__ResolveThumbnailUrl,
+        Na__PresentationMode__ProjectJson__LAYOUT_ONLY_KEY
     } from './Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
@@ -187,9 +212,71 @@
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build the FOV Slider Row for a Scene
+    // HELPER FUNCTION | Build the Move Speed Value Box
     // ------------------------------------------------------------
-    function Na__PmRows__BuildFovRow(scene, onChange) {
+    // A NUMBER BOX, NOT A SLIDER, AND IT SHARES THE FOV'S ROW.
+    //
+    // Move speed is a transition duration in seconds. It is set once for a
+    // project, if ever - almost every scene in every project is on the 1.8s
+    // default - and yet it was carrying a full-width slider of its own on
+    // every row, which is a whole line of panel height per scene spent on a
+    // number nobody changes. FOV keeps its slider because framing a view is
+    // exactly the kind of thing you want to drag and watch.
+    //
+    // Seconds in, milliseconds out: the JSON field is milliseconds, and the
+    // author thinks in seconds because that is what the readout has always
+    // said. Clamped to the same bounds the slider enforced, so a typo cannot
+    // write a forty-second flight into the project.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildMoveSpeedBox(scene, onChange) {
+        const currentMs = Number.isFinite(scene.PresentationMode__Scene__TransitionTimeToNextSceneMs)
+            ? scene.PresentationMode__Scene__TransitionTimeToNextSceneMs
+            : Na__PmRows__TRANSITION_DEFAULT;
+
+        const wrap = document.createElement('span');
+        wrap.className = 'na-pm-dev__inline-field';
+        wrap.title     = 'Move speed: how long the camera takes to fly to this scene, in seconds';
+
+        const label = document.createElement('span');
+        label.className   = 'na-pm-dev__inline-label';
+        label.textContent = 'Move';
+        wrap.appendChild(label);
+
+        const input = document.createElement('input');
+        input.type      = 'number';
+        input.className = 'na-pm-dev__input na-pm-dev__input--tiny';
+        input.min       = (Na__PmRows__TRANSITION_MIN_MS / 1000).toFixed(1);
+        input.max       = (Na__PmRows__TRANSITION_MAX_MS / 1000).toFixed(1);
+        input.step      = '0.1';
+        input.value     = (currentMs / 1000).toFixed(1);
+        wrap.appendChild(input);
+
+        const suffix = document.createElement('span');
+        suffix.className   = 'na-pm-dev__inline-suffix';
+        suffix.textContent = 's';
+        wrap.appendChild(suffix);
+
+        input.addEventListener('change', () => {
+            const seconds = parseFloat(input.value);
+            if (!Number.isFinite(seconds)) {
+                input.value = (currentMs / 1000).toFixed(1);                // <-- Reject junk, restore what is stored
+                return;
+            }
+            const ms = Math.round(
+                Math.max(Na__PmRows__TRANSITION_MIN_MS, Math.min(seconds * 1000, Na__PmRows__TRANSITION_MAX_MS))
+            );
+            input.value = (ms / 1000).toFixed(1);                           // <-- Show the clamped value back
+            onChange(ms);
+        });
+
+        return wrap;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the FOV Slider Row, With Move Speed Beside It
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildFovRow(scene, onFovChange, onMoveSpeedChange) {
         const currentFov = (scene.PresentationMode__Scene__CameraPosition
             && scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc
             && scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc.Camera__DefaultMisc__Fov)
@@ -197,7 +284,9 @@
 
         const currentMm = Math.round(Na__PmRows__FovToFocalMm(currentFov));
 
-        const row = Na__PmRows__BuildLabelledRow('FOV', 'na-pm-dev__slider-row');
+        const row = Na__PmRows__BuildLabelledRow('FOV', 'na-pm-dev__slider-row na-pm-dev__slider-row--fov');
+        const label = row.querySelector('.na-pm-dev__label');
+        if (label) label.classList.add('na-pm-dev__label--inline');
 
         const slider = document.createElement('input');
         slider.type      = 'range';
@@ -206,55 +295,113 @@
         slider.max       = Na__PmRows__FOV_MAX;
         slider.step      = '0.1';
         slider.value     = currentFov.toFixed(1);
+        slider.title     = 'Field of view for this scene, with the equivalent full-frame lens beside it';
 
         const valueDisplay = document.createElement('span');
         valueDisplay.className   = 'na-pm-dev__value';
-        valueDisplay.textContent = `${currentFov.toFixed(1)} deg / ${currentMm}mm`;
+        valueDisplay.textContent = `${currentFov.toFixed(1)}° / ${currentMm}mm`;   // <-- Degree glyph: the row shares its width with the move speed box
 
         slider.addEventListener('input', () => {
             const fov   = parseFloat(slider.value);
             const lenMm = Math.round(Na__PmRows__FovToFocalMm(fov));
-            valueDisplay.textContent = `${fov.toFixed(1)} deg / ${lenMm}mm`;   // <-- Live readout
-            onChange(fov);
+            valueDisplay.textContent = `${fov.toFixed(1)}° / ${lenMm}mm`;          // <-- Live readout
+            onFovChange(fov);
         });
 
         row.appendChild(slider);
         row.appendChild(valueDisplay);
+        row.appendChild(Na__PmRows__BuildMoveSpeedBox(scene, onMoveSpeedChange));
         return row;
     }
     // ------------------------------------------------------------
 
 
-    // HELPER FUNCTION | Build the Transition Time Slider Row
+    // HELPER FUNCTION | Build the Layout-Editor-Only Checkbox Row
     // ------------------------------------------------------------
-    function Na__PmRows__BuildTransitionRow(scene, onChange) {
-        const currentMs = Number.isFinite(scene.PresentationMode__Scene__TransitionTimeToNextSceneMs)
-            ? scene.PresentationMode__Scene__TransitionTimeToNextSceneMs
-            : Na__PmRows__TRANSITION_DEFAULT;
+    // OFF BY DEFAULT, and off means the key is absent rather than false, so
+    // ticking this is the only thing that ever writes it.
+    //
+    // A drawing sheet needs framings a viewer should never be flown to - a
+    // facade square-on at a focal length that makes a building read as an
+    // elevation, a corner cropped tight enough to show a cill. Those are real
+    // scenes with real cameras and they belong in the project; they just do
+    // not belong in a strip of thumbnails somebody is browsing. Ticked, the
+    // scene keeps its place here and in the Layout Editor's viewport picker,
+    // stays reachable through Preview, and leaves the carousel.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildLayoutOnlyRow(scene, onChange) {
+        const isLayoutOnly = scene[Na__PresentationMode__ProjectJson__LAYOUT_ONLY_KEY] === true;
 
-        const row = Na__PmRows__BuildLabelledRow('Move Speed', 'na-pm-dev__slider-row');
+        const row = document.createElement('div');
+        row.className = 'na-pm-dev__row na-pm-dev__row--checkbox';
 
-        const slider = document.createElement('input');
-        slider.type      = 'range';
-        slider.className = 'na-pm-dev__slider';
-        slider.min       = Na__PmRows__TRANSITION_MIN_MS;
-        slider.max       = Na__PmRows__TRANSITION_MAX_MS;
-        slider.step      = '100';
-        slider.value     = currentMs;
+        const label = document.createElement('label');
+        label.className = 'na-pm-dev__checkbox-label';
+        label.title     = 'Keep this scene for drawing sheets only. It stays in this menu, stays available to the '
+                        + 'Layout Editor and can still be previewed - it just never appears in the viewer carousel.';
 
-        const valueDisplay = document.createElement('span');
-        valueDisplay.className   = 'na-pm-dev__value';
-        valueDisplay.textContent = `${(currentMs / 1000).toFixed(1)}s`;
+        const checkbox = document.createElement('input');
+        checkbox.type      = 'checkbox';
+        checkbox.className = 'na-pm-dev__checkbox';
+        checkbox.checked   = isLayoutOnly;
 
-        slider.addEventListener('input', () => {
-            const ms = parseInt(slider.value, 10);
-            valueDisplay.textContent = `${(ms / 1000).toFixed(1)}s`;             // <-- Live seconds readout
-            onChange(ms);
+        const text = document.createElement('span');
+        text.className   = 'na-pm-dev__checkbox-text';
+        text.textContent = 'Layout editor only - hide from the viewer carousel';
+
+        checkbox.addEventListener('change', () => {
+            onChange(checkbox.checked === true);
         });
 
-        row.appendChild(slider);
-        row.appendChild(valueDisplay);
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        row.appendChild(label);
         return row;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | Build the Thumbnail + Identity Block for an Open Row
+    // ------------------------------------------------------------
+    // The scene's own saved thumbnail, at the size a card would be if it had
+    // one. Two reasons it earns the space:
+    //
+    //  - It is the visual confirmation that the row you are editing is the
+    //    view you think it is, without flying anywhere to check.
+    //  - For a layout-editor-only scene it is the ONLY picture of that scene
+    //    anywhere in the app. Those scenes have no card, so without this the
+    //    panel was asking you to author a view you could not see.
+    //
+    // A scene with no thumbnail yet gets the same frame with a hint in it,
+    // rather than a broken image or a gap that reads as a layout bug.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildThumbBlock(scene, onPreview) {
+        const frame = document.createElement('button');
+        frame.type      = 'button';
+        frame.className = 'na-pm-dev__thumb';
+        frame.title     = 'Fly to this scene';
+
+        const thumbUrl = Na__PresentationMode__ProjectJson__ResolveThumbnailUrl(scene);
+
+        if (thumbUrl) {
+            const img = document.createElement('img');
+            img.className = 'na-pm-dev__thumb-img';
+            img.src       = thumbUrl;
+            img.alt       = scene.PresentationMode__Scene__Name || '';
+            img.loading   = 'lazy';
+            img.addEventListener('error', () => {
+                img.remove();                                                // <-- Stored path exists, image does not (yet)
+                frame.classList.add('na-pm-dev__thumb--empty');
+                frame.textContent = 'No image';
+            });
+            frame.appendChild(img);
+        } else {
+            frame.classList.add('na-pm-dev__thumb--empty');
+            frame.textContent = 'No image';
+        }
+
+        frame.addEventListener('click', () => { if (typeof onPreview === 'function') onPreview(); });
+        return frame;
     }
     // ------------------------------------------------------------
 
@@ -434,13 +581,18 @@
 // REGION | Scene Row Builder
 // -----------------------------------------------------------------------------
 
-    // HELPER FUNCTION | Build the Header Strip (drag handle, title, reorder arrows)
+    // HELPER FUNCTION | Build the Header Strip (drag handle, fold title, reorder arrows)
     // ------------------------------------------------------------
-    function Na__PmRows__BuildHeader(wrapper, scene, indexInGroup, countInGroup, handlers) {
-        const sceneId = scene.PresentationMode__Scene__Id;
+    // The title is the FOLD CONTROL for this row. Everything below the header
+    // is built but hidden until this row is the focused one.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildHeader(wrapper, scene, indexInGroup, countInGroup, handlers, isFocused) {
+        const sceneId      = scene.PresentationMode__Scene__Id;
+        const isLayoutOnly = scene[Na__PresentationMode__ProjectJson__LAYOUT_ONLY_KEY] === true;
 
         const header = document.createElement('div');
         header.className = 'na-pm-dev__scene-header';
+        header.setAttribute('aria-expanded', String(isFocused));
 
         // DRAG HANDLE | Only the handle arms dragging, so sliders stay usable
         const dragHandle = document.createElement('span');
@@ -452,10 +604,40 @@
         dragHandle.addEventListener('mouseup',   () => { wrapper.draggable = false; });
         header.appendChild(dragHandle);
 
+        // FOLD BUTTON | The title IS the control that opens this scene
+        const titleBtn = document.createElement('button');
+        titleBtn.type      = 'button';
+        titleBtn.className = 'na-pm-dev__scene-title-btn';
+        titleBtn.title     = 'Open this scene for editing (closes the others)';
+
+        const arrow = document.createElement('span');
+        arrow.className = 'na-pm-dev__scene-arrow';
+        arrow.innerHTML = '&#9662;';
+        arrow.setAttribute('aria-hidden', 'true');
+        titleBtn.appendChild(arrow);
+
         const titleEl = document.createElement('strong');
         titleEl.className   = 'na-pm-dev__scene-title';
         titleEl.textContent = `#${indexInGroup + 1} - ${scene.PresentationMode__Scene__Name || sceneId}`;
-        header.appendChild(titleEl);
+        titleBtn.appendChild(titleEl);
+
+        // LAYOUT-ONLY BADGE | Readable on a FOLDED row, which is the only place
+        // it can do its job: telling you at a glance which of twenty collapsed
+        // scenes are the ones the viewer never sees.
+        if (isLayoutOnly) {
+            const badge = document.createElement('span');
+            badge.className   = 'na-pm-dev__scene-badge';
+            badge.textContent = 'LAYOUT';
+            badge.title       = 'Layout editor only - hidden from the viewer carousel';
+            titleBtn.appendChild(badge);
+        }
+
+        titleBtn.addEventListener('click', () => {
+            if (typeof handlers.onFocusToggle === 'function') {
+                handlers.onFocusToggle(wrapper.classList.contains('is-open') ? null : sceneId);
+            }
+        });
+        header.appendChild(titleBtn);
 
         // MOVE UP / MOVE DOWN | Keyboard-reachable alternative to dragging
         const moveUpBtn = document.createElement('button');
@@ -488,30 +670,63 @@
 
     // HELPER FUNCTION | Build the Action Buttons Row
     // ------------------------------------------------------------
-    function Na__PmRows__BuildActions(scene, onMutate) {
+    // THREE BUTTONS, NOT FOUR. Update Camera, Regen Thumb and Save Scene were
+    // three presses for one gesture - "I have reframed this view" - and every
+    // ordering of those presses saved a slightly different subset. They are
+    // now one Update Scene that recaptures the pose, the FOV, the model layers
+    // and the navigation mode, re-renders the thumbnail and saves, matching
+    // TrueVision. Preview takes the place they left.
+    //
+    // A DRAWING SCENE'S CAMERA IS DERIVED, NOT CAPTURED. A floor plan or
+    // elevation scene holds the pose its own definition produces, and that
+    // pose is rewritten by the drawing's own editor whenever its datum or
+    // plane moves. Recapturing the live view into one would overwrite it with
+    // wherever the perspective camera happened to be parked. Blocked here and
+    // signposted, rather than left as a button that quietly does damage.
+    // ------------------------------------------------------------
+    function Na__PmRows__BuildActions(scene, onMutate, onPreview) {
         const actionsRow = document.createElement('div');
         actionsRow.className = 'na-pm-dev__actions';
 
-        const buttons = [
-            { label : 'Update Camera', action : 'update',   modifier : '',                        title : 'Overwrite this scene with the current camera position, rotation and FOV' },
-            { label : 'Regen Thumb',   action : 'thumb',    modifier : '',                        title : 'Render the current viewport as a WebP thumbnail for this scene' },
-            { label : 'Save Scene',    action : 'save-one', modifier : ' na-pm-dev__btn--primary', title : 'Save this scene and the whole presentation block to R2' },
-            { label : 'Delete',        action : 'delete',   modifier : ' na-pm-dev__btn--danger',  title : 'Delete this scene from the project' }
-        ];
-
-        // DRAWING SCENES have no camera to update: their pose is built by the
-        // drawing that owns them, so Update Camera is withheld (plan 5.4).
         const isDrawingScene = Boolean(scene.PresentationMode__Scene__FloorPlanId || scene.PresentationMode__Scene__ElevationId);
 
-        buttons.filter((spec) => !(isDrawingScene && spec.action === 'update')).forEach((spec) => {
-            const btn = document.createElement('button');
-            btn.type        = 'button';
-            btn.className   = 'na-pm-dev__btn' + spec.modifier;
-            btn.textContent = spec.label;
-            btn.title       = spec.title;
-            btn.addEventListener('click', () => onMutate(spec.action, scene));
-            actionsRow.appendChild(btn);
+        // PREVIEW | Go and look at it
+        const previewBtn = document.createElement('button');
+        previewBtn.type        = 'button';
+        previewBtn.className   = 'na-pm-dev__btn';
+        previewBtn.textContent = 'Preview';
+        previewBtn.title       = 'Fly the viewport to this scene without changing anything';
+        previewBtn.addEventListener('click', () => { if (typeof onPreview === 'function') onPreview(); });
+        actionsRow.appendChild(previewBtn);
+
+        // UPDATE SCENE | The single "update scene" gesture
+        const updateBtn = document.createElement('button');
+        updateBtn.type        = 'button';
+        updateBtn.className   = 'na-pm-dev__btn na-pm-dev__btn--primary';
+        updateBtn.textContent = 'Update Scene';
+        updateBtn.title       = 'Recapture the live view into this scene - camera, FOV, model layers, navigation mode and thumbnail - then save';
+
+        if (isDrawingScene) {
+            updateBtn.disabled = true;
+            updateBtn.title    = 'This is a drawing scene. Its camera is set by the drawing that owns it, '
+                               + 'not by the live 3D view - use that drawing\'s own panel instead.';
+        }
+
+        updateBtn.addEventListener('click', () => {
+            if (updateBtn.disabled) return;
+            onMutate('update', scene);                                       // <-- The editor confirms, captures and saves
         });
+        actionsRow.appendChild(updateBtn);
+
+        // DELETE | Given its own line so it is never the button beside the one
+        // that was aimed at.
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type        = 'button';
+        deleteBtn.className   = 'na-pm-dev__btn na-pm-dev__btn--danger na-pm-dev__btn--trailing';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.title       = 'Delete this scene from the project';
+        deleteBtn.addEventListener('click', () => onMutate('delete', scene));
+        actionsRow.appendChild(deleteBtn);
 
         return actionsRow;
     }
@@ -520,17 +735,44 @@
 
     // FUNCTION | Build a Single Scene Editor Row
     // ------------------------------------------------------------
+    // A FOLDED ROW IS A HEADER AND NOTHING ELSE. The body - every field and
+    // every button - is built but hidden until this row is the focused one.
+    // Building it regardless keeps the fold a pure class toggle, which is what
+    // lets a carousel click re-point the panel without a rebuild.
+    // ------------------------------------------------------------
     function Na__PresentationMode__DevMenu__BuildSceneRow(scene, indexInGroup, countInGroup, handlers) {
-        const sceneId  = scene.PresentationMode__Scene__Id;
-        const onMutate = (handlers && typeof handlers.onMutate === 'function') ? handlers.onMutate : () => {};
+        const sceneId      = scene.PresentationMode__Scene__Id;
+        const onMutate     = (handlers && typeof handlers.onMutate === 'function') ? handlers.onMutate : () => {};
         const safeHandlers = handlers || {};
+        const isFocused    = safeHandlers.focusedSceneId === sceneId;
+        const isLayoutOnly = scene[Na__PresentationMode__ProjectJson__LAYOUT_ONLY_KEY] === true;
 
         const wrapper = document.createElement('div');
         wrapper.className       = 'na-pm-dev__scene-row';
         wrapper.dataset.sceneId = sceneId;
+        wrapper.classList.toggle('is-open', isFocused);
+        wrapper.classList.toggle('na-pm-dev__scene-row--layout-only', isLayoutOnly);
+
+        // PREVIEW | Routed by the editor so a drawing scene still opens its own
+        // drawing mode, and a layout-editor-only scene stays reachable.
+        const previewScene = () => {
+            if (typeof safeHandlers.onPreview === 'function') safeHandlers.onPreview(sceneId);
+        };
 
         // HEADER STRIP
-        const titleEl = Na__PmRows__BuildHeader(wrapper, scene, indexInGroup, countInGroup, safeHandlers);
+        const titleEl = Na__PmRows__BuildHeader(wrapper, scene, indexInGroup, countInGroup, safeHandlers, isFocused);
+
+        // SCENE BODY | Everything the fold hides
+        const body = document.createElement('div');
+        body.className = 'na-pm-dev__scene-body';
+
+        // IDENTITY BLOCK | Thumbnail beside Name and Group
+        const identity = document.createElement('div');
+        identity.className = 'na-pm-dev__identity';
+        identity.appendChild(Na__PmRows__BuildThumbBlock(scene, previewScene));
+
+        const identityFields = document.createElement('div');
+        identityFields.className = 'na-pm-dev__identity-fields';
 
         // NAME INPUT | A DRAWING CARD'S NAME IS NOT THIS EDITOR'S TO KEEP.
         // A floor plan or elevation card is a view of a drawing record that
@@ -543,6 +785,9 @@
         const ownedByDrawing = Na__DrawRename__OwnsScene(scene);
 
         const nameRow   = Na__PmRows__BuildLabelledRow('Name');
+        const nameLabel = nameRow.querySelector('.na-pm-dev__label');
+        if (nameLabel) nameLabel.classList.add('na-pm-dev__label--inline');
+
         const nameInput = document.createElement('input');
         nameInput.type      = 'text';
         nameInput.className = 'na-pm-dev__input';
@@ -572,14 +817,86 @@
         });
 
         nameRow.appendChild(nameInput);
-        wrapper.appendChild(nameRow);
+        identityFields.appendChild(nameRow);
 
         // GROUP DROPDOWN | The only control that moves a scene between groups
         const groupRow = Na__PmRows__BuildGroupRow(scene, (newGroupId) => {
             scene.PresentationMode__Scene__GroupId = newGroupId;             // <-- Explicit assignment
             onMutate('regroup', scene);                                      // <-- Renumbers both groups, persists, rebuilds
         });
-        if (groupRow) wrapper.appendChild(groupRow);
+        if (groupRow) {
+            groupRow.querySelectorAll('.na-pm-dev__label').forEach(el => el.classList.add('na-pm-dev__label--inline'));
+            identityFields.appendChild(groupRow);
+        }
+
+        identity.appendChild(identityFields);
+        body.appendChild(identity);
+
+        // FOV SLIDER | With the move speed value box on the same line
+        body.appendChild(Na__PmRows__BuildFovRow(
+            scene,
+            (newFov) => {
+                if (!scene.PresentationMode__Scene__CameraPosition) {
+                    scene.PresentationMode__Scene__CameraPosition = {};
+                }
+                if (!scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc) {
+                    scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc = {};
+                }
+                scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc.Camera__DefaultMisc__Fov = newFov;
+                scene.PresentationMode__Scene__LensMm = Math.round(Na__PmRows__FovToFocalMm(newFov)); // <-- Keep lens mm in sync
+                if (safeHandlers.camera) {
+                    safeHandlers.camera.fov = newFov;
+                    safeHandlers.camera.updateProjectionMatrix();            // <-- Live preview in viewport
+                    Na__RenderLoop__RequestRender();                         // <-- Redraw frame so FOV change is visible
+                }
+            },
+            (newMs) => {
+                scene.PresentationMode__Scene__TransitionTimeToNextSceneMs = newMs;
+            }
+        ));
+
+        // ADVANCED SECTION | Collapsed by default to keep each row readable
+        // ------------------------------------------------------------
+        // Holds the settings that are set once and rarely revisited: exact
+        // position, navigation mode, easing curve and whether the viewer sees
+        // this scene at all. Open/closed state is remembered across panel
+        // rebuilds so a reorder or a save does not collapse the section the
+        // user is working in.
+        //
+        // There is deliberately NO layer-timing row here, unlike TrueVision.
+        // This app applies a scene's model layers instantly at the start of a
+        // flight on purpose - an instant cut reads better than a mid-flight
+        // pop-out - so a before/after choice would be a control with nothing
+        // to control.
+        // ------------------------------------------------------------
+        const advanced = document.createElement('div');
+        advanced.className = 'na-pm-dev__advanced';
+
+        const advancedToggle = document.createElement('button');
+        advancedToggle.type      = 'button';
+        advancedToggle.className = 'na-pm-dev__advanced-toggle';
+
+        const advancedBody = document.createElement('div');
+        advancedBody.className = 'na-pm-dev__advanced-body';
+
+        const isAdvancedOpen = Boolean(safeHandlers.isAdvancedOpen && safeHandlers.isAdvancedOpen(sceneId));
+        advancedBody.classList.toggle('is-open', isAdvancedOpen);
+        advancedToggle.setAttribute('aria-expanded', String(isAdvancedOpen));
+        advancedToggle.innerHTML = `Advanced <span class="na-pm-dev__advanced-arrow">&#9662;</span>`;
+
+        advancedToggle.addEventListener('click', () => {
+            const willOpen = !advancedBody.classList.contains('is-open');
+            advancedBody.classList.toggle('is-open', willOpen);
+            advancedToggle.setAttribute('aria-expanded', String(willOpen));
+            if (typeof safeHandlers.onAdvancedToggle === 'function') {
+                safeHandlers.onAdvancedToggle(sceneId, willOpen);            // <-- Remembered across rebuilds
+            }
+        });
+
+        // POSITION FIELD | 1-based within the group
+        advancedBody.appendChild(
+            Na__PmRows__BuildPositionRow(sceneId, indexInGroup, countInGroup, safeHandlers.onMoveToPosition)
+        );
 
         // NAV MODE SWITCH | Orbit is the absent key, so older scenes read as orbit
         const navModeRow = Na__PmRows__BuildNavigationModeRow(scene, (newMode) => {
@@ -589,41 +906,38 @@
                 delete scene[Na__PresentationMode__KEY__NAVIGATION_MODE];
             }
         });
-        if (navModeRow) wrapper.appendChild(navModeRow);
-
-        // FOV SLIDER | Live viewport preview through the injected camera
-        wrapper.appendChild(Na__PmRows__BuildFovRow(scene, (newFov) => {
-            if (!scene.PresentationMode__Scene__CameraPosition) {
-                scene.PresentationMode__Scene__CameraPosition = {};
-            }
-            if (!scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc) {
-                scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc = {};
-            }
-            scene.PresentationMode__Scene__CameraPosition.Camera__DefaultMisc.Camera__DefaultMisc__Fov = newFov;
-            scene.PresentationMode__Scene__LensMm = Math.round(Na__PmRows__FovToFocalMm(newFov)); // <-- Keep lens mm in sync
-            if (safeHandlers.camera) {
-                safeHandlers.camera.fov = newFov;
-                safeHandlers.camera.updateProjectionMatrix();                // <-- Live preview in viewport
-                Na__RenderLoop__RequestRender();                             // <-- Redraw frame so FOV change is visible
-            }
-        }));
-
-        // TRANSITION TIME SLIDER
-        wrapper.appendChild(Na__PmRows__BuildTransitionRow(scene, (newMs) => {
-            scene.PresentationMode__Scene__TransitionTimeToNextSceneMs = newMs;
-        }));
+        if (navModeRow) advancedBody.appendChild(navModeRow);
 
         // EASING DROPDOWN
-        wrapper.appendChild(Na__PmRows__BuildEasingRow(scene, (newEasing) => {
+        advancedBody.appendChild(Na__PmRows__BuildEasingRow(scene, (newEasing) => {
             scene.PresentationMode__Scene__TransitionEasing = newEasing;
         }));
 
-        // POSITION FIELD | 1-based within the group
-        wrapper.appendChild(Na__PmRows__BuildPositionRow(sceneId, indexInGroup, countInGroup, safeHandlers.onMoveToPosition));
+        // LAYOUT EDITOR ONLY TOGGLE
+        // ------------------------------------------------------------
+        // Saved the instant it is toggled, unlike its neighbours in Advanced.
+        // Those change how a scene BEHAVES when you arrive at it; this one
+        // changes whether the scene is in the carousel at all, and a flag
+        // whose whole effect is "the strip looks different now" has to make
+        // the strip look different now or you cannot tell it worked.
+        // ------------------------------------------------------------
+        advancedBody.appendChild(Na__PmRows__BuildLayoutOnlyRow(scene, (layoutOnly) => {
+            if (layoutOnly) {
+                scene[Na__PresentationMode__ProjectJson__LAYOUT_ONLY_KEY] = true;
+            } else {
+                delete scene[Na__PresentationMode__ProjectJson__LAYOUT_ONLY_KEY]; // <-- Omit key when default
+            }
+            onMutate('flag', scene);
+        }));
+
+        advanced.appendChild(advancedToggle);
+        advanced.appendChild(advancedBody);
+        body.appendChild(advanced);
 
         // ACTION BUTTONS
-        wrapper.appendChild(Na__PmRows__BuildActions(scene, onMutate));
+        body.appendChild(Na__PmRows__BuildActions(scene, onMutate, previewScene));
 
+        wrapper.appendChild(body);
         return wrapper;
     }
     // ------------------------------------------------------------

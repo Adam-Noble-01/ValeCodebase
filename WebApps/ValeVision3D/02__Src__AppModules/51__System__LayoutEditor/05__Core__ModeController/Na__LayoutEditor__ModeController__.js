@@ -173,7 +173,7 @@
 
     // MODULE IMPORTS | Config, Model, Surface, Navigation, Tools, Panels, Toolbar, Snapshots
     // ------------------------------------------------------------
-    import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel, Na__LeCfg__GetPanelSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeCfg__SetAppConfig, Na__LeCfg__Ready, Na__LeCfg__IsEnabled, Na__LeCfg__IsReadOnlyOnWeb, Na__LeCfg__GetLabel, Na__LeCfg__GetPanelSetup, Na__LeCfg__MatchKeyBinding } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
     import { Na__LeGrad__Ready } from '../35__System__DrawingTools/Na__LayoutEditor__GradientTool__.js';
     import { Na__LeDash__Ready } from '../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js';   // @delegate: ../35__System__DrawingTools/Na__LayoutEditor__LineStyleTool__.js
     import { Na__LeEdge__Ready } from '../25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js';
@@ -206,7 +206,7 @@
     import { Na__LePanelShapes__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js';
     import { Na__LePanelStyles__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js';
     import { Na__LePanelModelLayers__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js';
-    import { Na__LeToolbar__Mount } from '../40__Ui__Panels/Na__LayoutEditor__Toolbar__.js';
+    import { Na__LeToolbar__Mount, Na__LeToolbar__Save } from '../40__Ui__Panels/Na__LayoutEditor__Toolbar__.js';
     import { Na__LeMeasure__Mount } from '../30__System__SheetTools/Na__LayoutEditor__Measurements__.js';
     import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from '../25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js';
     import { Na__LeOsnap__Clear } from '../30__System__SheetTools/Na__LayoutEditor__Snapping__.js';
@@ -548,6 +548,49 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Ctrl+S Saves, From Anywhere in the Editor
+    // ------------------------------------------------------------
+    // WHY THIS IS NOT WITH THE OTHER EDIT CHORDS. Ctrl+Z, Ctrl+C and the rest
+    // are answered by the sheet's own keyboard, which is attached only while a
+    // drawing tab is up - on the specification it has stood down. Saving must
+    // work on both, so it is answered here, once, for as long as the editor is
+    // open, and the sheet's keyboard is left alone.
+    //
+    // WHAT IT COMMITS FIRST. Clicking the Save button blurs whatever had focus,
+    // and that blur is what commits a panel field: those report on 'change',
+    // which fires on blur or Enter and not on every keystroke. A keyboard
+    // shortcut blurs nothing, so a half-typed dimension offset would have been
+    // saved at its old value. Typing on the paper is committed the way the
+    // specification tab already commits it, and a focused field inside the
+    // editor is blurred - the same commit the button always got for free.
+    // Focus is not put back afterwards, because that is what the button does
+    // too and a field rebuilt by its own change event is gone by then.
+    //
+    // THE KEY IS ALWAYS TAKEN while an editable editor is open, even when the
+    // save is a no-op, because the alternative is the browser offering to save
+    // the page as a file over the top of a drawing. A read-only viewer keeps
+    // its own Ctrl+S: there is nothing there to save.
+    // ------------------------------------------------------------
+    function Na__LeMode__OnSaveKey(event) {
+        if (!Na__LeMode__Active || !Na__LeMode__IsEditable()) return;            // <-- Read-only sessions keep the browser's key
+        if (event.defaultPrevented || event.repeat) return;
+        const match = Na__LeCfg__MatchKeyBinding(event.key, {
+            Ctrl : event.ctrlKey, Shift : event.shiftKey, Alt : event.altKey, Meta : event.metaKey, Space : false
+        });
+        if (!match || match.action !== 'Edit__Save') return;
+
+        event.preventDefault();                                                  // <-- Never the browser's Save Page dialog over a sheet
+        event.stopPropagation();
+
+        Na__LeText__Commit();                                                    // <-- Typing on the paper is kept
+        const focused = document.activeElement;                                  // <-- A panel field reports on 'change': blur is what commits it
+        if (focused && focused !== document.body && Na__LeMode__Host && Na__LeMode__Host.contains(focused) && typeof focused.blur === 'function') focused.blur();
+
+        void Na__LeToolbar__Save();                                              // <-- The Save Sheets action itself, busy guard and toast included
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Show the Project Specification Tab
     // ------------------------------------------------------------
     function Na__LeMode__OpenSpecification(noteId) {
@@ -739,6 +782,8 @@
             Na__LeSpecLink__Initialize();                                    // <-- Bubble codes follow their notes
             Na__LeSnap__Initialize(context);
             window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
+            document.addEventListener('keydown', Na__LeMode__OnSaveKey, true);   // <-- Ctrl+S on the sheet and the specification alike; capture, so it is answered before the browser is told
+
             window.addEventListener(Na__LeTools__DEFAULTS_EVENT, (event) => { if (Na__LeMode__Active) Na__LePanels__Refresh(Na__LeMode__PanelFor(event.detail && event.detail.kind)); });   // <-- A palette sync: the panel showing the new-object settings redraws
             window.addEventListener(Na__LeDrop__CHANGED_EVENT, (event) => {     // <-- Picking a style says what is being matched, the same way a selection does
                 if (event.detail && event.detail.hasSource) Na__LeMode__FocusPanelFor(event.detail.kind);

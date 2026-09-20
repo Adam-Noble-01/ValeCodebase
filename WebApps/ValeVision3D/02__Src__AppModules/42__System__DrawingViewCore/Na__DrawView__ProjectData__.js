@@ -46,6 +46,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.2.0
+// - Common title block fields: CommonClient and CommonSiteAddress hold the
+//   client and the site address ONCE for the whole pack. They sit beside the
+//   client measuring grant because they are the same kind of thing - a fact
+//   about the project, not about any one sheet.
+//
 // 11-Sep-2026 - Version 1.1.0
 // - LayoutEditor__DrawingsData__LayoutModeEnabled: the per-project Layout Mode
 //   switch the localhost Dev menu sets (absent reads as off), with its getter and setter.
@@ -101,6 +107,8 @@
     const Na__DrawData__DESCRIPTION_KEY  = 'LayoutEditor__DrawingsData__Description';
     const Na__DrawData__VERSION_KEY      = 'LayoutEditor__DrawingsData__Version';
     const Na__DrawData__CLIENT_DIMS_KEY  = 'LayoutEditor__DrawingsData__ClientDimensionsEnabled';
+    const Na__DrawData__COMMON_CLIENT_KEY = 'LayoutEditor__DrawingsData__CommonClient';
+    const Na__DrawData__COMMON_SITE_KEY   = 'LayoutEditor__DrawingsData__CommonSiteAddress';
     const Na__DrawData__LAYOUT_MODE_KEY  = 'LayoutEditor__DrawingsData__LayoutModeEnabled';
     const Na__DrawData__FLOOR_PLANS_KEY  = 'LayoutEditor__DrawingsData__FloorPlans';
     const Na__DrawData__ELEVATIONS_KEY   = 'LayoutEditor__DrawingsData__Elevations';
@@ -251,6 +259,50 @@
     // ------------------------------------------------------------
     function Na__DrawData__SetClientDimensionsEnabled(enabled) {
         Na__DrawData__GetBlock()[Na__DrawData__CLIENT_DIMS_KEY] = (enabled === true);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | Common Title Block Fields
+// -----------------------------------------------------------------------------
+
+    // FUNCTION | The Client and Site Address the Whole Pack Shares
+    // ------------------------------------------------------------
+    // One project, one client, one site: every sheet in a pack prints the same
+    // two lines, and typing them per sheet is how a pack comes to disagree with
+    // itself over a trailing space or a county. A sheet that genuinely differs
+    // turns Common off and keeps its own.
+    // Absent reads as empty, never as null, so callers can always concatenate.
+    // ------------------------------------------------------------
+    function Na__DrawData__GetCommonFields() {
+        const block = Na__DrawData__GetBlock();
+        const read  = (key) => (typeof block[key] === 'string') ? block[key] : '';
+        return { Client : read(Na__DrawData__COMMON_CLIENT_KEY), SiteAddress : read(Na__DrawData__COMMON_SITE_KEY) };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Set One Common Field for the Whole Pack
+    // ------------------------------------------------------------
+    // Trimmed on the way in - a trailing space is invisible in the panel and
+    // shifts the printed cell - and an empty value removes the key rather than
+    // storing "", so an unanswered project reads the same as a new one. Neither
+    // key joins the skeleton or the normaliser for that reason: absent is a
+    // state, not a fault.
+    // ------------------------------------------------------------
+    function Na__DrawData__SetCommonField(key, value) {
+        const mapKey = (key === 'Client') ? Na__DrawData__COMMON_CLIENT_KEY
+                     : (key === 'SiteAddress') ? Na__DrawData__COMMON_SITE_KEY : null;
+        if (!mapKey) return false;
+        const block = Na__DrawData__GetBlock();
+        const text  = (typeof value === 'string') ? value.trim() : '';
+        if (text) block[mapKey] = text;
+        else delete block[mapKey];
         return true;
     }
     // ------------------------------------------------------------
@@ -430,6 +482,8 @@
         Na__DrawData__GetSheetsArray,
         Na__DrawData__GetClientDimensionsEnabled,
         Na__DrawData__SetClientDimensionsEnabled,
+        Na__DrawData__GetCommonFields,
+        Na__DrawData__SetCommonField,
         Na__DrawData__GetLayoutModeEnabled,
         Na__DrawData__SetLayoutModeEnabled,
         Na__DrawData__IsFloorPlanScene,

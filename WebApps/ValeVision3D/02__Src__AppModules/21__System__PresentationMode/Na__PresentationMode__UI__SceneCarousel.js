@@ -192,6 +192,24 @@
     const Na__PresentationMode__UI__CAROUSEL_ID        = 'naPresentationCarousel';         // <-- Root carousel container id
     const Na__PresentationMode__UI__GROUP_EVENT        = 'na-presentation-group-changed';   // <-- Shared with the group selector bar
     const Na__PresentationMode__UI__GROUP_BAR_ID       = 'naPmSceneGroupBar';              // <-- Sibling element this module must not destroy
+    // ------------------------------------------------------------
+
+
+    // MODULE CONSTANTS | Scene Selection Announcement
+    // ------------------------------------------------------------
+    // Raised whenever a scene becomes the SELECTED one, whatever moved it
+    // there - a card tap, a chevron, a number hotkey, the end of a flight.
+    // The Dev menu listens and folds itself down to that one scene, so the row
+    // you are looking at is the scene you are looking at.
+    //
+    // DELIBERATELY NOT 'na-pm-scene-activated', which this app already has and
+    // means something narrower: the camera transition module fires that one
+    // when a scene's POSE IS APPLIED, and the cross-section bindings and the
+    // export preview restore themselves on it. Reusing that name here would
+    // fire those twice per card click. Selection and application are two
+    // different moments and now have two different names.
+    // ------------------------------------------------------------
+    const Na__PresentationMode__UI__SCENE_SELECTED_EVENT = 'na-pm-scene-selected';
     const Na__PresentationMode__UI__WAKE_CLASS         = 'na-pm-carousel--wake';           // <-- Short-lived opaque flash while the carousel is in use
     const Na__PresentationMode__UI__WakeHoldMs         = 2600;                             // <-- Opaque hold: covers the scene camera flight plus a beat
     const Na__PresentationMode__UI__InitialRevealHoldMs = 4000;                            // <-- Longer opaque hold on first reveal after the loading screen
@@ -432,6 +450,10 @@
             activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             Na__PresentationMode__UI__PlayCardPopAnimation(activeCard);         // <-- Scale-up "pop" feedback, whatever triggered the switch
         }
+
+        window.dispatchEvent(new CustomEvent(Na__PresentationMode__UI__SCENE_SELECTED_EVENT, {
+            detail : { sceneId : sceneId }                                      // <-- Dev menu folds down to this scene
+        }));
     }
     // ------------------------------------------------------------
 
@@ -893,6 +915,32 @@
     }
     // ------------------------------------------------------------
 
+    // FUNCTION | Travel to a Scene by Id, Whether or Not It Has a Card (Public)
+    // ------------------------------------------------------------
+    // The Dev menu's Preview. It looks the scene up in the RAW config rather
+    // than the viewer's filtered set, because a layout-editor-only scene has
+    // to stay reachable from the panel that authors it - hiding a scene from
+    // the carousel must not mean you can no longer go and look at it.
+    //
+    // It routes through the same NavigateToScene as a card click, so a floor
+    // plan or elevation scene still opens its own drawing mode, and the strip
+    // re-aims onto the scene's group when the scene is one the viewer can see.
+    // ------------------------------------------------------------
+    function Na__PresentationMode__UI__GoToSceneById(sceneId) {
+        const config = Na__PresentationMode__ProjectJson__GetActiveConfig();
+        const scene  = Na__PresentationMode__ProjectJson__GetSceneById(config, sceneId);
+        if (!scene) return false;
+
+        const groupId = Na__PresentationMode__SceneGroups__IsEnabled()
+            ? Na__PresentationMode__SceneGroups__ResolveSceneGroupId(scene, config)
+            : null;
+        if (groupId) Na__PresentationMode__UI__SwitchToGroup(groupId);        // <-- No-op when already showing it
+
+        Na__PresentationMode__UI__NavigateToScene(scene, sceneId);
+        return true;
+    }
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -912,7 +960,9 @@
         Na__PresentationMode__UI__GoToNextScene,
         Na__PresentationMode__UI__GoToPreviousScene,
         Na__PresentationMode__UI__IsCarouselVisible,
-        Na__PresentationMode__UI__GoToSceneAtIndex
+        Na__PresentationMode__UI__GoToSceneAtIndex,
+        Na__PresentationMode__UI__GoToSceneById,
+        Na__PresentationMode__UI__SCENE_SELECTED_EVENT
     };
     // ------------------------------------------------------------
 

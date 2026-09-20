@@ -1,6 +1,633 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.66.1 - 20-Sep-2026 - Tighter Margins on the Specification Page
+### Authored in TrueVision3D v2.78.1; one of its three changes applies here
+
+**Overview**
+- Adam, on the rendered specification: "the margins could do with being a bit tighter again
+  because they're quite wide". ValeVision's page carried the identical `13mm 18mm 10mm`.
+- Now `12mm 14mm 9mm`. Measured against the real stylesheet in a browser, not estimated: the
+  A4 page is 210mm, side padding 14mm, and the text block goes **174mm to 182mm**.
+
+**Two of TrueVision v2.78.1's three changes do NOT apply here, and neither is a gap**
+- **The jsPDF alignment bug.** TrueVision's register letterhead ran 17.5pt off the end of its own
+  margin because `align: 'right'` ignores `setCharSpace` - jsPDF measures the string untracked.
+  Checked before assuming: **`setCharSpace` does not appear anywhere in ValeVision**, so the bug
+  cannot occur. The `align: 'center'` hits here are markup geometry for dimension and leader
+  text, not jsPDF text calls, and are unrelated. Nothing to fix; worth knowing the trap exists
+  if tracking is ever added.
+- **The brown palette.** TrueVision's drawing register measured 25 warm colours out of 26 - a
+  whole warm chrome palette carried in with the register, which is TrueVision-only. Audited the
+  whole of ValeVision's Layout Editor stylesheets the same way: 36 warm values, and every one is
+  semantic - warning ambers (`#d97706`, `#d99a1e`, `#8a5a00`, `#fff6e3`, `#f0d9a8`) and error
+  reds (`#e01b24`, `#dc2626`, `#c0392b`, `#cc3333`, `#9b3b3b`). No warm chrome, because the
+  register never came here. Nothing to recolour.
+- The register's own margin change (18mm to 14mm) has no counterpart either, for the same reason.
+
+**Corrected in both apps**
+- The comment first written beside this padding claimed 14mm "gives the text block 14mm more
+  line". Measuring it showed 8mm (174 to 182). Both copies now state the measured figures.
+
+**Tested**
+- ValeVision's REAL stylesheets loaded into an isolated static page and the computed values read
+  back: page 210mm, sides 14mm, top 12mm, bottom 9mm, text block 182mm. The v2.60.0 surfaces work
+  still holds in the same measurement - ground `rgb(216, 220, 223)` and the drawing sheet's
+  `rgba(0, 0, 0, 0.22) 0px 6px 26px` on the page.
+- NOT verified in the running app: the page needs Doous on the authoring route, and a token-level
+  change whose values were read directly did not warrant it.
+
+**Files**
+- `02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__Read__.css`.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.66.0 - 20-Sep-2026 - A Title Block Cell Is a Width in Millimetres, and a Drawing Says What It Is Issued For
+### Ported from TrueVision3D v2.79.0, re-measured in this app's own face
+
+**Overview**
+- Adam signed off TrueVision's re-proportioned title block and its new Status field ("Good, update
+  ValeVision to suit"). His brief there, of a strip that is the same code as this one: "there are
+  certain fields that are never going to need more size, so they kind of seem needlessly
+  oversized... The one thing that does need the space is the drawing name."
+- The strip's rows were RELATIVE SHARES of the width beside the logo, so every cell grew and shrank
+  with the paper. On A2 that made Client 76 mm for a surname and Drawing No. 49 mm for eight
+  characters; on A3 it left the Drawing Title 71 mm, which cuts an 88 mm title short.
+- A row's `WidthMm` is now paper millimetres, the same on every paper size, as the logo already
+  was: Client 36, Site Address 70, Drawing No. 24, then Rev, Scale, Date and Drawn By as one 28 mm
+  module, then the new Status at 30. The Drawing Title carries `Flex` and takes what the paper has
+  left: 278 mm on A2, 104 on A3.
+- NO VALUE IS CUT OFF WHILE ANOTHER CELL HAS ROOM TO SPARE. A cell whose text overruns grows out of
+  the paper's spare room first, then out of room other cells are not using. A pack whose values
+  fit keeps its dividers in the same place on every sheet. The arithmetic is a new module with no
+  imports, `Na__LayoutEditor__TitleBlock__Cells__`, byte for byte TrueVision's.
+
+**Status**
+- The last cell on the right: what the drawing is issued for. A box in the Sheet panel - the one
+  title block field that is picked rather than typed - offering "Not set" and twelve statuses in
+  the order a job moves through them, PRELIMINARY to SUPERSEDED, from
+  `LayoutEditor__TitleBlock__Statuses`. It writes `Sheet__Fields__Status` like Date or Drawn By:
+  one undo step, kept by the draft. Held per sheet.
+- Nothing prints until one is chosen (`StatusDefault` ships empty): a wrong status on an issued
+  drawing is worse than none. A status that has since left the config stays on its sheet.
+
+**Re-measured, not copied**
+- TrueVision chose its widths against Open Sans. This app prints in jsPDF's Helvetica by a recorded
+  decision, and Helvetica sets WIDER - so every width was measured again here before it was kept.
+  They all still hold: FOR BUILDING CONTROL needs 29.8 of the 30 mm Status cell (28.6 in Open Sans),
+  "1:50 & 1:100 @ ISO A2" 25.7 of the 28 mm module, Drawn By's default "Vale Garden Houses" 23.1.
+  The two apps therefore issue the same strip, which is what the config's own description asks for.
+
+**What did not come across, and why**
+- THE LOGO CELL. TrueVision widened its cell 34 to 40 mm because its mark is 31 mm wide and was
+  1.4 mm from the rules either side. The Vale mark is 24.75 mm wide in the same 34 mm cell and has
+  had 4.6 mm either side all along. Nothing to fix.
+- THE LOGO'S STAND-IN TEXT. TrueVision's read VALE GARDEN HOUSES, left behind by its port. Here
+  that is the office.
+- THE DRAWING REGISTER'S STATUS COLUMN and the history's register-saved field list: this app has no
+  register. `Na__LeCfg__StatusToStore` came across anyway, so anything that later writes a status
+  stores it the way the box does.
+- THE QR CELL TrueVision's strip gained the same evening is another session's work and is not
+  part of this port. None of its lines were replayed.
+
+**Fixed on the way, in both apps**
+- The QR cell's session found that on a strip too narrow even for its cells' text, the solver
+  scaled EVERY cell - so the date and the drawing number lost their ends along with the title. The
+  Flex cells are now cut first, down to the width of their own label, and the lot is scaled only if
+  that is not enough: a title cut short still says what the drawing is, where a date or a scale cut
+  short says something false. TrueVision has it as Cells 1.1.0; this app never shipped the older
+  behaviour. On A4 portrait the other values now lose a tenth of their cell where they lost over a
+  quarter.
+
+**Shared files, landed beside another session's port**
+- The Common title block fields (v2.65.0) were being ported into `SheetRecords__`, `Panel__Sheet__`
+  and `AppConfig__.json` the same morning. Footprints were exchanged by message, every shared edit
+  was a small anchored one, and both sets of hunks are on disk: Status goes through BuildFields'
+  ordinary stored-or-default path, below the pack's two fields, and the Status box sits in the
+  panel's rows loop between the Common switch and the project record's offer.
+
+**Files**
+- New: `10__Core__SheetSurface/Na__LayoutEditor__TitleBlock__Cells__.js`,
+  `80__Testing__PrototypeEnvironment/Na__Test__TitleBlockCells__.test.mjs` and `.html`.
+- `TitleBlock__Modern__` 1.2.0, `ConfigState__SheetSetup__` 1.3.0, `ConfigState__` 1.17.0,
+  `SheetRecords__` 1.14.0, `Panel__Sheet__` 1.4.0, `AppConfig__.json` (TitleBlock Rows, RowsNote,
+  Statuses, StatusDefault, two labels).
+
+**Checked**
+- `Na__Test__TitleBlockCells__.test.mjs`: 37 checks of the solver against a Vale sheet's measured
+  values, A1 to A4 portrait. `Na__Verify__Exports__` passes over 389 files.
+- `Na__Test__TitleBlockCells__.html` builds eight sheets through the REAL chrome builder and reads
+  the widths back off the drawn rules: nothing cut on A1, A2 or A3 - including the 88 mm title the
+  old shares cut on A3 - and only the title on A4 landscape.
+- In the app, real modules, on a scratch A3 sheet with every write refused (the guard logged none):
+  the strip drew 34 / 36 / 70 / 104 / 24 / 28 / 28 / 28 / 28 / 30; the box picked, undid, redid,
+  printed FOR BUILDING CONTROL whole without moving a cell, and "Not set" left no key behind. The
+  Common switch sat beside it and both worked.
+- NOT checked: a real PDF download. The PDF is painted from the same primitive list as the screen
+  and no painter was touched.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.65.0 - 20-Sep-2026 - One Client, One Site, One Place to Type Them
+### Ported from TrueVision3D v2.74.0, adapted where ValeVision has no admin system behind it
+
+**Overview**
+- Adam, on the TrueVision side: "it's very rare that you, on a project like this, use a different
+  client or address. In fact, I've never really actually done it in my career... otherwise, every
+  time you edit a different drawing or create a new drawing, it then means you have to laboriously
+  refetch and retype all this." Then, of this tree: "update ValeVision to suit."
+- The two lines every title block prints were stored per sheet. Type them on drawing one, type
+  them again on drawing two, and a pack ends up disagreeing with itself over a trailing space.
+
+**The pack owns the two fields, and each sheet carries a switch**
+- `LayoutEditor__DrawingsData__CommonClient` and `...__CommonSiteAddress` hold them ONCE, beside
+  `ClientDimensionsEnabled`, because they are the same kind of thing: a fact about the project,
+  not about any one sheet. Neither key joins `BuildSkeleton` or `Normalise` - absent is a state,
+  not a fault, and an empty value removes the key rather than storing `""`.
+- The Sheet panel gains one row above Client, reading **Common**, ticked. On, the Client and Site
+  Address boxes show the pack's values and typing into either retypes the whole pack. Off, this
+  one sheet keeps its own.
+- One switch covers both fields. A sheet that needs its own address almost always needs its own
+  client with it, and a row of half-linked fields is harder to read than it is useful. Turning it
+  off writes BOTH current values onto the sheet, so the override opens with the right address in
+  it and a word gets edited rather than a postcode retyped.
+- `Sheet__CommonFields` is written only when `false`. Absent reads as on, so every sheet ever
+  drawn joins the pack by default and only a deliberate opt-out is recorded.
+- `BuildFields` resolves the two keys from the pack when a sheet is on Common, ahead of anything
+  stored on the sheet. Everything downstream reads `Na__LeModel__GetFields`, so the one change
+  covers the screen and the PDF alike. The Status field that landed in this same file today is
+  untouched by it: `Na__LeCommon__KEYS` is those two names and nothing else.
+
+**Where the two facts come from, and where ValeVision differs**
+- TrueVision reads them out of the Noble Architecture Project Admin system - a quotation for the
+  site address, a project config for the client - over HTTP from the website, because that admin
+  system exists and owns those facts.
+- **ValeVision has no Project Admin system at all.** No quotation, no client record; a project.json
+  carries `projectCode`, `projectName`, `displayName` and paths, and nothing else. So
+  `Na__LayoutEditor__ProjectRecord__` here reads the active config instead - no fetch, no timeout,
+  no cache - looking for `clientDrawingName` and `siteAddress`.
+- Neither key is in any project.json today, so the record answers empty and a pack seeds from its
+  own sheets. Add the two keys to a project.json and the seed starts using them; nothing else has
+  to change. `clientDrawingName` takes `{ salutation, initial, surname }` composing to
+  "Mr J. Doous", or a plain string for a company or a joint surname.
+
+**Migration adopts the sheets, never the record**
+- A pack that has never had common values takes them from its own sheets: the value most of the
+  pack already agrees on, trimmed, wins; sheets that match lose their copies and stay on Common; a
+  sheet that genuinely differs is switched off Common and keeps exactly what it was printing.
+- It does NOT take them from the record. An issued drawing must not quietly change its printed
+  address because a project file spells a county differently. The record is *offered* instead -
+  one line under the fields with a **Use it** button, shown only when there is a real difference
+  and only on a sheet that is on Common, because a loose sheet would not show the change it makes.
+- Only a project with nothing typed anywhere seeds straight from the record. The seed marks the
+  model dirty and rides out with the next save; it never writes by itself.
+
+**Undo had to be taught where the two values live**
+- Carried over from the TrueVision fix, and it matters as much here. `Na__LeHist__OnChanged`
+  snapshots `JSON.stringify(sheet)`, and these two values are on the drawings block, not on a
+  sheet - so retyping the client on a sheet that is on Common changed not one byte of what the
+  history watches. It read that as "an announce that changed nothing", recorded no step, and left
+  Ctrl+Z to reach past it to an older, unrelated one.
+- A step now carries `common` beside `json`, the changed-nothing test reads both halves, and
+  `Apply` puts the pack's values back before the announcement. ValeVision's `Apply` already took
+  the step object rather than its json, so that half was free.
+
+**Checked**
+- 38 assertions against these modules and a real Vale project (3047 Doous), including the one that
+  matters: what each title block prints is unchanged by the migration apart from an invisible
+  trailing space. Two of them pin `Na__LeCommon__KEYS` to exactly Client and Site Address, so a
+  future field cannot be swept into the pack by accident.
+- In the app on 3047 with Layout Mode on: Common ticked, type the client and address once and the
+  title block prints them; untick, give the sheet its own address, Ctrl+Z puts the override back;
+  tick again and it rejoins. **Add a second sheet and it arrives already filled in** - which is
+  the whole point. Retype the pack there and the first sheet follows. No write was attempted at
+  any point and 3047's project.json on disk is byte-for-byte what it was.
+- Client's placeholder reads empty on this project rather than falling back to the project name.
+  That is not new: `common.Client || project` is identical to the old `project` whenever the pack
+  value is empty, so the fallback was already resolving to nothing here.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.64.0 - 20-Sep-2026 - Every Ctrl+Z Was Writing the Whole Project to R2
+### Authored in TrueVision3D v2.30.1 and ported today, closing the parity ledger's oldest open row
+
+**Overview**
+- Adam: "Port this to ValeVision too, so it functions the same." This is the row that had been
+  sitting in the parity ledger's *pending return trip* since 14-Sep, waiting for exactly that.
+- Undo and redo in this tree wrote the entire project to R2 a second and a half after every press,
+  whatever they undid - including the undo of a vector delete that had never written anything itself.
+
+**What was actually wrong**
+- `Na__LeHist__Apply` put a snapshot back through `Na__LeModel__UpdateSheet(sheet, {})`, which
+  announces `'sheet-updated'`. That reason is in `Na__LeAuto__STRUCTURAL`, because for a real edit
+  it means a rename, a paper size or a title block change - all of which should save.
+- A restore is not that edit. For drawing purposes a restore IS a sheet update (any part of the
+  sheet may have changed, and every listener must redraw), but for SAVING it is one step reversed,
+  and it should be judged by the reason that step was first announced with.
+- So the fault was not in the auto save's list. It was that an undo had no way of saying what it
+  was undoing.
+
+**The fix, in three places**
+- A step is now `{ json, reason }` rather than a bare JSON string - it carries the reason its change
+  was announced with. (The same-day SheetModel__Common work merged onto this, making it
+  `{ json, common, reason }`; the two ports are independent and met cleanly.)
+- `Na__LeModel__AnnounceRestore(sheet, restore)` normalises, marks dirty and announces
+  `'sheet-updated'` with `restore : { direction, stepReason }` riding on the detail. Undo passes the
+  reason of the step it is REVERSING; redo passes the reason of the step it is REPLAYING. The
+  `restore` field needed `Na__LeModel__Dispatch` and `Touch` to take a fourth argument.
+- `Na__LeAuto__CallsForSave(detail)` reads `restore.stepReason` when there is one and
+  `detail.reason` when there is not, then tests that against the structural list. A restore with no
+  step reason never saves.
+- `Na__LeHist__OnChanged` ignores any announcement carrying a restore, so the history can never
+  record its own. Belt and braces - `Restoring` already covered the synchronous path.
+
+**A dead line that came back to life**
+- `Na__LayoutEditor__SpecLinks__.js` already read `detail.restore` - copied from TrueVision during
+  the specification port, where the field exists. Here it never did, so the test was always falsy
+  and **spec-link propagation on undo has silently never run in this tree**. It works now, for free,
+  and matches TrueVision.
+
+**Not ported, and why**
+- The `'register-updated'` rewrite of kept steps needs a Drawing Register this tree does not have.
+  Not missing - not reachable.
+- TrueVision's `'margin'` step reason is NOT here, and this tree DOES announce `'margin'`
+  (`SheetModel__Sheets__` line ~350). So a notes-margin change is still not undoable in ValeVision.
+  That is TrueVision's History v1.4.0, a separate feature, and it is left alone deliberately rather
+  than swept in - but it is a real gap and it is now written down.
+
+**Tested** - real modules on project 3047, every non-GET refused, `/r2/read` let through
+- Through the real event wiring, six cases: a structural edit with no restore SAVED; undo of a
+  vector edit, redo of a vector edit, undo of a text move, and a restore with no stepReason all did
+  NOT save; undo of a rename STILL saved, exactly as the rename did.
+- End to end with the real API and the real history: creating a text annotation recorded a step and
+  wrote nothing; `Na__LeHist__Undo()` took the sheet from 1 annotation to 0 and wrote nothing;
+  `Na__LeHist__Redo()` took it back to 1 and wrote nothing. `CanRedo()` was still true after the
+  undo, which is the proof that the restore was not recorded as a fresh step.
+- Real rename -> saved; undo of it -> reverted to "Elevations Test" AND saved.
+- Afterwards: probe annotation deleted, sheet name intact, dirty cleared, draft key removed, layout
+  mode toggled back off. Zero write attempts in the entire session.
+- **A false negative worth recording.** The first run showed undo "saving" on alternate cases. The
+  toast observer was re-reading the SAME toast text when the element merely HID after the array had
+  been cleared - an attribute mutation on a still-populated node. Emptying `textContent` before each
+  case fixes it. In this harness a toast that looks like it fired twice probably fired once.
+
+**Files**
+- `07__Core__SheetData/Na__LayoutEditor__History__.js` (v1.4.0), `...__AutoSave__.js` (v1.3.0),
+  `...__SheetModel__State__.js` (restore on Dispatch and Touch),
+  `...__SheetModel__Sheets__.js` (`Na__LeModel__AnnounceRestore`), `...__SheetModel__.js` (re-export).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.63.0 - 19-Sep-2026 - One Scene Open at a Time, and the Carousel Decides Which
+### Authored in TrueVision3D v2.68.0 and ported the same day
+
+**Overview**
+- Adam, of TrueVision: "I keep accidentally editing and breaking the wrong scenes." Then, of this
+  app: "align it, but ValeVision does have some extra things. Just align as many of these as are
+  relevant and fix the same bugs if they exist."
+- Most of it ported. Two of the bugs turned out not to exist here, one of them because this app had
+  already done the right thing, and the extras all survived.
+
+**One scene open at a time, and the carousel picks which**
+- Every scene row folds to a header strip. Opening one closes the rest - a single focused id, not a
+  set, because two open rows is already two sets of Update Scene and Delete on screen.
+- `SetActiveScene` now announces `na-pm-scene-selected`, and the Dev menu answers by folding down to
+  that scene: its group opens, every other group closes, the row opens and scrolls into view. Pick a
+  card, press a chevron, hit a number key - the row in front of you is the view in front of you.
+- DELIBERATELY NOT `na-pm-scene-activated`, which this app already has and means something narrower:
+  the camera transition module fires it when a scene's POSE IS APPLIED, and the cross-section
+  bindings and the export preview restore themselves on it. Reusing that name would have fired both
+  of those twice per card click. Selection and application are two different moments.
+- The fold is a PURE DOM PASS. It never rebuilds the panel, because it fires twice on a card click
+  (on the press, and again when the flight lands) and a rebuild there would throw away a half-typed
+  name and re-fetch every thumbnail for the privilege.
+
+**Layout-editor-only scenes**
+- New per-scene flag, `PresentationMode__Scene__LayoutEditorOnly`, off by default and absent when
+  off. The scene stays in this menu, stays in the Layout Editor's viewport picker and stays
+  reachable through Preview; it leaves the viewer carousel.
+- ONE FILTER, in `GetSortedScenes`, is what hides them. That accessor is the viewer's entire scene
+  set, so the strip, the chevrons, the number hotkeys and the group counts all narrowed together and
+  the carousel module needed no flag check at all. `GetDefaultScene` filters too, so a hidden scene
+  is never the opening view, and `HasValidSavedScenes` filters, so a project whose every scene is
+  hidden gets no carousel rather than an empty one.
+
+**What else came across**
+- A thumbnail per open row, beside Name and Group. For a layout-editor-only scene it is the only
+  picture of that scene anywhere in the app.
+- Move Speed lost its slider and became a value box on the FOV line. Two sliders for two settings,
+  one of which is set once a project, was most of the height of every row.
+- An Advanced fold holding Position, Nav Mode, Easing and the new flag.
+- Update Scene confirms before it overwrites. Clear All Scenes requires the word CLEAR typed in
+  capitals, sits below a rule on its own, and commits nothing until that word matches.
+- The buttons became a two-column grid with a square + at the top of the panel beside Scene Groups,
+  doing the same job as Add Scene From Camera three screens below it.
+- Update All Thumbnails and Download All Images, which walk every scene in turn behind a progress
+  dialog with the app's own spinner, the scene's name, and a count.
+
+**Update Camera, Regen Thumb and Save Scene are now one button**
+- Three presses for one gesture - "I have reframed this view" - and every ordering of those presses
+  saved a slightly different subset. They are one Update Scene, as in TrueVision, and Preview took
+  the space they left.
+- IT NOW CAPTURES THE MODEL LAYERS TOO. This app has applied a scene's
+  `PresentationMode__Scene__ModelLayerVisibility` on arrival since v1.1.0, but nothing in this panel
+  ever WROTE it: the block could only be authored by hand or through the Video Studio, so a view
+  framed with the existing building switched off came back showing whatever the viewer happened to
+  have on. `Na__ModelToggle__CaptureVisibilityMap` was already exported and unused from here.
+
+**Two of TrueVision's bugs do not exist here, and one is because this app was already right**
+- TrueVision's batch walked each scene through an instant camera apply that also ENTERED the
+  scene's walk or fly mode: a pointer-lock request per interior scene, and a controller that keeps
+  stepping the camera under gravity after the pose is set, so the captured frame was never quite the
+  saved one. It needed a `skipNavigationMode` option to fix. **This app never had the fault**: its
+  instant apply places the camera, the orbit target and the model layers and stops, and enters a
+  navigation mode only on ARRIVAL of an animated flight. Nothing to port, and the TrueVision fix was
+  copying the behaviour here.
+- TrueVision's new modal had its Confirm and Cancel handlers built outside the `new Promise` they
+  called `close()` from. `close` is a property of `window`, so every press silently called
+  `window.close()`, the dialog stayed up and the caller waited at its `await` for as long as anyone
+  was willing to watch. The ported module carries the fixed version - built inside the executor,
+  closer named `Na__PmDevModal__SettleDialog` - and a note that nothing in it may be called `close`,
+  `open`, `name`, `status`, `focus`, `top` or `length` again.
+
+**What deliberately did NOT come across**
+- The per-scene layer-timing checkbox. TrueVision offers "switch layers before the camera move";
+  this app applies model layers instantly at the start of a flight ON PURPOSE, because an instant
+  cut reads better than a mid-flight pop-out. The control would have controlled nothing.
+- The shared `Na__AppUtils__ConfirmDialog` is untouched. It is a real modal here with its own markup
+  and is used across the Layout Editor and the drawing panels; it simply cannot ask for a typed word
+  or report progress, so the Dev menu got its own self-building one.
+
+**Extras preserved**
+- The Cross Section capture toggle and its per-scene binding, which now ride along inside the single
+  Update Scene rather than the old Save Scene.
+- `PresentationMode__Scene__IsDrawingApproach`, the `ModelLayerVisibility` key name, the Flask save
+  transport, `ImageExport__Config__*`, and the export panel's elevation overrides - the batch export
+  drives this app's own `RenderToCanvas`, which returns a canvas and encodes through the encoder that
+  throws rather than writing an empty PNG, instead of TrueVision's data URL.
+
+**Verified**
+- `Na__Verify__Exports__` and `Na__Verify__ModuleGraph__` both pass (386 files, 490 modules, only
+  the known vendored three-edge-projection issue).
+- Driven in the running app against 57079 Mordaunt's thirteen scenes: fold, single-open, refold,
+  cross-group focus and focus-follows-card; the layout-only flag removing a card from the strip and
+  putting it back, with the row keeping its place and a LAYOUT chip; both modals, including every
+  rejected spelling of CLEAR with the scene list untouched behind it; and the batch confirmation
+  reading the right count. Every write blocked at `fetch` throughout - nothing was saved.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.62.0 - 19-Sep-2026 - Closing Asks First Now, and Ctrl+S Blurs Before It Saves
+### Authored in TrueVision3D v2.67.0 and v2.73.0, ported the same day
+
+**Overview**
+- Adam closed the TrueVision PWA mid-layout and lost a session's work. Two things came out of it,
+  and both are here: a guard on closing with unsaved work, and Ctrl+S.
+- Content edits - viewports, text, dimensions, vectors - deliberately do not auto save, because a
+  drag session that wrote the project between moves would be unusable. The cost is an editor that
+  can hold an afternoon behind the Save Sheets button, and nothing asked before the window went.
+
+**The close guard**
+- A `beforeunload` handler in the auto save raises the browser's own leave-site question while
+  sheets are unsaved or the specification is unsynced. Nothing unsaved, no question: closing a
+  clean editor is still instant. Editable sessions only.
+- **The draft is flushed as the question goes up, not on the `pagehide` after it.** That is the half
+  that rescues work: `pagehide` is a promise rather than a guarantee, it is skipped on an abnormal
+  close, and by the time it would fire the decision is already made. Proven here - the draft key was
+  absent when the close began inside the 600 ms debounce, and the sheet was on disk the instant the
+  handler ran.
+- The wording is the browser's; every current one replaced the custom message years ago.
+  `returnValue` is still set for the browsers that read it.
+- `LayoutEditor__AutoSave__CloseGuardEnabled` turns it off.
+
+**Ctrl+S, and why it is not with the other Edit chords**
+- Ctrl+Z and Ctrl+C are answered by the sheet's own keyboard, which is attached only while a drawing
+  tab is up - on the specification it has stood down. Saving must work on both, so `Edit__Save` is
+  answered once by the mode controller, on `document` in the capture phase, for as long as the
+  editor is open. Capture also means the key is taken before the browser is told, which is the
+  point: Ctrl+S would otherwise offer to save the page as a file over a drawing.
+- **The blur is the trick.** Panel fields report on `'change'`, which fires on blur or Enter and not
+  on every keystroke. Clicking the Save button blurs whatever had focus, so the value being typed
+  committed on the way to the button; a keyboard shortcut blurs nothing. Without help, Ctrl+S
+  pressed mid-type would have saved the OLD value and left the new one in the box. So the handler
+  commits the paper's text tool, then blurs the focused field if it is inside the editor host.
+- Proven here: the active sheet's name read `Elevations Test` before the key and `VV CTRL-S PROBE`
+  immediately after, with the typed value never having fired a change of its own.
+
+**Divergences from TrueVision, both deliberate**
+- TrueVision also publishes `window.TrueVision__Pwa__HasUnsavedWork` so its PWA service worker
+  registrar holds an automatic update reload back while work is unsaved. ValeVision has no service
+  worker and nothing that reloads the page by itself, so there is no reader and the flag is not
+  published. `Na__LeAuto__HasUnsavedWork` is exported anyway, so a registrar arriving later needs no
+  change in the auto save.
+- TrueVision's editor initialises at app start; ValeVision lazy-loads the whole editor on first use
+  through `01__Core__Loader`. So both listeners register when the editor is first opened rather than
+  at boot. That is correct rather than a shortfall - before the editor is opened there is nothing to
+  guard and nothing to save - but it is worth knowing when testing: `Na__LeMode__Ready()` resolves
+  to `false` and every config value reads as its built-in default until `Na__LeLoad__Require()` has
+  run, which makes an untriggered editor look exactly like a broken one.
+
+**Still behind TrueVision in this file**
+- The auto save is at TrueVision's v1.1.0. Its v1.2.0 - judging an undo or redo by the step it
+  reverses, rather than writing the whole project to R2 on every Ctrl+Z - has not been ported. Not
+  related to this work, but it is the next thing `Na__LayoutEditor__AutoSave__.js` wants.
+
+**Tested**
+- Real modules on project 3047 with every non-GET refused. Close guard: clean not prevented, dirty
+  prevented, draft flushed on the way up, `CloseGuardEnabled` proven in both directions. Ctrl+S from
+  the stage: taken, and the save ran end to end (it reports "Project not found: 3047" - that test
+  project is not writable locally, which is the project, not the path). Bare S untouched;
+  Ctrl+Shift+S no match, so `ModifierMatch: Exact` holds.
+- Afterwards: sheet name restored, dirty cleared, draft key removed, layout mode toggled back off,
+  and zero write attempts in the whole session.
+
+**Files**
+- `07__Core__SheetData/Na__LayoutEditor__AutoSave__.js` (v1.2.0 - close guard region,
+  `Na__LeAuto__HasUnsavedWork`, `beforeunload`), `03__Core__Config/Na__LayoutEditor__ConfigState__EditorSetup__.js`
+  and `...AppConfig__.json` (`CloseGuardEnabled`), `03__Core__Config/Na__LayoutEditor__KeyMappings__.json`
+  (`Edit__Save`), `05__Core__ModeController/Na__LayoutEditor__ModeController__.js` (`Na__LeMode__OnSaveKey`),
+  `40__Ui__Panels/Na__LayoutEditor__Toolbar__.js` (`Na__LeToolbar__Save` exported).
+
+# ---------------------------------------------------------
+## ValeVision3D v2.61.0 - 19-Sep-2026 - The Number Was Typed Into the Name, and the Name Had No Way of Knowing
+### Authored in TrueVision3D v2.70.0 and ported the same day
+
+**Overview**
+- Adam, of TrueVision: "these strings applied to the tabs are gigantic and really cumbersome, and
+  I keep having to update numbers in multiple places." Then, of this app: "Make all of the same
+  changes to align ValeVision the same."
+- A sheet tab read whatever was in `Sheet__Name`, so the only way to see a drawing's number on one
+  was to type it into the name - and then to retype it whenever the drawing was renumbered. Two of
+  the four sheets in the live projects are still called "Drawing 1" and "Drawing 2", from the old
+  `Drawing {index}` default, which is the same fact from the other end: the name was carrying a
+  number that nothing kept true.
+- A tab now reads `D03 - Elevations`: the short code cut from the sheet's own drawing number, then
+  a short name that holds words and nothing else. The whole number moves to the tab's hover.
+
+**Where ValeVision's code comes from, and why that is not TrueVision's answer**
+- TrueVision has a Drawing Register that owns numbering; its tabs read what the register wrote.
+  THERE IS NO REGISTER HERE, and inventing one was not the job. The code is cut from the sheet's
+  own `Drawing No.` title block field instead - the field a person types - so the feature works
+  the moment a number is typed and lies dormant, showing the name alone, until one is.
+- That is the whole of the divergence, and it is a small one: both apps read a drawing number,
+  cut its last letter-led code, and compose `{code} - {name}`. What differs is who writes the
+  number.
+- CONSEQUENTLY THE SHEET PANEL KEEPS EVERY TITLE BLOCK ROW, `Drawing No.` included. TrueVision
+  hides that row because its register owns the number and a second place to type it would be a
+  second source of truth. Here the row IS the source of truth, so hiding it would leave no way to
+  give a drawing a number at all.
+
+**The rules, in one leaf with no imports**
+- `07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js` (`Na__LeCode__`) is new and holds three
+  pure string functions: the stored number, the short code cut from it, and the composed label.
+- IT HAS NO IMPORTS AT ALL, and that is the point. This app loads the Layout Editor lazily: the tab
+  strip and the Dev menu draw sheet names through `Na__LayoutEditor__Loader__` BEFORE the editor
+  bundle exists. Had the rules sat in the sheet records unit, as they do in TrueVision, the loader
+  would have had to pull the editor's config, layout and project-data modules into the first paint
+  to read a tab label - undoing the lazy load - or keep a second copy of the regex that could drift.
+- `Na__LayoutEditor__SheetRecords__` imports the leaf and re-exports all of it under the
+  `Na__LeRec__` names TrueVision uses, so a future port in either direction lands on the same call.
+- A TAB MUST NOT RENAME ITSELF WHEN THE BUNDLE ARRIVES. `Na__LeLoad__GetTabLabel` composes from the
+  leaf before the editor loads and `Na__LeModel__GetTabLabel` composes from the same leaf and the
+  same configured format after it, and `SheetViews` now carries each record's `Sheet__Fields` so the
+  pre-load side can read the number at all. Checked in the running app on the same three records:
+  the two answers are identical, character for character.
+
+**The name holds words**
+- `StripSheetCode` takes a code typed in front of a name back off, and `NormaliseSheet` runs it, so
+  `Sheet__Name` is the short name for every reader at once with no migration step.
+- ONLY A CODE OF THE SHEET'S OWN SERIES COMES OFF: the letters of its own short code, its digits,
+  then a dash, a colon, a middle dot or a bar. So "D24 - Site Plan" on a sheet numbered D10 loses
+  its stale D24, while "L2 - Second Floor" on a D series keeps every word, and "3D Images",
+  "1:50 Details" and "D1.5 Details" are never touched. No period is a separator, because D1.5 is a
+  real thing to call a drawing.
+- `CleanSheetName` runs the same strip BEFORE a rename is kept, so a code typed out of habit is
+  saved as the words alone rather than saved whole and stripped on the next read.
+
+**The rename trap TrueVision hit, which this app did not have but now cannot grow**
+- In TrueVision a rename wrote the new name over `Sheet__Fields__Title`, so shortening a tab would
+  have destroyed a typed title block title. ValeVision's `UpdateSheet` never did that, so there was
+  nothing to fix - but the two apps' renames now go through one function, `ApplySheetName`, with
+  the rule written down: a stored title that DIFFERS from the name is somebody's typing and
+  survives; one that MATCHES was only following the name and still does; one never stored follows
+  by itself through the default. All three checked in the running app.
+
+**No short code invented from a default**
+- A sheet with no drawing number falls back, for the TITLE BLOCK only, to the project code and its
+  place in the order - `3047-01`. That is not a drawing code, and a tab reading `01 - Elevations`
+  would be worse than the name alone, so the short code is cut from the STORED number only and such
+  a sheet shows its name by itself.
+- This is not hypothetical. A project code ending in letters would compose `Doous-01`, which reads
+  as a letter-led code: without this rule every tab of a never-numbered pack would have read
+  `Doous-01 - Elevations`. Verified in the app: `3047-01` gives no code, a typed `VV_T01_D07` gives
+  `D07`.
+
+**Also**
+- A new sheet is called "New Drawing", not "Drawing {index}" - in the config, in the config state
+  fallback and in the loader's own pre-load copy of that default. `D11 - Drawing 5` is two numbers
+  on one tab that need not agree, which is the fault this release exists to remove. `{index}` still
+  answers, so a configured format that uses it keeps working.
+- The tab rename field holds the short name alone, with the code standing in front of it as fixed
+  text inside a tab-shaped frame. The Sheet panel's Name row does the same, and its code is read on
+  every refresh - so typing a `Drawing No.` below changes the Name row, the tab, the toolbar and
+  the hover together, which is exactly what was checked.
+- The toolbar, the Dev menu sheet list and delete prompt, and the specification's go-to chips all
+  name a sheet through the tab label, so a drawing is called the same thing wherever it is met.
+
+**Not ported, deliberately**
+- TrueVision v2.71.0 splits a drawing number into project, phase and drawing code and composes a
+  Document ID from the three. It is built on the Drawing Register's phases and numbering series,
+  neither of which exists here, so porting it would mean inventing a register first. Its
+  `Sheet__Fields__DrawingNumber` still holds the drawing code, which is what this release reads, so
+  the two apps' tabs already agree on what a tab shows.
+- TrueVision v2.72.0's register styling has no register here to style. Its shared surface tokens
+  came over separately as v2.60.0.
+
+**Verification**
+- Named exports (386 files) and the module graph both pass, and all twelve changed modules parse as
+  ES modules. The config JSON parses.
+- The 37-case table that proved the rules in TrueVision was re-run against THIS app's leaf, lifted
+  out of the real file rather than a copy: all 37 pass identically.
+- In the running app on 127.0.0.1:8666, no-cache, with every non-GET fetch, XHR and beacon refused:
+  nothing attempted a write at any point, including the sheet deletes at the end. Three scratch
+  sheets covered a legacy name with its code typed in, a clean name with a number, and a sheet with
+  no number; the tabs read `D01 - Floor Plans`, `D03 - 3D Images` and `Elevations`, with the whole
+  number on the hover of the first two and none on the third. Typing `VV_T01_D07` into Drawing No.
+  moved that tab to `D07 - Elevations` and took the chip, the toolbar and the hover with it.
+- Cleaned up afterwards: every scratch sheet deleted, localStorage back to empty.
+- ONE THING THE PANE CANNOT SHOW: with the browser pane hidden the document never has focus, so
+  `input.blur()` fires no event and the rename field does not close on its own. Dispatching the
+  blur by hand ran the commit path and the tab came back correctly. That mechanism is unchanged by
+  this release.
+
+# ---------------------------------------------------------
+## ValeVision3D v2.60.0 - 19-Sep-2026 - Two Greys and Two Shadows for One Pack of Documents
+### Authored in TrueVision3D v2.72.0 and applied to both copies the same day
+
+**Overview**
+- Adam: "there must be so many different styles and copying lots of code... this is like three
+  completely different developers built it. The drawing editor UI is kind of the gold standard
+  that needs to be the same everywhere else because it's like three different user interfaces."
+- ValeVision carried the identical divergence, line for line, because both apps inherited it from
+  the same port. Each editor declared its own ground and its own paper shadow, by hand, in its own
+  file: the drawing editor `#d8dcdf` with `0 6px 26px rgba(0, 0, 0, 0.22)`, the specification
+  `#eef1f4` on a `#d7dde3` desk with `0 1px 3px .16, 0 8px 24px .1`.
+- Two greys and two shadows for one pack of documents, so moving between tabs read as moving
+  between applications.
+
+**One place that says what a surface is**
+- `10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css` is new and holds every ground,
+  paper, shadow, edge and chrome token the Layout Editor has. Its header says outright: never
+  write a ground colour or a paper shadow into a feature stylesheet again, add a token here and
+  use it from both places.
+- `--Na_Le_Stage` is `#d8dcdf`, the drawing editor's, exactly as Adam specified. The editor's own
+  `--Vale_LayoutGreyStage` is now an alias of it, so every existing use keeps working and there is
+  still only one value.
+- `--Na_Le_PaperShadow` is the drawing sheet's `0 6px 26px rgba(0, 0, 0, 0.22)` - the deeper of the
+  two, and the one that actually reads as a sheet lying on a desk.
+- The specification's page and its reader desk both resolve to the one stage; its pages wear the
+  one paper shadow.
+
+**Divergence from TrueVision: where the sheet is loaded**
+- TrueVision imports it from `Na__CoreUi__Styles__Index__.css`, which loads its editor styles with
+  the page. ValeVision links its editor stylesheets from `Na__LeLoad__STYLESHEETS` in
+  `Na__LayoutEditor__Loader__.js`, so it is first in that array instead. Same cascade position -
+  before `Styles__Main__` - by a different mechanism. The token file's header records this.
+
+**Tested**
+- ValeVision's REAL stylesheets were loaded into an isolated static page in a browser and the
+  computed values read back, rather than eyeballed: the specification's page and its reader desk
+  both `rgb(216, 220, 223)` = `#d8dcdf`, and the specification's page shadow
+  `rgba(0, 0, 0, 0.22) 0px 6px 26px 0px`, identical to `.na-le-paper`'s. Both assertions
+  (`allGroundsMatch`, `allPapersMatch`) true.
+- Audited afterwards: no editor ground and no paper shadow is hard-coded anywhere in ValeVision's
+  Layout Editor stylesheets. One `#eef1f4` survives on purpose and is neither - the segmented
+  control pill on the specification's white bar.
+- `Na__LayoutEditor__Loader__.js` syntax-checked clean as `.mjs`.
+- NOT verified in the running app: the tabs against the new ground. That needs Doous on the
+  authoring route, which was out of scope for a token change whose values were read directly.
+
+**Three changes from TrueVision v2.69.0-v2.72.0 that did NOT port, and why**
+- **Open Sans embedding in PDFs.** TrueVision v2.69.0 fixed `Na__LeRegPdf__BuildDocument` asking
+  `Na__LePdfFonts__Install` to embed cuts it had never asked to be fetched. ValeVision has no
+  `Na__LayoutEditor__PdfFonts__` module at all, so there is no such call to fix: its PDFs are set
+  in Helvetica by a recorded decision, not by a silent failure. The parity ledger already carries
+  this at its `SpecPdf` row. Porting it is a new feature - the module, a `Pdf` config block, the
+  TTF cuts and the wiring into PdfExporter and SpecPdf - not an alignment.
+- **The Drawing Register.** ValeVision has no `51__Feature__DrawingRegister`. The register PDF's
+  letterhead, its three code columns and its Edit-table column widths all live in a feature that
+  does not exist here.
+- **The Document ID schema** (per-sheet phase, composed `PS01_T02_D01`, the title block's
+  `Drawing No.` becoming `Document ID`). It depends on the register: the phase default and the
+  numbering series that `Na__LeRec__DrawingNumber` falls back to are both read from
+  `GetDrawingRegisterSetup`. ValeVision's drawing number is still built inline at
+  `Na__LayoutEditor__SheetRecords__.js` as `code + '-' + index` ("PS01-04"), which is a place in
+  the order, not a document code. Relabelling its title block to "Document ID" without the schema
+  behind it would print that same string under a name that promises more than it holds.
+
+**Files**
+- `02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css` (new).
+- `02__Src__AppModules/51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js`.
+- `02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css`.
+- `02__Src__AppModules/51__System__LayoutEditor/10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css`.
+- `02__Src__AppModules/51__System__LayoutEditor/50__Feature__Specification/Na__LayoutEditor__Styles__Specification__.css`.
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.59.1 - 19-Sep-2026 - The Floor Was Shading Itself
 ### Authored in TrueVision3D v2.68.1 and applied to both copies the same day
 

@@ -36,6 +36,26 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.3.0
+// - Ported from TrueVision3D 1.4.0 (v2.79.0). GetTitleBlockSetup reads the
+//   drawing statuses (TitleBlock Statuses) the Sheet panel offers, and
+//   StatusDefault, what a sheet prints until one is chosen. The built-in list
+//   stands in for a config that lists none.
+// - StatusToStore: what a sheet stores for a status chosen in the box. "Not
+//   set" is no key at all, unless the config names a default, where it has to
+//   be kept as an empty string or the default would print instead.
+// - The title block row fallbacks follow the shipped JSON: a row's WidthMm is
+//   paper millimetres now rather than a share of the strip, the Drawing Title
+//   carries Flex, and Status is the last row.
+// - NOT PORTED: TrueVision also brought its logo fallbacks into line with its
+//   JSON. The ones here (34 / 33 / 5.5 / 1.8 / 2.5) already match this app's.
+//
+// 19-Sep-2026 - Version 1.2.0
+// - The default sheet name's fallback follows the shipped JSON to "New
+//   Drawing": a tab carries the drawing's own short code now, so the default
+//   name no longer carries a number of its own. Ported from TrueVision3D
+//   v2.70.0.
+//
 // 18-Sep-2026 - Version 1.1.0
 // - GetViewportCacheSetup reads how many sheets the sheet surface keeps rendered
 //   while another sheet is shown (ViewportCache MaxParkedSheets; 0 switches the
@@ -68,10 +88,13 @@
     const Na__LeCfg__FALLBACKS = Object.freeze({
         paperSizes : { A4 : { Label : 'A4', WidthMm : 297, HeightMm : 210 }, A3 : { Label : 'A3', WidthMm : 420, HeightMm : 297 },
                        A2 : { Label : 'A2', WidthMm : 594, HeightMm : 420 }, A1 : { Label : 'A1', WidthMm : 841, HeightMm : 594 } },
-        rows       : [ { Key : 'Client', Label : 'Client', WidthMm : 28 }, { Key : 'SiteAddress', Label : 'Site Address', WidthMm : 44 },
-                       { Key : 'Title', Label : 'Drawing Title', WidthMm : 38 }, { Key : 'DrawingNumber', Label : 'Drawing No.', WidthMm : 18 },
-                       { Key : 'Revision', Label : 'Rev', WidthMm : 8 }, { Key : 'Scale', Label : 'Scale', WidthMm : 30 },
-                       { Key : 'Date', Label : 'Date', WidthMm : 16 }, { Key : 'DrawnBy', Label : 'Drawn By', WidthMm : 20 } ],
+        rows       : [ { Key : 'Client', Label : 'Client', WidthMm : 36 }, { Key : 'SiteAddress', Label : 'Site Address', WidthMm : 70 },   // <-- Paper millimetres now, not shares of the strip
+                       { Key : 'Title', Label : 'Drawing Title', WidthMm : 60, Flex : 1 }, { Key : 'DrawingNumber', Label : 'Drawing No.', WidthMm : 24 },   // <-- The title takes what the paper has left
+                       { Key : 'Revision', Label : 'Rev', WidthMm : 28 }, { Key : 'Scale', Label : 'Scale', WidthMm : 28 },   // <-- The four small cells are one module, sized for the widest thing any of them says
+                       { Key : 'Date', Label : 'Date', WidthMm : 28 }, { Key : 'DrawnBy', Label : 'Drawn By', WidthMm : 28 },
+                       { Key : 'Status', Label : 'Status', WidthMm : 30 } ],                                                 // <-- Last on the right: what the drawing is issued for
+        statuses   : [ 'PRELIMINARY', 'FOR INFORMATION', 'FOR COMMENT', 'FOR COORDINATION', 'FOR APPROVAL', 'FOR PLANNING',
+                       'FOR BUILDING CONTROL', 'FOR PRICING', 'FOR TENDER', 'FOR CONSTRUCTION', 'AS BUILT', 'SUPERSEDED' ],
         scales     : [ 20, 50, 100 ]
     });
     // ------------------------------------------------------------
@@ -94,7 +117,7 @@
             blockGapMm         : Na__LeCfg__Num('Sheet', 'BlockGapMm', 3),
             borderStrokeMm     : Na__LeCfg__Num('Sheet', 'BorderStrokeMm', 0.5),
             screenPixelsPerMm  : Na__LeCfg__Num('Sheet', 'ScreenPixelsPerMm', 3.2),
-            defaultNameFormat  : Na__LeCfg__Val('Sheet', 'DefaultNameFormat', 'Drawing {index}'),
+            defaultNameFormat  : Na__LeCfg__Val('Sheet', 'DefaultNameFormat', 'New Drawing'),   // <-- No number: the tab carries the drawing's own short code
             paperSizes         : (sizes && typeof sizes === 'object') ? sizes : Na__LeCfg__FALLBACKS.paperSizes
         };
     }
@@ -129,6 +152,27 @@
     // ------------------------------------------------------------
 
 
+    // HELPER FUNCTION | The Drawing Statuses the Status Box Offers
+    // ------------------------------------------------------------
+    // Trimmed, without blanks or repeats, in the order the config lists them -
+    // which is the order a job moves through them. A config that lists none
+    // falls back to the built-in list rather than offering an empty box.
+    // ------------------------------------------------------------
+    function Na__LeCfg__TitleBlockStatuses(configured) {
+        if (!Array.isArray(configured)) return Na__LeCfg__FALLBACKS.statuses.slice();
+        const seen = new Set();
+        const kept = [];
+        configured.forEach((status) => {
+            const text = (typeof status === 'string') ? status.trim() : '';
+            if (!text || seen.has(text)) return;
+            seen.add(text);
+            kept.push(text);
+        });
+        return kept.length ? kept : Na__LeCfg__FALLBACKS.statuses.slice();
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Get the Title Block Setup
     // ------------------------------------------------------------
     function Na__LeCfg__GetTitleBlockSetup() {
@@ -152,10 +196,29 @@
             fieldPaddingBottomMm: Na__LeCfg__Num('TitleBlock', 'FieldPaddingBottomMm', 0.8),
             labelOffsetTopMm    : Na__LeCfg__Num('TitleBlock', 'FieldLabelOffsetTopMm', 1.5),
             drawnByDefault      : Na__LeCfg__Val('TitleBlock', 'DrawnByDefault', 'Vale Garden Houses'),
+            statuses            : Na__LeCfg__TitleBlockStatuses(Na__LeCfg__Val('TitleBlock', 'Statuses', null)),   // <-- What the Sheet panel's Status box offers
+            statusDefault       : String(Na__LeCfg__Val('TitleBlock', 'StatusDefault', '') || '').trim(),          // <-- What a sheet prints until one is chosen; shipped empty, so no drawing claims a status nobody gave it
             rows                : Array.isArray(rows) ? rows : Na__LeCfg__FALLBACKS.rows,
             classicScanAssets   : (scans && typeof scans === 'object') ? scans : {},
             classicFieldAnchors : (anchors && typeof anchors === 'object') ? anchors : {}
         };
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | What a Sheet Stores for a Status Chosen in the Box (null = no key)
+    // ------------------------------------------------------------
+    // A chosen status is stored as chosen. "Not set" is normally no key at
+    // all, which keeps a sheet nobody has touched exactly as it was. But where
+    // the config names a StatusDefault, no key MEANS that default - so there
+    // "Not set" has to be stored, as an empty string, or choosing it would
+    // quietly print the default instead. One function, so anything else that
+    // comes to write a status (TrueVision's Drawing Register does) stores alike.
+    // ------------------------------------------------------------
+    function Na__LeCfg__StatusToStore(chosen) {
+        const text = String(chosen === undefined || chosen === null ? '' : chosen).trim();
+        if (text) return text;
+        return Na__LeCfg__GetTitleBlockSetup().statusDefault ? '' : null;
     }
     // ------------------------------------------------------------
 
@@ -348,6 +411,7 @@
         Na__LeCfg__GetSheetSetup,
         Na__LeCfg__GetStyleSetup,
         Na__LeCfg__GetTitleBlockSetup,
+        Na__LeCfg__StatusToStore,
         Na__LeCfg__GetScaleSetup,
         Na__LeCfg__GetViewportSetup,
         Na__LeCfg__GetRasterSetup,

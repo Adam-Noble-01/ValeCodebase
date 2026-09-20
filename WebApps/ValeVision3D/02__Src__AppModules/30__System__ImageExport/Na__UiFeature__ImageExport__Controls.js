@@ -143,6 +143,25 @@
     // ------------------------------------------------------------
 
 
+    // MODULE VARIABLES | Live Export Settings, Published for Batch Callers
+    // ------------------------------------------------------------
+    // Everything the Download Image button needs, captured at init and read
+    // back through getters so a caller always gets the CURRENT slider
+    // positions rather than whatever they were when the panel was built.
+    //
+    // WHY THIS EXISTS: the Presentation Scenes Dev menu can export every scene
+    // in the project one after another, and "at the current export settings"
+    // has to mean the same thing there as it does at the button - same
+    // resolution, same aspect, same enhance state, same supersampling, same
+    // projected-linework overlay. A second copy of that resolution logic is a
+    // second thing to forget to update. Null until the panel initialises,
+    // which is also the honest answer to "what would an export do right now"
+    // on a build where the export config failed to validate.
+    // ------------------------------------------------------------
+    let Na__UiFeature__ImageExport__LiveSettings = null;
+    // ------------------------------------------------------------
+
+
     // HELPER FUNCTION | Download Image from Blob via Object URL
     // ------------------------------------------------------------
     function Na__UiFeature__DownloadBlob(blob, filename) {
@@ -452,6 +471,30 @@
             updateLabels();
         });
 
+        // PUBLISH THE LIVE SETTINGS | For callers that export without the button
+        // ------------------------------------------------------------
+        // Getters, not a snapshot: the Presentation Scenes batch export reads
+        // this at the moment it runs, so it honours a slider the user moved
+        // after the panel was built. Defaults are already in place here -
+        // ratioIndex and resIndex were clamped out of the config above - so a
+        // caller that arrives before anything has been touched gets exactly
+        // what pressing Download Image would have given it.
+        // ------------------------------------------------------------
+        Na__UiFeature__ImageExport__LiveSettings = {
+            renderer               : renderer,
+            scene                  : scene,
+            camera                 : camera,
+            getRenderPipelineState : getRenderPipelineState,
+            postProcessConfig      : postProcessConfig,
+            exportConfig           : exportConfig,
+            getElevationOverrides  : getElevationOverrides,
+            GetIsCustomEnabled     : () => isCustomEnabled,
+            GetIsEnhanceEnabled    : () => isEnhanceEnabled,
+            GetRatioIndex          : () => ratioIndex,
+            GetResIndex            : () => resIndex
+        };
+        // ------------------------------------------------------------
+
 
         // ------------------------------------------------------------
         // SUB FUNCTION | Loading Overlay Controller (Shared by Both Handlers)
@@ -637,13 +680,74 @@
 
 
     // -------------------------------------------------------------------------
+    // REGION | Programmatic Export (batch callers)
+    // -------------------------------------------------------------------------
+
+    // FUNCTION | Are the Export Controls Live Yet?
+    // ------------------------------------------------------------
+    function Na__UiFeature__ImageExport__IsReady() {
+        return Na__UiFeature__ImageExport__LiveSettings !== null;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Render the Live View at the Current Export Settings
+    // ------------------------------------------------------------
+    // Exactly what Download Image renders, minus the overlay and the save.
+    // Returns { canvas, width, height, aspectRatio, wasClamped }, or null when
+    // the export panel never initialised - a caller that gets null should say
+    // so rather than invent a size, because "the settings" would then be a
+    // fiction.
+    //
+    // THROWS ON A FAILED RENDER, like the button's own path: the tiled
+    // renderer refuses rather than hand back a blank canvas, and a batch needs
+    // to hear that on the scene it happened to, not at the end.
+    // ------------------------------------------------------------
+    async function Na__UiFeature__ImageExport__RenderCurrentView(onStatus) {
+        const live = Na__UiFeature__ImageExport__LiveSettings;
+        if (!live) return null;
+
+        return Na__UiFeature__RenderToCanvas(
+            live.renderer, live.scene, live.camera, live.getRenderPipelineState,
+            live.postProcessConfig, live.GetIsEnhanceEnabled(),
+            live.GetIsCustomEnabled(), live.exportConfig,
+            live.GetRatioIndex(), live.GetResIndex(),
+            live.getElevationOverrides,
+            (typeof onStatus === 'function') ? onStatus : null
+        );
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Encode a Rendered Canvas and Save It to the User's Downloads
+    // ------------------------------------------------------------
+    // Shares the button's encoder, which THROWS on failure rather than saving
+    // an empty PNG, and the button's object-URL download path - so a batch
+    // save and a single save are the same gesture as far as the browser and
+    // the file system are concerned.
+    // ------------------------------------------------------------
+    async function Na__UiFeature__ImageExport__DownloadCanvas(canvas, filename) {
+        if (!canvas || !filename) return false;
+        const blob = await Na__UiFeature__CanvasToBlob(canvas);
+        Na__UiFeature__DownloadBlob(blob, filename);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+    // endregion --------------------------------------------------------------
+
+
+    // -------------------------------------------------------------------------
     // REGION | Module Exports
     // -------------------------------------------------------------------------
 
     // MODULE EXPORTS | Image Export API
     // ------------------------------------------------------------
     export {
-        Na__UiFeature__InitializeImageExportControls
+        Na__UiFeature__InitializeImageExportControls,
+        Na__UiFeature__ImageExport__IsReady,
+        Na__UiFeature__ImageExport__RenderCurrentView,
+        Na__UiFeature__ImageExport__DownloadCanvas
     };
     // ------------------------------------------------------------
 

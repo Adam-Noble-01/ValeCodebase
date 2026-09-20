@@ -53,6 +53,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.1.0
+// - Short tab names, ported from TrueVision3D v2.70.0. GetTabLabel, GetShortCode
+//   and GetDrawingNumber on the facade, composed from the dependency-free
+//   Na__LayoutEditor__DrawingCode__ leaf rather than from the editor, because
+//   the tab strip and the Dev menu name sheets before the editor is loaded - a
+//   tab that gained its code only once the bundle arrived would rename itself
+//   under the reader. SheetViews carries each record's Sheet__Fields for the
+//   same reason (read only, for the drawing number).
+// - The pre-load default name follows the config to "New Drawing".
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -77,6 +87,7 @@
         Na__DrawData__Save
     } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
     import { Na__DevGate__IsAuthoringEnabled } from '../../03__AppUtils/Na__AppUtils__DevGate__.js';
+    import { Na__LeCode__StoredNumber, Na__LeCode__ShortCode, Na__LeCode__Compose } from '../07__Core__SheetData/Na__LayoutEditor__DrawingCode__.js';   // <-- A leaf with no imports of its own: the tab code rules, without pulling the editor in
     import {
         Na__LeLoadScreen__Show,
         Na__LeLoadScreen__SetStatus,
@@ -112,6 +123,7 @@
     // in: a sheet split in two keeps its halves next to each other.
     // ------------------------------------------------------------
     const Na__LeLoad__STYLESHEETS = [
+        new URL('../10__Core__SheetSurface/Na__LayoutEditor__Styles__Surfaces__.css', import.meta.url).href,   // <-- FIRST: the ground, paper and shadow tokens every sheet below reads
         new URL('../10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__.css', import.meta.url).href,
         new URL('../10__Core__SheetSurface/Na__LayoutEditor__Styles__Main__Paper__.css', import.meta.url).href,
         new URL('../40__Ui__Panels/Na__LayoutEditor__Styles__Panels__.css', import.meta.url).href,
@@ -127,7 +139,7 @@
     const Na__LeLoad__MAIN_BLOCK       = 'LayoutEditor__Config';               // <-- Na__AppConfig__Main.json: the web read-only flag
     const Na__LeLoad__DEV_ITEM_ID      = 'naLayoutEditorDevItem';              // <-- index.html
     const Na__LeLoad__DEV_TOGGLE_ID    = 'naLayoutEditorDevToggle';
-    const Na__LeLoad__NAME_FORMAT      = 'Drawing {index}';                    // <-- The config's DefaultNameFormat, for a record without a name
+    const Na__LeLoad__NAME_FORMAT      = 'New Drawing';                        // <-- The config's DefaultNameFormat, for a record without a name
     const Na__LeLoad__PAPER_SIZE       = 'A3';                                 // <-- The config's DefaultPaperSize, for a record without one
     const Na__LeLoad__STATUS_FILES     = 'Fetching the drawing tools';
     const Na__LeLoad__STATUS_SETTINGS  = 'Reading the drawing settings';
@@ -177,6 +189,7 @@
             Sheet__Name      : (typeof record.Sheet__Name === 'string' && record.Sheet__Name) ? record.Sheet__Name : Na__LeLoad__NAME_FORMAT.split('{index}').join(String(index + 1)),
             Sheet__Order     : (typeof record.Sheet__Order === 'number' && Number.isFinite(record.Sheet__Order)) ? record.Sheet__Order : index + 1,
             Sheet__PaperSize : (typeof record.Sheet__PaperSize === 'string' && record.Sheet__PaperSize) ? record.Sheet__PaperSize : Na__LeLoad__PAPER_SIZE,
+            Sheet__Fields    : (record.Sheet__Fields && typeof record.Sheet__Fields === 'object') ? record.Sheet__Fields : {},   // <-- Read only, and only for the tab's drawing code: a tab must not change when the editor finishes loading
             Sheet__Viewports : Array.isArray(record.Sheet__Viewports) ? record.Sheet__Viewports : []
         })).sort((a, b) => a.Sheet__Order - b.Sheet__Order);
     }
@@ -485,6 +498,25 @@
     function Na__LeLoad__IsActive()       { return !!Na__LeLoad__Editor && Na__LeLoad__Editor.mode.Na__LeMode__IsActive(); }
     function Na__LeLoad__GetView()        { return Na__LeLoad__Editor ? Na__LeLoad__Editor.mode.Na__LeMode__GetView() : Na__LeLoad__VIEW_SHEET; }
     function Na__LeLoad__GetSheets()      { return Na__LeLoad__Editor ? Na__LeLoad__Editor.model.Na__LeModel__GetSheets() : Na__LeLoad__SheetViews(); }
+
+    // WHAT A SHEET IS CALLED ON SCREEN | The same answer loaded or not
+    // ------------------------------------------------------------
+    // "D03 - Elevations": the short code cut from the sheet's drawing number,
+    // then its name. Composed here from the leaf rather than handed to the
+    // editor, because the tab strip and the Dev menu draw sheet names before
+    // the editor exists - and a tab that gained its code only once the bundle
+    // arrived would rename itself under the reader. The loaded model's
+    // Na__LeModel__GetTabLabel composes the same two parts through the same
+    // configured format.
+    // ------------------------------------------------------------
+    function Na__LeLoad__GetTabLabel(sheet, name) {
+        if (!sheet) return '';
+        const words = (typeof name === 'string') ? name : sheet.Sheet__Name;
+        return Na__LeCode__Compose(Na__LeCode__ShortCode(Na__LeCode__StoredNumber(sheet)), words, Na__LeLoad__GetLabel('TabLabelFormat', '{code} - {name}'));
+    }
+    function Na__LeLoad__GetShortCode(sheet) { return Na__LeCode__ShortCode(Na__LeCode__StoredNumber(sheet)); }
+    function Na__LeLoad__GetDrawingNumber(sheet) { return Na__LeCode__StoredNumber(sheet); }
+    // ------------------------------------------------------------
     function Na__LeLoad__GetActiveSheet() { return Na__LeLoad__Editor ? Na__LeLoad__Editor.model.Na__LeModel__GetActiveSheet() : null; }
     function Na__LeLoad__IsDirty()        { return !!Na__LeLoad__Editor && Na__LeLoad__Editor.model.Na__LeModel__IsDirty(); }
     function Na__LeLoad__IsSpecDirty()    { return !!Na__LeLoad__Editor && Na__LeLoad__Editor.spec.Na__LeSpec__IsDirty(); }
@@ -669,6 +701,9 @@
         Na__LeLoad__IsActive,
         Na__LeLoad__GetView,
         Na__LeLoad__GetSheets,
+        Na__LeLoad__GetTabLabel,
+        Na__LeLoad__GetShortCode,
+        Na__LeLoad__GetDrawingNumber,
         Na__LeLoad__GetActiveSheet,
         Na__LeLoad__IsDirty,
         Na__LeLoad__IsSpecDirty,

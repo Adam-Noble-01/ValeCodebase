@@ -37,6 +37,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.2.0
+// - A go-to chip names its sheet as the tab does (Na__LeModel__GetTabLabel,
+//   "D03 - Elevations"), since a sheet's name alone no longer carries a number.
+//   Ported from TrueVision3D v2.70.0.
+//
 // 18-Sep-2026 - Version 1.1.0
 // - Ported from TrueVision3D: the Reload R2 and Reload Local buttons beside
 //   Retry and Sync - a fast, explicit re-read of either copy, for when a
@@ -72,6 +77,7 @@
         Na__LeSpec__CanReloadLocal
     } from './Na__LayoutEditor__SpecData__.js';
     import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__LeModel__GetTabLabel } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';   // <-- A sheet is named as its tab names it
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Specification Editor Units: State and Small Builders
@@ -272,11 +278,11 @@
         }
         if (usage.broken.length) {
             add('warn', Na__LeSpecEd__Count(usage.broken.length, 'SpecBrokenOne', '{count} bubble links to a note that was deleted. It keeps its last code.', 'SpecBrokenMany', '{count} bubbles link to notes that were deleted. They keep their last codes.'),
-                usage.broken.map((item) => Na__LeSpecEd__GotoChip(item.sheet.Sheet__Name + ' · ' + (item.leader.Leader__Text || '?'), item.sheet.Sheet__Id, item.leader.Leader__Id, true)));
+                usage.broken.map((item) => Na__LeSpecEd__GotoChip(Na__LeModel__GetTabLabel(item.sheet) + ' · ' + (item.leader.Leader__Text || '?'), item.sheet.Sheet__Id, item.leader.Leader__Id, true)));
         }
         if (usage.unknown.size) {
             const chips = [];
-            usage.unknown.forEach((list, code) => list.forEach((item) => chips.push(Na__LeSpecEd__GotoChip(item.sheet.Sheet__Name + ' · ' + code, item.sheet.Sheet__Id, item.leader.Leader__Id, false))));
+            usage.unknown.forEach((list, code) => list.forEach((item) => chips.push(Na__LeSpecEd__GotoChip(Na__LeModel__GetTabLabel(item.sheet) + ' · ' + code, item.sheet.Sheet__Id, item.leader.Leader__Id, false))));
             add('info', Na__LeCfg__FormatLabel('SpecUnknownAlert', 'Bubbles read codes no note has yet: {codes}.', { codes : Array.from(usage.unknown.keys()).join(', ') }), chips);
         }
         alerts.hidden = alerts.childElementCount === 0;

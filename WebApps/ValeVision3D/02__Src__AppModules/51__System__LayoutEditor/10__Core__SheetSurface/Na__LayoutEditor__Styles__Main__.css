@@ -24,7 +24,7 @@
 :root {
     --Vale_LayoutLeftPanelWidth        : 250px;                       /* <-- Seeded from config by the panel host */
     --Vale_LayoutRightPanelWidth       : 300px;
-    --Vale_LayoutGreyStage             : #d8dcdf;
+    --Vale_LayoutGreyStage             : var(--Na_Le_Stage);          /* <-- Kept as an alias; the value lives in Styles__Surfaces__ */
 }
 
 /* While the editor is on screen the 3D overlays stand aside. The canvas

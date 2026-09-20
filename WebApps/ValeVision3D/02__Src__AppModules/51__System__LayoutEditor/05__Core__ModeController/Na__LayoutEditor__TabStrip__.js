@@ -50,6 +50,17 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.5.0
+// - Short tabs, ported from TrueVision3D v2.70.0. A sheet tab reads
+//   "D03 - Elevations": the short code cut from the sheet's drawing number,
+//   then its short name (Na__LeLoad__GetTabLabel). The whole drawing number is
+//   on the tab's hover, where it costs no width. A sheet with no drawing number
+//   shows its name alone, exactly as every tab did before.
+// - The rename field holds the short name alone, with the code standing in
+//   front of it as fixed text: the code is the drawing's, not the name's.
+// - The rebuild signature carries the drawing number, so a renumber redraws
+//   the strip.
+//
 // 18-Sep-2026 - Version 1.4.0
 // - The tabs go into a scroller with an arrow at each end, shown only when they
 //   do not all fit. An arrow opens the tab before or after the open one by
@@ -102,6 +113,9 @@
         Na__LeLoad__VIEW_SPEC,
         Na__LeLoad__GetLabel,
         Na__LeLoad__GetSheets,
+        Na__LeLoad__GetTabLabel,
+        Na__LeLoad__GetShortCode,
+        Na__LeLoad__GetDrawingNumber,
         Na__LeLoad__GetActiveSheet,
         Na__LeLoad__IsActive,
         Na__LeLoad__IsEditable,
@@ -166,14 +180,23 @@
     // HELPER FUNCTION | Inline Rename of a Sheet Tab
     // ------------------------------------------------------------
     function Na__LeTabs__Rename(button, sheet) {
+        const frame = document.createElement('span');
+        frame.className = 'na-le-tabs__renaming';
+        const code = document.createElement('span');
+        code.className   = 'na-le-tabs__renaming-code';
+        code.textContent = Na__LeLoad__GetTabLabel(sheet, '');                    // <-- The label with no name in it: "D03 -"
+        code.hidden      = !Na__LeLoad__GetShortCode(sheet);
         const input = document.createElement('input');
         input.type      = 'text';
         input.className = 'na-le-tabs__rename';
         input.value     = sheet.Sheet__Name;
+        input.setAttribute('aria-label', Na__LeLoad__GetLabel('SheetNameTitle', 'Short tab name'));
         const commit = () => { const v = input.value.trim(); if (v && v !== sheet.Sheet__Name) void Na__LeLoad__UpdateSheet(sheet, { name : v }); else Na__LeTabs__Render(); };
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } if (e.key === 'Escape') { input.value = sheet.Sheet__Name; input.blur(); } e.stopPropagation(); });
         input.addEventListener('blur', commit);
-        button.replaceWith(input);
+        frame.appendChild(code);
+        frame.appendChild(input);
+        button.replaceWith(frame);
         input.focus(); input.select();
     }
     // ------------------------------------------------------------
@@ -283,10 +306,15 @@
 
         Na__LeTabs__Scroller.appendChild(Na__LeTabs__Tab(Na__LeLoad__GetLabel('ModelTab', '3D Model'), !isActive, () => Na__LeLoad__Leave(), 'na-le-tabs__tab--model'));
         sheets.forEach((sheet) => {
-            const tab = Na__LeTabs__Tab(sheet.Sheet__Name, !!active && active.Sheet__Id === sheet.Sheet__Id, () => { void Na__LeLoad__Enter(sheet.Sheet__Id); });   // <-- Loads the editor on the first click
+            const tab = Na__LeTabs__Tab(Na__LeLoad__GetTabLabel(sheet), !!active && active.Sheet__Id === sheet.Sheet__Id, () => { void Na__LeLoad__Enter(sheet.Sheet__Id); });   // <-- "D03 - Elevations"; loads the editor on the first click
             tab.setAttribute('data-na-sheet-id', sheet.Sheet__Id);
+            // THE WHOLE DRAWING NUMBER IS ON THE HOVER, not on the tab. A tab
+            // has room for "D03"; the project and task in front of it are the
+            // same on every tab of a pack, so there they are only width.
+            const hover = Na__LeLoad__GetDrawingNumber(sheet).trim();
+            if (hover) tab.title = hover;
             if (editable) {
-                tab.title = 'Double-click to rename, drag to reorder';
+                tab.title = (hover ? hover + '. ' : '') + Na__LeLoad__GetLabel('SheetTabEditTitle', 'Double-click to rename, drag to reorder');
                 tab.addEventListener('dblclick', () => Na__LeTabs__Rename(tab, sheet));
                 tab.draggable = true;
                 tab.addEventListener('dragstart', (e) => { Na__LeTabs__DragId = sheet.Sheet__Id; e.dataTransfer.effectAllowed = 'move'; });
@@ -338,7 +366,7 @@
         const sheets   = Na__LeLoad__GetSheets();
         const isActive = Na__LeLoad__IsActive();
         const active   = isActive ? Na__LeLoad__GetActiveSheet() : null;
-        return sheets.map((sheet) => sheet.Sheet__Id + '' + sheet.Sheet__Name).join('')
+        return sheets.map((sheet) => sheet.Sheet__Id + '' + Na__LeLoad__GetDrawingNumber(sheet) + '' + sheet.Sheet__Name).join('')   // <-- The number too: a renumber must redraw the tab
             + '|' + (active ? active.Sheet__Id : '') + '|' + isActive + '|' + Na__LeLoad__IsEditable() + '|' + Na__LeLoad__IsAvailable()
             + '|' + Na__LeLoad__GetView() + '|' + Na__LeLoad__IsSpecDirty();     // <-- The specification tab: open or not, synced or not
     }

@@ -34,6 +34,17 @@
         "D:/10_CoreLib__ValeCodebase/WebApps/ValeVision3D"
       ],
       "port": 8631
+    },
+    {
+      "name": "vv-pmscenes",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "D:/_ClaudeScratch/tv_pmscenes_nocache_server.py",
+        "8651",
+        "D:/06__Cloud__Repo__NaCodebase__Puiblic/ValeCodebase"
+      ],
+      "port": 8651,
+      "url": "http://app.localhost:8651"
     }
   ]
 }

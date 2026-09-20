@@ -33,6 +33,32 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.15.0
+// - Common title block fields. Client and Site Address resolve from the pack
+//   rather than the sheet: on a sheet that is on Common the pack value wins
+//   over anything stored on the sheet, so a stale copy can never print over
+//   what every other sheet is showing. Status and every other field keep the
+//   ordinary stored-or-default path. Ported from TrueVision3D (v2.74.0).
+//
+// 20-Sep-2026 - Version 1.14.0
+// - BuildFields answers Status: what the drawing is issued for, the last cell
+//   of the title block. Stored per sheet as Sheet__Fields__Status and read like
+//   every other field, so a sheet from before it prints the config's
+//   StatusDefault - shipped empty, so no drawing claims a status nobody chose.
+//   Ported from TrueVision3D 1.22.0 (v2.79.0).
+//
+// 19-Sep-2026 - Version 1.13.0
+// - Short tab names, ported from TrueVision3D v2.70.0. DrawingNumber answers a
+//   sheet's number (stored, else the project default) without building every
+//   title block field; SheetShortCode is the "D03" a tab carries, cut from the
+//   STORED number alone. ShortCode and StripSheetCode are re-exported from the
+//   new Na__LayoutEditor__DrawingCode__ leaf, which the loader facade also
+//   imports - the tab strip draws sheet names before this unit is loaded.
+// - NormaliseSheet strips a drawing code typed in front of a name, so
+//   Sheet__Name holds the words and the Drawing No. holds the number. A stored
+//   Title that was only ever a copy of the name is stripped with it; a title
+//   typed separately is never touched.
+//
 // 14-Sep-2026 - Version 1.12.0
 // - Viewport__ImageZoom on the viewport record: how large a 3D viewport's
 //   picture is drawn, as a multiple of Viewport__ImageMm. Held inside the
@@ -164,6 +190,12 @@
     } from '../25__System__RenderStyles/Na__LayoutEditor__EdgeStyles__.js';
     import { Na__LeComposite__FIELD, Na__LeComposite__Row, Na__LeComposite__Clamp } from '../25__System__RenderStyles/Na__LayoutEditor__RenderComposites__.js';   // <-- A leaf too: it imports nothing
     import { Na__DrawData__GetProjectCode } from '../../42__System__DrawingViewCore/Na__DrawView__ProjectData__.js';
+    import { Na__LeCommon__Get, Na__LeCommon__Uses, Na__LeCommon__KEYS } from './Na__LayoutEditor__SheetModel__Common__.js';   // <-- A leaf: it reaches the drawings block and the project record, never back here
+    import {
+        Na__LeCode__StoredNumber,
+        Na__LeCode__ShortCode,
+        Na__LeCode__StripSheetCode
+    } from './Na__LayoutEditor__DrawingCode__.js';                               // <-- The tab code rules, in a leaf the loader can import before the editor exists
     import { Na__PresentationMode__ProjectJson__GetActiveConfig } from '../../21__System__PresentationMode/Na__PresentationMode__ProjectJson__SceneData.js';
     // ------------------------------------------------------------
 
@@ -616,6 +648,14 @@
         if (typeof sheet.Sheet__Name !== 'string' || !sheet.Sheet__Name) {
             sheet.Sheet__Name = Na__LeCfg__FormatLabel('SheetNameFormat', sheetSetup.defaultNameFormat, { index : index + 1 });
         }
+
+        // A DRAWING CODE TYPED INTO THE NAME COMES OFF | The tab reads it from the drawing number instead
+        const typedFields = (sheet.Sheet__Fields && typeof sheet.Sheet__Fields === 'object') ? sheet.Sheet__Fields : null;
+        const bareName    = Na__LeRec__StripSheetCode(sheet.Sheet__Name, typedFields ? typedFields.Sheet__Fields__DrawingNumber : '');
+        if (bareName !== sheet.Sheet__Name) {
+            if (typedFields && typedFields.Sheet__Fields__Title === sheet.Sheet__Name) typedFields.Sheet__Fields__Title = bareName;   // <-- A title that was only ever the name goes with it; one typed separately stays
+            sheet.Sheet__Name = bareName;
+        }
         sheet.Sheet__Order = Na__LeRec__Num(sheet.Sheet__Order, index + 1);
         if (!sheet.Sheet__PaperSize || !sheetSetup.paperSizes[sheet.Sheet__PaperSize]) sheet.Sheet__PaperSize = sheetSetup.defaultPaperSize;
         if (sheet.Sheet__Orientation !== 'portrait') sheet.Sheet__Orientation = 'landscape';
@@ -678,15 +718,57 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | A Sheet's Drawing Number, and the Short Code Cut From It
+    // ------------------------------------------------------------
+    // TWO DIFFERENT QUESTIONS, and they must not be confused. DrawingNumber is
+    // what the TITLE BLOCK prints: the number stored on the sheet, else the
+    // project default, so the cell is never blank. ShortCode is what a TAB
+    // shows, and it is cut from the STORED number alone - the project default
+    // is the project code and a place in the order, which is not a drawing
+    // code and must not become one on a tab.
+    // ------------------------------------------------------------
+    function Na__LeRec__DrawingNumber(sheet) {
+        const stored = Na__LeCode__StoredNumber(sheet);
+        if (stored) return stored;
+        const code = Na__DrawData__GetProjectCode() || '';
+        return (code ? code + '-' : '') + String(sheet ? sheet.Sheet__Order : 1).padStart(2, '0');
+    }
+    function Na__LeRec__SheetShortCode(sheet) {
+        return Na__LeCode__ShortCode(Na__LeCode__StoredNumber(sheet));
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | The Tab Code Rules, Re-Exported Under This Unit's Own Names
+    // ------------------------------------------------------------
+    // Na__LayoutEditor__DrawingCode__ holds them, so the loader facade can read
+    // them before the editor is loaded. Named here as TrueVision names them, so
+    // a port in either direction lands on the same call.
+    // ------------------------------------------------------------
+    function Na__LeRec__ShortCode(drawingNumber) {
+        return Na__LeCode__ShortCode(drawingNumber);
+    }
+    function Na__LeRec__StripSheetCode(name, drawingNumber) {
+        return Na__LeCode__StripSheetCode(name, drawingNumber);
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | The Title Block Fields With Project Defaults Filled In
+    // ------------------------------------------------------------
+    // CLIENT AND SITE ADDRESS ARE THE TWO EXCEPTIONS. They belong to the whole
+    // pack, not to a sheet, so on a sheet that is on Common the pack's value
+    // wins over anything stored on the sheet - a stale copy left by an older
+    // build, or by a path that wrote one before the switch was turned back on,
+    // can never print over the value every other sheet is showing.
     // ------------------------------------------------------------
     function Na__LeRec__BuildFields(sheet) {
         const setup   = Na__LeCfg__GetTitleBlockSetup();
         const stored  = (sheet && sheet.Sheet__Fields) || {};
         const config  = Na__PresentationMode__ProjectJson__GetActiveConfig();
         const project = (config && (config.projectName || config.displayName)) || '';
-        const code    = Na__DrawData__GetProjectCode() || '';
-        const index   = sheet ? sheet.Sheet__Order : 1;
+        const common   = Na__LeCommon__Get();
+        const onCommon = Na__LeCommon__Uses(sheet);
         const scales  = (sheet ? sheet.Sheet__Viewports : []).filter((v) => v.Viewport__Kind === Na__LeRec__KIND_2D).map((v) => v.Viewport__ScaleDenominator);
         const paper   = Na__LeLayout__PaperSizeMm(sheet ? sheet.Sheet__PaperSize : null, sheet ? sheet.Sheet__Orientation : null);   // <-- Resolved, not read raw: an unset or unknown size falls back to the default paper the sheet actually prints on
         const today   = new Date();
@@ -694,17 +776,19 @@
             [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ][today.getMonth()] + ' ' + today.getFullYear();
 
         const defaults = {
-            Client        : project,
-            SiteAddress   : '',
+            Client        : common.Client || project,                            // <-- The pack's client; the project name only until one is known
+            SiteAddress   : common.SiteAddress,
             Title         : sheet ? sheet.Sheet__Name : '',
-            DrawingNumber : (code ? code + '-' : '') + String(index).padStart(2, '0'),
+            DrawingNumber : Na__LeRec__DrawingNumber(sheet),                     // <-- Stored, else the project default; the same reading the tab's code is cut from
             Revision      : 'A',
             Scale         : Na__LeScale__SheetLabel(scales, paper.Label),
             Date          : dateText,
-            DrawnBy       : setup.drawnByDefault
+            DrawnBy       : setup.drawnByDefault,
+            Status        : setup.statusDefault                                  // <-- Empty as shipped: a drawing claims no status until one is chosen for it
         };
         const fields = {};
         Object.keys(defaults).forEach((key) => {
+            if (onCommon && Na__LeCommon__KEYS.indexOf(key) !== -1) { fields[key] = defaults[key]; return; }   // <-- The pack's, whatever the sheet happens to store
             const value = stored['Sheet__Fields__' + key];
             fields[key] = (typeof value === 'string') ? value : defaults[key];
         });
@@ -741,6 +825,10 @@
         Na__LeRec__NormaliseGroup,
         Na__LeRec__NormaliseSheet,
         Na__LeRec__DefaultLayerId,
+        Na__LeRec__DrawingNumber,
+        Na__LeRec__SheetShortCode,
+        Na__LeRec__ShortCode,
+        Na__LeRec__StripSheetCode,
         Na__LeRec__BuildFields
     };
     // ------------------------------------------------------------

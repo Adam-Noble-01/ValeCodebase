@@ -38,6 +38,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 19-Sep-2026 - Version 1.1.0
+// - A where-it-is-used chip names its sheet as the tab does
+//   (Na__LeModel__GetTabLabel). Ported from TrueVision3D v2.70.0.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SpecEditor__.js; the code moved verbatim.
 //
@@ -51,6 +55,7 @@
     // MODULE IMPORTS | Config
     // ------------------------------------------------------------
     import { Na__LeCfg__GetLabel, Na__LeCfg__FormatLabel, Na__LeCfg__GetSpecificationSetup } from '../03__Core__Config/Na__LayoutEditor__ConfigState__.js';
+    import { Na__LeModel__GetTabLabel } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';   // <-- A sheet is named as its tab names it
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Specification Editor Units: State and Small Builders
@@ -219,7 +224,7 @@
             const links   = Na__LeSpecEd__El('div', 'na-le-spec-note__links');
             const bySheet = new Map();
             linked.forEach((item) => { if (!bySheet.has(item.sheet.Sheet__Id)) bySheet.set(item.sheet.Sheet__Id, []); bySheet.get(item.sheet.Sheet__Id).push(item); });
-            bySheet.forEach((items) => links.appendChild(Na__LeSpecEd__GotoChip(items[0].sheet.Sheet__Name + (items.length > 1 ? ' ×' + items.length : ''), items[0].sheet.Sheet__Id, items[0].leader.Leader__Id, false)));
+            bySheet.forEach((items) => links.appendChild(Na__LeSpecEd__GotoChip(Na__LeModel__GetTabLabel(items[0].sheet) + (items.length > 1 ? ' ×' + items.length : ''), items[0].sheet.Sheet__Id, items[0].leader.Leader__Id, false)));
             if (matching.length) {
                 links.appendChild(Na__LeSpecEd__El('span', 'na-le-spec-note__matching', Na__LeSpecEd__Count(matching.length, 'SpecMatchingOne', '{count} unlinked bubble reads this code', 'SpecMatchingMany', '{count} unlinked bubbles read this code')));
                 if (editable) {

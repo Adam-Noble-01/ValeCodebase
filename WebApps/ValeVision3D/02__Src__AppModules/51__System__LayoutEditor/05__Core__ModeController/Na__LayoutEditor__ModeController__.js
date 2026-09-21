@@ -54,6 +54,16 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.18.0
+// - THE RIGHT COLUMN HAS TWO TABS, Properties and Scrapbook, ported from
+//   TrueVision3D. Properties is registered first, so every section that names
+//   no tab is on it; the Scrapbook tab holds the three libraries - Standard
+//   (empty in this app, so hidden), Parametric and Custom - and a selected
+//   parametric element's own section heads Properties, shown only while one is
+//   selected.
+// - Na__LeViewId__Initialize: unnamed elevation viewports are named from the
+//   project's north direction (47__System__NorthDirection) once it is set.
+//
 // 18-Sep-2026 - Version 1.17.0
 // - The web viewer, ported from TrueVision3D. A session that cannot author
 //   gets a different shell, not a disabled one: no panel columns, no toolbar
@@ -187,14 +197,16 @@
         Na__LeModel__GetActiveSheet,
         Na__LeModel__SetActiveSheetId,
         Na__LeModel__SetSelection,
-        Na__LeModel__GetSelectionItems
+        Na__LeModel__GetSelectionItems,
+        Na__LeModel__GetViewports
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeSurface__Mount, Na__LeSurface__SetSheet, Na__LeSurface__Refresh, Na__LeSurface__SetZoom, Na__LeSurface__GetZoom } from '../10__Core__SheetSurface/Na__LayoutEditor__SheetSurface__.js';
     import { Na__LeNav__Fit } from '../10__Core__SheetSurface/Na__LayoutEditor__Navigation__.js';
+    import { Na__LeVeil__DrawingSettled, Na__LeVeil__ReturnTo3d, Na__LeVeil__Dismiss3d } from './Na__LayoutEditor__LoadingVeil__.js';
     import { Na__LePc__Attach, Na__LePc__Detach } from '../10__Core__SheetSurface/Na__LayoutEditor__Controls__Pc__.js';
     import { Na__LeTouch__Attach, Na__LeTouch__Detach } from '../10__Core__SheetSurface/Na__LayoutEditor__Controls__TouchScreen__.js';
     import { Na__LeTools__DEFAULTS_EVENT, Na__LeTools__Attach, Na__LeTools__Detach } from '../30__System__SheetTools/Na__LayoutEditor__SheetTools__.js';
-    import { Na__LePanels__Mount, Na__LePanels__Refresh, Na__LePanels__FocusSection } from '../40__Ui__Panels/Na__LayoutEditor__PanelHost__.js';
+    import { Na__LePanels__Mount, Na__LePanels__Refresh, Na__LePanels__FocusSection, Na__LePanels__RegisterTab } from '../40__Ui__Panels/Na__LayoutEditor__PanelHost__.js';
     import { Na__LeGroup__Expand } from '../15__Core__Markup/Na__LayoutEditor__Groups__.js';
     import { Na__LeDrop__CHANGED_EVENT } from '../30__System__SheetTools/Na__LayoutEditor__Eyedropper__.js';
     import { Na__LePanelLayers__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Layers__.js';
@@ -206,6 +218,10 @@
     import { Na__LePanelShapes__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Shapes__.js';
     import { Na__LePanelStyles__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__Styles__.js';
     import { Na__LePanelModelLayers__Register } from '../40__Ui__Panels/Na__LayoutEditor__Panel__ModelLayers__.js';
+    import { Na__LePanelScrap__Register, Na__LePanelScrap__RegisterTab } from '../55__Feature__Scrapbook/Na__LayoutEditor__Panel__Scrapbook__.js';
+    import { Na__LePanelScrapCustom__Register } from '../56__Feature__ScrapbookCustom/Na__LayoutEditor__Panel__ScrapbookCustom__.js';
+    import { Na__LePanelParam__RegisterLibrary, Na__LePanelParam__RegisterProperties } from '../57__Feature__ScrapbookParametric/Na__LayoutEditor__Panel__ScrapbookParametric__.js';
+    import { Na__LeViewId__Initialize } from '../20__System__Viewports/Na__LayoutEditor__ViewportIdentity__.js';
     import { Na__LeToolbar__Mount, Na__LeToolbar__Save } from '../40__Ui__Panels/Na__LayoutEditor__Toolbar__.js';
     import { Na__LeMeasure__Mount } from '../30__System__SheetTools/Na__LayoutEditor__Measurements__.js';
     import { Na__LeSnap__Initialize, Na__LeSnap__ResetFingerprints } from '../25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js';
@@ -402,12 +418,19 @@
         Na__LePanelLayers__Register();
         Na__LePanelStyles__Register();
         Na__LePanelModelLayers__Register();
-        // RIGHT COLUMN | The selected item's properties
+        // RIGHT COLUMN | Two tabs: the selected item's properties, and the scrapbooks
+        Na__LePanels__RegisterTab('right', { id : 'properties', title : Na__LeCfg__GetLabel('PanelTabProperties', 'Properties') });   // <-- First, so every section that names no tab is on it
+        Na__LePanelScrap__RegisterTab();                                       // <-- The Scrapbook tab: the three libraries below name it
+        Na__LePanelParam__RegisterProperties();                                // <-- First on Properties, and hidden until a parametric element is selected
         Na__LePanelViewport__Register();
         Na__LePanelText__Register();
         Na__LePanelLeaders__Register();
         Na__LePanelDims__Register();
         Na__LePanelShapes__Register();
+        // THE SCRAPBOOK TAB | Three libraries, one way of dropping
+        Na__LePanelScrap__Register();                                          // <-- Standard: ready-made items from the config; this app ships none, so the section stays hidden
+        Na__LePanelParam__RegisterLibrary();                                   // <-- Parametric: dynamic elements - the scale bar, the drawing title - that keep answering to their parameters
+        Na__LePanelScrapCustom__Register();                                    // <-- Custom: items saved from a selection, one JSON file each in the user content folder
         Na__LeToolbar__Mount(host.querySelector('.na-le-centre__toolbar'), { editable : editable, showToast : toast });
         Na__LeMeasure__Mount(host.querySelector('.na-le-centre'), { editable : editable, stage : Na__LeMode__Stage });   // <-- The Measurements box, bottom right over the stage
         Na__LeSpecEd__Mount(host, { editable : editable, showToast : toast });    // <-- The Project Specification page, over the shell
@@ -473,6 +496,7 @@
     // ------------------------------------------------------------
     function Na__LeMode__Enter(sheetId) {
         if (!Na__LeMode__Context || !Na__LeMode__IsAvailable()) return false;   // <-- No tabs, no way back: never open a sheet without them
+        Na__LeVeil__Dismiss3d();                                                 // <-- A drawing tab pressed while the model was still settling: its veil goes now
         const sheets = Na__LeModel__GetSheets();
         const sheet  = (sheetId && Na__LeModel__GetSheetById(sheetId)) || sheets[0] || null;
         if (!sheet) return false;
@@ -542,8 +566,37 @@
         Na__DrawView__Transitions__ResumeThreeD();                          // <-- Orbit and culling back before the first 3D frame
         Na__RenderLoop__Resume(Na__LeMode__RENDER_HOLD);                    // <-- Engine runs again; one frame paints now
         Na__RenderLoop__RequestRender();
+
+        // THE MODEL IS NOT READY TO BE LOOKED AT THE INSTANT THE ENGINE
+        // RESTARTS. It flicks through stale 2D viewport frames first, and the
+        // camera is still parked wherever the reader left it rather than on a
+        // composed view. So the veil goes up at once, the camera is sent to the
+        // first presentation scene, and it lifts when the camera reports it has
+        // arrived - after the engine is resumed, because a paused engine would
+        // never animate the move.
+        void Na__LeVeil__ReturnTo3d();
         Na__LeMode__Dispatch();
         return true;
+    }
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Wait Until the Sheet Just Opened Has Actually Been Drawn
+    // ------------------------------------------------------------
+    // FOR THE LOADER, WHICH CANNOT REACH THE VEIL ITSELF. Na__LayoutEditor__
+    // Loader__ hides its loading screen in a finally, and importing anything
+    // from the editor bundle up there would defeat the lazy load, so the wait
+    // is offered through the editor facade instead.
+    //
+    // The expected count is read from the MODEL, not the page: the surface may
+    // not have drawn a frame yet when this is asked, and nought of two is only
+    // distinguishable from finished if the two is known in advance.
+    // ------------------------------------------------------------
+    function Na__LeMode__WaitForFirstDrawing(onProgress) {
+        if (!Na__LeMode__Active) return Promise.resolve(true);                   // <-- A Dev action, not a sheet: nothing to wait for
+        const sheet = Na__LeModel__GetActiveSheet();
+        const count = sheet ? (Na__LeModel__GetViewports(sheet) || []).length : 0;
+        return Na__LeVeil__DrawingSettled(count, onProgress);
     }
     // ------------------------------------------------------------
 
@@ -781,6 +834,7 @@
             Na__LeSpec__Initialize({ showToast : context.showToast || null, editable : Na__LeMode__IsEditable() });   // <-- The project specification: nothing is read until the editor opens
             Na__LeSpecLink__Initialize();                                    // <-- Bubble codes follow their notes
             Na__LeSnap__Initialize(context);
+            Na__LeViewId__Initialize();                                      // <-- Unnamed elevation viewports are named from the project's north
             window.addEventListener(Na__LeModel__CHANGED_EVENT, Na__LeMode__OnSheetsChanged);
             document.addEventListener('keydown', Na__LeMode__OnSaveKey, true);   // <-- Ctrl+S on the sheet and the specification alike; capture, so it is answered before the browser is told
 
@@ -831,6 +885,7 @@
     // MODULE EXPORTS | Layout Editor Mode Controller API
     // ------------------------------------------------------------
     export {
+        Na__LeMode__WaitForFirstDrawing,
         Na__LeMode__CHANGED_EVENT,
         Na__LeMode__VIEW_SHEET,
         Na__LeMode__VIEW_SPEC,

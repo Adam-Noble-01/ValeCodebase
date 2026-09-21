@@ -96,6 +96,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.18.0
+// - Re-exports the State unit's RegisterBeforeAnnounce and the Viewports unit's
+//   RegisterViewportNamer, both ported from TrueVision3D for the Parametric
+//   Scrapbook and the viewport identity module.
+// - Re-exports the Text and Dimensions unit's InsertDimension, which a Custom
+//   Scrapbook drop lands a dimension through.
+//
 // 19-Sep-2026 - Version 1.17.0
 // - Re-exports the Sheets unit's short tab name API: GetDrawingNumber,
 //   GetShortCode, GetTabLabel, CleanSheetName and ApplySheetName.
@@ -262,6 +269,7 @@
         Na__LeModel__SelectionItems,
         Na__LeModel__Dirty,
         Na__LeModel__Dispatch,
+        Na__LeModel__RegisterBeforeAnnounce,
         Na__LeModel__Array,
         Na__LeModel__AssignActiveSheetId,
         Na__LeModel__AssignSelectionItems,
@@ -314,7 +322,8 @@
         Na__LeModel__InsertViewport,
         Na__LeModel__DeleteViewport,
         Na__LeModel__UpdateViewport,
-        Na__LeModel__ResolveViewportSource
+        Na__LeModel__ResolveViewportSource,
+        Na__LeModel__RegisterViewportNamer
     } from './Na__LayoutEditor__SheetModel__Viewports__.js';
     // ------------------------------------------------------------
 
@@ -329,6 +338,7 @@
         Na__LeModel__UpdateAnnotation,
         Na__LeModel__DeleteAnnotation,
         Na__LeModel__CreateDimension,
+        Na__LeModel__InsertDimension,
         Na__LeModel__UpdateDimension,
         Na__LeModel__DeleteDimension
     } from './Na__LayoutEditor__SheetModel__TextAndDimensions__.js';
@@ -554,6 +564,7 @@
         Na__LeModel__DeleteViewport,
         Na__LeModel__UpdateViewport,
         Na__LeModel__ResolveViewportSource,
+        Na__LeModel__RegisterViewportNamer,
         Na__LeModel__GetAnnotations,
         Na__LeModel__GetAnnotationById,
         Na__LeModel__GetDimensions,
@@ -562,6 +573,7 @@
         Na__LeModel__UpdateAnnotation,
         Na__LeModel__DeleteAnnotation,
         Na__LeModel__CreateDimension,
+        Na__LeModel__InsertDimension,
         Na__LeModel__UpdateDimension,
         Na__LeModel__DeleteDimension,
         Na__LeModel__GetShapeById,
@@ -588,6 +600,7 @@
         Na__LeModel__GetSelectedViewport,
         Na__LeModel__IsDirty,
         Na__LeModel__MarkDirty,
+        Na__LeModel__RegisterBeforeAnnounce,
         Na__LeModel__RestoreSheets,
         Na__LeModel__Save
     };

@@ -1,0 +1,49 @@
+/* ================================================================= */
+/* VALEVISION3D - LAYOUT EDITOR - STYLES: CUSTOM SCRAPBOOK            */
+/* ================================================================= */
+/*
+ * FILE       : Na__LayoutEditor__Styles__ScrapbookCustom__.css
+ * MODULE     : Layout Editor - Custom Scrapbook
+ * AUTHOR     : Adam Noble - Noble Architecture
+ * PURPOSE    : The save block under the Custom Scrapbook's tiles
+ * CREATED    : 19-Sep-2026
+ *
+ * DESCRIPTION:
+ * - Linked by Na__LayoutEditor__Panel__ScrapbookCustom__ when it registers: a
+ *   feature's stylesheet arrives with the feature.
+ * - The tiles are the Scrapbook's (.na-le-scrap in Styles__Panels); nothing
+ *   here restyles them, so every library's tiles read alike. The rows, the
+ *   button and the notes are the panel host's.
+ *
+ * PORT NOTE:
+ * - Ported from : TrueVision3D 56__Feature__ScrapbookCustom/Na__LayoutEditor__Styles__ScrapbookCustom__.css
+ * - Ported on   : 20-Sep-2026 for ValeVision3D v2.69.0
+ * - Parity      : verbatim - every rule is byte for byte TrueVision's
+ *
+ * DEVELOPMENT LOG:
+ * 20-Sep-2026 - Version 1.0.0
+ * - Ported from TrueVision3D's 1.0.0.
+ */
+
+
+/* ----------------------------------------------------------------- */
+/* REGION  |  Save Block                                             */
+/* ----------------------------------------------------------------- */
+
+/* SAVING IS THE SECOND THING the section does, so it sits under the tiles
+   behind a rule, where it does not push the library down the column. */
+
+.na-le-scrap-save {
+    margin-top                         : 10px;
+    padding-top                        : 8px;
+    border-top                         : 1px solid #dde3e8;
+}
+
+.na-le-scrap-save__heading {
+    margin                             : 0 0 6px 0;
+    font-size                          : 0.72rem;
+    font-weight                        : 600;
+    color                              : #172b3a;
+}
+
+/* endregion ------------------------------------------------------- */

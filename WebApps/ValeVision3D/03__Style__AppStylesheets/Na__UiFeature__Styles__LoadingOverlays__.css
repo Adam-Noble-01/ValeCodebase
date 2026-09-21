@@ -264,3 +264,81 @@
 
 /* endregion ------------------------------------------------------------------- */
 
+
+/* -----------------------------------------------------------------------------
+ * REGION | Layout Editor Return-to-Model Veil
+ * -----------------------------------------------------------------------------
+ * The veil over the way back from the drawings to the 3D model.
+ * Na__LayoutEditor__LoadingVeil__.js owns when it appears; this owns what it
+ * looks like. The way IN needs no veil of its own here - Na__LeLoadScreen
+ * already covers it, because ValeVision loads its editor lazily.
+ *
+ * ITS z-index IS THE POINT: 500 sits above the canvas and the editor host but
+ * BELOW the tab strip (999) and the header (1001), so the top bar unfolding is
+ * still watched over the top of it rather than hidden by the thing that is
+ * waiting for the camera.
+ *
+ * TWO CLASSES, NOT ONE. --visible switches display on, --shown fades opacity
+ * in. A single class cannot do both: display and opacity changing in the same
+ * frame skips the transition entirely, so the module commits the first, reads
+ * back a layout, then adds the second.
+ *
+ * It lives in this stylesheet, not the editor's lazily linked ones, because it
+ * is shown on the way OUT of the editor and must not depend on a sheet that is
+ * only linked once the editor has loaded.
+ * ----------------------------------------------------------------------------- */
+
+    /* VEIL | The Cover */
+    /* ------------------------------------------------------------ */
+    .na-le-veil {
+        position                           : fixed;
+        inset                              : 0;
+        display                            : none;                         /* <-- Built lazily and still not shown until it is earned */
+        flex-direction                     : column;
+        justify-content                    : center;
+        align-items                        : center;
+        gap                                : 4px;
+        background-color                   : rgba(255, 255, 255, 0.94);
+        backdrop-filter                    : blur(3px);
+        z-index                            : 500;                          /* <-- Above the canvas, below the tabs (999) and the header (1001) */
+        opacity                            : 0;
+        transition                         : opacity 320ms ease-out;       /* <-- FADE_MS in the module matches this */
+    }
+
+    .na-le-veil--visible {
+        display                            : flex;
+    }
+
+    .na-le-veil--shown {
+        opacity                            : 1;
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* VEIL | The Words Under the Spinner */
+    /* ------------------------------------------------------------ */
+    .na-le-veil__text {
+        margin                             : 0;
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 17px;
+        font-weight                        : 600;
+        color                              : #172b3a;
+        letter-spacing                     : 0.3px;
+        text-align                         : center;
+    }
+
+    /* The second line names the job actually being waited on, so the veil can */
+    /* be believed. It is empty until there is something true to put in it.    */
+    .na-le-veil__status {
+        margin                             : 0;
+        min-height                         : 1.2em;                        /* <-- Reserved, so the headline does not hop when the line changes */
+        font-family                        : 'Open Sans', sans-serif;
+        font-size                          : 13px;
+        font-weight                        : 400;
+        color                              : rgba(23, 43, 58, 0.62);
+        letter-spacing                     : 0.2px;
+        text-align                         : center;
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

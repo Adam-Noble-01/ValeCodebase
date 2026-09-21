@@ -39,6 +39,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.1.0
+// - RegisterViewportNamer, ported from TrueVision3D's Viewports unit 1.1.0: one
+//   function may offer a name for a viewport nobody has named, ahead of its
+//   drawing's own. The viewport identity module uses it to call an elevation
+//   viewport "North Elevation" from the project's north. A typed Viewport__Name
+//   still wins, and with no namer the label is exactly what it always was.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SheetModel__.js; the code moved verbatim.
 //
@@ -80,6 +87,47 @@
         Na__LeModel__AssignDirty
     } from './Na__LayoutEditor__SheetModel__State__.js';
     import { Na__LeModel__GetLayerById, Na__LeModel__DefaultLayerId } from './Na__LayoutEditor__SheetModel__Layers__.js';
+    // ------------------------------------------------------------
+
+// endregion -------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// REGION | The Viewport Namer
+// -----------------------------------------------------------------------------
+
+    // MODULE VARIABLES | Who Names a Viewport Nobody Has Named
+    // ------------------------------------------------------------
+    let Na__LeModel__ViewportNamer = null;     // <-- namer(viewport, { plan, elevation, scene }) -> string, '' for no opinion
+    // ------------------------------------------------------------
+
+
+    // FUNCTION | Have Something Offer Names for Unnamed Viewports (one namer; null removes it)
+    // ------------------------------------------------------------
+    // The model resolves what a viewport shows and hands the parts over, so
+    // the namer never has to call ResolveViewportSource - which would call
+    // the namer. It is asked on every paint of a frame's caption, so it
+    // must be quick and must not throw; one that does costs its name only.
+    // ------------------------------------------------------------
+    function Na__LeModel__RegisterViewportNamer(namer) {
+        Na__LeModel__ViewportNamer = (typeof namer === 'function') ? namer : null;
+        return Na__LeModel__ViewportNamer !== null;
+    }
+    // ------------------------------------------------------------
+
+
+    // HELPER FUNCTION | The Namer's Name for a Viewport, or ''
+    // ------------------------------------------------------------
+    function Na__LeModel__DerivedViewportName(viewport, parts) {
+        if (!Na__LeModel__ViewportNamer) return '';
+        try {
+            const name = Na__LeModel__ViewportNamer(viewport, parts);
+            return (typeof name === 'string') ? name.trim() : '';
+        } catch (error) {
+            console.warn('[ValeVision3D LayoutEditor] The viewport namer failed; the drawing\'s own name is used.', error);
+            return '';
+        }
+    }
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -264,6 +312,7 @@
         }
 
         const label = viewport.Viewport__Name
+            || Na__LeModel__DerivedViewportName(viewport, { plan : plan, elevation : elevation, scene : scene })   // <-- An unnamed elevation viewport, named from the project's north
             || (plan && plan.FloorPlan__Name)
             || (elevation && elevation.Elevation__Name)
             || (scene && scene.PresentationMode__Scene__Name)
@@ -289,7 +338,8 @@
         Na__LeModel__InsertViewport,
         Na__LeModel__DeleteViewport,
         Na__LeModel__UpdateViewport,
-        Na__LeModel__ResolveViewportSource
+        Na__LeModel__ResolveViewportSource,
+        Na__LeModel__RegisterViewportNamer
     };
     // ------------------------------------------------------------
 

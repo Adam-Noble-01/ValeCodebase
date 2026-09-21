@@ -31,6 +31,9 @@
 # - POST /api/projects/<folder>/assets      : Save a binary asset into the local project folder
 # - GET  /api/projects/<folder>/drawing-notes : Read ValeVision__DrawingNotes__.json beside project.json
 # - POST /api/projects/<folder>/drawing-notes : Write ValeVision__DrawingNotes__.json beside project.json
+# - GET  /api/valevision/scrapbook              : ValeVision3D Custom Scrapbook index (Server__ValeVisionScrapbook__Api__.py)
+# - POST /api/valevision/scrapbook/items        : Save a Custom Scrapbook item file into an existing category folder
+# - POST /api/valevision/scrapbook/items/delete : Move a Custom Scrapbook item file into its quarantine folder
 # - GET  /ValeVision3D/<path>     : Serve ValeVision3D application files
 # - GET  /Whitecardopedia/<path>  : Production-path mirror for PWA module / manifest URLs
 # - GET  /Na__Pwa__ServiceWorker__.js : Serve shared PWA service worker stub
@@ -82,6 +85,15 @@ REFRESH_COUNTER         = 0                                              # <-- R
 # ------------------------------------------------------------
 app = Flask(__name__, static_folder='.')                                 # <-- Create Flask app instance
 CORS(app)                                                                # <-- Enable CORS for all routes
+# ------------------------------------------------------------
+
+
+# INITIALIZATION | Register the ValeVision3D Custom Scrapbook Routes
+# ------------------------------------------------------------
+# The routes live in a file of their own beside this one. A specific route
+# always wins over the catch-all static route at the foot of this file.
+from Server__ValeVisionScrapbook__Api__ import valevision_scrapbook_api  # <-- ValeVision3D Layout Editor Custom Scrapbook item files
+app.register_blueprint(valevision_scrapbook_api)                         # <-- /api/valevision/scrapbook...
 # ------------------------------------------------------------
 
 # endregion -------------------------------------------------------------------

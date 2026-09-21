@@ -32,15 +32,33 @@
 // PORT NOTE:
 // - Ported from   : TrueVision3D 51__System__LayoutEditor/Na__LayoutEditor__ItemClipboard__.js 1.0.0, then 1.2.0 (leaders, paste-in-place)
 // - Ported on     : 14-Sep-2026, then 18-Sep-2026
-// - Parity        : adapted - TrueVision's 1.1.0 (InsertSet, for its Scrapbook) is not ported: ValeVision has no
-//                   Scrapbook feature, so PasteSet keeps doing that job itself, now taking a fanOut flag directly
-//                   instead of through a separate InsertSet
-// - Divergences   : the InsertSet split (TrueVision only, Scrapbook support); everything else writes only records both apps share
+// - Parity        : adapted - InsertSet arrived with the Scrapbook port (20-Sep-2026). PasteSet keeps this app's
+//                   signature, (sheet, atMm, fanOut), where TrueVision's takes no fanOut and Duplicate calls
+//                   InsertSet itself
+// - Divergences   : PasteSet's signature; a set always lands through PlaceSet, so it is kept on the paper even when
+//                   pasted in place; a dimension lands (a Custom Scrapbook item may hold one) but is not copyable;
+//                   no viewport leaf; no CutItems
 // - Back-port     : n/a (this IS the port)
 //
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.2.0
+// - InsertSet, for the Scrapbook that has now arrived: a set built elsewhere - a
+//   scrapbook item, a parametric element - lands through the same code a paste
+//   does, so it is one undo step, kept on the paper, selected. PasteSet hands
+//   its held set to it and keeps its own signature and its own landing rule.
+// - A PASTED GROUP KEEPS THE REST OF ITS RECORD. InsertGroups rebuilt a group
+//   from its members alone, so anything else the record carried was dropped on
+//   paste. A parametric element is a group carrying Group__Parametric; a copy
+//   of one would have been a plain group that no longer answered to anything.
+//   Ported from TrueVision3D's 1.1.0 (InsertSet) and 1.3.0 (the whole record).
+// - A SET CAN LAND A DIMENSION. A Custom Scrapbook item may hold one, so
+//   InsertLeaves has TrueVision's dimension leaf: moved with the set, put on a
+//   dimension layer of the sheet it lands on, and keeping its viewport only
+//   when the set came from this same sheet. COPY IS UNCHANGED: a dimension is
+//   still not a copyable kind here, so nothing on the clipboard ever holds one.
+//
 // 18-Sep-2026 - Version 1.1.0
 // - Leaders join the set: copyable, pasteable and duplicable the way text
 //   already is (Ctrl+C / Ctrl+V / Ctrl+D and the right-click menu), even
@@ -79,9 +97,12 @@
         Na__LeModel__InsertAnnotation,
         Na__LeModel__InsertGroup,
         Na__LeModel__InsertLeader,
+        Na__LeModel__InsertDimension,
+        Na__LeModel__GetViewportById,
         Na__LeModel__UpdateShape,
         Na__LeModel__UpdateAnnotation,
-        Na__LeModel__UpdateLeader
+        Na__LeModel__UpdateLeader,
+        Na__LeModel__UpdateDimension
     } from '../07__Core__SheetData/Na__LayoutEditor__SheetModel__.js';
     import { Na__LeLayout__Solve } from '../07__Core__SheetData/Na__LayoutEditor__SheetLayout__.js';
     import { Na__LeShapeGeo__Points, Na__LeShapeGeo__Translated } from '../15__Core__Markup/Na__LayoutEditor__ShapeGeometry__.js';
@@ -298,9 +319,20 @@
         return true;
     }
 
-    function Na__LeClip__InsertLeaves(sheet, entries, ids, dx, dy, lastKey) {
+    function Na__LeClip__InsertLeaves(sheet, entries, ids, dx, dy, lastKey, sourceSheetId) {
         let last = null;
         entries.forEach((entry) => {
+            if (entry.kind === 'dimension') {                                  // <-- Only a set built elsewhere holds one: a dimension is not a copyable kind here
+                const record = Na__LeClip__Clone(entry.record);
+                record.Dimension__StartXMm += dx; record.Dimension__EndXMm += dx;
+                record.Dimension__StartYMm += dy; record.Dimension__EndYMm += dy;
+                record.Dimension__LayerId = Na__LeClip__LayerFor(sheet, record.Dimension__LayerId, 'dimension');
+                const host = record.Dimension__ViewportId;
+                record.Dimension__ViewportId = (host && sourceSheetId === sheet.Sheet__Id && Na__LeModel__GetViewportById(sheet, host)) ? host : null;   // <-- A viewport id means nothing on another sheet
+                const key = 'dimension:' + entry.id;
+                const pasted = Na__LeModel__InsertDimension(sheet, record, lastKey == null || key !== lastKey);
+                if (pasted) { ids.set(key, pasted.Dimension__Id); last = { kind : 'dimension', id : pasted.Dimension__Id }; }
+            }
             if (entry.kind === 'shape') {
                 const record = Na__LeClip__Clone(entry.record);
                 record.Shape__Points  = Na__LeShapeGeo__Translated(Na__LeShapeGeo__Points(record), dx, dy);
@@ -344,7 +376,7 @@
                 if (waiting) { next.push(entry); return; }
                 const key    = 'group:' + entry.id;
                 const silent = lastKey == null || key !== lastKey;
-                const pasted = Na__LeModel__InsertGroup(sheet, { Group__Members : members }, silent);
+                const pasted = Na__LeModel__InsertGroup(sheet, { ...entry.record, Group__Members : members }, silent);   // <-- The whole record: a parametric element is a group that carries more than its members
                 if (pasted) { ids.set(key, pasted.Group__Id); last = { kind : 'group', id : pasted.Group__Id }; }
             });
             if (next.length === pending.length) break;
@@ -354,38 +386,53 @@
         return last;
     }
 
-    // FUNCTION | Paste the Held Set Onto a Sheet (one undo step)
+    // FUNCTION | Put a Set Onto a Sheet as New Records (one undo step)
     // ------------------------------------------------------------
+    // set: { roots, entries, origin, size } - the held clipboard set, or one
+    // built elsewhere, such as a Scrapbook item (Na__LayoutEditor__Scrapbook__).
     // atMm is where the set's top-left corner goes, kept on the paper; without
     // it the set lands exactly where it came from. fanOut, when true, steps
-    // that landing spot clear of a copy already sitting there - Duplicate
-    // wants that (it is silent, so the step is the only sign it worked); an
-    // ordinary paste leaves it false, always lands in place, and says so with
-    // a toast instead. The new roots are selected and returned.
+    // that landing spot clear of a copy already sitting there. The new roots
+    // are selected and returned. Says nothing: the caller knows what arrived.
     // ------------------------------------------------------------
-    function Na__LeClip__PasteSet(sheet, atMm, fanOut) {
-        if (!sheet || !Na__LeClip__HasSet()) return null;
-        const held    = Na__LeClip__HeldSet;
-        const origin  = held.origin || { x : 0, y : 0 };
+    function Na__LeClip__InsertSet(sheet, set, atMm, fanOut) {
+        if (!sheet || !set || !Array.isArray(set.entries) || set.entries.length === 0) return null;
+        const origin  = set.origin || { x : 0, y : 0 };
         const start   = atMm || { x : origin.x, y : origin.y };
-        const spot    = Na__LeClip__PlaceSet(sheet, origin, held.size, start, !!fanOut);
+        const spot    = Na__LeClip__PlaceSet(sheet, origin, set.size, start, !!fanOut);
         const dx      = spot.X - origin.x;
         const dy      = spot.Y - origin.y;
         const ids     = new Map();
-        const entries = held.entries || [];
-        const leaf    = Na__LeClip__InsertLeaves(sheet, entries, ids, dx, dy, null);   // <-- All silent until one announce below, so groups land in the same undo step
+        const entries = set.entries;
+        const leaf    = Na__LeClip__InsertLeaves(sheet, entries, ids, dx, dy, null, set.sourceSheetId);   // <-- All silent until one announce below, so groups land in the same undo step
         Na__LeClip__InsertGroups(sheet, entries, ids, null);
         if (leaf && leaf.kind === 'shape')           Na__LeModel__UpdateShape(sheet, leaf.id, {}, false);
         else if (leaf && leaf.kind === 'annotation') Na__LeModel__UpdateAnnotation(sheet, leaf.id, {}, false);
         else if (leaf && leaf.kind === 'leader')     Na__LeModel__UpdateLeader(sheet, leaf.id, {}, false);
-        const selected = (held.roots || []).map((root) => {
+        else if (leaf && leaf.kind === 'dimension')  Na__LeModel__UpdateDimension(sheet, leaf.id, {}, false);
+        const selected = (set.roots || []).map((root) => {
             const id = ids.get(root.kind + ':' + root.id);
             return id ? { kind : root.kind, id : id } : null;
         }).filter(Boolean);
         if (selected.length === 1) Na__LeModel__SetSelection(selected[0]);
         else if (selected.length > 1) Na__LeModel__SetSelectionItems(selected);
-        if (!fanOut && selected.length) Na__LeClip__Toast(Na__LeClip__PastedToastFor(held.roots || []));   // <-- Duplicate passes fanOut true and stays quiet; its step is the tell
         return selected.length ? selected : null;
+    }
+    // ------------------------------------------------------------
+
+    // FUNCTION | Paste the Held Set Onto a Sheet (one undo step)
+    // ------------------------------------------------------------
+    // atMm and fanOut as InsertSet takes them. Duplicate passes fanOut true
+    // and stays quiet - it is silent, so the step is the only sign it worked;
+    // an ordinary paste leaves it false, always lands in place, and says so
+    // with a toast instead. The new roots are selected and returned.
+    // ------------------------------------------------------------
+    function Na__LeClip__PasteSet(sheet, atMm, fanOut) {
+        if (!sheet || !Na__LeClip__HasSet()) return null;
+        const held   = Na__LeClip__HeldSet;
+        const pasted = Na__LeClip__InsertSet(sheet, held, atMm, fanOut);
+        if (!fanOut && pasted) Na__LeClip__Toast(Na__LeClip__PastedToastFor(held.roots || []));   // <-- Duplicate passes fanOut true and stays quiet; its step is the tell
+        return pasted;
     }
     // ------------------------------------------------------------
 
@@ -500,6 +547,7 @@
         Na__LeClip__DuplicateShape,
         Na__LeClip__HasShape,
         Na__LeClip__CopyItems,
+        Na__LeClip__InsertSet,
         Na__LeClip__PasteSet,
         Na__LeClip__HasSet,
         Na__LeClip__RunKeyAction,

@@ -14,6 +14,7 @@
 //   InsertAnnotation for a complete record (a paste), UpdateAnnotation
 //   (the turn is kept by SetAnnotationRotation) and DeleteAnnotation.
 // - Dimensions: the list, CreateDimension between two paper points,
+//   InsertDimension for a complete record (a scrapbook drop),
 //   UpdateDimension and DeleteDimension.
 // - The silent paths set the dirty flag through the State unit's
 //   AssignDirty (an imported let cannot be assigned).
@@ -37,6 +38,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.1.0
+// - InsertDimension: a complete dimension record lands with a fresh id, its
+//   layer checked against the sheet it lands on, silently when asked. A Custom
+//   Scrapbook item may hold dimensions, and a drop is a set of whole records.
+//   Ported from TrueVision3D's unit, byte for byte.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Split out of Na__LayoutEditor__SheetModel__.js; the code moved verbatim.
 //
@@ -210,6 +217,23 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Insert a Complete Dimension Record With a Fresh Id
+    // ------------------------------------------------------------
+    function Na__LeModel__InsertDimension(sheet, record, silent) {
+        if (!sheet || !record || typeof record !== 'object') return null;
+        const item = JSON.parse(JSON.stringify(record));
+        item.Dimension__Id = Na__LeRec__NextId(sheet.Sheet__Dimensions, 'Dim_', 'Dimension__Id');
+        let layerId = item.Dimension__LayerId;
+        if (!Na__LeModel__GetLayerById(sheet, layerId)) layerId = Na__LeModel__DefaultLayerId(sheet, 'dimension');
+        Na__LeRec__NormaliseDimension(item, layerId);
+        sheet.Sheet__Dimensions.push(item);
+        if (silent) { Na__LeModel__AssignDirty(true); return item; }
+        Na__LeModel__Touch('dimensions', sheet.Sheet__Id, item.Dimension__Id);
+        return item;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Change or Remove a Dimension
     // ------------------------------------------------------------
     function Na__LeModel__UpdateDimension(sheet, itemId, patch, silent) {
@@ -260,6 +284,7 @@
         Na__LeModel__UpdateAnnotation,
         Na__LeModel__DeleteAnnotation,
         Na__LeModel__CreateDimension,
+        Na__LeModel__InsertDimension,
         Na__LeModel__UpdateDimension,
         Na__LeModel__DeleteDimension
     };

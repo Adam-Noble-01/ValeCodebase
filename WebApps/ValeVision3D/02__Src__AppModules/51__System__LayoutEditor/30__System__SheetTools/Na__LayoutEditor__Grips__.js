@@ -48,6 +48,12 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 20-Sep-2026 - Version 1.8.0
+// - RegisterGroupProvider, ported from TrueVision3D's Grips 1.8.0: a feature can
+//   draw grips of its own on a selected group, after the group's box. The
+//   Parametric Scrapbook's stretch and lookup grips, and its link noodle, arrive
+//   this way.
+//
 // 17-Sep-2026 - Version 1.7.0
 // - GRIPS BELONG TO AN OPEN CONTAINER. A selected vector's vertex grips and a
 //   selected dimension's grips are now drawn only while THAT object is open for
@@ -173,6 +179,17 @@
     let Na__LeGrips__Insert = null;
     // ------------------------------------------------------------
 
+    // MODULE VARIABLES | Features That Draw Grips of Their Own on a Selected Group
+    // ------------------------------------------------------------
+    // provider(layer, sheet, selection, ppm, zoom), called after the group's
+    // box is drawn. A group has no grips of its own; a parametric element is a
+    // group that does (Na__LayoutEditor__ScrapbookParametric__Grips__). It
+    // registers here rather than being imported, so this module never learns
+    // what a parametric element is.
+    // ------------------------------------------------------------
+    const Na__LeGrips__GroupProviders = [];
+    // ------------------------------------------------------------
+
 // endregion -------------------------------------------------------------------
 
 
@@ -230,6 +247,16 @@
     // ------------------------------------------------------------
 
 
+    // FUNCTION | Let a Feature Draw Its Own Grips on a Selected Group (once per provider)
+    // ------------------------------------------------------------
+    function Na__LeGrips__RegisterGroupProvider(provider) {
+        if (typeof provider !== 'function' || Na__LeGrips__GroupProviders.indexOf(provider) !== -1) return false;
+        Na__LeGrips__GroupProviders.push(provider);
+        return true;
+    }
+    // ------------------------------------------------------------
+
+
     // FUNCTION | Draw the Grips for the Selection (nothing for a viewport or a locked layer)
     // ------------------------------------------------------------
     function Na__LeGrips__Render(layer, sheet, selection, ppm, zoom) {
@@ -282,7 +309,11 @@
             return true;
         }
         if (selection.kind === 'group') {
-            return Na__LeGroup__Render(layer, sheet, [ selection ], ppm, zoom);
+            const drawn = Na__LeGroup__Render(layer, sheet, [ selection ], ppm, zoom);
+            Na__LeGrips__GroupProviders.forEach((provider) => {                  // <-- A parametric element's own grips, over the group's box
+                try { provider(layer, sheet, selection, ppm, zoom); } catch (error) { console.warn('[ValeVision3D LayoutEditor] A group grip provider failed.', error); }
+            });
+            return drawn;
         }
         if (selection.kind === 'annotation') {
             const item = (sheet.Sheet__Annotations || []).find((a) => a.Annotation__Id === selection.id);
@@ -504,6 +535,7 @@
     // ------------------------------------------------------------
     export {
         Na__LeGrips__Render,
+        Na__LeGrips__RegisterGroupProvider,
         Na__LeGrips__ShowBand,
         Na__LeGrips__HideBand,
         Na__LeGrips__ShowBox,

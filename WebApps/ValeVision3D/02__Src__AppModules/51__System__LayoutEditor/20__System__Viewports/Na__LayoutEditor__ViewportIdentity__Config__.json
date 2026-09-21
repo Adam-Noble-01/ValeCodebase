@@ -1,0 +1,19 @@
+{
+    "LayoutEditor__ViewportIdentity__Meta": {
+        "Meta__Description": "How the Layout Editor says what a viewport is a drawing OF: which way an elevation faces (from the project's north direction), and the words its name and its parametric title are written in. This app loads one model per project, so there is no design phase to read: Existing and Proposed are written only when a title's own settings force them. Read by Na__LayoutEditor__ViewportIdentity__.js. Every value has a built-in fallback equal to the one shipped here, because names are asked for synchronously on a sheet's first paint, which can come before this file arrives.",
+        "Meta__Version": 1
+    },
+    "LayoutEditor__ViewportIdentity__Words": {
+        "Words__Description": "The words a drawing's name is made of. The house pattern is qualifier then subject - 'Existing East Elevation' - and a parametric title writes it in capitals by its own setting. The two placeholders are shown in double braces, {{Direction}}, where a fact is still missing: Direction until north has been set in the 3D model (Dev Tools, North Direction), Drawing on a title that is tied to no viewport.",
+        "Words__Existing": "Existing",
+        "Words__Proposed": "Proposed",
+        "Words__Elevation": "Elevation",
+        "Words__PlaceholderDirection": "Direction",
+        "Words__PlaceholderDrawing": "Drawing"
+    },
+    "LayoutEditor__ViewportIdentity__Naming": {
+        "Naming__Description": "Whether an elevation viewport nobody has named takes a derived name - 'Existing North Elevation' - in the panels, the link menus, the toasts and its frame caption, in place of its elevation record's own name. Only once north is set; a typed viewport name always wins. IncludePhase puts Existing or Proposed in front where a phase is known, which in this app it never is.",
+        "Naming__NameElevationViewports": true,
+        "Naming__IncludePhase": true
+    }
+}

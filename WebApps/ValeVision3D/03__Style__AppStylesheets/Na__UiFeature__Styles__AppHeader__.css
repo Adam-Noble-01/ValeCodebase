@@ -163,3 +163,103 @@
 
 /* endregion ------------------------------------------------------------------- */
 
+
+/* -----------------------------------------------------------------------------
+ * REGION | Contextual Fold | The Bar Leaves on a Drawing Tab
+ * -----------------------------------------------------------------------------
+ * THE BRANDING EARNS ITS 60px IN THE 3D VIEW AND NOWHERE ELSE. Landing in
+ * ValeVision, orbiting a model, reaching for Dev Tools: the bar belongs there
+ * and is left exactly as it was. The moment a drawing tab is pressed the paper
+ * becomes the subject, and 60px of logo is 60px of drawing.
+ *
+ * WHAT MOVES, AND WHAT DELIBERATELY DOES NOT. The header and the tab strip
+ * slide up together as one unit; the editor host does NOT animate - it is laid
+ * out at its folded position the same frame the class lands, and the two bars
+ * slide up OVER it. That reads as a curtain lifting, and it is also the only
+ * arrangement that is correct: Na__LeMode__Enter fits the paper to the stage on
+ * the next animation frame (Na__LeNav__Fit), so a host still growing at that
+ * moment would fit the drawing to a stage 60px short of its final height.
+ *
+ * WHY top AND NOT transform. A transform would be the cheaper animation, and it
+ * is not available here: a transformed ancestor becomes the containing block for
+ * its position: fixed descendants, and the Dev Tools flyout list is a fixed
+ * descendant of this header. Na__UiFeature__Styles__DevToolsMenu__.css states
+ * that constraint outright - "The container must never carry a transform" - so
+ * the header carries none, in either state, and slides on top instead.
+ *
+ * THE 3D CANVAS IS NOT TOUCHED. In ValeVision it is already positioned below
+ * both the header and the tab strip, and it is hidden while a sheet is open, so
+ * it has nothing to contribute to the fold and is left alone.
+ *
+ * NO prefers-reduced-motion BRANCH, ON PURPOSE. TrueVision shipped one and it
+ * switched the whole feature off on the studio PC, where Windows animation
+ * effects are off (MinAnimate = 0) and Chromium reports that as reduced motion.
+ * The fold ran at 0.01ms, which is the two end states and no travel. That
+ * toggle is one most people flip for window animations or speed, not as a
+ * statement about vestibular motion, so it is not treated as a veto over a 60px
+ * linear slide of a toolbar. The pace is the app's, in the token below.
+ * ----------------------------------------------------------------------------- */
+
+    /* CSS VARIABLES | Fold Timing */
+    /* ------------------------------------------------------------ */
+    :root {
+        --Vale_HeaderFoldDuration      : 1000ms;                       /* <-- THE ONE NUMBER THAT SETS THE PACE. Change it here and both bars follow. */
+        --Vale_HeaderFoldEase          : cubic-bezier(0.40, 0.00, 0.20, 1);  /* <-- Even glide; a front-loaded curve read as a snap then a crawl */
+        --Vale_HeaderFoldDelay         : 1000ms;                       /* <-- The beat the bar waits before leaving. Going away only; see below. */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The Header Itself */
+    /* ------------------------------------------------------------ */
+    /* THE DELAY IS ONE-WAY, AND THAT IS NOT AN OVERSIGHT. A transition takes
+       its timing from the state it is moving TO, so declaring the delay only
+       on the folded rule buys a held beat on the way out and nothing at all on
+       the way back. That is the asymmetry the two directions deserve: pressing
+       a drawing tab, the drawing is what you came for and the bar can take its
+       time leaving; pressing 3D Model, the branding and the Dev Tools trigger
+       are what you came back for, and a second of empty space first would just
+       read as lag. Both the base rule's shorthand (delay 0) and the folded
+       rule's override are load-bearing - do not fold the delay into the
+       shorthand above, or it applies in both directions. */
+    .app-header {
+        transition                     : top var(--Vale_HeaderFoldDuration) var(--Vale_HeaderFoldEase),
+                                         box-shadow var(--Vale_HeaderFoldDuration) var(--Vale_HeaderFoldEase);
+    }
+
+    body.na-layout-editor--active .app-header {
+        top                            : calc(-1 * var(--Vale_HeaderHeight));   /* <-- Clears the viewport; follows the 48px narrow-screen value by itself */
+        box-shadow                     : 0 0 0 rgba(0, 0, 0, 0);                /* <-- Otherwise the drop shadow stays behind as a smudge over the tabs */
+        transition-delay               : var(--Vale_HeaderFoldDelay);           /* <-- Hold, then go. Only on this state; see the note above. */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The Drawing Tab Strip Travels With It */
+    /* ------------------------------------------------------------ */
+    /* Declared here rather than in the editor's boot stylesheet so the strip   */
+    /* cannot fall out of step with the bar it is pinned beneath, and so it     */
+    /* still folds on a page where the lazily loaded editor sheets have not     */
+    /* been linked yet. Na__LayoutEditor__Styles__Boot__.css owns the rest.     */
+    .na-le-tabs {
+        transition                     : top var(--Vale_HeaderFoldDuration) var(--Vale_HeaderFoldEase);
+    }
+
+    body.na-layout-editor--active .na-le-tabs {
+        top                            : 0;                            /* <-- Takes the space the header gave up */
+        transition-delay               : var(--Vale_HeaderFoldDelay);   /* <-- Identical to the header's, or the two come apart during the hold */
+    }
+    /* ------------------------------------------------------------ */
+
+
+    /* FOLD | The Editor Host Takes the Space at Once */
+    /* ------------------------------------------------------------ */
+    /* No transition, by design - see the region note. The host is only ever on */
+    /* screen while this class is set, so this is its only real position; the   */
+    /* base rule keeps the header term for the case that never happens.         */
+    body.na-layout-editor--active .na-le-host {
+        top                            : var(--Vale_LayoutTabStripHeight);
+    }
+    /* ------------------------------------------------------------ */
+
+/* endregion ------------------------------------------------------------------- */

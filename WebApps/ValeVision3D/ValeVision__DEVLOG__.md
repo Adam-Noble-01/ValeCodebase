@@ -1,6 +1,382 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.70.0 - 20-Sep-2026 - The Top Bar Knows When It Is Not Wanted, and Neither Crossing Is a Cold Drop
+### Ported from TrueVision3D v2.83.0, authored there the same day
+
+**Overview**
+- Adam, in TrueVision, with the whole top bar ringed on a floor plan screenshot and ANIMATE IT
+  written across it: the branding bar earns its 60px in the 3D view and nowhere else, and on a
+  drawing tab 60px of logo is 60px of drawing. It folds up and out on a drawing tab and comes back
+  down on 3D Model. Ported here unchanged in behaviour.
+- Two loading veils came with it, covering the two crossings between the model and the drawings.
+
+**The fold** (`03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css`)
+- The header slides `top: 0` to `calc(-1 * var(--Vale_HeaderHeight))`, shadow to zero; the tab strip
+  slides `var(--Vale_HeaderHeight)` to 0; the two are welded and move as one object.
+- 1000ms glide after a 1000ms hold, and THE HOLD IS ONE-WAY. A transition takes its timing from the
+  state it moves TO, so the delay sits only on the folded rule: pressing a drawing tab the bar can
+  take its time leaving, pressing 3D Model the branding comes straight back.
+- The editor host takes the 60px AT ONCE and does not animate - Na__LeMode__Enter fits the paper on
+  the next animation frame, so a host still growing then would fit every sheet to a short stage.
+- `top`, never `transform`: a transformed ancestor becomes the containing block for its
+  position: fixed descendants, and the Dev Tools flyout list is a fixed descendant of this header.
+  Na__UiFeature__Styles__DevToolsMenu__.css already states that constraint outright.
+- NO prefers-reduced-motion BRANCH, on purpose. TrueVision shipped one and it switched the whole
+  feature off on the studio PC, where Windows animation effects are off (MinAnimate = 0) and
+  Chromium reports that as reduced motion. The fold ran at 0.01ms - two end states, no travel.
+
+**The veils** (`51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js`, new)
+- COMING OUT is this module's own: "Loading Your 3D Model", shown AT ONCE, because the flicker of
+  stale 2D viewport frames it hides happens the instant the render loop restarts. It requests the
+  first scene in the carousel through the same `GoToSceneAtIndex(1)` a number key uses - so the
+  scene's group, visibility state and navigation mode are applied the ordinary way - and lifts when
+  the presentation camera reports it has stopped transitioning. Not a duration, the camera itself.
+- GOING IN IS DELIBERATELY NOT A SECOND OVERLAY. ValeVision already has `Na__LeLoadScreen`, because
+  the editor is lazily loaded here and something must cover the import. What it lacked was the
+  right moment to go: it hid two frames after the sheet opened, which is long before the sheet is
+  drawn, so the reader was handed a blank page that filled in underneath them. It now waits for the
+  pictures to actually be on the paper and says how far along it is: "Drawing the Views  -  1 of 2".
+- DRAWN MEANS COUNTED, against a number known up front. The expected count comes from the MODEL
+  (`Na__LeMode__WaitForFirstDrawing`), the achieved count is the `.na-le-frame` elements carrying a
+  decoded `<img>`. TrueVision's first version watched only the render queue and was wrong: the
+  queue is not filled until about 800ms after the tab is pressed, so "the queue is empty" is also
+  true before any work exists, and it called itself finished at 600ms. Nought of two cannot be.
+- The loader reaches the wait through the editor facade rather than importing it, which would load
+  eagerly the very bundle `01__Core__Loader` exists to defer. An editor without the call is simply
+  not waited for.
+- `Na__LayoutEditor__SnapshotRenderer__` now counts its queue in and out and announces the depth
+  (`Na__LeSnap__QUEUE_EVENT`, `Na__LeSnap__GetOutstanding`). Rendering behaviour is unchanged.
+
+**Divergences from TrueVision**
+- TrueVision builds its own going-in veil; here that job stays with `Na__LeLoadScreen` and only the
+  WAIT is ported. Two overlays over one crossing would be a duplication, not a port.
+- No text-metrics job: ValeVision has no `Na__LayoutEditor__PdfFonts__` module to preload.
+- TrueVision's canvas is positioned below the header alone and was considered for the fold and left
+  out; ValeVision's is already below both the header and the tab strip, and is hidden while a sheet
+  is open, so it has nothing to contribute either. Untouched in both.
+
+**Known, accepted**
+- The tab strip's `top` is now transitioned, so it also eases the 12px when a viewport crosses the
+  600px breakpoint and `--Vale_HeaderHeight` changes between 60 and 48. It used to snap. CSS cannot
+  tell that apart from a fold.
+- Leaving the editor now always returns the camera to the first presentation scene. Adam asked for
+  that outright; it is not a side effect.
+- THE SHARED SERVICE WORKER. This release adds a module and two exports, and ValeVision sits under
+  Whitecardopedia's shared worker whose cache token is Adam's call, not this app's. A warm client
+  whose cached copy of `Na__LayoutEditor__SnapshotRenderer__.js` lacks the two new exports will
+  break the editor until a second visit. The token needs bumping with this release.
+
+**Verified**
+- `Na__Verify__Exports__.mjs` PASS, 411 files. The fold tokens and `transform: none` confirmed live
+  in the browser on app.localhost.
+- THE VEILS ARE NOT BROWSER-VERIFIED HERE. A project with sheets would not load on a local static
+  server, so the tab strip never appeared and neither veil could be exercised. They are verified in
+  TrueVision - traced end to end, both directions - and ported with the class names, body class,
+  header height, carousel API and frame markup all confirmed identical between the two apps. Worth
+  a look on a real ValeVision project before this is trusted.
+
+**Files**
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__AppHeader__.css` - the fold, one region.
+- `03__Style__AppStylesheets/Na__UiFeature__Styles__LoadingOverlays__.css` - the veil.
+- `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__LoadingVeil__.js` - new.
+- `51__System__LayoutEditor/05__Core__ModeController/Na__LayoutEditor__ModeController__.js` - wiring.
+- `51__System__LayoutEditor/01__Core__Loader/Na__LayoutEditor__Loader__.js` - waits for the drawing.
+- `51__System__LayoutEditor/25__System__RenderStyles/Na__LayoutEditor__SnapshotRenderer__.js` - queue depth.
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.69.0 - 20-Sep-2026 - A Selection Saved as a File, and a Route on the Local Server to Write It
+### Ported from TrueVision3D v2.76.0 (the Custom Scrapbook), with the server side written for this app's own server
+
+**Overview**
+- Third and last part of one port: v2.67.0 is north and what a viewport is a drawing of, v2.68.0 the
+  Scrapbook tab and the elements that keep answering, this is the library of your own making.
+- Select anything on a sheet - vectors, text, leaders, dimensions, groups nested to any depth - give
+  it a name, press Save Selection. It becomes ONE JSON FILE in a category folder, and a tile on the
+  Scrapbook tab that drags onto any sheet of any project, double-clicks into the middle of the view,
+  and right-clicks to delete. A dropped item is ordinary sheet records: it moves, copies, prints and
+  undoes like anything drawn by hand, in one undo step.
+- MADE PORTABLE ON THE WAY OUT. What only means something where it came from is left behind: layer
+  ids (it lands on the target sheet's own text, dimension and vector layers), a dimension's viewport,
+  a bubble's specification link, a parametric element's tie. A dimension that read its drawing's
+  scale is told so outright, as a copy is. Viewports are refused: a viewport carries a scene and a
+  snapshot, and both are its project's.
+- A SCALE BAR INSIDE AN ITEM STAYS A SCALE BAR. Its parametric block rides on the group record, and
+  after the drop it ties itself to the drawing it landed beside.
+
+**Where the files are** (`51__LayoutEditor__UserScrapbookContent/`, new, beside `index.html`)
+- Five category folders, TrueVision's: General, Dimensions, Annotations, 2D Entourage, General Notes.
+  `UserScrapbook__Index__.json` at the root lists every item and is rewritten from what is actually
+  in the folders, so a file added or taken away by hand is picked up. The live site has no directory
+  listing: the index is what makes the library readable there.
+- EACH FOLDER HOLDS A `.gitkeep`. The save route never creates a category - a typo in a request must
+  not grow the tree - and git does not track an empty folder, so without it a fresh clone would have
+  a library nothing could be saved into. The index only lists files named as items, so it never
+  sees them. (TrueVision's five folders are empty and untracked today: the same gap, on Adam's list.)
+- AN ITEM FILE IS THE SAME DOCUMENT IN BOTH APPS, key for key. One copied by hand from TrueVision's
+  library folder into this one drops here as it does there.
+
+**The server side** (`WebApps/Whitecardopedia/Server__ValeVisionScrapbook__Api__.py`, new; `server.py`, two lines)
+- A browser cannot write a file, so the app saves through three routes on the local development
+  server: `GET /api/valevision/scrapbook` (the index, rebuilt first), `POST .../items`
+  `{ category, name, item }`, `POST .../items/delete` `{ file }`. A Flask blueprint in a file of
+  its own, registered by `server.py` straight after the app is made.
+- EVERY RULE IS TRUEVISION'S. It saves only into category folders that already exist and match
+  `NN__ScrapbookItems__Name`; it names every file itself from a sanitised name, so nothing in a
+  request is ever used as a path; the identity keys are the server's and cannot be forged; a delete
+  never unlinks - the file moves to `00__Deleted__Quarantine`, where the index does not look; the
+  index is only rewritten when its items changed, so reading the library never dirties the repo.
+- THIS SERVER IS NOT TRUEVISION'S, and the transport says how it differs. It has no `/api/health`:
+  it is known by `/api/check-localhost` answering `{ isLocalhost : true }`. It answers an UNKNOWN
+  GET WITH A PAGE OF HTML AND 200 (its catch-all serves `index.html`), so an answer only counts when
+  it parses as the JSON expected - TrueVision's code already read answers that way, so nothing had
+  to change but the probe. An unknown POST answers 405. Both proved against `server.py` itself,
+  imported and driven through Flask's test client, never run.
+- `server.py` RUNS FLASK IN DEBUG MODE, so a running server restarts itself when the file is saved
+  and has the routes at once. One started another way needs restarting by hand; the section says
+  "Restart it, then save" when it finds the server without them. It was not running during this port.
+
+**The clipboard learned to land a dimension** (`ItemClipboard__` 1.2.0, `SheetModel__TextAndDimensions__` 1.1.0)
+- The library has a Dimensions category, and this app's clipboard set had no dimension leaf and its
+  sheet model no `InsertDimension`: a saved dimension would have been dropped on the floor, silently.
+  `InsertDimension` is TrueVision's, byte for byte; `InsertLeaves` has TrueVision's dimension leaf -
+  moved with the set, put on a dimension layer of the sheet it lands on, keeping its viewport only
+  when the set came from this same sheet.
+- COPY IS UNCHANGED. A dimension is still not a copyable kind here, so Ctrl+C never holds one.
+  TrueVision's wider clipboard (dimensions and viewports in a set, cut, exact cross-sheet paste) is
+  a separate piece of work and is not part of this port.
+
+**Tested**
+- `Na__Test__ScrapbookApi__.test.py`, ported: 25 checks through Flask's test client against a
+  temporary folder - saves, the server's own file names and identity keys, a second save inside one
+  second, every refusal (unknown category, traversal, no name, no entries, a viewport entry), a
+  hand-added file listed and junk ignored, a read that changes nothing not rewriting the index,
+  quarantine, and the real folder never the target.
+- THE FIRST RUN DIRTIED THE REPOSITORY, and not where expected. The test puts the bundled Flask on
+  the path, as `server.py` does - and this repository TRACKS that Flask's `__pycache__` files. Python
+  found them stale and rewrote 108 of them. Restored from HEAD, file by file, nothing else touched;
+  the test and the test server now set `sys.dont_write_bytecode` before their first import and say
+  why. Re-run: working tree exactly as found.
+- In the app, through `Na__Test__ScrapbookServer__.py` (ported and adapted: the REAL blueprint on a
+  temporary folder, plus read-only copies of the two reads the app makes of its local server - on
+  `127.0.0.1` the app asks its server for `project.json`, not the CDN). On a scratch copy of 3047's
+  sheet: a Drawing Title saved to General (the file carries its parametric block and no tie); dropped
+  back as a live element tied to the nearest drawing, one undo step, redo whole; two dimensions and
+  a vector saved to Dimensions and dropped - 7 dimensions to 9, no viewport, measure-at-scale said
+  outright, this sheet's dimension layer, the same lengths, all three selected; deleted through the
+  house confirm dialog and found in the quarantine folder. The real content folder held its five
+  `.gitkeep` files throughout.
+- Nothing of the project was written. The test server has no route that writes one and no worker
+  config, the page's fetch was guarded besides, and the one write the guard did refuse was the app's
+  own drawing-notes mirror. The real sheet was byte-identical before and after, twice.
+
+**Files**
+- New: `51__System__LayoutEditor/56__Feature__ScrapbookCustom/` (the library, verbatim but for one
+  string; the transport, adapted; the section; the config; the stylesheet),
+  `51__LayoutEditor__UserScrapbookContent/` (five folders), `80__Testing__PrototypeEnvironment/`
+  `Na__Test__ScrapbookApi__.test.py` and `Na__Test__ScrapbookServer__.py`,
+  `WebApps/Whitecardopedia/Server__ValeVisionScrapbook__Api__.py`.
+- Changed: `WebApps/Whitecardopedia/server.py` (registers the blueprint; three lines in its route
+  list), `ItemClipboard__` 1.2.0, `SheetModel__TextAndDimensions__` 1.1.0, `SheetModel__` 1.18.0,
+  `ModeController__` 1.18.0 (registers the section).
+
+**Not yet confirmed by Adam.** The service worker note under v2.67.0 covers all three releases.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.68.0 - 20-Sep-2026 - The Right Column Gets a Scrapbook Tab, and What You Drag Out of It Keeps Answering
+### Ported from TrueVision3D v2.76.0 (the parametric scale bar), v2.77.0 (the tab and the linking noodle), v2.80.0 (the Drawing Title) and v2.85.0 (the noodle's plug)
+
+**Overview**
+- THE RIGHT COLUMN HAS TWO TABS. Properties is everything it was; Scrapbook holds the libraries.
+  Sections name the tab they live on, the choice is remembered per browser, and a section on the
+  tab that is not showing is neither built nor refreshed.
+- A PARAMETRIC ELEMENT IS A GROUP THAT KNOWS WHAT IT IS. It carries `Group__Parametric` - a type, its
+  parameters, and what it is tied to - and its members are rebuilt from those whenever one changes.
+  It is still ordinary records: it moves, copies, prints, and Ctrl+Shift+G explodes it into plain
+  vectors and text. Two types arrive: the SCALE BAR and the DRAWING TITLE (the title, its underline,
+  and optionally the bar beneath). A tile is a PRESET of a type, so three tiles are two types.
+- TIED TO A DRAWING, IT FOLLOWS IT. Dropped, an element ties itself to the nearest scaled drawing.
+  Change that drawing's scale and the bar redraws INSIDE THE SAME ANNOUNCEMENT, so it is one undo
+  step and redo brings both back - the sheet model's new `RegisterBeforeAnnounce` is what makes that
+  possible. The title is written from what the drawing is: NORTH ELEVATION, from the project's
+  north (v2.67.0); a name somebody typed on the viewport, if there is one; and until north is set,
+  `{{DIRECTION}} ELEVATION` - the word stays in braces, it is not guessed.
+- THE NOODLE. A selected element shows its tie as a curve from its socket to the drawing, which
+  lights up. Drag from the SOCKET onto another drawing to re-tie, onto the title block's Scale cell
+  for the sheet's scale, onto bare paper to untie (it keeps what it says). Or take hold of THE PLUG,
+  the dot at the far end, and carry that instead - "like dragging a rope or a cable". One drag, two
+  places to begin it; Escape puts it back; one undo step either way.
+- Grips: stretch a bar by its end (it grows by whole divisions), and a lookup grip opens its scales.
+  The Properties tab's Parametric Element section has the rest, and says in a sentence why a title
+  reads as it does.
+
+**What the existing modules had to learn** (all ported from TrueVision, anchored, nothing else moved)
+- `SheetModel__State__` 1.1.0: `RegisterBeforeAnnounce`, run inside Touch ahead of the change event,
+  so derived records are in step before the history takes its snapshot. `SheetModel__Groups__` 1.1.0:
+  `DeleteItems(sheet, items, silent)`. `SheetModel__Viewports__` 1.1.0: the viewport namer (v2.67.0).
+- `15__Core__Markup/Groups__` 1.2.0: `RegisterLabeller` and `NameFor`, so the tag on a selected group
+  reads "Drawing Title" or "Scale Bar". `30__System__SheetTools/Grips__` 1.8.0:
+  `RegisterGroupProvider`, how a group's own grips and its noodle get onto the handles layer.
+- `ItemClipboard__` 1.2.0: `InsertSet`, the door every scrapbook drop goes through - PasteSet keeps
+  this app's own signature and hands its set to it - and A PASTED GROUP KEEPS THE REST OF ITS RECORD.
+  It was rebuilt from its members alone, so a copy of a parametric element would have been a plain
+  group that no longer answered to anything.
+- `PanelHost__` 1.4.0: the tabs. `Styles__Panels__.css`: TrueVision's Scrapbook and Column Tabs
+  regions, byte for byte.
+
+**Divergences from TrueVision**
+- THE STANDARD SCRAPBOOK ARRIVES EMPTY, and so its section stays hidden. TrueVision ships two items -
+  a mapping data credentials block and a north point - both site plan furniture and both Noble
+  Architecture's own. Neither belongs in this app. The module, the section and the config are in
+  place because every other library draws its tiles, previews and bounds through them; a house item
+  is added by writing it into the config, exactly as TrueVision's are written.
+- ONE DRAWING TYPE. This app has no site plan sheets, so the libraries filter by the one type every
+  sheet is, where TrueVision asks the sheet model.
+- NO PHASE TO READ. TrueVision writes EXISTING or PROPOSED from the model group a viewport draws.
+  This app loads one model per project, so Automatic writes nothing - the box says
+  "Automatic (none in this app)" - and Existing or Proposed is chosen per title where it is wanted.
+
+**What did not come across, and why**
+- TRUEVISION MOVED ON THE SAME MORNING, twice, in work Adam has not yet signed off there: a floor
+  plan's storey as a sixth fact ("PROPOSED GROUND FLOOR PLAN", its v2.87.0) and an elevation record's
+  typed name reaching the title ("COACH HOUSE EAST ELEVATION", its v2.86.0). This app holds the
+  modules as they were before both: TitleText 1.0.0, Identity 1.0.0, DrawingTitle 1.0.0,
+  ViewportLink 1.2.0, Panel 1.2.0. Each TrueVision header says which version is here. TrueVision
+  first, then the port, once he has tried them.
+- The noodle's tooltip names an unnamed drawing "Viewport 1", not "North Elevation". That is
+  TrueVision's wording too; worth changing there first.
+
+**Found by this port's own test, fixed in both apps**
+- The plug's dot stayed at the far end of a noodle that was no longer there for the length of a
+  drag. The live noodle took the finished tie away, but the plug is a grip element, not part of the
+  noodle's drawing. Now hidden while either end is carried - hidden, not removed, because it may be
+  the element the press began on. TrueVision's 1.2.0 had not shipped, so it is the same version there.
+
+**Tested**
+- Node, against this app's own modules: scale bar 35 checks, drawing title 39. Every module marked
+  verbatim proved byte-identical to TrueVision's from its first code region down (eight files; four
+  of them against TrueVision's HEAD, because its working copies have since moved on).
+- In the app on a scratch copy of 3047's sheet, every write refused: both tabs, three parametric
+  tiles, the Standard section hidden; a title dropped by double press ties to the elevation and
+  reads NORTH ELEVATION; north turned and it reads EAST ELEVATION, cleared and it reads
+  {{DIRECTION}} ELEVATION, the unnamed viewport being called North Elevation, East Elevation and
+  then by its record's name in step; one undo step for a drop, redo whole; the drawing's scale
+  changed 1:50 to 1:100 and both elements followed, ONE undo took all three back and ONE redo
+  brought all three forward; the plug carried to a second drawing (retitled from its typed name,
+  1:100, one undo step each way), dropped on a 3D picture (untied - a picture has no scale, the same
+  rule as TrueVision), Escape mid-drag (nothing changed, still selected); the socket still doing all
+  it did; the plug visible on a press that has not moved, hidden while carried, back after Escape.
+- Real sheet byte-identical before and after, twice. No write reached the network.
+
+**Files**
+- New: `51__System__LayoutEditor/55__Feature__Scrapbook/` (4), `57__Feature__ScrapbookParametric/`
+  (9), `80__Testing__PrototypeEnvironment/Na__Test__ScrapbookScaleBar__.test.mjs` and
+  `Na__Test__ScrapbookDrawingTitle__.test.mjs`.
+- Changed: `SheetModel__` 1.18.0 and its `State__`, `Groups__` and `Viewports__` units (1.1.0 each),
+  `15__Core__Markup/Groups__` 1.2.0, `Grips__` 1.8.0, `ItemClipboard__` 1.2.0, `PanelHost__` 1.4.0,
+  `Styles__Panels__.css`, `ModeController__` 1.18.0.
+
+**Not yet confirmed by Adam.** The service worker note under v2.67.0 covers all three releases.
+
+
+# ---------------------------------------------------------
+## ValeVision3D v2.67.0 - 20-Sep-2026 - North Is a Bearing, Not the Model's Green Axis, and an Elevation Is Named From It
+### Ported from TrueVision3D v2.80.0 (north direction and viewport identity), with its compass as TrueVision v2.84.0 left it
+
+**Overview**
+- THE APP HAS ALWAYS CALLED THE MODEL'S -Z AXIS NORTH. An elevation's stored bearing is measured
+  from it and the Elevations menu's presets are named by it, so on a model that was not drawn with
+  north up the page every name is wrong and is put right by hand, drawing by drawing. One number
+  fixes all of them: the project's north, as a bearing clockwise from that axis.
+- DEV TOOLS > NORTH DIRECTION. Draw Compass: one click where it sits, a second towards north; the
+  compass follows the pointer between them, Shift snaps, Escape cancels, and it works in a plan view.
+  Or type the bearing - a model drawn north-up is 0 in one keystroke. WHAT THE ELEVATIONS WILL BE
+  CALLED is the proof: every elevation with its stored bearing and the word north now gives it, live
+  while the compass is aimed, so one pointed the wrong way round shows at once as "South" against
+  the wall everybody knows faces north.
+- SET IS NOT SAVED. Setting north changes the project in memory and every open sheet follows; Save
+  North keeps it through the drawings block's own save, as `LayoutEditor__DrawingsData__North`
+  (bearing, where the compass stands, when). ABSENT MEANS NOT SET - never zero, which is an answer.
+- WHAT A VIEWPORT IS A DRAWING OF is now asked in one place (`Na__LeViewId__Describe`): kind, which
+  way an elevation faces, a name somebody typed, the record's name. A pure sentence writer turns
+  that into a title (`Na__LeViewText__Compose`), and UNNAMED ELEVATION VIEWPORTS ARE NAMED FROM IT -
+  "North Elevation" in the panels, the menus, the toasts and the frame caption - once north is set.
+  A typed name always wins; a paste's "... copy" is not a typed name; and nothing is written to a
+  record, so a name can never go stale. The parametric Drawing Title (v2.68.0) reads the same facts.
+- Compass words: the four cardinals, and the four between them only within 15 degrees of the
+  diagonal (configurable), because 30 degrees off north is still the north elevation to everybody.
+
+**Divergences from TrueVision**
+- NO SHOW COMPASS. TrueVision can leave the compass standing with the panel shut because its
+  interactive-overlay registry hides authoring aids from every render. This app has no such
+  registry, so THE COMPASS IS IN THE SCENE ONLY WHILE ITS PANEL IS OPEN, the panel shuts itself when
+  a sheet opens, and the compass steps out for as long as any sheet picture is queued or rendering.
+- NO PHASE AND NO SITE PLAN BRANCH in the identity module: one model per project, no site plan
+  viewports. `PhaseOf` is kept as a function that answers "unknown", so the day this app has phases
+  there is one place that learns of them.
+- `Na__NorthData__Save(showToast)` follows this app's `Na__DrawData__Save`.
+
+**Found by this port's own test, and it would have printed**
+- THE COMPASS WAS RENDERED INTO A SHEET'S 3D VIEWPORT. The panel was meant to shut itself when a
+  sheet opened; the listener first asked whether its panel was open - and the mode controller
+  collapses every dev panel by class BEFORE it announces a sheet, so the answer was always no, and
+  the compass was left in the scene for the snapshot renderer to draw. It no longer asks. The
+  announcement is made in the same turn the sheet is set and a render is queued behind a promise, so
+  taking the compass out there is always ahead of the first render.
+- And the other door: a scene saved from the 3D tab restamps every viewport that shows it, with no
+  sheet opening at all. The compass now also leaves the scene whenever the snapshot renderer
+  announces work (`na-layouteditor-snapshot-queue`, which the renderer has announced since v2.70.0,
+  written the same morning) and returns after. Heard by name - the editor loads lazily here and
+  must not be imported for one string - so where the event is absent nothing is lost but this.
+
+**What did not come across, and why**
+- `Na__InteractiveOverlays` and the Show Compass toggle (TrueVision v2.84.0): the registry belongs to
+  TrueVision's Drawing Planes system, which is not in this tree. When it is ported, take the gizmo
+  and the editor from TrueVision whole.
+- TrueVision's rebuilt Elevations menu (its v2.86.0, not yet signed off) names its presets from
+  north. Here the Elevations menu still names them by the model's axes, as TrueVision's did at the
+  version this was ported from. The NAMES ON SHEETS are right regardless: they are derived.
+
+**The shared service worker - Adam's call, and it matters for all three releases**
+- v2.67.0 to v2.69.0 add 21 modules and NEW EXPORTS ON EXISTING ONES: `RegisterBeforeAnnounce`,
+  `RegisterViewportNamer`, `InsertDimension`, `RegisterLabeller`, `RegisterGroupProvider`,
+  `InsertSet`, `RegisterTab` among them. This app sits under Whitecardopedia's shared worker
+  (`PWA_SW_VERSION_TOKEN`, `2026-09-18-1`), which serves shell JS stale-while-revalidate away from
+  localhost. A warm client holding the old `SheetModel__` beside the new `ModeController__` will fail
+  to link the editor until its next visit. The token evicts every Vale app's caches, models
+  included, so bumping it is not a port's decision. Raised with Adam; NOT changed.
+
+**Tested**
+- Node, against this app's own modules: compass maths 23 checks (one north bearing gives back all
+  of a real project's hand-typed elevation names), title text 27.
+- In the app on `127.0.0.1` (project 3047's local copy, every write refused): the section in the
+  Dev menu; a typed bearing of 90 and the list reads "faces North"; the two-click compass through
+  the canvas's own pointer events - the first click stands it, the second aims it, the list follows,
+  Escape mid-draw changes nothing; Save North fails honestly on a server with no worker config and
+  the status line keeps saying "Not saved yet"; the compass in the scene with the panel open, gone
+  with it shut, and gone the moment a sheet opens with the panel still open.
+- `Na__Verify__Exports__.mjs` PASS (411 files) and `Na__Verify__ModuleGraph__.mjs` PASS (515 modules).
+
+**Files**
+- New: `02__Src__AppModules/47__System__NorthDirection/` (8: compass maths, config and its state,
+  the project data, the gizmo, the pick tool, the Dev menu editor, its stylesheet),
+  `51__System__LayoutEditor/20__System__Viewports/Na__LayoutEditor__ViewportTitleText__.js`
+  (verbatim), `...ViewportIdentity__.js` and its config (adapted),
+  `80__Testing__PrototypeEnvironment/Na__Test__NorthCompass__.test.mjs` and
+  `Na__Test__ViewportTitleText__.test.mjs`.
+- Changed: `index.html` (the Dev menu item, three imports, three init lines),
+  `03__Style__AppStylesheets/Na__CoreUi__Styles__Index__.css` (one import),
+  `SheetModel__Viewports__` 1.1.0 and `SheetModel__` 1.18.0 (the namer), `ModeController__` 1.18.0
+  (`Na__LeViewId__Initialize`).
+
+**Not yet confirmed by Adam.** North is not saved for any project.
+
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.66.1 - 20-Sep-2026 - Tighter Margins on the Specification Page
 ### Authored in TrueVision3D v2.78.1; one of its three changes applies here
 

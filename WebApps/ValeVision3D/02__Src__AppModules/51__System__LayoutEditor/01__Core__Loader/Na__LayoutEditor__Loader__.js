@@ -143,6 +143,7 @@
     const Na__LeLoad__PAPER_SIZE       = 'A3';                                 // <-- The config's DefaultPaperSize, for a record without one
     const Na__LeLoad__STATUS_FILES     = 'Fetching the drawing tools';
     const Na__LeLoad__STATUS_SETTINGS  = 'Reading the drawing settings';
+    const Na__LeLoad__STATUS_DRAWING   = 'Drawing the Views';                    // <-- A real count is appended: "Drawing the Views  -  1 of 2"
     const Na__LeLoad__MSG_SWITCHED_OFF = 'The Layout Editor is switched off in its config.';
     const Na__LeLoad__MSG_DEV_FAILED   = 'The Layout Editor Dev section could not load. The console has the reason.';
     // ------------------------------------------------------------
@@ -365,6 +366,25 @@
     // belongs to the Dev section. Resolves to the action's result, or null
     // when the editor could not be had.
     // ------------------------------------------------------------
+    // HELPER FUNCTION | Hold the Screen Until the First Sheet Is Drawn
+    // ------------------------------------------------------------
+    // Reached through the facade rather than imported, because importing the
+    // editor's own modules up here would load eagerly the very bundle this
+    // file exists to defer. An older editor without the call is simply not
+    // waited for.
+    // ------------------------------------------------------------
+    function Na__LeLoad__AwaitFirstDrawing(editor) {
+        const wait = editor && editor.mode && editor.mode.Na__LeMode__WaitForFirstDrawing;
+        if (typeof wait !== 'function') return Promise.resolve(true);
+        const onProgress = (drawn, total) => {
+            Na__LeLoadScreen__SetStatus(total > 1 ? Na__LeLoad__STATUS_DRAWING + '  -  ' + drawn + ' of ' + total : Na__LeLoad__STATUS_DRAWING);
+        };
+        try { return Promise.resolve(wait(onProgress)).catch(() => true); }
+        catch (error) { return Promise.resolve(true); }                          // <-- A wait that throws must never keep the screen up
+    }
+    // ------------------------------------------------------------
+
+
     async function Na__LeLoad__WithEditor(action, quiet) {
         if (Na__LeLoad__Editor) return action(Na__LeLoad__Editor);
         if (!quiet) Na__LeLoadScreen__Show();
@@ -387,7 +407,17 @@
         try {
             return action(editor);
         } finally {
-            if (!quiet) Na__LeLoadScreen__Hide();                                // <-- Waits for the first paint, then fades
+            // THE SCREEN USED TO GO TWO FRAMES AFTER THE SHEET OPENED, which is
+            // long before the sheet is drawn: the viewports are rendered from
+            // the model one at a time, and the reader was handed a blank page
+            // that filled in underneath them. Now it waits for the pictures to
+            // actually be on the paper, counted against what the model says the
+            // sheet has, and says how far along it is while it waits. A Dev
+            // action with no sheet open answers at once, as before.
+            if (!quiet) {
+                await Na__LeLoad__AwaitFirstDrawing(editor);
+                Na__LeLoadScreen__Hide();                                        // <-- Waits for the first paint, then fades
+            }
         }
     }
     // ------------------------------------------------------------

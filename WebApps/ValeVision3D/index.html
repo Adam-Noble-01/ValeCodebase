@@ -910,6 +910,20 @@
                 </li>
                 <!-- -------------------------------------------------------- -->
                 <!-- -------------------------------------------------------- -->
+                <!-- NORTH DIRECTION (authoring only, ported from TrueVision)  -->
+                <!-- -------------------------------------------------------- -->
+                <!-- @delegate: ./02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js -->
+                <li class="na-dropdown-menu__item na-dropdown-menu__item--localhost-only" id="naNorthDevItem" style="display:none;">
+                    <button class="na-dropdown-menu__button na-dropdown-menu__button--has-submenu" id="naNorthDevToggle" aria-expanded="false">
+                        North Direction
+                        <span class="na-dropdown-menu__subarrow">&#9662;</span>
+                    </button>
+                    <div class="na-dropdown-menu__panel na-pm-dev__panel" id="naNorthDevPanel">
+                        <!-- Compass controls generated dynamically by Na__North__DevMenu__Editor__.js -->
+                    </div>
+                </li>
+                <!-- -------------------------------------------------------- -->
+                <!-- -------------------------------------------------------- -->
                 <!-- PROJECTED LINEWORK (localhost dev only, port Phase 4)     -->
                 <!-- -------------------------------------------------------- -->
                 <!-- @delegate: ./02__Src__AppModules/50__System__ProjectedLinework/Na__ProjectedLinework__DevMenu__Controls__.js -->
@@ -1404,6 +1418,9 @@
     import { Na__ElevGrip__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__GizmoGrip__.js';
     import { Na__ElevationMode__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__ModeController__.js';
     import { Na__Elevation__DevMenu__Initialize } from './02__Src__AppModules/46__System__ElevationViews/Na__Elevation__DevMenu__Editor__.js';
+    import { Na__North__DevMenu__Initialize } from './02__Src__AppModules/47__System__NorthDirection/Na__North__DevMenu__Editor__.js';
+    import { Na__NorthGizmo__Initialize } from './02__Src__AppModules/47__System__NorthDirection/Na__North__CompassGizmo__.js';
+    import { Na__NorthPick__Initialize } from './02__Src__AppModules/47__System__NorthDirection/Na__North__PickTool__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Projected Linework (port Phase 4)
@@ -2227,6 +2244,12 @@
             showToast : Na__UiFeature__ShowToast
         });
     });
+
+    // NORTH DIRECTION | Draw a compass in the 3D view; elevations and drawing titles are named by it
+    // @delegate: ./02__Src__AppModules/47__System__NorthDirection/
+    Na__NorthGizmo__Initialize(Na__Scene__Main);                                // <-- The compass lives in the scene, outside the model root
+    Na__NorthPick__Initialize({ renderer : Na__Renderer__Main, camera : Na__Camera__Main, modelRoot : Na__ModelGroup__Root });
+    Na__North__DevMenu__Initialize({ modelRoot : Na__ModelGroup__Root, showToast : Na__UiFeature__ShowToast });   // <-- Authoring only; a saved north is read without it
 
     // PROJECTED LINEWORK | Config, overlay, pipeline and Dev section (port Phase 4)
     // @delegate: ./02__Src__AppModules/50__System__ProjectedLinework/

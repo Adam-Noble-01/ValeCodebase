@@ -1189,24 +1189,27 @@ ValeVision's loader links. A file in one app is at the same path in the other.
 | The service worker cache token bump that carries TV v2.65.0 to installed copies | TV `62/TrueVision__Pwa__ServiceWorker__Logic__.js` 1.7.1 | **n/a** | ValeVision has no service worker or installability module, so there is no shell cache to evict | 18-Sep-2026 |
 | `51/80__Feature__WebViewer/Na__LayoutEditor__WebViewer__TouchControls__.js` 1.1.0, `...__Drawings__.js` 1.1.0, `...__WebViewer__.js` | TV v2.65.2 same files | verbatim | The iPad round: a drawing no longer turns the page (a fitted sheet had no panning to spend, so every drag was spare travel), gestures apply once per painted frame instead of once per touch move, the pan stopped reading the scroll back, and WebKit's page pinch is refused where this code does the pinching. Applied to both copies the same day | 18-Sep-2026 |
 
----
-
 ## Per-Scene Lighting (v2.71.0, 28-Sep-2026)
 
-ValeVision only, at Adam's request. A Presentation Mode scene can carry its own sun and fill light (Rotation, Height, Sun,
-Ambient, Shadows) in `PresentationMode__Scene__Lighting`, storing only what differs from `Scene__Default__LightingConfig`.
-TrueVision builds the same two lights in the same place and has no per-scene lighting.
+ValeVision first, at Adam's request, and ported to TrueVision the same day as TrueVision3D v2.161.0. A Presentation
+Mode scene can carry its own sun and fill light (Rotation, Height, Sun, Ambient, Shadows) in
+`PresentationMode__Scene__Lighting`, storing only what differs from `Scene__Default__LightingConfig`.
 
 | ValeVision | TrueVision | Parity | Notes | Checked |
 |---|---|---|---|---|
-| `06/Na__Scene__PerSceneLighting__.js` 1.0.0 | none | new | Owns both lights: defaults from the config, resolve, the minimal stored block, the flight blend (short way round), apply, capture; shadows by `LightShadow.intensity`, never castShadow | 28-Sep-2026 |
-| `21/Na__PresentationMode__DevMenu__SceneLightingRows__.js` 1.0.0 | none | new | Advanced > Lighting: four sliders with number boxes, Sun Casts Shadows, live preview, Use Default, Save Lighting | 28-Sep-2026 |
-| `06/Na__Scene__DefaultSceneLighting.js` (edited) | TV same | diverged | The sun position comes from the config and both lights are handed to the per-scene module; TrueVision still hardcodes (50, 100, 40) | 28-Sep-2026 |
-| `21/Na__PresentationMode__Camera__SceneTransition.js` 1.5.0 | TV same | adapted | The instant apply lights the scene; AnimateToScene eases the light with the camera | 28-Sep-2026 |
-| `21/Na__PresentationMode__DevMenu__SceneRowBuilders__.js` 1.3.0, `SceneEditor.js` 1.4.0, `BatchOps__.js` 1.1.0 | TV same | adapted | The Lighting subsection; the 'lighting' row action; Update Scene and Add Scene capture the live light; the batch restore point keeps it | 28-Sep-2026 |
-| `51/25/Na__LayoutEditor__SnapshotRenderer__.js` 1.7.0, `51/20/Na__LayoutEditor__Viewport3d__.js` 1.6.1 | TV same | adapted | 3D viewports in their scene's light, 2D underlays in the default; the scene's lighting joins the 3D fingerprint only when set | 28-Sep-2026 |
-| `42/Na__DrawView__ThumbnailBake__.js` 1.0.1 | none | new | The remembered 3D pose carries the light | 28-Sep-2026 |
-| `02__AppData/Na__AppConfig__Main.json`, the carousel stylesheet, `80/Na__Test__PerSceneLighting__.test.mjs` | n/a | n/a | The two lighting blocks; one CSS region; 40 Node checks | 28-Sep-2026 |
+| `06/Na__Scene__PerSceneLighting__.js` 1.0.0 | TV `06/` same 1.0.0 | verbatim | Owns both lights: defaults from the config, resolve, the minimal stored block, the flight blend (short way round), apply, capture; shadows by `LightShadow.intensity`, never castShadow. Header and console prefix differ | 28-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__SceneLightingRows__.js` 1.0.0 | TV `21/` same 1.0.0 | verbatim | Advanced > Lighting: four sliders with number boxes, Sun Casts Shadows, live preview, Use Default, Save Lighting. The drawing view broker is `40/` there, `42/` here | 28-Sep-2026 |
+| `06/Na__Scene__DefaultSceneLighting.js` (edited) | TV same (edited) | adapted | The sun position comes from the config and both lights are handed to the per-scene module, the same in both; TV keeps its HDRLoader and its own strengths (3.3 and 0.7) | 28-Sep-2026 |
+| `01/Na__AppFlow__LoadingSequence.js` (edited) | TV same 1.3.1, and TV `Index.html` | adapted | The block reaches the setup from the full config here; TV reads it in Index.html and hands it through the configs object | 28-Sep-2026 |
+| `21/Na__PresentationMode__Camera__SceneTransition.js` 1.5.0 | TV same (28-Sep-2026 log) | adapted | The instant apply lights the scene; AnimateToScene eases the light with the camera. TV eases it whatever its layer-timing flag says | 28-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__SceneRowBuilders__.js` 1.3.0, `SceneEditor.js` 1.4.0 | TV `SceneEditor.js` 1.4.0 | adapted | TV builds its rows inside the editor, so the subsection is appended there; the 'lighting' row action and the capture in `CaptureLiveViewIntoScene` are the same in both | 28-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__BatchOps__.js` 1.1.0 | TV same 1.2.0 | adapted | The restore point keeps the light | 28-Sep-2026 |
+| none | TV `21/Na__PresentationMode__ProjectJson__SceneData.js` 1.1.1 | n/a | TV's re-stamped schema note names the key; ValeVision has no schema note | 28-Sep-2026 |
+| `51/25/Na__LayoutEditor__SnapshotRenderer__.js` 1.7.0, `51/20/Na__LayoutEditor__Viewport3d__.js` 1.6.1 | TV SnapshotRenderer 1.13.0, Viewport3d 1.8.1 | adapted | 3D viewports in their scene's light, 2D underlays (and TV's fog images) in the default; the scene's lighting joins the 3D fingerprint only when set | 28-Sep-2026 |
+| `42/Na__DrawView__ThumbnailBake__.js` 1.0.1 | none | new | The remembered 3D pose carries the light; TV has no thumbnail bake | 28-Sep-2026 |
+| `02__AppData/Na__AppConfig__Main.json`, the carousel stylesheet, `80/Na__Test__PerSceneLighting__.test.mjs` 1.0.1 | TV same | adapted | The two lighting blocks (each app keeps its own strengths); one CSS region, placed after the tiny-input rules in TV's sheet; the test verbatim, reading the default strengths from each app's config | 28-Sep-2026 |
+
+---
 
 ## Pending back-port (ValeVision to TrueVision)
 
@@ -1227,7 +1230,6 @@ TrueVision builds the same two lights in the same place and has no per-scene lig
 | Layout Editor loads on first use: loader facade, loading screen, boot stylesheet | `51/01__Core__Loader/Na__LayoutEditor__Loader__.js`, `LoadingScreen__.js`, `Styles__Boot__.css`; TabStrip, DevMenu, ModeController and RenameDrawing edits (v2.45.0) | TrueVision's Index.html imports the whole editor at start-up as well; the loader keeps it off every page load until a sheet is opened |
 | Add Viewport scene list rebuilt on every refresh; the Viewport panel refreshed on scene broadcasts | `51/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.1, `51/05__Core__ModeController/Na__LayoutEditor__ModeController__.js` 1.15.1 (v2.45.1) | TrueVision's panel has the same one-time fill (`addSelect.options.length <= 1`), so plans, elevations and scenes added after a sheet first opens never reach Add Viewport there either |
 | Drawing thumbnail bake: new cards bake their picture, Bake Missing Thumbnails button | `42/Na__DrawView__ThumbnailBake__.js`, the floor plan and elevation Dev editors 1.2.0, two label keys (v2.46.0) | TrueVision's scene links also set the thumbnail path at creation with no picture behind it, so its seeded and added drawing cards show broken images until Save Thumbnail is pressed on each |
-| Per-scene lighting: Rotation, Height, Sun, Ambient and Shadows per scene, eased over flights | `06/Na__Scene__PerSceneLighting__.js`, `21/Na__PresentationMode__DevMenu__SceneLightingRows__.js`, the scene transition, editor, batch and Layout Editor snapshot edits (v2.71.0) | TrueVision lights every view the same way, so a shot whose subject faces away from its fixed sun stays in shadow |
 
 
 ### Contextual top bar fold and loading veils (TrueVision v2.83.0 -> ValeVision v2.70.0, 20-Sep-2026)

@@ -121,6 +121,11 @@
   `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css` (one region),
   `ValeVision__README__.md` (a Per-Scene Lighting section).
 
+**Ported to TrueVision** the same day as TrueVision3D v2.161.0, at Adam's request: the two new modules
+verbatim, the scene transition, editor, batch walk and Layout Editor edits adapted to TrueVision's own shape (its row
+builder sits inside its scene editor; its drawings bypass the composer but not the lights). The test became 1.0.1
+here: it reads the default strengths from the app config, so the same file runs in both apps.
+
 **Not yet confirmed by Adam.**
 
 

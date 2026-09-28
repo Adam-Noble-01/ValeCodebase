@@ -39,6 +39,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.0.1
+// - The default strengths are read from the app config rather than written
+//   in, so the test runs unchanged against TrueVision's 3.3 and 0.7 and keeps
+//   passing here when the defaults are retuned.
+//
 // 28-Sep-2026 - Version 1.0.0
 // - Initial implementation with the module it proves.
 //
@@ -132,8 +137,10 @@ import { tmpdir } from 'node:os';
         register(lights, appConfig.Scene__Default__LightingConfig, appConfig.Scene__PerSceneLighting) === true);
     check('the default sun sits at (50, 100, 40), where the setup module used to put it',
         nearXyz(lights.sun.position, 50, 100, 40), xyz(lights.sun.position));
-    check('default strengths come from the config: ambient 2.8, sun 0.5',
-        near(lights.ambient.intensity, 2.8) && near(lights.sun.intensity, 0.5));
+    const cfgAmbient = appConfig.Scene__Default__LightingConfig.Scene__Default__LightingConfig__AmbientIntensity;
+    const cfgSun     = appConfig.Scene__Default__LightingConfig.Scene__Default__LightingConfig__DirectionalIntensity;
+    check(`default strengths come from the config: ambient ${cfgAmbient}, sun ${cfgSun}`,
+        near(lights.ambient.intensity, cfgAmbient) && near(lights.sun.intensity, cfgSun));
     check('shadows are on by default', lights.sun.shadow.intensity === 1);
     check('registering asks for no frame (the first frame has not been drawn yet)', renderRequests === 0);
 
@@ -182,7 +189,7 @@ import { tmpdir } from 'node:os';
     check('a height that rounds to the default height is not stored',
         lighting.Na__SceneLighting__BuildBlock({ ...defaults, heightDeg : 57.4 }) === null);
     check('a strength that rounds to the default is not stored',
-        lighting.Na__SceneLighting__BuildBlock({ ...defaults, ambientIntensity : 2.804 }) === null);
+        lighting.Na__SceneLighting__BuildBlock({ ...defaults, ambientIntensity : defaults.ambientIntensity + 0.004 }) === null);
     check('rotation 360, and 359.6, are the default direction',
         lighting.Na__SceneLighting__BuildBlock({ ...defaults, rotationDeg : 360 }) === null
         && lighting.Na__SceneLighting__BuildBlock({ ...defaults, rotationDeg : 359.6 }) === null);

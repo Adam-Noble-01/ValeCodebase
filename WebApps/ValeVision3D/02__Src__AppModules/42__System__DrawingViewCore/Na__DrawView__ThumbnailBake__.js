@@ -54,6 +54,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.0.1 (per-scene lighting, v2.71.0)
+// - The 3D camera pose remembered before a run carries the lighting too. The
+//   flight into the first drawing eases the lights to the default, so without
+//   it the author came back to their scene lit the default way.
+//
 // 15-Sep-2026 - Version 1.0.0
 // - Initial implementation.
 //
@@ -84,6 +89,12 @@
     import { Na__DrawView__Transitions__GetCamera, Na__DrawView__Transitions__GetControls } from './Na__DrawView__Transitions__.js';
     import { Na__AppUtils__LoadingOverlay__Create } from '../03__AppUtils/Na__AppUtils__LoadingOverlay__.js';
     import { Na__RenderLoop__RequestRender } from '../05__RenderPipeline/Na__RenderLoop__Invalidation.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Scene Lighting (remembered and put back with the 3D camera)
+    // @delegate: ../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js
+    // ------------------------------------------------------------
+    import { Na__SceneLighting__GetLive, Na__SceneLighting__Apply } from '../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -198,7 +209,8 @@
             position   : camera.position.clone(),
             quaternion : camera.quaternion.clone(),
             fov        : camera.fov,
-            target     : (controls && controls.target) ? controls.target.clone() : null
+            target     : (controls && controls.target) ? controls.target.clone() : null,
+            lighting   : Na__SceneLighting__GetLive()                           // <-- The flight into a drawing eases the lights to the default
         };
     }
     function Na__DrawThumb__RestoreCameraPose(pose) {
@@ -213,6 +225,7 @@
             controls.target.copy(pose.target);
             if (typeof controls.update === 'function') controls.update();
         }
+        if (pose.lighting) Na__SceneLighting__Apply(pose.lighting, { requestRender : false });  // <-- Back in the light the 3D view had
         Na__RenderLoop__RequestRender();
     }
     // ------------------------------------------------------------

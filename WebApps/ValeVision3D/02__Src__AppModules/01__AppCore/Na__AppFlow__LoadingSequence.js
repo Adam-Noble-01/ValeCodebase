@@ -38,6 +38,10 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Per-scene lighting (v2.71.0)
+// - The lighting setup also receives the app config's Scene__PerSceneLighting
+//   block, and hands both lights to Na__Scene__PerSceneLighting__.
+//
 // 09-Sep-2026 - Projected linework overlay sync (port Phase 4)
 // - The drawing branch registers the linework overlay to the drawing camera every frame.
 //
@@ -601,7 +605,12 @@
         Na__LoadWatchdog__SetIsLoadingFlag(true);                             // <-- Expose flag for SW controllerchange bridge
 
         Na__UiFeature__UpdateStatus('Creating scene...');
-        Na__Scene__SetupDefaultSceneLighting(Na__Scene__Main, Na__Config__LightingConfig, Na__Config__GroundPlane);
+        Na__Scene__SetupDefaultSceneLighting(
+            Na__Scene__Main,
+            Na__Config__LightingConfig,
+            Na__Config__GroundPlane,
+            (Na__FullAppConfig && Na__FullAppConfig.Scene__PerSceneLighting) || null  // <-- Per-scene lighting switch, flight blend and slider ranges
+        );
 
         // RENDER PIPELINE | Engine-Aware Composer Builder
         // ---------------------------------------------------------------

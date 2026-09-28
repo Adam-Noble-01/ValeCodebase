@@ -15,12 +15,13 @@
 //   model window, the composer and material presets are entered with the
 //   viewport's style toggles, and the tiled renderer paints it at the
 //   requested pixels per paper millimetre. Then the cut, the presets and
-//   the 3D suspension are undone in reverse.
+//   the 3D suspension are undone in reverse. A 2D underlay is always lit by
+//   the default lighting, as a drawing is in the viewer.
 // - 3D snapshot: the main camera is posed from the scene record (which also
-//   applies the scene's layer visibility and cross section binding), the
-//   material preset applies whitecard and opaque glass, the profile lines
+//   applies the scene's layer visibility, cross section binding and lighting),
+//   the material preset applies whitecard and opaque glass, the profile lines
 //   pass follows the toggle, the tiled renderer paints, and the pose,
-//   visibility, sections and pass are put back.
+//   visibility, sections, lighting and pass are put back.
 // - Renders queue one behind another: the renderer and the presets are
 //   shared state and two renders in flight would trample each other.
 //
@@ -40,6 +41,15 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.7.0 (per-scene lighting, ValeVision v2.71.0)
+// - Render3d: the scene pose now also lights the model the scene's way
+//   (PresentationMode__Scene__Lighting), and the viewer's lighting goes back
+//   afterwards with the pose, the layers and the sections.
+// - Render2d: the underlay is rendered in the default lighting and the
+//   viewer's lighting is put back after, so a drawing never borrows the light
+//   of whichever 3D scene was last on screen.
+// - ValeVision only; TrueVision has no per-scene lighting.
+//
 // 18-Sep-2026 - Version 1.6.0
 // - stillWanted. Render2d and Render3d take an optional last argument, a
 //   function asked when the render's turn in the queue comes; false answers
@@ -162,6 +172,17 @@
     // ------------------------------------------------------------
     import { Na__CrossSection__GetAppearance, Na__CrossSection__SetLineWidth } from '../../41__System__CrossSectionView/Na__CrossSectionView__SystemLogic.js';
     import { Na__LineworkSettings__SetLineworkBaseOverride } from '../../05__RenderPipeline/Na__RenderEffect__LineworkSettings__State.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Scene Lighting (a 3D picture in its scene's light, a 2D one in the default)
+    // ------------------------------------------------------------
+    // @delegate: ../../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js
+    // ------------------------------------------------------------
+    import {
+        Na__SceneLighting__GetLive,
+        Na__SceneLighting__Apply,
+        Na__SceneLighting__ApplyDefaults
+    } from '../../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -460,7 +481,13 @@
             let   sectionWas  = null;
             let   edgesSet    = false;
             let contextSaved = null;                                               // <-- Visibility to put back when the context was hidden
+            const lightingWas = Na__SceneLighting__GetLive();                      // <-- The light a 3D scene may have left on; put back after
             try {
+                // A DRAWING IS ALWAYS LIT BY THE DEFAULT, as it is in the viewer,
+                // where every flight into a drawing eases the lights back to it.
+                // Without this the underlay would be shaded by whichever scene the
+                // viewer last stood in, and two renders of one drawing could differ.
+                Na__SceneLighting__ApplyDefaults({ requestRender : false });
                 Na__DrawView__SectionAdapter__SuspendLiveTool();
                 // THE OUTLINE WIDTH GOES IN BEFORE THE CUT IS BUILT, so the cut's
                 // outline is drawn at this viewport's width, and comes back out
@@ -502,6 +529,7 @@
                 Na__DrawView__SectionAdapter__Release();
                 if (sectionWas !== null) Na__CrossSection__SetLineWidth(sectionWas);                  // <-- After the release, so the author's sections end at their own width
                 if (!wasSuspended) Na__DrawView__Transitions__ResumeThreeD();
+                if (lightingWas) Na__SceneLighting__Apply(lightingWas, { requestRender : false });   // <-- The light the viewport had before this picture
                 Na__RenderLoop__RequestRender();
             }
         });
@@ -540,6 +568,7 @@
                 target     : controls ? controls.target.clone() : null,
                 visibility : Na__ModelToggle__CaptureVisibilityMap(),
                 sections   : Na__CrossSection__SerializeSections(),
+                lighting   : Na__SceneLighting__GetLive(),                     // <-- The pose below lights the model the scene's way; this puts the viewer's back
                 passOn     : pass ? pass.enabled : null
             };
             let edgesSet = false;
@@ -576,6 +605,7 @@
                 if (controls && saved.target) { controls.target.copy(saved.target); controls.update(); }
                 Na__ModelToggle__ApplySceneLayerVisibility(saved.visibility);
                 Na__CrossSection__ApplySerializedSections(saved.sections);
+                if (saved.lighting) Na__SceneLighting__Apply(saved.lighting, { requestRender : false });
                 Na__RenderLoop__RequestRender();
             }
         });

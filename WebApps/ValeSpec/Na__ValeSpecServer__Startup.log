@@ -164,3 +164,14 @@
 [REQUEST] 24-Sep-2026 - 11:36 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0000__Ironmongery__DoorHandles/VG_IRN0003__DoorHandle__NewtonLeverHandle__.json?t=1790246209508 HTTP/1.1" 200 -
 [REQUEST] 24-Sep-2026 - 11:36 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0900__Ironmongery__Misc/VG_IRN999__DoorHandle__GhostGuy__.json?t=1790246209508 HTTP/1.1" 200 -
 [REQUEST] 24-Sep-2026 - 11:36 | 127.0.0.1 | "GET /03__Data__HardwareDataLibrary/VG_IRN0100__Ironmongery__Hinges/VG_IRN0102__Hinge__StandardHinge__WithUrns__.json?t=1790246209508 HTTP/1.1" 200 -
+=============================================================================
+ VALESPEC - SILENT SERVER OUTPUT REDIRECT ACTIVE -> D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec\Na__ValeSpecServer__Startup.log
+=============================================================================
+=============================================================================
+ VALESPEC - STATIC DEVELOPMENT SERVER
+=============================================================================
+ Root Directory : D:\10_CoreLib__ValeCodebase\WebApps\ValeSpec
+ Local URL      : http://127.0.0.1:8002/ValeSpec__App__.html
+ LAN URL        : http://192.168.9.69:8002/ValeSpec__App__.html
+ Press Ctrl+C to stop server
+=============================================================================

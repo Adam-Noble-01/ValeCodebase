@@ -1,6 +1,130 @@
 # ValeVision3D Development Log
 
 # ---------------------------------------------------------
+## ValeVision3D v2.71.0 - 28-Sep-2026 - A Scene Can Turn the Sun, and Every Scene It Does Not Touch Keeps the Default
+
+**Overview**
+- Adam, with 06 | Entrance Door ringed and TOO DARK written under it: the front that shot looks at
+  faces away from the sun, so it only ever gets the fill light. He asked for a way to turn the light
+  through 360 degrees, and to adjust the ambient light, per scene, previewed live before it is saved,
+  in a new subsection of the scene's Advanced settings. Every scene nobody touches keeps the default.
+- DEV TOOLS > PRESENTATION MODE SCENES > a scene > ADVANCED > LIGHTING. Rotation (0 to 360, 0 being
+  today's sun), Height (the sun's angle above the horizon), Sun (its strength), Ambient (the fill
+  light) and Sun Casts Shadows. Each slider has a number box beside it for an exact value, because
+  across a panel this narrow a slider moves the sun two or three degrees a pixel; a double-click on
+  a slider puts that one setting back to the default.
+- EVERY MOVE LIGHTS THE VIEWPORT AT ONCE. That is the preview. SAVE LIGHTING keeps it, and is only
+  live while there is something to save; USE DEFAULT puts every control back. The status line says
+  which of three states the row is in: the default, the scene's own saved lighting, or changes not
+  saved yet (amber). Update Scene and Save All To Project carry it too, as they carry every other
+  in-row setting.
+- Adam's choices through prompts: all four extra controls including shadows; the light eases over
+  a carousel flight rather than cutting; a Save Lighting button of its own; 3D sheet viewports in
+  their scene's lighting, plans and elevations always in the default.
+
+**What is stored** (`project.json`, on the scene record in `PresentationMode__SavedCameraScenes`)
+- `PresentationMode__Scene__Lighting`, holding ONLY the settings that differ from the default:
+  `Scene__Lighting__RotationDeg`, `__HeightDeg`, `__DirectionalIntensity`, `__AmbientIntensity`,
+  `__ShadowsEnabled`, plus a `Scene__Lighting__Description` saying so. Whole degrees, strengths to
+  two places, shadows as a flag.
+- A SCENE STORES ONLY WHAT IT CHANGES, so everything it leaves alone keeps following the default when
+  the default is changed. Turn the sun on one scene and change the default ambient next month, and
+  that scene gets the new ambient. No block at all is the default lighting: a scene put back to the
+  default loses its key rather than carrying a copy of the default.
+- Saved through the scene editor's existing R2-first path (GET-merge, Na__AppUtils__R2SaveProjectJson,
+  Flask mirror). No new top-level block: the lighting rides inside the scene it belongs to, like
+  PresentationMode__Scene__NavigationMode and ModelLayerVisibility.
+
+**The default moved into the app config, unchanged**
+- `Na__Scene__DefaultSceneLighting` hardcoded the sun at (50, 100, 40). `Scene__Default__LightingConfig`
+  now holds it as `DirectionalPosXMm / YMm / ZMm` = 50000, 100000, 40000, with `ShadowsEnabled` and a
+  description. Only its direction shades anything; its distance is kept for every direction a scene
+  turns it to, because that is what keeps the shadow camera clear of the model.
+- New `Scene__PerSceneLighting` block: `Enabled` (false ignores every stored override and hides the
+  controls, deleting nothing), `BlendDuringFlight`, and the slider ranges (height 10 to 90, sun to
+  3.0, ambient to 6.0; always widened to include the default).
+- An app config older than these keys (cached on a deployed origin for a visit) falls back to the
+  old values, so the model is lit exactly as before. Proved by the test below.
+
+**How it behaves** (`06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js`, new)
+- The new module owns both lights from the moment they are built. The setup hands them over; the
+  scene transition, the Dev menu, the batch walk, the Layout Editor and the drawing thumbnail bake
+  call in. It never imports the Presentation Mode system.
+- ROTATION IS CLOCKWISE SEEN FROM ABOVE, the sense the north bearing is measured in: plan with +X to
+  the right and -Z up the page, 90 degrees turns (50, _, 40) to (-40, _, 50).
+- FLIGHTS EASE THE LIGHT with the camera's own eased t, the rotation the short way round (350 to 10
+  passes through 0). An interrupted flight carries on from wherever the light is. The instant apply
+  (page load, the batch walks, a Layout Editor 3D viewport) sets it at once, before the
+  scene-activated announcement so its listeners see the new light.
+- SHADOWS SWITCH BY STRENGTH, NEVER BY castShadow. Turning castShadow over changes every lit
+  material's shader defines, so every one recompiles: a stall per flight between two scenes that
+  disagree. `LightShadow.intensity` is a plain uniform in r184, and fades with the flight.
+- ANYTHING WITHOUT A BLOCK RESOLVES TO THE DEFAULT, including the synthetic approach pose a drawing
+  flight uses. So a drawing is always lit by the default in the viewer, and one scene's light never
+  leaks into the next.
+
+**Everything else that poses the camera, and now the light**
+- Update Scene and Add Scene From Camera capture the live lighting (the thumbnail is rendered in it
+  a moment later, so the card and the scene agree); the overwrite confirmation says so.
+- Update All Thumbnails and Download All Images walk each scene in its own lighting, and the restore
+  point puts back the light that was on screen before the walk (BatchOps 1.1.0).
+- Layout Editor: a 3D viewport renders in its scene's lighting and the viewer's light goes back
+  afterwards (SnapshotRenderer 1.7.0). A 2D underlay renders in the DEFAULT and puts the viewer's
+  back: without that it would be shaded by whichever scene the viewer last stood in, and two renders
+  of one drawing could differ. The 3D picture's fingerprint gains the scene's lighting, only when it
+  has some, so relighting a scene re-renders its pictures and every unlit scene keeps its keys
+  (Viewport3d 1.6.1).
+- The drawing thumbnail bake remembers the light with the 3D camera and puts both back (1.0.1).
+
+**Known, accepted**
+- Save Lighting does not re-render the scene's thumbnail; Update Scene and Update All Thumbnails do.
+  The carousel card shows the old light until one of them runs.
+- The row's Preview button flies to the scene AS SAVED, so an unsaved light is replaced by the saved
+  one on arrival. The working copy keeps the edit and the status line still says it is not saved; a
+  touch on any control shows it again. Previewing a row's light while the viewport shows a different
+  scene lights that other view, the same way the FOV slider always has.
+- While a floor plan or elevation is on screen the controls edit the working copy but hold the
+  preview back, and the status line says why.
+- Reset View and the Video Studio leave the lighting as it is, as they already leave the model layers.
+- Shadows reach as far as they always have: three's default shadow camera, a 10 m square around the
+  line from the sun to the origin. Turning the sun changes where they fall, not how far they reach.
+- THE SHARED SERVICE WORKER. This release adds two modules and NO new export on any existing module,
+  so a warm client holding a mix of old and new files cannot fail to link: an old setup module leaves
+  the lights unregistered and every scene lit by the default until the next visit. The token is
+  still Adam's call; it was not bumped.
+
+**Tested**
+- `Na__Test__PerSceneLighting__.test.mjs`, new, 40 checks in Node against the module as shipped and
+  the app config as shipped: the default sun lands at exactly (50, 100, 40); rotation 90 and 180 go
+  clockwise in plan; overhead keeps the distance; a render is asked for only on a change; the stored
+  block is minimal and rounds as specified (360 and 359.6 are the default); partial blocks keep exact
+  defaults; clamping; shadows by strength with castShadow untouched; the short-way blend; capture
+  removes the key at the default; the picture token; Enabled false resolves to the default and
+  leaves records alone; an old config lights the model as before.
+- `Na__Verify__Exports__.mjs` PASS (415 files), `Na__Verify__ModuleGraph__.mjs` PASS (517 modules),
+  ESLint no-undef clean over the eleven changed and new modules.
+- NOT BROWSER-TESTED HERE, at Adam's standing request. To try: open 06 | Entrance Door, Dev Tools >
+  Presentation Mode Scenes > Advanced > Lighting, drag Rotation and watch the facade; Save Lighting;
+  fly to another scene and back (the light should ease both ways); Use Default + Save; Update All
+  Thumbnails; a sheet with that scene's 3D viewport and an elevation on it.
+
+**Files**
+- New: `02__Src__AppModules/06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js`,
+  `02__Src__AppModules/21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js`,
+  `80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs`.
+- Changed: `02__AppData/Na__AppConfig__Main.json` (the two lighting blocks),
+  `06/Na__Scene__DefaultSceneLighting.js` (hands the lights over), `01/Na__AppFlow__LoadingSequence.js`
+  (passes the new block), `21/...Camera__SceneTransition.js` 1.5.0, `21/...DevMenu__SceneRowBuilders__.js`
+  1.3.0, `21/...DevMenu__SceneEditor.js` 1.4.0, `21/...DevMenu__BatchOps__.js` 1.1.0,
+  `42/Na__DrawView__ThumbnailBake__.js` 1.0.1, `51/20/Na__LayoutEditor__Viewport3d__.js` 1.6.1,
+  `51/25/Na__LayoutEditor__SnapshotRenderer__.js` 1.7.0,
+  `03__Style__AppStylesheets/Na__PresentationMode__Styles__SceneCarousel__.css` (one region),
+  `ValeVision__README__.md` (a Per-Scene Lighting section).
+
+**Not yet confirmed by Adam.**
+
+
+# ---------------------------------------------------------
 ## ValeVision3D v2.70.0 - 20-Sep-2026 - The Top Bar Knows When It Is Not Wanted, and Neither Crossing Is a Cold Drop
 ### Ported from TrueVision3D v2.83.0, authored there the same day
 

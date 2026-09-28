@@ -25,8 +25,9 @@
 // - Open, a row reads: the scene's saved thumbnail beside the Name field and
 //   the Group dropdown; the FOV slider with live viewport preview and the move
 //   speed value box on the same line; then Advanced (collapsed) holding
-//   Position, the Nav Mode switch, Easing and the layout-editor-only flag;
-//   then Preview, Update Scene and Delete.
+//   Position, the Nav Mode switch, Easing, the layout-editor-only flag and the
+//   Lighting subsection (built by SceneLightingRows__); then Preview, Update
+//   Scene and Delete.
 // - The drag handle is the ONLY thing that arms a drag on the row, so the
 //   sliders stay usable and selecting text in the name field never starts a
 //   drag.
@@ -40,7 +41,7 @@
 // - handlers.onPreview(sceneId)          : fly to this scene (routed, so drawings open their own mode)
 // - handlers.onMoveByOffset(sceneId, +-1): reorder arrows
 // - handlers.onMoveToPosition(sceneId, n): Position field, 1-based within the group
-// - handlers.onMutate(action, scene)     : 'regroup' | 'update' | 'flag' | 'delete'
+// - handlers.onMutate(action, scene)     : 'regroup' | 'update' | 'flag' | 'lighting' | 'delete'
 //
 // INTEGRATION:
 // - Consumed only by Na__PresentationMode__DevMenu__SceneEditor.js.
@@ -65,6 +66,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.3.0 (per-scene lighting, v2.71.0)
+// - Advanced ends with a Lighting subsection: Rotation, Height, Sun, Ambient
+//   and Shadows, previewed live, with its own Use Default and Save Lighting.
+//   Built in Na__PresentationMode__DevMenu__SceneLightingRows__ to keep this
+//   file inside the house budget; Save Lighting raises onMutate('lighting').
+// - Update Scene's tooltip names the lighting among what it recaptures.
+//
 // 19-Sep-2026 - Version 1.2.0 (Presentation Scenes alignment with TrueVision)
 // - Rows fold. The header title is the fold control; the editor decides which
 //   single row is open.
@@ -144,6 +152,13 @@
         Na__DrawRename__OwnsScene,
         Na__DrawRename__RenameSceneCard
     } from '../42__System__DrawingViewCore/Na__DrawView__RenameDrawing__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Advanced > Lighting Subsection (per-scene sun and fill light)
+    // ------------------------------------------------------------
+    // @delegate: ./Na__PresentationMode__DevMenu__SceneLightingRows__.js
+    // ------------------------------------------------------------
+    import { Na__PresentationMode__DevMenu__BuildSceneLightingSection } from './Na__PresentationMode__DevMenu__SceneLightingRows__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -704,7 +719,7 @@
         updateBtn.type        = 'button';
         updateBtn.className   = 'na-pm-dev__btn na-pm-dev__btn--primary';
         updateBtn.textContent = 'Update Scene';
-        updateBtn.title       = 'Recapture the live view into this scene - camera, FOV, model layers, navigation mode and thumbnail - then save';
+        updateBtn.title       = 'Recapture the live view into this scene - camera, FOV, model layers, navigation mode, lighting and thumbnail - then save';
 
         if (isDrawingScene) {
             updateBtn.disabled = true;
@@ -858,8 +873,8 @@
         // ADVANCED SECTION | Collapsed by default to keep each row readable
         // ------------------------------------------------------------
         // Holds the settings that are set once and rarely revisited: exact
-        // position, navigation mode, easing curve and whether the viewer sees
-        // this scene at all. Open/closed state is remembered across panel
+        // position, navigation mode, easing curve, whether the viewer sees
+        // this scene at all, and its lighting. Open/closed state is remembered across panel
         // rebuilds so a reorder or a save does not collapse the section the
         // user is working in.
         //
@@ -929,6 +944,19 @@
             }
             onMutate('flag', scene);
         }));
+
+        // LIGHTING SUBSECTION | This scene's own sun and fill light
+        // ------------------------------------------------------------
+        // Rotation, Height, Sun, Ambient and Shadows, previewed live in the
+        // viewport as they move. Like Nav Mode and Easing they edit the working
+        // copy; unlike them the subsection has its own Save Lighting, because
+        // "preview, then keep" is the whole gesture. Null for a drawing card.
+        // @delegate: ./Na__PresentationMode__DevMenu__SceneLightingRows__.js
+        // ------------------------------------------------------------
+        const lightingSection = Na__PresentationMode__DevMenu__BuildSceneLightingSection(scene, () => {
+            onMutate('lighting', scene);                                     // <-- The editor commits, writes and rebuilds
+        });
+        if (lightingSection) advancedBody.appendChild(lightingSection);
 
         advanced.appendChild(advancedToggle);
         advanced.appendChild(advancedBody);

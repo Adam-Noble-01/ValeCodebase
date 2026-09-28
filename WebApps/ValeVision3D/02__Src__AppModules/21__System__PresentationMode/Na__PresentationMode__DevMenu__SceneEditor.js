@@ -25,6 +25,10 @@
 //   then Update Camera, Regen Thumb, Save Scene and Delete.
 // - Update Camera and Add Scene From Camera record the live navigation mode
 //   with the camera, so a view framed in fly is shown in fly.
+// - They record the live lighting too (Na__Scene__PerSceneLighting__), as the
+//   smallest override that reproduces it, or none when it is the default. The
+//   Lighting subsection's Save Lighting raises the 'lighting' row action,
+//   which commits and writes like the layout-only flag does.
 // - Reordering (arrows, drag handle, Position field) is confined to a scene's
 //   own group; the Group dropdown is the only way to move a scene between
 //   groups. Scene Order restarts at 1 inside every group and is renumbered
@@ -72,6 +76,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.4.0 (per-scene lighting, v2.71.0)
+// - Update Scene and Add Scene From Camera capture the live lighting into
+//   PresentationMode__Scene__Lighting (removed when the viewport shows the
+//   default), and the overwrite confirmation says so.
+// - New row action 'lighting' from the Advanced > Lighting subsection's Save
+//   Lighting: hold focus, then the one normalise, commit, write, rebuild tail.
+//
 // 11-Sep-2026 - Version 1.3.2
 // - Update Camera and Add Scene From Camera record the live navigation mode
 //   (PresentationMode__Scene__NavigationMode; orbit is the absent key), and
@@ -268,6 +279,12 @@
     // @delegate: ../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js
     // ------------------------------------------------------------
     import { Na__DrawView__IsActive } from '../42__System__DrawingViewCore/Na__DrawView__ActiveView__.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Scene Lighting Capture (Update Scene, Add Scene From Camera)
+    // @delegate: ../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js
+    // ------------------------------------------------------------
+    import { Na__SceneLighting__CaptureIntoScene } from '../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';
     // ------------------------------------------------------------
 
     import { Na__DevGate__IsAuthoringEnabled } from '../03__AppUtils/Na__AppUtils__DevGate__.js';
@@ -581,7 +598,7 @@
     // ------------------------------------------------------------
     // The single definition of "what a scene is a snapshot of": camera pose
     // and FOV, the derived lens mm, the model layer visibility, the navigation
-    // mode, the cross-section binding and the thumbnail. Shared by Update
+    // mode, the lighting, the cross-section binding and the thumbnail. Shared by Update
     // Scene and Add Scene From Camera so the two can never drift into
     // capturing different subsets - which is exactly what happened while
     // Update Camera, Regen Thumb and Save Scene each owned part of it.
@@ -609,6 +626,7 @@
         if (visibility) scene.PresentationMode__Scene__ModelLayerVisibility = visibility;
 
         Na__PmDev__CaptureLiveNavigationMode(scene);                         // <-- Walk or fly travels with the camera it framed
+        Na__SceneLighting__CaptureIntoScene(scene);                          // <-- The light the thumbnail is about to be rendered in; no block when it is the default
         Na__PmDev__CaptureCrossSectionIfEnabled(scene);                      // <-- Bind the live section state (toggle-gated, default OFF)
 
         await Na__PmDev__RegenerateThumbnail(scene);                         // <-- Render + upload, sets ThumbnailUrl
@@ -653,7 +671,7 @@
             const ok = await Na__PresentationMode__DevMenu__Confirm({
                 title         : 'Overwrite "' + sceneName + '"?',
                 message       : 'This replaces the scene\'s saved camera, field of view, model layers, navigation '
-                              + 'mode and thumbnail with whatever the viewport is showing right now, and saves it. '
+                              + 'mode, lighting and thumbnail with whatever the viewport is showing right now, and saves it. '
                               + 'There is no undo.',
                 confirmLabel  : 'Overwrite Scene',
                 cancelLabel   : 'Cancel',
@@ -663,7 +681,10 @@
 
             Na__PmDev__FocusedSceneId = sceneId;                             // <-- Come back to this row after the rebuild
             if (!await Na__PmDev__CaptureLiveViewIntoScene(targetScene)) return;
-        } else if (action === 'flag') {
+        } else if (action === 'flag' || action === 'lighting') {
+            // The row already wrote the change to its working copy (the
+            // layout-only flag, or the Lighting subsection's Save Lighting);
+            // what is left is the same commit and write every action ends in.
             Na__PmDev__FocusedSceneId = sceneId;                             // <-- Hold focus across the rebuild the commit triggers
         } else if (action !== 'regroup') {
             return;                                                          // <-- Unknown action, do nothing
@@ -932,7 +953,7 @@
         addBtn.type        = 'button';
         addBtn.className   = 'na-pm-dev__btn na-pm-dev__btn--primary na-pm-dev__btn--wide';
         addBtn.textContent = '+ Add Scene From Camera';
-        addBtn.title       = 'Capture the current camera, model layers and navigation mode as a new scene';
+        addBtn.title       = 'Capture the current camera, model layers, navigation mode and lighting as a new scene';
         addBtn.addEventListener('click', () => Na__PmDev__AddSceneFromCamera());
         globalActions.appendChild(addBtn);
 
@@ -1151,6 +1172,7 @@
         };
 
         Na__PmDev__CaptureLiveNavigationMode(newScene);                     // <-- Added while flying: a fly scene
+        Na__SceneLighting__CaptureIntoScene(newScene);                      // <-- Lit as the viewport is, so the thumbnail and the scene agree
 
         // GROUP | A new scene joins the group the carousel is currently showing
         // ------------------------------------------------------------

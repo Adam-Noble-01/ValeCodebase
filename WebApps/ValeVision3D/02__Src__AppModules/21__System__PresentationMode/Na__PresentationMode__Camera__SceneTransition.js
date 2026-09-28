@@ -34,6 +34,11 @@
 //   before the move and enters the scene's mode on arrival, through
 //   Na__NavigationModes__Switcher. The instant snap frames such a scene
 //   correctly but never changes the mode.
+// - A scene may carry PresentationMode__Scene__Lighting, its own sun and fill
+//   light (Na__Scene__PerSceneLighting__). The instant snap applies it at once;
+//   AnimateToScene eases the lights from where they stand to it over the
+//   flight, with the camera's eased t. A scene without one is lit by the
+//   default, so a custom light never carries over into the next scene.
 //
 // INTEGRATION:
 // - Imported by Na__PresentationMode__UI__SceneCarousel.js (clicks, play).
@@ -43,6 +48,13 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.5.0 (per-scene lighting, v2.71.0)
+// - ApplySceneCameraState lights the model the way the scene asks, before the
+//   scene-activated announcement, so its listeners see the new light.
+// - AnimateToScene eases the lighting over the flight, or cuts at the start
+//   (as the model layers do) when Scene__PerSceneLighting__BlendDuringFlight
+//   is false in the app config.
+//
 // 09-Sep-2026 - Drawing approach flag (port Phase 2)
 // - na-pm-scene-activated now carries isDrawingApproach so per-scene bindings
 // - can ignore the synthetic pose a floor plan or elevation flies to.
@@ -131,6 +143,20 @@
         Na__NavigationModes__ReleaseToOrbit,
         Na__NavigationModes__EnterModeAtPose
     } from '../10__NavigationAndCameras/Na__NavigationModes__Switcher.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Scene Lighting (PresentationMode__Scene__Lighting)
+    // @delegate: ../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js
+    // ------------------------------------------------------------
+    import {
+        Na__SceneLighting__ApplyScene,
+        Na__SceneLighting__ResolveScene,
+        Na__SceneLighting__GetLive,
+        Na__SceneLighting__IsSame,
+        Na__SceneLighting__Blend,
+        Na__SceneLighting__Apply,
+        Na__SceneLighting__IsBlendDuringFlight
+    } from '../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';
     // ------------------------------------------------------------
 
 // endregion -------------------------------------------------------------------
@@ -404,6 +430,8 @@
 
         Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);  // <-- Sync tag-driven model toggles (no-op before groups load)
 
+        Na__SceneLighting__ApplyScene(scene, { requestRender : false });                 // <-- The scene's own lighting, or the default when it has none (the render request below paints it)
+
         Na__PresentationMode__Camera__DispatchSceneActivated(scene);                     // <-- Per-scene bindings (e.g. cross sections) follow the scene
 
         Na__RenderLoop__RequestRender();                                                 // <-- Single frame redraw
@@ -516,6 +544,24 @@
         // SYNC TAG-DRIVEN MODEL TOGGLES IMMEDIATELY (not animated — an instant cut reads better than a mid-flight pop-out)
         Na__ModelToggle__ApplySceneLayerVisibility(scene.PresentationMode__Scene__ModelLayerVisibility);
 
+        // PER-SCENE LIGHTING | Eased with the camera, unlike the model layers
+        // ------------------------------------------------------------
+        // A sun that jumps while the old view is still on screen reads as a
+        // flicker; turned in step with the flight it reads as the light moving.
+        // It runs from wherever the lights stand now (an interrupted flight
+        // carries on from mid-turn) to the scene's own lighting, or to the
+        // default when the scene has none - which is also what a drawing's
+        // approach pose resolves to. With blending off in the app config it
+        // cuts here instead, at the start of the flight.
+        // @delegate: ../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js
+        // ------------------------------------------------------------
+        const lightFrom  = Na__SceneLighting__GetLive();
+        const lightTo    = Na__SceneLighting__ResolveScene(scene);
+        const blendLight = Boolean(lightFrom && lightTo)
+            && Na__SceneLighting__IsBlendDuringFlight()
+            && !Na__SceneLighting__IsSame(lightFrom, lightTo);               // <-- Same light both ends: nothing to ease
+        if (!blendLight) Na__SceneLighting__Apply(lightTo, { requestRender : false });  // <-- Cut now (a no-op when already there)
+
         // PER-SCENE BINDINGS | Cross sections etc. swap instantly, like model toggles
         Na__PresentationMode__Camera__DispatchSceneActivated(scene);
 
@@ -565,6 +611,11 @@
             camera.fov = interpFov;
             camera.updateProjectionMatrix();                                  // <-- Rebuild projection each frame
 
+            // INTERPOLATE LIGHTING | The same eased t, so the light lands with the camera
+            if (blendLight) {
+                Na__SceneLighting__Apply(Na__SceneLighting__Blend(lightFrom, lightTo, t), { requestRender : false });  // <-- The flight is already drawing every frame
+            }
+
             // INTERPOLATE ORBIT TARGET | A walk or fly shot keeps it on the
             // slerped look axis, so update() agrees with the rotation above
             if (controls) {
@@ -584,6 +635,7 @@
                 camera.setRotationFromQuaternion(endQuat);
                 camera.fov = endFov;
                 camera.updateProjectionMatrix();
+                if (blendLight) Na__SceneLighting__Apply(lightTo, { requestRender : false });  // <-- Exactly the scene's lighting
 
                 if (controls) {
                     controls.target.copy(endTarget);

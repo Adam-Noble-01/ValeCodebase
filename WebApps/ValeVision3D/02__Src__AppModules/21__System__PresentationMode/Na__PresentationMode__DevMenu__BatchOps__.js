@@ -27,8 +27,8 @@
 //      saves each one.
 //
 // - THE LIVE VIEW IS PUT BACK. Both operations snapshot the camera pose, the
-//   orbit target and the model layer visibility before the first scene and
-//   restore all three afterwards, including after a stop or a failure. A batch
+//   orbit target, the model layer visibility and the lighting before the first
+//   scene and restore them afterwards, including after a stop or a failure. A batch
 //   that left the author parked inside scene nineteen with half the model
 //   switched off would be worse than no batch.
 //
@@ -77,6 +77,11 @@
 // -----------------------------------------------------------------------------
 //
 // DEVELOPMENT LOG:
+// 28-Sep-2026 - Version 1.1.0 (per-scene lighting, v2.71.0)
+// - Each scene is walked in its own lighting (the instant apply sets it), so
+//   thumbnails and exported images show it. The restore point records the
+//   lighting on screen before the walk and the restore puts it back.
+//
 // 19-Sep-2026 - Version 1.0.0
 // - Initial implementation alongside the Presentation Scenes menu alignment.
 //
@@ -100,6 +105,13 @@
     // @delegate: ../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js
     // ------------------------------------------------------------
     import { Na__ModelToggle__CaptureVisibilityMap } from '../26__System__ToggleModelElements/Na__UiFeature__ModelToggle__Controls.js';
+    // ------------------------------------------------------------
+
+    // MODULE IMPORTS | Per-Scene Lighting (snapshot / restore)
+    // ------------------------------------------------------------
+    // @delegate: ../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js
+    // ------------------------------------------------------------
+    import { Na__SceneLighting__CaptureIntoScene } from '../06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js';
     // ------------------------------------------------------------
 
     // MODULE IMPORTS | Thumbnail Capture and Upload
@@ -229,6 +241,11 @@
 
         const visibility = Na__ModelToggle__CaptureVisibilityMap();
         if (visibility) snapshot.PresentationMode__Scene__ModelLayerVisibility = visibility;
+
+        // LIGHTING | Every scene walked lights the model its own way, and the
+        // instant apply that restores this point would otherwise land in the
+        // default light rather than the light the author was looking at.
+        Na__SceneLighting__CaptureIntoScene(snapshot);
 
         return snapshot;
     }

@@ -350,3 +350,64 @@ The layout system shares the same render pipeline as the "Export Now" feature vi
 As of v0.1.4, this shared helper also synchronizes profile-lines normal-buffer render and size state during capture/restore, preventing perspective mismatches in layout exports.
 
 # -----------------------------------------------------------------------------
+
+## Per-Scene Lighting (v2.71.0)
+
+Any Presentation Mode scene can carry its own lighting, so a view whose subject faces away from the sun can be lit properly without changing any other scene. Every scene that is not given its own lighting keeps using the default.
+
+### Authoring
+
+Dev Tools > Presentation Mode Scenes > open a scene > **Advanced** > **Lighting** (localhost only):
+
+| Control | What it does |
+| :------ | :----------- |
+| Rotation | Turns the sun about the vertical axis, clockwise seen from above. 0 is the default direction; the slider runs 0 to 360. |
+| Height | The sun's angle above the horizon. Lower lights the walls more strongly; 90 is straight overhead. |
+| Sun | The strength of the sun (the directional light, the only light that casts shadows). |
+| Ambient | The strength of the even fill light every face receives. |
+| Sun casts shadows | Untick to fade the sun's shadows out for this scene. |
+
+Every change lights the viewport straight away: that is the preview. **Save Lighting** writes it to the project, **Use Default** puts every control back, and a double-click on a slider puts that one setting back. Update Scene and Add Scene From Camera also capture whatever lighting the viewport is showing.
+
+### Data
+
+Stored on the scene record in `project.json`, holding only the settings that differ from the default:
+
+```json
+"PresentationMode__Scene__Lighting": {
+    "Scene__Lighting__Description"      : "This scene's own lighting. Only the settings that differ from ...",
+    "Scene__Lighting__RotationDeg"      : 135,
+    "Scene__Lighting__AmbientIntensity" : 3.2
+}
+```
+
+An absent key follows the default, and an absent block is the default lighting. The five keys are `Scene__Lighting__RotationDeg`, `Scene__Lighting__HeightDeg`, `Scene__Lighting__DirectionalIntensity`, `Scene__Lighting__AmbientIntensity` and `Scene__Lighting__ShadowsEnabled`.
+
+### Config
+
+| Key | Purpose |
+| :-- | :------ |
+| `Scene__Default__LightingConfig__AmbientIntensity`, `__DirectionalIntensity` | Default strengths. |
+| `Scene__Default__LightingConfig__DirectionalPosXMm`, `__DirectionalPosYMm`, `__DirectionalPosZMm` | Default sun position, integer mm from the model origin (50000, 100000, 40000). Its direction shades the faces; its distance keeps the shadow camera clear of the model. |
+| `Scene__Default__LightingConfig__ShadowsEnabled` | Default shadows on or off. |
+| `Scene__PerSceneLighting__Enabled` | false ignores every stored override and hides the controls. Nothing is deleted. |
+| `Scene__PerSceneLighting__BlendDuringFlight` | true eases the lighting over a camera flight; false cuts to it at the start of the flight. |
+| `Scene__PerSceneLighting__HeightMinDeg`, `__HeightMaxDeg`, `__DirectionalIntensityMax`, `__AmbientIntensityMax` | Slider ranges. |
+
+### Where It Applies
+
+- Carousel flights ease the lighting in step with the camera; instant scene applies (page load, the batch walks, Layout Editor 3D viewports) set it at once.
+- Floor plans and elevations always use the default lighting, in the viewer and on Layout Editor sheets.
+- Image export, scene thumbnails, Update All Thumbnails and Download All Images render each scene in its own lighting.
+- Shadows switch by strength (`LightShadow.intensity`), never by `castShadow`, so no material recompiles.
+
+### Key Modules
+
+| Module | Purpose |
+| :----- | :------ |
+| `06__Scene__LightingEffects/Na__Scene__PerSceneLighting__.js` | Owns both lights: defaults, resolve, the minimal stored block, flight blend, apply and capture. |
+| `21__System__PresentationMode/Na__PresentationMode__DevMenu__SceneLightingRows__.js` | The Advanced > Lighting subsection. |
+| `21__System__PresentationMode/Na__PresentationMode__Camera__SceneTransition.js` | Applies a scene's lighting on an instant apply and eases it over a flight. |
+| `80__Testing__PrototypeEnvironment/Na__Test__PerSceneLighting__.test.mjs` | Node test of the lighting maths against the shipped app config. |
+
+# -----------------------------------------------------------------------------

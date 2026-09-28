@@ -1191,6 +1191,23 @@ ValeVision's loader links. A file in one app is at the same path in the other.
 
 ---
 
+## Per-Scene Lighting (v2.71.0, 28-Sep-2026)
+
+ValeVision only, at Adam's request. A Presentation Mode scene can carry its own sun and fill light (Rotation, Height, Sun,
+Ambient, Shadows) in `PresentationMode__Scene__Lighting`, storing only what differs from `Scene__Default__LightingConfig`.
+TrueVision builds the same two lights in the same place and has no per-scene lighting.
+
+| ValeVision | TrueVision | Parity | Notes | Checked |
+|---|---|---|---|---|
+| `06/Na__Scene__PerSceneLighting__.js` 1.0.0 | none | new | Owns both lights: defaults from the config, resolve, the minimal stored block, the flight blend (short way round), apply, capture; shadows by `LightShadow.intensity`, never castShadow | 28-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__SceneLightingRows__.js` 1.0.0 | none | new | Advanced > Lighting: four sliders with number boxes, Sun Casts Shadows, live preview, Use Default, Save Lighting | 28-Sep-2026 |
+| `06/Na__Scene__DefaultSceneLighting.js` (edited) | TV same | diverged | The sun position comes from the config and both lights are handed to the per-scene module; TrueVision still hardcodes (50, 100, 40) | 28-Sep-2026 |
+| `21/Na__PresentationMode__Camera__SceneTransition.js` 1.5.0 | TV same | adapted | The instant apply lights the scene; AnimateToScene eases the light with the camera | 28-Sep-2026 |
+| `21/Na__PresentationMode__DevMenu__SceneRowBuilders__.js` 1.3.0, `SceneEditor.js` 1.4.0, `BatchOps__.js` 1.1.0 | TV same | adapted | The Lighting subsection; the 'lighting' row action; Update Scene and Add Scene capture the live light; the batch restore point keeps it | 28-Sep-2026 |
+| `51/25/Na__LayoutEditor__SnapshotRenderer__.js` 1.7.0, `51/20/Na__LayoutEditor__Viewport3d__.js` 1.6.1 | TV same | adapted | 3D viewports in their scene's light, 2D underlays in the default; the scene's lighting joins the 3D fingerprint only when set | 28-Sep-2026 |
+| `42/Na__DrawView__ThumbnailBake__.js` 1.0.1 | none | new | The remembered 3D pose carries the light | 28-Sep-2026 |
+| `02__AppData/Na__AppConfig__Main.json`, the carousel stylesheet, `80/Na__Test__PerSceneLighting__.test.mjs` | n/a | n/a | The two lighting blocks; one CSS region; 40 Node checks | 28-Sep-2026 |
+
 ## Pending back-port (ValeVision to TrueVision)
 
 | Item | Where | Why TrueVision wants it |
@@ -1210,6 +1227,7 @@ ValeVision's loader links. A file in one app is at the same path in the other.
 | Layout Editor loads on first use: loader facade, loading screen, boot stylesheet | `51/01__Core__Loader/Na__LayoutEditor__Loader__.js`, `LoadingScreen__.js`, `Styles__Boot__.css`; TabStrip, DevMenu, ModeController and RenameDrawing edits (v2.45.0) | TrueVision's Index.html imports the whole editor at start-up as well; the loader keeps it off every page load until a sheet is opened |
 | Add Viewport scene list rebuilt on every refresh; the Viewport panel refreshed on scene broadcasts | `51/40__Ui__Panels/Na__LayoutEditor__Panel__ViewportSettings__.js` 1.4.1, `51/05__Core__ModeController/Na__LayoutEditor__ModeController__.js` 1.15.1 (v2.45.1) | TrueVision's panel has the same one-time fill (`addSelect.options.length <= 1`), so plans, elevations and scenes added after a sheet first opens never reach Add Viewport there either |
 | Drawing thumbnail bake: new cards bake their picture, Bake Missing Thumbnails button | `42/Na__DrawView__ThumbnailBake__.js`, the floor plan and elevation Dev editors 1.2.0, two label keys (v2.46.0) | TrueVision's scene links also set the thumbnail path at creation with no picture behind it, so its seeded and added drawing cards show broken images until Save Thumbnail is pressed on each |
+| Per-scene lighting: Rotation, Height, Sun, Ambient and Shadows per scene, eased over flights | `06/Na__Scene__PerSceneLighting__.js`, `21/Na__PresentationMode__DevMenu__SceneLightingRows__.js`, the scene transition, editor, batch and Layout Editor snapshot edits (v2.71.0) | TrueVision lights every view the same way, so a shot whose subject faces away from its fixed sun stays in shadow |
 
 
 ### Contextual top bar fold and loading veils (TrueVision v2.83.0 -> ValeVision v2.70.0, 20-Sep-2026)

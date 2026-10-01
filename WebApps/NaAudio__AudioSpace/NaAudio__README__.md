@@ -5,7 +5,12 @@
 A 3D environment for building a piece of music as a *place* rather than as a list of
 tracks. Everything you can see is a control; everything that makes a sound is somewhere.
 
-Built against **AudioSPACE Concept Manifest 1.0.0**.
+Built against **AudioSPACE Concept Manifest 1.0.0**, filed in `90__Docs__DesignManifest/` (the
+original PDF, plus a full-text transcription because the PDF is a single image with no text layer).
+
+Agents: the `audiospace-3d-daw-development-expert` skill (AgentSkills repo, category
+`50-audiospace-3d-daw-development-expert`) carries the design intent in tiers and a memory of
+Adam's steering. Load it before working here.
 
 ---
 
@@ -327,7 +332,8 @@ NaAudio__AudioSpace/
 ├── 25__Generated__RenderedBounces/            ┘
 │
 ├── 60__Dev__WebBuildUtils/                    audio library index generator
-└── 61__Dev__AssetAuthoring__SampleLibraryIngest/   curated ingest from GitHub
+├── 61__Dev__AssetAuthoring__SampleLibraryIngest/   curated ingest from GitHub
+└── 90__Docs__DesignManifest/                  the design manifest: original PDF and full text
 ```
 
 ### The shipped / generated split
